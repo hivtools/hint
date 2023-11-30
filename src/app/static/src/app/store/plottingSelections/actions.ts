@@ -5,7 +5,7 @@ import {
     PlottingSelectionsState,
     TableSelections
 } from "./plottingSelections";
-import {PayloadWithType} from "../../types";
+import {ModelOutputTabs, PayloadWithType} from "../../types";
 import {DataExplorationState} from "../dataExploration/dataExploration";
 
 export interface PlottingSelectionsActions {
@@ -20,14 +20,18 @@ export const actions: ActionTree<PlottingSelectionsState, DataExplorationState> 
     async updateBarchartSelections(context, payload) {
         const {commit, dispatch} = context;
         const indicatorId = payload.payload.indicatorId;
-        await dispatch("modelCalibrate/getResultData", indicatorId, {root:true});
+        const tab = ModelOutputTabs.Bar;
+        const resultDataPayload = { indicatorId, tab };
+        await dispatch("modelCalibrate/getResultData", resultDataPayload, {root:true});
         commit({type: PlottingSelectionsMutations.updateBarchartSelections, payload: payload.payload});
     },
 
     async updateChoroplethSelections(context, payload) {
         const {commit, dispatch} = context;
         const indicatorId = payload.payload.indicatorId;
-        if (indicatorId) await dispatch("modelCalibrate/getResultData", indicatorId, {root:true});
+        const tab = ModelOutputTabs.Map;
+        const resultDataPayload = { indicatorId, tab };
+        if (indicatorId) await dispatch("modelCalibrate/getResultData", resultDataPayload, {root:true});
         commit({type: PlottingSelectionsMutations.updateOutputChoroplethSelections, payload: payload.payload});
     },
 
@@ -35,15 +39,20 @@ export const actions: ActionTree<PlottingSelectionsState, DataExplorationState> 
         const {commit, dispatch} = context;
         const colourIndicatorId = payload.payload.colorIndicatorId;
         const sizeIndicatorId = payload.payload.sizeIndicatorId;
-        if (colourIndicatorId) await dispatch("modelCalibrate/getResultData", colourIndicatorId, {root:true});
-        if (sizeIndicatorId) await dispatch("modelCalibrate/getResultData", sizeIndicatorId, {root:true});
+        const tab = ModelOutputTabs.Bubble;
+        const resultDataPayloadColor = { indicatorId: colourIndicatorId, tab };
+        const resultDataPayloadSize = { indicatorId: sizeIndicatorId, tab };
+        if (colourIndicatorId) await dispatch("modelCalibrate/getResultData", resultDataPayloadColor, {root:true});
+        if (sizeIndicatorId) await dispatch("modelCalibrate/getResultData", resultDataPayloadSize, {root:true});
         commit({type: PlottingSelectionsMutations.updateBubblePlotSelections, payload: payload.payload});
     },
 
     async updateTableSelections(context, payload) {
         const {commit, dispatch} = context;
         const indicatorId = payload.payload.indicator;
-        if (indicatorId) await dispatch("modelCalibrate/getResultData", indicatorId, {root:true});
+        const tab = ModelOutputTabs.Table;
+        const resultDataPayload = { indicatorId, tab };
+        if (indicatorId) await dispatch("modelCalibrate/getResultData", resultDataPayload, {root:true});
         commit({type: PlottingSelectionsMutations.updateTableSelections, payload: payload.payload});
     }
 };

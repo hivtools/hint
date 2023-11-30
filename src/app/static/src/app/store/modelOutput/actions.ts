@@ -36,7 +36,10 @@ export const actions: ActionTree<ModelOutputState, DataExplorationState> & Model
                 break;
         }
 
-        currentIndicators.forEach(indicator => dispatch("modelCalibrate/getResultData", indicator, {root:true}));
+        currentIndicators.forEach(indicator => {
+            const payload = { indicatorId: indicator, tab };
+            dispatch("modelCalibrate/getResultData", payload, {root:true});
+        });
         commit({type: ModelOutputMutation.TabSelected, payload: tab});
     },
 };
