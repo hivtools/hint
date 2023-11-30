@@ -18,6 +18,7 @@
     import {mapStateProp} from "../../utils";
     import {RootState} from "../../root";
     import {Language} from "../../store/translations/locales";
+    import {InputTimeSeriesRow, InputTimeSeriesData} from "../../../app/generated";
 
     const config = {
         responsive: false,
@@ -34,20 +35,7 @@
         ]
     };
 
-    type Data = {
-        area_hierarchy: string,
-        area_id: string,
-        area_level?: number,
-        area_name: string,
-        page?: number,
-        plot?: string,
-        quarter?: string,
-        time_period: string,
-        value?: number,
-        missing_ids?: string[] | null
-    }
-
-    type ChartData = { data: Data[] } | null
+    type ChartData = { data: InputTimeSeriesData } | null
 
     type Subplots = {
         columns: number,
@@ -107,10 +95,10 @@
                 await drawFunc(el as HTMLElement, drawData.data, drawData.layout, {...config as any});
                 this.rendering = false;
             },
-            getTooltipTemplate: function(plotData: (Data | null)[], areaHierarchy: string) {
+            getTooltipTemplate: function(plotData: (InputTimeSeriesRow | null)[], areaHierarchy: string) {
                 const hierarchyText = areaHierarchy ? "<br>" + areaHierarchy : "";
                 const tooltip = "%{x}, %{y}" + hierarchyText;
-                return plotData.map((entry: Data | null) => {
+                return plotData.map((entry: InputTimeSeriesRow | null) => {
                     let missingIdsText = "";
                     if (entry && entry.missing_ids && entry.missing_ids.length) {
                         // If the area ID matches the missing_id then this is a synthetic value we have appended
@@ -128,7 +116,7 @@
                     return tooltip + missingIdsText + "<extra></extra>";
                 })
             },
-            getScatterPoints: function(plotData: (Data | null)[], areaName: string, areaHierarchy: string,
+            getScatterPoints: function(plotData: (InputTimeSeriesRow | null)[], areaName: string, areaHierarchy: string,
                                        index: number, baseColour: string, missingColour: string) {
                 const hoverTemplate = this.getTooltipTemplate(plotData, areaHierarchy);
                 const points: any = {
@@ -157,7 +145,7 @@
                 if (!this.chartData) {
                     return {data: [], layout: {}}
                 }
-                const dataByArea: Record<string, Data[]> = {};
+                const dataByArea: Record<string, InputTimeSeriesData> = {};
                 this.chartData.data.forEach(dataPoint => {
                     const areaId = dataPoint.area_id;
                     if (areaId in dataByArea) {
@@ -176,7 +164,7 @@
 
                 const data: any = [];
                 areaIds.forEach((id, index) => {
-                    const areaData: Data[] = dataByArea[id];
+                    const areaData: InputTimeSeriesData = dataByArea[id];
 
                     const highlightedLineIndexes: boolean[] = [];
                     for (let i = 1; i < areaData.length; i++) {
@@ -192,7 +180,7 @@
 
                     const highlightsRequired = highlightedLineIndexes.some(v => v);
 
-                    let highlight: (Data | null)[] = [];
+                    let highlight: (InputTimeSeriesRow | null)[] = [];
                     if (highlightsRequired) {
                         const interpolateIndexes: boolean[] = [];
                         for (let i = 0; i < highlightedLineIndexes.length - 1; i++) {
