@@ -2,7 +2,7 @@ import { shallowMount } from "@vue/test-utils";
 import TableData from "../../../app/components/outputTable/TableData.vue";
 import Vuex from "vuex";
 import { mockModelCalibrateState, mockPlottingSelections } from "../../mocks";
-import TableDisplay from "../../../app/components/outputTable/TableDisplay.vue";
+import TableReshapeData from "../../../app/components/outputTable/TableReshapeData.vue";
 
 const mockFilters = [
     {
@@ -88,24 +88,24 @@ describe("Output Table display table tests", () => {
 
     it("filters data and renders as expected", () => {
         const wrapper = getWrapper("pop", "op1", 2);
-        expect(wrapper.findComponent(TableDisplay).props("data")).toStrictEqual([
+        expect(wrapper.findComponent(TableReshapeData).props("data")).toStrictEqual([
             {id: 3, indicator: "pop", col_id_filter_1: "op1", area_level: 2}
         ]);
 
         const wrapper1 = getWrapper("pop", "op1", 1);
-        expect(wrapper1.findComponent(TableDisplay).props("data")).toStrictEqual([]);
+        expect(wrapper1.findComponent(TableReshapeData).props("data")).toStrictEqual([]);
 
         const wrapper2 = getWrapper("pop2", "op1", 1);
-        expect(wrapper2.findComponent(TableDisplay).props("data")).toStrictEqual([
+        expect(wrapper2.findComponent(TableReshapeData).props("data")).toStrictEqual([
             {id: 2, indicator: "pop2", col_id_filter_1: "op1", area_level: 1}
         ]);
 
         const wrapper3 = getWrapper("pop", "op2", 1);
-        expect(wrapper3.findComponent(TableDisplay).props("data")).toStrictEqual([
+        expect(wrapper3.findComponent(TableReshapeData).props("data")).toStrictEqual([
             {id: 1, indicator: "pop", col_id_filter_1: "op2", area_level: 1}
         ]);
 
         const wrapper4 = getWrapper("pop2", "op2", 1);
-        expect(wrapper4.findComponent(TableDisplay).props("data")).toStrictEqual([]);
+        expect(wrapper4.findComponent(TableReshapeData).props("data")).toStrictEqual([]);
     });
 });

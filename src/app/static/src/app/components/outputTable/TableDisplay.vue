@@ -1,13 +1,14 @@
 <template>
-    <div>{{ data }}</div>
+    <div>Table</div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent } from "vue";
 
 export default defineComponent({
     props: {
-        data: Array
+        data: Object,
+        headerName: String
     }
 });
 </script>
