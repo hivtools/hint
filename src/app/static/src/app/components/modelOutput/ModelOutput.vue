@@ -357,12 +357,7 @@
                         this.updateComparisonPlotSelections)
                 }
             },
-            prepareOutputDownloads: mapActionByName("downloadResults", "prepareOutputs"),
-            handleClick(event: Event) {
-                event.preventDefault();
-                event.stopImmediatePropagation();
-                event.stopPropagation();
-            }
+            prepareOutputDownloads: mapActionByName("downloadResults", "prepareOutputs")
         },
         mounted() {
             this.prepareOutputDownloads();
