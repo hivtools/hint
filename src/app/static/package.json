@@ -111,6 +111,8 @@
     "@types/chartjs-plugin-annotation": "^0.5.2",
     "@types/geojson": "^7946.0.7",
     "@types/plotly.js-basic-dist": "^1.54.0",
+    "ag-grid-community": "^30.2.1",
+    "ag-grid-vue3": "^30.2.1",
     "bootstrap-vue-next": "^0.8.7",
     "chart.js": "^4.1.1",
     "chartjs-plugin-annotation": "^3.0.1",
