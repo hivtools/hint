@@ -2,6 +2,10 @@
 
 * Add new table tab to Model Outputs page
 
+# hint 3.4.3
+
+* Add loading components to plots when they fetch indicator slice of data
+
 # hint 3.3.0
 
 * Keep user's language preference outside project state
