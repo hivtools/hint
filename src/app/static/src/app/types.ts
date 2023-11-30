@@ -335,7 +335,8 @@ export interface DownloadIndicatorDataset {
 
 export interface DownloadIndicatorPayload {
     data: DownloadIndicatorDataset,
-    filename: string
+    filename: string,
+    options?: any
 }
 
 export interface Field {

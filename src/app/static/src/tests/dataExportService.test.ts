@@ -11,7 +11,7 @@ const mockWriteFile = jest.fn();
 jest.mock("xlsx", () => ({
     writeFile: (data: any, fileName: string) => mockWriteFile(data, fileName),
     utils: {
-        json_to_sheet: (data: any) => mockJsonToSheet(data),
+        json_to_sheet: (data: any, options: any = undefined) => mockJsonToSheet(data, options),
         book_new: () => mockBookNew(),
         book_append_sheet: (wb: any, ws: any, name: string) => mockBookAppendSheet(wb, ws, name)
     }
@@ -98,6 +98,16 @@ describe("data export service", () => {
         assertExpectedSingleSheet()
     });
 
+    it("can take options", () => {
+        const data = mockDownloadIndicatorData();
+        const options = { testOp: "testConfig" };
+        exportService({data, filename: "testFile", options})
+            .addFilteredData()
+            .download()
+
+        expect(mockJsonToSheet.mock.calls[0][0]).toStrictEqual(expectedFilteredData.data);
+        expect(mockJsonToSheet.mock.calls[0][1]).toStrictEqual(options);
+    });
 })
 
 const assertExpectedSingleSheet = () => {
