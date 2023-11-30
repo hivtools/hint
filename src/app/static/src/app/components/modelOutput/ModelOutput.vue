@@ -225,14 +225,12 @@
             this.tabSelected(tab);
         },
         data: () => {
-            const tabs: (keyof Translations)[] = [ModelOutputTabs.Bar];
-
-            if (switches.tableTab) {
-                tabs.push(ModelOutputTabs.Table);
-            }
-
-            tabs.push(ModelOutputTabs.Map);
-            tabs.push(ModelOutputTabs.Comparison);
+            const tabs: (keyof Translations)[] = [
+                ModelOutputTabs.Bar,
+                ModelOutputTabs.Table,
+                ModelOutputTabs.Map,
+                ModelOutputTabs.Comparison
+            ];
 
             if (!inactiveFeatures.includes("BubblePlot")) {
                 tabs.push(ModelOutputTabs.Bubble);
