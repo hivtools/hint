@@ -238,8 +238,8 @@
 
                 for (let i = 0; i < areaIds.length; i++) {
                     const row = Math.floor(i/this.layoutData.subplots.columns);
+                    const maxOfData = Math.max(...dataByArea[areaIds[i]].map(d => d.value || 0));
                     baseLayout[`yaxis${i + 1}`] = {
-                        "rangemode": "tozero",
                         "zeroline": false,
                         "tickformat": this.layoutData.yAxisFormat,
                         "tickfont": {
@@ -249,7 +249,7 @@
                             1 - (row/this.layoutData.subplots.rows),
                             1 - ((row/this.layoutData.subplots.rows) + subPlotHeight)
                         ],
-                        "autorange": true,
+                        "range": [-maxOfData * 0.1, maxOfData * 1.1],
                         "type": "linear"
                     };
                     baseLayout[`xaxis${i + 1}`] = {
