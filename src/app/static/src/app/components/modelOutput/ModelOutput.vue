@@ -14,7 +14,7 @@
         </div>
         <div class="row mt-2">
             <div v-if="selectedTab === modelOutputTabs.Map" id="choropleth-container" class="col-md-12">
-                <loading-tab :loading="loading.map"/>
+                <loading-tab :loading="showLoading.map"/>
                 <choropleth
                     :chartdata="chartdata"
                     :filters="choroplethFilters"
@@ -42,7 +42,7 @@
             </div>
 
             <div v-if="selectedTab === modelOutputTabs.Bar" id="barchart-container" class="col-md-12">
-                <loading-tab :loading="loading.bar"/>
+                <loading-tab :loading="showLoading.bar"/>
                 <bar-chart-with-filters
                     :chart-data="chartdata"
                     :filter-config="barchartFilterConfig"
@@ -68,7 +68,7 @@
             </div>
 
             <div v-if="selectedTab === modelOutputTabs.Bubble" id="bubble-plot-container" class="col-md-12">
-                <loading-tab :loading="loading.bubble"/>
+                <loading-tab :loading="showLoading.bubble"/>
                 <bubble-plot :chartdata="chartdata" :features="features" :featureLevels="featureLevels"
                              :filters="bubblePlotFilters" :indicators="bubblePlotIndicators"
                              :selections="bubblePlotSelections"
@@ -93,7 +93,6 @@
             </div>
 
             <div v-if="selectedTab === modelOutputTabs.Comparison" id="comparison-container" class="col-md-12">
-                <loading-tab :loading="loading.comparison"/>
                 <bar-chart-with-filters
                     :chart-data="comparisonPlotData"
                     :filter-config="comparisonPlotFilterConfig"
@@ -122,7 +121,7 @@
             </div>
 
             <div v-if="selectedTab === modelOutputTabs.Table" id="table-container" class="col-md-12">
-                <loading-tab :loading="loading.table"/>
+                <loading-tab :loading="showLoading.table"/>
                 <output-table></output-table>
             </div>
         </div>
@@ -166,7 +165,6 @@
     import {ModelCalibrateState} from "../../store/modelCalibrate/modelCalibrate";
     import i18next from "i18next";
     import { defineComponent } from "vue";
-    import { switches } from "../../featureSwitches";
     import LoadingTab from "./LoadingTab.vue";
 
     const namespace = 'filteredData';
@@ -263,7 +261,8 @@
                 bubblePlotSelections: (state: PlottingSelectionsState) => state.bubble,
                 choroplethSelections: (state: PlottingSelectionsState) => state.outputChoropleth,
                 colourScales: (state: PlottingSelectionsState) => state.colourScales.output,
-                bubbleSizeScales: (state: PlottingSelectionsState) => state.bubbleSizeScales.output
+                bubbleSizeScales: (state: PlottingSelectionsState) => state.bubbleSizeScales.output,
+                tableSelections: (state: PlottingSelectionsState) => state.table,
             }),
             ...mapStateProps("baseline", {
                     features: (state: BaselineState) => state.shape!.data.features as Feature[],
@@ -274,7 +273,7 @@
                 comparisonPlotError: (state: ModelCalibrateState) => state.comparisonPlotError
             }),
             ...mapStateProps("modelOutput", {
-                loading: (state: ModelOutputState) => state.loading
+                indicatorsBeingFetched: (state: ModelOutputState) => state.indicatorsBeingFetched
             }),
             filteredChoroplethIndicators() {
                 return this.choroplethIndicators.filter((val: ChoroplethIndicatorMetadata) => val.indicator === this.choroplethSelections.indicatorId)
@@ -318,6 +317,19 @@
             noChartData() {
                 return i18next.t("noChartData", this.currentLanguage)
             },
+            showLoading() {
+                const isBarLoading = this.indicatorsBeingFetched.includes(this.barchartSelections.indicatorId);
+                const isMapLoading = this.indicatorsBeingFetched.includes(this.choroplethSelections.indicatorId);
+                const isTableLoading = this.indicatorsBeingFetched.includes(this.tableSelections.indicator);
+                const isBubbleLoading = this.indicatorsBeingFetched.includes(this.bubblePlotSelections.colorIndicatorId)
+                                        || this.indicatorsBeingFetched.includes(this.bubblePlotSelections.sizeIndicatorId);
+                return {
+                    [ModelOutputTabs.Bar]: isBarLoading,
+                    [ModelOutputTabs.Map]: isMapLoading,
+                    [ModelOutputTabs.Table]: isTableLoading,
+                    [ModelOutputTabs.Bubble]: isBubbleLoading
+                };
+            }
         },
         methods: {
             ...mapMutationsByNames("plottingSelections",

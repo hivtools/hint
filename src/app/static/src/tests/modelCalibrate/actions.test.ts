@@ -316,23 +316,23 @@ describe("ModelCalibrate actions", () => {
             fetchedIndicators: new Set(["mock"])
         });
 
-        await actions.getResultData({commit, state, rootState, dispatch} as any, {indicatorId: "prevalence", tab: ModelOutputTabs.Map});
+        await actions.getResultData({commit, state, rootState, dispatch} as any, "prevalence");
 
         expect(commit.mock.calls.length).toBe(3);
-        expect(commit.mock.calls[0][0]).toBe("modelOutput/SetTabLoading");
-        expect(commit.mock.calls[0][1].payload).toStrictEqual({tab: ModelOutputTabs.Map, loading: true});
+        expect(commit.mock.calls[0][0]).toBe("modelOutput/AddIndicatorBeingFetched");
+        expect(commit.mock.calls[0][1].payload).toBe("prevalence");
         expect(commit.mock.calls[0][2]["root"]).toBe(true);
 
         expect(commit.mock.calls[1][0]["type"]).toBe("CalibrateResultFetched");
         expect(commit.mock.calls[1][0]["payload"]["indicatorId"]).toBe("prevalence");
         expect(commit.mock.calls[1][0]["payload"]["data"]).toBe("PREVALENCE DATA");
 
-        expect(commit.mock.calls[2][0]).toBe("modelOutput/SetTabLoading");
-        expect(commit.mock.calls[2][1].payload).toStrictEqual({tab: ModelOutputTabs.Map, loading: false});
+        expect(commit.mock.calls[2][0]).toBe("modelOutput/RemoveIndicatorBeingFetched");
+        expect(commit.mock.calls[2][1].payload).toBe("prevalence");
         expect(commit.mock.calls[2][2]["root"]).toBe(true);
 
         // Fetching an already-known indicator does not trigger a refresh
-        await actions.getResultData({commit, state, rootState, dispatch} as any, {indicatorId: "mock", tab: ModelOutputTabs.Map});
+        await actions.getResultData({commit, state, rootState, dispatch} as any, "mock");
 
         expect(commit.mock.calls.length).toBe(3);
     });
@@ -351,7 +351,7 @@ describe("ModelCalibrate actions", () => {
             } as any
         });
 
-        await actions.getResultData({commit, dispatch, state, rootState} as any, {indicatorId: "prevalence", tab: ModelOutputTabs.Map});
+        await actions.getResultData({commit, dispatch, state, rootState} as any, "prevalence");
 
         expect(commit.mock.calls.length).toBe(3);
         expect(commit.mock.calls[1][0]).toStrictEqual({
@@ -377,10 +377,49 @@ describe("ModelCalibrate actions", () => {
             } as any
         });
 
-        await actions.getResultData({commit, dispatch, state, rootState} as any, {indicatorId: "prevalence", tab: ModelOutputTabs.Map});
+        await actions.getResultData({commit, dispatch, state, rootState} as any, "prevalence");
 
         expect(mockAxios.history.get.length).toBe(0);
         expect(commit.mock.calls.length).toBe(0);
+    });
+
+    it("getResult fetches first 5 indicators", async () => {
+        const testResult = {
+            data: "TEST DATA",
+            plottingMetadata: {
+                barchart: {
+                    indicators: [
+                        { indicator: "ind1" },
+                        { indicator: "ind2" },
+                        { indicator: "ind3" },
+                        { indicator: "ind4" },
+                        { indicator: "ind5" },
+                        { indicator: "ind6" },
+                    ]
+                }
+            },
+        };
+        mockAxios.onGet(`/calibrate/result/metadata/1234`)
+            .reply(200, mockSuccess(testResult));
+
+        const commit = jest.fn();
+        const dispatch = jest.fn();
+        const state = mockModelCalibrateState({
+            calibrateId: "1234",
+            status: {
+                success: true,
+                done: true
+            } as any
+        });
+
+        await actions.getResult({commit, state, rootState, dispatch} as any);
+
+        expect(dispatch.mock.calls.length).toBe(6);
+        for (let i = 0; i < 5; i++) {
+            expect(dispatch.mock.calls[i][0]).toBe("getResultData");
+            expect(dispatch.mock.calls[i][1]).toBe(`ind${i + 1}`);
+        }
+        expect(dispatch.mock.calls[5][0]).toBe("getComparisonPlot");
     });
 
     it("getCalibratePlot fetches the calibrate plot data and sets it when successful", async () => {

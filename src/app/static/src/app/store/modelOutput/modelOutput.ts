@@ -11,9 +11,7 @@ const namespaced = true;
 
 export interface ModelOutputState {
     selectedTab: string,
-    loading: {
-        [k in ModelOutputTabs]: boolean
-    }
+    indicatorsBeingFetched: string[]
 }
 
 export const modelOutputGetters = {
@@ -114,13 +112,7 @@ const outputPlotFilters = (rootState: RootState, resultName: "metadata" | "compa
 export const initialModelOutputState = (): ModelOutputState => {
     return {
         selectedTab: "",
-        loading: {
-            [ModelOutputTabs.Map]: false,
-            [ModelOutputTabs.Bar]: false,
-            [ModelOutputTabs.Comparison]: false,
-            [ModelOutputTabs.Table]: false,
-            [ModelOutputTabs.Bubble]: false
-        }
+        indicatorsBeingFetched: []
     }
 };
 

@@ -9,23 +9,15 @@ describe("Model output mutations", () => {
         expect(testState.selectedTab).toBe(ModelOutputTabs.Map);
     });
 
-    it("sets tab loading", () => {
-        const testState = mockModelOutputState({
-            loading: {
-                map: false,
-                bar: false,
-                comparison: false,
-                bubble: false,
-                table: false
-            }
-        });
-        mutations[ModelOutputMutation.SetTabLoading](testState, {payload: {tab: ModelOutputTabs.Map, loading: true}});
-        expect(testState.loading).toStrictEqual({
-            map: true,
-            bar: false,
-            comparison: false,
-            bubble: false,
-            table: false
-        });
+    it("adds indicator being fetched", () => {
+        const testState = mockModelOutputState({indicatorsBeingFetched: ["indicator1"]});
+        mutations[ModelOutputMutation.AddIndicatorBeingFetched](testState, {payload: "indicator2"});
+        expect(testState.indicatorsBeingFetched).toStrictEqual(["indicator1", "indicator2"]);
+    });
+
+    it("removes indicator being fetched", () => {
+        const testState = mockModelOutputState({indicatorsBeingFetched: ["indicator1", "indicator2"]});
+        mutations[ModelOutputMutation.RemoveIndicatorBeingFetched](testState, {payload: "indicator2"});
+        expect(testState.indicatorsBeingFetched).toStrictEqual(["indicator1"]);
     });
 });

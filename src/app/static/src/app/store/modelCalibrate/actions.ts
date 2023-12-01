@@ -5,6 +5,7 @@ import {api} from "../../apiService";
 import {RootState} from "../../root";
 import {ModelCalibrateMutation} from "./mutations";
 import {
+    BarchartIndicator,
     CalibrateDataResponse,
     CalibrateMetadataResponse,
     CalibrateResultResponse,
@@ -14,15 +15,10 @@ import {
     ModelSubmitResponse
 } from "../../generated";
 import {switches} from "../../featureSwitches";
-import {CalibrateResultWithType, Dict, ModelOutputTabs} from "../../types";
+import {CalibrateResultWithType, Dict} from "../../types";
 import {DownloadResultsMutation} from "../downloadResults/mutations";
 import {PlottingSelectionsMutations} from "../plottingSelections/mutations";
 import { ModelOutputMutation } from "../modelOutput/mutations";
-
-type ResultDataPayload = {
-    indicatorId: string,
-    tab: ModelOutputTabs
-}
 
 export interface ModelCalibrateActions {
     fetchModelCalibrateOptions: (store: ActionContext<ModelCalibrateState, RootState>) => void
@@ -32,7 +28,7 @@ export interface ModelCalibrateActions {
     getCalibratePlot: (store: ActionContext<ModelCalibrateState, RootState>) => void
     getComparisonPlot: (store: ActionContext<ModelCalibrateState, RootState>) => void
     resumeCalibrate: (store: ActionContext<ModelCalibrateState, RootState>) => void
-    getResultData: (store: ActionContext<ModelCalibrateState, RootState>, payload: ResultDataPayload) => void
+    getResultData: (store: ActionContext<ModelCalibrateState, RootState>, payload: string) => void
 }
 
 export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrateActions = {
@@ -128,9 +124,8 @@ export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrat
         }
     },
 
-    async getResultData(context, payload) {
-        const {indicatorId, tab} = payload;
-        const {commit, state} = context;
+    async getResultData(context, indicatorId) {
+        const {commit, state, rootState} = context;
         const calibrateId = state.calibrateId;
 
         if (!state.status.done || !indicatorId) {
@@ -145,8 +140,10 @@ export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrat
             })
         }
 
-        if (!indicatorKnown) {
-            commit(`modelOutput/${ModelOutputMutation.SetTabLoading}`, {payload:{tab, loading: true}}, {root: true});
+        const isIndicatorFetching = rootState.modelOutput.indicatorsBeingFetched.includes(indicatorId);
+
+        if (!indicatorKnown && !isIndicatorFetching) {
+            commit(`modelOutput/${ModelOutputMutation.AddIndicatorBeingFetched}`, {payload: indicatorId}, {root: true});
             const response = await api<ModelCalibrateMutation, ModelCalibrateMutation>(context)
                 .ignoreSuccess()
                 .withError(ModelCalibrateMutation.SetError)
@@ -159,9 +156,26 @@ export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrat
                 } as CalibrateResultWithType
                 commit({type: ModelCalibrateMutation.CalibrateResultFetched, payload: payload});
             }
-            commit(`modelOutput/${ModelOutputMutation.SetTabLoading}`, {payload:{tab, loading: false}}, {root: true});
+            commit(`modelOutput/${ModelOutputMutation.RemoveIndicatorBeingFetched}`, {payload: indicatorId}, {root: true});
         }
     }
+};
+
+export const getResultDataForNIndicators = async (
+    context: ActionContext<ModelCalibrateState, RootState>,
+    numOfIndicators: number,
+    indicators: BarchartIndicator[]
+) => {
+    const {dispatch} = context;
+    const indicatorIds: string[] = [];
+    indicators.forEach((indicator, index) => {
+        if (index >= numOfIndicators) return;
+        indicatorIds.push(indicator.indicator);
+    });
+    const promisesArray = indicatorIds.map(indicatorId => {
+        return dispatch("getResultData", indicatorId);
+    });
+    await Promise.all(promisesArray);
 };
 
 export const getResultMetadata = async function (context: ActionContext<ModelCalibrateState, RootState>) {
@@ -183,6 +197,8 @@ export const getResultMetadata = async function (context: ActionContext<ModelCal
         if (switches.modelCalibratePlot) {
             dispatch("getCalibratePlot");
         }
+        const indicators = data.plottingMetadata.barchart.indicators || [];
+        getResultDataForNIndicators(context, 5, indicators);
         await dispatch("getComparisonPlot");
     }
 }

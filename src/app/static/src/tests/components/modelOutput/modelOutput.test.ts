@@ -24,6 +24,7 @@ import {BarchartIndicator, Filter, ModelOutputTabs} from "../../../app/types";
 import AreaIndicatorsTable from "../../../app/components/plots/table/AreaIndicatorsTable.vue";
 import ErrorAlert from "../../../app/components/ErrorAlert.vue";
 import LoadingTab from '../../../app/components/modelOutput/LoadingTab.vue';
+import { nextTick } from 'vue';
 
 function getStore(modelOutputState: Partial<ModelOutputState> = {}, partialGetters = {}, partialSelections = {}, barchartFilters: any = ["TEST BAR FILTERS"], comparisonPlotFilters: any = ["TEST COMPARISON FILTERS"], comparisonPlotError: any = null) {
     const store = new Vuex.Store({
@@ -59,13 +60,7 @@ function getStore(modelOutputState: Partial<ModelOutputState> = {}, partialGette
                 namespaced: true,
                 state: {
                     selectedTab: "",
-                    loading: {
-                        map: false,
-                        bar: false,
-                        comparison: false,
-                        bubble: false,
-                        table: false
-                    },
+                    indicatorsBeingFetched: [],
                     ...modelOutputState,
                 },
                 getters: {
@@ -218,20 +213,29 @@ describe("ModelOutput component", () => {
         expect(wrapper.findComponent(ErrorAlert).props().error).toStrictEqual(error);
     });
 
-    it("renders loading component when loading state true", () => {
+    it("renders loading component when loading state true for indicator", async () => {
         const store = getStore({
             selectedTab: ModelOutputTabs.Map,
-            loading: {
-                map: true,
-                comparison: false,
-                table: false,
-                bar: false,
-                bubble: false
-            }
+            indicatorsBeingFetched: ["TestIndicator"]
         });
         const wrapper = shallowMountWithTranslate(ModelOutput, store, {global: {plugins: [store]}});
-        expect(wrapper.find("#choropleth-container").findComponent(LoadingTab).exists()).toBe(true);
-        expect(wrapper.findAllComponents(LoadingTab).length).toBe(1);
+        const mapLoading = wrapper.find("#choropleth-container").findComponent(LoadingTab);
+        expect(mapLoading.props("loading")).toBe(false);
+
+        store.state.modelOutput.selectedTab = ModelOutputTabs.Bar;
+        await nextTick();
+        const barLoading = wrapper.find("#barchart-container").findComponent(LoadingTab);
+        expect(barLoading.props("loading")).toBe(true);
+
+        store.state.modelOutput.selectedTab = ModelOutputTabs.Bubble;
+        await nextTick();
+        const bubbleLoading = wrapper.find("#bubble-plot-container").findComponent(LoadingTab);
+        expect(bubbleLoading.props("loading")).toBe(false);
+
+        store.state.modelOutput.selectedTab = ModelOutputTabs.Table;
+        await nextTick();
+        const tableLoading = wrapper.find("#table-container").findComponent(LoadingTab);
+        expect(tableLoading.props("loading")).toBe(true);
     });
 
     it("does not render comparison plot if no there are no comparison plot indicators", () => {

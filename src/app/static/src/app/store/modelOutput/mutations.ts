@@ -4,12 +4,8 @@ import {ModelOutputTabs, PayloadWithType} from "../../types";
 
 export enum ModelOutputMutation {
     TabSelected = "TabSelected",
-    SetTabLoading = "SetTabLoading"
-}
-
-type TabLoading = {
-    tab: ModelOutputTabs,
-    loading: boolean
+    AddIndicatorBeingFetched = "AddIndicatorBeingFetched",
+    RemoveIndicatorBeingFetched = "RemoveIndicatorBeingFetched",
 }
 
 export const mutations: MutationTree<ModelOutputState> = {
@@ -18,7 +14,15 @@ export const mutations: MutationTree<ModelOutputState> = {
         state.selectedTab = payload.payload;
     },
 
-    [ModelOutputMutation.SetTabLoading](state: ModelOutputState, payload: PayloadWithType<TabLoading>) {
-        state.loading[payload.payload.tab] = payload.payload.loading;
+    [ModelOutputMutation.AddIndicatorBeingFetched](state: ModelOutputState, payload: PayloadWithType<string>) {
+        if (!state.indicatorsBeingFetched.includes(payload.payload)) {
+            state.indicatorsBeingFetched.push(payload.payload);
+        }
+    },
+
+    [ModelOutputMutation.RemoveIndicatorBeingFetched](state: ModelOutputState, payload: PayloadWithType<string>) {
+        if (state.indicatorsBeingFetched.includes(payload.payload)) {
+            state.indicatorsBeingFetched = state.indicatorsBeingFetched.filter(indicator => indicator !== payload.payload);
+        }
     },
 };
