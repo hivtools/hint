@@ -39,7 +39,7 @@
                         {{ p.name }}
                     </a>
                     <span class="float-right">
-                    <button v-if="projects.length <= 25" href="#" class="btn btn-sm btn-red-icons"
+                    <button v-if="showTooltip" href="#" class="btn btn-sm btn-red-icons"
                             v-tooltip="getTranslatedValue('editProjectNote')"
                             @click.prevent="handleEditProjectNote(p.id)"
                             v-translate:aria-label="'editProjectNote'">
@@ -65,7 +65,7 @@
                     {{ format(p.versions[0].updated) }}
                 </div>
                 <div class="col-md-1 project-cell load-cell">
-                    <button v-if="projects.length <= 25" class=" btn btn-sm btn-red-icons"
+                    <button v-if="showTooltip" class=" btn btn-sm btn-red-icons"
                             v-tooltip="getTranslatedValue('load')"
                             v-translate:aria-label="'load'"
                             @click="loadVersion($event, p.id, p.versions[0].id)">
@@ -78,7 +78,7 @@
                     </button>
                 </div>
                 <div class="col-md-1 project-cell rename-cell">
-                    <button v-if="projects.length <= 25" class="btn btn-sm btn-red-icons"
+                    <button v-if="showTooltip" class="btn btn-sm btn-red-icons"
                             v-tooltip="getTranslatedValue('renameProject')"
                             v-translate:aria-label="'renameProject'"
                             @click="renameProject($event, p.id)">
@@ -91,7 +91,7 @@
                     </button>
                 </div>
                 <div class="col-md-1 project-cell delete-cell">
-                    <button v-if="projects.length <= 25" class=" btn btn-sm btn-red-icons"
+                    <button v-if="showTooltip" class=" btn btn-sm btn-red-icons"
                             v-tooltip="getTranslatedValue('delete')"
                             v-translate:aria-label="'delete'"
                             @click="deleteProject($event, p.id)">
@@ -104,7 +104,7 @@
                     </button>
                 </div>
                 <div class="col-md-1 project-cell copy-cell">
-                    <button v-if="projects.length <= 25" class=" btn btn-sm btn-red-icons"
+                    <button v-if="showTooltip" class=" btn btn-sm btn-red-icons"
                             v-tooltip="getTranslatedValue('copyLatestToNewProject')"
                             v-translate:aria-label="'copyLatestToNewProject'"
                             @click="promoteVersion(
@@ -138,7 +138,7 @@
                     <div class="col-md-1 version-cell"></div>
                     <div class="col-md-3 version-cell edit-cell">
                         <span class="float-right">
-                            <button v-if="projects.length <= 25" href="#" class="btn btn-sm btn-red-icons"
+                            <button v-if="showTooltip" href="#" class="btn btn-sm btn-red-icons"
                                     v-tooltip="getTranslatedValue('editVersionNote')"
                                     v-translate:aria-label="'editVersionNote'"
                                     @click.prevent="handleEditVersionNote(p.id, v.id, v.versionNumber)">
@@ -158,7 +158,7 @@
                         {{ format(v.updated) }}
                     </div>
                     <div class="col-md-1 version-cell load-cell">
-                        <button v-if="projects.length <= 25" class=" btn btn-sm btn-red-icons"
+                        <button v-if="showTooltip" class=" btn btn-sm btn-red-icons"
                                 v-tooltip="getTranslatedValue('load')"
                                 v-translate:aria-label="'load'"
                                 @click="loadVersion($event, p.id, v.id)">
@@ -173,7 +173,7 @@
                     <div class="col-md-1 version-cell">
                     </div>
                     <div class="col-md-1 version-cell delete-cell">
-                        <button v-if="projects.length <= 25" class=" btn btn-sm btn-red-icons"
+                        <button v-if="showTooltip" class=" btn btn-sm btn-red-icons"
                                 v-tooltip="getTranslatedValue('delete')"
                                 v-translate:aria-label="'delete'"
                                 @click="deleteVersion($event, p.id, v.id)">
@@ -186,7 +186,7 @@
                         </button>
                     </div>
                     <div class="col-md-1 version-cell copy-cell">
-                        <button v-if="projects.length <= 25" class=" btn btn-sm btn-red-icons"
+                        <button v-if="showTooltip" class=" btn btn-sm btn-red-icons"
                                 v-tooltip="getTranslatedValue('copyToNewProject')"
                                 v-translate:aria-label="'copyToNewProject'"
                                 @click="promoteVersion(
@@ -415,7 +415,10 @@
             currentLanguage: mapStateProp<RootState, Language>(
                 null,
                 (state: RootState) => state.language
-            )
+            ),
+            showTooltip() {
+                return this.projects.length <= 25;
+            }
         },
         methods: {
             format(date: string) {
