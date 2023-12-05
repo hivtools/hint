@@ -1,3 +1,8 @@
+# hint 3.5.1
+
+* Fix bug where indicator loading would not end because call stack exceeded error in chrome
+* Fix bug where projects page would be very slow by removing tooltips
+
 # hint 3.5.0
 
 * Add new table tab to Model Outputs page

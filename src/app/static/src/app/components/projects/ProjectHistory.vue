@@ -39,8 +39,13 @@
                         {{ p.name }}
                     </a>
                     <span class="float-right">
-                    <button href="#" class="btn btn-sm btn-red-icons"
+                    <button v-if="showTooltip" href="#" class="btn btn-sm btn-red-icons"
                             v-tooltip="getTranslatedValue('editProjectNote')"
+                            @click.prevent="handleEditProjectNote(p.id)"
+                            v-translate:aria-label="'editProjectNote'">
+                        <vue-feather type="file-text" size="20"></vue-feather>
+                    </button>
+                    <button v-else href="#" class="btn btn-sm btn-red-icons"
                             @click.prevent="handleEditProjectNote(p.id)"
                             v-translate:aria-label="'editProjectNote'">
                         <vue-feather type="file-text" size="20"></vue-feather>
@@ -60,32 +65,56 @@
                     {{ format(p.versions[0].updated) }}
                 </div>
                 <div class="col-md-1 project-cell load-cell">
-                    <button class=" btn btn-sm btn-red-icons"
+                    <button v-if="showTooltip" class=" btn btn-sm btn-red-icons"
                             v-tooltip="getTranslatedValue('load')"
+                            v-translate:aria-label="'load'"
+                            @click="loadVersion($event, p.id, p.versions[0].id)">
+                        <vue-feather type="refresh-cw" size="20"></vue-feather>
+                    </button>
+                    <button v-else class=" btn btn-sm btn-red-icons"
                             v-translate:aria-label="'load'"
                             @click="loadVersion($event, p.id, p.versions[0].id)">
                         <vue-feather type="refresh-cw" size="20"></vue-feather>
                     </button>
                 </div>
                 <div class="col-md-1 project-cell rename-cell">
-                    <button class="btn btn-sm btn-red-icons"
+                    <button v-if="showTooltip" class="btn btn-sm btn-red-icons"
                             v-tooltip="getTranslatedValue('renameProject')"
+                            v-translate:aria-label="'renameProject'"
+                            @click="renameProject($event, p.id)">
+                        <vue-feather type="edit" size="20"></vue-feather>
+                    </button>
+                    <button v-else class="btn btn-sm btn-red-icons"
                             v-translate:aria-label="'renameProject'"
                             @click="renameProject($event, p.id)">
                         <vue-feather type="edit" size="20"></vue-feather>
                     </button>
                 </div>
                 <div class="col-md-1 project-cell delete-cell">
-                    <button class=" btn btn-sm btn-red-icons"
+                    <button v-if="showTooltip" class=" btn btn-sm btn-red-icons"
                             v-tooltip="getTranslatedValue('delete')"
+                            v-translate:aria-label="'delete'"
+                            @click="deleteProject($event, p.id)">
+                        <vue-feather type="trash-2" size="20"></vue-feather>
+                    </button>
+                    <button v-else class=" btn btn-sm btn-red-icons"
                             v-translate:aria-label="'delete'"
                             @click="deleteProject($event, p.id)">
                         <vue-feather type="trash-2" size="20"></vue-feather>
                     </button>
                 </div>
                 <div class="col-md-1 project-cell copy-cell">
-                    <button class=" btn btn-sm btn-red-icons"
+                    <button v-if="showTooltip" class=" btn btn-sm btn-red-icons"
                             v-tooltip="getTranslatedValue('copyLatestToNewProject')"
+                            v-translate:aria-label="'copyLatestToNewProject'"
+                            @click="promoteVersion(
+                                $event,
+                                p.id,
+                                p.versions[0].id,
+                                p.versions[0].versionNumber)">
+                        <vue-feather type="copy" size="20"></vue-feather>
+                    </button>
+                    <button v-else class=" btn btn-sm btn-red-icons"
                             v-translate:aria-label="'copyLatestToNewProject'"
                             @click="promoteVersion(
                                 $event,
@@ -109,8 +138,13 @@
                     <div class="col-md-1 version-cell"></div>
                     <div class="col-md-3 version-cell edit-cell">
                         <span class="float-right">
-                            <button href="#" class="btn btn-sm btn-red-icons"
+                            <button v-if="showTooltip" href="#" class="btn btn-sm btn-red-icons"
                                     v-tooltip="getTranslatedValue('editVersionNote')"
+                                    v-translate:aria-label="'editVersionNote'"
+                                    @click.prevent="handleEditVersionNote(p.id, v.id, v.versionNumber)">
+                            <vue-feather type="file-text" size="20"></vue-feather>
+                            </button>
+                            <button v-else href="#" class="btn btn-sm btn-red-icons"
                                     v-translate:aria-label="'editVersionNote'"
                                     @click.prevent="handleEditVersionNote(p.id, v.id, v.versionNumber)">
                             <vue-feather type="file-text" size="20"></vue-feather>
@@ -124,8 +158,13 @@
                         {{ format(v.updated) }}
                     </div>
                     <div class="col-md-1 version-cell load-cell">
-                        <button class=" btn btn-sm btn-red-icons"
+                        <button v-if="showTooltip" class=" btn btn-sm btn-red-icons"
                                 v-tooltip="getTranslatedValue('load')"
+                                v-translate:aria-label="'load'"
+                                @click="loadVersion($event, p.id, v.id)">
+                            <vue-feather type="refresh-cw" size="20"></vue-feather>
+                        </button>
+                        <button v-else class=" btn btn-sm btn-red-icons"
                                 v-translate:aria-label="'load'"
                                 @click="loadVersion($event, p.id, v.id)">
                             <vue-feather type="refresh-cw" size="20"></vue-feather>
@@ -134,16 +173,30 @@
                     <div class="col-md-1 version-cell">
                     </div>
                     <div class="col-md-1 version-cell delete-cell">
-                        <button class=" btn btn-sm btn-red-icons"
+                        <button v-if="showTooltip" class=" btn btn-sm btn-red-icons"
                                 v-tooltip="getTranslatedValue('delete')"
+                                v-translate:aria-label="'delete'"
+                                @click="deleteVersion($event, p.id, v.id)">
+                        <vue-feather type="trash-2" size="20"></vue-feather>
+                        </button>
+                        <button v-else class=" btn btn-sm btn-red-icons"
                                 v-translate:aria-label="'delete'"
                                 @click="deleteVersion($event, p.id, v.id)">
                         <vue-feather type="trash-2" size="20"></vue-feather>
                         </button>
                     </div>
                     <div class="col-md-1 version-cell copy-cell">
-                        <button class=" btn btn-sm btn-red-icons"
+                        <button v-if="showTooltip" class=" btn btn-sm btn-red-icons"
                                 v-tooltip="getTranslatedValue('copyToNewProject')"
+                                v-translate:aria-label="'copyToNewProject'"
+                                @click="promoteVersion(
+                                    $event,
+                                    p.id,
+                                    v.id,
+                                    v.versionNumber)">
+                            <vue-feather type="copy" size="20"></vue-feather>
+                        </button>
+                        <button v-else class=" btn btn-sm btn-red-icons"
                                 v-translate:aria-label="'copyToNewProject'"
                                 @click="promoteVersion(
                                     $event,
@@ -362,7 +415,10 @@
             currentLanguage: mapStateProp<RootState, Language>(
                 null,
                 (state: RootState) => state.language
-            )
+            ),
+            showTooltip() {
+                return this.projects.length <= 25;
+            }
         },
         methods: {
             format(date: string) {
