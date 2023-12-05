@@ -21,6 +21,7 @@ module.exports = {
     moduleDirectories: ["node_modules", "src"],
     coverageDirectory: './coverage/',
     collectCoverage: true,
+    coverageProvider: "v8",
     coveragePathIgnorePatterns: [
         '/node_modules/',
         './tests/mocks.ts',
