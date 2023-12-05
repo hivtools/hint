@@ -67,6 +67,17 @@ describe("Project history component", () => {
         }
     ];
 
+    const testProjectsLong = (n: number) => {
+        const projects: Project[] = [];
+        for (let i = 0; i < n; i++) {
+            projects.push({
+                id: i + 1,
+                name: `proj${i}`,
+                versions: [{ id: `s${i}`, created: isoDates[2], updated: isoDates[3], versionNumber: 1 }]
+            })
+        }
+        return projects;
+    };
 
     const getWrapper = (projects = testProjects) => {
         const store = createStore(projects)
@@ -149,6 +160,34 @@ describe("Project history component", () => {
         expect(mockTooltip.mock.calls[4][1].value).toBe("Copy last updated to a new project");
         expect(mockTooltip.mock.calls[5][1].value).toBe("Add or edit version notes");
         expect(mockTooltip.mock.calls[8][1].value).toBe("Copy to a new project");
+    });
+
+    it("does not render tooltips if project length > 25", () => {
+        const mockTooltip = jest.fn();
+        const store = createStore(testProjectsLong(25))
+        mountWithTranslate(ProjectHistory, store, {
+            global: {
+                directives: {"tooltip": mockTooltip},
+                plugins: [store],
+                stubs: ["share-project"]
+            }
+        });
+
+        // 9 * 25, we have 9 instances of tooltips
+        expect(mockTooltip).toBeCalledTimes(225);
+
+        mockTooltip.mockReset();
+
+        const store1 = createStore(testProjectsLong(26))
+        mountWithTranslate(ProjectHistory, store1, {
+            global: {
+                directives: {"tooltip": mockTooltip},
+                plugins: [store1],
+                stubs: ["share-project"]
+            }
+        });
+
+        expect(mockTooltip).toBeCalledTimes(0);
     });
 
     it("can render tooltips in french without an error", async () => {
