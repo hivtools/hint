@@ -151,7 +151,11 @@ export const mutations: MutationTree<ModelCalibrateState> = {
         } else {
             state.result.data = [...state.result.data, ...action.payload.data];
         }
-        if (!state.fetchedIndicators) {
+        // mrc-4761: Seen an issue where when rehydrating from an output zip for some reason we are
+        // getting the fetchedIndicators as an object. So below where we try to call .add is not working
+        // Not sure why this is the case, can see the rehydration building the state correctly
+        // but then after reloading the fetched indicators are coming through as an empty object
+        if (!state.fetchedIndicators || !(state.fetchedIndicators instanceof Set)) {
             state.fetchedIndicators = new Set<string>([action.payload.indicatorId]);
         } else {
             state.fetchedIndicators.add(action.payload.indicatorId);
