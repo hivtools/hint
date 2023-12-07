@@ -189,7 +189,12 @@ export default defineComponent({
                     },
                     scales: {
                         y: {
-                            max: this.chartData.maxValuePlusError * 1.1
+                            max: this.chartData.maxValuePlusError * 1.1,
+                            ticks: {
+                                callback: ((value: number | string) => {
+                                    return value == this.chartData.maxValuePlusError * 1.1 ? "" : formatCallback(value)
+                                })
+                            }
                         }
                     },
                     animation: {
