@@ -68,7 +68,7 @@ export const mutations: MutationTree<ModelCalibrateState> = {
         state.calibratePlotResult = null;
         state.comparisonPlotResult = null;
         state.error = null;
-        state.fetchedIndicators = new Set<string>();
+        state.fetchedIndicators = [];
         state.result = null;
         state.status = {} as CalibrateStatusResponse;
     },
@@ -152,9 +152,11 @@ export const mutations: MutationTree<ModelCalibrateState> = {
             state.result.data = [...state.result.data, ...action.payload.data];
         }
         if (!state.fetchedIndicators) {
-            state.fetchedIndicators = new Set<string>([action.payload.indicatorId]);
+            state.fetchedIndicators = [action.payload.indicatorId];
         } else {
-            state.fetchedIndicators.add(action.payload.indicatorId);
+            if (state.fetchedIndicators.indexOf(action.payload.indicatorId) == -1) {
+                state.fetchedIndicators.push(action.payload.indicatorId);
+            }
         }
     },
 };

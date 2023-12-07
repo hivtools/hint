@@ -27,7 +27,7 @@ export interface ModelCalibrateState extends ReadyState, WarningsState {
     calibratePlotResult: any,
     comparisonPlotResult: ComparisonPlotResponse | null,
     result: CalibrateDataResponse | CalibrateResultResponse | null
-    fetchedIndicators: Set<string> | null
+    fetchedIndicators: string[] | null
     version: VersionInfo
     error: Error | null
     comparisonPlotError: Error | null,
@@ -49,7 +49,7 @@ export const initialModelCalibrateState = (): ModelCalibrateState => {
         calibratePlotResult: null,
         comparisonPlotResult: null,
         result: null,
-        fetchedIndicators: new Set<string>(),
+        fetchedIndicators: [],
         version: {hintr: "unknown", naomi: "unknown", rrq: "unknown"},
         error: null,
         comparisonPlotError: null,
