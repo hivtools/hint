@@ -18,10 +18,20 @@ import {CalibrateResultWithType, Dict, ModelOutputTabs} from "../../types";
 import {DownloadResultsMutation} from "../downloadResults/mutations";
 import {PlottingSelectionsMutations} from "../plottingSelections/mutations";
 import { ModelOutputMutation } from "../modelOutput/mutations";
+import { BarchartSelections, BubblePlotSelections, ChoroplethSelections, TableSelections } from "../plottingSelections/plottingSelections";
 
-type ResultDataPayload = {
-    indicatorId: string,
-    tab: ModelOutputTabs
+export type ResultDataPayload = {
+    payload: Partial<BarchartSelections>,
+    tab: ModelOutputTabs.Bar
+} | {
+    payload: Partial<TableSelections>,
+    tab: ModelOutputTabs.Table
+} | {
+    payload: Partial<ChoroplethSelections>,
+    tab: ModelOutputTabs.Map
+} | {
+    payload: Partial<BubblePlotSelections>,
+    tab: ModelOutputTabs.Bubble
 }
 
 export interface ModelCalibrateActions {
@@ -129,24 +139,37 @@ export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrat
     },
 
     async getResultData(context, payload) {
-        const {indicatorId, tab} = payload;
+        // treat it like an array because bubble plot has 2
+        const indicators: string[] = [];
+        const tab = payload.tab;
+
+        if (tab === ModelOutputTabs.Bubble) {
+            if (payload.payload.colorIndicatorId) {
+                indicators.push(payload.payload.colorIndicatorId);
+            }
+            if (payload.payload.sizeIndicatorId) {
+                indicators.push(payload.payload.sizeIndicatorId);
+            }
+        } else if (tab === ModelOutputTabs.Table) {
+            if (payload.payload.indicator) {
+                indicators.push(payload.payload.indicator);
+            }
+        } else {
+            if (payload.payload.indicatorId) {
+                indicators.push(payload.payload.indicatorId)
+            }
+        }
         const {commit, state} = context;
         const calibrateId = state.calibrateId;
+        const calibrateFinshed = state.status.done;
+        const fetchedIndicators = Array.from(state.fetchedIndicators || []);
+        const unknownIndicators = indicators.filter(indicator => !fetchedIndicators.includes(indicator));
 
-        if (!state.status.done || !indicatorId) {
-            // Don't try to fetch data if the calibration hasn't finished
-            return
-        }
-
-        let indicatorKnown = false;
-        if (state.fetchedIndicators) {
-            indicatorKnown = Array.from(state.fetchedIndicators).some(indicator => {
-                return indicator === indicatorId
-            })
-        }
-
-        if (!indicatorKnown) {
+        if (unknownIndicators.length > 0 && calibrateFinshed) {
             commit(`modelOutput/${ModelOutputMutation.SetTabLoading}`, {payload:{tab, loading: true}}, {root: true});
+            // in practice the length of unknownIndicators is always going to be 1 since the user can
+            // only change one indicator at a time even on bubble plot
+            const indicatorId = unknownIndicators[0];
             const response = await api<ModelCalibrateMutation, ModelCalibrateMutation>(context)
                 .ignoreSuccess()
                 .withError(ModelCalibrateMutation.SetError)
@@ -155,12 +178,38 @@ export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrat
             if (response) {
                 const payload = {
                     data: response.data,
-                    indicatorId: indicatorId
+                    indicatorId
                 } as CalibrateResultWithType
                 commit({type: ModelCalibrateMutation.CalibrateResultFetched, payload: payload});
             }
             commit(`modelOutput/${ModelOutputMutation.SetTabLoading}`, {payload:{tab, loading: false}}, {root: true});
         }
+        updatePlotSelections(commit, payload);
+    }
+};
+
+const updatePlotSelections = (commit: Commit, payload: ResultDataPayload) => {
+    switch (payload.tab) {
+        case ModelOutputTabs.Bar:
+            commit(`plottingSelections/${PlottingSelectionsMutations.updateBarchartSelections}`, {
+                payload: payload.payload
+            }, {root: true});
+            break;
+        case ModelOutputTabs.Table:
+            commit(`plottingSelections/${PlottingSelectionsMutations.updateTableSelections}`, {
+                payload: payload.payload
+            }, {root: true});
+            break;
+        case ModelOutputTabs.Map:
+            commit(`plottingSelections/${PlottingSelectionsMutations.updateOutputChoroplethSelections}`, {
+                payload: payload.payload
+            }, {root: true});
+            break;
+        case ModelOutputTabs.Bubble:
+            commit(`plottingSelections/${PlottingSelectionsMutations.updateBubblePlotSelections}`, {
+                payload: payload.payload
+            }, {root: true})
+            break;
     }
 };
 

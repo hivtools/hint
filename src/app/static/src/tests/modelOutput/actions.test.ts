@@ -56,7 +56,7 @@ describe("ModelOutput actions", () => {
 
         expect(dispatch.mock.calls.length).toBe(1);
         expect(dispatch.mock.calls[0][0]).toBe("modelCalibrate/getResultData");
-        expect(dispatch.mock.calls[0][1]).toStrictEqual({tab: ModelOutputTabs.Bar, indicatorId: "barchart-indicator"});
+        expect(dispatch.mock.calls[0][1]).toStrictEqual({tab: ModelOutputTabs.Bar, payload: {indicatorId: "barchart-indicator"}});
 
         expect(commit.mock.calls.length).toBe(1);
         expect(commit.mock.calls[0][0].type).toBe(ModelOutputMutation.TabSelected);
@@ -69,9 +69,9 @@ describe("ModelOutput actions", () => {
 
         expect(dispatch.mock.calls.length).toBe(2);
         expect(dispatch.mock.calls[0][0]).toBe("modelCalibrate/getResultData");
-        expect(dispatch.mock.calls[0][1]).toStrictEqual({tab: ModelOutputTabs.Bubble, indicatorId: "colour-indicator"});
+        expect(dispatch.mock.calls[0][1]).toStrictEqual({tab: ModelOutputTabs.Bubble, payload: {colorIndicatorId: "colour-indicator"}});
         expect(dispatch.mock.calls[1][0]).toBe("modelCalibrate/getResultData");
-        expect(dispatch.mock.calls[1][1]).toStrictEqual({tab: ModelOutputTabs.Bubble, indicatorId: "size-indicator"});
+        expect(dispatch.mock.calls[1][1]).toStrictEqual({tab: ModelOutputTabs.Bubble, payload: {sizeIndicatorId: "size-indicator"}});
 
         expect(commit.mock.calls.length).toBe(1);
         expect(commit.mock.calls[0][0].type).toBe(ModelOutputMutation.TabSelected);
@@ -95,7 +95,7 @@ describe("ModelOutput actions", () => {
 
         expect(dispatch.mock.calls.length).toBe(1);
         expect(dispatch.mock.calls[0][0]).toBe("modelCalibrate/getResultData");
-        expect(dispatch.mock.calls[0][1]).toStrictEqual({tab: ModelOutputTabs.Map, indicatorId: "choropleth-indicator"});
+        expect(dispatch.mock.calls[0][1]).toStrictEqual({tab: ModelOutputTabs.Map, payload: {indicatorId: "choropleth-indicator"}});
 
         expect(commit.mock.calls.length).toBe(1);
         expect(commit.mock.calls[0][0].type).toBe(ModelOutputMutation.TabSelected);
@@ -108,7 +108,7 @@ describe("ModelOutput actions", () => {
 
         expect(dispatch.mock.calls.length).toBe(1);
         expect(dispatch.mock.calls[0][0]).toBe("modelCalibrate/getResultData");
-        expect(dispatch.mock.calls[0][1]).toStrictEqual({tab: ModelOutputTabs.Table, indicatorId: "table-indicator"});
+        expect(dispatch.mock.calls[0][1]).toStrictEqual({tab: ModelOutputTabs.Table, payload: {indicator: "table-indicator"}});
 
         expect(commit.mock.calls.length).toBe(1);
         expect(commit.mock.calls[0][0].type).toBe(ModelOutputMutation.TabSelected);

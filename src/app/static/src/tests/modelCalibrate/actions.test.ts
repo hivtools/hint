@@ -315,10 +315,10 @@ describe("ModelCalibrate actions", () => {
             result: mockCalibrateResultResponse(),
             fetchedIndicators: new Set(["mock"])
         });
+        const payload = {indicatorId: "prevalence"};
+        await actions.getResultData({commit, state, rootState, dispatch} as any, { payload, tab: ModelOutputTabs.Map});
 
-        await actions.getResultData({commit, state, rootState, dispatch} as any, {indicatorId: "prevalence", tab: ModelOutputTabs.Map});
-
-        expect(commit.mock.calls.length).toBe(3);
+        expect(commit.mock.calls.length).toBe(4);
         expect(commit.mock.calls[0][0]).toBe("modelOutput/SetTabLoading");
         expect(commit.mock.calls[0][1].payload).toStrictEqual({tab: ModelOutputTabs.Map, loading: true});
         expect(commit.mock.calls[0][2]["root"]).toBe(true);
@@ -331,10 +331,16 @@ describe("ModelCalibrate actions", () => {
         expect(commit.mock.calls[2][1].payload).toStrictEqual({tab: ModelOutputTabs.Map, loading: false});
         expect(commit.mock.calls[2][2]["root"]).toBe(true);
 
-        // Fetching an already-known indicator does not trigger a refresh
-        await actions.getResultData({commit, state, rootState, dispatch} as any, {indicatorId: "mock", tab: ModelOutputTabs.Map});
+        expect(commit.mock.calls[3][0]).toBe("plottingSelections/updateOutputChoroplethSelections");
+        expect(commit.mock.calls[3][1].payload).toStrictEqual({indicatorId: "prevalence"});
+        expect(commit.mock.calls[3][2]["root"]).toBe(true);
 
-        expect(commit.mock.calls.length).toBe(3);
+        // Fetching an already-known indicator does not trigger a refresh
+        const payload1 = { indicatorId: "mock" }
+        await actions.getResultData({commit, state, rootState, dispatch} as any, {payload: payload1 , tab: ModelOutputTabs.Map});
+
+        // still needs to update selections
+        expect(commit.mock.calls.length).toBe(5);
     });
 
     it("getResultData commits error when unsuccessful data fetch", async () => {
@@ -350,10 +356,10 @@ describe("ModelCalibrate actions", () => {
                 done: true
             } as any
         });
+        const payload = {indicatorId: "prevalence"};
+        await actions.getResultData({commit, dispatch, state, rootState} as any, {payload, tab: ModelOutputTabs.Map});
 
-        await actions.getResultData({commit, dispatch, state, rootState} as any, {indicatorId: "prevalence", tab: ModelOutputTabs.Map});
-
-        expect(commit.mock.calls.length).toBe(3);
+        expect(commit.mock.calls.length).toBe(4);
         expect(commit.mock.calls[1][0]).toStrictEqual({
             type: "SetError",
             payload: mockError("Test Error")
@@ -376,11 +382,15 @@ describe("ModelCalibrate actions", () => {
                 done: false
             } as any
         });
-
-        await actions.getResultData({commit, dispatch, state, rootState} as any, {indicatorId: "prevalence", tab: ModelOutputTabs.Map});
+        const payload = {indicatorId: "prevalence"};
+        await actions.getResultData({commit, dispatch, state, rootState} as any, {payload, tab: ModelOutputTabs.Map});
 
         expect(mockAxios.history.get.length).toBe(0);
-        expect(commit.mock.calls.length).toBe(0);
+        expect(commit.mock.calls.length).toBe(1);
+
+        expect(commit.mock.calls[0][0]).toBe("plottingSelections/updateOutputChoroplethSelections");
+        expect(commit.mock.calls[0][1].payload).toStrictEqual(payload);
+        expect(commit.mock.calls[0][2]["root"]).toBe(true);
     });
 
     it("getCalibratePlot fetches the calibrate plot data and sets it when successful", async () => {
