@@ -1,15 +1,11 @@
 package org.imperial.mrc.hint.db
 
-import org.jooq.tools.json.JSONArray
-import org.springframework.stereotype.Component
 import org.imperial.mrc.hint.models.CalibrateResultRow
-import java.sql.Connection
-import java.sql.DriverManager
-import java.sql.Statement
-import java.util.Properties
-import java.sql.ResultSet
-import java.sql.SQLException
-import java.sql.PreparedStatement
+import org.slf4j.LoggerFactory
+import org.springframework.stereotype.Component
+import java.sql.*
+import java.util.*
+import kotlin.system.measureTimeMillis
 
 const val INDICATOR_QUERY = """SELECT
 age_group,area_id,
@@ -46,6 +42,7 @@ interface CalibrateDataRepository
 class JooqCalibrateDataRepository: CalibrateDataRepository
 {
 
+    private val logger = LoggerFactory.getLogger(CalibrateDataRepository::class.java)
     private fun convertDataToArrayList(resultSet: ResultSet): List<CalibrateResultRow> {
             resultSet.use {
             return generateSequence {
@@ -99,7 +96,12 @@ class JooqCalibrateDataRepository: CalibrateDataRepository
         indicator: String): List<CalibrateResultRow>
     {
         getDBConnFromPathResponse(path).use { conn ->
-            return getDataFromConnection(conn, indicator)
+            val data: List<CalibrateResultRow>
+            val time = measureTimeMillis {
+                data = getDataFromConnection(conn, indicator);
+            }
+            logger.info("""{"msg": "Fetched data for indicator", "indicator": "$indicator", "timeinmillis": "$time"}""")
+            return data
         }
     }
 }
