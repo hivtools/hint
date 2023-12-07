@@ -53,7 +53,7 @@ describe("ModelCalibrate mutations", () => {
             complete: true,
             status: ["TEST STATUS"] as any,
             result: {data: "TEST DATA"} as any,
-            fetchedIndicators: new Set<string>(["prev"])
+            fetchedIndicators: ["prev"]
         });
         const payload = {id: "123"} as any;
         mutations[ModelCalibrateMutation.CalibrateStarted](state, {payload});
@@ -66,7 +66,7 @@ describe("ModelCalibrate mutations", () => {
         expect(state.calibratePlotResult).toBe(null);
         expect(state.comparisonPlotResult).toBe(null);
         expect(state.result).toBe(null);
-        expect(state.fetchedIndicators).toStrictEqual(new Set<string>());
+        expect(state.fetchedIndicators).toStrictEqual([]);
     });
 
     it("CalibrateStatusUpdate sets status, resets error", () => {
@@ -279,7 +279,7 @@ describe("ModelCalibrate mutations", () => {
         };
         mutations[ModelCalibrateMutation.CalibrateResultFetched](state, {payload: dataWithType1});
         expect(state.result).toStrictEqual(data1);
-        expect(state.fetchedIndicators).toStrictEqual(new Set(["plhiv"]));
+        expect(state.fetchedIndicators).toStrictEqual(["plhiv"]);
 
         const data2 = {data: [{indicator: "plhiv", value: 2}]}
         const dataWithType2 = {
@@ -295,7 +295,7 @@ describe("ModelCalibrate mutations", () => {
             ]
         };
         expect(state.result).toStrictEqual(expected);
-        expect(state.fetchedIndicators).toStrictEqual(new Set(["plhiv"]));
+        expect(state.fetchedIndicators).toStrictEqual(["plhiv"]);
 
         const data3 = {data: [{indicator: "prevalence", value: 3}]}
         const dataWithType3 = {
@@ -312,6 +312,6 @@ describe("ModelCalibrate mutations", () => {
             ]
         };
         expect(state.result).toStrictEqual(expected2);
-        expect(state.fetchedIndicators).toStrictEqual(new Set(["plhiv", "prevalence"]));
+        expect(state.fetchedIndicators).toStrictEqual(["plhiv", "prevalence"]);
     });
 });

@@ -89,7 +89,7 @@ describe("LocalStorageManager", () => {
             modelOutput: mockModelOutputState(),
             modelCalibrate: mockModelCalibrateState({
                 result: mockCalibrateResultResponse(),
-                fetchedIndicators: new Set<string>(),
+                fetchedIndicators: [],
                 calibratePlotResult: {data: "test calibrate plot result"},
                 comparisonPlotResult: mockComparisonPlotResponse()
             }),

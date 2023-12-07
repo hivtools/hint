@@ -68,7 +68,7 @@ export const mutations: MutationTree<ModelCalibrateState> = {
         state.calibratePlotResult = null;
         state.comparisonPlotResult = null;
         state.error = null;
-        state.fetchedIndicators = new Set<string>();
+        state.fetchedIndicators = [];
         state.result = null;
         state.status = {} as CalibrateStatusResponse;
     },
@@ -151,14 +151,12 @@ export const mutations: MutationTree<ModelCalibrateState> = {
         } else {
             state.result.data = [...state.result.data, ...action.payload.data];
         }
-        // mrc-4761: Seen an issue where when rehydrating from an output zip for some reason we are
-        // getting the fetchedIndicators as an object. So below where we try to call .add is not working
-        // Not sure why this is the case, can see the rehydration building the state correctly
-        // but then after reloading the fetched indicators are coming through as an empty object
-        if (!state.fetchedIndicators || !(state.fetchedIndicators instanceof Set)) {
-            state.fetchedIndicators = new Set<string>([action.payload.indicatorId]);
+        if (!state.fetchedIndicators) {
+            state.fetchedIndicators = [action.payload.indicatorId];
         } else {
-            state.fetchedIndicators.add(action.payload.indicatorId);
+            if (state.fetchedIndicators.indexOf(action.payload.indicatorId) == -1) {
+                state.fetchedIndicators.push(action.payload.indicatorId);
+            }
         }
     },
 };
