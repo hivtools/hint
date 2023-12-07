@@ -9,12 +9,13 @@ import {
     mockSuccess,
     mockWarning
 } from "../mocks";
-import {actions} from "../../app/store/modelCalibrate/actions";
+import {actions, fetchFirstNIndicators} from "../../app/store/modelCalibrate/actions";
 import {ModelCalibrateMutation} from "../../app/store/modelCalibrate/mutations";
 import {freezer} from "../../app/utils";
 import {switches} from "../../app/featureSwitches";
 import {DownloadResultsMutation} from "../../app/store/downloadResults/mutations";
 import { ModelOutputTabs } from "../../app/types";
+import { BarchartIndicator } from "../../app/generated";
 
 const rootState = mockRootState();
 describe("ModelCalibrate actions", () => {
@@ -174,7 +175,8 @@ describe("ModelCalibrate actions", () => {
                         x_axis_id: "test_x",
                         disaggregate_by_id: "test_dis",
                         selected_filter_options: {"test_name": ["test_value"]}
-                    }
+                    },
+                    indicators: []
                 }
             },
             uploadMetadata: {
@@ -247,7 +249,8 @@ describe("ModelCalibrate actions", () => {
                         selected_filter_options: {
                             type: [{id: "test", label: "test"}]
                         }
-                    }
+                    },
+                    indicators: []
                 }
             },
             uploadMetadata: {
@@ -272,6 +275,23 @@ describe("ModelCalibrate actions", () => {
 
         expect(dispatch.mock.calls.length).toBe(1);
         expect(dispatch.mock.calls[0][0]).toBe("getComparisonPlot");
+    });
+
+    it("fetchFirstNIndicators works as expected", () => {
+        const dispatch = jest.fn();
+        const mockBarchartIndicators: Partial<BarchartIndicator>[] = [
+            { indicator: "indicator1" },
+            { indicator: "indicator2" },
+            { indicator: "indicator3" },
+        ]
+        fetchFirstNIndicators(dispatch, mockBarchartIndicators as any, 2);
+        expect(dispatch.mock.calls.length).toBe(2);
+        expect(dispatch.mock.calls[0][0]).toBe("modelCalibrate/getResultData");
+        expect(dispatch.mock.calls[0][1]).toStrictEqual({ indicatorId: "indicator1", tab: ModelOutputTabs.Bar });
+        expect(dispatch.mock.calls[0][2]).toStrictEqual({ root: true });
+        expect(dispatch.mock.calls[1][0]).toBe("modelCalibrate/getResultData");
+        expect(dispatch.mock.calls[1][1]).toStrictEqual({ indicatorId: "indicator2", tab: ModelOutputTabs.Bar });
+        expect(dispatch.mock.calls[1][2]).toStrictEqual({ root: true });
     });
 
     it("getResult does not fetch when status is not done", async () => {
