@@ -313,7 +313,7 @@ describe("ModelCalibrate actions", () => {
                 done: true
             } as any,
             result: mockCalibrateResultResponse(),
-            fetchedIndicators: new Set(["mock"])
+            fetchedIndicators: ["mock"]
         });
         const payload = {indicatorId: "prevalence"};
         await actions.getResultData({commit, state, rootState, dispatch} as any, { payload, tab: ModelOutputTabs.Map});
