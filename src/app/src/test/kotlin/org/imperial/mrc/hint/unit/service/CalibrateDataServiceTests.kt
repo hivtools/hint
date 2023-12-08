@@ -1,14 +1,17 @@
 package org.imperial.mrc.hint.unit.service
 
-import org.junit.jupiter.api.Test
-import com.nhaarman.mockito_kotlin.*
-import org.mockito.ArgumentMatchers.anyString
+import com.nhaarman.mockito_kotlin.doReturn
+import com.nhaarman.mockito_kotlin.mock
 import org.imperial.mrc.hint.clients.HintrAPIClient
 import org.imperial.mrc.hint.db.CalibrateDataRepository
 import org.imperial.mrc.hint.models.CalibrateResultRow
+import org.imperial.mrc.hint.security.Session
 import org.imperial.mrc.hint.service.CalibrateDataService
+import org.imperial.mrc.hint.unit.ADRClientBuilderTests
+import org.junit.jupiter.api.Test
+import org.mockito.ArgumentMatchers.anyString
+import org.pac4j.core.profile.CommonProfile
 import org.springframework.http.ResponseEntity
-import org.jooq.tools.json.JSONArray
 
 class CalibrateDataServiceTests
 {
@@ -32,7 +35,12 @@ class CalibrateDataServiceTests
             on { getDataFromPath("testPath", "all") } doReturn listOf(mockResultRow)
         }
 
-        val sut = CalibrateDataService(mockClient, mockCalibrateDataRepo)
+        val mockSession = mock<Session> {
+            on { getUserProfile() } doReturn CommonProfile().apply { id = ADRClientBuilderTests.TEST_EMAIL }
+            on { getAccessToken() } doReturn "FAKE_TOKEN"
+        }
+
+        val sut = CalibrateDataService(mockClient, mockCalibrateDataRepo, mockSession)
 
         val dataObj = sut.getCalibrateData("anyPath", "all")
 

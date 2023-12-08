@@ -1,23 +1,54 @@
 package org.imperial.mrc.hint.unit.logging
 
+import ch.qos.logback.classic.Level
+import ch.qos.logback.classic.Logger
+import ch.qos.logback.classic.LoggerContext
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
 import net.logstash.logback.argument.StructuredArguments.kv
+import org.assertj.core.api.Assertions
 import org.imperial.mrc.hint.exceptions.HintException
+import org.imperial.mrc.hint.helpers.MemoryAppender
 import org.imperial.mrc.hint.logging.*
 import org.imperial.mrc.hint.models.ErrorDetail
+import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.slf4j.Logger
+import org.slf4j.LoggerFactory
+import org.springframework.boot.test.web.client.getForEntity
 import org.springframework.http.HttpStatus
-import java.lang.Exception
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 import javax.servlet.http.HttpSession
 
 class GenericLoggerImplTests
 {
-    private val mockLogger = mock<Logger>()
+
+    companion object {
+
+        lateinit var testLogger: org.slf4j.Logger
+        lateinit var memoryAppender: MemoryAppender
+
+        @BeforeAll
+        @JvmStatic
+        fun setup() {
+            testLogger = LoggerFactory.getLogger(GenericLoggerImpl::class.java) as Logger
+            memoryAppender = MemoryAppender()
+            memoryAppender.context = LoggerFactory.getILoggerFactory() as LoggerContext
+            (testLogger as Logger).setLevel(Level.DEBUG)
+            (testLogger as Logger).addAppender(memoryAppender)
+            memoryAppender.start()
+        }
+
+        @BeforeEach
+        fun resetAppender()
+        {
+            memoryAppender.reset()
+        }
+    }
+
+    private val mockLogger = mock<org.slf4j.Logger>()
 
     val mockSession = mock<HttpSession> {
         on { id } doReturn "session1"
@@ -95,6 +126,19 @@ class GenericLoggerImplTests
         val sut = GenericLoggerImpl(mockLogger)
         sut.info("updated project notes", mockRequest)
         verify(mockLogger).info("{}", kv("hint", loggedData))
+    }
+
+    @Test
+    fun `can log info with generic additional data`()
+    {
+        val additionalData = mapOf(
+            "foo" to "bar",
+            "thing" to 423
+        )
+        val logger = GenericLoggerImpl(testLogger)
+        logger.info("My example message", additionalData)
+        Assertions.assertThat(memoryAppender.countEventsForLogger("org.imperial.mrc.hint.logging.GenericLoggerImpl")).isEqualTo(1)
+        Assertions.assertThat(memoryAppender.get(0).toString()).isEqualTo("[INFO] msg=My example message, {foo=bar, thing=423}")
     }
 
     @Test
