@@ -16,7 +16,6 @@ import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.slf4j.LoggerFactory
-import org.springframework.boot.test.web.client.getForEntity
 import org.springframework.http.HttpStatus
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
@@ -144,8 +143,6 @@ class GenericLoggerImplTests
     @Test
     fun `can log error with HttpRequest, HttpResponse and message`()
     {
-        val mockLogger = mock<Logger>()
-
         val loggedData = LogMetadata(
             null,
             ErrorMessage(
@@ -169,8 +166,6 @@ class GenericLoggerImplTests
     @Test
     fun `can log error with HttpRequest, HttpResponse`()
     {
-        val mockLogger = mock<Logger>()
-
         val loggedData = LogMetadata(
             null,
             ErrorMessage(
