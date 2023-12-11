@@ -188,10 +188,12 @@ export const getResultMetadata = async function (context: ActionContext<ModelCal
         commit({type: ModelCalibrateMutation.MetadataFetched, payload: data});
 
         selectFilterDefaults(data, commit, PlottingSelectionsMutations.updateBarchartSelections)
-        commit(ModelCalibrateMutation.Calibrated);
 
         const indicators = data.plottingMetadata.barchart.indicators;
         await fetchFirstNIndicators(dispatch, indicators, 5);
+        
+        commit(ModelCalibrateMutation.Calibrated);
+
 
         if (switches.modelCalibratePlot) {
             dispatch("getCalibratePlot");
