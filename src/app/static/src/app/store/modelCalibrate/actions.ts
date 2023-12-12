@@ -1,10 +1,11 @@
 import {ModelCalibrateState} from "./modelCalibrate";
-import {ActionContext, ActionTree, Commit} from "vuex";
+import {ActionContext, ActionTree, Commit, Dispatch} from "vuex";
 import {DynamicFormData, DynamicFormMeta} from "@reside-ic/vue-next-dynamic-form";
 import {api} from "../../apiService";
 import {RootState} from "../../root";
 import {ModelCalibrateMutation} from "./mutations";
 import {
+    BarchartIndicator,
     CalibrateDataResponse,
     CalibrateMetadataResponse,
     CalibrateResultResponse,
@@ -164,6 +165,14 @@ export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrat
     }
 };
 
+export const fetchFirstNIndicators = async (dispatch: Dispatch, indicators: BarchartIndicator[], n: number) => {
+    const promisesArray = [];
+    for (let i = 0; i < n && i < indicators.length; i++) {
+        promisesArray.push(dispatch("modelCalibrate/getResultData", {indicatorId: indicators[i].indicator, tab: ModelOutputTabs.Bar}, {root: true}));
+    }
+    await Promise.all(promisesArray);
+};
+
 export const getResultMetadata = async function (context: ActionContext<ModelCalibrateState, RootState>) {
     const {commit, dispatch, state} = context;
     const calibrateId = state.calibrateId;
@@ -179,7 +188,13 @@ export const getResultMetadata = async function (context: ActionContext<ModelCal
         commit({type: ModelCalibrateMutation.MetadataFetched, payload: data});
 
         selectFilterDefaults(data, commit, PlottingSelectionsMutations.updateBarchartSelections)
+
+        const indicators = data.plottingMetadata.barchart.indicators;
+        await fetchFirstNIndicators(dispatch, indicators, 5);
+        
         commit(ModelCalibrateMutation.Calibrated);
+
+
         if (switches.modelCalibratePlot) {
             dispatch("getCalibratePlot");
         }
