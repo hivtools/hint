@@ -175,7 +175,6 @@ describe("chartjsBar component", () => {
             onComplete: showAllErrorBars
         })
         expect(renderedConfig.scales.y.max).toBeCloseTo(0.22);
-        console.log(renderedConfig.scales.y.ticks.callback(0.2))
         expect(renderedConfig.scales.y.ticks.callback(renderedConfig.scales.y.max)).toStrictEqual("")
         expect(renderedConfig.scales.y.ticks.callback(0.2)).toStrictEqual("Value 0.2")
     });
