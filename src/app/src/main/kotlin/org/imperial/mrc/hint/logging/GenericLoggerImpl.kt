@@ -1,7 +1,6 @@
 package org.imperial.mrc.hint.logging
 
 import net.logstash.logback.argument.StructuredArguments.e
-import net.logstash.logback.argument.StructuredArguments.v
 import net.logstash.logback.argument.StructuredArguments.kv
 import org.imperial.mrc.hint.exceptions.HintException
 import org.imperial.mrc.hint.models.ErrorDetail
