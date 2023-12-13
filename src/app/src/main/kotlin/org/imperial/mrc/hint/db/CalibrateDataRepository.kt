@@ -1,9 +1,15 @@
 package org.imperial.mrc.hint.db
 
-import org.imperial.mrc.hint.models.CalibrateResultRow
+import org.jooq.tools.json.JSONArray
 import org.springframework.stereotype.Component
-import java.sql.*
-import java.util.*
+import org.imperial.mrc.hint.models.CalibrateResultRow
+import java.sql.Connection
+import java.sql.DriverManager
+import java.sql.Statement
+import java.util.Properties
+import java.sql.ResultSet
+import java.sql.SQLException
+import java.sql.PreparedStatement
 
 const val INDICATOR_QUERY = """SELECT
 age_group,area_id,
@@ -39,6 +45,7 @@ interface CalibrateDataRepository
 @Component
 class JooqCalibrateDataRepository: CalibrateDataRepository
 {
+
     private fun convertDataToArrayList(resultSet: ResultSet): List<CalibrateResultRow> {
             resultSet.use {
             return generateSequence {
