@@ -15,10 +15,12 @@ export interface SurveyAndProgramActions {
     uploadSurvey: (store: ActionContext<SurveyAndProgramState, DataExplorationState>, formData: FormData) => void,
     uploadProgram: (store: ActionContext<SurveyAndProgramState, DataExplorationState>, formData: FormData) => void,
     uploadANC: (store: ActionContext<SurveyAndProgramState, DataExplorationState>, formData: FormData) => void
+    uploadVmmc: (store: ActionContext<SurveyAndProgramState, DataExplorationState>, formData: FormData) => void
     getSurveyAndProgramData: (store: ActionContext<SurveyAndProgramState, DataExplorationState>) => void;
     deleteSurvey: (store: ActionContext<SurveyAndProgramState, DataExplorationState>) => void
     deleteProgram: (store: ActionContext<SurveyAndProgramState, DataExplorationState>) => void
     deleteANC: (store: ActionContext<SurveyAndProgramState, DataExplorationState>) => void
+    deleteVmmc: (store: ActionContext<SurveyAndProgramState, DataExplorationState>) => void
     deleteAll: (store: ActionContext<SurveyAndProgramState, DataExplorationState>) => void
     selectDataType: (store: ActionContext<SurveyAndProgramState, DataExplorationState>, payload: DataType) => void
     validateSurveyAndProgramData: (store: ActionContext<SurveyAndProgramState, DataExplorationState>) => void;
@@ -163,6 +165,11 @@ export const actions: ActionTree<SurveyAndProgramState, DataExplorationState> & 
             getFilenameFromUploadFormData(formData))
     },
 
+    async uploadVmmc(context, formData) {
+        await uploadOrImportVmmc(context, {url: "/disease/vmmc/", payload: formData},
+            getFilenameFromUploadFormData(formData))
+    },
+
     async deleteSurvey(context) {
         const {commit, state} = context;
         await api<SurveyAndProgramMutation, SurveyAndProgramMutation>(context)
@@ -216,11 +223,31 @@ export const actions: ActionTree<SurveyAndProgramState, DataExplorationState> & 
             });
     },
 
+    async deleteVmmc(context) {
+        const {commit, state} = context;
+        await api<SurveyAndProgramMutation, SurveyAndProgramMutation>(context)
+            .delete("/disease/vmmc/")
+            .then(() => {
+                commit({type: SurveyAndProgramMutation.VmmcUpdated, payload: null});
+                if (state.selectedDataType == DataType.Vmmc) {
+                    if (state.program) {
+                        // TODO: do we need this?
+                        commitSelectedDataTypeUpdated(commit, DataType.Program)
+                    } else if (state.survey) {
+                        commitSelectedDataTypeUpdated(commit, DataType.Survey)
+                    }
+                }
+                commitClearGenericChartDataset(commit, DATASET_TYPE.ANC)
+                commit({type: SurveyAndProgramMutation.WarningsFetched, payload: {type: DataType.Vmmc, warnings: []}});
+            });
+    },
+
     async deleteAll(store) {
         await Promise.all([
             actions.deleteSurvey(store),
             actions.deleteProgram(store),
-            actions.deleteANC(store)
+            actions.deleteANC(store),
+            actions.deleteVmmc(store)
         ]);
     },
 
