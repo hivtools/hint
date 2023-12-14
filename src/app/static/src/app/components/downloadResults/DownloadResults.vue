@@ -147,7 +147,7 @@
             ),
             translation(): Record<string, any> {
                 return {
-                    spectrum: {header: 'exportOutputs', button: 'export'},
+                    spectrum: {header: 'exportOutputs', button: 'download'},
                     coarse: {header: 'downloadCoarseOutput', button: 'download'},
                     summary: {header: 'downloadSummaryReport', button: 'download'},
                     comparison: {header: 'downloadComparisonReport', button: 'download'},
