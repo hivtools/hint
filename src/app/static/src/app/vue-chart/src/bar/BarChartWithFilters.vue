@@ -1,7 +1,7 @@
 <template>
     <div>
         <div v-if="initialised" class="row">
-            <div class="col-md-3">
+            <div class="col-md-3" style="height: fit-content;">
                 <div id="indicator-fg" class="form-group">
                     <label class="font-weight-bold">{{filterConfig.indicatorLabel || "Indicator"}}</label>
                     <hint-tree-select :multiple=false
@@ -44,7 +44,7 @@
                 </div>
             </template>
             </div>
-            <div v-if="!!xAxisLabel" id="chart" class="col-md-9">
+            <div v-if="!!xAxisLabel" id="chart" class="col-md-9" style="height: min(850px, 85vh)">
                 <bar-chart-with-errors
                         :data="processedOutputData"
                         :chart-data="processedOutputData"
