@@ -14,11 +14,14 @@ import TableReshapeData from './TableReshapeData.vue';
 import DownloadButton from '../downloadIndicator/DownloadButton.vue';
 import { exportService } from '../../dataExportService';
 import { appendCurrentDateTime } from '../../utils';
+import { formatOutput } from '../plots/utils';
 
 // defines the order of headers on the excel download
 const header = [ "area_id", "area_name", "area_level",
     "parent_area_id", "indicator", "calendar_quarter",
-    "age_group", "sex", "mode", "mean", "upper", "lower" ];
+    "age_group", "sex", "formatted_mode", "formatted_mean",
+    "formatted_upper", "formatted_lower", "mode",
+    "mean", "upper", "lower" ];
 
 export default defineComponent({
     components: {
@@ -40,6 +43,7 @@ export default defineComponent({
             return idToDataId;
         });
         const features = computed(() => store.state.baseline.shape?.data.features || []);
+        const indicators = computed(() => store.state.modelCalibrate.metadata?.plottingMetadata.choropleth.indicators || []);
 
         const filteredData = computed(() => {
             const result = store.state.modelCalibrate.result;
@@ -72,10 +76,19 @@ export default defineComponent({
         const getDownloadData = (filteredData: any[]) => {
             return filteredData.map(d => {
                 const feature = features.value.find(f => f.properties.area_id === d.area_id);
+                const indicator = indicators.value.find(i => i.indicator === d.indicator);
+                const format = (value: number) => formatOutput(value,
+                                                               indicator?.format || "",
+                                                               indicator?.scale || null,
+                                                               indicator?.accuracy || null);
                 return {
                     ...d,
                     area_name: feature?.properties.area_name || "",
-                    parent_area_id: feature?.properties.parent_area_id || ""
+                    parent_area_id: feature?.properties.parent_area_id || "",
+                    formatted_mode: format(d.mode),
+                    formatted_mean: format(d.mean),
+                    formatted_upper: format(d.upper),
+                    formatted_lower: format(d.lower)
                 }
             });
         };

@@ -147,7 +147,8 @@ describe("Output Table display table tests", () => {
         expect(mockExportService.mock.calls[0][0].options).toStrictEqual({
             header: ["area_id", "area_name", "area_level", "parent_area_id",
                     "indicator", "calendar_quarter", "age_group", "sex",
-                    "mode", "mean", "upper", "lower"]
+                    "formatted_mode", "formatted_mean", "formatted_upper",
+                    "formatted_lower", "mode", "mean", "upper", "lower"]
         });
         expect(mockAddFilteredData.mock.calls.length).toBe(1);
         expect(mockDownload.mock.calls.length).toBe(1);
