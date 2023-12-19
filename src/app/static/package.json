@@ -11,7 +11,6 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@playwright/test": "^1.40.1",
     "@reside-ic/vue-nested-multiselect": "^0.0.15",
     "@reside-ic/vue-next-dynamic-form": "^1.1.5",
     "@reside-ic/vue3-treeselect": "^1.0.18",
@@ -57,6 +56,8 @@
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
+    "@playwright/test": "^1.40.1",
+    "@types/node": "^20.10.5",
     "@vitejs/plugin-vue": "^4.5.2",
     "jsdom": "^23.0.1",
     "sass": "^1.69.5",
