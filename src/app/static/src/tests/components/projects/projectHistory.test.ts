@@ -11,6 +11,7 @@ import ShareProject from "../../../app/components/projects/ShareProject.vue";
 import {Language} from "../../../app/store/translations/locales";
 import VueFeather from "vue-feather";
 import { flushPromises } from "@vue/test-utils";
+import {describe, expect, it, vi, afterEach} from "vitest";
 
 describe("Project history component", () => {
 
