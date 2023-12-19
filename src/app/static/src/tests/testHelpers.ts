@@ -158,6 +158,7 @@ Since this is just for testing, ts-ignore was used for this special case.
 export function shallowMountWithTranslate<T extends TranslatableState, C>(component: C, store: Store<T>, options?: any): VueWrapper<InstanceType<C>> {
     // @ts-ignore
     return shallowMount(component, {
+        attachTo: document.body,
         ...options,
         global: {
             ...options?.global,
@@ -173,6 +174,7 @@ export function shallowMountWithTranslate<T extends TranslatableState, C>(compon
 export function mountWithTranslate<T extends TranslatableState, C>(component: C, store: Store<T>, options?: any): VueWrapper<InstanceType<C>> {
     // @ts-ignore
     return mount(component, {
+        attachTo: document.body,
         ...options,
         global: {
             ...options?.global,
