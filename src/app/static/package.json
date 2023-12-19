@@ -25,7 +25,7 @@
     "floating-vue": "^2.0.0-beta.24",
     "geojson": "^0.5.0",
     "i18next": "^23.7.11",
-    "jsonata": "^2.0.3",
+    "jsonata": "^1.8.6",
     "leaflet": "^1.9.4",
     "moment": "^2.29.4",
     "numeral": "^2.0.6",
