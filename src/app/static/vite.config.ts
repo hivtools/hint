@@ -6,6 +6,7 @@ export default defineConfig({
   test: {
     environment: "jsdom",
     globals: true,
+    maxConcurrency: 4,
     setupFiles: [
       './src/tests/setup.ts'
     ],

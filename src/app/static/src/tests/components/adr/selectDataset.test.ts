@@ -30,7 +30,7 @@ import {getters} from "../../../app/store/dataExploration/getters"
 import ResetConfirmation from "../../../app/components/resetConfirmation/ResetConfirmation.vue";
 import { DataExplorationState } from "../../../app/store/dataExploration/dataExploration";
 import HintTreeSelect from "../../../app/components/HintTreeSelect.vue";
-import {describe, expect, it, Mock, vi, beforeEach, afterEach, beforeAll, afterAll} from "vitest";
+import { Mock } from "vitest";
 
 describe("select dataset", () => {
 
