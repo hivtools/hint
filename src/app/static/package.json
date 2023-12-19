@@ -8,7 +8,7 @@
     "build": "vue-tsc && vite build",
     "preview": "vite preview",
     "copy": "cp -r ./templates/*.ftl ./public && cp -r ./assets/* ./public",
-    "test": "vitest"
+    "test": "vitest run"
   },
   "dependencies": {
     "ag-grid-community": "^31.0.1",
