@@ -1,5 +1,4 @@
-ARG GIT_ID="UNKNOWN"
-FROM mrcide/node-20-docker:$GIT_ID
+FROM mrcide/node-20-docker:main
 
 ARG CODECOV_TOKEN
 ENV CODECOV_TOKEN=$CODECOV_TOKEN
