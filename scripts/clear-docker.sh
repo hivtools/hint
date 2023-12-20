@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
-docker kill $(docker ps -aq) || true
-docker rm $(docker ps -aq) || true
+containers=$(docker ps -a -q)
+for container in $containers
+do
+  docker kill $container;
+  docker rm $container;
+done
+
 docker network prune --force || true
 exit 0
