@@ -1,5 +1,5 @@
 ARG GIT_ID="UNKNOWN"
-FROM mrcide/hint-shared-build-env:$GIT_ID
+FROM mrcide/node-20-docker:$GIT_ID
 
 ARG CODECOV_TOKEN
 ENV CODECOV_TOKEN=$CODECOV_TOKEN
