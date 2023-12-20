@@ -232,9 +232,9 @@
         },
         data: () => {
             const tabs: (keyof Translations)[] = [
+                ModelOutputTabs.Map,
                 ModelOutputTabs.Bar,
                 ModelOutputTabs.Table,
-                ModelOutputTabs.Map,
                 ModelOutputTabs.Comparison
             ];
 
