@@ -20,5 +20,4 @@ docker build --tag hint-test \
 
 # Run the created image
 docker run --rm \
-  --network=hint_nw \
   hint-test
