@@ -34,10 +34,7 @@ jobs:
 
             - name: Compile Kotlin
               run: >
-                ./src/gradlew -p src app:compileKotlin -x databaseInterface:compileKotlin
-                -x databaseInterface:compileJava -x databaseInterface:processResources
-                -x databaseInterface:classes -x databaseInterface:inspectClassesForKotlinIC
-                -x databaseInterface:jar
+                ./src/gradlew -p src app:compileKotlin
 
             - name: Test Back-end
               run: >
@@ -52,7 +49,7 @@ jobs:
               run: ./scripts/run-dependencies.sh
             
             - name: Compile Kotlin
-              run: ./src/gradlew -p src databaseInterface:compileKotlin
+              run: ./src/gradlew -p src app:compileKotlin
 
             - name: Test Back-end
               run: >
