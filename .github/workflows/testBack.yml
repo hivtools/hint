@@ -14,5 +14,13 @@ jobs:
         steps:
             - uses: actions/checkout@v4
 
+            - name: Setup Node
+              uses: actions/setup-node@v3
+              with:
+               node-version: 14.x
+
+            - name: Install Packages
+              run: npm ci --prefix=src/app/static
+
             - name: Test Back-end
-              run: ./gradlew :app:detektMain -PexcludeADR=true :app:test :userCLI:test :app:jacocoTestReport && codecov -p .. -f app/coverage/test/*.xml --prefix=src/
+              run: ./src/gradlew -p src :app:detektMain -PexcludeADR=true :app:test :userCLI:test :app:jacocoTestReport && codecov -p .. -f app/coverage/test/*.xml
