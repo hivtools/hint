@@ -26,7 +26,9 @@ jobs:
               run: npm ci --prefix=src/app/static
 
             - name: Build front end
-              run: npm run build --prefix=src/app/static
+              run: |
+                npm run build --prefix=src/app/static
+                npm run copy --prefix=src/app/static
 
             - name: Compile Kotlin
               run: ./src/gradlew -p src app:compileKotlin
