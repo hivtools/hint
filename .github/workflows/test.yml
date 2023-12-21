@@ -23,4 +23,4 @@ jobs:
               run: npm ci --prefix=src/app/static
 
             - name: Front-end tests
-              run: npm run test
+              run: npm run test --prefix=src/app/static
