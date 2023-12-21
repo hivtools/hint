@@ -23,7 +23,9 @@ jobs:
                node-version: 14.x
 
             - name: Install Packages
-              run: npm ci --prefix=src/app/static
+              run: |
+                npm ci --prefix=src/app/static
+                npm install -g codecov
 
             - name: Build front end
               run: |
