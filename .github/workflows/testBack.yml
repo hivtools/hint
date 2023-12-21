@@ -22,5 +22,8 @@ jobs:
             - name: Install Packages
               run: npm ci --prefix=src/app/static
 
+            - name: Run Dependencies
+              run: ./scripts/run-dependencies.sh
+
             - name: Test Back-end
               run: ./src/gradlew -p src :app:detektMain -PexcludeADR=true :app:test :userCLI:test :app:jacocoTestReport && codecov -p .. -f app/coverage/test/*.xml
