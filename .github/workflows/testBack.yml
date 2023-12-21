@@ -1,0 +1,18 @@
+on:
+    push:
+        branches:
+            - main
+    pull_request:
+        branches:
+            - "*"
+
+name: Back-end tests
+
+jobs:
+    test:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Test Back-end
+              run: ./gradlew :app:detektMain -PexcludeADR=true :app:test :userCLI:test :app:jacocoTestReport && codecov -p .. -f app/coverage/test/*.xml --prefix=src/
