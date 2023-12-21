@@ -9,7 +9,7 @@ on:
 name: Back-end tests
 
 jobs:
-    setup:
+    test:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v4
@@ -23,18 +23,7 @@ jobs:
               run: npm ci --prefix=src/app/static
 
             - name: Run Dependencies
-              run: ./scripts/run-dependencies-half.sh
-    wait-for-db:
-          runs-on: ubuntu-latest
-          container: hint_db
-          steps:
-              - name: Wait for DB
-                run: ./wait-for-db
-    test-backend:
-          runs-on: ubuntu-latest
-          steps:
-            - name: Complete setup
-              run: ./scripts/run-dependencies-other-half.sh
+              run: ./scripts/run-dependencies.sh
 
             - name: Test Back-end
               run: ./src/gradlew -p src :app:detektMain -PexcludeADR=true :app:test :userCLI:test :app:jacocoTestReport && codecov -p .. -f app/coverage/test/*.xml
