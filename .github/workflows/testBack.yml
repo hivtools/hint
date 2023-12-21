@@ -17,6 +17,17 @@ jobs:
             - name: Run Dependencies
               run: ./scripts/run-dependencies.sh
 
+            - name: Setup Node
+              uses: actions/setup-node@v3
+              with:
+               node-version: 14.x
+
+            - name: Install Packages
+              run: npm ci --prefix=src/app/static
+
+            - name: Build front end
+              run: npm run build --prefix=src/app/static
+
             - name: Compile Kotlin
               run: ./src/gradlew -p src app:compileKotlin
 
