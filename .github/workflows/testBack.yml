@@ -18,7 +18,8 @@ jobs:
               run: ./scripts/run-dependencies.sh
 
             - name: Test Back-end
-              run: ./src/gradlew -p src :app:detektMain -x app:compileFrontEnd -x app:copyAssets -x app:compileKotlin |
-                   -PexcludeADR=true :app:test -x app:compileFrontEnd -x app:copyAssets -x app:compileKotlin |
-                   :userCLI:test :app:jacocoTestReport -x app:compileFrontEnd -x app:copyAssets -x app:compileKotlin && |
-                   codecov -p .. -f app/coverage/test/*.xml
+              run: |
+                ./src/gradlew -p src :app:detektMain -x app:compileFrontEnd -x app:copyAssets -x app:compileKotlin 
+                -PexcludeADR=true :app:test -x app:compileFrontEnd -x app:copyAssets -x app:compileKotlin 
+                :userCLI:test :app:jacocoTestReport -x app:compileFrontEnd -x app:copyAssets -x app:compileKotlin && 
+                codecov -p .. -f app/coverage/test/*.xml
