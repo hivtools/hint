@@ -82,6 +82,17 @@ tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile) {
     }
 }
 
+tasks.withType(Test) {
+    filter {
+        if (shardTest == "1/2") {
+            includeTestsMatching "*ADR*"
+        }
+        if (shardTest == "2/2") {
+            excludeTestsMatching "*ADR*"
+        }
+    }
+}
+
 task compileFrontEnd() {
     onlyIf {
         hotReload != "true"
