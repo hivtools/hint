@@ -98,7 +98,7 @@ abstract class SecureIntegrationTests : CleanDatabaseTests()
 
         do
         {
-            Thread.sleep(500)
+            Thread.sleep(200)
             val statusResponse = testRestTemplate.getForEntity<String>("/model/status/$id")
         } while (statusResponse.body!!.contains("\"status\":\"RUNNING\"")
                 || statusResponse.body!!.contains("\"status\":\"PENDING\""))
@@ -114,7 +114,7 @@ abstract class SecureIntegrationTests : CleanDatabaseTests()
 
         do
         {
-            Thread.sleep(500)
+            Thread.sleep(200)
             val statusResponse = testRestTemplate.getForEntity<String>("/calibrate/status/$id")
         } while (statusResponse.body!!.contains("\"status\":\"RUNNING\"")
                 || statusResponse.body!!.contains("\"status\":\"PENDING\""))
@@ -131,7 +131,7 @@ abstract class SecureIntegrationTests : CleanDatabaseTests()
 
         do
         {
-            Thread.sleep(500)
+            Thread.sleep(200)
             val statusResponse = testRestTemplate.getForEntity<String>("/download/status/$responseId")
         } while (statusResponse.body!!.contains("\"status\":\"RUNNING\"")
                 || statusResponse.body!!.contains("\"status\":\"PENDING\""))
