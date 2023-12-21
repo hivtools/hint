@@ -20,7 +20,7 @@ jobs:
                node-version: 14.x
 
             - name: Install Packages
-              run: npm ci
+              run: npm ci --prefix=src/app/static
 
             - name: Front-end tests
               run: npm run test
