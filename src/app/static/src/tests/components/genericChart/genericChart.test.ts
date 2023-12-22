@@ -8,7 +8,9 @@ import DataSource from "../../../app/components/genericChart/dataSelectors/DataS
 import FiltersComp from "../../../app/components/plots/Filters.vue";
 // Mock the import of plotly to avoid import failures in non-browser context
 vi.mock("plotly.js-basic-dist", () => ({
-    newPlot: vi.fn()
+    default: {
+        newPlot: vi.fn()
+    }
 }));
 import Plotly from "../../../app/components/genericChart/Plotly.vue";
 import {mockGenericChartState, mockSuccess} from "../../mocks";

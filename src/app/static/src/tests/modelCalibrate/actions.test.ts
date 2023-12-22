@@ -121,7 +121,7 @@ describe("ModelCalibrate actions", () => {
 
         expect(commit.mock.calls.length).toBe(2);
         expect(commit.mock.calls[0][0].type).toBe("PollingForStatusStarted");
-        expect(commit.mock.calls[0][0].payload).toBeGreaterThan(-1);
+        expect(+commit.mock.calls[0][0].payload).toBeGreaterThan(-1);
         expect(commit.mock.calls[1][0].type).toBe("CalibrateStatusUpdated");
         expect(commit.mock.calls[1][0].payload).toBe("TEST DATA");
         expect(dispatch.mock.calls.length).toBe(0);

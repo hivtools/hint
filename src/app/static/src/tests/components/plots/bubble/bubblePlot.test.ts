@@ -7,7 +7,7 @@ import MapControl from "../../../../app/components/plots/MapControl.vue";
 import {NestedFilterOption} from "../../../../app/generated";
 import registerTranslations from "../../../../app/store/translations/registerTranslations";
 import Vuex from "vuex";
-import Treeselect from "vue3-treeselect";
+import Treeselect from "../../../../app/components/HintTreeSelect.vue";
 import {emptyState} from "../../../../app/root";
 import MapLegend from "../../../../app/components/plots/MapLegend.vue";
 import SizeLegend from "../../../../app/components/plots/bubble/SizeLegend.vue";
@@ -18,7 +18,8 @@ import ResetMap from "../../../../app/components/plots/ResetMap.vue";
 import { mountWithTranslate } from "../../../testHelpers";
 import { nextTick } from "vue";
 
-vi.mock("@vue-leaflet/vue-leaflet", () => {
+vi.mock("@vue-leaflet/vue-leaflet", async () => {
+    const actual = await vi.importActual("@vue-leaflet/vue-leaflet")
     const LMap = {
         template: "<div id='l-map-mock'><slot></slot></div>"
     }
@@ -31,7 +32,7 @@ vi.mock("@vue-leaflet/vue-leaflet", () => {
             geojson: Object
         }
     }
-    return { LMap, LControl, LGeoJson }
+    return { ...actual, LMap, LControl, LGeoJson }
 });
 
 const store = new Vuex.Store({
@@ -84,7 +85,6 @@ export const expectIndicatorSelect = (wrapper: VueWrapper<any>, divId: string, v
     expect(indDiv.classes()[0]).toBe("form-group");
     const indSelect = indDiv.findComponent(Treeselect);
     expect(indSelect.props().multiple).toBe(false);
-    expect(indSelect.props().clearable).toBe(false);
     expect(indSelect.props().options).toStrictEqual(props.indicators);
     expect(indSelect.props().modelValue).toBe(value);
 };

@@ -69,7 +69,7 @@ describe(`download results actions integration`, () => {
         expect(commit.mock.calls.length).toBe(2);
         expect(commit.mock.calls[0][0]["type"]).toBe("PollingStatusStarted");
         expect(commit.mock.calls[0][0]["payload"].downloadType).toBe(DOWNLOAD_TYPE.SUMMARY);
-        expect(commit.mock.calls[0][0]["payload"].pollId).toBeGreaterThan(-1);
+        expect(+commit.mock.calls[0][0]["payload"].pollId).toBeGreaterThan(-1);
 
         expect(commit.mock.calls[1][0]["type"]).toBe("SummaryReportStatusUpdated");
         expect(commit.mock.calls[1][0]["payload"].status).toBe("MISSING");
@@ -152,7 +152,7 @@ describe(`download results actions integration`, () => {
         expect(commit.mock.calls.length).toBe(2);
         expect(commit.mock.calls[0][0]["type"]).toBe("PollingStatusStarted");
         expect(commit.mock.calls[0][0]["payload"].downloadType).toBe(DOWNLOAD_TYPE.SPECTRUM);
-        expect(commit.mock.calls[0][0]["payload"].pollId).toBeGreaterThan(-1);
+        expect(+commit.mock.calls[0][0]["payload"].pollId).toBeGreaterThan(-1);
 
         expect(commit.mock.calls[1][0]["type"]).toBe("SpectrumOutputStatusUpdated");
         expect(commit.mock.calls[1][0]["payload"].status).toBe("MISSING");
@@ -193,7 +193,7 @@ describe(`download results actions integration`, () => {
         expect(commit.mock.calls.length).toBe(2);
         expect(commit.mock.calls[0][0]["type"]).toBe("PollingStatusStarted");
         expect(commit.mock.calls[0][0]["payload"].downloadType).toBe(DOWNLOAD_TYPE.COARSE);
-        expect(commit.mock.calls[0][0]["payload"].pollId).toBeGreaterThan(-1);
+        expect(+commit.mock.calls[0][0]["payload"].pollId).toBeGreaterThan(-1);
 
         expect(commit.mock.calls[1][0]["type"]).toBe("CoarseOutputStatusUpdated");
         expect(commit.mock.calls[1][0]["payload"].status).toBe("MISSING");
@@ -234,7 +234,7 @@ describe(`download results actions integration`, () => {
         expect(commit.mock.calls.length).toBe(2);
         expect(commit.mock.calls[0][0]["type"]).toBe("PollingStatusStarted");
         expect(commit.mock.calls[0][0]["payload"].downloadType).toBe(DOWNLOAD_TYPE.COMPARISON);
-        expect(commit.mock.calls[0][0]["payload"].pollId).toBeGreaterThan(-1);
+        expect(+commit.mock.calls[0][0]["payload"].pollId).toBeGreaterThan(-1);
 
         expect(commit.mock.calls[1][0]["type"]).toBe("ComparisonOutputStatusUpdated");
         expect(commit.mock.calls[1][0]["payload"].status).toBe("MISSING");
@@ -258,7 +258,7 @@ describe(`download results actions integration`, () => {
         expect(commit.mock.calls.length).toBe(2);
         expect(commit.mock.calls[0][0]["type"]).toBe("PollingStatusStarted");
         expect(commit.mock.calls[0][0]["payload"].downloadType).toBe(DOWNLOAD_TYPE.COMPARISON);
-        expect(commit.mock.calls[0][0]["payload"].pollId).toBeGreaterThan(-1);
+        expect(+commit.mock.calls[0][0]["payload"].pollId).toBeGreaterThan(-1);
 
         expect(commit.mock.calls[1][0]["type"]).toBe("ComparisonError");
         expect(commit.mock.calls[1][0]["payload"].detail).toContain("Otherwise please contact support at naomi-support@imperial.ac.uk");

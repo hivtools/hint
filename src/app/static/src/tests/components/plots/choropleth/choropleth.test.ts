@@ -21,7 +21,8 @@ const mockLayer = {
     setTooltipContent: mockSetTooltipContent
 } as any;
 
-vi.mock("@vue-leaflet/vue-leaflet", () => {
+vi.mock("@vue-leaflet/vue-leaflet", async () => {
+    const actual = await vi.importActual("@vue-leaflet/vue-leaflet")
     const LMap = {
         template: "<div id='l-map-mock'><slot></slot></div>"
     }
@@ -44,7 +45,7 @@ vi.mock("@vue-leaflet/vue-leaflet", () => {
             }
         }
     }
-    return { LMap, LControl, LGeoJson }
+    return { ...actual, LMap, LControl, LGeoJson }
 });
 
 const store = new Vuex.Store({

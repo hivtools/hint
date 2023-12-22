@@ -4,7 +4,6 @@ import {ADRMutation} from "../../../app/store/adr/mutations";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {mockRootState} from "../../mocks";
 import {expectTranslated, mountWithTranslate, shallowMountWithTranslate} from "../../testHelpers";
-import Treeselect from "vue3-treeselect";
 import {Language} from "../../../app/store/translations/locales";
 import {Dataset} from "../../../app/types";
 import VueFeather from "vue-feather";
@@ -97,9 +96,8 @@ describe("select release", () => {
         expectTranslated(labels[2], "Releases", "Versions",
             "Lançamentos", store);
         expect(rendered.findAllComponents(VueFeather).length).toBe(2);
-        const select = rendered.findComponent(Treeselect);
+        const select = rendered.findComponent(HintTreeSelect);
         expect(select.props("multiple")).toBe(false);
-        expect(select.props("searchable")).toBe(true);
         expect((rendered.vm.$data as any).releaseId).toBeUndefined();
 
         const expectedOptions = [
@@ -221,7 +219,7 @@ describe("select release", () => {
             }, 
         });
         await rendered.setProps({datasetId: "datasetId"})
-        const select = rendered.findComponent(Treeselect);
+        const select = rendered.findComponent(HintTreeSelect);
         expect(select.props("disabled")).toBe(true);
         const selectRelease = rendered.findAll("input")[1]
         await selectRelease.trigger("change")
@@ -235,7 +233,7 @@ describe("select release", () => {
                 plugins: [store]
             }, props: {datasetId: "datasetId"}
         });
-        const select = rendered.findComponent(Treeselect);
+        const select = rendered.findComponent(HintTreeSelect);
         expect(select.props("disabled")).toBe(true);
         expect((rendered.vm.$data as any).releaseId).toBe("releaseId");
     });
@@ -267,7 +265,7 @@ describe("select release", () => {
                 plugins: [store]
             }, props: {datasetId: "datasetId", choiceADR: "useRelease"}
         });
-        const select = rendered.findComponent(Treeselect);
+        const select = rendered.findComponent(HintTreeSelect);
         expect(select.props("disabled")).toBe(true);
         expect((rendered.vm.$data as any).releaseId).toBeUndefined();
     });
@@ -334,7 +332,7 @@ describe("select release", () => {
 
         await rendered.setProps({datasetId: "datasetId2"})
         expect(clearReleasesMock.mock.calls.length).toBe(2);
-        const select = rendered.findComponent(Treeselect);
+        const select = rendered.findComponent(HintTreeSelect);
         expect(select.props("disabled")).toBe(true);
         expect((rendered.vm.$data as any).releaseId).toBe(undefined);
         expect((rendered.vm.$data as any).choiceADR).toBe("useLatest");

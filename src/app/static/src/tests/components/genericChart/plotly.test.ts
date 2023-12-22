@@ -1,12 +1,19 @@
 // Mock the import of plotly so that we can spy on its exported 'newPlot' method - need to do this
 // before importing Plotly
 import Vuex from "vuex";
-
+import plotly from "plotly.js-basic-dist";
+const mocks = vi.hoisted(() => {
+    return {
+        newPlot: vi.fn(),
+        react: vi.fn()
+    }
+});
 vi.mock("plotly.js-basic-dist", () => ({
-    newPlot: vi.fn(),
-    react: vi.fn()
+    default: {
+        newPlot: mocks.newPlot,
+        react: mocks.react
+    }
 }));
-import * as plotly from "plotly.js-basic-dist";
 import Vue, { nextTick } from "vue";
 import { flushPromises, shallowMount } from "@vue/test-utils";
 import Plotly from "../../../app/components/genericChart/Plotly.vue";
@@ -248,7 +255,8 @@ describe("Plotly", () => {
         // Rendering flag should be set while rendering proceeds
         expect((wrapper.vm as any).rendering).toBe(true);
 
-        await nextTick();
+        await flushPromises();
+
         expect(mockPlotlyReact.mock.calls.length).toBe(1);
         expectPlotlyParams(mockPlotlyReact.mock.calls[0]);
         expect((wrapper.vm as any).rendering).toBe(false);
@@ -274,7 +282,7 @@ describe("Plotly", () => {
                 rows: 3
             }
         }, layoutData)
-        await nextTick();
+        await flushPromises();
         expect(mockPlotlyNewPlot.mock.calls.length).toBe(1);
         expectPlotlyParams(mockPlotlyNewPlot.mock.calls[0], 3);
         expect((wrapper.vm as any).rendering).toBe(false);
@@ -290,7 +298,7 @@ describe("Plotly", () => {
         });
 
         (wrapper.vm as any).$options.watch.chartData.handler.call(wrapper.vm);
-        await nextTick();
+        await flushPromises();
 
         expect(mockPlotlyReact.mock.calls.length).toBe(3);
         const plotlyParams = mockPlotlyReact.mock.calls[1];
@@ -309,7 +317,7 @@ describe("Plotly", () => {
         });
 
         (wrapper.vm as any).$options.watch.layoutData.call(wrapper.vm);
-        await nextTick();
+        await flushPromises();
 
         expect(mockPlotlyReact.mock.calls.length).toBe(2);
         const plotlyParams = mockPlotlyReact.mock.calls[1];

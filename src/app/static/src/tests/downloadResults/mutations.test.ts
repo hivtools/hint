@@ -62,7 +62,7 @@ describe(`download results mutations`, () => {
         const state = mockDownloadResultsState();
         const payload = {pollId: 123, downloadType: DOWNLOAD_TYPE.SUMMARY}
         mutations[DownloadResultsMutation.PollingStatusStarted](state, {payload: payload});
-        expect(state.summary.statusPollId).toBeGreaterThan(-1);
+        expect(+state.summary.statusPollId).toBeGreaterThan(-1);
     });
 
     it("sets summary download error", () => {
@@ -138,7 +138,7 @@ describe(`download results mutations`, () => {
         const state = mockDownloadResultsState();
         const payload = {pollId: 123, downloadType: DOWNLOAD_TYPE.SPECTRUM}
         mutations[DownloadResultsMutation.PollingStatusStarted](state, {payload: payload});
-        expect(state.spectrum.statusPollId).toBeGreaterThan(-1);
+        expect(+state.spectrum.statusPollId).toBeGreaterThan(-1);
     });
 
     it("sets fetchingDownloadId for spectrum download on SetFetchingDownloadId", () => {
@@ -216,7 +216,7 @@ describe(`download results mutations`, () => {
         const state = mockDownloadResultsState();
         const payload = {pollId: 123, downloadType: DOWNLOAD_TYPE.COARSE}
         mutations[DownloadResultsMutation.PollingStatusStarted](state, {payload: payload});
-        expect(state.coarseOutput.statusPollId).toBeGreaterThan(-1);
+        expect(+state.coarseOutput.statusPollId).toBeGreaterThan(-1);
     });
 
     it("sets fetchingDownloadId for coarseOutput download on SetFetchingDownloadId", () => {
@@ -297,7 +297,7 @@ describe(`download results mutations`, () => {
         const state = mockDownloadResultsState();
         const payload = {pollId: 123, downloadType: DOWNLOAD_TYPE.COMPARISON}
         mutations[DownloadResultsMutation.PollingStatusStarted](state, {payload: payload});
-        expect(state.comparison.statusPollId).toBeGreaterThan(-1);
+        expect(+state.comparison.statusPollId).toBeGreaterThan(-1);
     });
 
     it("sets fetchingDownloadId for comparison download on SetFetchingDownloadId", () => {
@@ -368,7 +368,7 @@ describe(`download results mutations`, () => {
         const state = mockDownloadResultsState();
         const payload = {pollId: 123, downloadType: DOWNLOAD_TYPE.AGYW}
         mutations[DownloadResultsMutation.PollingStatusStarted](state, {payload: payload});
-        expect(state.agyw.statusPollId).toBeGreaterThan(-1);
+        expect(+state.agyw.statusPollId).toBeGreaterThan(-1);
     });
 
     it("sets fetchingDownloadId for AGYW download on SetFetchingDownloadId", () => {

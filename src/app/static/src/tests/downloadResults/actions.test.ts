@@ -110,7 +110,7 @@ describe(`download Results actions`, () => {
 
         expect(commit.mock.calls.length).toBe(2);
         expect(commit.mock.calls[0][0]["type"]).toBe("PollingStatusStarted")
-        expect(commit.mock.calls[0][0]["payload"].pollId).toBeGreaterThan(-1)
+        expect(+commit.mock.calls[0][0]["payload"].pollId).toBeGreaterThan(-1)
         expect(commit.mock.calls[0][0]["payload"].downloadType).toEqual(DOWNLOAD_TYPE.SUMMARY)
 
         expect(commit.mock.calls[1][0]["type"]).toBe("SummaryReportStatusUpdated")
@@ -251,7 +251,7 @@ describe(`download Results actions`, () => {
         expect(commit.mock.calls.length).toBe(2)
 
         expect(commit.mock.calls[0][0]["type"]).toBe("PollingStatusStarted")
-        expect(commit.mock.calls[0][0]["payload"].pollId).toBeGreaterThan(-1)
+        expect(+commit.mock.calls[0][0]["payload"].pollId).toBeGreaterThan(-1)
         expect(commit.mock.calls[0][0]["payload"].downloadType).toEqual(DOWNLOAD_TYPE.SUMMARY)
 
         expect(commit.mock.calls[1][0]).toStrictEqual({
@@ -335,7 +335,7 @@ describe(`download Results actions`, () => {
 
         expect(commit.mock.calls.length).toBe(2);
         expect(commit.mock.calls[0][0]["type"]).toBe("PollingStatusStarted")
-        expect(commit.mock.calls[0][0]["payload"].pollId).toBeGreaterThan(-1)
+        expect(+commit.mock.calls[0][0]["payload"].pollId).toBeGreaterThan(-1)
         expect(commit.mock.calls[0][0]["payload"].downloadType).toEqual(DOWNLOAD_TYPE.SPECTRUM)
 
         expect(commit.mock.calls[1][0]["type"]).toBe("SpectrumOutputStatusUpdated")
@@ -360,7 +360,7 @@ describe(`download Results actions`, () => {
 
         expect(commit.mock.calls.length).toBe(2);
         expect(commit.mock.calls[0][0]["type"]).toBe("PollingStatusStarted")
-        expect(commit.mock.calls[0][0]["payload"].pollId).toBeGreaterThan(-1)
+        expect(+commit.mock.calls[0][0]["payload"].pollId).toBeGreaterThan(-1)
         expect(commit.mock.calls[0][0]["payload"].downloadType).toEqual(DOWNLOAD_TYPE.SPECTRUM)
 
         expect(commit.mock.calls[1][0]["type"]).toBe("SpectrumOutputStatusUpdated")
@@ -502,7 +502,7 @@ describe(`download Results actions`, () => {
         expect(commit.mock.calls.length).toBe(2)
 
         expect(commit.mock.calls[0][0]["type"]).toBe("PollingStatusStarted")
-        expect(commit.mock.calls[0][0]["payload"].pollId).toBeGreaterThan(-1)
+        expect(+commit.mock.calls[0][0]["payload"].pollId).toBeGreaterThan(-1)
         expect(commit.mock.calls[0][0]["payload"].downloadType).toEqual(DOWNLOAD_TYPE.SPECTRUM)
 
         expect(commit.mock.calls[1][0]).toStrictEqual({
@@ -672,7 +672,7 @@ describe(`download Results actions`, () => {
 
         expect(commit.mock.calls.length).toBe(2);
         expect(commit.mock.calls[0][0]["type"]).toBe("PollingStatusStarted")
-        expect(commit.mock.calls[0][0]["payload"].pollId).toBeGreaterThan(-1)
+        expect(+commit.mock.calls[0][0]["payload"].pollId).toBeGreaterThan(-1)
         expect(commit.mock.calls[0][0]["payload"].downloadType).toEqual(DOWNLOAD_TYPE.COARSE)
 
         expect(commit.mock.calls[1][0]["type"]).toBe("CoarseOutputStatusUpdated")
@@ -697,7 +697,7 @@ describe(`download Results actions`, () => {
 
         expect(commit.mock.calls.length).toBe(2);
         expect(commit.mock.calls[0][0]["type"]).toBe("PollingStatusStarted")
-        expect(commit.mock.calls[0][0]["payload"].pollId).toBeGreaterThan(-1)
+        expect(+commit.mock.calls[0][0]["payload"].pollId).toBeGreaterThan(-1)
         expect(commit.mock.calls[0][0]["payload"].downloadType).toEqual(DOWNLOAD_TYPE.COARSE)
 
         expect(commit.mock.calls[1][0]["type"]).toBe("CoarseOutputStatusUpdated")
@@ -744,7 +744,7 @@ describe(`download Results actions`, () => {
 
         expect(commit.mock.calls.length).toBe(2)
         expect(commit.mock.calls[0][0]["type"]).toBe("PollingStatusStarted")
-        expect(commit.mock.calls[0][0]["payload"].pollId).toBeGreaterThan(-1)
+        expect(+commit.mock.calls[0][0]["payload"].pollId).toBeGreaterThan(-1)
         expect(commit.mock.calls[0][0]["payload"].downloadType).toEqual(DOWNLOAD_TYPE.COARSE)
 
         expect(commit.mock.calls[1][0]).toStrictEqual({
@@ -833,7 +833,7 @@ describe(`download Results actions`, () => {
 
         expect(commit.mock.calls.length).toBe(2);
         expect(commit.mock.calls[0][0]["type"]).toBe("PollingStatusStarted")
-        expect(commit.mock.calls[0][0]["payload"].pollId).toBeGreaterThan(-1)
+        expect(+commit.mock.calls[0][0]["payload"].pollId).toBeGreaterThan(-1)
         expect(commit.mock.calls[0][0]["payload"].downloadType).toEqual(DOWNLOAD_TYPE.COMPARISON)
 
         expect(commit.mock.calls[1][0]["type"]).toBe("ComparisonOutputStatusUpdated")
@@ -858,7 +858,7 @@ describe(`download Results actions`, () => {
 
         expect(commit.mock.calls.length).toBe(2);
         expect(commit.mock.calls[0][0]["type"]).toBe("PollingStatusStarted")
-        expect(commit.mock.calls[0][0]["payload"].pollId).toBeGreaterThan(-1)
+        expect(+commit.mock.calls[0][0]["payload"].pollId).toBeGreaterThan(-1)
         expect(commit.mock.calls[0][0]["payload"].downloadType).toEqual(DOWNLOAD_TYPE.COMPARISON)
 
         expect(commit.mock.calls[1][0]["type"]).toBe("ComparisonOutputStatusUpdated")
@@ -991,7 +991,7 @@ describe(`download Results actions`, () => {
         expect(commit.mock.calls.length).toBe(2)
 
         expect(commit.mock.calls[0][0]["type"]).toBe("PollingStatusStarted")
-        expect(commit.mock.calls[0][0]["payload"].pollId).toBeGreaterThan(-1)
+        expect(+commit.mock.calls[0][0]["payload"].pollId).toBeGreaterThan(-1)
         expect(commit.mock.calls[0][0]["payload"].downloadType).toEqual(DOWNLOAD_TYPE.COMPARISON)
 
         expect(commit.mock.calls[1][0]).toStrictEqual({
@@ -1080,7 +1080,7 @@ describe(`download Results actions`, () => {
 
         expect(commit.mock.calls.length).toBe(2);
         expect(commit.mock.calls[0][0]["type"]).toBe("PollingStatusStarted")
-        expect(commit.mock.calls[0][0]["payload"].pollId).toBeGreaterThan(-1)
+        expect(+commit.mock.calls[0][0]["payload"].pollId).toBeGreaterThan(-1)
         expect(commit.mock.calls[0][0]["payload"].downloadType).toEqual(DOWNLOAD_TYPE.AGYW)
 
         expect(commit.mock.calls[1][0]["type"]).toBe("AgywStatusUpdated")
@@ -1127,7 +1127,7 @@ describe(`download Results actions`, () => {
         expect(commit.mock.calls.length).toBe(2)
 
         expect(commit.mock.calls[0][0]["type"]).toBe("PollingStatusStarted")
-        expect(commit.mock.calls[0][0]["payload"].pollId).toBeGreaterThan(-1)
+        expect(+commit.mock.calls[0][0]["payload"].pollId).toBeGreaterThan(-1)
         expect(commit.mock.calls[0][0]["payload"].downloadType).toEqual(DOWNLOAD_TYPE.AGYW)
 
         expect(commit.mock.calls[1][0]).toStrictEqual({

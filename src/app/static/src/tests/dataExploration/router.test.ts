@@ -37,18 +37,6 @@ import DataExploration from "../../app/components/dataExploration/DataExploratio
 import Accessibility from "../../app/components/Accessibility.vue";
 import { Mock } from "vitest";
 
-// vi.mock("../../app/components/dataExploration/DataExploration.vue", () => ({
-//     name: "DataExploration",
-//     template: "<div id='data-exploration-stub'/>"
-// }))
-
-// vi.mock("../../app/components/Accessibility.vue", () => ({
-//     name: "Accessibility",
-//     template: "<div id='accessibility-stub'/>"
-// }))
-
-
-
 describe("Router", () => {
 
     afterAll(() => {

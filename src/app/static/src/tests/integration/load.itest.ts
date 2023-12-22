@@ -196,7 +196,7 @@ describe("load actions", () => {
 
         expect(commit.mock.calls.length).toBe(2)
         expect(commit.mock.calls[0][0].type).toBe("RehydratePollingStarted");
-        expect(commit.mock.calls[0][0].payload).toBeGreaterThan(-1);
+        expect(+commit.mock.calls[0][0].payload).toBeGreaterThan(-1);
         expect(commit.mock.calls[1][0].type).toBe("RehydrateStatusUpdated");
         expect(commit.mock.calls[1][0]["payload"].status).toBe("MISSING");
     });
