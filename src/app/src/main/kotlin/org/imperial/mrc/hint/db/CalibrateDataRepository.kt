@@ -124,7 +124,11 @@ class JooqCalibrateDataRepository: CalibrateDataRepository
         var stmtIndex = 1;
         for ((_, values) in filterQuery) {
             values.forEach { it ->
-                stmt.setString(stmtIndex, it as String)
+                if (it is String) {
+                    stmt.setString(stmtIndex, it)
+                } else if (it is Int) {
+                    stmt.setInt(stmtIndex, it)
+                }
                 stmtIndex++
             }
         }
