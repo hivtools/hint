@@ -54,7 +54,7 @@ class CalibrateDataRepositoryTests
     ))
     val query = FilterQuery(
         listOf("indicator_test_2"),
-        listOf("calendar_quarter_test"),
+        listOf(),
         listOf("age_group_test"),
         listOf("sex_test"),
         listOf("area_id_test"),
