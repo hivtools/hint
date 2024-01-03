@@ -105,6 +105,7 @@ class JooqCalibrateDataRepository: CalibrateDataRepository
         return arrayList
     }
 
+    @Suppress("MagicNumber")
     private fun getFilteredDataFromConnection(
         conn: Connection,
         filterQuery: FilterQuery): List<CalibrateResultRow> {
