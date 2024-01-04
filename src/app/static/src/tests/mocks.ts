@@ -478,7 +478,8 @@ export const mockDataset = (props: Partial<Dataset> = {}): Dataset => {
             pop: null,
             survey: null,
             shape: null,
-            anc: null
+            anc: null,
+            vmmc: null
         },
         organization: {
           id: "456"

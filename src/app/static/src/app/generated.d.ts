@@ -748,6 +748,13 @@ export interface DownloadSubmitRequest {
     fromADR?: boolean;
     resource_url?: string | null;
   };
+  vmmc?: {
+    path: string | null;
+    hash: string;
+    filename: string;
+    fromADR?: boolean;
+    resource_url?: string | null;
+  };
 }
 export interface DownloadSubmitResponse {
   id: string;
@@ -1657,7 +1664,8 @@ export type ValidateInputResponse =
   | PopulationResponse
   | ProgrammeResponse
   | AncResponse
-  | SurveyResponse;
+  | SurveyResponse
+  | VmmcResponse;
 
 export interface PjnzResponse {
   hash: string;
@@ -1855,6 +1863,15 @@ export interface SurveyResponse {
     )[];
   }[];
 }
+export interface VmmcResponse {
+  hash: string;
+  filename: string;
+  fromADR?: boolean;
+  resource_url?: string | null;
+  type: "vmmc";
+  data: null;
+  filters?: null;
+}
 export interface ValidateSurveyAndProgrammeRequest {
   type: "pjnz" | "shape" | "population" | "survey" | "programme" | "anc";
   file: {
@@ -1872,6 +1889,7 @@ export interface VersionInfo {
   rrq: string;
   [k: string]: any;
 }
+export type VmmcResponseData = null;
 export interface Warning {
   text: string;
   locations: (

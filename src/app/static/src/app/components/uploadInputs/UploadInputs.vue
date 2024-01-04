@@ -79,7 +79,7 @@
                                  :upload="uploadVmmc"
                                  :delete-file="uploadVmmc"
                                  :existingFileName="vmmc.existingFileName"
-                                 accept="csv,.csv"
+                                 accept="xlsx,.xlsx"
                                  name="vmmc">
                     </manage-file>
                 </form>

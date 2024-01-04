@@ -2,7 +2,7 @@ import {Module} from 'vuex';
 import {actions} from './actions';
 import {mutations} from './mutations';
 import {ReadyState, WarningsState} from "../../root";
-import {AncResponse, ProgrammeResponse, SurveyResponse, Error, Warning} from "../../generated";
+import {AncResponse, ProgrammeResponse, SurveyResponse, VmmcResponse, Error, Warning} from "../../generated";
 import {getters} from "./getters";
 import {DataExplorationState} from "../dataExploration/dataExploration";
 

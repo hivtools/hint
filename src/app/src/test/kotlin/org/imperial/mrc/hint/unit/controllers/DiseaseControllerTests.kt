@@ -53,6 +53,14 @@ class DiseaseControllerTests : HintrControllerTests()
     }
 
     @Test
+    fun `validates vmmc file`()
+    {
+        assertSavesAndValidates(FileType.Vmmc) { sut ->
+            (sut as DiseaseController).uploadVmmc(mockFile)
+        }
+    }
+
+    @Test
     fun `deletes survey file`()
     {
         assertDeletes(FileType.Survey) { sut ->
@@ -73,6 +81,14 @@ class DiseaseControllerTests : HintrControllerTests()
     {
         assertDeletes(FileType.ANC) { sut ->
             (sut as DiseaseController).removeANC()
+        }
+    }
+
+    @Test
+    fun `deletes vmmc file`()
+    {
+        assertDeletes(FileType.Vmmc) { sut ->
+            (sut as DiseaseController).removeVmmc()
         }
     }
 

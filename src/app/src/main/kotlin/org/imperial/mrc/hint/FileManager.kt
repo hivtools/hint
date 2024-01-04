@@ -1,21 +1,23 @@
 package org.imperial.mrc.hint
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import jakarta.xml.bind.DatatypeConverter
 import org.apache.tomcat.util.http.fileupload.FileUtils
 import org.imperial.mrc.hint.db.VersionRepository
+import org.imperial.mrc.hint.exceptions.AdrException
+import org.imperial.mrc.hint.models.AdrResource
+import org.imperial.mrc.hint.models.VersionFile
+import org.imperial.mrc.hint.models.VersionFileWithPath
 import org.imperial.mrc.hint.security.Session
+import org.imperial.mrc.hint.service.ADRService
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Component
 import org.springframework.web.multipart.MultipartFile
+import org.springframework.web.util.UriComponentsBuilder
 import java.io.File
 import java.io.InputStream
 import java.security.DigestInputStream
 import java.security.MessageDigest
-import jakarta.xml.bind.DatatypeConverter
-import org.imperial.mrc.hint.exceptions.AdrException
-import org.imperial.mrc.hint.models.*
-import org.imperial.mrc.hint.service.ADRService
-import org.springframework.http.HttpStatus
-import org.springframework.web.util.UriComponentsBuilder
 
 enum class FileType
 {
@@ -25,7 +27,8 @@ enum class FileType
     Population,
     Programme,
     Shape,
-    Survey;
+    Survey,
+    Vmmc;
 
     override fun toString(): String
     {
