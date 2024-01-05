@@ -1,5 +1,6 @@
 package org.imperial.mrc.hint.logging
 
+import net.logstash.logback.argument.StructuredArguments.e
 import net.logstash.logback.argument.StructuredArguments.kv
 import org.imperial.mrc.hint.exceptions.HintException
 import org.imperial.mrc.hint.models.ErrorDetail
@@ -29,6 +30,11 @@ class GenericLoggerImpl(
             username = user
         )
         logger.info("{}", kv("hint", log))
+    }
+
+    override fun <K, V> info(message: String, additionalData: Map<K, V>?)
+    {
+        logger.info("{}, {}", kv("msg", message), e(additionalData))
     }
 
     override fun error(request: HttpServletRequest, response: HttpServletResponse, message: String?)

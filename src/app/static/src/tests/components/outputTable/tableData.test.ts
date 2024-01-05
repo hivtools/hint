@@ -47,7 +47,7 @@ describe("Output Table display table tests", () => {
                         },
                         plottingMetadata: {
                             barchart: {indicators: [], filters: []},
-                            choropleth: {indicators: [{indicator: "pop", name: "Pop"}, {indicator: "pop2", name: "Pop2"}] as any, filters: []}
+                            choropleth: {indicators: [{indicator: "pop", name: "Pop", scale: 10}, {indicator: "pop2", name: "Pop2"}] as any, filters: []}
                         },
                         warnings: []
                     },
@@ -69,7 +69,11 @@ describe("Output Table display table tests", () => {
                                 id: 3,
                                 indicator: "pop",
                                 col_id_filter_1: "op1",
-                                area_level: 2
+                                area_level: 2,
+                                mode: 1,
+                                mean: 2,
+                                upper: 3,
+                                lower: 4
                             },
                         ] as any
                     }
@@ -109,7 +113,10 @@ describe("Output Table display table tests", () => {
     it("filters data and renders as expected", () => {
         const wrapper = getWrapper("pop", "op1", 2);
         expect(wrapper.findComponent(TableReshapeData).props("data")).toStrictEqual([
-            {id: 3, indicator: "pop", col_id_filter_1: "op1", area_level: 2}
+            {
+                id: 3, indicator: "pop", col_id_filter_1: "op1", area_level: 2,
+                mode: 1, mean: 2, upper: 3, lower: 4
+            }
         ]);
 
         const wrapper1 = getWrapper("pop", "op1", 1);
@@ -139,15 +146,23 @@ describe("Output Table display table tests", () => {
     });
 
     it("handle download works as expected", () => {
-        const wrapper = getWrapper("pop", "op1", 1);
+        const wrapper = getWrapper("pop", "op1", 2);
         const downloadButton = wrapper.findComponent(DownloadButton);
         downloadButton.vm.$emit("click");
-        expect(mockExportService.mock.calls[0][0].data).toStrictEqual({filteredData: [], unfilteredData: []});
+        expect(mockExportService.mock.calls[0][0].data.filteredData).toStrictEqual([
+            {
+                area_level: 2, area_name: "", col_id_filter_1: "op1", id: 3,
+                indicator: "pop", parent_area_id: "", mode: 1, mean: 2, upper: 3,
+                lower: 4, formatted_mode: 10, formatted_mean: 20, formatted_upper: 30,
+                formatted_lower: 40
+            }
+        ]);
         expect(mockExportService.mock.calls[0][0].filename).toContain("ABC_naomi_table-data_");
         expect(mockExportService.mock.calls[0][0].options).toStrictEqual({
             header: ["area_id", "area_name", "area_level", "parent_area_id",
                     "indicator", "calendar_quarter", "age_group", "sex",
-                    "mode", "mean", "upper", "lower"]
+                    "formatted_mode", "formatted_mean", "formatted_upper",
+                    "formatted_lower", "mode", "mean", "upper", "lower"]
         });
         expect(mockAddFilteredData.mock.calls.length).toBe(1);
         expect(mockDownload.mock.calls.length).toBe(1);

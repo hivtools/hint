@@ -52,6 +52,7 @@
                     :showRangesInTooltips="true"
                     :no-data-message="noChartData"
                     :show-error-bars="true"
+                    :scale-to-screen="true"
                     @update:selections="updateBarchartSelectionsAndXAxisOrder"></bar-chart-with-filters>
                 <div class="row mt-2">
                     <div class="col-md-3"></div>
@@ -104,6 +105,7 @@
                     :showRangesInTooltips="true"
                     :no-data-message="noChartData"
                     :show-error-bars="true"
+                    :scale-to-screen="true"
                     @update:selections="updateComparisonPlotSelectionsAndXAxisOrder"></bar-chart-with-filters>
                 <div class="row mt-2">
                     <div class="col-md-3"></div>
@@ -232,9 +234,9 @@
         },
         data: () => {
             const tabs: (keyof Translations)[] = [
+                ModelOutputTabs.Map,
                 ModelOutputTabs.Bar,
                 ModelOutputTabs.Table,
-                ModelOutputTabs.Map,
                 ModelOutputTabs.Comparison
             ];
 

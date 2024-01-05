@@ -9,6 +9,7 @@ interface GenericLogger
 {
     fun info(action: String)
     fun info(action: String, request: HttpServletRequest, user: String? = null)
+    fun <K, V> info(message: String, additionalData: Map<K, V>? = null)
     fun error(request: HttpServletRequest, response: HttpServletResponse, message: String? = null)
     fun error(request: HttpServletRequest, error: Throwable?, status: HttpStatus)
     fun error(request: HttpServletRequest, error: HintException)

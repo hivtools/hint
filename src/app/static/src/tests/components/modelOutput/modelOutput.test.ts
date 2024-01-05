@@ -245,15 +245,15 @@ describe("ModelOutput component", () => {
         const wrapper = shallowMountWithTranslate(ModelOutput, store, {global: {plugins: [store]}});
 
         const activeTab = wrapper.find("a.active");
-        expectTranslated(activeTab, "Bar", "Barre", "Bar", store);
+        expectTranslated(activeTab, "Map", "Carte", "Mapa", store);
     });
 
     it("gets selected tab from state", () => {
-        const store = getStore({selectedTab: ModelOutputTabs.Map});
+        const store = getStore({selectedTab: ModelOutputTabs.Bar});
         const wrapper = shallowMountWithTranslate(ModelOutput, store, {global: {plugins: [store]}});
 
         const activeTab = wrapper.find("a.active");
-        expectTranslated(activeTab, "Map", "Carte", "Mapa", store);
+        expectTranslated(activeTab, "Bar", "Barre", "Bar", store);
     });
 
     it("can change tabs", async () => {
@@ -264,6 +264,26 @@ describe("ModelOutput component", () => {
             }
         });
         expect(wrapper.findAll(".nav-link").length).toBe(5);
+
+        expect(wrapper.find(".nav-link.active").text()).toBe("Map");
+
+        expect(wrapper.find("#barchart-container").exists()).toBe(false);
+        expect(wrapper.find("barchart-stub").exists()).toBe(false);
+
+        expect(wrapper.find("#table-container").exists()).toBe(false);
+        expect(wrapper.find("output-table-stub").exists()).toBe(false);
+
+        expect(wrapper.findAll("#choropleth-container").length).toBe(1);
+        expect(wrapper.findAll("choropleth-stub").length).toBe(1);
+
+        expect(wrapper.find("#comparison-container").exists()).toBe(false);
+        expect(wrapper.find("barchart-stub").exists()).toBe(false);
+
+        expect(wrapper.find("#bubble-plot-container").exists()).toBe(false);
+        expect(wrapper.find("bubble-plot-stub").exists()).toBe(false);
+
+        //should invoke mutation
+        await wrapper.findAll(".nav-link")[1].trigger("click");
 
         expect(wrapper.find(".nav-link.active").text()).toBe("Bar");
 
@@ -283,8 +303,7 @@ describe("ModelOutput component", () => {
         expect(wrapper.find("#bubble-plot-container").exists()).toBe(false);
         expect(wrapper.find("bubble-plot-stub").exists()).toBe(false);
 
-        //should invoke mutation
-        await wrapper.findAll(".nav-link")[1].trigger("click");
+        await wrapper.findAll(".nav-link")[2].trigger("click");
 
         expect(wrapper.find(".nav-link.active").text()).toBe("Table");
 
@@ -296,25 +315,6 @@ describe("ModelOutput component", () => {
 
         expect(wrapper.find("#choropleth-container").exists()).toBe(false);
         expect(wrapper.find("choropleth-stub").exists()).toBe(false);
-
-        expect(wrapper.find("#comparison-container").exists()).toBe(false);
-        expect(wrapper.find("barchart-stub").exists()).toBe(false);
-
-        expect(wrapper.find("#bubble-plot-container").exists()).toBe(false);
-        expect(wrapper.find("bubble-plot-stub").exists()).toBe(false);
-
-        await wrapper.findAll(".nav-link")[2].trigger("click");
-
-        expect(wrapper.find(".nav-link.active").text()).toBe("Map");
-
-        expect(wrapper.find("#barchart-container").exists()).toBe(false);
-        expect(wrapper.find("barchart-stub").exists()).toBe(false);
-
-        expect(wrapper.find("#table-container").exists()).toBe(false);
-        expect(wrapper.find("output-table-stub").exists()).toBe(false);
-
-        expect(wrapper.findAll("#choropleth-container").length).toBe(1);
-        expect(wrapper.findAll("choropleth-stub").length).toBe(1);
 
         expect(wrapper.find("#comparison-container").exists()).toBe(false);
         expect(wrapper.find("barchart-stub").exists()).toBe(false);

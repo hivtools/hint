@@ -101,8 +101,8 @@ describe("Download Results component", () => {
             });
 
         const headers = wrapper.findAll("h4");
-        expectTranslated(headers[0], "Export model outputs for Spectrum",
-            "Exporter des sorties de modèles pour Spectrum", "Exportação de saídas modelo para Spectrum", store);
+        expectTranslated(headers[0], "Download Naomi results",
+            "Télécharger les résultats de Naomi", "Baixe os resultados de Naomi", store);
         expectTranslated(headers[1], "Download coarse age group outputs",
             "Télécharger les résultats grossiers du groupe d'âge",
             "Descarregar resultados de grupos etários grosseiros", store);
@@ -115,7 +115,7 @@ describe("Download Results component", () => {
 
         const buttons = wrapper.findAll("button");
         expect(buttons.length).toBe(5);
-        expectTranslated(buttons[0], "Export", "Exporter", "Exportação", store);
+        expectTranslated(buttons[0], "Download", "Télécharger", "Descarregar", store);
         expectTranslated(buttons[1], "Download", "Télécharger", "Descarregar", store);
         expectTranslated(buttons[2], "Download", "Télécharger", "Descarregar", store);
         expectTranslated(buttons[3], "Download", "Télécharger", "Descarregar", store);
