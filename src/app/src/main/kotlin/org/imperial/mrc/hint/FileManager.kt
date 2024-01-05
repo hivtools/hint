@@ -58,9 +58,6 @@ class LocalFileManager(
 {
     private val uploadPath = appProperties.uploadDirectory
 
-    private val modelFitFiles = arrayOf(FileType.ANC, FileType.PJNZ, FileType.Population, FileType.Programme,
-        FileType.Shape, FileType.Survey)
-
     override fun saveFile(file: MultipartFile, type: FileType): VersionFileWithPath
     {
         return saveFile(file.inputStream, file.originalFilename!!, type, false)
@@ -154,7 +151,8 @@ class LocalFileManager(
 
     override fun getModelFitFiles(): Map<String, VersionFileWithPath>
     {
-        return getFiles(*this.modelFitFiles)
+        return getFiles(FileType.ANC, FileType.PJNZ, FileType.Population, FileType.Programme,
+            FileType.Shape, FileType.Survey)
     }
 
     override fun setAllFiles(files: Map<String, VersionFile?>)
