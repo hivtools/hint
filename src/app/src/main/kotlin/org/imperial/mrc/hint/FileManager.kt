@@ -43,6 +43,7 @@ interface FileManager
     fun getFile(type: FileType): VersionFileWithPath?
     fun getAllHashes(): Map<String, String>
     fun getFiles(vararg include: FileType): Map<String, VersionFileWithPath>
+    fun getModelFitFiles(): Map<String, VersionFileWithPath>
     fun setAllFiles(files: Map<String, VersionFile?>)
     fun saveOutputZip(file: MultipartFile): VersionFileWithPath
 }
@@ -56,6 +57,9 @@ class LocalFileManager(
     private val objectMapper: ObjectMapper) : FileManager
 {
     private val uploadPath = appProperties.uploadDirectory
+
+    private val modelFitFiles = arrayOf(FileType.ANC, FileType.PJNZ, FileType.Population, FileType.Programme,
+        FileType.Shape, FileType.Survey)
 
     override fun saveFile(file: MultipartFile, type: FileType): VersionFileWithPath
     {
@@ -146,6 +150,11 @@ class LocalFileManager(
         val includeKeys = include.map { it.toString() }
         return files.filterKeys { includeKeys.isEmpty() || includeKeys.contains(it) }
                 .mapValues { it.value.toVersionFileWithPath(uploadPath) }
+    }
+
+    override fun getModelFitFiles(): Map<String, VersionFileWithPath>
+    {
+        return getFiles(*this.modelFitFiles)
     }
 
     override fun setAllFiles(files: Map<String, VersionFile?>)
