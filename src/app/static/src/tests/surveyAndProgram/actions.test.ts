@@ -622,10 +622,13 @@ describe("Survey and programme actions", () => {
         mockAxios.onDelete("/disease/programme/")
             .reply(200, mockSuccess(true));
 
+        mockAxios.onDelete("/disease/vmmc/")
+            .reply(200, mockSuccess(true));
+
         const commit = jest.fn();
         await actions.deleteAll({commit, rootState, state: mockSurveyAndProgramState()} as any);
-        expect(mockAxios.history["delete"].length).toBe(3);
-        expect(commit).toBeCalledTimes(8);
+        expect(mockAxios.history["delete"].length).toBe(4);
+        expect(commit).toBeCalledTimes(11);
         expect(commit.mock.calls.map(c => c[0]["type"])).toEqual([
             SurveyAndProgramMutation.SurveyUpdated,
             SurveyAndProgramMutation.WarningsFetched,
@@ -633,6 +636,9 @@ describe("Survey and programme actions", () => {
             "genericChart/ClearDataset",
             SurveyAndProgramMutation.WarningsFetched,
             SurveyAndProgramMutation.ANCUpdated,
+            "genericChart/ClearDataset",
+            SurveyAndProgramMutation.WarningsFetched,
+            SurveyAndProgramMutation.VmmcUpdated,
             "genericChart/ClearDataset",
             SurveyAndProgramMutation.WarningsFetched
         ]);

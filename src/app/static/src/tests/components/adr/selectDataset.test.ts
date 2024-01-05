@@ -99,7 +99,7 @@ describe("select dataset", () => {
     const vmmc = {
         id: "7",
         resource_type: schemas.vmmc,
-        url: "vmmmc.xlsx",
+        url: "vmmc.xlsx",
         last_modified: "2020-11-09",
         metadata_modified: "2020-11-10",
         name: "VMMC Resource"
@@ -1133,7 +1133,8 @@ describe("select dataset", () => {
                     shape: mockDatasetResource(shape),
                     survey: mockDatasetResource(survey),
                     program: mockDatasetResource(program),
-                    anc: mockDatasetResource(anc)
+                    anc: mockDatasetResource(anc),
+                    vmmc: mockDatasetResource(vmmc),
                 }
             }
         });

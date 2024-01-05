@@ -333,6 +333,7 @@
                     survey,
                     program,
                     anc,
+                    vmmc,
                 } = this.selectedDataset!.resources;
                 await Promise.all([
                     this.outOfDateResources["pjnz"] &&
@@ -365,6 +366,9 @@
                     (baselineUpdated || this.outOfDateResources["anc"]) &&
                     anc &&
                     this.importANC(anc.url),
+                    (baselineUpdated || this.outOfDateResources["vmmc"]) &&
+                    vmmc &&
+                    this.importVmmc(vmmc.url),
                 ]));
 
                 this.markResourcesUpdated();

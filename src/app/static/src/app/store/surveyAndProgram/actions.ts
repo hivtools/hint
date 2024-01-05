@@ -30,7 +30,8 @@ export interface SurveyAndProgramActions {
 const enum DATASET_TYPE {
     ANC = "anc",
     ART = "art",
-    SURVEY = "survey"
+    SURVEY = "survey",
+    VMMC = "vmmc"
 }
 
 function commitSelectedDataTypeUpdated(commit: Commit, dataType: DataType) {
@@ -126,6 +127,7 @@ async function uploadOrImportVmmc(context: ActionContext<SurveyAndProgramState, 
     commit({type: SurveyAndProgramMutation.VmmcUpdated, payload: null});
     commit({type: SurveyAndProgramMutation.WarningsFetched, payload: {type: DataType.Vmmc, warnings: []}});
 
+    console.log("upload or import VMMC")
     await api<SurveyAndProgramMutation, SurveyAndProgramMutation>(context)
         .withError(SurveyAndProgramMutation.VmmcError)
         .withSuccess(SurveyAndProgramMutation.VmmcUpdated)

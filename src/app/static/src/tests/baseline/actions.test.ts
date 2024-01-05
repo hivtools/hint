@@ -629,7 +629,8 @@ describe("Baseline actions", () => {
             pop: null,
             survey: null,
             program: null,
-            anc: null
+            anc: null,
+            vmmc: null
         });
     });
 
@@ -646,7 +647,8 @@ describe("Baseline actions", () => {
             pop: null,
             survey: null,
             program: null,
-            anc: null
+            anc: null,
+            vmmc: null
         }
 
         const expectResources = {
@@ -655,7 +657,8 @@ describe("Baseline actions", () => {
             pop: availableResources.pop,
             survey: availableResources.survey,
             program: availableResources.program,
-            anc: availableResources.anc
+            anc: availableResources.anc,
+            vmmc: availableResources.vmmc
         }
 
         const commit = jest.fn();

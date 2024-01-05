@@ -934,7 +934,7 @@ export interface InputTimeSeriesRow {
   area_hierarchy: string;
   missing_ids?: string[] | null;
 }
-export type InputType = "pjnz" | "shape" | "population" | "survey" | "programme" | "anc";
+export type InputType = "pjnz" | "shape" | "population" | "survey" | "programme" | "anc" | "vmmc";
 export interface LevelLabels {
   id: number;
   area_level_label: string;
@@ -1649,7 +1649,7 @@ export interface ValidateBaselineResponse {
   consistent: boolean;
 }
 export interface ValidateInputRequest {
-  type: "pjnz" | "shape" | "population" | "survey" | "programme" | "anc";
+  type: "pjnz" | "shape" | "population" | "survey" | "programme" | "anc" | "vmmc";
   file: {
     path: string | null;
     hash: string;
@@ -1870,10 +1870,21 @@ export interface VmmcResponse {
   resource_url?: string | null;
   type: "vmmc";
   data: null;
-  filters?: null;
+  filters: null;
+  warnings: {
+    text: string;
+    locations: (
+      | "review_inputs"
+      | "model_options"
+      | "model_fit"
+      | "model_calibrate"
+      | "review_output"
+      | "download_results"
+    )[];
+  }[];
 }
 export interface ValidateSurveyAndProgrammeRequest {
-  type: "pjnz" | "shape" | "population" | "survey" | "programme" | "anc";
+  type: "pjnz" | "shape" | "population" | "survey" | "programme" | "anc" | "vmmc";
   file: {
     path: string | null;
     hash: string;
