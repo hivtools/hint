@@ -14,8 +14,6 @@ function response(state: SurveyAndProgramState) {
             return state.program;
         case (DataType.Survey):
             return state.survey;
-        case (DataType.Vmmc):
-            return state.vmmc;
         default:
             return null;
     }

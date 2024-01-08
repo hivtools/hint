@@ -126,8 +126,8 @@ async function uploadOrImportVmmc(context: ActionContext<SurveyAndProgramState, 
     const {commit} = context;
     commit({type: SurveyAndProgramMutation.VmmcUpdated, payload: null});
     commit({type: SurveyAndProgramMutation.WarningsFetched, payload: {type: DataType.Vmmc, warnings: []}});
+    commitClearGenericChartDataset(commit, DATASET_TYPE.VMMC);
 
-    console.log("upload or import VMMC")
     await api<SurveyAndProgramMutation, SurveyAndProgramMutation>(context)
         .withError(SurveyAndProgramMutation.VmmcError)
         .withSuccess(SurveyAndProgramMutation.VmmcUpdated)
@@ -272,7 +272,7 @@ export const actions: ActionTree<SurveyAndProgramState, DataExplorationState> & 
                         commitSelectedDataTypeUpdated(commit, DataType.Survey)
                     }
                 }
-                commitClearGenericChartDataset(commit, DATASET_TYPE.ANC)
+                commitClearGenericChartDataset(commit, DATASET_TYPE.VMMC)
                 commit({type: SurveyAndProgramMutation.WarningsFetched, payload: {type: DataType.Vmmc, warnings: []}});
             });
     },
@@ -304,7 +304,12 @@ export const actions: ActionTree<SurveyAndProgramState, DataExplorationState> & 
                     .ignoreErrors()
                     .withSuccess(SurveyAndProgramMutation.ANCUpdated)
                     .freezeResponse()
-                    .get<AncResponse>(getUrlWithQuery(context, "/disease/anc/"))
+                    .get<AncResponse>(getUrlWithQuery(context, "/disease/anc/")),
+                api<SurveyAndProgramMutation, SurveyAndProgramMutation>(context)
+                    .ignoreErrors()
+                    .withSuccess(SurveyAndProgramMutation.VmmcUpdated)
+                    .freezeResponse()
+                    .get<AncResponse>(getUrlWithQuery(context, "/disease/vmmc/"))
             ]);
 
         commit({type: SurveyAndProgramMutation.Ready, payload: true});
@@ -345,6 +350,16 @@ export const actions: ActionTree<SurveyAndProgramState, DataExplorationState> & 
                     .then((response) => {
                         if (response && response.data) {
                             successfulDataTypes.push(DataType.ANC)
+                        }
+                    }),
+                api<SurveyAndProgramMutation, SurveyAndProgramMutation>(context)
+                    .withError(SurveyAndProgramMutation.VmmcError)
+                    .withSuccess(SurveyAndProgramMutation.VmmcUpdated)
+                    .freezeResponse()
+                    .get<AncResponse>(getUrlWithQuery(context, "/disease/vmmc/"))
+                    .then((response) => {
+                        if (response && response.data) {
+                            successfulDataTypes.push(DataType.Vmmc)
                         }
                     })
             ]);
