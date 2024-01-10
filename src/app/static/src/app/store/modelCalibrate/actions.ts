@@ -9,6 +9,7 @@ import {
     CalibrateDataResponse,
     CalibrateMetadataResponse,
     CalibrateResultResponse,
+    Filter,
     FilterOption,
     ModelResultResponse,
     ModelStatusResponse,
@@ -19,9 +20,10 @@ import {CalibrateResultWithType, Dict, ModelOutputTabs} from "../../types";
 import {DownloadResultsMutation} from "../downloadResults/mutations";
 import {PlottingSelectionsMutations} from "../plottingSelections/mutations";
 import { ModelOutputMutation } from "../modelOutput/mutations";
+import { FetchResultDataPayload } from "../plottingSelections/actions";
 
-type ResultDataPayload = {
-    indicatorId: string,
+type FilterDataPayload = {
+    payload: FetchResultDataPayload,
     tab: ModelOutputTabs
 }
 
@@ -33,7 +35,7 @@ export interface ModelCalibrateActions {
     getCalibratePlot: (store: ActionContext<ModelCalibrateState, RootState>) => void
     getComparisonPlot: (store: ActionContext<ModelCalibrateState, RootState>) => void
     resumeCalibrate: (store: ActionContext<ModelCalibrateState, RootState>) => void
-    getResultData: (store: ActionContext<ModelCalibrateState, RootState>, payload: ResultDataPayload) => void
+    getResultData: (store: ActionContext<ModelCalibrateState, RootState>, payload: FilterDataPayload) => void
 }
 
 export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrateActions = {
@@ -130,47 +132,30 @@ export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrat
     },
 
     async getResultData(context, payload) {
-        const {indicatorId, tab} = payload;
-        const {commit, state} = context;
+        const {payload: fetchPayload, tab} = payload;
+        const {commit, state, rootGetters} = context;
         const calibrateId = state.calibrateId;
+        if (!state.status.done) return;
 
-        if (!state.status.done || !indicatorId) {
-            // Don't try to fetch data if the calibration hasn't finished
-            return
-        }
+        // temporary, necessary for map plot types to get nested area data points
+        const payloadWithNestedAreas = getPayloadWithNestedAreas(fetchPayload, tab, rootGetters);
 
-        let indicatorKnown = false;
-        if (state.fetchedIndicators) {
-            indicatorKnown = state.fetchedIndicators.some(indicator => {
-                return indicator === indicatorId
-            })
-        }
-
-        if (!indicatorKnown) {
+        const loadingTimeout = setTimeout(() => {
             commit(`modelOutput/${ModelOutputMutation.SetTabLoading}`, {payload:{tab, loading: true}}, {root: true});
-            const response = await api<ModelCalibrateMutation, ModelCalibrateMutation>(context)
-                .ignoreSuccess()
-                .withError(ModelCalibrateMutation.SetError)
-                .freezeResponse()
-                .get<CalibrateDataResponse["data"]>(`calibrate/result/data/${calibrateId}/${indicatorId}`);
-            if (response) {
-                const payload = {
-                    data: response.data,
-                    indicatorId: indicatorId
-                } as CalibrateResultWithType
-                commit({type: ModelCalibrateMutation.CalibrateResultFetched, payload: payload});
-            }
-            commit(`modelOutput/${ModelOutputMutation.SetTabLoading}`, {payload:{tab, loading: false}}, {root: true});
-        }
-    }
-};
+        }, 300);
 
-export const fetchFirstNIndicators = async (dispatch: Dispatch, indicators: BarchartIndicator[], n: number) => {
-    const promisesArray = [];
-    for (let i = 0; i < n && i < indicators.length; i++) {
-        promisesArray.push(dispatch("modelCalibrate/getResultData", {indicatorId: indicators[i].indicator, tab: ModelOutputTabs.Bar}, {root: true}));
+        const response = await api<ModelCalibrateMutation, ModelCalibrateMutation>(context)
+            .ignoreSuccess()
+            .withError(ModelCalibrateMutation.SetError)
+            .freezeResponse()
+            .postAndReturn<CalibrateDataResponse["data"]>(`calibrate/result/filteredData/${calibrateId}`, payloadWithNestedAreas);
+        if (response) {
+            commit({type: ModelCalibrateMutation.SetData, payload: response.data});
+        }
+
+        clearTimeout(loadingTimeout);
+        commit(`modelOutput/${ModelOutputMutation.SetTabLoading}`, {payload:{tab, loading: false}}, {root: true});
     }
-    await Promise.all(promisesArray);
 };
 
 export const getResultMetadata = async function (context: ActionContext<ModelCalibrateState, RootState>) {
@@ -189,11 +174,7 @@ export const getResultMetadata = async function (context: ActionContext<ModelCal
 
         selectFilterDefaults(data, commit, PlottingSelectionsMutations.updateBarchartSelections)
 
-        const indicators = data.plottingMetadata.barchart.indicators;
-        await fetchFirstNIndicators(dispatch, indicators, 5);
-        
         commit(ModelCalibrateMutation.Calibrated);
-
 
         if (switches.modelCalibratePlot) {
             dispatch("getCalibratePlot");
@@ -214,6 +195,68 @@ export const getCalibrateStatus = async function (context: ActionContext<ModelCa
                 dispatch("getResult");
             }
         });
+};
+
+type FeatureOption = {
+    id: string,
+    label: string,
+    children: FeatureOption[]
+}
+
+class Queue {
+    items: FeatureOption[]
+    constructor(elems: FeatureOption[]) { this.items = elems }
+    enqueue(elem: FeatureOption) { this.items.push(elem) }
+    dequeue() { return this.items.pop()! }
+    isEmpty() { return this.items.length === 0 }
+}
+
+const findNodes = (root: FeatureOption, areaIds: string[]) => {
+    let seekAreaIds = areaIds;
+    const q = new Queue([root]), nodes: FeatureOption[] = [];
+    while (!q.isEmpty() && seekAreaIds.length > 0) {
+        const feature = q.dequeue();
+        if (seekAreaIds.includes(feature.id)) {
+            seekAreaIds = seekAreaIds.filter(id => id !== feature.id);
+            nodes.push(feature);
+        }
+        if (feature.children && feature.children.length > 0) {
+            feature.children.forEach(child => q.enqueue(child));
+        }
+    }
+    return nodes;
+};
+
+const getChildrenIds = (root: FeatureOption) => {
+    const q = new Queue([root]), childrenIds: string[] = [];
+    while (!q.isEmpty()) {
+        const feature = q.dequeue();
+        if (feature.children && feature.children.length > 0) {
+            feature.children.forEach(child => {
+                childrenIds.push(child.id);
+                q.enqueue(child);
+            });
+        }
+    }
+    return childrenIds;
+};
+
+const getNestedChildrenIds = (features: FeatureOption[], areaIds: string[]) => {
+    const fakeParentNode: FeatureOption = { id: "", label: "", children: features };
+    const nodes = findNodes(fakeParentNode, areaIds);
+    const fakeRootNode: FeatureOption = { id: "", label: "", children: nodes }; 
+    return getChildrenIds(fakeRootNode);
+};
+
+const getPayloadWithNestedAreas = (payload: FetchResultDataPayload, tab: ModelOutputTabs, rootGetters: any) => {
+    if (tab !== ModelOutputTabs.Map && tab !== ModelOutputTabs.Bubble) return payload;
+    if (!payload.area_id || payload.area_id.length === 0) return payload;
+    const areas = payload.area_id;
+    const filters = rootGetters["modelOutput/choroplethFilters"] as Filter[];
+    const areaOptions = filters.find(f => f.id === "area")!.options;
+    const childrenIds = getNestedChildrenIds(areaOptions as any, areas);
+    const newPayload = {...payload, area_id: childrenIds};
+    return newPayload;
 };
 
 const selectFilterDefaults = (data: CalibrateMetadataResponse, commit: Commit, mutationName: string) => {

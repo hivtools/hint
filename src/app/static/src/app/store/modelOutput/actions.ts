@@ -1,45 +1,69 @@
 import {ActionContext, ActionTree} from "vuex";
 import {ModelOutputMutation} from "./mutations";
-import {ModelOutputTabs} from "../../types";
+import {Dict, ModelOutputTabs} from "../../types";
 import {DataExplorationState} from "../dataExploration/dataExploration";
 import {ModelOutputState} from "./modelOutput";
+import { FilterOption } from "../../generated";
+import { getData } from "../plottingSelections/actions";
 
 export interface ModelOutputActions {
     updateSelectedTab: (store: ActionContext<ModelOutputState, DataExplorationState>, tab: ModelOutputTabs) => void
 }
 
+const isObjEmpty = (object: object) => {
+    return Object.keys(object).length === 0;
+};
+
 export const actions: ActionTree<ModelOutputState, DataExplorationState> & ModelOutputActions = {
 
     async updateSelectedTab(context, tab) {
-        const {commit, rootState, dispatch} = context;
-
-        const currentIndicators: string[] = [];
-        switch (tab) {
-            case ModelOutputTabs.Bar:
-                currentIndicators.push(rootState.plottingSelections.barchart.indicatorId);
-                break;
-            case ModelOutputTabs.Bubble:
-                currentIndicators.push(rootState.plottingSelections.bubble.colorIndicatorId);
-                currentIndicators.push(rootState.plottingSelections.bubble.sizeIndicatorId);
-                break;
-            case ModelOutputTabs.Comparison:
-                // Comparison plot data is fetched separately immediately after calibration is complete
-                // We don't need to retrieve slices of it here.
-                break;
-            case ModelOutputTabs.Map:
-                currentIndicators.push(rootState.plottingSelections.outputChoropleth.indicatorId);
-                break;
-            case ModelOutputTabs.Table:
-                currentIndicators.push(rootState.plottingSelections.table.indicator);
-                break;
-            default:
-                break;
-        }
-
-        currentIndicators.forEach(indicator => {
-            const payload = { indicatorId: indicator, tab };
-            dispatch("modelCalibrate/getResultData", payload, {root:true});
-        });
+        const { commit, rootState } = context;
         commit({type: ModelOutputMutation.TabSelected, payload: tab});
+        if (tab === ModelOutputTabs.Comparison) return;
+        setTimeout(async () => {
+            let filterSelections: Dict<FilterOption[]> = {};
+            switch (tab) {
+                case ModelOutputTabs.Bar:
+                    if (!isObjEmpty(rootState.plottingSelections.barchart.selectedFilterOptions)) {
+                        filterSelections = {
+                            indicator: [{id: rootState.plottingSelections.barchart.indicatorId, label: ""}],
+                            ...rootState.plottingSelections.barchart.selectedFilterOptions
+                        };
+                    }
+                    break;
+                case ModelOutputTabs.Bubble:
+                    if (!isObjEmpty(rootState.plottingSelections.bubble.selectedFilterOptions)) {
+                        filterSelections = {
+                            indicator: [
+                                {id: rootState.plottingSelections.bubble.colorIndicatorId, label: ""},
+                                {id: rootState.plottingSelections.bubble.sizeIndicatorId, label: ""}
+                            ],
+                            ...rootState.plottingSelections.bubble.selectedFilterOptions
+                        };
+                    }
+                    break;
+                case ModelOutputTabs.Map:
+                    if (!isObjEmpty(rootState.plottingSelections.outputChoropleth.selectedFilterOptions)) {
+                        filterSelections = {
+                            indicator: [{id: rootState.plottingSelections.outputChoropleth.indicatorId, label: ""}],
+                            ...rootState.plottingSelections.outputChoropleth.selectedFilterOptions
+                        };
+                    }
+                    break;
+                case ModelOutputTabs.Table:
+                    if (!isObjEmpty(rootState.plottingSelections.table.selectedFilterOptions)) {
+                        filterSelections = {
+                            indicator: [{id: rootState.plottingSelections.table.indicator, label: ""}],
+                            ...rootState.plottingSelections.table.selectedFilterOptions
+                        };
+                    }
+                    break;
+                default:
+                    break;
+            }
+            if (!isObjEmpty(filterSelections)) {
+                await getData(context as any, filterSelections, tab);
+            }
+        }, 0);
     },
 };
