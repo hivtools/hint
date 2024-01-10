@@ -4,8 +4,7 @@ import {ModelOutputTabs, PayloadWithType} from "../../types";
 
 export enum ModelOutputMutation {
     TabSelected = "TabSelected",
-    SetTabLoading = "SetTabLoading",
-    SetFetchDataNumber = "SetFetchDataNumber"
+    SetTabLoading = "SetTabLoading"
 }
 
 type TabLoading = {
@@ -21,9 +20,5 @@ export const mutations: MutationTree<ModelOutputState> = {
 
     [ModelOutputMutation.SetTabLoading](state: ModelOutputState, payload: PayloadWithType<TabLoading>) {
         state.loading[payload.payload.tab] = payload.payload.loading;
-    },
-
-    [ModelOutputMutation.SetFetchDataNumber](state: ModelOutputState, payload: PayloadWithType<number>) {
-        state.fetchDataNumber = payload.payload;
     },
 };

@@ -13,8 +13,7 @@ export interface ModelOutputState {
     selectedTab: string,
     loading: {
         [k in ModelOutputTabs]: boolean
-    },
-    fetchDataNumber: number
+    }
 }
 
 export const modelOutputGetters = {
@@ -121,8 +120,7 @@ export const initialModelOutputState = (): ModelOutputState => {
             [ModelOutputTabs.Comparison]: false,
             [ModelOutputTabs.Table]: false,
             [ModelOutputTabs.Bubble]: false
-        },
-        fetchDataNumber: 0
+        }
     }
 };
 
