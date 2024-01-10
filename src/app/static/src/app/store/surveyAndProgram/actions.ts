@@ -139,7 +139,6 @@ async function uploadOrImportVmmc(context: ActionContext<SurveyAndProgramState, 
                     type: SurveyAndProgramMutation.WarningsFetched,
                     payload: {type: DataType.Vmmc, warnings: response.data.warnings}
                 })
-                commitSelectedDataTypeUpdated(commit, DataType.Vmmc);
             } else {
                 commit({type: SurveyAndProgramMutation.VmmcErroredFile, payload: filename});
             }

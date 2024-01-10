@@ -409,6 +409,8 @@ describe("Survey and programme actions", () => {
     });
 
     const checkVmmcImportUpload = (commit: Mock) => {
+        expect(commit.mock.calls.length).toBe(5);
+
         expect(commit.mock.calls[0][0]).toStrictEqual({
             type: SurveyAndProgramMutation.VmmcUpdated,
             payload: null
@@ -433,13 +435,6 @@ describe("Survey and programme actions", () => {
             {
                 type: "WarningsFetched",
                 payload: {type: 3, warnings: "TEST WARNINGS"}
-            });
-
-        //Should also have set selectedDataType
-        expect(commit.mock.calls[5][0]).toStrictEqual(
-            {
-                type: "SelectedDataTypeUpdated",
-                payload: DataType.Vmmc
             });
     }
 
