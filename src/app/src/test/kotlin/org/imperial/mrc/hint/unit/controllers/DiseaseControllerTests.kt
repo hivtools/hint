@@ -221,4 +221,21 @@ class DiseaseControllerTests : HintrControllerTests()
                         VersionFileWithPath("test-path", "hash", "some-file-name.csv", false),
                         "shape-path", FileType.ANC, true)
     }
+
+    @Test
+    fun `gets and validates VMMC`()
+    {
+        val mockApiClient = getMockAPIClient(FileType.Vmmc)
+        val mockRequest = mock<HttpServletRequest> {
+            on { getParameter("strict") } doReturn "true"
+        }
+        val mockFileManager = getMockFileManager(FileType.Vmmc)
+        val sut = DiseaseController(mockFileManager, mockApiClient, mock(), mock(), mockRequest)
+
+        sut.getVmmc()
+        verify(mockApiClient, Times(1))
+            .validateSurveyAndProgramme(
+                VersionFileWithPath("test-path", "hash", "some-file-name.csv", false),
+                "shape-path", FileType.Vmmc, true)
+    }
 }
