@@ -77,7 +77,7 @@
                                  :fromADR="vmmc.fromADR"
                                  :error="vmmc.error"
                                  :upload="uploadVmmc"
-                                 :delete-file="uploadVmmc"
+                                 :delete-file="deleteVmmc"
                                  :existingFileName="vmmc.existingFileName"
                                  accept="xlsx,.xlsx"
                                  name="vmmc">
