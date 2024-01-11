@@ -96,6 +96,7 @@ class JooqCalibrateDataRepository: CalibrateDataRepository
         return arrayList
     }
 
+    @Suppress("UnsafeCallOnNullableType")
     private fun getFilteredDataFromConnection(
         conn: Connection,
         filterQuery: FilterQuery): List<CalibrateResultRow>
