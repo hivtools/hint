@@ -1,8 +1,11 @@
 package org.imperial.mrc.hint.db
 
 import org.jooq.tools.json.JSONArray
+import org.jooq.tools.jdbc.SingleConnectionDataSource
+import org.jooq.SQLDialect
 import org.springframework.stereotype.Component
 import org.imperial.mrc.hint.models.CalibrateResultRow
+import org.imperial.mrc.hint.models.ResultData
 import org.imperial.mrc.hint.models.FilterQuery
 import java.sql.Connection
 import java.sql.DriverManager
@@ -11,6 +14,8 @@ import java.util.Properties
 import java.sql.ResultSet
 import java.sql.SQLException
 import java.sql.PreparedStatement
+import org.ktorm.database.*
+import org.ktorm.dsl.*
 
 const val INDICATOR_QUERY = """SELECT
 age_group,area_id,
@@ -57,7 +62,7 @@ interface CalibrateDataRepository
     
     fun getFilteredCalibrateData(
         path: String,
-        data: FilterQuery): List<CalibrateResultRow>
+        filterQuery: FilterQuery): List<CalibrateResultRow>
 }
 
 @Component
@@ -108,34 +113,46 @@ class JooqCalibrateDataRepository: CalibrateDataRepository
     @Suppress("MagicNumber")
     private fun getFilteredDataFromConnection(
         conn: Connection,
-        filterQuery: FilterQuery): List<CalibrateResultRow> {
-        val resultSet: ResultSet
-        var query = FILTER_TEMPLATE
-
-        for ((field, values) in filterQuery) {
-            if (values.size > 0) {
-                val questionMarks = values.map { "?" }.joinToString(",")
-                query += "$field IN ($questionMarks) AND "
-            }
-        }
-        query = query.dropLast(5)
-
-        val stmt: PreparedStatement = conn.prepareStatement(query)
-        var stmtIndex = 1;
-        for ((_, values) in filterQuery) {
-            values.forEach { it ->
-                if (it is String) {
-                    stmt.setString(stmtIndex, it)
-                } else if (it is Int) {
-                    stmt.setInt(stmtIndex, it)
+        filterQuery: FilterQuery
+    ): List<CalibrateResultRow> {
+        val dataSource = SingleConnectionDataSource(conn)
+        return Database.connect(dataSource)
+            .from(ResultData)
+            .select()
+            .whereWithConditions {
+                if (filterQuery.indicator.size > 0) {
+                    it += ResultData.indicator inList filterQuery.indicator
                 }
-                stmtIndex++
+                if (filterQuery.calendarQuarter.size > 0) {
+                    it += ResultData.calendarQuarter inList filterQuery.calendarQuarter
+                }
+                if (filterQuery.ageGroup.size > 0) {
+                    it += ResultData.ageGroup inList filterQuery.ageGroup
+                }
+                if (filterQuery.sex.size > 0) {
+                    it += ResultData.sex inList filterQuery.sex
+                }
+                if (filterQuery.areaId.size > 0) {
+                    it += ResultData.areaId inList filterQuery.areaId
+                }
+                if (filterQuery.areaLevel.size > 0) {
+                    it += ResultData.areaLevel inList filterQuery.areaLevel
+                }
             }
-        }
-
-        resultSet = stmt.executeQuery()
-        val arrayList = convertDataToArrayList(resultSet)
-        return arrayList
+            .map { it ->
+                CalibrateResultRow(
+                    it.getString("indicator")!!,
+                    it.getString("calendar_quarter")!!,
+                    it.getString("age_group")!!,
+                    it.getString("sex")!!,
+                    it.getString("area_id")!!,
+                    it.getFloat("mode"),
+                    it.getFloat("mean"),
+                    it.getFloat("lower"),
+                    it.getFloat("upper"),
+                    it.getInt("area_level")
+                )
+            }
     }
 
     private fun getDBConnFromPathResponse(path: String): Connection {   

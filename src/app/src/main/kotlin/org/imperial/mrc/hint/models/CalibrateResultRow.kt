@@ -1,6 +1,20 @@
 package org.imperial.mrc.hint.models
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import org.ktorm.schema.*
+
+object ResultData : Table<Nothing>("data") {
+    val indicator = varchar("indicator")
+    val calendarQuarter = varchar("calendar_quarter")
+    val ageGroup = varchar("age_group")
+    val sex = varchar("sex")
+    val areaId = varchar("area_id")
+    val areaLevel = int("area_level")
+    val mode = float("mode")
+    val mean = float("mean")
+    val upper = float("upper")
+    val lower = float("lower")
+}
 
 data class CalibrateResultRow(
     val indicator: String,
@@ -29,16 +43,3 @@ data class FilterQuery(
     val areaId: List<String>,
     @field:JsonProperty("area_level")
     val areaLevel: List<Int>)
-{
-    operator fun iterator(): Iterator<Pair<String, List<Any>>>
-    {
-        return listOf(
-            "indicator" to indicator,
-            "calendar_quarter" to calendarQuarter,
-            "age_group" to ageGroup,
-            "sex" to sex,
-            "area_id" to areaId,
-            "area_level" to areaLevel
-        ).iterator()
-    }
-}
