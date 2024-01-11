@@ -41,19 +41,6 @@ ROUND(upper, 4) AS upper,
 area_level,
 FROM data"""
 
-const val FILTER_TEMPLATE = """SELECT
-age_group,area_id,
-calendar_quarter,
-indicator,
-ROUND(lower, 4) AS lower,
-ROUND(mean, 4) AS mean,
-ROUND(mode, 4) AS mode,
-sex,
-ROUND(upper, 4) AS upper,
-area_level,
-FROM data WHERE 
-"""
-
 interface CalibrateDataRepository
 {
     fun getDataFromPath(
@@ -113,8 +100,8 @@ class JooqCalibrateDataRepository: CalibrateDataRepository
     @Suppress("MagicNumber")
     private fun getFilteredDataFromConnection(
         conn: Connection,
-        filterQuery: FilterQuery
-    ): List<CalibrateResultRow> {
+        filterQuery: FilterQuery): List<CalibrateResultRow>
+    {
         val dataSource = SingleConnectionDataSource(conn)
         return Database.connect(dataSource)
             .from(ResultData)
@@ -173,10 +160,10 @@ class JooqCalibrateDataRepository: CalibrateDataRepository
 
     override fun getFilteredCalibrateData(
         path: String,
-        data: FilterQuery): List<CalibrateResultRow>
+        filterQuery: FilterQuery): List<CalibrateResultRow>
     {
         getDBConnFromPathResponse(path).use { conn ->
-            return getFilteredDataFromConnection(conn, data)
+            return getFilteredDataFromConnection(conn, filterQuery)
         }
     }
 }
