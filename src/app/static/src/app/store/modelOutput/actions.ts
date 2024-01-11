@@ -3,8 +3,7 @@ import {ModelOutputMutation} from "./mutations";
 import {Dict, ModelOutputTabs} from "../../types";
 import {DataExplorationState} from "../dataExploration/dataExploration";
 import {ModelOutputState} from "./modelOutput";
-import { FilterOption } from "../../generated";
-import { getData } from "../plottingSelections/actions";
+import { PayloadFilterOption, getData } from "../plottingSelections/actions";
 
 export interface ModelOutputActions {
     updateSelectedTab: (store: ActionContext<ModelOutputState, DataExplorationState>, tab: ModelOutputTabs) => void
@@ -20,12 +19,12 @@ export const actions: ActionTree<ModelOutputState, DataExplorationState> & Model
         const { commit, rootState } = context;
         commit({type: ModelOutputMutation.TabSelected, payload: tab});
         if (tab === ModelOutputTabs.Comparison) return;
-        let filterSelections: Dict<FilterOption[]> = {};
+        let filterSelections: Dict<PayloadFilterOption[]> = {};
         switch (tab) {
             case ModelOutputTabs.Bar:
                 if (!isObjEmpty(rootState.plottingSelections.barchart.selectedFilterOptions)) {
                     filterSelections = {
-                        indicator: [{id: rootState.plottingSelections.barchart.indicatorId, label: ""}],
+                        indicator: [{id: rootState.plottingSelections.barchart.indicatorId}],
                         ...rootState.plottingSelections.barchart.selectedFilterOptions
                     };
                 }
@@ -34,9 +33,10 @@ export const actions: ActionTree<ModelOutputState, DataExplorationState> & Model
                 if (!isObjEmpty(rootState.plottingSelections.bubble.selectedFilterOptions)) {
                     filterSelections = {
                         indicator: [
-                            {id: rootState.plottingSelections.bubble.colorIndicatorId, label: ""},
-                            {id: rootState.plottingSelections.bubble.sizeIndicatorId, label: ""}
+                            {id: rootState.plottingSelections.bubble.colorIndicatorId},
+                            {id: rootState.plottingSelections.bubble.sizeIndicatorId}
                         ],
+                        area_level: [{id: rootState.plottingSelections.bubble.detail}],
                         ...rootState.plottingSelections.bubble.selectedFilterOptions
                     };
                 }
@@ -44,7 +44,8 @@ export const actions: ActionTree<ModelOutputState, DataExplorationState> & Model
             case ModelOutputTabs.Map:
                 if (!isObjEmpty(rootState.plottingSelections.outputChoropleth.selectedFilterOptions)) {
                     filterSelections = {
-                        indicator: [{id: rootState.plottingSelections.outputChoropleth.indicatorId, label: ""}],
+                        indicator: [{id: rootState.plottingSelections.outputChoropleth.indicatorId}],
+                        area_level: [{id: rootState.plottingSelections.outputChoropleth.detail}],
                         ...rootState.plottingSelections.outputChoropleth.selectedFilterOptions
                     };
                 }
@@ -52,7 +53,7 @@ export const actions: ActionTree<ModelOutputState, DataExplorationState> & Model
             case ModelOutputTabs.Table:
                 if (!isObjEmpty(rootState.plottingSelections.table.selectedFilterOptions)) {
                     filterSelections = {
-                        indicator: [{id: rootState.plottingSelections.table.indicator, label: ""}],
+                        indicator: [{id: rootState.plottingSelections.table.indicator}],
                         ...rootState.plottingSelections.table.selectedFilterOptions
                     };
                 }

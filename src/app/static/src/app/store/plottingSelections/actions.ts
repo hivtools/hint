@@ -22,7 +22,7 @@ export type FetchResultDataPayload = Partial<{
     [K in keyof DataPoint]: DataPoint[K][]
 } & { area_level: number[] }>
 
-type PayloadFilterOption = {
+export type PayloadFilterOption = {
     id: string | number,
     label?: string
 }
