@@ -33,21 +33,6 @@ describe("Load actions", () => {
         (console.info as jest.Mock).mockClear();
     });
 
-    it("load reads blob and dispatches setFiles action", (done) => {
-        const dispatch = jest.fn();
-        const file = new File(["Test File Contents"], "testFile")
-        actions.load({dispatch, rootState} as any, file);
-
-        const interval = setInterval(() => {
-            if (dispatch.mock.calls.length > 0) {
-                expect(dispatch.mock.calls[0][0]).toEqual("setFiles");
-                expect(dispatch.mock.calls[0][1].savedFileContents).toEqual("Test File Contents");
-                clearInterval(interval);
-                done();
-            }
-        });
-    });
-
     it("clears loading state", async () => {
         const commit = jest.fn();
         await actions.clearLoadState({commit, rootState} as any);

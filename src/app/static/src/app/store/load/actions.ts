@@ -15,7 +15,6 @@ import {initialStepperState} from "../stepper/stepper";
 import {
     ModelStatusResponse,
     ProjectRehydrateResultResponse,
-    ProjectState
 } from "../../generated";
 import {DynamicFormData} from "@reside-ic/vue-next-dynamic-form";
 import {ModelCalibrateState} from "../modelCalibrate/modelCalibrate";
@@ -24,7 +23,6 @@ export type LoadActionTypes = "SettingFiles" | "UpdatingState" | "LoadSucceeded"
 export type LoadErrorActionTypes = "LoadFailed" | "RehydrateResultError"
 
 export interface LoadActions {
-    load: (store: ActionContext<LoadState, RootState>, file: File) => void
     preparingRehydrate: (store: ActionContext<LoadState, RootState>, file: FormData) => void
     setFiles: (store: ActionContext<LoadState, RootState>, payload: setFilesPayload) => void
     loadFromVersion: (store: ActionContext<LoadState, RootState>, versionDetails: VersionDetails) => void
@@ -38,16 +36,6 @@ export interface setFilesPayload {
 }
 
 export const actions: ActionTree<LoadState, RootState> & LoadActions = {
-
-    async load(context, file) {
-        const {dispatch} = context
-
-        const reader = new FileReader();
-        reader.addEventListener('loadend', function () {
-            dispatch("setFiles", {savedFileContents: reader.result as string});
-        });
-        reader.readAsText(file);
-    },
 
     async setFiles(context, payload) {
         const {savedFileContents} = payload;
