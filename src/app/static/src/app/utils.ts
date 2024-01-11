@@ -142,20 +142,6 @@ export const mapMutationByName = <T>(namespace: string | null, name: string): Mu
     return (!!namespace && mapMutations(namespace, [name])[name]) || mapMutations([name])[name]
 };
 
-export const addCheckSum = (data: string): string => {
-    const hash = CryptoJS.MD5(data);
-    return JSON.stringify([hash.toString(CryptoJS.enc.Base64), data]);
-};
-
-export const verifyCheckSum = (content: string): false | any => {
-    const result = JSON.parse(content);
-    const hash = result[0];
-    const data = result[1];
-    const valid = CryptoJS.MD5(data).toString(CryptoJS.enc.Base64) === hash;
-
-    return valid && JSON.parse(data);
-};
-
 function isHINTError(object: any): object is Error {
     return typeof object.error == "string"
         && object.detail == undefined || typeof object.detail == "string"
