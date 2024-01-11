@@ -2,7 +2,6 @@ package org.imperial.mrc.hint.db
 
 import org.jooq.tools.json.JSONArray
 import org.jooq.tools.jdbc.SingleConnectionDataSource
-import org.jooq.SQLDialect
 import org.springframework.stereotype.Component
 import org.imperial.mrc.hint.models.CalibrateResultRow
 import org.imperial.mrc.hint.models.ResultData
@@ -97,7 +96,6 @@ class JooqCalibrateDataRepository: CalibrateDataRepository
         return arrayList
     }
 
-    @Suppress("MagicNumber")
     private fun getFilteredDataFromConnection(
         conn: Connection,
         filterQuery: FilterQuery): List<CalibrateResultRow>
