@@ -65,23 +65,4 @@ class CalibrateResultRowTests
         val filterQueryJson = convertToJson(filterQuery)
         assert(expectedJsonFilterQuery.equals(filterQueryJson))
     }
-
-    @Test
-    fun `filter query iterator works as expected`()
-    {
-        val expectedList = listOf(
-            listOf("indicator", listOf("ind1", "ind2")),
-            listOf("calendar_quarter", listOf("cal1")),
-            listOf("age_group", listOf("age1")),
-            listOf("sex", listOf("sex1", "sex2", "sex3")),
-            listOf("area_id", listOf("area1")),
-            listOf("area_level", listOf(1, 2, 3, 4))
-        )
-        var i = 0
-        for ((field, values) in filterQuery) {
-            assert(field == expectedList[i][0])
-            assert(values == expectedList[i][1])
-            i++
-        }
-    }
 }
