@@ -173,6 +173,7 @@ class ADRControllerTests : HintrControllerTests()
         val result = sut.getDatasets(true)
         val data = objectMapper.readTree(result.body!!)["data"]
         assertThat(data.isArray).isTrue
+        assertThat(data.count()).isEqualTo(2)
         assertThat(data[0]["resources"].count()).isEqualTo(2)
     }
 
@@ -198,6 +199,34 @@ class ADRControllerTests : HintrControllerTests()
                 mock(),
                 mock())
         val result = sut.getDatasets()
+        val data = objectMapper.readTree(result.body!!)["data"]
+        assertThat(data.isArray).isTrue
+        assertThat(data.count()).isEqualTo(2)
+        assertThat(data[0]["resources"].count()).isEqualTo(2)
+    }
+
+    @Test
+    fun `can get datasets with a specific resource type`()
+    {
+        val expectedUrl = "package_search?q=type:adr-schema&rows=1000&include_private=true&hide_inaccessible_resources=true"
+        val mockClient = mock<ADRClient> {
+            on { get(expectedUrl) } doReturn makeFakeSuccessResponse()
+        }
+        val mockBuilder = mock<ADRService> {
+            on { build() } doReturn mockClient
+        }
+        val sut = ADRController(
+            mock(),
+            mock(),
+            mockBuilder,
+            objectMapper,
+            mockProperties,
+            mock(),
+            mock(),
+            mockSession,
+            mock(),
+            mock())
+        val result = sut.getDatasetsWithResource("outputZip")
         val data = objectMapper.readTree(result.body!!)["data"]
         assertThat(data.isArray).isTrue
         assertThat(data.count()).isEqualTo(1)
@@ -317,6 +346,58 @@ class ADRControllerTests : HintrControllerTests()
         assertThat(result.body!!).isEqualTo("whatever")
     }
 
+    @Test
+    fun `get releases by id with a specific resource`()
+    {
+        val shapeResource = makeFakeResource("adr-shape")
+        val ancResource = makeFakeResource("adr-anc")
+        val vmmcResource = makeFakeResource("adr-output-zip")
+        val getDatasetRes1 = objectMapper.writeValueAsString(mapOf("data" to mapOf(
+                "resources" to listOf(shapeResource, ancResource))))
+        val getDatasetRes2 = objectMapper.writeValueAsString(mapOf("data" to mapOf(
+                "resources" to listOf(shapeResource, vmmcResource))))
+        val getReleasesResponse = objectMapper.writeValueAsString(mapOf("data" to listOf(
+                mapOf("id" to "rel1", "package_id" to "1234"),
+                mapOf("id" to "rel2", "package_id" to "1234"))))
+
+        val getReleasesUrl = "/dataset_version_list?dataset_id=1234"
+        val getDatasetUrl1 = "package_show?id=1234&release=rel1"
+        val getDatasetUrl2 = "package_show?id=1234&release=rel2"
+
+        val mockClient = mock<ADRClient> {
+            on { get(getReleasesUrl) } doReturn ResponseEntity
+                .ok()
+                .body(getReleasesResponse)
+            on { get(getDatasetUrl1) } doReturn ResponseEntity
+                .ok()
+                .body(getDatasetRes1)
+            on { get(getDatasetUrl2) } doReturn ResponseEntity
+                .ok()
+                .body(getDatasetRes2)
+        }
+        val mockBuilder = mock<ADRService> {
+            on { build() } doReturn mockClient
+        }
+        val sut = ADRController(
+            mock(),
+            mock(),
+            mockBuilder,
+            objectMapper,
+            mockProperties,
+            mock(),
+            mock(),
+            mockSession,
+            mock(),
+            mock())
+        val result = sut.getReleasesWithResource("1234", "outputZip")
+        val data = objectMapper.readTree(result.body!!)["data"]
+        assertThat(data.isArray).isTrue
+        assertThat(data.count()).isEqualTo(1)
+        assertThat(data[0]["id"].asText()).isEqualTo("rel2")
+        assertThat(data[0]["package_id"].asText()).isEqualTo("1234")
+    }
+
+    @Test
     fun `gets dataset by id and version`()
     {
         val expectedUrl = "package_show?id=1234&release=1.0"
@@ -1101,13 +1182,23 @@ class ADRControllerTests : HintrControllerTests()
 
     private fun makeFakeSuccessResponse(): ResponseEntity<String>
     {
-        val resultWithResources = mapOf("resources" to listOf(1, 2))
+        val resultWithResources = mapOf("resources" to listOf(makeFakeResource("adr-anc"),
+            makeFakeResource("adr-shape")))
         val resultWithoutResources = mapOf("resources" to listOf<Any>())
-        val data = mapOf("results" to listOf(resultWithResources, resultWithoutResources))
+        val resultWithOutput = mapOf("resources" to listOf(makeFakeResource("adr-anc"),
+            makeFakeResource("adr-output-zip")))
+        val data = mapOf("results" to listOf(resultWithResources, resultWithoutResources, resultWithOutput))
         val body = mapOf("data" to data)
         return ResponseEntity
                 .ok()
                 .body(objectMapper.writeValueAsString(body))
+    }
+
+    private fun makeFakeResource(type: String): Map<String, String>
+    {
+        return mapOf(
+            "resource_type" to type,
+            "url" to "https://example.com/$type")
     }
 
 }

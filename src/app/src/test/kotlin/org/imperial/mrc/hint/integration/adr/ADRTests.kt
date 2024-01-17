@@ -1,7 +1,7 @@
 package org.imperial.mrc.hint.integration.adr
 
-import com.github.kittinunf.fuel.httpPost
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.github.kittinunf.fuel.httpPost
 import org.assertj.core.api.Assertions.assertThat
 import org.imperial.mrc.hint.ConfiguredAppProperties
 import org.imperial.mrc.hint.helpers.JSONValidator
@@ -12,11 +12,7 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
 import org.springframework.boot.test.web.client.getForEntity
 import org.springframework.boot.test.web.client.postForEntity
-import org.springframework.http.HttpEntity
-import org.springframework.http.HttpHeaders
-import org.springframework.http.HttpStatus
-import org.springframework.http.MediaType
-import org.springframework.http.ResponseEntity
+import org.springframework.http.*
 import org.springframework.util.LinkedMultiValueMap
 
 // These test integration between HINT and the ADR
@@ -81,8 +77,21 @@ class ADRTests : SecureIntegrationTests()
             val data = ObjectMapper().readTree(result.body!!)["data"]
             assertThat(data.isArray).isTrue
         }
+
+
+        // Releases with resource returns in same format
+        val withResourceResult = testRestTemplate.getForEntity<String>("/adr/datasets/$id/releasesWithResource?resourceType=outputZip")
+        assertSecureWithSuccess(isAuthorized, withResourceResult, null)
+        if (isAuthorized == IsAuthorized.TRUE)
+        {
+            val withResourceReleases = ObjectMapper().readTree(result.body!!)["data"]
+            val allReleases = ObjectMapper().readTree(result.body!!)["data"]
+            assertThat(withResourceReleases).isEqualTo(allReleases)
+        }
     }
-    
+
+    @ParameterizedTest
+    @EnumSource(IsAuthorized::class)
     fun `can get individual ADR dataset version`(isAuthorized: IsAuthorized)
     {
         testRestTemplate.postForEntity<String>("/adr/key", getPostEntityWithKey())

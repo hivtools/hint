@@ -1,5 +1,6 @@
 package org.imperial.mrc.hint.controllers
 
+import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.imperial.mrc.hint.AppProperties
 import org.imperial.mrc.hint.FileManager
@@ -84,6 +85,24 @@ class ADRController(private val encryption: Encryption,
     @GetMapping("/datasets")
     fun getDatasets(@RequestParam showInaccessible: Boolean = false): ResponseEntity<String>
     {
+        return SuccessResponse(listDatasets(showInaccessible).filter { it["resources"].count() > 0 }).asResponseEntity()
+    }
+
+    @GetMapping("/datasetsWithResource")
+    fun getDatasetsWithResource(@RequestParam resourceType: String, @RequestParam showInaccessible: Boolean = false): ResponseEntity<String>
+    {
+        val data = listDatasets(showInaccessible)
+        val fileTypeMappings = getApiToFileTypeMappings()
+        val filteredData = data.filter { dataset ->
+            dataset["resources"].any { resource ->
+                resource["resource_type"]?.asText() == fileTypeMappings[resourceType]
+            }
+        }
+
+        return SuccessResponse(filteredData).asResponseEntity()
+    }
+
+    fun listDatasets(showInaccessible: Boolean): JsonNode {
         val adr = adrService.build()
 
         var url = "package_search?q=type:${appProperties.adrDatasetSchema}&rows=$MAX_DATASETS&include_private=true"
@@ -113,11 +132,8 @@ class ADRController(private val encryption: Encryption,
                 url
             )
         }
-        else
-        {
-            val data = objectMapper.readTree(response.body!!)["data"]["results"]
-            return SuccessResponse(data.filter { it["resources"].count() > 0 }).asResponseEntity()
-        }
+
+        return objectMapper.readTree(response.body!!)["data"]["results"]
     }
 
     @GetMapping("/datasets/{id}")
@@ -138,20 +154,39 @@ class ADRController(private val encryption: Encryption,
         return adr.get("/dataset_version_list?dataset_id=${id}")
     }
 
+    @GetMapping("/datasets/{id}/releasesWithResource")
+    fun getReleasesWithResource(@PathVariable id: String, @RequestParam resourceType: String): ResponseEntity<String>
+    {
+        val fileTypeMappings = getApiToFileTypeMappings()
+        val releases = objectMapper.readTree(getReleases(id).body!!)["data"]
+        val filteredReleases = releases?.filter { release ->
+            val dataset = getDataset(id, release["id"].asText())
+            val resources = objectMapper.readTree(dataset?.body!!)["data"]["resources"]
+            resources.any { resource ->
+                resource["resource_type"]?.asText() == fileTypeMappings[resourceType]
+            }
+        }
+
+        return SuccessResponse(filteredReleases).asResponseEntity()
+    }
+
+    fun getApiToFileTypeMappings(): Map<String, String> {
+        return mapOf("baseUrl" to appProperties.adrUrl,
+            "anc" to appProperties.adrANCSchema,
+            "programme" to appProperties.adrARTSchema,
+            "pjnz" to appProperties.adrPJNZSchema,
+            "population" to appProperties.adrPopSchema,
+            "shape" to appProperties.adrShapeSchema,
+            "survey" to appProperties.adrSurveySchema,
+            "outputZip" to appProperties.adrOutputZipSchema,
+            "outputSummary" to appProperties.adrOutputSummarySchema,
+            "outputComparison" to appProperties.adrOutputComparisonSchema)
+    }
+
     @GetMapping("/schemas")
     fun getFileTypeMappings(): ResponseEntity<String>
     {
-        return SuccessResponse(
-                mapOf("baseUrl" to appProperties.adrUrl,
-                        "anc" to appProperties.adrANCSchema,
-                        "programme" to appProperties.adrARTSchema,
-                        "pjnz" to appProperties.adrPJNZSchema,
-                        "population" to appProperties.adrPopSchema,
-                        "shape" to appProperties.adrShapeSchema,
-                        "survey" to appProperties.adrSurveySchema,
-                        "outputZip" to appProperties.adrOutputZipSchema,
-                        "outputSummary" to appProperties.adrOutputSummarySchema,
-                        "outputComparison" to appProperties.adrOutputComparisonSchema)).asResponseEntity()
+        return SuccessResponse(getApiToFileTypeMappings()).asResponseEntity()
     }
 
     @GetMapping("/orgs")
@@ -195,6 +230,12 @@ class ADRController(private val encryption: Encryption,
     fun importANC(@RequestBody data: AdrResource): ResponseEntity<String>
     {
         return saveAndValidate(data, FileType.ANC)
+    }
+
+    @PostMapping("/output")
+    fun importOutputZip(@RequestBody data: AdrResource): ResponseEntity<String>
+    {
+        return saveAndValidate(data, FileType.OutputZip)
     }
 
 

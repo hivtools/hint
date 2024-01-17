@@ -25,7 +25,8 @@ enum class FileType
     Population,
     Programme,
     Shape,
-    Survey;
+    Survey,
+    OutputZip;
 
     override fun toString(): String
     {
