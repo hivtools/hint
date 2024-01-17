@@ -89,7 +89,8 @@ class ADRController(private val encryption: Encryption,
     }
 
     @GetMapping("/datasetsWithResource")
-    fun getDatasetsWithResource(@RequestParam resourceType: String, @RequestParam showInaccessible: Boolean = false): ResponseEntity<String>
+    fun getDatasetsWithResource(@RequestParam resourceType: String,
+                                @RequestParam showInaccessible: Boolean = false): ResponseEntity<String>
     {
         val data = listDatasets(showInaccessible)
         val fileTypeMappings = getApiToFileTypeMappings()
@@ -102,7 +103,7 @@ class ADRController(private val encryption: Encryption,
         return SuccessResponse(filteredData).asResponseEntity()
     }
 
-    fun listDatasets(showInaccessible: Boolean): JsonNode {
+    private fun listDatasets(showInaccessible: Boolean): JsonNode {
         val adr = adrService.build()
 
         var url = "package_search?q=type:${appProperties.adrDatasetSchema}&rows=$MAX_DATASETS&include_private=true"
@@ -161,26 +162,13 @@ class ADRController(private val encryption: Encryption,
         val releases = objectMapper.readTree(getReleases(id).body!!)["data"]
         val filteredReleases = releases?.filter { release ->
             val dataset = getDataset(id, release["id"].asText())
-            val resources = objectMapper.readTree(dataset?.body!!)["data"]["resources"]
+            val resources = objectMapper.readTree(dataset.body!!)["data"]["resources"]
             resources.any { resource ->
                 resource["resource_type"]?.asText() == fileTypeMappings[resourceType]
             }
         }
 
         return SuccessResponse(filteredReleases).asResponseEntity()
-    }
-
-    fun getApiToFileTypeMappings(): Map<String, String> {
-        return mapOf("baseUrl" to appProperties.adrUrl,
-            "anc" to appProperties.adrANCSchema,
-            "programme" to appProperties.adrARTSchema,
-            "pjnz" to appProperties.adrPJNZSchema,
-            "population" to appProperties.adrPopSchema,
-            "shape" to appProperties.adrShapeSchema,
-            "survey" to appProperties.adrSurveySchema,
-            "outputZip" to appProperties.adrOutputZipSchema,
-            "outputSummary" to appProperties.adrOutputSummarySchema,
-            "outputComparison" to appProperties.adrOutputComparisonSchema)
     }
 
     @GetMapping("/schemas")
@@ -435,5 +423,18 @@ class ADRController(private val encryption: Encryption,
         }
         val hash = objectMapper.readTree(response.body!!)["data"]["hash"].asText()
         return hash != newDatasetHash
+    }
+
+    private fun getApiToFileTypeMappings(): Map<String, String> {
+        return mapOf("baseUrl" to appProperties.adrUrl,
+            "anc" to appProperties.adrANCSchema,
+            "programme" to appProperties.adrARTSchema,
+            "pjnz" to appProperties.adrPJNZSchema,
+            "population" to appProperties.adrPopSchema,
+            "shape" to appProperties.adrShapeSchema,
+            "survey" to appProperties.adrSurveySchema,
+            "outputZip" to appProperties.adrOutputZipSchema,
+            "outputSummary" to appProperties.adrOutputSummarySchema,
+            "outputComparison" to appProperties.adrOutputComparisonSchema)
     }
 }
