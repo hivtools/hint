@@ -19,7 +19,7 @@ describe("uploadNewProject", () => {
 
     const mockMutations = {
         RehydrateCancel: jest.fn(),
-        SetProjectName: jest.fn()
+        SetNewProjectName: jest.fn()
     }
 
     const mockActions = {
@@ -84,7 +84,6 @@ describe("uploadNewProject", () => {
         })
         const uploadProject = wrapper.find("#load-project-name");
         expect(uploadProject.exists()).toBe(true)
-        expect(mockGetProjects).toHaveBeenCalledTimes(1)
         expect(uploadProject.findComponent(LoadErrorModal).exists()).toBe(true)
         expect(uploadProject.findComponent(UploadProgress).exists()).toBe(true)
     })
@@ -127,8 +126,8 @@ describe("uploadNewProject", () => {
         const confirmButton = wrapper.find("#confirm-load-project");
         expect((confirmButton.element as HTMLButtonElement).disabled).toBe(true);
         await wrapper.find("#input-id").setValue("test");
-        expect(mockMutations.SetProjectName.mock.calls[0][1]).toBe("test")
-        expect((wrapper.vm as any).$data.uploadProjectName).toBe("test")
+        expect(mockMutations.SetNewProjectName.mock.calls[0][1]).toBe("test")
+        expect((wrapper.vm as any).$data.newProjectName).toBe("test")
         expect((confirmButton.element as HTMLButtonElement).disabled).toBe(false);
     });
 

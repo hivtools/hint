@@ -1,6 +1,5 @@
 <template>
     <div v-if="projects.length > 0">
-        <h5 v-translate="'projectHistory'"></h5>
         <div id="headers" class="row font-weight-bold pt-2">
             <div class="col-md-1 header-cell"></div>
             <div class="col-md-3 header-cell" v-translate="'projectName'"></div>
@@ -13,7 +12,7 @@
             <div class="col-md-1 header-cell" v-translate="'share'"></div>
         </div>
         <hr/>
-        <div v-for="p in projects" :key="p.id">
+        <div v-for="p in this.projects" :key="p.id">
             <div :id="`p-${p.id}`" class="row py-2">
                 <div class="col-md-1 project-cell">
                     <button
@@ -321,7 +320,7 @@
 <script lang="ts">
     import i18next from "i18next";
     import {Project, Version, VersionIds} from "../../types";
-    import {BCollapse, vBToggle} from "bootstrap-vue-next";
+    import {BCollapse} from "bootstrap-vue-next";
     import VueFeather from "vue-feather";
     import Modal from "../Modal.vue";
     import {formatDateTime, mapActionByName, mapStateProp, versionLabel} from "../../utils";
@@ -330,7 +329,6 @@
     import {RootState} from "../../root";
     import ProjectsMixin from "./ProjectsMixin";
     import ShareProject from "./ShareProject.vue";
-    import {projects} from "../../store/projects/projects";
     import { defineComponent } from "vue";
 
     const namespace = "projects";
@@ -564,7 +562,6 @@
                 "promoteVersion"
             ),
             createProject: mapActionByName(namespace, "createProject"),
-            getProjects: mapActionByName(namespace, "getProjects"),
             versionCountLabel(project: Project) {
                 const lng = this.currentLanguage;
                 return project.versions.length == 1

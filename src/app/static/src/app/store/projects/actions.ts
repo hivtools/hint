@@ -82,7 +82,7 @@ export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
             .postAndReturn(`/project/${payload.projectId}/clone`, emails);
     },
 
-    async createProject(context, payload) {
+    async createProject(context, payload: CreateProjectPayload) {
         const {commit, state, dispatch} = context;
 
         //Ensure we have saved the current version

@@ -6,10 +6,10 @@
                    type="text"
                    class="form-control"
                    v-translate:placeholder="'projectName'"
-                   v-model="uploadProjectName">
+                   v-model="newProjectName">
             <div class="invalid-feedback d-inline"
                  v-translate="'uniqueProjectName'"
-                 v-if="invalidName(uploadProjectName)"></div>
+                 v-if="invalidName(newProjectName)"></div>
             <template v-slot:footer>
                 <button id="confirm-load-project"
                         type="button"
@@ -35,7 +35,7 @@
     import Modal from "../Modal.vue";
     import {mapActionByName, mapGetterByName, mapMutationByName, mapStateProps} from "../../utils";
     import UploadProgress from "./UploadProgress.vue";
-    import {LoadingState, LoadState} from "../../store/load/state";
+    import {LoadState} from "../../store/load/state";
     import LoadErrorModal from "./LoadErrorModal.vue";
     import ProjectsMixin from "../projects/ProjectsMixin";
     import { PropType, defineComponent } from "vue";
@@ -63,12 +63,12 @@
         },
         data() {
             return {
-                uploadProjectName: ""
+                newProjectName: ""
             }
         },
         methods: {
             cancelRehydration: mapMutationByName("load", "RehydrateCancel"),
-            setProjectName: mapMutationByName("load", "SetProjectName"),
+            setNewProjectName: mapMutationByName("load", "SetNewProjectName"),
             getProjects: mapActionByName("projects", "getProjects")
         },
         computed: {
@@ -76,7 +76,7 @@
                 preparing: (state: LoadState) => state.preparing
             }),
             disableCreate() {
-                return !this.uploadProjectName || this.invalidName(this.uploadProjectName)
+                return !this.newProjectName || this.invalidName(this.newProjectName)
             },
             isGuest: mapGetterByName(null,"isGuest")
         },
@@ -86,13 +86,8 @@
             LoadErrorModal
         },
         watch: {
-            uploadProjectName(newValue) {ProjectsMixin
-                this.setProjectName(newValue)
-            }
-        },
-        mounted() {
-            if (!this.isGuest) {
-                this.getProjects();
+            newProjectName(newValue) {
+                this.setNewProjectName(newValue)
             }
         }
     })

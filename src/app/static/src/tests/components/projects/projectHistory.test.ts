@@ -277,11 +277,9 @@ describe("Project history component", () => {
         expect(cells[7].classes()).toContain("copy-cell");
     };
 
-    it("renders as expected ", async () => {
+    it("renders as expected", async () => {
         const wrapper = getWrapper();
         const store = wrapper.vm.$store;
-
-        expect(wrapper.find("h5").text()).toBe("Project history");
 
         const headers = wrapper.find("#headers").findAll(".header-cell");
         expect(headers.length).toBe(9);
