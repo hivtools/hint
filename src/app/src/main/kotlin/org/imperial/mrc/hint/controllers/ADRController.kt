@@ -28,7 +28,7 @@ import javax.servlet.http.HttpServletRequest
 
 @RestController
 @RequestMapping("/adr")
-@Suppress("LongParameterList")
+@Suppress("LongParameterList", "TooManyFunctions")
 class ADRController(private val encryption: Encryption,
                     private val userRepository: UserRepository,
                     private val adrService: ADRService,

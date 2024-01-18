@@ -97,7 +97,7 @@ class ADRTests : SecureIntegrationTests()
         testRestTemplate.postForEntity<String>("/adr/key", getPostEntityWithKey())
 
         val name = ADR_TEST_DATASET_NAME
-        val release = "1.0"
+        val release = "Version 1.0"
 
         val result = testRestTemplate.getForEntity<String>("/adr/datasets/$name?release=$release")
         assertSecureWithSuccess(isAuthorized, result, null)
