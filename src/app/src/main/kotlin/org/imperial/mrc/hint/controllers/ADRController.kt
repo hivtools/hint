@@ -220,12 +220,17 @@ class ADRController(private val encryption: Encryption,
         return saveAndValidate(data, FileType.ANC)
     }
 
+    @PostMapping("/vmmc")
+    fun importVmmc(@RequestBody data: AdrResource): ResponseEntity<String>
+    {
+        return saveAndValidate(data, FileType.Vmmc)
+    }
+
     @PostMapping("/output")
     fun importOutputZip(@RequestBody data: AdrResource): ResponseEntity<String>
     {
         return saveAndValidate(data, FileType.OutputZip)
     }
-
 
     @PostMapping("/datasets/{id}/releases")
     @Suppress("ReturnCount")
@@ -275,7 +280,8 @@ class ADRController(private val encryption: Encryption,
             appProperties.adrPopSchema,
             appProperties.adrSurveySchema,
             appProperties.adrARTSchema,
-            appProperties.adrANCSchema ->
+            appProperties.adrANCSchema,
+            appProperties.adrVmmcSchema ->
                 pushInputFileToADR(id, resourceType, resourceId, resourceName)
             else -> ErrorDetail(HttpStatus.BAD_REQUEST, "Invalid resourceType").toResponseEntity()
 
@@ -345,6 +351,7 @@ class ADRController(private val encryption: Encryption,
             appProperties.adrSurveySchema -> FileType.Survey
             appProperties.adrARTSchema -> FileType.Programme
             appProperties.adrANCSchema -> FileType.ANC
+            appProperties.adrVmmcSchema -> FileType.Vmmc
             else -> throw IllegalArgumentException("$resourceType is not an input resource type")
         }
 
@@ -433,6 +440,7 @@ class ADRController(private val encryption: Encryption,
             "population" to appProperties.adrPopSchema,
             "shape" to appProperties.adrShapeSchema,
             "survey" to appProperties.adrSurveySchema,
+            "vmmc" to appProperties.adrVmmcSchema,
             "outputZip" to appProperties.adrOutputZipSchema,
             "outputSummary" to appProperties.adrOutputSummarySchema,
             "outputComparison" to appProperties.adrOutputComparisonSchema)

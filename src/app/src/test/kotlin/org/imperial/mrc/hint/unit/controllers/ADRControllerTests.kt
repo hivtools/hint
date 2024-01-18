@@ -69,6 +69,7 @@ class ADRControllerTests : HintrControllerTests()
         on { adrPopSchema } doReturn "adr-pop"
         on { adrShapeSchema } doReturn "adr-shape"
         on { adrSurveySchema } doReturn "adr-survey"
+        on { adrVmmcSchema } doReturn "adr-vmmc"
         on { adrOutputZipSchema } doReturn "adr-output-zip"
         on { adrOutputSummarySchema } doReturn "adr-output-summary"
         on { adrOutputComparisonSchema } doReturn "adr-output-comparison"
@@ -347,7 +348,7 @@ class ADRControllerTests : HintrControllerTests()
     }
 
     @Test
-    fun `get releases by id with a specific resource`()
+    fun `get releases with a specific resource by id`()
     {
         val shapeResource = makeFakeResource("adr-shape")
         val ancResource = makeFakeResource("adr-anc")
@@ -446,6 +447,7 @@ class ADRControllerTests : HintrControllerTests()
         assertThat(data["anc"].textValue()).isEqualTo("adr-anc")
         assertThat(data["shape"].textValue()).isEqualTo("adr-shape")
         assertThat(data["survey"].textValue()).isEqualTo("adr-survey")
+        assertThat(data["vmmc"].textValue()).isEqualTo("adr-vmmc")
         assertThat(data["outputZip"].textValue()).isEqualTo("adr-output-zip")
         assertThat(data["outputSummary"].textValue()).isEqualTo("adr-output-summary")
         assertThat(data["baseUrl"].textValue()).isEqualTo("adr-url")
@@ -516,6 +518,14 @@ class ADRControllerTests : HintrControllerTests()
     {
         assertSavesAndValidatesUrl(FileType.Survey) { sut ->
             (sut as ADRController).importSurvey(adrResource)
+        }
+    }
+
+    @Test
+    fun `imports vmmc`()
+    {
+        assertSavesAndValidatesUrl(FileType.Vmmc) { sut ->
+            (sut as ADRController).importVmmc(adrResource)
         }
     }
 
