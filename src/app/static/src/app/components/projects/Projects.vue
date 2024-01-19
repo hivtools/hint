@@ -25,7 +25,7 @@
 </template>
 
 <script lang="ts">
-    import {mapActionByName, mapStateProps} from "../../utils";
+    import {mapActionByName, mapGetterByName, mapStateProps} from "../../utils";
     import {ProjectsState} from "../../store/projects/projects";
     import ErrorAlert from "../ErrorAlert.vue";
     import LoadingSpinner from "../LoadingSpinner.vue";
@@ -45,6 +45,7 @@
                 hasError: (state: ProjectsState) => !!state.error,
                 loading: (state: ProjectsState) => state.loading
             }),
+            isGuest: mapGetterByName(null, "isGuest")
         },
         methods: {
             handleCurrentProjectClick: function (e: Event) {
@@ -54,7 +55,9 @@
             getProjects: mapActionByName(namespace, "getProjects")
         },
         mounted() {
-            this.getProjects();
+            if (!this.isGuest) {
+                this.getProjects();
+            }
         },
         components: {
             NewProject,

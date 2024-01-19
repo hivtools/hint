@@ -33,7 +33,7 @@
 
 <script lang="ts">
     import Modal from "../Modal.vue";
-    import {mapActionByName, mapGetterByName, mapMutationByName, mapStateProps} from "../../utils";
+    import {mapMutationByName, mapStateProps} from "../../utils";
     import UploadProgress from "./UploadProgress.vue";
     import {LoadState} from "../../store/load/state";
     import LoadErrorModal from "./LoadErrorModal.vue";
@@ -69,7 +69,6 @@
         methods: {
             cancelRehydration: mapMutationByName("load", "RehydrateCancel"),
             setNewProjectName: mapMutationByName("load", "SetNewProjectName"),
-            getProjects: mapActionByName("projects", "getProjects")
         },
         computed: {
             ...mapStateProps("load", {
@@ -78,7 +77,6 @@
             disableCreate() {
                 return !this.newProjectName || this.invalidName(this.newProjectName)
             },
-            isGuest: mapGetterByName(null,"isGuest")
         },
         components: {
             Modal,

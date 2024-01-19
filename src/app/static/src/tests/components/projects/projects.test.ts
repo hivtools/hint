@@ -17,6 +17,7 @@ describe("Projects component", () => {
 
     const mockCreateProject = jest.fn()
     const mockRouterPush = jest.fn()
+    const mockGetProjects = jest.fn()
 
     const createSut = (state: Partial<ProjectsState> = {},
                        isGuest = false) => {
@@ -32,7 +33,7 @@ describe("Projects component", () => {
                     state: mockProjectsState(state),
                     actions: {
                         createProject: mockCreateProject,
-                        getProjects: jest.fn()
+                        getProjects: mockGetProjects
                     }
                 }
             }
@@ -48,8 +49,8 @@ describe("Projects component", () => {
         return {store, mocks}
     };
 
-    const getWrapper = (state: Partial<ProjectsState> = {}) => {
-        const {store, mocks} = createSut(state)
+    const getWrapper = (state: Partial<ProjectsState> = {}, isGuest: boolean = false) => {
+        const {store, mocks} = createSut(state, isGuest)
         return shallowMountWithTranslate(Projects, store, {global: {plugins: [store], mocks}});
     }
 
@@ -100,4 +101,17 @@ describe("Projects component", () => {
         expect(wrapper.find("#projects-content").exists()).toBe(false);
     });
 
+    it("gets projects when user is logged in", () => {
+        const wrapper = getWrapper()
+
+        expect(wrapper.find("#projects-content").exists()).toBe(true);
+        expect(mockGetProjects).toHaveBeenCalled()
+    })
+
+    it("does not get projects when user is not logged in", () => {
+        const wrapper = getWrapper({}, true)
+
+        expect(wrapper.find("#projects-content").exists()).toBe(true);
+        expect(mockGetProjects).not.toHaveBeenCalled()
+    })
 });

@@ -1,36 +1,38 @@
 <template>
     <div>
         <div class="dropdown">
-        <button type="button"
-                id="new-project-dropdown"
-                class="btn btn-red btn-lg dropdown-toggle-no-caret"
-                data-toggle="dropdown"
-                aria-haspopup="true"
-                aria-expanded="false">
-            <div class="mx-3">
-                <vue-feather type="plus" size="30" class="icon align-middle"></vue-feather>
-                <span class="ml-2 align-middle" v-translate="'newProjectDropdown'"></span>
+            <button type="button"
+                    id="new-project-dropdown"
+                    class="btn btn-red btn-lg dropdown-toggle-no-caret"
+                    data-toggle="dropdown"
+                    aria-haspopup="true"
+                    aria-expanded="false">
+                <div class="mx-3">
+                    <vue-feather type="plus" size="30" class="icon align-middle"></vue-feather>
+                    <span class="ml-2 align-middle" v-translate="'newProjectDropdown'"></span>
+                </div>
+            </button>
+            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="new-project-dropdown">
+                <button id="create-project-button"
+                        class="dropdown-item mb-0"
+                        type="button"
+                        @click="showCreateProjectModal">
+                    <vue-feather type="plus-circle" size="20" class="icon ml-1 align-middle"></vue-feather>
+                    <span class="align-middle ml-2" v-translate="'createProject'"></span>
+                </button>
+                <button id="load-zip-button"
+                        class="dropdown-item mb-0"
+                        type="button"
+                        @click="$refs.loadZip.click()">
+                    <vue-feather type="upload" size="20" class="icon ml-1 align-middle"></vue-feather>
+                    <span class="align-middle ml-2" v-translate="'loadZip'"></span>
+                </button>
+                <input id="upload-zip"
+                       v-translate:aria-label="'selectFile'"
+                       type="file"
+                       style="display: none;" ref="loadZip"
+                       @change="showLoadZipModal" accept=".zip">
             </div>
-        </button>
-        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="new-project-dropdown">
-            <button class="dropdown-item mb-0"
-                    type="button"
-                    @click="showCreateProjectModal">
-                <vue-feather type="plus-circle" size="20" class="icon ml-1 align-middle"></vue-feather>
-                <span class="align-middle ml-2" v-translate="'createProject'"></span>
-            </button>
-            <button class="dropdown-item mb-0"
-                    type="button"
-                    @click="$refs.loadZip.click()">
-                <vue-feather type="upload" size="20" class="icon ml-1 align-middle"></vue-feather>
-                <span class="align-middle ml-2" v-translate="'loadZip'"></span>
-            </button>
-            <input id="upload-zip"
-                   v-translate:aria-label="'selectFile'"
-                   type="file"
-                   style="display: none;" ref="loadZip"
-                   @change="showLoadZipModal" accept=".zip">
-        </div>
         </div>
 
         <div id="create-project">

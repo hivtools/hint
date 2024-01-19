@@ -1,6 +1,5 @@
 import {mount} from "@vue/test-utils";
 import {mockError, mockLoadState, mockProjectsState, mockRootState} from "../../mocks";
-import Vue, { nextTick } from "vue";
 import UploadNewProject from "../../../app/components/load/UploadNewProject.vue"
 import Vuex, {Store} from "vuex";
 import {emptyState, RootState} from "../../../app/root";
@@ -28,7 +27,6 @@ describe("uploadNewProject", () => {
 
     const mockSubmitFunction = jest.fn()
     const mockCancelFunction = jest.fn()
-    const mockGetProjects = jest.fn()
 
     const testProjects = [{id: 2, name: "proj1", versions: []}];
 
@@ -48,9 +46,6 @@ describe("uploadNewProject", () => {
                 projects: {
                     namespaced: true,
                     state: mockProjectsState({previousProjects: testProjects}),
-                    actions: {
-                        getProjects: mockGetProjects
-                    }
                 }
             }
         })
@@ -207,19 +202,5 @@ describe("uploadNewProject", () => {
         expect(wrapper.findComponent(UploadProgress).props("openModal")).toBe(true)
         await wrapper.findComponent(UploadProgress).find("button").trigger("click")
         expect(mockMutations.RehydrateCancel.mock.calls.length).toBe(1)
-    })
-
-    it("does not get projects when user is not logged in", () => {
-        const store = getStore({}, true)
-        const wrapper = getWrapper({}, store)
-
-        expect(wrapper.find(".modal").exists()).toBe(true)
-        expect(wrapper.find(".modal").attributes()).toEqual({
-            "class": "modal",
-            "style": "display: none;"
-        })
-        const uploadProject = wrapper.find("#load-project-name");
-        expect(uploadProject.exists()).toBe(true)
-        expect(mockGetProjects).not.toHaveBeenCalled()
     })
 })
