@@ -530,6 +530,14 @@ class ADRControllerTests : HintrControllerTests()
     }
 
     @Test
+    fun `imports output zip`()
+    {
+        assertSavesAndValidatesUrl(FileType.OutputZip) { sut ->
+            (sut as ADRController).importOutputZip(adrResource)
+        }
+    }
+
+    @Test
     fun `requests strict validation by default`()
     {
         val mockApiClient = getMockAPIClient(FileType.Survey)
