@@ -11,6 +11,7 @@
                 <span v-if="!isGuest" class="pr-2 mr-2 border-right text-white">
                     <span v-translate="'loggedInAs'"></span> {{ user }}
                 </span>
+                <div v-else style="flex:auto"></div>
                 <hintr-version-menu class="pr-2 mr-2 border-right"/>
                 <online-support-menu class="pr-2 mr-2 border-right"/>
                 <a v-if="!isGuest" href="/logout" class="pr-2 mr-2 border-right" v-translate="'logout'">

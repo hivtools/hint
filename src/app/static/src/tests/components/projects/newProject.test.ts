@@ -1,20 +1,12 @@
 import {expectHasTranslationKey} from "../../testHelpers";
 import Vuex from "vuex";
-import {mockDataExplorationState, mockFile, mockProjectsState, mockLoadState} from "../../mocks";
+import {mockFile, mockProjectsState, mockLoadState, mockRootState} from "../../mocks";
 import {DOMWrapper, mount, shallowMount, VueWrapper} from "@vue/test-utils";
 import NewProject from "../../../app/components/projects/NewProject.vue";
 import UploadNewProject from "../../../app/components/load/UploadNewProject.vue";
 import {Translations} from "../../../app/store/translations/locales";
 
 describe("New project component", () => {
-
-    // @ts-ignore
-    global.File = class MockFile {
-        filename: string;
-        constructor(parts: (string | Blob | ArrayBuffer | ArrayBufferView)[], filename: string, properties ? : FilePropertyBag) {
-            this.filename = filename;
-        }
-    }
 
     const mockTranslate = jest.fn();
     const mockCreateProject = jest.fn();
@@ -29,7 +21,7 @@ describe("New project component", () => {
 
     const createStore = () => {
         return new Vuex.Store({
-            state: mockDataExplorationState(),
+            state: mockRootState(),
             modules: {
                 projects: {
                     namespaced: true,
