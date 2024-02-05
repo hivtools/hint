@@ -421,7 +421,7 @@ export const resourceTypes = {
     survey: "inputs-unaids-survey",
     program: "inputs-unaids-art",
     anc: "inputs-unaids-anc",
-    vmmc: "inputs-unaids-vmmc-workbook"
+    vmmc: "inputs-unaids-vmmc-coverage-outputs"
 }
 
 export const getFormData = (file: File) => {
