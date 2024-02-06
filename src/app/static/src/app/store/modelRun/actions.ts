@@ -22,10 +22,12 @@ export const actions: ActionTree<ModelRunState, RootState> & ModelRunActions = {
         if (state.statusPollId !== -1) {
             commit(ModelRunMutation.RunCancelled);
         }
-        await api<ModelRunMutation, ModelRunMutation>(context)
-            .withSuccess(ModelRunMutation.ModelRunStarted)
-            .withError(ModelRunMutation.ModelRunError)
-            .postAndReturn<ModelSubmitResponse>("/model/run/", {options, version})
+        if (!state.startedRunning) {
+            await api<ModelRunMutation, ModelRunMutation>(context)
+                .withSuccess(ModelRunMutation.ModelRunStarted)
+                .withError(ModelRunMutation.ModelRunError)
+                .postAndReturn<ModelSubmitResponse>("/model/run/", {options, version})
+        }
     },
 
     poll(context, runId) {

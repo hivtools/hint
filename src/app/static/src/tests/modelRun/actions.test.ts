@@ -133,6 +133,14 @@ describe("Model run actions", () => {
 
     });
 
+    it.only("does not start another model run if one already started", () => {
+        const commit = jest.fn();
+        const state = mockModelRunState({ startedRunning: true });
+        actions.run({commit, state, rootState} as any);
+        expect(commit.mock.calls.length).toBe(1);
+        expect(commit.mock.calls[0][0]).toStrictEqual({payload: true, type: "StartedRunning"});
+    });
+
     it("poll commits status when successfully fetched",  (done) => {
         mockAxios.onGet(`/model/status/1234`)
             .reply(200, mockSuccess("TEST DATA"));
