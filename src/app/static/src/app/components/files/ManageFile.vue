@@ -26,8 +26,7 @@
                      :uploading="uploading"
                      @uploading="handleUploading"></file-upload>
         <error-alert v-if="hasError" :error="error!"></error-alert>
-        <reset-confirmation v-if="!dataExplorationMode"
-                            :discard-step-warning="modelOptions"
+        <reset-confirmation :discard-step-warning="modelOptions"
                             :continue-editing="deleteSelectedFile"
                             :cancel-editing="cancelEdit"
                             :open="showDeleteConfirmation"></reset-confirmation>

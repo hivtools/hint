@@ -24,31 +24,13 @@ class HomeController(
     @GetMapping(value = ["/", "/projects", "accessibility", "privacy"])
     fun index(model: Model): String
     {
-        return loadApp("naomi", appProperties.applicationTitle, "index", model)
-    }
-
-    @GetMapping("/callback/explore")
-    fun explore(model: Model): String
-    {
-        return loadApp("explore", appProperties.exploreApplicationTitle, "data-exploration", model)
-    }
-
-    @Suppress("FunctionOnlyReturningConstant")
-    @GetMapping("/explore")
-    fun exploreRedirect(): String
-    {
-        return "redirect:/callback/explore"
-    }
-
-    private fun loadApp(mode: String, applicationTitle: String, template: String, model: Model): String
-    {
         val userProfile = session.getUserProfile()
-        session.setMode(mode)
         versionRepository.saveVersion(session.getVersionId(), null)
-        model["title"] = applicationTitle
+        model["title"] = appProperties.applicationTitle
         model["user"] = userProfile.id
-        return template
+        return "index"
     }
+
 
     @GetMapping("/metrics", produces = ["text/plain"])
     fun metrics(): ResponseEntity<String>

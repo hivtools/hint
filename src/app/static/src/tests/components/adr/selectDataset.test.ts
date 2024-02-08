@@ -1,12 +1,12 @@
 import Vuex, {ActionTree} from "vuex";
 import { nextTick } from "vue";
-import {VueWrapper, flushPromises, mount, shallowMount} from "@vue/test-utils";
+import { flushPromises } from "@vue/test-utils";
 import SelectDataset from "../../../app/components/adr/SelectDataset.vue";
 import SelectRelease from "../../../app/components/adr/SelectRelease.vue";
 import Modal from "../../../app/components/Modal.vue";
 import TreeSelect from "@reside-ic/vue3-treeselect"
 import {
-    mockBaselineState, mockDataExplorationState,
+    mockBaselineState,
     mockDataset,
     mockDatasetResource,
     mockError,
@@ -26,11 +26,10 @@ import VueFeather from "vue-feather";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {expectTranslatedWithStoreType, mountWithTranslate, shallowMountWithTranslate} from "../../testHelpers";
 import {ADRState} from "../../../app/store/adr/adr";
-import {getters} from "../../../app/store/dataExploration/getters"
 import ResetConfirmation from "../../../app/components/resetConfirmation/ResetConfirmation.vue";
 import Mock = jest.Mock;
-import { DataExplorationState } from "../../../app/store/dataExploration/dataExploration";
 import HintTreeSelect from "../../../app/components/HintTreeSelect.vue";
+import {getters} from "../../../app/store/root/getters";
 
 describe("select dataset", () => {
 
@@ -303,7 +302,7 @@ describe("select dataset", () => {
         baselineGetters = {}) => {
 
         const store = new Vuex.Store({
-            state: mockDataExplorationState(),
+            state: mockRootState(),
             getters: getters,
             modules: genericModules(baselineProps, adrProps, requireConfirmation, baselineGetters)
         });
@@ -884,40 +883,6 @@ describe("select dataset", () => {
 
     it("imports baseline files if they exist", async () => {
         const store = getStore({}, {}, false, {
-            selectedDatasetAvailableResources: () => {
-                return {
-                    pjnz: mockDatasetResource(pjnz),
-                    pop: mockDatasetResource(pop),
-                    shape: mockDatasetResource(shape)
-                }
-            }
-        });
-        const rendered = mountWithTranslate(SelectDataset, store, {
-            global: {
-                plugins: [store],
-                stubs: ["treeselect"]
-            },
-        });
-        await rendered.find("button").trigger("click");
-
-        expect(rendered.findAllComponents(TreeSelect).length).toBe(1);
-        await rendered.setData({newDatasetId: "id1"})
-        await rendered.findComponent(Modal).find("button").trigger("click");
-
-        expect(rendered.findAllComponents(LoadingSpinner).length).toBe(1);
-
-        expect((baselineActions.importPJNZ as Mock).mock.calls[0][1]).toBe("pjnz.pjnz");
-        expect((baselineActions.importPopulation as Mock).mock.calls[0][1]).toBe("pop.csv");
-        expect((baselineActions.importShape as Mock).mock.calls[0][1]).toBe("shape.geojson");
-
-        await flushPromises();
-
-        expect(rendered.find("#loading-dataset").exists()).toBe(false);
-        expect(rendered.findComponent(Modal).props("open")).toBe(false);
-    });
-
-    it("imports baseline files does not trigger confirmation dialog when on data exploration mode", async () => {
-        const store = getStore({}, {}, true, {
             selectedDatasetAvailableResources: () => {
                 return {
                     pjnz: mockDatasetResource(pjnz),

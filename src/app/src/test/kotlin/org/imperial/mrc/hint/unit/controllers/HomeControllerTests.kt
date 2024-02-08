@@ -48,37 +48,8 @@ class HomeControllerTests
         val result = sut.index(mockModel)
         assertThat(result).isEqualTo("index")
 
-        verify(mockSession).setMode("naomi")
         verify(mockRepo).saveVersion("test-version", null)
         verify(mockModel).addAttribute("title", "Test App Title")
-        verify(mockModel).addAttribute("user", "test-user")
-    }
-
-    @Test
-    fun `explore saves version and sets model properties`()
-    {
-        val mockRepo = mock<VersionRepository>()
-
-        val mockProfile = mock<CommonProfile> {
-            on { id } doReturn "test-user"
-        }
-        val mockSession = mock<Session> {
-            on { getUserProfile() } doReturn mockProfile
-            on { getVersionId() } doReturn "test-version"
-        }
-        val mockAppProps = mock<AppProperties> {
-            on { exploreApplicationTitle } doReturn "Test Explore App Title"
-        }
-        val mockModel = mock<Model>()
-
-        val sut = HomeController(mockRepo, mockSession, mockAppProps, mock())
-
-        val result = sut.explore(mockModel)
-        assertThat(result).isEqualTo("data-exploration")
-
-        verify(mockSession).setMode("explore")
-        verify(mockRepo).saveVersion("test-version", null)
-        verify(mockModel).addAttribute("title", "Test Explore App Title")
         verify(mockModel).addAttribute("user", "test-user")
     }
 
@@ -93,13 +64,5 @@ class HomeControllerTests
         assertThat(result.body)
                 .isEqualTo("running 1\nbusy_workers 1\nidle_workers 2" +
                         "\npaused_workers 1\nexited_workers 1\nlost_workers 0\nlive_workers 4")
-    }
-
-    @Test
-    fun`can redirect from explore to callback slash explore endpoint`()
-    {
-        val mockMvc = standaloneSetup(HomeController(mock(), mock(), mock(), mock())).build()
-
-        mockMvc.perform(get("/explore")).andExpect(redirectedUrl("/callback/explore"))
     }
 }

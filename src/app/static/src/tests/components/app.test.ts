@@ -147,7 +147,7 @@ describe("App", () => {
 
         expect(spy).toHaveBeenCalled();
         expect(spy.mock.calls[0][0]?.language).toBe("pt");
-        expect(localStorageManager.getState(false)?.language).toEqual("pt")
+        expect(localStorageManager.getState()?.language).toEqual("pt")
     });
 
     it("resets model options if baseline selected dataset is updated and state is ready", () => {

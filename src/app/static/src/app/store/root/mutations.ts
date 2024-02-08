@@ -66,7 +66,6 @@ export const mutations: MutationTree<RootState> = {
             },
             currentUser: state.currentUser,
             downloadResults: initialDownloadResultsState(),
-            dataExplorationMode: false,
             downloadIndicator: initialDownloadIndicatorState()
         };
         Object.assign(state, resetState);

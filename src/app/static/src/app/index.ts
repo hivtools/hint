@@ -1,10 +1,9 @@
 import {createApp} from "vue";
-import {store, storeDataExploration, storePassword} from "./main"
-import {router, routerDataExploration} from "./router"
+import {store, storePassword} from "./main"
+import {router} from "./router"
 import translate from "./directives/translate";
 import FloatingVue from "floating-vue";
 import Hint from "./components/Hint.vue"
-import HintDataExploration from "./components/HintDataExploration.vue";
 import ForgotPassword from "./components/password/ForgotPassword.vue";
 import ResetPassword from "./components/password/ResetPassword.vue";
 import 'floating-vue/dist/style.css';
@@ -13,7 +12,6 @@ import "bootstrap/scss/bootstrap-grid.scss";
 import "@reside-ic/vue-nested-multiselect/style.css";
 
 const mountEl = document.querySelector("#app");
-const mountElDataExploration = document.querySelector("#dataExplorationApp");
 const mountElForgotPassword = document.querySelector("#forgotPasswordApp");
 const mountElResetPassword = document.querySelector("#resetPasswordApp");
 
@@ -47,17 +45,6 @@ const getApp = () => {
 
         app.mount('#app');
 
-        return app
-    } else if (mountElDataExploration) {
-        const app = createApp(HintDataExploration, {...(mountElDataExploration as HTMLDivElement).dataset});
-        app.use(storeDataExploration);
-        app.use(routerDataExploration);
-
-        app.use(FloatingVue, options);
-        app.directive("translate", translate(storeDataExploration));
-        
-        app.mount('#dataExplorationApp');
-        
         return app
     } else if (mountElForgotPassword) {
         const app = createApp(ForgotPassword, {...(mountElForgotPassword as HTMLDivElement).dataset});

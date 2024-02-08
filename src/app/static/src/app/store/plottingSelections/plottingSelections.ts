@@ -3,7 +3,7 @@ import {Module} from "vuex";
 import {mutations} from "./mutations";
 import {getters} from "./getters";
 import {Dict} from "../../types";
-import {DataExplorationState} from "../dataExploration/dataExploration";
+import {RootState} from "../../root";
 import {actions} from "./actions";
 
 export interface PlottingSelectionsState {
@@ -165,7 +165,7 @@ export const initialPlottingSelectionsState = (): PlottingSelectionsState => {
 
 const namespaced = true;
 
-export const plottingSelections = (existingState: Partial<DataExplorationState> | null): Module<PlottingSelectionsState, DataExplorationState> => {
+export const plottingSelections = (existingState: Partial<RootState> | null): Module<PlottingSelectionsState, RootState> => {
     return {
         namespaced,
         state: {...initialPlottingSelectionsState(), ...existingState && existingState.plottingSelections},

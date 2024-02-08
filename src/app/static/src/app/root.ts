@@ -8,7 +8,7 @@ import {
     SurveyAndProgramState,
 } from "./store/surveyAndProgram/surveyAndProgram";
 import {initialModelRunState, modelRun, ModelRunState} from "./store/modelRun/modelRun";
-import {initialStepperState, stepper} from "./store/stepper/stepper";
+import {initialStepperState, stepper, StepperState} from "./store/stepper/stepper";
 import {initialLoadState, LoadState} from "./store/load/state";
 import {load} from "./store/load/load";
 import {initialModelOutputState, modelOutput, ModelOutputState} from "./store/modelOutput/modelOutput";
@@ -43,15 +43,15 @@ import {
 import {ModelCalibrateMutation, ModelCalibrateUpdates} from "./store/modelCalibrate/mutations";
 import {GenericChartState, initialGenericChartState, genericChart} from "./store/genericChart/genericChart";
 import {Warning} from "./generated";
-import {DataExplorationState} from "./store/dataExploration/dataExploration";
 import {DownloadResultsMutation} from "./store/downloadResults/mutations";
 import {
     downloadIndicator,
     DownloadIndicatorState,
     initialDownloadIndicatorState
 } from "./store/downloadIndicator/downloadIndicator";
+import {TranslatableState} from "./types";
 
-export interface RootState extends DataExplorationState {
+export interface RootState extends TranslatableState {
     version: string,
     adr: ADRState,
     genericChart: GenericChartState,
@@ -65,6 +65,7 @@ export interface RootState extends DataExplorationState {
     modelCalibrate: ModelCalibrateState,
     modelOutput: ModelOutputState,
     plottingSelections: PlottingSelectionsState,
+    stepper: StepperState,
     load: LoadState,
     errors: ErrorsState,
     projects: ProjectsState
@@ -172,14 +173,12 @@ export const emptyState = (): RootState => {
         projects: initialProjectsState(),
         currentUser: currentUser,
         downloadResults: initialDownloadResultsState(),
-        dataExplorationMode: false,
         downloadIndicator: initialDownloadIndicatorState(),
         invalidSteps: []
     }
 };
 
-localStorageManager.deleteState(true); //Clear state in other mode if it exists
-const existingState = localStorageManager.getState(false);
+const existingState = localStorageManager.getState();
 
 export const storeOptions: StoreOptions<RootState> = {
     state: {...emptyState(), ...existingState},
