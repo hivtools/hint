@@ -1,5 +1,5 @@
 import { Commit } from "vuex";
-import { CalibrateMetadataResponse, FilterOption, FilterTypes } from "../../generated";
+import { CalibrateMetadataResponse, FilterOption, FilterRef, FilterTypes, PlotSettingOption } from "../../generated";
 import { PlotName } from "./plotSelections";
 import { PlotSelectionUpdate, PlotSelectionsMutations } from "./mutations";
 import { RootState } from "../../root";
@@ -46,6 +46,54 @@ const getFullNestedFilters = (filterOptions: NestedFilterOption[]) => {
     return fullFilterOptions;
 };
 
+export const selectedFiltersFromPlotSettings = (
+    settings: PlotSettingOption[],
+    defaultFilterTypes: FilterRef[] | undefined,
+    filterTypes: FilterTypes[]
+) => {
+    let filterRefs = defaultFilterTypes;
+    let multiFilters: string[] = [];
+    let filterValues: Record<string, string[]> = {};
+    settings.forEach(setting => {
+        // track which effects need to occur
+        const effect = setting.effect;
+        if (effect.setFilters) {
+            filterRefs = effect.setFilters;
+        }
+        if (effect.setMultiple) {
+            // remove dupes just in case
+            multiFilters = [...new Set([...multiFilters, ...effect.setMultiple])];
+        }
+        if (effect.setFilterValues) {
+            filterValues = {...filterValues, ...effect.setFilterValues};
+        }
+    });
+
+    const filterSelections: PlotSelectionUpdate["selections"]["filterSelections"] = {};
+    filterRefs!.forEach(f => {
+        const filter = filterTypes.find(filterType => filterType.id === f.filterId)!;
+        
+        filterSelections[f.stateFilterId] = multiFilters.includes(f.stateFilterId) ?
+                                            getFullNestedFilters(filter.options) :
+                                            [filter.options[0]];
+
+        if (f.stateFilterId in filterValues) {
+            const optionIds = filterValues[f.stateFilterId];
+            const filterOptions = [];
+            for (let i = 0; i < filter.options.length; i++) {
+                if (optionIds.includes(filter.options[i].id)) {
+                    filterOptions.push(filter.options[i]);
+                }
+                if (filterOptions.length === optionIds.length) {
+                    break;
+                }
+            }
+            filterSelections[f.stateFilterId] = filterOptions;
+        }
+    });
+    return filterSelections;
+}
+
 export const commitPlotDefaultSelections = (metadata: CalibrateMetadataResponse, commit: Commit, rootState: RootState) => {
     const plotControl = metadata.plotSettingsControl;
     const filters = filtersAfterUseShapeRegions(metadata.filterTypes, rootState);
@@ -53,61 +101,23 @@ export const commitPlotDefaultSelections = (metadata: CalibrateMetadataResponse,
         const name = plotName as PlotName;
         const selectionsInState: PlotSelectionUpdate = {
             plot: name,
-            selections: {
-                controls: {},
-                filterSelections: {}
-            }
+            selections: { controls: {}, filterSelections: {} }
         };
         const control = plotControl[plotName as PlotName];
-        let filterTypes = control.defaultFilterTypes;
-        let multiFitlers: string[] = [];
-        let filterValues: Record<string, string[]> = {}
-
-        // add default control options to state object and get filters
+        const defaultSettingOptions: PlotSettingOption[] = [];
         control.plotSettings.forEach(setting => {
             const defaultOption = setting.options[0];
+            defaultSettingOptions.push(defaultOption);
             if (setting.id !== "default") {
                 selectionsInState.selections.controls[setting.id] = [{ id: defaultOption.id, label: defaultOption.label }];
             }
-
-            // resolve effects
-            const effect = defaultOption.effect;
-            if (effect.setFilters) {
-                filterTypes = effect.setFilters;
-            }
-            if (effect.setMultiple) {
-                // remove dupes just in case
-                multiFitlers = [...new Set([...multiFitlers, ...effect.setMultiple])];
-            }
-            if (effect.setFilterValues) {
-                filterValues = {...filterValues, ...effect.setFilterValues};
-            }
         });
 
-        // we can now combine all the data to get filterSelections
-        filterTypes!.forEach(f => {
-            const filter = filters.find(filterType => filterType.id === f.filterId)!;
-            
-            if (multiFitlers.includes(f.stateFilterId)) {
-                selectionsInState.selections.filterSelections[f.stateFilterId] = getFullNestedFilters(filter.options);
-            } else {
-                selectionsInState.selections.filterSelections[f.stateFilterId] = [filter.options[0]];
-            }
-
-            if (f.stateFilterId in filterValues) {
-                const optionIds = filterValues[f.stateFilterId];
-                const filterOptions = [];
-                for (let i = 0; i < filter.options.length; i++) {
-                    if (optionIds.includes(filter.options[i].id)) {
-                        filterOptions.push(filter.options[i]);
-                    }
-                    if (filterOptions.length === optionIds.length) {
-                        break;
-                    }
-                }
-                selectionsInState.selections.filterSelections[f.stateFilterId] = filterOptions;
-            }
-        });
+        selectionsInState.selections.filterSelections = selectedFiltersFromPlotSettings(
+            defaultSettingOptions,
+            control.defaultFilterTypes,
+            filters
+        );
 
         commit(
             `plotSelections/${PlotSelectionsMutations.updatePlotSelection}`,
