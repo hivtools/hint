@@ -18,6 +18,34 @@ export const filtersAfterUseShapeRegions = (filterTypes: FilterTypes[], rootStat
     return filters;
 };
 
+type NestedFilterOption = {
+    id: string
+    label: string,
+    children?: NestedFilterOption[]
+}
+
+class Q {
+    items: NestedFilterOption[]
+    constructor() { this.items = [] }
+    enqueue(item: NestedFilterOption) { this.items.push(item) }
+    dequeue() { return this.items.pop()! }
+    isEmpty() { return this.items.length === 0 }
+}
+
+const getFullNestedFilters = (filterOptions: NestedFilterOption[]) => {
+    const fullFilterOptions: NestedFilterOption[] = [];
+    const q = new Q();
+    filterOptions.forEach(op => q.enqueue(op));
+    while (!q.isEmpty()) {
+        const currentOption = q.dequeue();
+        fullFilterOptions.push(currentOption);
+        if (currentOption.children && currentOption.children.length > 0) {
+            currentOption.children.forEach(op => q.enqueue(op));
+        }
+    }
+    return fullFilterOptions;
+};
+
 export const commitPlotDefaultSelections = (metadata: CalibrateMetadataResponse, commit: Commit, rootState: RootState) => {
     const plotControl = metadata.plotSettingsControl;
     const filters = filtersAfterUseShapeRegions(metadata.filterTypes, rootState);
@@ -60,9 +88,8 @@ export const commitPlotDefaultSelections = (metadata: CalibrateMetadataResponse,
         filterTypes!.forEach(f => {
             const filter = filters.find(filterType => filterType.id === f.filterId)!;
             
-            // TODO need to consider nested children
             if (multiFitlers.includes(f.stateFilterId)) {
-                selectionsInState.selections.filterSelections[f.stateFilterId] = filter.options;
+                selectionsInState.selections.filterSelections[f.stateFilterId] = getFullNestedFilters(filter.options);
             } else {
                 selectionsInState.selections.filterSelections[f.stateFilterId] = [filter.options[0]];
             }
