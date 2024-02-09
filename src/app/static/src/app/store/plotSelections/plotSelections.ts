@@ -1,28 +1,29 @@
-import { CalibrateMetadataResponse, FilterOption } from "../../generated";
+import { CalibrateMetadataResponse, FilterOption, FilterRef } from "../../generated";
 import { mutations } from "./mutations";
 
 export type PlotName = keyof CalibrateMetadataResponse["plotSettingsControl"]
 const plotNames: PlotName[] = ["barchart", "choropleth", "bubble", "table"]
 
-type FilterConfigValue = {
-    filterId: string
-    label: string
+export type FilterSelection = {
     multiple: boolean
+    selection: FilterOption[]
+} & FilterRef
+
+export type ControlSelection = {
+    id: string,
+    label: string,
+    selection: FilterOption[]
 }
 
 export type PlotSelectionsState = {
     [P in PlotName]: {
-        controls: Record<string, FilterOption[]>
-        filterSelections: Record<string, FilterOption[]>,
-        filterConfig: Record<string, FilterConfigValue>
+        controls: ControlSelection[]
+        filters: FilterSelection[]
     }
 }
 
 export const initialPlotSelectionsState = (): PlotSelectionsState => {
-    const emptySelections = {
-        controls: {},
-        filterSelections: {}
-    };
+    const emptySelections: PlotSelectionsState[PlotName] = { controls: [], filters: [] };
     return Object.fromEntries(plotNames.map(plot => [plot, emptySelections])) as PlotSelectionsState;
 }
 
