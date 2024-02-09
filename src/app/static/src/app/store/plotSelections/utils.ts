@@ -46,7 +46,7 @@ const getFullNestedFilters = (filterOptions: NestedFilterOption[]) => {
     return fullFilterOptions;
 };
 
-export const selectedFiltersFromPlotSettings = (
+export const filtersInfoFromPlotSettings = (
     settings: PlotSettingOption[],
     defaultFilterTypes: FilterRef[] | undefined,
     filterTypes: FilterTypes[]
@@ -68,6 +68,18 @@ export const selectedFiltersFromPlotSettings = (
             filterValues = {...filterValues, ...effect.setFilterValues};
         }
     });
+
+    // construct filter config so the frontend doesn't need to
+    // parse through metadata for what to render
+    const filterConfig: PlotSelectionUpdate["selections"]["filterConfig"] = {};
+    filterRefs!.forEach(f => {
+        filterConfig[f.stateFilterId] = {
+            filterId: f.filterId,
+            label: f.label,
+            multiple: multiFilters.includes(f.stateFilterId)
+        }
+    })
+
 
     const filterSelections: PlotSelectionUpdate["selections"]["filterSelections"] = {};
     filterRefs!.forEach(f => {
@@ -91,7 +103,7 @@ export const selectedFiltersFromPlotSettings = (
             filterSelections[f.stateFilterId] = filterOptions;
         }
     });
-    return filterSelections;
+    return { filterSelections, filterConfig };
 }
 
 export const commitPlotDefaultSelections = (metadata: CalibrateMetadataResponse, commit: Commit, rootState: RootState) => {
@@ -101,7 +113,11 @@ export const commitPlotDefaultSelections = (metadata: CalibrateMetadataResponse,
         const name = plotName as PlotName;
         const selectionsInState: PlotSelectionUpdate = {
             plot: name,
-            selections: { controls: {}, filterSelections: {} }
+            selections: {
+                controls: {},
+                filterSelections: {},
+                filterConfig: {}
+            }
         };
         const control = plotControl[plotName as PlotName];
         const defaultSettingOptions: PlotSettingOption[] = [];
@@ -113,11 +129,14 @@ export const commitPlotDefaultSelections = (metadata: CalibrateMetadataResponse,
             }
         });
 
-        selectionsInState.selections.filterSelections = selectedFiltersFromPlotSettings(
+        const { filterSelections, filterConfig } = filtersInfoFromPlotSettings(
             defaultSettingOptions,
             control.defaultFilterTypes,
             filters
         );
+
+        selectionsInState.selections.filterSelections = filterSelections;
+        selectionsInState.selections.filterConfig = filterConfig;
 
         commit(
             `plotSelections/${PlotSelectionsMutations.updatePlotSelection}`,

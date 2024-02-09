@@ -4,10 +4,17 @@ import { mutations } from "./mutations";
 export type PlotName = keyof CalibrateMetadataResponse["plotSettingsControl"]
 const plotNames: PlotName[] = ["barchart", "choropleth", "bubble", "table"]
 
+type FilterConfigValue = {
+    filterId: string
+    label: string
+    multiple: boolean
+}
+
 export type PlotSelectionsState = {
     [P in PlotName]: {
         controls: Record<string, FilterOption[]>
-        filterSelections: Record<string, FilterOption[]>
+        filterSelections: Record<string, FilterOption[]>,
+        filterConfig: Record<string, FilterConfigValue>
     }
 }
 
