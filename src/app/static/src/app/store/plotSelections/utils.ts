@@ -1,5 +1,5 @@
 import { Commit } from "vuex";
-import { CalibrateMetadataResponse, FilterOption, FilterRef, FilterTypes, PlotSettingOption } from "../../generated";
+import { CalibrateMetadataResponse, FilterOption, FilterTypes, PlotSettingOption } from "../../generated";
 import { PlotName } from "./plotSelections";
 import { PlotSelectionUpdate, PlotSelectionsMutations } from "./mutations";
 import { RootState } from "../../root";
