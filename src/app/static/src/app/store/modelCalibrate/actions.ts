@@ -187,7 +187,6 @@ export const getResultMetadata = async function (context: ActionContext<ModelCal
 
     if (response) {
         const data = response.data;
-        console.log(data)
         commit({type: ModelCalibrateMutation.MetadataFetched, payload: data});
 
         commitPlotDefaultSelections(data, commit, rootState);
