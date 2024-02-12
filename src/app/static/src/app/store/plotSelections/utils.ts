@@ -5,17 +5,18 @@ import { PlotSelectionUpdate, PlotSelectionsMutations } from "./mutations";
 import { RootState } from "../../root";
 
 export const filtersAfterUseShapeRegions = (filterTypes: FilterTypes[], rootState: RootState) => {
-    const filters = [...filterTypes];
-    const area = filters.find(f => f.id == "area");
-    if (area && area.use_shape_regions) {
+    return filterTypes.map(filter => filterAfterUseShapeRegions(filter, rootState));
+};
+
+export const filterAfterUseShapeRegions = (filterType: FilterTypes, rootState: RootState) => {
+    if (filterType.use_shape_regions) {
         const regions: FilterOption[] = rootState.baseline.shape!.filters!.regions ?
             [rootState.baseline.shape!.filters!.regions] : [];
 
-        const index = filters.findIndex(f => f.id === "area");
-        const { use_shape_regions, ...areaFilterConfig } = area;
-        filters[index] = { ...areaFilterConfig, options: regions };
+        const { use_shape_regions: _, ...areaFilterConfig } = filterType;
+        filterType = { ...areaFilterConfig, options: regions };
     }
-    return filters;
+    return filterType;
 };
 
 type NestedFilterOption = {

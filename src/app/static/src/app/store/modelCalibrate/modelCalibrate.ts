@@ -9,10 +9,11 @@ import {
     CalibrateStatusResponse,
     CalibrateResultResponse,
     ComparisonPlotResponse,
-    CalibrateDataResponse, PlottingMetadataResponse, CalibrateMetadataResponse
+    CalibrateDataResponse,
+    CalibrateMetadataResponse, FilterTypes,
 } from "../../generated";
-import {BarchartIndicator, Filter} from "../../types";
-import {BarchartSelections, PlottingSelectionsState} from "../plottingSelections/plottingSelections";
+import {filterAfterUseShapeRegions, filtersAfterUseShapeRegions} from "../plotSelections/utils";
+import {PlotName} from "../plotSelections/plotSelections";
 
 export interface ModelCalibrateState extends ReadyState, WarningsState {
     optionsFormMeta: DynamicFormMeta
@@ -59,15 +60,18 @@ export const initialModelCalibrateState = (): ModelCalibrateState => {
 };
 
 export const modelCalibrateGetters = {
-    indicators: (state: ModelCalibrateState): BarchartIndicator[] => {
-        return state.calibratePlotResult!.plottingMetadata.barchart.indicators;
+    outputFilterOptions: (state: ModelCalibrateState, getters: any, rootState: RootState) => (filterId: string) => {
+        const type = state.metadata!.filterTypes.find(f => f.id === filterId);
+        return filterAfterUseShapeRegions(type as FilterTypes, rootState).options;
     },
-    filters: (state: ModelCalibrateState): Filter[] => {
-        return state.calibratePlotResult!.plottingMetadata.barchart.filters;
+    plotControlOptions: (state: ModelCalibrateState) => (activePlot: PlotName, plotControlId: string) => {
+        const control = state.metadata!.plotSettingsControl[activePlot].plotSettings.find(f => f.id === plotControlId);
+        if (control) {
+            return control.options;
+        } else {
+            return [];
+        }
     },
-    calibratePlotDefaultSelections: (state: ModelCalibrateState): BarchartSelections => {
-        return state.calibratePlotResult!.plottingMetadata.barchart.defaults;
-    }
 };
 
 const namespaced = true;

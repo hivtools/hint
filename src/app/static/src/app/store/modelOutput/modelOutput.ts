@@ -75,7 +75,7 @@ export const modelOutputGetters = {
 const getPresetMetadata = (rootState: RootState) => {
     const currentPreset = rootState.plottingSelections.table.preset;
     const presetMetadata = rootState.modelCalibrate.metadata?.tableMetadata.presets;
-    const currentPresetMetadata = presetMetadata?.find(p => p.defaults.id === currentPreset);
+    const currentPresetMetadata = presetMetadata?.find((p: any) => p.defaults.id === currentPreset);
     if (currentPreset && presetMetadata && currentPresetMetadata) {
         return currentPresetMetadata;
     }
