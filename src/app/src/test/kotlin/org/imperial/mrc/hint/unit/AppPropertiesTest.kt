@@ -55,14 +55,6 @@ class AppPropertiesTests
     }
 
     @Test
-    fun `can read exploreApplicationTitle`()
-    {
-        val props = readPropsFromTempFile("explore_application_title=Explore TestTitle")
-        val sut = ConfiguredAppProperties(props)
-        assertEquals(sut.exploreApplicationTitle, "Explore TestTitle")
-    }
-
-    @Test
     fun `can read applicationUrl`()
     {
         val props = readPropsFromTempFile("application_url=https://test")

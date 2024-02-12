@@ -100,8 +100,8 @@
     import {Error} from "../generated";
     import { ErrorsState } from "../store/errors/errors";
     import LoadingSpinner from "./LoadingSpinner.vue";
-    import {DataExplorationState} from "../store/dataExploration/dataExploration";
     import { defineComponent } from "vue";
+    import { RootState } from '../root';
 
     export default defineComponent({
         components: {
@@ -126,8 +126,8 @@
             }
         },
         computed: {
-            currentLanguage: mapStateProp<DataExplorationState, Language>(null,
-                (state: DataExplorationState) => state.language),
+            currentLanguage: mapStateProp<RootState, Language>(null,
+                (state: RootState) => state.language),
             errorReportError: mapStateProp<ErrorsState, Error | null>(
                 "errors",
                 (state: ErrorsState) => state.errorReportError),

@@ -6,8 +6,7 @@ describe("Root", () => {
         jest.clearAllMocks();
     });
 
-    it("deletes state from explore app, and loads state for main app, from local storage on load", async () => {
-        const mockDeleteState = jest.spyOn(localStorageManager, "deleteState");
+    it("loads state for main app, from local storage on load", async () => {
         const mockGetState = jest.spyOn(localStorageManager, "getState");
         const mockSaveState = jest.spyOn(localStorageManager, "saveState");
 
@@ -15,8 +14,7 @@ describe("Root", () => {
         console.log = mockConsoleLog;
 
         const module = await import("../app/root");
-        expect(mockDeleteState).toHaveBeenCalledWith(true);
-        expect(mockGetState).toHaveBeenCalledWith(false);
+        expect(mockGetState).toHaveBeenCalledTimes(1);
 
         // Also check persistState plugin is functioning
         expect(mockSaveState).toHaveBeenCalledTimes(0);

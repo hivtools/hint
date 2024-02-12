@@ -3,7 +3,7 @@ import {Error} from "../../generated";
 import {ADRSchemas} from "../../types";
 import {actions} from "./actions";
 import {mutations} from "./mutations";
-import {DataExplorationState} from "../dataExploration/dataExploration";
+import {RootState} from "../../root";
 
 export interface ADRState {
     datasets: any[],
@@ -33,7 +33,7 @@ export const initialADRState = (): ADRState => {
 
 const namespaced = true;
 
-export const adr: Module<ADRState, DataExplorationState> = {
+export const adr: Module<ADRState, RootState> = {
     namespaced,
     state: {...initialADRState()},
     actions,

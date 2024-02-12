@@ -74,7 +74,7 @@ export const actions: ActionTree<LoadState, RootState> & LoadActions = {
             }
         }
 
-        localStorageManager.savePartialState(savedState, false);
+        localStorageManager.savePartialState(savedState);
         location.reload();
     },
 

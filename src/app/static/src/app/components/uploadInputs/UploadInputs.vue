@@ -4,7 +4,7 @@
             <div class="col-sm-6 col-md-8">
                 <form>
                     <manage-file label="PJNZ"
-                                 :required="!dataExplorationMode"
+                                 :required="true"
                                  :valid="pjnz.valid"
                                  :fromADR="pjnz.fromADR"
                                  :error="pjnz.error || plottingMetadataError"
@@ -28,7 +28,7 @@
                                  name="shape">
                     </manage-file>
                     <manage-file label="population"
-                                 :required="!dataExplorationMode"
+                                 :required="true"
                                  :valid="population.valid"
                                  :fromADR="population.fromADR"
                                  :error="population.error"
@@ -39,7 +39,7 @@
                                  name="population">
                     </manage-file>
                     <manage-file label="survey"
-                                 :required="!dataExplorationMode"
+                                 :required="true"
                                  :valid="survey.valid"
                                  :fromADR="survey.fromADR"
                                  :error="survey.error"
@@ -130,7 +130,6 @@
         survey: ADRResponse,
         programme: ADRResponse,
         vmmc: ADRResponse,
-        dataExplorationMode: boolean
     }
 
     interface Methods {
@@ -208,7 +207,6 @@
                     existingFileName: (surveyAndProgram.vmmc && surveyAndProgram.vmmc.filename) || surveyAndProgram.vmmcErroredFile
                 })
             }),
-            dataExplorationMode: mapStatePropByName(null, "dataExplorationMode"),
         },
         methods: {
             ...mapActions({

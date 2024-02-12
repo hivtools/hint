@@ -66,21 +66,6 @@ describe("Survey and programme actions", () => {
         expect(commit.mock.calls[4][0]["type"]).toBe(SurveyAndProgramMutation.WarningsFetched);
     });
 
-    it("can upload data with lax validation", async () => {
-
-        const commit = jest.fn();
-        const formData = getFormData("anc-pos-greater-than-total.csv");
-        const root = {...rootState, dataExplorationMode: true}
-
-        await actions.uploadANC({commit, rootState: root} as any, formData);
-        expect(commit.mock.calls[2][0]["type"]).toBe("genericChart/ClearDataset");
-        expect(commit.mock.calls[2][0]["payload"]).toBe("anc");
-        expect(commit.mock.calls[3][0]["type"]).toBe(SurveyAndProgramMutation.ANCUpdated);
-        expect(commit.mock.calls[3][0]["payload"]["filename"])
-            .toBe("anc-pos-greater-than-total.csv");
-        expect(commit.mock.calls[4][0]["type"]).toBe(SurveyAndProgramMutation.WarningsFetched);
-    });
-
     it("can delete survey", async () => {
         const commit = jest.fn();
 

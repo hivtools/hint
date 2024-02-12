@@ -2,7 +2,7 @@ import { Module } from "vuex";
 import { actions } from "./actions";
 import { mutations } from "./mutations";
 import { HintrVersionResponse } from "../../generated";
-import {DataExplorationState} from "../dataExploration/dataExploration";
+import {RootState} from "../../root";
 
 export interface HintrVersionState {
     hintrVersion: HintrVersionResponse
@@ -16,7 +16,7 @@ export const initialHintrVersionState = (): HintrVersionState => {
 
 const namespaced = true;
 
-export const hintrVersion = (existingState: Partial<DataExplorationState> | null): Module<HintrVersionState, DataExplorationState> => {
+export const hintrVersion = (existingState: Partial<RootState> | null): Module<HintrVersionState, RootState> => {
     return  {
         namespaced,
         state: { ...initialHintrVersionState(), ...existingState && existingState.hintrVersion },

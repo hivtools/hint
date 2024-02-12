@@ -1,14 +1,10 @@
 import {RootState} from "./root";
 import {currentHintVersion} from "./hintVersion";
-import {DataExplorationState} from "./store/dataExploration/dataExploration";
 import {Language} from "./store/translations/locales";
 
-const getAppStateKey = (dataExplorationMode: boolean) => {
-    const appType = dataExplorationMode ? "hintAppState_explore" : "hintAppState";
-    return `${appType}_v${currentHintVersion}`;
-};
+const appStateKey = `hintAppState_v${currentHintVersion}`;
 
-export const serialiseState = (state: DataExplorationState): Partial<RootState> => {
+export const serialiseState = (state: RootState): Partial<RootState> => {
     const baseline = {
         selectedDataset: state.baseline.selectedDataset,
         selectedDatasetIsRefreshed: state.baseline.selectedDatasetHasChanged,
@@ -20,43 +16,29 @@ export const serialiseState = (state: DataExplorationState): Partial<RootState> 
     } as any;
     const metadata =  {...state.metadata, plottingMetadataError: null};
     const plottingSelections = state.plottingSelections;
-    if (state.dataExplorationMode) {
-        return {
-            version: state.version,
-            baseline,
-            metadata,
-            plottingSelections,
-            surveyAndProgram,
-            stepper: state.stepper,
-            hintrVersion: state.hintrVersion
-        }
-
-    } else {
-        const rootState = state as RootState;
-        return {
-            version: state.version,
-            baseline,
-            metadata,
-            plottingSelections,
-            surveyAndProgram,
-            modelRun: {
-                ...rootState.modelRun,
-                statusPollId: -1,
-                result: null,
-                errors: []
-            },
-            modelOptions: rootState.modelOptions,
-            modelOutput: rootState.modelOutput,
-            modelCalibrate: {
-                ...rootState.modelCalibrate,
-                result: null,
-                fetchedIndicators: null,
-                calibratePlotResult: null,
-                comparisonPlotResult: null
-            },
-            stepper: rootState.stepper,
-            hintrVersion: state.hintrVersion
-        };
+    return {
+        version: state.version,
+        baseline,
+        metadata,
+        plottingSelections,
+        surveyAndProgram,
+        modelRun: {
+            ...state.modelRun,
+            statusPollId: -1,
+            result: null,
+            errors: []
+        },
+        modelOptions: state.modelOptions,
+        modelOutput: state.modelOutput,
+        modelCalibrate: {
+            ...state.modelCalibrate,
+            result: null,
+            fetchedIndicators: null,
+            calibratePlotResult: null,
+            comparisonPlotResult: null
+        },
+        stepper: state.stepper,
+        hintrVersion: state.hintrVersion
     }
 };
 
@@ -73,23 +55,21 @@ export class LocalStorageManager {
         return storedLang ? storedLang as Language : Language.en;
     }
 
-    saveState = (state: DataExplorationState) => {
+    saveState = (state: RootState) => {
         const partialState = serialiseState(state);
-        this.savePartialState(partialState, state.dataExplorationMode);
+        this.savePartialState(partialState);
     };
 
-    savePartialState = (partialState: Partial<RootState>, dataExplorationMode: boolean) => {
-        const appStateKey = getAppStateKey(dataExplorationMode);
-            window.localStorage.setItem(appStateKey, JSON.stringify(partialState));
+    savePartialState = (partialState: Partial<RootState>) => {
+        window.localStorage.setItem(appStateKey, JSON.stringify(partialState));
     };
 
-    getState = (dataExplorationMode: boolean): Partial<RootState> | null => {
+    getState = (): Partial<RootState> | null => {
         if (currentUser != window.localStorage.getItem("user")) {
             localStorage.clear();
             localStorage.setItem("user", currentUser);
         }
 
-        const appStateKey = getAppStateKey(dataExplorationMode);
         const item = window.localStorage.getItem(appStateKey);
         if (item) {
             const partialRootState = JSON.parse(item) as Partial<RootState>;
@@ -101,10 +81,6 @@ export class LocalStorageManager {
         } else {
             return null;
         }
-    };
-
-    deleteState = (dataExplorationMode: boolean): void => {
-        window.localStorage.removeItem(getAppStateKey(dataExplorationMode));
     };
 }
 
