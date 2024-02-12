@@ -15,6 +15,7 @@ import {useStore} from "vuex";
 import {RootState} from "../../root";
 import {FilterOption} from "../../generated";
 import {PlotName} from "../../store/plotSelections/plotSelections";
+import { PlotSelectionActionUpdate } from "../../store/plotSelections/actions";
 
 export default defineComponent({
     props: {
@@ -29,11 +30,19 @@ export default defineComponent({
             return store.getters["modelCalibrate/plotControlOptions"](props.activePlot, props.plotControlId);
         });
 
-        const selected = ref<string>(props.selectedControl[0]?.id);
+        const selected = computed(() => props.selectedControl![0].id);
         const updateControlSelection = (newSelection: FilterOption) => {
-            // TODO: dispatch action to run the effects
-            console.log("Running effects for plot control " + newSelection.id);
-            selected.value = newSelection.id;
+            store.dispatch("plotSelections/updateSelections", {
+                payload: {
+                    plot: props.activePlot,
+                    selection: {
+                        plotSetting: {
+                            id: props.plotControlId,
+                            options: [newSelection]
+                        }
+                    }
+                } as PlotSelectionActionUpdate
+            });
         };
 
         const placeholder = computed(() => {

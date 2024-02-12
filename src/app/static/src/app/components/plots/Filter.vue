@@ -7,7 +7,7 @@
                   @update:model-value="updateSelection"/>
     <single-select v-else
                    :options="options"
-                   :model-value="selected[0]"
+                   :model-value="selected?.at(0)"
                    :placeholder="placeholder"
                    @update:model-value="updateSelection"/>
 
@@ -15,11 +15,12 @@
 
 <script lang="ts">
 import { SingleSelect, MultiSelect } from "@reside-ic/vue-nested-multiselect";
-import {computed, defineComponent, PropType, ref} from 'vue';
+import {computed, defineComponent, PropType} from 'vue';
 import i18next from "i18next";
 import {useStore} from "vuex";
 import {RootState} from "../../root";
 import {FilterOption} from "../../generated";
+import {PlotSelectionActionUpdate} from "../../store/plotSelections/actions";
 
 export default defineComponent({
     props: {
@@ -34,15 +35,21 @@ export default defineComponent({
             return store.getters["modelCalibrate/outputFilterOptions"](props.filterId)
         });
 
-        const selected = ref<string[]>(props.selectedOptions?.map(option => option.id));
+        const selected = computed(() => {
+            return props.selectedOptions?.map(option => option.id);
+        })
         const updateSelection = (newSelection: FilterOption | FilterOption[]) => {
-            // TODO: dispatch event and update the selectedOptions in state
-            console.log("Updating selection to " + JSON.stringify(newSelection));
-            if (Array.isArray(newSelection)) {
-                selected.value = newSelection.map(newOption => newOption.id);
-            } else {
-                selected.value = [newSelection.id];
-            }
+            store.dispatch("plotSelections/updateSelections", {
+                payload: {
+                    plot: "barchart",
+                    selection: {
+                        filter: {
+                            filterId: props.filterId,
+                            options: Array.isArray(newSelection) ? newSelection : [newSelection]
+                        }
+                    }
+                } as PlotSelectionActionUpdate
+            });
         };
 
         const placeholder = computed(() => {
