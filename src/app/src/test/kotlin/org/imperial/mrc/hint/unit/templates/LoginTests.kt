@@ -96,23 +96,6 @@ class LoginTests
     }
 
     @Test
-    fun `renders correctly for data exploration`()
-    {
-        val model = ConcurrentModel()
-        model["oauth2LoginMethod"] = false
-        model["username"] = ""
-        model["error"] = ""
-        model["title"] = "test title"
-        model["appTitle"] = "Naomi Data Exploration"
-        model["continueTo"] = "/callback/explore"
-        val doc = template.jsoupDocFor(model)
-
-        assertThat(doc.select("h1").count()).isEqualTo(1)
-        assertThat(doc.select("h1").text()).isEqualTo("Naomi Data Exploration")
-        assertThat(doc.select("#continue-as-guest a").attr("href")).isEqualTo("/callback/explore")
-    }
-
-    @Test
     fun `renders oauth2 login page correctly`()
     {
         val model = ConcurrentModel()

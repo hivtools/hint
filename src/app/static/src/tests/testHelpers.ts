@@ -6,12 +6,11 @@ import {Language, Translations} from "../app/store/translations/locales";
 import registerTranslations from "../app/store/translations/registerTranslations";
 import {LanguageMutation} from "../app/store/language/mutations";
 import ErrorReport from "../app/components/ErrorReport.vue";
-import {DataExplorationState} from "../app/store/dataExploration/dataExploration";
-import {VNode} from "vue";
 import { VueWrapper, mount, shallowMount } from "@vue/test-utils";
 import translate from "../app/directives/translate";
 import { nextTick } from "vue";
 import Mock = jest.Mock;
+import {RootState} from "../app/root";
 
 export function expectEqualsFrozen(args: PayloadWithType<any>, expected: PayloadWithType<any>) {
     expect(Object.isFrozen(args["payload"])).toBe(true);
@@ -98,9 +97,9 @@ export const expectTranslated = async (element: DOMWrapper<any>,
                                  englishText: string,
                                  frenchText: string,
                                  portugueseText: string,
-                                 store: Store<DataExplorationState>,
+                                 store: Store<RootState>,
                                  attribute?: string) =>
-    expectTranslatedWithStoreType<DataExplorationState>(element, englishText, frenchText, portugueseText, store, attribute);
+    expectTranslatedWithStoreType<RootState>(element, englishText, frenchText, portugueseText, store, attribute);
 
 export const expectHasTranslationKey = (element: DOMWrapper<any>,
                                         mockTranslate: Mock,

@@ -3,7 +3,6 @@ import i18next from "i18next";
 import {LanguageMutation} from "./mutations";
 import {Language} from "../translations/locales";
 import {TranslatableState} from "../../types";
-import {DataExplorationState} from "../dataExploration/dataExploration";
 import {RootState} from "../../root";
 
 export async function changeLanguage<T extends TranslatableState>({commit}: ActionContext<T, T>, lang: Language) {
@@ -11,11 +10,7 @@ export async function changeLanguage<T extends TranslatableState>({commit}: Acti
     commit({type: LanguageMutation.ChangeLanguage, payload: lang})
 }
 
-function isRoot(object: DataExplorationState): object is RootState {
-    return !object.dataExplorationMode
-}
-
-export const ChangeLanguageAction = async (context: ActionContext<DataExplorationState, DataExplorationState>, payload: Language) => {
+export const ChangeLanguageAction = async (context: ActionContext<RootState, RootState>, payload: Language) => {
 
     const {commit, dispatch, rootState} = context;
 
@@ -25,7 +20,7 @@ export const ChangeLanguageAction = async (context: ActionContext<DataExploratio
 
     commit({type: LanguageMutation.SetUpdatingLanguage, payload: true});
 
-    await changeLanguage<DataExplorationState>(context, payload);
+    await changeLanguage<RootState>(context, payload);
 
     const actions: Promise<unknown>[] = [];
 
@@ -33,7 +28,7 @@ export const ChangeLanguageAction = async (context: ActionContext<DataExploratio
         actions.push(dispatch("metadata/getPlottingMetadata", rootState.baseline.iso3));
     }
 
-    if (isRoot(rootState) && rootState.modelCalibrate.status.done) {
+    if (rootState.modelCalibrate.status.done) {
         actions.push(dispatch("modelCalibrate/getResult"));
     }
 

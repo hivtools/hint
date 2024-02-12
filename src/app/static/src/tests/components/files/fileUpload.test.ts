@@ -1,14 +1,12 @@
-import Vue, { defineComponent, nextTick } from "vue";
-import {DOMWrapper, flushPromises, shallowMount} from '@vue/test-utils';
+import { defineComponent, nextTick } from "vue";
 
 import FileUpload from "../../../app/components/files/FileUpload.vue";
-import {mockDataExplorationState, mockFile} from "../../mocks";
+import {mockFile} from "../../mocks";
 import Vuex, {Store} from "vuex";
-import {emptyState} from "../../../app/root";
+import {emptyState, RootState} from "../../../app/root";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {BDropdown} from "bootstrap-vue-next";
 import {expectTranslatedWithStoreType, mountWithTranslate, shallowMountWithTranslate} from "../../testHelpers";
-import {DataExplorationState, initialDataExplorationState} from "../../../app/store/dataExploration/dataExploration";
 
 describe("File upload component", () => {
     global.FormData = class MockFormData {
@@ -24,14 +22,28 @@ describe("File upload component", () => {
         }
     } as any
 
-    const createStore = (state = initialDataExplorationState(), requireConfirmation = false) => {
+    const createStore = (state = emptyState(), requireConfirmation = false) => {
+        const mockStepperGetters = {
+            editsRequireConfirmation: () => requireConfirmation,
+            changesToRelevantSteps: () => [{number: 4, textKey: "fitModel"}]
+        };
+
         const store = new Vuex.Store({
             state: state,
             modules: {
                 stepper: {
                     namespaced: true,
-                    getters: {editsRequireConfirmation: () => requireConfirmation}
-                }
+                    getters: mockStepperGetters
+                },
+                errors: {
+                    namespaced: true
+                },
+                projects: {
+                    namespaced: true,
+                },
+            },
+            getters: {
+                isGuest: () => false
             }
         });
         registerTranslations(store);
@@ -41,7 +53,7 @@ describe("File upload component", () => {
     const mockHideDropDown = jest.fn();
     const dropdownWithMockedHideMethod = defineComponent({mixins: [BDropdown], methods: {hide: mockHideDropDown}});
 
-    const createSut = (props?: any, slots?: any, storeOptions?: Store<DataExplorationState>) => {
+    const createSut = (props?: any, slots?: any, storeOptions?: Store<RootState>) => {
         const store = storeOptions || createStore();
         return mountWithTranslate(FileUpload, store, {
             global: {
@@ -132,31 +144,7 @@ describe("File upload component", () => {
         expect(wrapper.emitted().uploading.length).toBe(1);
     });
 
-    it("does not trigger confirmation dialog when on data exploration mode", async () => {
-        const store = createStore(mockDataExplorationState(), true);
-        const wrapper = shallowMountWithTranslate(FileUpload, store, {
-            global: {
-                plugins: [store]
-            },
-            props: {
-                uploading: false,
-                upload: jest.fn(),
-                name: "pjnz",
-                accept: "csv"
-            }
-        });
-
-        (wrapper.vm.$refs as any).pjnz = {
-            files: [testFile]
-        };
-        (wrapper.vm as any).handleFileSelect();
-
-        await nextTick();
-
-        expect(wrapper.emitted().uploading.length).toBe(1);
-    });
-
-    it("can trigger confirmation dialog when not on data exploration mode", async () => {
+    it("can trigger confirmation dialog", async () => {
         const store = createStore(emptyState(), true);
         const wrapper = shallowMountWithTranslate(FileUpload, store, {
             global: {

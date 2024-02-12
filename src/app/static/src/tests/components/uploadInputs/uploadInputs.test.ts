@@ -1,12 +1,13 @@
-import {VueWrapper, shallowMount} from '@vue/test-utils';
 import Vuex, {Store} from 'vuex';
 import {BaselineActions} from "../../../app/store/baseline/actions";
 import {
     mockBaselineState,
     mockError,
     mockMetadataState,
-    mockPopulationResponse, mockRootState,
+    mockPopulationResponse,
+    mockRootState,
     mockShapeResponse,
+    mockStepperState,
     mockSurveyAndProgramState
 } from "../../mocks";
 import {BaselineState} from "../../../app/store/baseline/baseline";
@@ -21,6 +22,7 @@ import {SurveyAndProgramActions} from "../../../app/store/surveyAndProgram/actio
 import {getters} from "../../../app/store/surveyAndProgram/getters";
 import {DataType, SurveyAndProgramState} from "../../../app/store/surveyAndProgram/surveyAndProgram";
 import {testUploadComponent} from "./fileUploads";
+import {RootState} from "../../../app/root";
 
 describe("UploadInputs upload component", () => {
 
@@ -30,14 +32,18 @@ describe("UploadInputs upload component", () => {
     let sapActions: jest.Mocked<SurveyAndProgramActions>;
     let sapMutations = {};
 
+    const mockStepperGetters = {
+        editsRequireConfirmation: () => true,
+        changesToRelevantSteps: () => [{number: 4, textKey: "fitModel"}]
+    };
+
     testUploadComponent("surveys", 3);
     testUploadComponent("program", 4);
     testUploadComponent("anc", 5);
 
     const createSut = (baselineState?: Partial<BaselineState>,
                        metadataState?: Partial<MetadataState>,
-                       surveyAndProgramState: Partial<SurveyAndProgramState> = {selectedDataType: DataType.Survey},
-                       isDataExploration = true) => {
+                       surveyAndProgramState: Partial<SurveyAndProgramState> = {selectedDataType: DataType.Survey}) => {
 
         actions = {
             refreshDatasetMetadata: jest.fn(),
@@ -56,8 +62,18 @@ describe("UploadInputs upload component", () => {
         };
 
         const store = new Vuex.Store({
-            state: mockRootState({dataExplorationMode: isDataExploration}),
+            state: mockRootState(),
             modules: {
+                stepper: {
+                    namespaced: true,
+                    getters: mockStepperGetters
+                },
+                errors: {
+                    namespaced: true
+                },
+                projects: {
+                    namespaced: true,
+                },
                 baseline: {
                     namespaced: true,
                     state: mockBaselineState(baselineState),
@@ -75,6 +91,9 @@ describe("UploadInputs upload component", () => {
                     actions: {...sapActions},
                     getters: getters
                 }
+            },
+            getters: {
+                isGuest: () => false
             }
         });
 
@@ -92,65 +111,39 @@ describe("UploadInputs upload component", () => {
         expect(wrapper.findAllComponents(ManageFile)[0].props().accept).toBe("PJNZ,pjnz,.pjnz,.PJNZ,.zip,zip,ZIP,.ZIP");
     });
 
-    it("does not show required text in front of pjnz upload label when on data exploration mode", () => {
-        const store = createSut();
-        expectFileIsNotRequired(store, 0)
-    });
-
-    it("shows required text in front of pjnz upload label when not on data exploration mode", () => {
-        const store = createSut({}, {}, {}, false);
+    it("shows required text in front of pjnz upload label", () => {
+        const store = createSut({}, {}, {});
         expectFileIsRequired(store, 0)
     });
 
-    it("shows required text in front of area file upload label when on data exploration mode", () => {
-        const store = createSut();
+    it("shows required text in front of area file upload label", () => {
+        const store = createSut({}, {}, {});
         expectFileIsRequired(store, 1)
     });
 
-    it("shows required text in front of area file upload label when not on data exploration mode", () => {
-        const store = createSut({}, {}, {}, false);
-        expectFileIsRequired(store, 1)
-    });
 
-    it("does not show required text in front of population upload label when on data exploration mode", () => {
-        const store = createSut();
-        expectFileIsNotRequired(store, 2)
-    });
-
-    it("shows required text in front of population upload label when not on data exploration mode", () => {
-        const store = createSut({}, {}, {}, false);
+    it("shows required text in front of population upload label", () => {
+        const store = createSut({}, {}, {});
         expectFileIsRequired(store, 2)
     });
 
-    it("does not show required text in front of survey upload label when on data exploration mode", () => {
-        const store = createSut();
-        expectFileIsNotRequired(store, 3)
-    });
 
-    it("shows required text in front of survey upload label when not on data exploration mode", () => {
-        const store = createSut({}, {}, {}, false);
+    it("shows required text in front of survey upload label", () => {
+        const store = createSut({}, {}, {});
         expectFileIsRequired(store, 3)
     });
 
-    it("does not show required text in front of ART upload label when on data exploration mode", () => {
+    it("does not show required text in front of ART upload", () => {
         const store = createSut();
         expectFileIsNotRequired(store, 4)
     });
 
-    it("does not show required text in front of ART upload label when not on data exploration mode", () => {
-        const store = createSut();
-        expectFileIsNotRequired(store, 4)
-    });
 
-    it("does not show required text in front of ANC upload label when on data exploration mode", () => {
+    it("does not show required text in front of ANC upload label", () => {
         const store = createSut();
         expectFileIsNotRequired(store, 5)
     });
 
-    it("does not show required text in front of ANC upload label when not on data exploration mode", () => {
-        const store = createSut();
-        expectFileIsNotRequired(store, 5)
-    });
 
     it("pjnz is not valid if country is not present", () => {
         const store = createSut();

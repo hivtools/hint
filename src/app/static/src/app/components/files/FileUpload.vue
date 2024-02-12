@@ -14,8 +14,7 @@
                 <span v-translate="'selectNewFile'"></span>
             </label>
         </div>
-        <reset-confirmation v-if="!dataExplorationMode"
-                            :discard-step-warning="modelOptions"
+        <reset-confirmation :discard-step-warning="modelOptions"
                             :continue-editing="uploadSelectedFile"
                             :cancel-editing="cancelEdit"
                             :open="showUploadConfirmation"></reset-confirmation>

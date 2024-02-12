@@ -3,7 +3,7 @@ import {GenericChartDataset, GenericChartMetadataResponse} from "../../types";
 import {Module} from "vuex";
 import {actions} from "./actions";
 import {mutations} from "./mutations";
-import {DataExplorationState} from "../dataExploration/dataExploration";
+import {RootState} from "../../root";
 import {WarningsState} from "../../root";
 
 export interface GenericChartState extends WarningsState{
@@ -25,7 +25,7 @@ export const initialGenericChartState = (): GenericChartState => {
 
 const namespaced = true;
 
-export const genericChart: Module<GenericChartState, DataExplorationState> = {
+export const genericChart: Module<GenericChartState, RootState> = {
     namespaced,
     state: {...initialGenericChartState()},
     actions,

@@ -1,3 +1,7 @@
+# hint 3.7.0
+
+* Remove data exploration mode. This mode has not had much uptake from countries and in particular UNAIDS have stopped telling country teams about it. Have agreed with UNAIDS, Jeff and Rachel that we can remove it.
+
 # hint 3.6.0
 
 * Add new input file "VMMC" for uploading DMPPT2 outputs to add VMMC indicators into datapack download

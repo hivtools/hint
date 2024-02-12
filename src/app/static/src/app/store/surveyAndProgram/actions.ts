@@ -5,26 +5,26 @@ import {AncResponse, ProgrammeResponse, SurveyResponse} from "../../generated";
 import {SurveyAndProgramMutation} from "./mutations";
 import {buildData, getFilenameFromImportUrl, getFilenameFromUploadFormData} from "../../utils";
 import {GenericChartMutation} from "../genericChart/mutations";
-import {DataExplorationState} from "../dataExploration/dataExploration";
 import {UploadImportPayload} from "../../types";
+import { RootState } from '../../root';
 
 export interface SurveyAndProgramActions {
-    importSurvey: (store: ActionContext<SurveyAndProgramState, DataExplorationState>, url: string) => void,
-    importProgram: (store: ActionContext<SurveyAndProgramState, DataExplorationState>, url: string) => void,
-    importANC: (store: ActionContext<SurveyAndProgramState, DataExplorationState>, url: string) => void,
-    importVmmc: (store: ActionContext<SurveyAndProgramState, DataExplorationState>, url: string) => void,
-    uploadSurvey: (store: ActionContext<SurveyAndProgramState, DataExplorationState>, formData: FormData) => void,
-    uploadProgram: (store: ActionContext<SurveyAndProgramState, DataExplorationState>, formData: FormData) => void,
-    uploadANC: (store: ActionContext<SurveyAndProgramState, DataExplorationState>, formData: FormData) => void
-    uploadVmmc: (store: ActionContext<SurveyAndProgramState, DataExplorationState>, formData: FormData) => void
-    getSurveyAndProgramData: (store: ActionContext<SurveyAndProgramState, DataExplorationState>) => void;
-    deleteSurvey: (store: ActionContext<SurveyAndProgramState, DataExplorationState>) => void
-    deleteProgram: (store: ActionContext<SurveyAndProgramState, DataExplorationState>) => void
-    deleteANC: (store: ActionContext<SurveyAndProgramState, DataExplorationState>) => void
-    deleteVmmc: (store: ActionContext<SurveyAndProgramState, DataExplorationState>) => void
-    deleteAll: (store: ActionContext<SurveyAndProgramState, DataExplorationState>) => void
-    selectDataType: (store: ActionContext<SurveyAndProgramState, DataExplorationState>, payload: DataType) => void
-    validateSurveyAndProgramData: (store: ActionContext<SurveyAndProgramState, DataExplorationState>) => void;
+    importSurvey: (store: ActionContext<SurveyAndProgramState, RootState>, url: string) => void,
+    importProgram: (store: ActionContext<SurveyAndProgramState, RootState>, url: string) => void,
+    importANC: (store: ActionContext<SurveyAndProgramState, RootState>, url: string) => void,
+    importVmmc: (store: ActionContext<SurveyAndProgramState, RootState>, url: string) => void,
+    uploadSurvey: (store: ActionContext<SurveyAndProgramState, RootState>, formData: FormData) => void,
+    uploadProgram: (store: ActionContext<SurveyAndProgramState, RootState>, formData: FormData) => void,
+    uploadANC: (store: ActionContext<SurveyAndProgramState, RootState>, formData: FormData) => void
+    uploadVmmc: (store: ActionContext<SurveyAndProgramState, RootState>, formData: FormData) => void
+    getSurveyAndProgramData: (store: ActionContext<SurveyAndProgramState, RootState>) => void;
+    deleteSurvey: (store: ActionContext<SurveyAndProgramState, RootState>) => void
+    deleteProgram: (store: ActionContext<SurveyAndProgramState, RootState>) => void
+    deleteANC: (store: ActionContext<SurveyAndProgramState, RootState>) => void
+    deleteVmmc: (store: ActionContext<SurveyAndProgramState, RootState>) => void
+    deleteAll: (store: ActionContext<SurveyAndProgramState, RootState>) => void
+    selectDataType: (store: ActionContext<SurveyAndProgramState, RootState>, payload: DataType) => void
+    validateSurveyAndProgramData: (store: ActionContext<SurveyAndProgramState, RootState>) => void;
 }
 
 const enum DATASET_TYPE {
@@ -47,7 +47,7 @@ interface UploadImportOptions {
     payload: FormData | UploadImportPayload
 }
 
-async function uploadOrImportANC(context: ActionContext<SurveyAndProgramState, DataExplorationState>, options: UploadImportOptions,
+async function uploadOrImportANC(context: ActionContext<SurveyAndProgramState, RootState>, options: UploadImportOptions,
                                  filename: string) {
     const {commit} = context;
     commit({type: SurveyAndProgramMutation.ANCUpdated, payload: null});
@@ -58,7 +58,7 @@ async function uploadOrImportANC(context: ActionContext<SurveyAndProgramState, D
         .withError(SurveyAndProgramMutation.ANCError)
         .withSuccess(SurveyAndProgramMutation.ANCUpdated)
         .freezeResponse()
-        .postAndReturn<ProgrammeResponse>(getUrlWithQuery(context, options.url), options.payload)
+        .postAndReturn<ProgrammeResponse>(getUrlWithQuery(options.url), options.payload)
         .then((response) => {
             if (response) {
                 commit({
@@ -72,7 +72,7 @@ async function uploadOrImportANC(context: ActionContext<SurveyAndProgramState, D
         });
 }
 
-async function uploadOrImportProgram(context: ActionContext<SurveyAndProgramState, DataExplorationState>, options: UploadImportOptions,
+async function uploadOrImportProgram(context: ActionContext<SurveyAndProgramState, RootState>, options: UploadImportOptions,
                                      filename: string) {
     const {commit} = context;
     commit({type: SurveyAndProgramMutation.ProgramUpdated, payload: null});
@@ -83,7 +83,7 @@ async function uploadOrImportProgram(context: ActionContext<SurveyAndProgramStat
         .withError(SurveyAndProgramMutation.ProgramError)
         .withSuccess(SurveyAndProgramMutation.ProgramUpdated)
         .freezeResponse()
-        .postAndReturn<ProgrammeResponse>(getUrlWithQuery(context, options.url), options.payload)
+        .postAndReturn<ProgrammeResponse>(getUrlWithQuery(options.url), options.payload)
         .then((response) => {
             if (response) {
                 commit({
@@ -97,7 +97,7 @@ async function uploadOrImportProgram(context: ActionContext<SurveyAndProgramStat
         });
 }
 
-async function uploadOrImportSurvey(context: ActionContext<SurveyAndProgramState, DataExplorationState>, options: UploadImportOptions,
+async function uploadOrImportSurvey(context: ActionContext<SurveyAndProgramState, RootState>, options: UploadImportOptions,
                                     filename: string) {
     const {commit} = context;
     commit({type: SurveyAndProgramMutation.SurveyUpdated, payload: null});
@@ -107,7 +107,7 @@ async function uploadOrImportSurvey(context: ActionContext<SurveyAndProgramState
         .withError(SurveyAndProgramMutation.SurveyError)
         .withSuccess(SurveyAndProgramMutation.SurveyUpdated)
         .freezeResponse()
-        .postAndReturn<SurveyResponse>(getUrlWithQuery(context, options.url), options.payload)
+        .postAndReturn<SurveyResponse>(getUrlWithQuery(options.url), options.payload)
         .then((response) => {
             if (response) {
                 commit({
@@ -121,7 +121,7 @@ async function uploadOrImportSurvey(context: ActionContext<SurveyAndProgramState
         });
 }
 
-async function uploadOrImportVmmc(context: ActionContext<SurveyAndProgramState, DataExplorationState>,
+async function uploadOrImportVmmc(context: ActionContext<SurveyAndProgramState, RootState>,
                                   options: UploadImportOptions, filename: string) {
     const {commit} = context;
     commit({type: SurveyAndProgramMutation.VmmcUpdated, payload: null});
@@ -132,7 +132,7 @@ async function uploadOrImportVmmc(context: ActionContext<SurveyAndProgramState, 
         .withError(SurveyAndProgramMutation.VmmcError)
         .withSuccess(SurveyAndProgramMutation.VmmcUpdated)
         .freezeResponse()
-        .postAndReturn<SurveyResponse>(getUrlWithQuery(context, options.url), options.payload)
+        .postAndReturn<SurveyResponse>(getUrlWithQuery(options.url), options.payload)
         .then((response) => {
             if (response) {
                 commit({
@@ -145,7 +145,7 @@ async function uploadOrImportVmmc(context: ActionContext<SurveyAndProgramState, 
         });
 }
 
-export const actions: ActionTree<SurveyAndProgramState, DataExplorationState> & SurveyAndProgramActions = {
+export const actions: ActionTree<SurveyAndProgramState, RootState> & SurveyAndProgramActions = {
 
     selectDataType(context, payload) {
         const {commit} = context;
@@ -293,22 +293,22 @@ export const actions: ActionTree<SurveyAndProgramState, DataExplorationState> & 
                     .ignoreErrors()
                     .withSuccess(SurveyAndProgramMutation.SurveyUpdated)
                     .freezeResponse()
-                    .get<SurveyResponse>(getUrlWithQuery(context, "/disease/survey/")),
+                    .get<SurveyResponse>(getUrlWithQuery("/disease/survey/")),
                 api<SurveyAndProgramMutation, SurveyAndProgramMutation>(context)
                     .ignoreErrors()
                     .withSuccess(SurveyAndProgramMutation.ProgramUpdated)
                     .freezeResponse()
-                    .get<ProgrammeResponse>(getUrlWithQuery(context, "/disease/programme/")),
+                    .get<ProgrammeResponse>(getUrlWithQuery("/disease/programme/")),
                 api<SurveyAndProgramMutation, SurveyAndProgramMutation>(context)
                     .ignoreErrors()
                     .withSuccess(SurveyAndProgramMutation.ANCUpdated)
                     .freezeResponse()
-                    .get<AncResponse>(getUrlWithQuery(context, "/disease/anc/")),
+                    .get<AncResponse>(getUrlWithQuery("/disease/anc/")),
                 api<SurveyAndProgramMutation, SurveyAndProgramMutation>(context)
                     .ignoreErrors()
                     .withSuccess(SurveyAndProgramMutation.VmmcUpdated)
                     .freezeResponse()
-                    .get<AncResponse>(getUrlWithQuery(context, "/disease/vmmc/"))
+                    .get<AncResponse>(getUrlWithQuery("/disease/vmmc/"))
             ]);
 
         commit({type: SurveyAndProgramMutation.Ready, payload: true});
@@ -325,7 +325,7 @@ export const actions: ActionTree<SurveyAndProgramState, DataExplorationState> & 
                     .withError(SurveyAndProgramMutation.SurveyError)
                     .withSuccess(SurveyAndProgramMutation.SurveyUpdated)
                     .freezeResponse()
-                    .get<SurveyResponse>(getUrlWithQuery(context, "/disease/survey/"))
+                    .get<SurveyResponse>(getUrlWithQuery("/disease/survey/"))
                     .then((response) => {
                         if (response && response.data) {
                             successfulDataTypes.push(DataType.Survey)
@@ -335,7 +335,7 @@ export const actions: ActionTree<SurveyAndProgramState, DataExplorationState> & 
                     .withError(SurveyAndProgramMutation.ProgramError)
                     .withSuccess(SurveyAndProgramMutation.ProgramUpdated)
                     .freezeResponse()
-                    .get<ProgrammeResponse>(getUrlWithQuery(context, "/disease/programme/"))
+                    .get<ProgrammeResponse>(getUrlWithQuery("/disease/programme/"))
                     .then((response) => {
                         if (response && response.data) {
                             successfulDataTypes.push(DataType.Program)
@@ -345,7 +345,7 @@ export const actions: ActionTree<SurveyAndProgramState, DataExplorationState> & 
                     .withError(SurveyAndProgramMutation.ANCError)
                     .withSuccess(SurveyAndProgramMutation.ANCUpdated)
                     .freezeResponse()
-                    .get<AncResponse>(getUrlWithQuery(context, "/disease/anc/"))
+                    .get<AncResponse>(getUrlWithQuery("/disease/anc/"))
                     .then((response) => {
                         if (response && response.data) {
                             successfulDataTypes.push(DataType.ANC)
@@ -355,7 +355,7 @@ export const actions: ActionTree<SurveyAndProgramState, DataExplorationState> & 
                     .withError(SurveyAndProgramMutation.VmmcError)
                     .withSuccess(SurveyAndProgramMutation.VmmcUpdated)
                     .freezeResponse()
-                    .get<AncResponse>(getUrlWithQuery(context, "/disease/vmmc/"))
+                    .get<AncResponse>(getUrlWithQuery("/disease/vmmc/"))
                     .then((response) => {
                         if (response && response.data) {
                             successfulDataTypes.push(DataType.Vmmc)
@@ -371,7 +371,6 @@ export const actions: ActionTree<SurveyAndProgramState, DataExplorationState> & 
     }
 };
 
-function getUrlWithQuery(context: ActionContext<SurveyAndProgramState, DataExplorationState>, url: string) {
-    const query = context.rootState.dataExplorationMode ? "?strict=false" : "?strict=true"
-    return `${url}${query}`
+function getUrlWithQuery(url: string) {
+    return `${url}?strict=true`
 }

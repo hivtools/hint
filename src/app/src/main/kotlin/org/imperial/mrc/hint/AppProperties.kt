@@ -29,7 +29,6 @@ interface AppProperties
     val emailSender: String
     val emailUsername: String
     val emailPassword: String
-    val exploreApplicationTitle: String
     val tokenIssuer: String
     val uploadDirectory: String
     val dbUser: String
@@ -73,7 +72,6 @@ class ConfiguredAppProperties(private val props: HintProperties = properties) : 
     override val emailSender = propString("email_sender")
     override val emailUsername = propString("email_username")
     override val emailPassword = propString("email_password")
-    override val exploreApplicationTitle = propString("explore_application_title")
     override val tokenIssuer = propString("token_issuer")
     override val uploadDirectory = propString("upload_dir")
     override val dbUser: String = propString("db_user")

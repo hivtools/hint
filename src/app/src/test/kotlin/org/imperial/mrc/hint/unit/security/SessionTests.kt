@@ -1,14 +1,17 @@
 package org.imperial.mrc.hint.unit.security
 
-import com.nhaarman.mockito_kotlin.*
+import com.nhaarman.mockito_kotlin.any
+import com.nhaarman.mockito_kotlin.doReturn
+import com.nhaarman.mockito_kotlin.mock
+import com.nhaarman.mockito_kotlin.verify
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.Test
-import org.pac4j.core.config.Config
-import org.pac4j.core.context.session.SessionStore
 import org.imperial.mrc.hint.security.Session
 import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Test
 import org.mockito.ArgumentMatchers.anyString
+import org.pac4j.core.config.Config
 import org.pac4j.core.context.WebContext
+import org.pac4j.core.context.session.SessionStore
 import java.util.*
 
 class SessionTests
@@ -56,43 +59,6 @@ class SessionTests
     }
 
     @Test
-    fun `setMode saves new mode and clears version id if mode has changed`()
-    {
-        val mockWebContext = mock<WebContext>()
-        val mockSessionStore = mock<SessionStore> {
-            on { get(mockWebContext, "mode") } doReturn Optional.of("naomi")
-        }
-        val mockConfig = mock<Config>
-        {
-            on { sessionStore } doReturn mockSessionStore
-        }
-
-        val sut = Session(mockWebContext, mockConfig, mockSessionStore)
-        sut.setMode("explore")
-
-        verify(mockSessionStore).set(mockWebContext, "mode", "explore")
-        verify(mockSessionStore).set(mockWebContext, "version_id", null)
-    }
-
-    @Test
-    fun `setMode does nothing if mode has not changed`()
-    {
-        val mockWebContext = mock<WebContext>()
-        val mockSessionStore = mock<SessionStore> {
-            on { get(mockWebContext, "mode") } doReturn Optional.of("naomi")
-        }
-        val mockConfig = mock<Config>
-        {
-            on { sessionStore } doReturn mockSessionStore
-        }
-
-        val sut = Session(mockWebContext, mockConfig, mockSessionStore)
-        sut.setMode("naomi")
-
-        verify(mockSessionStore, never()).set(any(), any(), any())
-    }
-
-    @Test
     fun `can set pac4j requested url to string value`()
     {
         val mockWebContext = mock<WebContext>()
@@ -103,9 +69,9 @@ class SessionTests
         }
 
         val sut = Session(mockWebContext, mockConfig, mockSessionStore)
-        sut.setRequestedUrl("explore")
+        sut.setRequestedUrl("accessibility")
 
-        verify(mockSessionStore).set(mockWebContext, "pac4jRequestedUrl", "explore")
+        verify(mockSessionStore).set(mockWebContext, "pac4jRequestedUrl", "accessibility")
     }
 
     @Test

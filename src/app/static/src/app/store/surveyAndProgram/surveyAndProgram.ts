@@ -4,7 +4,7 @@ import {mutations} from './mutations';
 import {ReadyState, WarningsState} from "../../root";
 import {AncResponse, ProgrammeResponse, SurveyResponse, VmmcResponse, Error, Warning} from "../../generated";
 import {getters} from "./getters";
-import {DataExplorationState} from "../dataExploration/dataExploration";
+import {RootState} from "../../root";
 
 export enum DataType { ANC, Program, Survey, Vmmc}
 
@@ -53,7 +53,7 @@ export const initialSurveyAndProgramState = (): SurveyAndProgramState => {
 
 const namespaced = true;
 
-export const surveyAndProgram = (existingState: Partial<DataExplorationState> | null): Module<SurveyAndProgramState, DataExplorationState> => {
+export const surveyAndProgram = (existingState: Partial<RootState> | null): Module<SurveyAndProgramState, RootState> => {
     return {
         namespaced,
         state: {...initialSurveyAndProgramState(), ...existingState && existingState.surveyAndProgram},
