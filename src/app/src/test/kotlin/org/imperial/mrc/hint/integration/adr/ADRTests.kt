@@ -40,6 +40,22 @@ class ADRTests : SecureIntegrationTests()
 
     @ParameterizedTest
     @EnumSource(IsAuthorized::class)
+    fun `can get ADR datasets with a specific resource`(isAuthorized: IsAuthorized)
+    {
+        testRestTemplate.postForEntity<String>("/adr/key", getPostEntityWithKey())
+        val result = testRestTemplate.getForEntity<String>("/adr/datasetsWithResource?resourceType=anc")
+
+        if (isAuthorized == IsAuthorized.TRUE)
+        {
+            val data = ObjectMapper().readTree(result.body!!)["data"]
+            assertThat(data.isArray).isTrue()
+            // the test api key has access to at least 1 dataset
+            assertThat(data.any()).isTrue()
+        }
+    }
+
+    @ParameterizedTest
+    @EnumSource(IsAuthorized::class)
     fun `can get individual ADR dataset`(isAuthorized: IsAuthorized)
     {
         val id = if (isAuthorized == IsAuthorized.TRUE)
