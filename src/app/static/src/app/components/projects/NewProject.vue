@@ -23,7 +23,7 @@
                 <button id="load-zip-button"
                         class="dropdown-item mb-0"
                         type="button"
-                        @click="$refs.loadZip.click()">
+                        @click="() => loadZip?.click()">
                     <vue-feather type="upload" size="20" class="icon ml-1 align-middle"></vue-feather>
                     <span class="align-middle ml-2" v-translate="'loadZip'"></span>
                 </button>
@@ -52,63 +52,80 @@
 </template>
 <script lang="ts">
 import VueFeather from "vue-feather";
-import {getFormData, mapActionByName} from "../../utils";
+import {getFormData} from "../../utils";
 import UploadNewProject from "../load/UploadNewProject.vue";
-import {defineComponent} from "vue";
-
-interface Data {
-    showNewProjectModal: boolean,
-    showUploadZipModal: boolean,
-    fileToLoad: File | null
-}
+import {defineComponent, ref} from "vue";
+import {useStore} from "vuex";
+import {CreateProjectPayload} from "../../store/projects/actions";
+import {RootState} from "../../root";
 
 export default defineComponent({
-    data(): Data {
-        return {
-            showNewProjectModal: false,
-            showUploadZipModal: false,
-            fileToLoad: null,
-        }
-    },
-    methods: {
-        createProject: mapActionByName("projects", "createProject"),
-        preparingRehydrate: mapActionByName("load","preparingRehydrate"),
-        showCreateProjectModal() {
-            this.showNewProjectModal = true;
-        },
-        showLoadZipModal() {
-            const input = this.$refs.loadZip as HTMLInputElement;
-            if (input.files && input.files.length > 0) {
-                const file = input.files[0];
-                this.clearLoadZipInput();
-                this.fileToLoad = file;
-                this.showUploadZipModal = true;
-            }
-        },
-        clearLoadZipInput() {
+    setup() {
+        const showNewProjectModal = ref(false);
+        const showUploadZipModal = ref(false);
+        const fileToLoad = ref<File | null>(null);
+        const loadZip = ref<HTMLInputElement | null>(null);
+
+        const store = useStore<RootState>();
+
+        const createProject = (payload: CreateProjectPayload) => store.dispatch("projects/createProject", payload);
+
+        const preparingRehydrate =  (payload: FormData) => store.dispatch("load/preparingRehydrate", payload);
+
+        const showCreateProjectModal = () => showNewProjectModal.value = true
+
+        const clearLoadZipInput = () => {
             // clearing value because browser does not
             // allow selection of the same file twice
-            const input = this.$refs.loadZip as HTMLInputElement
-            input.value = ""
-        },
-        handleCreateProject() {
-            this.showNewProjectModal = false;
-            this.createProject({name: this.$store.state.load.newProjectName});
-        },
-        handleLoadZip() {
-            this.showUploadZipModal = false;
-            if (this.fileToLoad) {
-                this.preparingRehydrate(getFormData(this.fileToLoad));
+            if (loadZip.value) {
+                loadZip.value.value = ""
             }
-        },
-        cancelLoadZip() {
-            this.showUploadZipModal = false;
-            this.clearLoadZipInput();
-        },
-        cancelCreateProject() {
-            this.showNewProjectModal = false;
+        }
+
+        const showLoadZipModal = () => {
+            if (loadZip.value && loadZip.value.files && loadZip.value.files.length > 0) {
+                const file = loadZip.value.files[0];
+                clearLoadZipInput();
+                fileToLoad.value = file;
+                showUploadZipModal.value = true;
+            }
+        }
+
+        const handleCreateProject = () => {
+            showNewProjectModal.value = false;
+            createProject({name: store.state.load.newProjectName});
+        }
+
+        const handleLoadZip = () => {
+            showUploadZipModal.value = false;
+            if (fileToLoad.value) {
+                preparingRehydrate(getFormData(fileToLoad.value));
+            }
+        }
+
+        const cancelLoadZip = () => {
+            showUploadZipModal.value = false;
+            clearLoadZipInput();
+        }
+
+        const cancelCreateProject = () => {
+            showNewProjectModal.value = false;
+        }
+
+        return {
+            showNewProjectModal,
+            showUploadZipModal,
+            showCreateProjectModal,
+            showLoadZipModal,
+            handleCreateProject,
+            handleLoadZip,
+            cancelLoadZip,
+            cancelCreateProject,
+            loadZip
         }
     },
+
+
     components: {
         VueFeather,
         UploadNewProject
