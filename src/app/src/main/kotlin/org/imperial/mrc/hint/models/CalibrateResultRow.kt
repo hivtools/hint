@@ -33,13 +33,13 @@ data class CalibrateResultRow(
     val areaLevel: Int)
 
 data class FilterQuery(
-    val indicator: List<String>,
+    val indicator: List<String>?,
     @field:JsonProperty("calendar_quarter")
-    val calendarQuarter: List<String>,
+    val calendarQuarter: List<String>?,
     @field:JsonProperty("age_group")
-    val ageGroup: List<String>,
-    val sex: List<String>,
+    val ageGroup: List<String>?,
+    val sex: List<String>?,
     @field:JsonProperty("area_id")
-    val areaId: List<String>,
+    val areaId: List<String>?,
     @field:JsonProperty("area_level")
-    val areaLevel: List<Int>)
+    val areaLevel: List<String>?)

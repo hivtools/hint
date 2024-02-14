@@ -106,23 +106,23 @@ class JooqCalibrateDataRepository: CalibrateDataRepository
             .from(ResultData)
             .select()
             .whereWithConditions {
-                if (filterQuery.indicator.size > 0) {
+                if (filterQuery.indicator != null) {
                     it += ResultData.indicator inList filterQuery.indicator
                 }
-                if (filterQuery.calendarQuarter.size > 0) {
+                if (filterQuery.calendarQuarter != null) {
                     it += ResultData.calendarQuarter inList filterQuery.calendarQuarter
                 }
-                if (filterQuery.ageGroup.size > 0) {
+                if (filterQuery.ageGroup != null) {
                     it += ResultData.ageGroup inList filterQuery.ageGroup
                 }
-                if (filterQuery.sex.size > 0) {
+                if (filterQuery.sex != null) {
                     it += ResultData.sex inList filterQuery.sex
                 }
-                if (filterQuery.areaId.size > 0) {
+                if (filterQuery.areaId != null) {
                     it += ResultData.areaId inList filterQuery.areaId
                 }
-                if (filterQuery.areaLevel.size > 0) {
-                    it += ResultData.areaLevel inList filterQuery.areaLevel
+                if (filterQuery.areaLevel != null) {
+                    it += ResultData.areaLevel inList filterQuery.areaLevel.map { it.toInt() }
                 }
             }
             .map { it ->
@@ -161,6 +161,24 @@ class JooqCalibrateDataRepository: CalibrateDataRepository
         path: String,
         filterQuery: FilterQuery): List<CalibrateResultRow>
     {
+        if (filterQuery.indicator != null && filterQuery.indicator.size == 0) {
+            return listOf()
+        }
+        if (filterQuery.calendarQuarter != null && filterQuery.calendarQuarter.size == 0) {
+            return listOf()
+        }
+        if (filterQuery.ageGroup != null && filterQuery.ageGroup.size == 0) {
+            return listOf()
+        }
+        if (filterQuery.sex != null && filterQuery.sex.size == 0) {
+            return listOf()
+        }
+        if (filterQuery.areaId != null && filterQuery.areaId.size == 0) {
+            return listOf()
+        }
+        if (filterQuery.areaLevel != null && filterQuery.areaLevel.size == 0) {
+            return listOf()
+        }
         getDBConnFromPathResponse(path).use { conn ->
             return getFilteredDataFromConnection(conn, filterQuery)
         }

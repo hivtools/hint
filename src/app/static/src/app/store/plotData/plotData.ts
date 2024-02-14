@@ -1,5 +1,6 @@
 import { CalibrateDataResponse } from "../../generated"
 import { PlotName, plotNames } from "../plotSelections/plotSelections"
+import { mutations } from "./mutations"
 
 export type PlotData = CalibrateDataResponse["data"]
 
@@ -14,5 +15,6 @@ export const initialPlotDataState = (): PlotDataState => {
 
 export const plotData = {
     namespaced: true,
-    state: initialPlotDataState()
+    state: initialPlotDataState(),
+    mutations
 }

@@ -1,11 +1,12 @@
-import { ActionContext, ActionTree } from "vuex"
-import { PlotName, PlotSelectionsState } from "./plotSelections"
+import { ActionContext, ActionTree, Commit } from "vuex"
+import { PlotName, PlotSelectionsState, outputPlots } from "./plotSelections"
 import { RootState } from "../../root"
 import { PayloadWithType } from "../../types"
 import { CalibrateDataResponse, FilterOption, PlotSettingOption } from "../../generated"
 import { PlotSelectionUpdate, PlotSelectionsMutations } from "./mutations"
 import { filtersInfoFromPlotSettings } from "./utils"
 import { api } from "../../apiService"
+import { PlotDataMutations, PlotDataUpdate } from "../plotData/mutations"
 
 type Selection = {
     filter: {
@@ -55,9 +56,15 @@ export const actions: ActionTree<PlotSelectionsState, RootState> & PlotSelection
     }
 }
 
-const getFilteredData = async (plot: PlotName, selections: PlotSelectionUpdate["selections"]["filters"], context: ActionContext<PlotSelectionsState, RootState>) => {
-    if (plot === "barchart" || plot === "bubble") {
-        const filterTypes = context.rootState.modelCalibrate.metadata!.filterTypes;
+type FilteredDataContext = {
+    commit: Commit,
+    rootState: RootState
+}
+
+export const getFilteredData = async (plot: PlotName, selections: PlotSelectionUpdate["selections"]["filters"], context: FilteredDataContext) => {
+    if (outputPlots.includes(plot)) {
+        const { commit, rootState } = context;
+        const filterTypes = rootState.modelCalibrate.metadata!.filterTypes;
         const dataFetchPayload: Record<string, string[]> = {};
         selections.forEach(sel => {
             const colId = filterTypes.find(f => f.id === sel.filterId)!.column_id;
@@ -69,13 +76,18 @@ const getFilteredData = async (plot: PlotName, selections: PlotSelectionUpdate["
             }
         });
 
-        const calibrateId = context.rootState.modelCalibrate.calibrateId;
-        const response = await api<any, PlotSelectionsMutations>(context)
+        const calibrateId = rootState.modelCalibrate.calibrateId;
+        const response = await api<any, PlotSelectionsMutations>(context as any)
             .ignoreSuccess()
             .withError(PlotSelectionsMutations.setError)
             .freezeResponse()
             .postAndReturn<CalibrateDataResponse["data"]>(`calibrate/result/filteredData/${calibrateId}`, dataFetchPayload);
         
-        console.log(response?.data)
+        if (response) {
+            const data = response.data;
+            commit(`plotData/${PlotDataMutations.updatePlotData}`, {
+                payload: { plot, data } as PlotDataUpdate
+            }, { root: true });
+        }
     }
 };
