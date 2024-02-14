@@ -51,6 +51,7 @@ import {
     initialDownloadIndicatorState
 } from "./store/downloadIndicator/downloadIndicator";
 import { initialPlotSelectionsState, PlotSelectionsState, plotSelections } from "./store/plotSelections/plotSelections";
+import { initialPlotDataState, PlotDataState, plotData } from "./store/plotData/plotData";
 
 export interface RootState extends DataExplorationState {
     version: string,
@@ -66,6 +67,7 @@ export interface RootState extends DataExplorationState {
     modelCalibrate: ModelCalibrateState,
     modelOutput: ModelOutputState,
     plottingSelections: PlottingSelectionsState,
+    plotData: PlotDataState,
     plotSelections: PlotSelectionsState,
     load: LoadState,
     errors: ErrorsState,
@@ -170,6 +172,7 @@ export const emptyState = (): RootState => {
         stepper: initialStepperState(),
         load: initialLoadState(),
         plottingSelections: initialPlottingSelectionsState(),
+        plotData: initialPlotDataState(),
         plotSelections: initialPlotSelectionsState(),
         errors: initialErrorsState(),
         projects: initialProjectsState(),
@@ -198,6 +201,7 @@ export const storeOptions: StoreOptions<RootState> = {
         modelRun: modelRun(existingState),
         modelOutput: modelOutput(existingState),
         plottingSelections: plottingSelections(existingState),
+        plotData,
         plotSelections,
         stepper: stepper(existingState),
         load,

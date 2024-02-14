@@ -46,9 +46,27 @@ export const actions: ActionTree<PlotSelectionsState, RootState> & PlotSelection
             const filtersInfo = filtersInfoFromPlotSettings(plotSettingOptions, plot, rootState);
             updatedSelections.filters = filtersInfo;
         }
+        getFilteredData(plot, updatedSelections.filters, context);
         commit({
             type: PlotSelectionsMutations.updatePlotSelection,
             payload: { plot, selections: updatedSelections } as PlotSelectionUpdate
         });
     }
 }
+
+const getFilteredData = async (plot: PlotName, selections: PlotSelectionUpdate["selections"]["filters"], context: ActionContext<PlotSelectionsState, RootState>) => {
+    if (plot === "barchart" || plot === "bubble") {
+        const filterTypes = context.rootState.modelCalibrate.metadata!.filterTypes;
+        const dataFetchPayload: Record<string, string[]> = {};
+        selections.forEach(sel => {
+            const colId = filterTypes.find(f => f.id === sel.filterId)!.column_id;
+            const opIds = sel.selection.map(s => s.id);
+            if (colId in dataFetchPayload) {
+                dataFetchPayload[colId] = [...dataFetchPayload[colId], ...opIds];
+            } else {
+                dataFetchPayload[colId] = opIds;
+            }
+        });
+        // post data fetch payload
+    }
+};

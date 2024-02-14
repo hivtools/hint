@@ -3,7 +3,7 @@ import { mutations } from "./mutations";
 import { actions } from "./actions";
 
 export type PlotName = keyof CalibrateMetadataResponse["plotSettingsControl"]
-const plotNames: PlotName[] = ["barchart", "choropleth", "bubble", "table"]
+export const plotNames: PlotName[] = ["barchart", "choropleth", "bubble", "table"]
 
 export type FilterSelection = {
     multiple: boolean

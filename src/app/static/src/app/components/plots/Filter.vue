@@ -41,7 +41,7 @@ export default defineComponent({
         const updateSelection = (newSelection: FilterOption | FilterOption[]) => {
             store.dispatch("plotSelections/updateSelections", {
                 payload: {
-                    plot: "barchart",
+                    plot: "bubble",
                     selection: {
                         filter: {
                             filterId: props.filterId,
