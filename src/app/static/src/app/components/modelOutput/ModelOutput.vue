@@ -8,10 +8,13 @@
                    @click="switchTab(plotName)"></a>
             </li>
         </ul>
-        <div class="mt-2">
-            <plot-control-set/>
-            <h4 v-translate="'filters'"/>
-            <filter-set/>
+        <div class="row">
+            <div class="mt-2 col-md-3">
+                <plot-control-set/>
+                <h4 v-translate="'filters'"/>
+                <filter-set/>
+            </div>
+            <choropleth class="col-md-9" v-if="selectedPlot === 'choropleth'"/>
         </div>
     </div>
 </template>
@@ -24,6 +27,7 @@ import {PlotName, plotNames} from "../../store/plotSelections/plotSelections";
 import {useStore} from "vuex";
 import {RootState} from "../../root";
 import { ModelOutputMutation } from "../../store/modelOutput/mutations";
+import Choropleth from "../plots/choropleth/Choropleth.vue";
 
 export default defineComponent({
 
@@ -39,6 +43,7 @@ export default defineComponent({
     },
 
     components: {
+        Choropleth,
         FilterSet,
         PlotControlSet
     }
