@@ -67,6 +67,8 @@ const getFilteredData = async (plot: PlotName, selections: PlotSelectionUpdate["
                 dataFetchPayload[colId] = opIds;
             }
         });
+
+        await 
         // post data fetch payload
     }
 };
