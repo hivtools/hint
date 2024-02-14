@@ -2,9 +2,10 @@ import { ActionContext, ActionTree } from "vuex"
 import { PlotName, PlotSelectionsState } from "./plotSelections"
 import { RootState } from "../../root"
 import { PayloadWithType } from "../../types"
-import { FilterOption, PlotSettingOption } from "../../generated"
+import { CalibrateDataResponse, FilterOption, PlotSettingOption } from "../../generated"
 import { PlotSelectionUpdate, PlotSelectionsMutations } from "./mutations"
 import { filtersInfoFromPlotSettings } from "./utils"
+import { api } from "../../apiService"
 
 type Selection = {
     filter: {
@@ -68,7 +69,13 @@ const getFilteredData = async (plot: PlotName, selections: PlotSelectionUpdate["
             }
         });
 
-        await 
-        // post data fetch payload
+        const calibrateId = context.rootState.modelCalibrate.calibrateId;
+        const response = await api<any, PlotSelectionsMutations>(context)
+            .ignoreSuccess()
+            .withError(PlotSelectionsMutations.setError)
+            .freezeResponse()
+            .postAndReturn<CalibrateDataResponse["data"]>(`calibrate/result/filteredData/${calibrateId}`, dataFetchPayload);
+        
+        console.log(response?.data)
     }
 };

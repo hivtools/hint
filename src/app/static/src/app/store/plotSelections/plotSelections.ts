@@ -1,4 +1,4 @@
-import { CalibrateMetadataResponse, FilterOption, FilterRef } from "../../generated";
+import { CalibrateMetadataResponse, Error, FilterOption, FilterRef } from "../../generated";
 import { mutations } from "./mutations";
 import { actions } from "./actions";
 
@@ -21,11 +21,12 @@ export type PlotSelectionsState = {
         controls: ControlSelection[]
         filters: FilterSelection[]
     }
-}
+} & { error: Error }
 
 export const initialPlotSelectionsState = (): PlotSelectionsState => {
     const emptySelections: PlotSelectionsState[PlotName] = { controls: [], filters: [] };
-    return Object.fromEntries(plotNames.map(plot => [plot, emptySelections])) as PlotSelectionsState;
+    const emptySelectionsArray = plotNames.map(plot => [plot, emptySelections]);
+    return Object.fromEntries([...emptySelectionsArray, ["error", ""]]) as PlotSelectionsState;
 }
 
 export const plotSelections = {
