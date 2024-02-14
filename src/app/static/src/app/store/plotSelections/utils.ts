@@ -24,23 +24,14 @@ type NestedFilterOption = {
     children?: NestedFilterOption[]
 }
 
-class Q {
-    items: NestedFilterOption[]
-    constructor() { this.items = [] }
-    enqueue(item: NestedFilterOption) { this.items.push(item) }
-    dequeue() { return this.items.pop()! }
-    isEmpty() { return this.items.length === 0 }
-}
-
 const getFullNestedFilters = (filterOptions: NestedFilterOption[]) => {
     const fullFilterOptions: NestedFilterOption[] = [];
-    const q = new Q();
-    filterOptions.forEach(op => q.enqueue(op));
-    while (!q.isEmpty()) {
-        const currentOption = q.dequeue();
+    const q = [...filterOptions];
+    while (q.length !== 0) {
+        const currentOption = q.pop()!;
         fullFilterOptions.push(currentOption);
         if (currentOption.children && currentOption.children.length > 0) {
-            currentOption.children.forEach(op => q.enqueue(op));
+            currentOption.children.forEach(op => q.push(op));
         }
     }
     return fullFilterOptions;
