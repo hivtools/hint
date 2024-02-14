@@ -5,19 +5,18 @@ import { PlotSelectionUpdate, PlotSelectionsMutations } from "./mutations";
 import { RootState } from "../../root";
 
 export const filtersAfterUseShapeRegions = (filterTypes: FilterTypes[], rootState: RootState) => {
-    return filterTypes.map(filter => filterAfterUseShapeRegions(filter, rootState));
-};
-
-export const filterAfterUseShapeRegions = (filterType: FilterTypes, rootState: RootState) => {
-    if (filterType.use_shape_regions) {
+    const filters = [...filterTypes];
+    const area = filters.find(f => f.id == "area");
+    if (area && area.use_shape_regions) {
         const regions: FilterOption[] = rootState.baseline.shape!.filters!.regions ?
             [rootState.baseline.shape!.filters!.regions] : [];
 
-        const { use_shape_regions: _, ...areaFilterConfig } = filterType;
-        filterType = { ...areaFilterConfig, options: regions };
+        const index = filters.findIndex(f => f.id === "area");
+        const {use_shape_regions, ...areaFilterConfig} = area;
+        filters[index] = {...areaFilterConfig, options: regions};
     }
-    return filterType;
-};
+    return filters;
+}
 
 type NestedFilterOption = {
     id: string
@@ -25,23 +24,14 @@ type NestedFilterOption = {
     children?: NestedFilterOption[]
 }
 
-class Q {
-    items: NestedFilterOption[]
-    constructor() { this.items = [] }
-    enqueue(item: NestedFilterOption) { this.items.push(item) }
-    dequeue() { return this.items.pop()! }
-    isEmpty() { return this.items.length === 0 }
-}
-
 const getFullNestedFilters = (filterOptions: NestedFilterOption[]) => {
     const fullFilterOptions: NestedFilterOption[] = [];
-    const q = new Q();
-    filterOptions.forEach(op => q.enqueue(op));
-    while (!q.isEmpty()) {
-        const currentOption = q.dequeue();
+    const q = [...filterOptions];
+    while (q.length !== 0) {
+        const currentOption = q.pop()!;
         fullFilterOptions.push(currentOption);
         if (currentOption.children && currentOption.children.length > 0) {
-            currentOption.children.forEach(op => q.enqueue(op));
+            currentOption.children.forEach(op => q.push(op));
         }
     }
     return fullFilterOptions;

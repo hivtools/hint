@@ -1,10 +1,8 @@
 <template>
-
     <single-select :options="controlOptions"
                    :model-value="selected"
                    :placeholder="placeholder"
                    @update:model-value="updateControlSelection"/>
-
 </template>
 
 <script lang="ts">
@@ -20,21 +18,29 @@ import { PlotSelectionActionUpdate } from "../../store/plotSelections/actions";
 export default defineComponent({
     props: {
         plotControlId: String,
-        activePlot: String as PropType<PlotName>,
-        selectedControl: Object as PropType<FilterOption[]>
     },
     setup(props) {
         const store = useStore<RootState>();
 
-        const controlOptions = computed(() => {
-            return store.getters["modelCalibrate/plotControlOptions"](props.activePlot, props.plotControlId);
+        const activePlot = computed(() => {
+            return store.state.modelOutput.selectedTab;
         });
 
-        const selected = computed(() => props.selectedControl![0].id);
+        const controlOptions = computed(() => {
+            return store.state.modelCalibrate.metadata!.plotSettingsControl[activePlot.value].plotSettings
+                .find(f => f.id === props.plotControlId)!.options;
+        });
+
+        const selected = computed(() => {
+            const plotName: PlotName = store.state.modelOutput.selectedTab;
+            const controls =  store.state.plotSelections[plotName].controls
+            return controls.find(control => control.id == props.plotControlId)!.selection[0]?.id;
+        });
+
         const updateControlSelection = (newSelection: FilterOption) => {
             store.dispatch("plotSelections/updateSelections", {
                 payload: {
-                    plot: props.activePlot,
+                    plot: activePlot.value,
                     selection: {
                         plotSetting: {
                             id: props.plotControlId,
@@ -46,7 +52,7 @@ export default defineComponent({
         };
 
         const placeholder = computed(() => {
-            return i18next.t("select", "en");
+            return i18next.t("select", store.state.language);
         });
 
         return {
@@ -63,7 +69,3 @@ export default defineComponent({
 })
 
 </script>
-
-<style scoped>
-
-</style>
