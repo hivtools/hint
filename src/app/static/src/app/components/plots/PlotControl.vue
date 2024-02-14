@@ -19,21 +19,24 @@ import {PlotName} from "../../store/plotSelections/plotSelections";
 export default defineComponent({
     props: {
         plotControlId: String,
-        activePlot: String as PropType<PlotName>,
-        selectedControl: Object as PropType<FilterOption[]>
     },
     setup(props) {
         const store = useStore<RootState>();
 
         const controlOptions = computed(() => {
-            return store.getters["modelCalibrate/plotControlOptions"](props.activePlot, props.plotControlId);
+            const plotName: PlotName = store.state.modelOutput.selectedTab;
+            return store.state.modelCalibrate.metadata!.plotSettingsControl[plotName].plotSettings.find(f => f.id === props.plotControlId)!.options;
         });
 
-        const selected = ref<string>(props.selectedControl[0]?.id);
+        const selected = computed(() => {
+            const plotName: PlotName = store.state.modelOutput.selectedTab;
+            const controls =  store.state.plotSelections[plotName].controls
+            return controls.find(control => control.id == props.plotControlId)!.selection[0]?.id;
+        });
+
         const updateControlSelection = (newSelection: FilterOption) => {
             // TODO: dispatch action to run the effects
-            console.log("Running effects for plot control " + newSelection.id);
-            selected.value = newSelection.id;
+            console.log("Dispatching action to update selected state " + newSelection.id);
         };
 
         const placeholder = computed(() => {
@@ -54,7 +57,3 @@ export default defineComponent({
 })
 
 </script>
-
-<style scoped>
-
-</style>
