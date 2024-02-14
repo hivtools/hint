@@ -31,5 +31,6 @@ export const initialPlotSelectionsState = (): PlotSelectionsState => {
 export const plotSelections = {
     namespaced: true,
     state: initialPlotSelectionsState(),
-    mutations
+    mutations,
+    actions
 };
