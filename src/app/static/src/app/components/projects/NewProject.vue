@@ -121,7 +121,9 @@ export default defineComponent({
             handleLoadZip,
             cancelLoadZip,
             cancelCreateProject,
-            loadZip
+            loadZip,
+            fileToLoad,
+            clearLoadZipInput
         }
     },
 

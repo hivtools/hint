@@ -23,7 +23,6 @@ import {getters} from "../../../app/store/surveyAndProgram/getters";
 import {DataType, SurveyAndProgramState} from "../../../app/store/surveyAndProgram/surveyAndProgram";
 import {testUploadComponent} from "./fileUploads";
 import {VueWrapper} from "@vue/test-utils"
-import {RootState} from "../../../app/root";
 
 describe("UploadInputs upload component", () => {
 

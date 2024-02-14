@@ -1,12 +1,21 @@
 import {expectHasTranslationKey} from "../../testHelpers";
 import Vuex from "vuex";
 import {mockFile, mockProjectsState, mockLoadState, mockRootState} from "../../mocks";
-import {DOMWrapper, mount, shallowMount, VueWrapper} from "@vue/test-utils";
+import {DOMWrapper, flushPromises, mount, shallowMount, VueWrapper} from "@vue/test-utils";
 import NewProject from "../../../app/components/projects/NewProject.vue";
 import UploadNewProject from "../../../app/components/load/UploadNewProject.vue";
 import {Translations} from "../../../app/store/translations/locales";
+import {nextTick} from "vue";
 
 describe("New project component", () => {
+
+    // @ts-ignore
+    global.File = class MockFile {
+        filename: string;
+        constructor(parts: (string | Blob | ArrayBuffer | ArrayBufferView)[], filename: string, properties ? : FilePropertyBag) {
+            this.filename = filename;
+        }
+    }
 
     const mockTranslate = jest.fn();
     const mockCreateProject = jest.fn();
@@ -200,7 +209,6 @@ describe("New project component", () => {
                 },
             },
         })
-        const clearLoadZipSpy = jest.spyOn((wrapper.vm as any), "clearLoadZipInput")
 
         // When I pick a zip file
         const testFile = mockFile("test.zip", "test file contents", "application/zip");
@@ -212,8 +220,16 @@ describe("New project component", () => {
         expect(projectZipModal.props("open")).toBe(true);
 
         // and value set for file
-        const uploadZip = wrapper.find("#upload-zip")
-        expect((uploadZip.element as HTMLInputElement).files).toEqual([testFile])
+        const uploadZip = wrapper.find("#upload-zip");
+        expect((uploadZip.element as HTMLInputElement).files).toEqual([testFile]);
+
+
+        // This is disgusting but is really difficult to test in composition API
+        // as we can't spy on this function and assert it has been called.
+        // It is also really difficult to test the actual file input value because
+        // we can't manually set it to anything other than an empty string.
+        // This will do for now I think.
+        (wrapper.vm as any).$refs.loadZip.type = "text";
 
         // When I click cancel
         const cancelLoad = projectZipModal.find("#cancel-load-project")
@@ -223,7 +239,7 @@ describe("New project component", () => {
         expect((projectZipModal as VueWrapper).props("open")).toBe(false);
 
         // and upload zip is cleared
-        expect(clearLoadZipSpy).toHaveBeenCalled()
+        expect((wrapper.vm as any).$refs.loadZip.value).toBe("")
     });
 })
 
