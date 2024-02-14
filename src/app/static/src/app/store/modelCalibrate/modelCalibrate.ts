@@ -10,10 +10,8 @@ import {
     CalibrateResultResponse,
     ComparisonPlotResponse,
     CalibrateDataResponse,
-    CalibrateMetadataResponse, FilterTypes,
+    CalibrateMetadataResponse,
 } from "../../generated";
-import {filterAfterUseShapeRegions, filtersAfterUseShapeRegions} from "../plotSelections/utils";
-import {PlotName} from "../plotSelections/plotSelections";
 
 export interface ModelCalibrateState extends ReadyState, WarningsState {
     optionsFormMeta: DynamicFormMeta
@@ -59,28 +57,12 @@ export const initialModelCalibrateState = (): ModelCalibrateState => {
     }
 };
 
-export const modelCalibrateGetters = {
-    outputFilterOptions: (state: ModelCalibrateState, getters: any, rootState: RootState) => (filterId: string) => {
-        const type = state.metadata!.filterTypes.find(f => f.id === filterId);
-        return filterAfterUseShapeRegions(type as FilterTypes, rootState).options;
-    },
-    plotControlOptions: (state: ModelCalibrateState) => (activePlot: PlotName, plotControlId: string) => {
-        const control = state.metadata!.plotSettingsControl[activePlot].plotSettings.find(f => f.id === plotControlId);
-        if (control) {
-            return control.options;
-        } else {
-            return [];
-        }
-    },
-};
-
 const namespaced = true;
 
 export const modelCalibrate = (existingState: Partial<RootState> | null): Module<ModelCalibrateState, RootState> => {
     return {
         namespaced,
         state: {...initialModelCalibrateState(), ...existingState && existingState.modelCalibrate, ready: false},
-        getters: modelCalibrateGetters,
         mutations,
         actions
     };

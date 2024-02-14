@@ -1,45 +1,36 @@
 <template>
 
-    <div class="form-group" v-for="filter of filters" :key="filter.stateFilterId">
-        <label class="font-weight-bold">{{filter.label}}</label>
-        <Filter :filter-id="filter.filterId"
-                :multiple="filter.multiple"
-                :selected-options="filter.selection"/>
+    <div class="form-group" v-for="f of filters" :key="f.stateFilterId">
+        <label class="font-weight-bold">{{f.label}}</label>
+        <!-- For some reason using filter is saying no component registered
+        with this name, no idea why so using capital Filter -->
+        <Filter :state-filter-id="f.stateFilterId"/>
     </div>
 
 </template>
 
 <script lang="ts">
-import {computed, defineComponent, PropType} from 'vue';
+import {computed, defineComponent} from 'vue';
 import {useStore} from "vuex";
 import {RootState} from "../../root";
 import Filter from "./Filter.vue";
 import {PlotName} from "../../store/plotSelections/plotSelections";
 
 export default defineComponent({
-    props: {
-        activePlot: {
-            type: String as PropType<PlotName>
-        }
+    components: {
+        Filter
     },
-    setup(props) {
+    setup() {
         const store = useStore<RootState>();
         const filters = computed(() => {
-            return store.getters["plotSelections/outputFilters"](props.activePlot);
+            const plotName: PlotName = store.state.modelOutput.selectedTab
+            return store.state.plotSelections[plotName].filters;
         });
 
         return {
             filters
         }
-    },
-
-    components: {
-        Filter
     }
 })
 
 </script>
-
-<style scoped>
-
-</style>

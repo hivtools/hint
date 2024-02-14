@@ -28,19 +28,9 @@ export const initialPlotSelectionsState = (): PlotSelectionsState => {
     return Object.fromEntries(plotNames.map(plot => [plot, emptySelections])) as PlotSelectionsState;
 }
 
-export const plotSelectionsGetters = {
-    plotControls: (state: PlotSelectionsState) => (plotName: PlotName) => {
-        return state[plotName].controls;
-    },
-    outputFilters: (state: PlotSelectionsState) => (plotName: PlotName) => {
-        return state[plotName].filters;
-    },
-};
-
 export const plotSelections = {
     namespaced: true,
     state: initialPlotSelectionsState(),
     mutations,
-    actions,
-    getters: plotSelectionsGetters,
+    actions
 };
