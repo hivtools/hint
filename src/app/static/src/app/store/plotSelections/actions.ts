@@ -1,5 +1,5 @@
 import { ActionContext, ActionTree, Commit } from "vuex"
-import { PlotName, PlotSelectionsState, outputPlots } from "./plotSelections"
+import { PlotName, PlotSelectionsState } from "./plotSelections"
 import { RootState } from "../../root"
 import { PayloadWithType } from "../../types"
 import { CalibrateDataResponse, FilterOption, PlotSettingOption } from "../../generated"
@@ -48,7 +48,7 @@ export const actions: ActionTree<PlotSelectionsState, RootState> & PlotSelection
             const filtersInfo = filtersInfoFromPlotSettings(plotSettingOptions, plot, rootState);
             updatedSelections.filters = filtersInfo;
         }
-        getFilteredData(plot, updatedSelections.filters, context);
+        await getFilteredData(plot, updatedSelections.filters, context);
         commit({
             type: PlotSelectionsMutations.updatePlotSelection,
             payload: { plot, selections: updatedSelections } as PlotSelectionUpdate
@@ -60,6 +60,8 @@ type FilteredDataContext = {
     commit: Commit,
     rootState: RootState
 }
+
+export const outputPlots = ["barchart", "choropleth", "bubble", "table"];
 
 export const getFilteredData = async (plot: PlotName, selections: PlotSelectionUpdate["selections"]["filters"], context: FilteredDataContext) => {
     if (outputPlots.includes(plot)) {

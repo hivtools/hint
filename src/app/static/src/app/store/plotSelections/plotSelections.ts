@@ -4,7 +4,6 @@ import { actions } from "./actions";
 
 export type PlotName = keyof CalibrateMetadataResponse["plotSettingsControl"]
 export const plotNames: PlotName[] = ["barchart", "choropleth", "bubble", "table"]
-export const outputPlots = ["barchart", "choropleth", "bubble", "table"]
 
 export type FilterSelection = {
     multiple: boolean
