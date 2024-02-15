@@ -125,7 +125,6 @@ export const commitPlotDefaultSelections = (
         const filtersInfo = filtersInfoFromPlotSettings(defaultSettingOptions, name, rootState);
         payload.selections.filters = filtersInfo;
 
-        console.log(filtersInfo)
         getFilteredData(name, payload.selections.filters, { commit, rootState })
 
         commit(
