@@ -55,7 +55,7 @@ export default defineComponent({
                         }
                     }
                 } as PlotSelectionActionUpdate
-            });
+            }, { root: true });
         };
 
         const placeholder = computed(() => {
