@@ -14,6 +14,7 @@ export type PlotDataUpdate = {
 
 export const mutations: MutationTree<PlotDataState> = {
     [PlotDataMutations.updatePlotData](state: PlotDataState, action: PayloadWithType<PlotDataUpdate>) {
+        console.log("setting plot data ", action.payload.plot, " to ", action.payload.data)
         state[action.payload.plot] = action.payload.data;
     }
 };
