@@ -221,6 +221,36 @@ class ADRTests : SecureIntegrationTests()
 
     @ParameterizedTest
     @EnumSource(IsAuthorized::class)
+    fun `can save VMMC from ADR`(isAuthorized: IsAuthorized)
+    {
+        val resourceType = "inputs-unaids-vmmc-coverage-outputs"
+
+        val resourceId = extractResourceId(isAuthorized, resourceType)
+
+        importGeoFiles(isAuthorized)
+
+        val vmmc = extractUrl(isAuthorized, resourceType)
+        val result = testRestTemplate.postForEntity<String>("/adr/vmmc",
+            getPostEntityWithUrl(AdrResource(vmmc, getDatasetId(isAuthorized), resourceId)))
+        assertSecureWithSuccess(isAuthorized, result, "ValidateInputResponse")
+    }
+
+    @ParameterizedTest
+    @EnumSource(IsAuthorized::class)
+    fun `can save output zip from ADR`(isAuthorized: IsAuthorized)
+    {
+        val resourceType = "inputs-unaids-naomi-output-zip"
+
+        val resourceId = extractResourceId(isAuthorized, resourceType)
+
+        val outputZip = extractUrl(isAuthorized, resourceType)
+        val result = testRestTemplate.postForEntity<String>("/adr/output",
+            getPostEntityWithUrl(AdrResource(outputZip, getDatasetId(isAuthorized), resourceId)))
+        assertSecureWithSuccess(isAuthorized, result, null)
+    }
+
+    @ParameterizedTest
+    @EnumSource(IsAuthorized::class)
     fun `can save programme from ADR`(isAuthorized: IsAuthorized)
     {
         importGeoFiles(isAuthorized)

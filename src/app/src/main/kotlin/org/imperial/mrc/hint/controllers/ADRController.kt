@@ -9,8 +9,9 @@ import org.imperial.mrc.hint.clients.HintrAPIClient
 import org.imperial.mrc.hint.db.UserRepository
 import org.imperial.mrc.hint.db.VersionRepository
 import org.imperial.mrc.hint.exceptions.AdrException
-import org.imperial.mrc.hint.md5sum
-import org.imperial.mrc.hint.models.*
+import org.imperial.mrc.hint.models.AdrResource
+import org.imperial.mrc.hint.models.SuccessResponse
+import org.imperial.mrc.hint.models.asResponseEntity
 import org.imperial.mrc.hint.security.Encryption
 import org.imperial.mrc.hint.security.Session
 import org.imperial.mrc.hint.service.ADRService
@@ -18,12 +19,6 @@ import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody
-import java.io.ByteArrayOutputStream
-import java.io.File
-import java.io.FileOutputStream
-import java.io.IOException
-import java.nio.file.Files
 import javax.servlet.http.HttpServletRequest
 
 @RestController
@@ -223,7 +218,7 @@ class ADRController(private val encryption: Encryption,
     @PostMapping("/output")
     fun importOutputZip(@RequestBody data: AdrResource): ResponseEntity<String>
     {
-        return saveAndValidate(data, FileType.OutputZip)
+        return SuccessResponse(fileManager.saveFile(data, FileType.OutputZip)).asResponseEntity()
     }
 
     private fun datasetHasResourceOfType(resources: JsonNode, resourceType: String): Boolean {
