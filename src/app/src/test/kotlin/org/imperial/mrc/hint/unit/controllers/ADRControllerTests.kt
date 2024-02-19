@@ -1,9 +1,11 @@
 package org.imperial.mrc.hint.unit.controllers
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.nhaarman.mockito_kotlin.*
+import com.nhaarman.mockito_kotlin.any
+import com.nhaarman.mockito_kotlin.doReturn
+import com.nhaarman.mockito_kotlin.mock
+import com.nhaarman.mockito_kotlin.verify
 import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.imperial.mrc.hint.AppProperties
 import org.imperial.mrc.hint.FileManager
 import org.imperial.mrc.hint.FileType
@@ -15,7 +17,6 @@ import org.imperial.mrc.hint.db.UserRepository
 import org.imperial.mrc.hint.db.VersionRepository
 import org.imperial.mrc.hint.exceptions.AdrException
 import org.imperial.mrc.hint.helpers.TranslationAssert
-import org.imperial.mrc.hint.md5sum
 import org.imperial.mrc.hint.models.VersionFileWithPath
 import org.imperial.mrc.hint.security.Encryption
 import org.imperial.mrc.hint.security.Session
@@ -26,13 +27,9 @@ import org.junit.jupiter.api.Test
 import org.pac4j.core.profile.CommonProfile
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody
 import java.io.File
-import java.lang.reflect.InvocationTargetException
 import java.nio.file.Files
 import javax.servlet.http.HttpServletRequest
-import kotlin.reflect.full.memberFunctions
-import kotlin.reflect.jvm.isAccessible
 
 class ADRControllerTests : HintrControllerTests()
 {
@@ -537,9 +534,13 @@ class ADRControllerTests : HintrControllerTests()
     @Test
     fun `imports output zip`()
     {
-        assertSavesAndValidatesUrl(FileType.OutputZip) { sut ->
-            (sut as ADRController).importOutputZip(adrResource)
-        }
+        val mockFileManager = getMockFileManager(FileType.OutputZip)
+        val mockApiClient = getMockAPIClient(FileType.OutputZip)
+        val mockRequest = mock<HttpServletRequest>()
+        val sut = getSut(mockFileManager, mockApiClient, mock(), mock(), mockRequest)
+        val result = (sut as ADRController).importOutputZip(adrResource)
+        assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
+        verify(mockFileManager).saveFile(adrResource, FileType.OutputZip)
     }
 
     @Test
