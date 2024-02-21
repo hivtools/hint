@@ -323,7 +323,7 @@ class LocalFileManagerTests
         assertThat(result["pjnz"]!!.path).isEqualTo("$tmpUploadDirectory/pjnzhash")
         assertThat(result["pjnz"]!!.filename).isEqualTo("pjnzfilename")
         assertThat(result["pjnz"]!!.hash).isEqualTo("pjnzhash")
-        assertThat(result.count()).isEqualTo(7)
+        assertThat(result.count()).isEqualTo(8)
     }
 
     @Test
