@@ -43,7 +43,7 @@
 <script lang="ts">
 import VueFeather from "vue-feather";
 import {getFormData} from "../../utils";
-import NewProjectCreate from "../load/NewProjectName.vue";
+import NewProjectCreate from "../load/NewProjectCreate.vue";
 import {defineComponent, ref} from "vue";
 import {useStore} from "vuex";
 import {CreateProjectPayload} from "../../store/projects/actions";

@@ -1,13 +1,12 @@
 import {expectHasTranslationKey} from "../../testHelpers";
 import Vuex from "vuex";
 import {mockFile, mockProjectsState, mockLoadState, mockRootState} from "../../mocks";
-import {DOMWrapper, flushPromises, mount, shallowMount, VueWrapper} from "@vue/test-utils";
-import NewProject from "../../../app/components/projects/NewProjectMenu.vue";
-import UploadNewProject from "../../../app/components/load/NewProjectName.vue";
+import {DOMWrapper, mount, shallowMount, VueWrapper} from "@vue/test-utils";
+import NewProjectMenu from "../../../app/components/projects/NewProjectMenu.vue";
+import UploadNewProject from "../../../app/components/load/NewProjectCreate.vue";
 import {Translations} from "../../../app/store/translations/locales";
-import {nextTick} from "vue";
 
-describe("New project component", () => {
+describe("New project menu component", () => {
 
     // @ts-ignore
     global.File = class MockFile {
@@ -55,7 +54,7 @@ describe("New project component", () => {
 
     const getWrapper = () => {
         const store = createStore();
-        return shallowMount(NewProject, {
+        return shallowMount(NewProjectMenu, {
             global: {
                 plugins: [store],
                 directives: {
@@ -88,14 +87,13 @@ describe("New project component", () => {
 
         // Set new project name components are hidden by default
         const projectNameInput = wrapper.findAllComponents(UploadNewProject)
-        expect(projectNameInput.length).toBe(2)
+        expect(projectNameInput.length).toBe(1)
         expect(projectNameInput[0].attributes("open")).toBeFalsy();
-        expect(projectNameInput[1].attributes("open")).toBeFalsy();
     })
 
     it("triggers createProject action selecting a new project", async () => {
         const store = createStore();
-        const wrapper = mount(NewProject, {
+        const wrapper = mount(NewProjectMenu, {
             global: {
                 plugins: [store],
                 directives: {
@@ -109,12 +107,12 @@ describe("New project component", () => {
         await createProjectButton.trigger("click")
 
         // Then new project modal is opened
-        const createProject = wrapper.find("#create-project")
+        const createProject = wrapper.find("#new-project-create")
         const createProjectModal = createProject.findComponent("#load") as VueWrapper
         expect(createProjectModal.props("open")).toBe(true);
 
         // When I enter a name
-        await createProjectModal.find("#project-name-create-new").setValue("new created project")
+        await createProjectModal.find("#project-name-input").setValue("new created project")
 
         // then confirm load button is enabled
         const confirmLoad = createProjectModal.find("#confirm-load-project")
@@ -132,7 +130,7 @@ describe("New project component", () => {
 
     it("clicking cancel from create project modal closes it", async () => {
         const store = createStore();
-        const wrapper = mount(NewProject, {
+        const wrapper = mount(NewProjectMenu, {
             global: {
                 plugins: [store],
                 directives: {
@@ -146,7 +144,7 @@ describe("New project component", () => {
         await createProjectButton.trigger("click")
 
         // Then new project modal is opened
-        const createProject = wrapper.find("#create-project")
+        const createProject = wrapper.find("#new-project-create")
         const createProjectModal = createProject.findComponent("#load") as VueWrapper
         expect(createProjectModal.props("open")).toBe(true);
 
@@ -160,7 +158,7 @@ describe("New project component", () => {
 
     it("triggers preparingRehydrate action when file is uploaded", async () => {
         const store = createStore();
-        const wrapper = mount(NewProject, {
+        const wrapper = mount(NewProjectMenu, {
             global: {
                 plugins: [store],
                 directives: {
@@ -174,7 +172,7 @@ describe("New project component", () => {
         await triggerSelectZip(wrapper, testFile, "#upload-zip");
 
         // Then project zip modal is opened
-        const projectZip = wrapper.find("#project-zip")
+        const projectZip = wrapper.find("#new-project-create")
         const projectZipModal = projectZip.findComponent("#load") as VueWrapper
         expect(projectZipModal.props("open")).toBe(true);
 
@@ -183,7 +181,7 @@ describe("New project component", () => {
         expect((confirmLoad.element as HTMLButtonElement).disabled).toBe(true)
 
         // When I enter a name
-        await projectZipModal.find("#project-name-input-zip").setValue("new uploaded project")
+        await projectZipModal.find("#project-name-input").setValue("new uploaded project")
 
         // then confirm load button is enabled
         expect((confirmLoad.element as HTMLButtonElement).disabled).toBe(false)
@@ -201,7 +199,7 @@ describe("New project component", () => {
 
     it("clicking cancel from Zip project name modal hides modal", async () => {
         const store = createStore();
-        const wrapper = mount(NewProject, {
+        const wrapper = mount(NewProjectMenu, {
             global: {
                 plugins: [store],
                 directives: {
@@ -215,7 +213,7 @@ describe("New project component", () => {
         await triggerSelectZip(wrapper, testFile, "#upload-zip");
 
         // Then project zip modal is opened
-        const projectZip = wrapper.find("#project-zip")
+        const projectZip = wrapper.find("#new-project-create")
         const projectZipModal = projectZip.findComponent("#load") as VueWrapper
         expect(projectZipModal.props("open")).toBe(true);
 

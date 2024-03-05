@@ -1,8 +1,8 @@
 <template>
-    <div id="load-project-name">
+    <div id="new-project-create">
         <modal id="load" :open="openModal">
             <label class="h5" v-translate="'enterProjectName'"></label>
-            <input id="upload-project-input"
+            <input id="project-name-input"
                    type="text"
                    class="form-control"
                    v-translate:placeholder="'projectName'"
