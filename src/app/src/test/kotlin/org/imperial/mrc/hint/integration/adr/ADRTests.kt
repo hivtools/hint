@@ -1,7 +1,7 @@
 package org.imperial.mrc.hint.integration.adr
 
-import com.github.kittinunf.fuel.httpPost
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.github.kittinunf.fuel.httpPost
 import org.assertj.core.api.Assertions.assertThat
 import org.imperial.mrc.hint.ConfiguredAppProperties
 import org.imperial.mrc.hint.helpers.JSONValidator
@@ -12,11 +12,7 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
 import org.springframework.boot.test.web.client.getForEntity
 import org.springframework.boot.test.web.client.postForEntity
-import org.springframework.http.HttpEntity
-import org.springframework.http.HttpHeaders
-import org.springframework.http.HttpStatus
-import org.springframework.http.MediaType
-import org.springframework.http.ResponseEntity
+import org.springframework.http.*
 import org.springframework.util.LinkedMultiValueMap
 
 // These test integration between HINT and the ADR
@@ -32,6 +28,22 @@ class ADRTests : SecureIntegrationTests()
     {
         testRestTemplate.postForEntity<String>("/adr/key", getPostEntityWithKey())
         val result = testRestTemplate.getForEntity<String>("/adr/datasets")
+
+        if (isAuthorized == IsAuthorized.TRUE)
+        {
+            val data = ObjectMapper().readTree(result.body!!)["data"]
+            assertThat(data.isArray).isTrue()
+            // the test api key has access to at least 1 dataset
+            assertThat(data.any()).isTrue()
+        }
+    }
+
+    @ParameterizedTest
+    @EnumSource(IsAuthorized::class)
+    fun `can get ADR datasets with a specific resource`(isAuthorized: IsAuthorized)
+    {
+        testRestTemplate.postForEntity<String>("/adr/key", getPostEntityWithKey())
+        val result = testRestTemplate.getForEntity<String>("/adr/datasetsWithResource?resourceType=anc")
 
         if (isAuthorized == IsAuthorized.TRUE)
         {
@@ -81,14 +93,27 @@ class ADRTests : SecureIntegrationTests()
             val data = ObjectMapper().readTree(result.body!!)["data"]
             assertThat(data.isArray).isTrue
         }
+
+
+        // Releases with resource returns in same format
+        val withResourceResult = testRestTemplate.getForEntity<String>("/adr/datasets/$id/releasesWithResource?resourceType=outputZip")
+        assertSecureWithSuccess(isAuthorized, withResourceResult, null)
+        if (isAuthorized == IsAuthorized.TRUE)
+        {
+            val withResourceReleases = ObjectMapper().readTree(result.body!!)["data"]
+            val allReleases = ObjectMapper().readTree(result.body!!)["data"]
+            assertThat(withResourceReleases).isEqualTo(allReleases)
+        }
     }
-    
+
+    @ParameterizedTest
+    @EnumSource(IsAuthorized::class)
     fun `can get individual ADR dataset version`(isAuthorized: IsAuthorized)
     {
         testRestTemplate.postForEntity<String>("/adr/key", getPostEntityWithKey())
 
         val name = ADR_TEST_DATASET_NAME
-        val release = "1.0"
+        val release = "Version 1.0"
 
         val result = testRestTemplate.getForEntity<String>("/adr/datasets/$name?release=$release")
         assertSecureWithSuccess(isAuthorized, result, null)
@@ -192,6 +217,36 @@ class ADRTests : SecureIntegrationTests()
         val result = testRestTemplate.postForEntity<String>("/adr/anc",
                 getPostEntityWithUrl(AdrResource(anc, getDatasetId(isAuthorized), resourceId)))
         assertSecureWithSuccess(isAuthorized, result, "ValidateInputResponse")
+    }
+
+    @ParameterizedTest
+    @EnumSource(IsAuthorized::class)
+    fun `can save VMMC from ADR`(isAuthorized: IsAuthorized)
+    {
+        val resourceType = "inputs-unaids-vmmc-coverage-outputs"
+
+        val resourceId = extractResourceId(isAuthorized, resourceType)
+
+        importGeoFiles(isAuthorized)
+
+        val vmmc = extractUrl(isAuthorized, resourceType)
+        val result = testRestTemplate.postForEntity<String>("/adr/vmmc",
+            getPostEntityWithUrl(AdrResource(vmmc, getDatasetId(isAuthorized), resourceId)))
+        assertSecureWithSuccess(isAuthorized, result, "ValidateInputResponse")
+    }
+
+    @ParameterizedTest
+    @EnumSource(IsAuthorized::class)
+    fun `can save output zip from ADR`(isAuthorized: IsAuthorized)
+    {
+        val resourceType = "inputs-unaids-naomi-output-zip"
+
+        val resourceId = extractResourceId(isAuthorized, resourceType)
+
+        val outputZip = extractUrl(isAuthorized, resourceType)
+        val result = testRestTemplate.postForEntity<String>("/adr/output",
+            getPostEntityWithUrl(AdrResource(outputZip, getDatasetId(isAuthorized), resourceId)))
+        assertSecureWithSuccess(isAuthorized, result, null)
     }
 
     @ParameterizedTest

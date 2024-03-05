@@ -34,7 +34,10 @@ abstract class SecureIntegrationTests : CleanDatabaseTests()
     @BeforeEach
     fun beforeEach(info: TestInfo)
     {
-        userRepo.addUser("guest", "guest")
+        val userExists = userRepo.getUser("guest")
+        if (userExists == null) {
+            userRepo.addUser("guest", "guest")
+        }
         val isAuthorized = info.displayName.contains("TRUE")
         if (isAuthorized)
         {
