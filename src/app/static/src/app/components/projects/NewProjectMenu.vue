@@ -7,7 +7,7 @@
                     data-toggle="dropdown"
                     aria-haspopup="true"
                     aria-expanded="false">
-                <div class="mx-3">
+                <div class="ml-2 mr-3">
                     <vue-feather type="plus" size="30" class="icon align-middle"></vue-feather>
                     <span class="ml-2 align-middle" v-translate="'newProjectDropdown'"></span>
                 </div>
@@ -17,7 +17,7 @@
                         class="dropdown-item mb-0"
                         type="button"
                         @click="showCreateProjectModal">
-                    <vue-feather type="plus-circle" size="20" class="icon ml-1 align-middle"></vue-feather>
+                    <vue-feather type="plus" size="20" class="icon ml-1 align-middle"></vue-feather>
                     <span class="align-middle ml-2" v-translate="'createProject'"></span>
                 </button>
                 <button id="load-zip-button"
@@ -35,34 +35,29 @@
             </div>
         </div>
 
-        <div id="create-project">
-            <upload-new-project input-id="project-name-create-new"
-                                :open-modal="showNewProjectModal"
-                                :submit-load="handleCreateProject"
-                                :cancel-load="cancelCreateProject"/>
-        </div>
-
-        <div id="project-zip">
-            <upload-new-project input-id="project-name-input-zip"
-                                :open-modal="showUploadZipModal"
-                                :submit-load="handleLoadZip"
-                                :cancel-load="cancelLoadZip"/>
-        </div>
+        <new-project-create :open-modal="showUploadProjectModal"
+                            :submit-create="handleCreateProject"
+                            :cancel-create="cancelCreateProject"/>
     </div>
 </template>
 <script lang="ts">
 import VueFeather from "vue-feather";
 import {getFormData} from "../../utils";
-import UploadNewProject from "../load/UploadNewProject.vue";
+import NewProjectCreate from "../load/NewProjectName.vue";
 import {defineComponent, ref} from "vue";
 import {useStore} from "vuex";
 import {CreateProjectPayload} from "../../store/projects/actions";
 import {RootState} from "../../root";
 
+enum NewProjectType {
+    NEW = "new",
+    ZIP = "zip",
+}
+
 export default defineComponent({
     setup() {
-        const showNewProjectModal = ref(false);
-        const showUploadZipModal = ref(false);
+        const showUploadProjectModal = ref(false);
+        const newProjectType = ref<NewProjectType | null>(null);
         const fileToLoad = ref<File | null>(null);
         const loadZip = ref<HTMLInputElement | null>(null);
 
@@ -72,7 +67,10 @@ export default defineComponent({
 
         const preparingRehydrate =  (payload: FormData) => store.dispatch("load/preparingRehydrate", payload);
 
-        const showCreateProjectModal = () => showNewProjectModal.value = true
+        const showCreateProjectModal = () => {
+            newProjectType.value = NewProjectType.NEW;
+            showUploadProjectModal.value = true
+        }
 
         const clearLoadZipInput = () => {
             // clearing value because browser does not
@@ -87,39 +85,32 @@ export default defineComponent({
                 const file = loadZip.value.files[0];
                 clearLoadZipInput();
                 fileToLoad.value = file;
-                showUploadZipModal.value = true;
+                newProjectType.value = NewProjectType.ZIP;
+                showUploadProjectModal.value = true;
             }
         }
 
         const handleCreateProject = () => {
-            showNewProjectModal.value = false;
-            createProject({name: store.state.load.newProjectName});
-        }
-
-        const handleLoadZip = () => {
-            showUploadZipModal.value = false;
-            if (fileToLoad.value) {
+            showUploadProjectModal.value = false;
+            if (newProjectType.value === NewProjectType.NEW) {
+                createProject({name: store.state.load.newProjectName});
+            } else if (newProjectType.value === NewProjectType.ZIP && fileToLoad.value) {
                 preparingRehydrate(getFormData(fileToLoad.value));
             }
         }
 
-        const cancelLoadZip = () => {
-            showUploadZipModal.value = false;
-            clearLoadZipInput();
-        }
-
         const cancelCreateProject = () => {
-            showNewProjectModal.value = false;
+            showUploadProjectModal.value = false;
+            if (newProjectType.value === NewProjectType.ZIP) {
+                clearLoadZipInput();
+            }
         }
 
         return {
-            showNewProjectModal,
-            showUploadZipModal,
+            showUploadProjectModal,
             showCreateProjectModal,
             showLoadZipModal,
             handleCreateProject,
-            handleLoadZip,
-            cancelLoadZip,
             cancelCreateProject,
             loadZip,
             fileToLoad,
@@ -130,7 +121,7 @@ export default defineComponent({
 
     components: {
         VueFeather,
-        UploadNewProject
+        NewProjectCreate
     }
 })
 </script>

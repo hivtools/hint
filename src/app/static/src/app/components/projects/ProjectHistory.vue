@@ -1,5 +1,8 @@
 <template>
-    <div v-if="projects.length > 0">
+    <div v-if="projects.length == 0" class="text-center">
+        <h5 class="mt-5" v-translate="'projectPlaceholderText'"></h5>
+    </div>
+    <div v-else>
         <div id="headers" class="row font-weight-bold pt-2">
             <div class="col-md-1 header-cell"></div>
             <div class="col-md-3 header-cell" v-translate="'projectName'"></div>
@@ -12,7 +15,7 @@
             <div class="col-md-1 header-cell" v-translate="'share'"></div>
         </div>
         <hr/>
-        <div v-for="p in this.projects" :key="p.id">
+        <div v-for="p in projects" :key="p.id">
             <div :id="`p-${p.id}`" class="row py-2">
                 <div class="col-md-1 project-cell">
                     <button

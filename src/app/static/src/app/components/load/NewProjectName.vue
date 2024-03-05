@@ -1,8 +1,8 @@
 <template>
     <div id="load-project-name">
         <modal id="load" :open="openModal">
-            <label class="h5" :for="inputId" v-translate="'enterProjectName'"></label>
-            <input :id="inputId"
+            <label class="h5" v-translate="'enterProjectName'"></label>
+            <input id="upload-project-input"
                    type="text"
                    class="form-control"
                    v-translate:placeholder="'projectName'"
@@ -14,14 +14,14 @@
                 <button id="confirm-load-project"
                         type="button"
                         class="btn btn-red"
-                        @click="submitLoad"
+                        @click="submitCreate"
                         v-translate="'createProject'"
                         :disabled="disableCreate">
                 </button>
                 <button id="cancel-load-project"
                         type="button"
                         class="btn btn-white"
-                        @click="cancelLoad"
+                        @click="cancelCreate"
                         v-translate="'cancel'">
                 </button>
             </template>
@@ -42,21 +42,17 @@
 
     export default defineComponent({
         extends: ProjectsMixin,
-        name: "UploadNewProject",
+        name: "NewProjectCreate",
         props: {
-            inputId: {
-                type: String,
-                required: true
-            },
             openModal: {
                 type: Boolean,
                 required: true
             },
-            submitLoad: {
+            submitCreate: {
                 type: Function as PropType<() => void>,
                 required: true
             },
-            cancelLoad: {
+            cancelCreate: {
                 type: Function as PropType<() => void>,
                 required: true
             }

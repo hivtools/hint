@@ -16,9 +16,10 @@ import {
 } from "../../generated";
 import {DynamicFormData} from "@reside-ic/vue-next-dynamic-form";
 import {ModelCalibrateState} from "../modelCalibrate/modelCalibrate";
+import {LoadMutations} from "./mutations";
 
-export type LoadActionTypes = "UpdatingState" | "LoadSucceeded" | "ClearLoadError" | "PreparingRehydrate" | "SaveProjectName" | "RehydrateStatusUpdated" | "RehydratePollingStarted" | "RehydrateResult" | "SetNewProjectName" | "RehydrateCancel"
 export type LoadErrorActionTypes = "LoadFailed" | "RehydrateResultError"
+export type LoadActionTypes = keyof Omit<LoadMutations, LoadErrorActionTypes>
 
 export interface LoadActions {
     preparingRehydrate: (store: ActionContext<LoadState, RootState>, file: FormData) => void

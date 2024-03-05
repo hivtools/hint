@@ -10,7 +10,7 @@
                     </span>
                 </div>
                 <div class="flex-grow-1"></div>
-                <new-project></new-project>
+                <new-project-menu></new-project-menu>
             </div>
             <div class="my-3 col-12">
                 <project-history></project-history>
@@ -30,7 +30,7 @@
     import ErrorAlert from "../ErrorAlert.vue";
     import LoadingSpinner from "../LoadingSpinner.vue";
     import ProjectHistory from "./ProjectHistory.vue";
-    import NewProject from "./NewProject.vue";
+    import NewProjectMenu from "./NewProjectMenu.vue";
     import ProjectsMixin from "./ProjectsMixin";
     import { defineComponent } from "vue";
 
@@ -60,7 +60,7 @@
             }
         },
         components: {
-            NewProject,
+            NewProjectMenu,
             ErrorAlert,
             LoadingSpinner,
             ProjectHistory

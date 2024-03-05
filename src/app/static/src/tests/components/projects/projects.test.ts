@@ -4,7 +4,7 @@ import {mockProjectsState} from "../../mocks";
 import Projects from "../../../app/components/projects/Projects.vue";
 import LoadingSpinner from "../../../app/components/LoadingSpinner.vue";
 import ErrorAlert from "../../../app/components/ErrorAlert.vue";
-import NewProject from "../../../app/components/projects/NewProject.vue";
+import NewProject from "../../../app/components/projects/NewProjectMenu.vue";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {emptyState} from "../../../app/root";
 import {expectTranslated, shallowMountWithTranslate} from "../../testHelpers";

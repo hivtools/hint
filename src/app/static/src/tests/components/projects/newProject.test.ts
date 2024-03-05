@@ -2,8 +2,8 @@ import {expectHasTranslationKey} from "../../testHelpers";
 import Vuex from "vuex";
 import {mockFile, mockProjectsState, mockLoadState, mockRootState} from "../../mocks";
 import {DOMWrapper, flushPromises, mount, shallowMount, VueWrapper} from "@vue/test-utils";
-import NewProject from "../../../app/components/projects/NewProject.vue";
-import UploadNewProject from "../../../app/components/load/UploadNewProject.vue";
+import NewProject from "../../../app/components/projects/NewProjectMenu.vue";
+import UploadNewProject from "../../../app/components/load/NewProjectName.vue";
 import {Translations} from "../../../app/store/translations/locales";
 import {nextTick} from "vue";
 

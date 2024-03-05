@@ -1,6 +1,6 @@
 import {mount} from "@vue/test-utils";
 import {mockError, mockLoadState, mockProjectsState, mockRootState} from "../../mocks";
-import UploadNewProject from "../../../app/components/load/UploadNewProject.vue"
+import UploadNewProject from "../../../app/components/load/NewProjectName.vue"
 import Vuex, {Store} from "vuex";
 import {emptyState, RootState} from "../../../app/root";
 import RegisterTranslations from "../../../app/store/translations/registerTranslations";
