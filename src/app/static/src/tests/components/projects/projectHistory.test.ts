@@ -349,9 +349,16 @@ describe("Project history component", () => {
         expect(chevDown.isVisible()).toBe(false);
         expect(versionMenu.classes()).toStrictEqual(["collapse"])
     });
-    it("does not render if no previous projects", () => {
+
+    it("renders placeholder text if no previous projects", () => {
         const wrapper = getWrapper([]);
-        expect(wrapper.findAll("div").length).toBe(0);
+        const placeholderText = wrapper.find("div h5");
+        const store = wrapper.vm.$store;
+        expectTranslated(placeholderText,
+            'Projects will appear here.Use the "New" button to create a new project.',
+            'Les projets apparaissent ici.Utilisez le le bouton "Nouveau" pour créer un nouveau projet.',
+            'Os projectos aparecem aqui.Utilize o botão "Novo" para criar um novo projeto.',
+            store);
     });
 
     it("clicking version load link invokes loadVersion action", async () => {
