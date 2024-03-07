@@ -3,10 +3,8 @@
         <div class="legend-container">
             <map-adjust-scale class="legend-element legend-adjust map-control"
                               name="colour"
-                              :step="colourScaleStep"
                               :show="showAdjust"
                               :scale-to-adjust="colourScales"
-                              @update="update"
                               :metadata="indicatorMetadata">
             </map-adjust-scale>
             <div class="legend-element map-control p-3">
@@ -46,11 +44,11 @@ export default defineComponent({
 
         const selectedIndicator = computed<string>(() => {
             return store.state.plotSelections.choropleth.filters
-                .find(f => f.stateFilterId === "indicator").selection[0].id
+                .find(f => f.stateFilterId === "indicator")!.selection[0].id
         })
 
         const indicatorMetadata = computed<ChoroplethIndicatorMetadata>(() => {
-            return store.state.modelCalibrate.metadata?.indicators.find(i => i.indicator == selectedIndicator.value)
+            return store.state.modelCalibrate.metadata!.indicators.find(i => i.indicator == selectedIndicator.value)!
         });
 
         const colourScales = computed<ScaleSelections>(() => {

@@ -141,3 +141,7 @@ export const roundRange = function (unrounded: NumericRange) {
 
     return {min: roundToPlaces(unrounded.min, decPl), max: roundToPlaces(unrounded.max, decPl)};
 };
+
+export const scaleStepFromMetadata = function (meta: ChoroplethIndicatorMetadata) {
+    return (meta.max - meta.min) / 10;
+};
