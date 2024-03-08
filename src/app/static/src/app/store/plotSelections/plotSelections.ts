@@ -23,8 +23,6 @@ export type PlotSelectionsState = {
     }
 } & { error: Error }
 
-export enum ScaleType {Default, Custom, DynamicFull, DynamicFiltered}
-
 export const initialPlotSelectionsState = (): PlotSelectionsState => {
     const emptySelections: PlotSelectionsState[PlotName] = { controls: [], filters: [] };
     const emptySelectionsArray = plotNames.map(plot => [plot, emptySelections]);

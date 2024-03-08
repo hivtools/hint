@@ -3,6 +3,7 @@ import {Dict, LevelLabel, NumericRange} from "../../../types";
 import {ChoroplethIndicatorMetadata, Filter, FilterOption} from "../../../generated";
 import numeral from 'numeral';
 import * as d3ScaleChromatic from "d3-scale-chromatic";
+import {PlotData} from "../../../store/plotData/plotData";
 
 
 export const getFeaturesByLevel = function(features: Feature[], featureLevels: LevelLabel[]) {
@@ -108,26 +109,23 @@ export const formatOutput = function (value: number | string, format: string, sc
     } else return ans
 };
 
-// export const getIndicatorRange = function (data: any,
-//                                            indicatorMeta: ChoroplethIndicatorMetadata,
-//                                            filters: Filter[] | null = null,
-//                                            selectedFilterValues: Dict<FilterOption[]> | null = null,
-//                                            selectedAreaIds: string[] | null = null): NumericRange {
-//     let result = {} as NumericRange;
-//     iterateDataValues(data, [indicatorMeta], selectedAreaIds, filters, selectedFilterValues,
-//         (areaId: string, indicatorMeta: ChoroplethIndicatorMetadata, value: number) => {
-//             if (!result.max) {
-//                 result = {min: value, max: value};
-//             } else {
-//                 result.min = Math.min(result.min, value);
-//                 result.max = Math.max(result.max, value);
-//             }
-//         });
-//     return roundRange({
-//         min: result ? result.min : 0,
-//         max: result ? result.max : 0
-//     });
-// };
+export const getIndicatorRange = function (data: PlotData,
+                                           indicatorMeta: ChoroplethIndicatorMetadata): NumericRange {
+    let result = {} as NumericRange;
+    for (const row of data) {
+        const value = row[indicatorMeta.value_column]
+        if (!result.max) {
+            result = {min: value, max: value};
+        } else {
+            result.min = Math.min(result.min, value);
+            result.max = Math.max(result.max, value);
+        }
+    }
+    return roundRange({
+        min: result ? result.min : 0,
+        max: result ? result.max : 0
+    });
+};
 
 export const roundRange = function (unrounded: NumericRange) {
     //round appropriate to the range magnitude
@@ -144,4 +142,14 @@ export const roundRange = function (unrounded: NumericRange) {
 
 export const scaleStepFromMetadata = function (meta: ChoroplethIndicatorMetadata) {
     return (meta.max - meta.min) / 10;
+};
+
+
+// eslint-disable-next-line @typescript-eslint/ban-types
+export const debounce = (fn: Function, ms = 300) => {
+    let timeoutId: ReturnType<typeof setTimeout>;
+    return function (this: any, ...args: any[]) {
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => fn.apply(this, args), ms);
+    };
 };

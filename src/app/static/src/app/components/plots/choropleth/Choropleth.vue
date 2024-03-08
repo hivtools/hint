@@ -14,7 +14,7 @@
 </template>
 
 <script lang="ts">
-import {computed, defineComponent, ref} from "vue";
+import {computed, defineComponent, PropType, ref} from "vue";
 import {useStore} from "vuex";
 import {RootState} from "../../../root";
 import {PlotData} from "../../../store/plotData/plotData";
@@ -23,9 +23,16 @@ import { Feature } from "geojson";
 import {getVisibleFeatures} from "./utils";
 import ResetMap from "./ResetMap.vue";
 import MapLegend from "./MapLegend.vue";
+import {ChoroplethSelections} from "../../../store/plottingSelections/plottingSelections";
 
 export default defineComponent({
-    setup() {
+    props: {
+        selections: {
+            type: Object as PropType<ChoroplethSelections>,
+            required: true
+        },
+    },
+    setup(props) {
         const map = ref<typeof LMap | null>(null);
         const featureRefs = ref<typeof LGeoJson[]>([]);
         const store = useStore<RootState>();
