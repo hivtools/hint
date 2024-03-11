@@ -1,9 +1,9 @@
 import {Feature} from "geojson";
-import {Dict, LevelLabel, NumericRange} from "../../../types";
-import {ChoroplethIndicatorMetadata, Filter, FilterOption} from "../../../generated";
+import {IndicatorValuesDict, LevelLabel, NumericRange} from "../../../types";
+import {ChoroplethIndicatorMetadata, FilterOption} from "../../../generated";
 import numeral from 'numeral';
-import * as d3ScaleChromatic from "d3-scale-chromatic";
 import {PlotData} from "../../../store/plotData/plotData";
+import {getColour} from "../utils";
 
 
 export const getFeaturesByLevel = function(features: Feature[], featureLevels: LevelLabel[]) {
@@ -26,16 +26,6 @@ export const getVisibleFeatures = function(features: Feature[], selectedLevels: 
     return features.filter((feature: Feature) => {
         return feature.properties && levels.includes(feature.properties["area_level"]) && areas.includes(feature.properties["area_id"]);
     });
-};
-
-export const colorFunctionFromName = function (name: string) {
-    let result = (d3ScaleChromatic as any)[name];
-    if (!result) {
-        //This is trying to be defensive against typos in metadata...
-        console.warn(`Unknown color function: ${name}`);
-        result = d3ScaleChromatic.interpolateWarm;
-    }
-    return result;
 };
 
 export const roundToContext = function (value: number, context: number[]) {
@@ -152,4 +142,24 @@ export const debounce = (fn: Function, ms = 300) => {
         clearTimeout(timeoutId);
         timeoutId = setTimeout(() => fn.apply(this, args), ms);
     };
+};
+
+
+export const getFeatureIndicator = function (data: any[],
+                                             indicatorMeta: ChoroplethIndicatorMetadata,
+                                             colourRange: NumericRange): IndicatorValuesDict {
+
+    console.log("getting feature indicator")
+    const result = {} as IndicatorValuesDict;
+    for (const row of data) {
+        const value = row[indicatorMeta.value_column]
+        result[row.area_id] = {
+            value: value,
+            color: getColour(value, indicatorMeta, colourRange),
+            lower_value: row['lower'],
+            upper_value: row['upper']
+        }
+    }
+
+    return result;
 };

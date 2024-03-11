@@ -1,9 +1,9 @@
 <template>
     <l-control position="bottomright">
         <div class="legend-container">
-            <map-adjust-scale class="legend-element legend-adjust map-control"
-                              name="colour"
-                              :show="showAdjust">
+            <map-adjust-scale v-if="showAdjust"
+                              class="legend-element legend-adjust map-control"
+                              name="colour">
             </map-adjust-scale>
             <div class="legend-element map-control p-3">
                 <label>{{indicatorMetadata.name}}</label>
@@ -26,15 +26,26 @@
 
 <script lang="ts">
 
-import {defineComponent, ref} from "vue";
+import {computed, defineComponent, ref} from "vue";
 import {LControl} from "@vue-leaflet/vue-leaflet";
 import MapAdjustScale from "./MapAdjustScale.vue";
+import {useStore} from "vuex";
+import {RootState} from "../../../root";
 import {useFilterScale} from "../useFilterScale";
 
 export default defineComponent({
     setup() {
-
-        const {colourScales, scaleLevels, indicatorMetadata} = useFilterScale();
+        const store = useStore<RootState>();
+        const indicatorMetadata = computed(() => {
+            return store.getters["modelCalibrate/indicatorMetadata"];
+        });
+        const {selectedScale} = useFilterScale();
+        const scaleLevels = computed(() => {
+            return store.getters["plotState/scaleLevels"](selectedScale.value);
+        });
+        const colourScales = computed(() => {
+            return store.getters["plotState/colourScales"];
+        });
 
         const showAdjust = ref<boolean>(false);
 
