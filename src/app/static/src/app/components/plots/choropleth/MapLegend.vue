@@ -26,25 +26,36 @@
 
 <script lang="ts">
 
-import {computed, defineComponent, ref} from "vue";
+import {computed, defineComponent, PropType, ref} from "vue";
 import {LControl} from "@vue-leaflet/vue-leaflet";
 import MapAdjustScale from "./MapAdjustScale.vue";
 import {useStore} from "vuex";
 import {RootState} from "../../../root";
-import {useFilterScale} from "../useFilterScale";
+import {NumericRange} from "../../../types";
+import {ChoroplethIndicatorMetadata} from "../../../generated";
 
 export default defineComponent({
-    setup() {
+    props: {
+        indicatorMetadata: {
+            type: Object as PropType<ChoroplethIndicatorMetadata>,
+            required: true
+        },
+        colourRange: {
+            type: Object as PropType<NumericRange>,
+            required: true
+        },
+        scaleLevels: {
+            type: Object,
+            required: true
+        }
+    },
+    setup(props) {
         const store = useStore<RootState>();
         const indicatorMetadata = computed(() => {
             return store.getters["modelCalibrate/indicatorMetadata"];
         });
-        const {selectedScale} = useFilterScale();
-        const scaleLevels = computed(() => {
-            return store.getters["plotState/scaleLevels"](selectedScale.value);
-        });
         const colourScales = computed(() => {
-            return store.getters["plotState/colourScales"];
+            return store.state.plotState.output.colourScales;
         });
 
         const showAdjust = ref<boolean>(false);
@@ -56,7 +67,6 @@ export default defineComponent({
 
         return {
             indicatorMetadata,
-            scaleLevels,
             colourScales,
             showAdjust,
             toggleAdjust

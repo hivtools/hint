@@ -13,7 +13,7 @@ export const useFilterScale = () => {
         return store.getters["plotSelections/selectedIndicator"];
     });
     const colourScales = computed(() => {
-        return store.getters["plotState/colourScales"];
+        return store.state.plotState.output.colourScales;
     });
 
     const selectedScale = computed(() => {
@@ -21,6 +21,7 @@ export const useFilterScale = () => {
         if (current) {
             return current;
         } else {
+            console.log("initialising new scale");
             const newScaleSettings = initialiseScaleFromMetadata(indicatorMetadata.value);
             updateOutputColourScale(newScaleSettings);
             return newScaleSettings;

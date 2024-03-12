@@ -1,5 +1,4 @@
 import { mutations } from "./mutations";
-import { getters } from "./getters";
 import {Dict} from "../../types";
 
 export interface PlotState {
@@ -47,6 +46,5 @@ export const initialScaleSettings = (): ScaleSettings => {
 export const plotState = {
     namespaced: true,
     state: initialPlotState(),
-    mutations,
-    getters
+    mutations
 };

@@ -8,14 +8,16 @@
                         :options-style="() => {return {...style, fillColor: getColour(feature)}}">
             </l-geo-json>
             <reset-map @reset-view="updateBounds"></reset-map>
-            <map-legend></map-legend>
+            <map-legend :indicator-metadata="indicatorMetadata"
+                        :colour-range="colourRange"
+                        :scale-levels="scaleLevels"></map-legend>
         </l-map>
     </div>
 
 </template>
 
 <script lang="ts">
-import {computed, defineComponent, PropType, ref} from "vue";
+import {computed, defineComponent, PropType, ref, watch} from "vue";
 import {useStore} from "vuex";
 import {RootState} from "../../../root";
 import {PlotData} from "../../../store/plotData/plotData";
@@ -26,6 +28,8 @@ import ResetMap from "./ResetMap.vue";
 import MapLegend from "./MapLegend.vue";
 import {ChoroplethSelections} from "../../../store/plottingSelections/plottingSelections";
 import {useFilterScale} from "../useFilterScale";
+import {getColourRange, getScaleLevels} from "../utils";
+import {NumericRange} from "../../../types";
 
 export default defineComponent({
     props: {
@@ -37,15 +41,18 @@ export default defineComponent({
     setup(props) {
         const store = useStore<RootState>();
         const {selectedScale} = useFilterScale();
-        const indicatorMetadata = computed(() => {
-            return store.getters["modelCalibrate/indicatorMetadata"];
-        });
-        const colourRange = computed(() => {
-            return store.getters["plotState/colourRange"];
-        });
+        const indicatorMetadata = store.getters["modelCalibrate/indicatorMetadata"];
+        const plotData = computed<PlotData>(() => store.state.plotData.choropleth);
+        const colourRange = ref<NumericRange>(getColourRange(indicatorMetadata.value, selectedScale.value, plotData.value));
+        const scaleLevels = ref<any>(getScaleLevels(indicatorMetadata.value, colourRange.value));
+        watch(plotData, (newData, oldData) => {
+            console.log("updating colour Range and scale levels")
+            indicatorMetadata.value = store.getters["modelCalibrate/indicatorMetadata"];
+            colourRange.value = getColourRange(indicatorMetadata.value, selectedScale.value, plotData.value);
+            scaleLevels.value = getScaleLevels(indicatorMetadata.value, colourRange.value);
+        })
         const map = ref<typeof LMap | null>(null);
         const featureRefs = ref<typeof LGeoJson[]>([]);
-        const plotData = computed<PlotData>(() => store.state.plotData.choropleth);
 
         const features = store.state.baseline.shape ?
                 store.state.baseline.shape.data.features as Feature[] : [] as Feature[];
@@ -75,7 +82,7 @@ export default defineComponent({
                 return getFeatureIndicator(
                     plotData.value,
                     metadata,
-                    colourRange.value(selectedScale.value)
+                    colourRange.value ? colourRange.value : {max: 1, min: 0}
                 );
             }
         });
@@ -105,7 +112,9 @@ export default defineComponent({
             currentFeatures,
             updateBounds,
             style,
-            getColour
+            getColour,
+            colourRange,
+            scaleLevels
         }
     },
     components: {
