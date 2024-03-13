@@ -9,7 +9,6 @@ export const getColourRange = (indicatorMetadata: ChoroplethIndicatorMetadata, s
     if (!indicatorMetadata) {
         return {max: 1, min: 0};
     }
-    console.log("Computing colourRange selected scale is ", scaleSettings)
     switch (scaleSettings.type) {
         case ScaleType.DynamicFiltered:
             return getIndicatorRange(plotData, indicatorMetadata);

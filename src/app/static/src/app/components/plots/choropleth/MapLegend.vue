@@ -3,7 +3,10 @@
         <div class="legend-container">
             <map-adjust-scale v-if="showAdjust"
                               class="legend-element legend-adjust map-control"
-                              name="colour">
+                              name="colour"
+                              :indicator-metadata="indicatorMetadata"
+                              :selected-scale="selectedScale"
+                              @update:selected-scale="$emit('update:selectedScale')">
             </map-adjust-scale>
             <div class="legend-element map-control p-3">
                 <label>{{indicatorMetadata.name}}</label>
@@ -31,8 +34,8 @@ import {LControl} from "@vue-leaflet/vue-leaflet";
 import MapAdjustScale from "./MapAdjustScale.vue";
 import {useStore} from "vuex";
 import {RootState} from "../../../root";
-import {NumericRange} from "../../../types";
 import {ChoroplethIndicatorMetadata} from "../../../generated";
+import {ScaleSettings} from "../../../store/plotState/plotState";
 
 export default defineComponent({
     props: {
@@ -40,20 +43,17 @@ export default defineComponent({
             type: Object as PropType<ChoroplethIndicatorMetadata>,
             required: true
         },
-        colourRange: {
-            type: Object as PropType<NumericRange>,
-            required: true
-        },
         scaleLevels: {
             type: Object,
             required: true
-        }
+        },
+        selectedScale: {
+            type: Object as PropType<ScaleSettings>,
+            required: true
+        },
     },
     setup(props) {
         const store = useStore<RootState>();
-        const indicatorMetadata = computed(() => {
-            return store.getters["modelCalibrate/indicatorMetadata"];
-        });
         const colourScales = computed(() => {
             return store.state.plotState.output.colourScales;
         });
@@ -66,7 +66,6 @@ export default defineComponent({
         };
 
         return {
-            indicatorMetadata,
             colourScales,
             showAdjust,
             toggleAdjust

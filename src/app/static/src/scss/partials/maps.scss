@@ -130,3 +130,8 @@
   @extend .geojson !optional;
   fill: rgb(200, 200, 200);
 }
+
+// Hide the black square on the map when a feature is clicked
+path.leaflet-interactive:focus {
+  outline: none;
+}

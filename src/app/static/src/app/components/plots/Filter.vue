@@ -28,7 +28,6 @@ export default defineComponent({
         const store = useStore<RootState>();
 
         const activePlot = computed(() => {
-            console.log("updating active plot to ", store.state.modelOutput.selectedTab)
             return store.state.modelOutput.selectedTab;
         });
 

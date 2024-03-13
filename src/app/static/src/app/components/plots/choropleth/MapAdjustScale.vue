@@ -55,34 +55,41 @@
 
 <script lang="ts">
 
-import {computed, defineComponent} from "vue";
-import {ScaleType} from "../../../store/plotState/plotState";
+import {computed, defineComponent, PropType} from "vue";
+import {ScaleSettings, ScaleType} from "../../../store/plotState/plotState";
 import i18next from "i18next";
-import {useFilterScale} from "../useFilterScale";
 import {useStore} from "vuex";
 import {RootState} from "../../../root";
+import {ChoroplethIndicatorMetadata} from "../../../generated";
+import {useUpdateScale} from "../useUpdateScale";
 
 export default defineComponent({
+    emits: ['update:selectedScale'],
     props: {
         name: {
             type: String,
             required: true
-        }
+        },
+        indicatorMetadata: {
+            type: Object as PropType<ChoroplethIndicatorMetadata>,
+            required: true
+        },
+        selectedScale: {
+            type: Object as PropType<ScaleSettings>,
+            required: true
+        },
     },
-    setup(props) {
+    setup(props, { emit }) {
         const store = useStore<RootState>();
-        const indicatorMetadata = computed(() => {
-            return store.getters["modelCalibrate/indicatorMetadata"];
-        });
         const scaleStep = computed(() => {
             return store.getters["modelCalibrate/scaleStep"];
         });
-        const {selectedScale, updateOutputColourScale} = useFilterScale();
+        const {updateOutputColourScale} = useUpdateScale();
 
         const invalidMsg = computed(() => {
             let result = null;
-            if (selectedScale.value.type === ScaleType.Custom) {
-                if (selectedScale.value.customMin >= selectedScale.value.customMax) {
+            if (props.selectedScale.type === ScaleType.Custom) {
+                if (props.selectedScale.customMin >= props.selectedScale.customMax) {
                     result = i18next.t("maxMustBeGreaterThanMin");
                 }
             }
@@ -90,12 +97,12 @@ export default defineComponent({
         });
 
         const disableCustom = computed(() => {
-            return selectedScale.value.type !== ScaleType.Custom;
+            return props.selectedScale.type !== ScaleType.Custom;
         });
 
         const scaleText = computed(() => {
-            if (indicatorMetadata.value) {
-                const {format, scale} = indicatorMetadata.value
+            if (props.indicatorMetadata) {
+                const {format, scale} = props.indicatorMetadata
                 if (!format.includes('%') && scale !== 1) {
                     return `x ${scale}`
                 }
@@ -109,34 +116,37 @@ export default defineComponent({
 
         const selectedScaleType = computed({
             get() {
-                return selectedScale.value.type
+                return props.selectedScale.type
             },
             set(newType: ScaleType) {
-                const newScaleSetting = {...selectedScale.value};
+                const newScaleSetting = {...props.selectedScale};
                 newScaleSetting.type = newType;
                 updateOutputColourScale(newScaleSetting)
+                emit('update:selectedScale')
             }
         });
 
         const selectedScaleMin = computed({
             get() {
-                return selectedScale.value.customMin
+                return props.selectedScale.customMin
             },
             set(newMin: number) {
-                const newScaleSetting = {...selectedScale.value};
+                const newScaleSetting = {...props.selectedScale};
                 newScaleSetting.customMin = newMin;
                 updateOutputColourScale(newScaleSetting)
+                emit('update:selectedScale')
             }
         });
 
         const selectedScaleMax = computed({
             get() {
-                return selectedScale.value.customMax
+                return props.selectedScale.customMax
             },
             set(newMax: number) {
-                const newScaleSetting = {...selectedScale.value};
+                const newScaleSetting = {...props.selectedScale};
                 newScaleSetting.customMax = newMax;
                 updateOutputColourScale(newScaleSetting)
+                emit('update:selectedScale')
             }
         });
 
@@ -147,7 +157,6 @@ export default defineComponent({
             scaleTypeGroup,
             scaleType: ScaleType,
             colourScaleStep: scaleStep,
-            selectedScale,
             selectedScaleType,
             selectedScaleMin,
             selectedScaleMax

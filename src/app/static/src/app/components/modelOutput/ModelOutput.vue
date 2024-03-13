@@ -14,8 +14,7 @@
                 <h4 v-translate="'filters'"/>
                 <filter-set/>
             </div>
-            <choropleth class="col-md-9" v-if="selectedPlot === 'choropleth'"
-            :selections="choroplethSelections"/>
+            <choropleth class="col-md-9" v-if="selectedPlot === 'choropleth'"/>
         </div>
     </div>
 </template>
@@ -36,12 +35,10 @@ export default defineComponent({
         const store = useStore<RootState>();
         const selectedPlot = computed(() => store.state.modelOutput.selectedTab);
         const switchTab = (plotName: PlotName) => store.commit(`modelOutput/${ModelOutputMutation.TabSelected}`, {payload: plotName});
-        const choroplethSelections = computed(() => store.state.plottingSelections.outputChoropleth);
         return {
             plotNames,
             selectedPlot,
             switchTab,
-            choroplethSelections
         }
     },
 

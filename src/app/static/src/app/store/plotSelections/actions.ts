@@ -34,7 +34,6 @@ export const actions: ActionTree<PlotSelectionsState, RootState> & PlotSelection
         const { plot, selection } = payload.payload;
         const { state, commit, rootState } = context;
         const updatedSelections: PlotSelectionsState[PlotName]  = {...state[plot]};
-        console.log("updating selections")
         if ("filter" in selection) {
             const fIndex = updatedSelections.filters.findIndex(f => f.filterId === selection.filter.filterId);
             updatedSelections.filters[fIndex].selection = selection.filter.options;
@@ -69,7 +68,6 @@ export const getFilteredData = async (plot: PlotName, selections: PlotSelectionU
         const { commit, rootState } = context;
         const filterTypes = rootState.modelCalibrate.metadata!.filterTypes;
         const dataFetchPayload: Record<string, string[]> = {};
-        console.log("updating plot data")
         selections.forEach(sel => {
             const colId = filterTypes.find(f => f.id === sel.filterId)!.column_id;
             const opIds = sel.selection.map(s => s.id);
