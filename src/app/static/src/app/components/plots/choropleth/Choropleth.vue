@@ -1,6 +1,6 @@
 <template>
     <div>
-        <l-map ref="map" style="height: 800px; width: 100%" @ready="updateBounds">
+        <l-map ref="map" style="height: 800px; width: 100%" @ready="updateBounds" @vnode-updated="updateBounds">
             <l-geo-json v-for="feature in currentFeatures"
                         ref="featureRefs"
                         :key="feature.properties.area_id"
@@ -36,7 +36,9 @@ import MapLegend from "../MapLegend.vue";
 import {
     getVisibleFeatures,
     getIndicatorRange,
-    getColourScaleLevels} from "../utils";
+    getColourScaleLevels,
+    debounce_leading
+} from "../utils";
 import {IndicatorValuesDict, NumericRange} from "../../../types";
 import {ChoroplethIndicatorMetadata} from "../../../generated";
 import { ScaleSettings } from "../../../store/plotState/plotState";
@@ -105,14 +107,16 @@ const updateFeatures = () => {
     currentFeatures.value = getVisibleFeatures(features, selectedLevel, selectedAreas);
 }
 
-const updateBounds = () => {
+// Update bounds can be called multiple times by v-node-updated, but
+// I can't find an appropriate thing to watch to trigger this only once
+// so debounce it instead. If the bound update is called twice in quick
+// succession, it kills the animation. Debouncing this means it should
+// update smoothly
+const updateBounds = debounce_leading(() => {
     if (featureRefs.value.length > 0) {
         map.value?.leafletObject.fitBounds(featureRefs.value.map(f => f.leafletObject.getBounds()));
     }
-};
-watch(featureRefs.value, () => {
-    updateBounds();
-});
+}, 50);
 
 const showColour = (feature: Feature) => {
     return featureData.value[feature.properties!.area_id]
@@ -140,6 +144,4 @@ onMounted(() => {
     updateFeatures();
     updateColourScales();
 });
-
-
 </script>

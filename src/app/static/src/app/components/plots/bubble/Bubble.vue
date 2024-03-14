@@ -40,7 +40,8 @@ import MapLegend from "../MapLegend.vue";
 import {
     getVisibleFeatures,
     getIndicatorRange,
-    getColourScaleLevels
+    getColourScaleLevels,
+    debounce_leading
 } from "../utils";
 import {BubbleIndicatorValuesDict, NumericRange} from "../../../types";
 import {ChoroplethIndicatorMetadata} from "../../../generated";
@@ -88,6 +89,7 @@ export default defineComponent({
         watch([plotData], updateMap)
 
         const updateColourScales = () => {
+            colourIndicatorMetadata.value = store.getters["modelCalibrate/bubbleColourMetadata"];
             const colourScales = store.state.plotState.output.colourScales;
             const colourIndicator = store.getters["plotSelections/bubbleColourIndicator"];
             colourScale.value = colourScales[colourIndicator];
@@ -123,9 +125,8 @@ export default defineComponent({
             colourIndicatorMetadata.value = store.getters["modelCalibrate/bubbleColourMetadata"];
             const selectedLevel = store.state.plotSelections.bubble.filters
                     .find(f => f.stateFilterId === "detail")!.selection;
-            const selectedAreas = store.state.plotSelections.bubble.filters
-                    .find(f => f.stateFilterId === "area")!.selection;
-            currentFeatures.value = getVisibleFeatures(features, selectedLevel, selectedAreas);
+            // Don't filter on areas for bubble as we want to always show full map
+            currentFeatures.value = getVisibleFeatures(features, selectedLevel, null);
         };
 
         const updateFeatureData = () => {
@@ -141,7 +142,7 @@ export default defineComponent({
         };
 
         const emptyFeature = computed(() => {
-            return currentFeatures.value.length == 0
+            return featuresWithBubbles.value.length == 0
         });
 
         const circles = ref<CircleMarker<any>[]>([]);
@@ -174,15 +175,31 @@ export default defineComponent({
             }
         };
 
-        const updateBounds = () => {
+        const getFeatureFromAreaId = (areaId: string) => {
+            return featureRefs.value.find(f => f.geojson.properties.area_id === areaId);
+        };
+
+        const featuresWithBubbles = computed(() => {
+            return currentFeatures.value.filter(feature => showBubble(feature));
+        });
+
+        // Update bounds can be called multiple times by v-node-updated, but
+        // I can't find an appropriate thing to watch to trigger this only once
+        // so debounce it instead. If the bound update is called twice in quick
+        // succession, it kills the animation. Debouncing this means it should
+        // update smoothly
+        const updateBounds = debounce_leading(() => {
             buildBubbles();
-            if (featureRefs.value.length > 0) {
-                map.value?.leafletObject.fitBounds(featureRefs.value.map(f => f.leafletObject.getBounds()));
+            if (featuresWithBubbles.value.length > 0) {
+                map.value?.leafletObject.fitBounds(featuresWithBubbles.value.map(feature => {
+                    const featureRef = getFeatureFromAreaId(feature.properties!.area_id)
+                    return featureRef?.leafletObject.getBounds()
+                }));
                 if (circles.value.length > 0) {
                     circles.value.forEach(circle => circle.addTo(map.value?.leafletObject))
                 }
             }
-        }
+        }, 50)
 
         const showBubble = (feature: Feature) => {
             return featureData.value[feature.properties!.area_id]

@@ -82,11 +82,15 @@ export const getFeaturesByLevel = function(features: Feature[], featureLevels: L
     return result;
 };
 
-export const getVisibleFeatures = function(features: Feature[], selectedLevels: FilterOption[], selectedAreas: FilterOption[]) {
+export const getVisibleFeatures = function(features: Feature[], selectedLevels: FilterOption[], selectedAreas: FilterOption[] | null) {
     const levels = selectedLevels.map((l: FilterOption) => parseInt(l.id));
-    const areas = selectedAreas.map((a: FilterOption) => a.id);
+    const areas = selectedAreas?.map((a: FilterOption) => a.id);
     return features.filter((feature: Feature) => {
-        return feature.properties && levels.includes(feature.properties["area_level"]) && areas.includes(feature.properties["area_id"]);
+        let include = feature.properties && levels.includes(feature.properties["area_level"]);
+        if (areas && feature.properties) {
+            include = include && areas.includes(feature.properties["area_id"]);
+        }
+        return include;
     });
 };
 
@@ -219,3 +223,24 @@ export const roundRange = function (unrounded: NumericRange) {
 export const scaleStepFromMetadata = function (meta: ChoroplethIndicatorMetadata) {
     return (meta.max - meta.min) / 10;
 }
+
+// eslint-disable-next-line @typescript-eslint/ban-types
+export const debounce = (fn: Function, ms = 300) => {
+    let timeoutId: ReturnType<typeof setTimeout>;
+    return function (this: any, ...args: any[]) {
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => fn.apply(this, args), ms);
+    };
+};
+
+// eslint-disable-next-line @typescript-eslint/ban-types
+export const debounce_leading = (fn: Function, ms = 300) => {
+    let timeoutId: ReturnType<typeof setTimeout> | undefined;
+    return function (this: any, ...args: any[]) {
+        if (!timeoutId) {
+            fn.apply(this, args);
+        }
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => timeoutId = undefined, ms);
+    };
+};
