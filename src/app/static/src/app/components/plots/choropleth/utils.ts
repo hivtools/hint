@@ -1,7 +1,6 @@
 import {IndicatorValuesDict, NumericRange} from "../../../types";
 import {ChoroplethIndicatorMetadata} from "../../../generated";
 import {getColour} from "../utils";
-import {initialScaleSettings} from "../../../store/plotState/plotState";
 
 export const getFeatureData = function (data: any[],
                                         indicatorMeta: ChoroplethIndicatorMetadata,
@@ -18,14 +17,5 @@ export const getFeatureData = function (data: any[],
         }
     }
 
-    return result;
-};
-
-export const initialiseScaleFromMetadata = function (meta: ChoroplethIndicatorMetadata | undefined) {
-    const result = initialScaleSettings();
-    if (meta) {
-        result.customMin = meta.min;
-        result.customMax = meta.max;
-    }
     return result;
 };

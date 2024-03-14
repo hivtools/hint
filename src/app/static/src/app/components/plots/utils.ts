@@ -1,7 +1,7 @@
 import {IndicatorValuesDict, LevelLabel, NumericRange} from "../../types";
 import {ChoroplethIndicatorMetadata, FilterOption} from "../../generated";
 import * as d3ScaleChromatic from "d3-scale-chromatic";
-import {ScaleSettings, ScaleType} from "../../store/plotState/plotState";
+import {initialScaleSettings, ScaleSettings, ScaleType} from "../../store/plotState/plotState";
 import {PlotData} from "../../store/plotData/plotData";
 import {Feature} from "geojson";
 import numeral from "numeral";
@@ -58,27 +58,13 @@ export const getColour = (value: number,
 };
 
 
-export const colourFunctionFromName = function (name: string) {
+const colourFunctionFromName = function (name: string) {
     let result = (d3ScaleChromatic as any)[name];
     if (!result) {
         //This is trying to be defensive against typos in metadata...
         console.warn(`Unknown color function: ${name}`);
         result = d3ScaleChromatic.interpolateWarm;
     }
-    return result;
-};
-
-export const getFeaturesByLevel = function(features: Feature[], featureLevels: LevelLabel[]) {
-    const result = {} as { [k: number]: Feature[] };
-    featureLevels.forEach((level: LevelLabel) => {
-        result[level.id] = [];
-    });
-    features.forEach((feature: Feature) => {
-        const adminLevel = parseInt(feature.properties!["area_level"]); //Country (e.g. "MWI") is level 0
-        if (result[adminLevel]) {
-            result[adminLevel].push(feature);
-        }
-    });
     return result;
 };
 
@@ -94,7 +80,7 @@ export const getVisibleFeatures = function(features: Feature[], selectedLevels: 
     });
 };
 
-export const roundToContext = function (value: number, context: number[]) {
+const roundToContext = function (value: number, context: number[]) {
     //Rounds the value to one more decimal place than is present in the 'context'
     let maxDecPl = 0;
     for (const contextValue of context) {
@@ -207,7 +193,7 @@ const getDynamicRange = function (data: PlotData,
 };
 
 
-export const roundRange = function (unrounded: NumericRange) {
+const roundRange = function (unrounded: NumericRange) {
     //round appropriate to the range magnitude
     let decPl = 0;
     let magnitude = unrounded.max == unrounded.min ? unrounded.min : (unrounded.max - unrounded.min);
@@ -243,4 +229,13 @@ export const debounce_leading = (fn: Function, ms = 300) => {
         clearTimeout(timeoutId);
         timeoutId = setTimeout(() => timeoutId = undefined, ms);
     };
+};
+
+export const initialiseScaleFromMetadata = function (meta: ChoroplethIndicatorMetadata | undefined) {
+    const result = initialScaleSettings();
+    if (meta) {
+        result.customMin = meta.min;
+        result.customMax = meta.max;
+    }
+    return result;
 };

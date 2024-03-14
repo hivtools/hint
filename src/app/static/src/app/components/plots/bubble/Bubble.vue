@@ -34,7 +34,7 @@ import { LMap, LGeoJson } from "@vue-leaflet/vue-leaflet";
 import { Feature } from "geojson";
 import {
     initialiseScaleFromMetadata,
-} from "../choropleth/utils";
+} from "../utils";
 import ResetMap from "../ResetMap.vue";
 import MapLegend from "../MapLegend.vue";
 import {
@@ -60,9 +60,13 @@ export default defineComponent({
         const {updateOutputColourScale, updateOutputSizeScale} = useUpdateScale();
         const colourIndicatorMetadata = ref<ChoroplethIndicatorMetadata>(store.getters["modelCalibrate/bubbleColourMetadata"]);
         const sizeIndicatorMetadata = ref<ChoroplethIndicatorMetadata>(store.getters["modelCalibrate/bubbleSizeMetadata"]);
+
         const colourRange = ref<NumericRange | null>(null);
         const colourScaleLevels = ref<any>(null);
         const colourScale = ref<ScaleSettings | null>(null);
+
+        const sizeScale = ref<ScaleSettings | null>(null);
+        const sizeRange = ref<NumericRange | null>(null);
 
         const features = store.state.baseline.shape ?
                 store.state.baseline.shape.data.features as Feature[] : [] as Feature[];
@@ -101,8 +105,6 @@ export default defineComponent({
             colourScaleLevels.value = getColourScaleLevels(colourIndicatorMetadata.value, colourRange.value);
         }
 
-        const sizeScale = ref<ScaleSettings | null>(null);
-        const sizeRange = ref<NumericRange | null>(null);
         const updateSizeScales = () => {
             sizeIndicatorMetadata.value = store.getters["modelCalibrate/bubbleSizeMetadata"];
             const sizeScales = store.state.plotState.output.sizeScales;
@@ -117,7 +119,7 @@ export default defineComponent({
 
         const updateBubbles = () => {
             updateSizeScales();
-            updateFeatures();
+            updateFeatureData()
             updateBounds();
         }
 

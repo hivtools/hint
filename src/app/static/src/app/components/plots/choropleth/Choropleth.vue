@@ -30,7 +30,7 @@ import { LMap, LGeoJson } from "@vue-leaflet/vue-leaflet";
 import { Feature } from "geojson";
 import {
     initialiseScaleFromMetadata,
-} from "./utils";
+} from "../utils";
 import ResetMap from "../ResetMap.vue";
 import MapLegend from "../MapLegend.vue";
 import {
