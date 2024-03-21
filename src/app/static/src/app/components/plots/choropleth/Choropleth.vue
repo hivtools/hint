@@ -1,6 +1,6 @@
 <template>
     <div>
-        <l-map ref="map" style="height: 800px; width: 100%" @ready="updateBounds" @vnode-updated="updateBounds">
+        <l-map ref="map" style="height: 800px; width: 100%" @ready="updateBounds" @vue:updated="updateBounds">
             <l-geo-json v-for="feature in currentFeatures"
                         ref="featureRefs"
                         :key="feature.properties.area_id"
