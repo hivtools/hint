@@ -6,13 +6,12 @@
                         :key="feature.properties.area_id"
                         :geojson="feature"
                         :options="createTooltips"
-                        :options-style="() => {return {...style, fillColor: getColour(feature)}}">
+                        :options-style="getStyle(feature)">
             </l-geo-json>
             <reset-map @reset-view="updateBounds"></reset-map>
             <map-legend :indicator-metadata="indicatorMetadata"
                         :scale-levels="scaleLevels"
-                        :selected-scale="selectedScale"
-                        @update:selected-scale="updateColourScales"></map-legend>
+                        :selected-scale="selectedScale"></map-legend>
         </l-map>
     </div>
 
@@ -63,15 +62,10 @@ const updateMap = () => {
     updateColourScales();
     updateTooltips();
 };
-// Watch on the plotData only instead of using computed. Here we want to update the colours,
-// the features and the legend. If we use computed this will cause multiple updates
-// 1. When a selection changes it will update immediately
-// 2. After the plotData has been fetched async it will update again
-// This can cause the map to appear to flicker as it updates with old scales
-// then quickly updates after new data has been fetched.
-// Instead manually watch on the plot data changes, and also trigger this when a user changes the
-// scale selection
-watch([plotData], updateMap)
+
+const colourScales = computed(() => {
+    return store.state.plotState.output.colourScales
+});
 
 const updateColourScales = () => {
     const colourScales = store.state.plotState.output.colourScales;
@@ -105,9 +99,18 @@ const updateBounds = () => {
     }
 };
 
-watch(featureRefs.value, () => {
-    updateBounds();
-});
+// Watch on instead of using computed.
+// When the plotData updates, we want to update the colours, the features and the legend.
+// If we use computed this will cause multiple updates
+// 1. When a selection changes it will update immediately
+// 2. After the plotData has been fetched async it will update again
+// This can cause the map to appear to flicker as it updates with old scales
+// then quickly updates after new data has been fetched.
+// Instead manually watch on the plot data changes, and also trigger this when a user changes the
+// scale selection
+watch(plotData, updateMap)
+watch(colourScales, updateColourScales)
+watch(featureRefs.value, updateBounds);
 
 const showColour = (feature: Feature) => {
     return featureData.value[feature.properties!.area_id]
@@ -123,9 +126,12 @@ const getColour = (feature: Feature) => {
     }
 };
 
-const style = {
-    className: "geojson"
-};
+const getStyle = (feature: Feature) => {
+    return {
+        className: "geojson",
+        fillColor: getColour(feature)
+    }
+}
 
 onMounted(() => {
     updateFeatures();
