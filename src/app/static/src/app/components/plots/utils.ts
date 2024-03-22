@@ -119,6 +119,7 @@ export const formatLegend = function (text: string | number, format: string, sca
 export const formatOutput = function (value: number | string, format: string, scale: number | null, accuracy: number | null, roundValue = true) {
     let ans: number
 
+    console.log("formatting value", value, format, scale, accuracy, roundValue)
     if (typeof (value) === 'string') {
         ans = parseFloat(value)
     } else ans = value
