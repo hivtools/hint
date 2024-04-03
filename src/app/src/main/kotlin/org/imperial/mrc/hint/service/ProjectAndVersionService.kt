@@ -4,8 +4,10 @@ import org.imperial.mrc.hint.AppProperties
 import org.imperial.mrc.hint.db.ProjectRepository
 import org.imperial.mrc.hint.db.VersionRepository
 import org.imperial.mrc.hint.exceptions.UserException
+import org.imperial.mrc.hint.logging.GenericLoggerImpl
 import org.imperial.mrc.hint.logic.UserLogic
 import org.imperial.mrc.hint.security.Session
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 
 interface ProjectVersionService
@@ -23,8 +25,10 @@ class ProjectAndVersionService (
 ) : ProjectVersionService
 {
 
+    private val logger = GenericLoggerImpl(LoggerFactory.getLogger(ProjectAndVersionService::class.java))
     override fun cloneProjectToUser(projectId: Int, emails: List<String>)
     {
+        logger.info("Cloning project to users", mapOf("projectId" to projectId, "emails" to emails))
         val userIds = emails.map {
             userLogic.getUser(it, properties.oauth2LoginMethod)?.id ?: throw UserException("userDoesNotExist")
         }

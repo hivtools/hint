@@ -72,7 +72,7 @@ export const actions: ActionTree<RootState, RootState> & RootActions = {
     },
 
     async generateErrorReport(context, payload) {
-        const {dispatch, rootState, getters, commit} = context
+        const {rootState, getters, commit} = context
         const data = {
             email: payload.email || rootState.currentUser,
             country: rootState.baseline.country || ErrorReportDefaultValue.country,
@@ -89,19 +89,14 @@ export const actions: ActionTree<RootState, RootState> & RootActions = {
             errors: getters.errors
         }
         commit({type: `errors/${ErrorsMutation.SendingErrorReport}`, payload: true});
+        let url = "error-report"
+        if (rootState.projects.currentProject?.id) {
+            url = url + "?projectId=" + rootState.projects.currentProject.id
+        }
         await api<ErrorsMutation, ErrorsMutation>(context)
             .withSuccess(`errors/${ErrorsMutation.ErrorReportSuccess}` as ErrorsMutation, true)
             .withError(`errors/${ErrorsMutation.ErrorReportError}` as ErrorsMutation, true)
-            .postAndReturn("error-report", data)
-            .then(() => {
-                if (rootState.projects.currentProject && !rootState.errors.errorReportError) {
-                    dispatch("projects/cloneProject",
-                        {
-                            emails: ["naomi-support@imperial.ac.uk"],
-                            projectId: rootState.projects.currentProject!.id
-                        })
-                }
-            })
+            .postAndReturn(url, data)
 
         commit({type: `errors/${ErrorsMutation.SendingErrorReport}`, payload: false});
     }

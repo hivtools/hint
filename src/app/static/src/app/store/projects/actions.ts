@@ -10,7 +10,6 @@ import {serialiseState} from "../../localStorageManager";
 import qs from "qs";
 import {CurrentProject, Project, VersionDetails, VersionIds} from "../../types";
 import {ModelCalibrateMutation} from "../modelCalibrate/mutations";
-import ModelRun from "../../components/modelRun/ModelRun.vue";
 import {ModelRunMutation} from "../modelRun/mutations";
 
 export interface versionPayload {

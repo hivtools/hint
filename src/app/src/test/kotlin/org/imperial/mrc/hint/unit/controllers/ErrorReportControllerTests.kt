@@ -4,18 +4,24 @@ import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
 import org.assertj.core.api.Assertions.assertThat
+import org.imperial.mrc.hint.AppProperties
 import org.imperial.mrc.hint.clients.FuelFlowClient
 import org.imperial.mrc.hint.controllers.ErrorReportController
 import org.imperial.mrc.hint.models.ErrorReport
 import org.imperial.mrc.hint.models.Errors
 import org.imperial.mrc.hint.service.ProjectVersionService
 import org.junit.jupiter.api.Test
-import org.mockito.Mockito
+import org.mockito.Mockito.verifyNoInteractions
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import java.util.*
 
 class ErrorReportControllerTests
 {
+
+    private val mockProperties = mock<AppProperties> {
+        on { supportEmail } doReturn "support@email.com"
+    }
 
     private val data = ErrorReport(
             "test.user@example.com",
@@ -47,34 +53,68 @@ class ErrorReportControllerTests
     @Test
     fun `can post error report to teams`()
     {
-        val result = testFlowClient(ResponseEntity.ok("whatever"))
+        val result = testFlowClient(ResponseEntity.ok("whatever"), Optional.of(1))
 
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
 
         assertThat(result.body).isEqualTo("whatever")
 
-        verify(mockProjectVersionService).cloneProjectToUser(1, listOf("test.user@example.com"))
+        verify(mockProjectVersionService).cloneProjectToUser(1, listOf(mockProperties.supportEmail))
+    }
+
+    @Test
+    fun `project not cloned when no project active`()
+    {
+        val result = testFlowClient(ResponseEntity.ok("whatever"), Optional.empty())
+
+        assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
+
+        assertThat(result.body).isEqualTo("whatever")
+
+        verifyNoInteractions(mockProjectVersionService)
+    }
+
+    @Test
+    fun `project not cloned when issue report submitted by support user`()
+    {
+        val newData = data.copy();
+        newData.email = mockProperties.supportEmail;
+
+        val mockFlowClient = mock<FuelFlowClient>
+        {
+            on { notifyTeams(newData) } doReturn ResponseEntity.ok("whatever")
+        }
+
+        val sut = ErrorReportController(mockFlowClient, mockProjectVersionService, mockProperties)
+
+        val result = sut.postErrorReport(newData, Optional.of(1))
+        assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
+
+        assertThat(result.body).isEqualTo("whatever")
+
+        verifyNoInteractions(mockProjectVersionService)
     }
 
     @Test
     fun `can return error response when request is unsuccessful`()
     {
-        val result = testFlowClient(ResponseEntity.badRequest().build())
+        val result = testFlowClient(ResponseEntity.badRequest().build(), Optional.of(1))
 
         assertThat(result.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
-        Mockito.verifyNoInteractions(mockProjectVersionService)
+
+        verifyNoInteractions(mockProjectVersionService)
     }
 
-    private fun testFlowClient(response: ResponseEntity<String>): ResponseEntity<String>
+    private fun testFlowClient(response: ResponseEntity<String>, projectId: Optional<Int>): ResponseEntity<String>
     {
         val mockFlowClient = mock<FuelFlowClient>
         {
             on { notifyTeams(data) } doReturn response
         }
 
-        val sut = ErrorReportController(mockFlowClient, mockProjectVersionService)
+        val sut = ErrorReportController(mockFlowClient, mockProjectVersionService, mockProperties)
 
-        return sut.postErrorReport(1, data)
+        return sut.postErrorReport(data, projectId)
     }
 
 }
