@@ -1,7 +1,7 @@
 package org.imperial.mrc.hint.models
 
 data class ErrorReport(
-    var email: String,
+    val email: String,
     val country: String,
     val projectName: String,
     val section: String,

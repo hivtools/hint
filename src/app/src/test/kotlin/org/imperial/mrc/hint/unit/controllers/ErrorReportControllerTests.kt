@@ -77,8 +77,7 @@ class ErrorReportControllerTests
     @Test
     fun `project not cloned when issue report submitted by support user`()
     {
-        val newData = data.copy();
-        newData.email = mockProperties.supportEmail;
+        val newData = data.copy(email = mockProperties.supportEmail);
 
         val mockFlowClient = mock<FuelFlowClient>
         {
