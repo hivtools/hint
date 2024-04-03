@@ -1,13 +1,18 @@
 package org.imperial.mrc.hint.unit.controllers
 
-import com.nhaarman.mockito_kotlin.*
+import com.nhaarman.mockito_kotlin.doReturn
+import com.nhaarman.mockito_kotlin.mock
+import com.nhaarman.mockito_kotlin.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.imperial.mrc.hint.clients.FuelFlowClient
 import org.imperial.mrc.hint.controllers.ErrorReportController
 import org.imperial.mrc.hint.models.ErrorReport
 import org.imperial.mrc.hint.models.Errors
+import org.imperial.mrc.hint.service.ProjectVersionService
 import org.junit.jupiter.api.Test
-import org.springframework.http.*
+import org.mockito.Mockito
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 
 class ErrorReportControllerTests
 {
@@ -37,6 +42,8 @@ class ErrorReportControllerTests
             "2021-10-12T14:07:22.759Z"
     )
 
+    private val mockProjectVersionService = mock<ProjectVersionService>()
+
     @Test
     fun `can post error report to teams`()
     {
@@ -45,6 +52,8 @@ class ErrorReportControllerTests
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
 
         assertThat(result.body).isEqualTo("whatever")
+
+        verify(mockProjectVersionService).cloneProjectToUser(1, listOf("test.user@example.com"))
     }
 
     @Test
@@ -53,6 +62,7 @@ class ErrorReportControllerTests
         val result = testFlowClient(ResponseEntity.badRequest().build())
 
         assertThat(result.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
+        Mockito.verifyNoInteractions(mockProjectVersionService)
     }
 
     private fun testFlowClient(response: ResponseEntity<String>): ResponseEntity<String>
@@ -62,9 +72,9 @@ class ErrorReportControllerTests
             on { notifyTeams(data) } doReturn response
         }
 
-        val sut = ErrorReportController(mockFlowClient)
+        val sut = ErrorReportController(mockFlowClient, mockProjectVersionService)
 
-        return sut.postErrorReport(data)
+        return sut.postErrorReport(1, data)
     }
 
 }
