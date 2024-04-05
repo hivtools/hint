@@ -7,22 +7,20 @@ import java.util.*
 import java.util.function.Predicate
 import java.util.stream.Collectors
 
-class MemoryAppender : ListAppender<ILoggingEvent?>() {
+class LogMemoryAppender : ListAppender<ILoggingEvent?>() {
     fun reset() {
-        list.clear()
+        this.list.clear()
     }
 
     fun contains(string: String, level: Level): Boolean {
-        return list.stream()
+        return this.list.stream()
             .anyMatch(Predicate { event: ILoggingEvent? ->
                 event!!.toString().contains(string) && event.level == level
             })
     }
 
     fun countEventsForLogger(loggerName: String): Int {
-        print(list)
-        print(list.count())
-        return list.stream()
+        return this.list.stream()
             .filter(Predicate { event: ILoggingEvent? ->
                 event!!.loggerName.contains(loggerName)
             })
@@ -30,6 +28,6 @@ class MemoryAppender : ListAppender<ILoggingEvent?>() {
     }
 
     fun get(index: Int): ILoggingEvent? {
-        return list[index]
+        return this.list[index]
     }
 }
