@@ -13,4 +13,6 @@ interface GenericLogger
     fun error(request: HttpServletRequest, response: HttpServletResponse, message: String? = null)
     fun error(request: HttpServletRequest, error: Throwable?, status: HttpStatus)
     fun error(request: HttpServletRequest, error: HintException)
+
+    fun <K, V> error(message: String, additionalData: Map<K, V>? = null)
 }
