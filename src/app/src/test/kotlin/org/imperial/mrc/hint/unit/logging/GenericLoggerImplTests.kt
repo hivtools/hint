@@ -141,6 +141,19 @@ class GenericLoggerImplTests
     }
 
     @Test
+    fun `can log error with generic additional data`()
+    {
+        val additionalData = mapOf(
+            "foo" to "bar",
+            "thing" to 423
+        )
+        val logger = GenericLoggerImpl(testLogger)
+        logger.error("My example message", additionalData)
+        Assertions.assertThat(memoryAppender.countEventsForLogger("org.imperial.mrc.hint.logging.GenericLoggerImpl")).isEqualTo(1)
+        Assertions.assertThat(memoryAppender.get(0).toString()).isEqualTo("[ERROR] msg=My example message, {foo=bar, thing=423}")
+    }
+
+    @Test
     fun `can log error with HttpRequest, HttpResponse and message`()
     {
         val loggedData = LogMetadata(
