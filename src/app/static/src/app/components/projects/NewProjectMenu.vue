@@ -1,39 +1,31 @@
 <template>
     <div>
-        <div class="dropdown">
-            <button type="button"
-                    id="new-project-dropdown"
-                    class="btn btn-red btn-lg dropdown-toggle-no-caret"
-                    data-toggle="dropdown"
-                    aria-haspopup="true"
-                    aria-expanded="false">
+        <b-dropdown toggle-class="text-decoration-none btn-red btn-lg"
+                    end
+                    no-caret
+                    id="new-project-dropdown">
+            <template #button-content>
                 <div class="ml-2 mr-3">
                     <vue-feather type="plus" size="30" class="icon align-middle"></vue-feather>
                     <span class="ml-2 align-middle" v-translate="'newProjectDropdown'"></span>
                 </div>
-            </button>
-            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="new-project-dropdown">
-                <button id="create-project-button"
-                        class="dropdown-item mb-0"
-                        type="button"
-                        @click="showCreateProjectModal">
-                    <vue-feather type="plus" size="20" class="icon ml-1 align-middle"></vue-feather>
-                    <span class="align-middle ml-2" v-translate="'createProject'"></span>
-                </button>
-                <button id="load-zip-button"
-                        class="dropdown-item mb-0"
-                        type="button"
-                        @click="() => loadZip?.click()">
-                    <vue-feather type="upload" size="20" class="icon ml-1 align-middle"></vue-feather>
-                    <span class="align-middle ml-2" v-translate="'loadZip'"></span>
-                </button>
+            </template>
+            <b-dropdown-item id="create-project-button"
+                             @click="showCreateProjectModal">
+                <vue-feather type="plus" size="20" class="icon align-middle"></vue-feather>
+                <span class="align-middle ml-2" v-translate="'createProject'"></span>
+            </b-dropdown-item>
+            <b-dropdown-item id="load-zip-button"
+                             @click="() => loadZip?.click()">
+                <vue-feather type="upload" size="20" class="icon align-middle"></vue-feather>
+                <span class="align-middle ml-2" v-translate="'loadZip'"></span>
                 <input id="upload-zip"
                        v-translate:aria-label="'selectFile'"
                        type="file"
                        style="display: none;" ref="loadZip"
                        @change="showLoadZipModal" accept=".zip">
-            </div>
-        </div>
+            </b-dropdown-item>
+        </b-dropdown>
 
         <new-project-create :open-modal="showUploadProjectModal"
                             :submit-create="handleCreateProject"
@@ -48,6 +40,7 @@ import {defineComponent, ref} from "vue";
 import {useStore} from "vuex";
 import {CreateProjectPayload} from "../../store/projects/actions";
 import {RootState} from "../../root";
+import {BDropdown, BDropdownItem, BDropdownText} from "bootstrap-vue-next";
 
 enum NewProjectType {
     NEW = "new",
@@ -121,7 +114,9 @@ export default defineComponent({
 
     components: {
         VueFeather,
-        NewProjectCreate
+        NewProjectCreate,
+        BDropdown,
+        BDropdownItem
     }
 })
 </script>

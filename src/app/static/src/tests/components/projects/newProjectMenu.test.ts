@@ -54,7 +54,7 @@ describe("New project menu component", () => {
 
     const getWrapper = () => {
         const store = createStore();
-        return shallowMount(NewProjectMenu, {
+        return mount(NewProjectMenu, {
             global: {
                 plugins: [store],
                 directives: {
