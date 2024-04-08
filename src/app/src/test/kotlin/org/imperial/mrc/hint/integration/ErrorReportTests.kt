@@ -75,6 +75,7 @@ class ErrorReportTests: SecureIntegrationTests()
             "timeStamp": "2021-10-12T14:07:22.759Z"
         }""".trimIndent()
 
+        userRepo.addUser("naomi-support@imperial.ac.uk", "password")
         val project = createProject()
         val createProjectData = getResponseData(project)
         val projectId = createProjectData["id"].asInt()
