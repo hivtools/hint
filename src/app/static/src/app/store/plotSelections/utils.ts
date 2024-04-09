@@ -1,8 +1,9 @@
-import { Commit } from "vuex";
+import { ActionContext, Commit } from "vuex";
 import { CalibrateMetadataResponse, FilterOption, FilterTypes, PlotSettingOption } from "../../generated";
 import { PlotName } from "./plotSelections";
 import { PlotSelectionUpdate, PlotSelectionsMutations } from "./mutations";
 import { RootState } from "../../root";
+import { getFilteredData } from "./actions";
 
 export const filtersAfterUseShapeRegions = (filterTypes: FilterTypes[], rootState: RootState) => {
     const filters = [...filterTypes];
@@ -123,6 +124,8 @@ export const commitPlotDefaultSelections = (
 
         const filtersInfo = filtersInfoFromPlotSettings(defaultSettingOptions, name, rootState);
         payload.selections.filters = filtersInfo;
+
+        getFilteredData(name, payload.selections.filters, { commit, rootState })
 
         commit(
             `plotSelections/${PlotSelectionsMutations.updatePlotSelection}`,
