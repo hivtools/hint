@@ -1,9 +1,9 @@
-import { CalibrateDataResponse } from "../../generated"
+import { CalibrateDataResponse, InputTimeSeriesData, InputTimeSeriesRow } from "../../generated"
 import { PlotName, plotNames } from "../plotSelections/plotSelections"
 import { mutations } from "./mutations"
 
-export type PlotData = CalibrateDataResponse["data"] | Record<string, string | number>[]
-
+export type PlotData = CalibrateDataResponse["data"] | InputTimeSeriesData
+export type InputTimeSeriesKey = keyof InputTimeSeriesRow;
 export type PlotDataState = {
     [P in PlotName]: PlotData
 }

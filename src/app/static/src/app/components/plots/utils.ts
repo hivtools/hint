@@ -1,8 +1,7 @@
-import {IndicatorValuesDict, LevelLabel, NumericRange} from "../../types";
-import {ChoroplethIndicatorMetadata, FilterOption} from "../../generated";
+import {NumericRange} from "../../types";
+import {CalibrateDataResponse, ChoroplethIndicatorMetadata, FilterOption} from "../../generated";
 import * as d3ScaleChromatic from "d3-scale-chromatic";
 import {initialScaleSettings, ScaleSettings, ScaleType} from "../../store/plotState/plotState";
-import {PlotData} from "../../store/plotData/plotData";
 import {Feature} from "geojson";
 import numeral from "numeral";
 
@@ -151,11 +150,11 @@ export const formatOutput = function (value: number | string, format: string, sc
     } else return ans
 };
 
-const getPlotDataForIndicator = (indicatorMetadata: ChoroplethIndicatorMetadata, plotData: PlotData) => {
+const getPlotDataForIndicator = (indicatorMetadata: ChoroplethIndicatorMetadata, plotData: CalibrateDataResponse["data"]) => {
     return plotData.filter((row) => row.indicator == indicatorMetadata.indicator);
 }
 
-export const getIndicatorRange = (indicatorMetadata: ChoroplethIndicatorMetadata, scaleSettings: ScaleSettings, plotData: PlotData): NumericRange => {
+export const getIndicatorRange = (indicatorMetadata: ChoroplethIndicatorMetadata, scaleSettings: ScaleSettings, plotData: CalibrateDataResponse["data"]): NumericRange => {
     if (!indicatorMetadata) {
         return {max: 1, min: 0};
     }
@@ -174,7 +173,7 @@ export const getIndicatorRange = (indicatorMetadata: ChoroplethIndicatorMetadata
     }
 }
 
-const getDynamicRange = function (data: PlotData,
+const getDynamicRange = function (data: CalibrateDataResponse["data"],
                                   indicatorMeta: ChoroplethIndicatorMetadata): NumericRange {
     let result = {} as NumericRange;
     for (const row of data) {

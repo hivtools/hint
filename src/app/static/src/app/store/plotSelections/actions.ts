@@ -2,13 +2,14 @@ import { ActionContext, ActionTree, Commit } from "vuex"
 import { OutputPlotName, PlotDataType, PlotName, PlotSelectionsState, plotNameToDataType } from "./plotSelections"
 import { RootState } from "../../root"
 import { GenericChartDataset, PayloadWithType } from "../../types"
-import { CalibrateDataResponse, FilterOption, PlotSettingOption } from "../../generated"
+import { CalibrateDataResponse, FilterOption, InputTimeSeriesData, InputTimeSeriesRow, PlotSettingOption } from "../../generated"
 import { PlotSelectionUpdate, PlotSelectionsMutations } from "./mutations"
 import { filtersInfoFromPlotSettings, getPlotData } from "./utils"
 import { api } from "../../apiService"
 import { PlotDataMutations, PlotDataUpdate } from "../plotData/mutations"
 import { PlotMetadataFrame } from "../metadata/metadata"
 import { GenericChartMutation } from "../genericChart/mutations"
+import { InputTimeSeriesKey } from "../plotData/plotData"
 
 type Selection = {
     filter: {
@@ -127,19 +128,20 @@ export const getTimeSeriesFilteredDataset = async (payload: PlotSelectionUpdate,
     // filter
     const metadata = getMetadataFromPlotName(rootState, payload.plot);
     const { filters } = payload.selections;
-    const filterObject: Record<string, (string| number)[]> = {};
+    const filterObject: Record<InputTimeSeriesKey, (string| number)[]> = {} as any;
     filters.forEach(f => {
         const filterType = metadata.filterTypes.find(ft => ft.id === f.filterId)!;
-        filterObject[filterType.column_id] = filterType.column_id === "area_level" ?
+        filterObject[filterType.column_id as InputTimeSeriesKey] = filterType.column_id === "area_level" ?
             f.selection.map(s => parseInt(s.id)) :
             f.selection.map(s => s.id);
     });
     const { data } = rootState.genericChart.datasets[dataSource];
-    const filteredData: Record<string, string | number>[] = [];
+    const filteredData: InputTimeSeriesData = [];
     outer: for (let i = 0; i < data.length; i++) {
-        const currRow = data[i] as Record<string, string | number>;
+        const currRow = data[i] as unknown as InputTimeSeriesRow;
         for (const column_id in filterObject) {
-            if (!filterObject[column_id].includes(currRow[column_id])) {
+            const key = column_id as InputTimeSeriesKey;
+            if (!filterObject[key].includes(currRow[key] as string | number)) {
                 continue outer;
             }
         }
