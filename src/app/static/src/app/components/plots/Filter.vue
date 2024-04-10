@@ -1,43 +1,50 @@
 <template>
-    <multi-select v-if="filter.multiple"
-                  :options="options"
-                  :model-value="selected"
-                  :placeholder="placeholder"
-                  @update:model-value="updateSelection"/>
-    <single-select v-else
-                   :options="options"
-                   :model-value="selected?.at(0)"
-                   :placeholder="placeholder"
-                   @update:model-value="updateSelection"/>
+    <div :key="filter.filterId">
+        <multi-select v-if="filter.multiple"
+                      :options="options"
+                      :model-value="selected"
+                      :placeholder="placeholder"
+                      @update:model-value="updateSelection"/>
+        <single-select v-else
+                       :options="options"
+                       :model-value="selected?.at(0)"
+                       :placeholder="placeholder"
+                       @update:model-value="updateSelection"/>
+    </div>
 </template>
 
 <script lang="ts">
 import { SingleSelect, MultiSelect } from "@reside-ic/vue-nested-multiselect";
-import {computed, defineComponent} from 'vue';
+import {PropType, computed, defineComponent} from 'vue';
 import i18next from "i18next";
 import { useStore } from "vuex";
 import { RootState } from "../../root";
 import { FilterOption } from "../../generated";
-import { PlotSelectionActionUpdate } from "../../store/plotSelections/actions";
+import { PlotSelectionActionUpdate, getMetadataFromPlotName } from "../../store/plotSelections/actions";
+import { PlotName } from "../../store/plotSelections/plotSelections";
 
 export default defineComponent({
     props: {
-        stateFilterId: String,
+        stateFilterId: {
+            type: String,
+            required: true
+        },
+        plot: {
+            type: String as PropType<PlotName>,
+            required: true
+        }
     },
     setup(props) {
         const store = useStore<RootState>();
 
-        const activePlot = computed(() => {
-            return store.state.modelOutput.selectedTab;
-        });
-
         const filter = computed(() => {
-            return store.state.plotSelections[activePlot.value].filters
+            return store.state.plotSelections[props.plot].filters
                 .find(f => f.stateFilterId === props.stateFilterId)!;
         })
 
         const options = computed(() => {
-            return store.state.modelCalibrate.metadata!.filterTypes.find(f => f.id === filter.value.filterId)!.options
+            const metadata = getMetadataFromPlotName(store.state, props.plot);
+            return metadata.filterTypes.find(f => f.id === filter.value.filterId)!.options;
         });
 
         const selected = computed(() => {
@@ -47,7 +54,7 @@ export default defineComponent({
         const updateSelection = (newSelection: FilterOption | FilterOption[]) => {
             store.dispatch("plotSelections/updateSelections", {
                 payload: {
-                    plot: activePlot.value,
+                    plot: props.plot,
                     selection: {
                         filter: {
                             filterId: props.stateFilterId,

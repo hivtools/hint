@@ -13,34 +13,37 @@ import {useStore} from "vuex";
 import {RootState} from "../../root";
 import {FilterOption} from "../../generated";
 import {PlotName} from "../../store/plotSelections/plotSelections";
-import { PlotSelectionActionUpdate } from "../../store/plotSelections/actions";
+import { getMetadataFromPlotName, PlotSelectionActionUpdate } from "../../store/plotSelections/actions";
 
 export default defineComponent({
     props: {
-        plotControlId: String,
+        plotControlId: {
+            type: String,
+            required: true
+        },
+        plot: {
+            type: String as PropType<PlotName>,
+            required: true
+        }
     },
     setup(props) {
         const store = useStore<RootState>();
 
-        const activePlot = computed(() => {
-            return store.state.modelOutput.selectedTab;
-        });
-
         const controlOptions = computed(() => {
-            return store.state.modelCalibrate.metadata!.plotSettingsControl[activePlot.value].plotSettings
+            const metadata = getMetadataFromPlotName(store.state, props.plot);
+            return metadata.plotSettingsControl[props.plot].plotSettings
                 .find(f => f.id === props.plotControlId)!.options;
         });
 
         const selected = computed(() => {
-            const plotName: PlotName = store.state.modelOutput.selectedTab;
-            const controls =  store.state.plotSelections[plotName].controls
+            const controls =  store.state.plotSelections[props.plot].controls
             return controls.find(control => control.id == props.plotControlId)!.selection[0]?.id;
         });
 
         const updateControlSelection = (newSelection: FilterOption) => {
             store.dispatch("plotSelections/updateSelections", {
                 payload: {
-                    plot: activePlot.value,
+                    plot: props.plot,
                     selection: {
                         plotSetting: {
                             id: props.plotControlId,
