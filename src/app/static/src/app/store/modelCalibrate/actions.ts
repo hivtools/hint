@@ -19,6 +19,7 @@ import {CalibrateResultWithType, Dict, ModelOutputTabs} from "../../types";
 import {DownloadResultsMutation} from "../downloadResults/mutations";
 import { ModelOutputMutation } from "../modelOutput/mutations";
 import {commitPlotDefaultSelections, filtersAfterUseShapeRegions} from "../plotSelections/utils";
+import { PlotDataType } from "../plotSelections/plotSelections";
 
 type ResultDataPayload = {
     indicatorId: string,
@@ -188,7 +189,7 @@ export const getResultMetadata = async function (context: ActionContext<ModelCal
         data.filterTypes = filtersAfterUseShapeRegions(data.filterTypes, rootState);
         commit({type: ModelCalibrateMutation.MetadataFetched, payload: data});
 
-        commitPlotDefaultSelections(data, commit, rootState);
+        await commitPlotDefaultSelections(data, commit, rootState);
 
         commit(ModelCalibrateMutation.Calibrated);
 
@@ -212,25 +213,3 @@ export const getCalibrateStatus = async function (context: ActionContext<ModelCa
             }
         });
 };
-
-const selectFilterDefaults = (data: CalibrateMetadataResponse, commit: Commit, mutationName: string) => {
-    if (data?.plottingMetadata?.barchart?.defaults) {
-        const defaults = data.plottingMetadata.barchart.defaults;
-        const unfrozenDefaultOptions = Object.keys(defaults.selected_filter_options)
-            .reduce((dict, key) => {
-                dict[key] = [...defaults.selected_filter_options[key]];
-                return dict;
-            }, {} as Dict<FilterOption[]>);
-
-        commit({
-                type: `plottingSelections/${mutationName}`,
-                payload: {
-                    indicatorId: defaults.indicator_id,
-                    xAxisId: defaults.x_axis_id,
-                    disaggregateById: defaults.disaggregate_by_id,
-                    selectedFilterOptions: unfrozenDefaultOptions
-                }
-            },
-            {root: true});
-    }
-}
