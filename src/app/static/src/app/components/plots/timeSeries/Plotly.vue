@@ -3,8 +3,8 @@
 </template>
 
 <script lang="ts">
-import { PropType, computed, defineComponent, onMounted, onUpdated, ref, watch } from 'vue';
-import { InputTimeSeriesData, InputTimeSeriesRow } from '../../../generated';
+import { PropType, computed, defineComponent, onMounted, ref, watch } from 'vue';
+import { InputTimeSeriesData } from '../../../generated';
 import { useStore } from 'vuex';
 import { RootState } from '../../../root';
 import { drawConfig, getScatterPointsFromAreaIds, Layout, getLayoutFromData } from "./utils";
