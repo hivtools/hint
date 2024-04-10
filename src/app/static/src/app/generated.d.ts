@@ -1552,6 +1552,124 @@ export interface Response {
     [k: string]: any;
   };
 }
+export interface ReviewInputFilterMetadataRequest {
+  iso3: string;
+  data: {
+    shape?: {
+      path: string | null;
+      hash: string;
+      filename: string;
+      fromADR?: boolean;
+      resource_url?: string | null;
+    };
+    programme?: {
+      path: string | null;
+      hash: string;
+      filename: string;
+      fromADR?: boolean;
+      resource_url?: string | null;
+    };
+    anc?: {
+      path: string | null;
+      hash: string;
+      filename: string;
+      fromADR?: boolean;
+      resource_url?: string | null;
+    };
+    survey?: {
+      path: string | null;
+      hash: string;
+      filename: string;
+      fromADR?: boolean;
+      resource_url?: string | null;
+    };
+    [k: string]: any;
+  };
+}
+export interface ReviewInputFilterMetadataResponse {
+  filterTypes: {
+    id: string;
+    column_id: string;
+    options: {
+      label: string;
+      id: string;
+      description?: string;
+    }[];
+    use_shape_regions?: boolean;
+  }[];
+  indicators: {
+    indicator: string;
+    value_column: string;
+    error_low_column?: string;
+    error_high_column?: string;
+    indicator_column?: string;
+    indicator_value?: string;
+    indicator_sort_order?: number;
+    name: string;
+    min: number;
+    max: number;
+    colour: string;
+    invert_scale: boolean;
+    scale: number;
+    accuracy: number | null;
+    format: string;
+  }[];
+  plotSettingsControl: {
+    timeSeries: {
+      defaultFilterTypes?: {
+        filterId: string;
+        label: string;
+        stateFilterId: string;
+      }[];
+      plotSettings: {
+        id: string;
+        label: string;
+        options: {
+          id: string;
+          label: string;
+          effect: {
+            setFilters?: {
+              filterId: string;
+              label: string;
+              stateFilterId: string;
+            }[];
+            setMultiple?: string[];
+            setFilterValues?: {
+              [k: string]: string[];
+            };
+          };
+        }[];
+      }[];
+    };
+    inputChoropleth: {
+      defaultFilterTypes?: {
+        filterId: string;
+        label: string;
+        stateFilterId: string;
+      }[];
+      plotSettings: {
+        id: string;
+        label: string;
+        options: {
+          id: string;
+          label: string;
+          effect: {
+            setFilters?: {
+              filterId: string;
+              label: string;
+              stateFilterId: string;
+            }[];
+            setMultiple?: string[];
+            setFilterValues?: {
+              [k: string]: string[];
+            };
+          };
+        }[];
+      }[];
+    };
+  };
+  [k: string]: any;
+}
 export interface SessionFile {
   path: string | null;
   hash: string;
