@@ -80,7 +80,7 @@ export const PlotColours = Object.freeze({
 });
 
 export const getScatterPoints = (plotData: (InputTimeSeriesRow | null)[], areaData: InputTimeSeriesRow, index: number,
-                                 isHighlight: boolean, currentLanguage: string, isFirstPointHighlight: boolean = false) => {
+                                 isHighlight: boolean, currentLanguage: string, isFirstPointHighlight = false) => {
     const { area_hierarchy, area_name } = areaData;
     const colours = isHighlight ? PlotColours.HIGHLIGHT : PlotColours.NORMAL;
     const markerFillColors = plotData.map((x, i) => {
@@ -134,7 +134,7 @@ export const getScatterPointsFromAreaIds = (areaIds: string[], dataByArea: Dict<
             pointsInfo.push({isHighlight: isNextLineSegmentHighlighted, point: areaData[i]});
         }
         let isPreviousLineHighlight = pointsInfo[0].isHighlight;
-        let lineSegmentsInfo: LineSegmentsInfo[] = [{
+        const lineSegmentsInfo: LineSegmentsInfo[] = [{
             isHighlight: isPreviousLineHighlight, points: []
         }];
         for (let i = 0; i < pointsInfo.length; i++) {
@@ -166,7 +166,8 @@ export const getLayoutFromData = (areaIds: string[], dataByArea: Dict<InputTimeS
         grid: {
             columns: layout.subplots.columns,
             rows: layout.subplots.rows,
-            pattern: 'independent'
+            pattern: 'independent',
+            xgap: 0.25, ygap: 0.4
         },
         annotations: areaIds.map((id, index) => {
             return {
@@ -204,6 +205,5 @@ export const getLayoutFromData = (areaIds: string[], dataByArea: Dict<InputTimeS
             type: "category"
         };
     }
-
     return baseLayout;
 }
