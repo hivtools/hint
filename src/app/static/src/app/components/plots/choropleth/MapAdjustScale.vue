@@ -5,7 +5,7 @@
                 <input id="type-input-dynamic-filtered" class="form-check-input" type="radio" :name="scaleTypeGroup"
                        :value="scaleType.DynamicFiltered"
                        :checked="selectedScale.type === scaleType.DynamicFiltered"
-                       @change="updateOutputColourScale({...selectedScale, type: parseInt($event.target.value)})">
+                       @change="updateOutputColourScale(indicatorMetadata.indicator, {...selectedScale, type: parseInt($event.target.value)})">
                 <span class="scale-type-radio" v-translate="'filteredDataset'"></span>
             </label>
         </div>
@@ -14,7 +14,7 @@
                 <input id="type-input-default" class="form-check-input" type="radio" :name="scaleTypeGroup"
                        :value="scaleType.Default"
                        :checked="selectedScale.type === scaleType.Default"
-                       @change="updateOutputColourScale({...selectedScale, type: parseInt($event.target.value)})">
+                       @change="updateOutputColourScale(indicatorMetadata.indicator, {...selectedScale, type: parseInt($event.target.value)})">
                 <span class="scale-type-radio" v-translate="'default'"></span>
             </label>
         </div>
@@ -23,7 +23,7 @@
                 <input id="type-input-custom" class="form-check-input" type="radio" :name="scaleTypeGroup"
                        :value="scaleType.Custom"
                        :checked="selectedScale.type === scaleType.Custom"
-                       @change="updateOutputColourScale({...selectedScale, type: parseInt($event.target.value)})">
+                       @change="updateOutputColourScale(indicatorMetadata.indicator, {...selectedScale, type: parseInt($event.target.value)})">
                 <span class="scale-type-radio" v-translate="'custom'"></span>
             </label>
 
@@ -34,7 +34,7 @@
                         <div class="col pt-1 pr-1">
                             <input id="custom-min-input" type="number" :step="colourScaleStep"
                                    :value="selectedScale.customMin"
-                                   @change="updateOutputColourScale({...selectedScale, customMin: parseFloat($event.target.value)})"
+                                   @change="updateOutputColourScale(indicatorMetadata.indicator, {...selectedScale, customMin: parseFloat($event.target.value)})"
                                    :max="selectedScale.customMax"
                                    :disabled="disableCustom">
                         </div>
@@ -45,7 +45,7 @@
                         <div class="col pt-1 pr-1">
                             <input id="custom-max-input" type="number" :step="colourScaleStep"
                                    :value="selectedScale.customMax"
-                                   @change="updateOutputColourScale({...selectedScale, customMax: parseFloat($event.target.value)})"
+                                   @change="updateOutputColourScale(indicatorMetadata.indicator, {...selectedScale, customMax: parseFloat($event.target.value)})"
                                    :min="selectedScale.customMin"
                                    :disabled="disableCustom">
                         </div>
@@ -63,10 +63,9 @@
 import {computed, defineComponent, PropType} from "vue";
 import {ScaleSettings, ScaleType} from "../../../store/plotState/plotState";
 import i18next from "i18next";
-import {useStore} from "vuex";
-import {RootState} from "../../../root";
 import {ChoroplethIndicatorMetadata} from "../../../generated";
 import {useUpdateScale} from "../useUpdateScale";
+import {scaleStepFromMetadata} from "./utils";
 
 export default defineComponent({
     props: {
@@ -84,9 +83,8 @@ export default defineComponent({
         },
     },
     setup(props) {
-        const store = useStore<RootState>();
         const scaleStep = computed<number>(() => {
-            return store.getters["modelCalibrate/scaleStep"];
+            return scaleStepFromMetadata(props.indicatorMetadata)
         });
         const {updateOutputColourScale} = useUpdateScale();
 

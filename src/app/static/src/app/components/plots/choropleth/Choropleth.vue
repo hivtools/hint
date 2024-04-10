@@ -6,7 +6,7 @@
                         :key="feature.properties.area_id"
                         :geojson="feature"
                         :options="createTooltips"
-                        :options-style="getStyle(feature)">
+                        :options-style="() => getStyle(feature)">
             </l-geo-json>
             <reset-map @reset-view="updateBounds"></reset-map>
             <map-legend :indicator-metadata="indicatorMetadata"
@@ -31,7 +31,7 @@ import {
 } from "./utils";
 import ResetMap from "./ResetMap.vue";
 import MapLegend from "./MapLegend.vue";
-import {getColourRange, getScaleLevels} from "../utils";
+import {getColourRange, getIndicatorMetadata, getScaleLevels} from "../utils";
 import {IndicatorValuesDict, NumericRange} from "../../../types";
 import {ChoroplethIndicatorMetadata} from "../../../generated";
 import { ScaleSettings } from "../../../store/plotState/plotState";
@@ -42,7 +42,10 @@ const store = useStore<RootState>();
 const plotData = computed<PlotData>(() => store.state.plotData.choropleth);
 
 const {updateOutputColourScale} = useUpdateScale();
-const indicatorMetadata = ref<ChoroplethIndicatorMetadata>(store.getters["modelCalibrate/indicatorMetadata"]);
+const selectedIndicator = computed<string>(() => {
+    return store.state.plotSelections.choropleth.filters.find(f => f.stateFilterId === "indicator")!.selection[0].id
+})
+const indicatorMetadata = computed<ChoroplethIndicatorMetadata>(() => getIndicatorMetadata(store, selectedIndicator.value))
 const colourRange = ref<NumericRange | null>(null);
 const scaleLevels = ref<any>(null);
 const selectedScale = ref<ScaleSettings | null>(null);
@@ -69,11 +72,10 @@ const colourScales = computed(() => {
 
 const updateColourScales = () => {
     const colourScales = store.state.plotState.output.colourScales;
-    const selectedIndicator =  store.getters["plotSelections/selectedIndicator"];
-    selectedScale.value = colourScales[selectedIndicator];
+    selectedScale.value = colourScales[selectedIndicator.value];
     if (!selectedScale.value) {
         selectedScale.value = initialiseScaleFromMetadata(indicatorMetadata.value);
-        updateOutputColourScale(selectedScale.value);
+        updateOutputColourScale(selectedIndicator.value, selectedScale.value);
     }
     colourRange.value = getColourRange(indicatorMetadata.value, selectedScale.value, plotData.value);
     scaleLevels.value = getScaleLevels(indicatorMetadata.value, colourRange.value);
@@ -82,20 +84,26 @@ const updateColourScales = () => {
             indicatorMetadata.value,
             colourRange.value ? colourRange.value : {max: 1, min: 0}
     );
-}
+};
 
 const updateFeatures = () => {
-    indicatorMetadata.value = store.getters["modelCalibrate/indicatorMetadata"];
     const selectedLevel = store.state.plotSelections.choropleth.filters
             .find(f => f.stateFilterId === "detail")!.selection;
-    const selectedAreas = store.state.plotSelections.choropleth.filters
-            .find(f => f.stateFilterId === "area")!.selection;
-    currentFeatures.value = getVisibleFeatures(features, selectedLevel, selectedAreas);
-}
+    currentFeatures.value = getVisibleFeatures(features, selectedLevel);
+};
+
+const selectedAreaIds = computed(() => {
+    return store.state.plotSelections.choropleth.filters
+        .find(f => f.stateFilterId === "area")!.selection
+        .map(opt => opt.id);
+});
 
 const updateBounds = () => {
-    if (featureRefs.value.length > 0) {
-        map.value?.leafletObject.fitBounds(featureRefs.value.map(f => f.leafletObject.getBounds()));
+    const visibleRefs = featureRefs.value
+        .filter(f => selectedAreaIds.value.includes(f.geojson?.properties?.area_id))
+    if (visibleRefs.length > 0) {
+        map.value?.leafletObject.fitBounds(visibleRefs
+                .map(f => f.leafletObject.getBounds()));
     }
 };
 
@@ -110,7 +118,7 @@ const updateBounds = () => {
 // scale selection
 watch(plotData, updateMap)
 watch(colourScales, updateColourScales)
-watch(featureRefs.value, updateBounds);
+watch(selectedAreaIds, updateBounds);
 
 const showColour = (feature: Feature) => {
     return featureData.value[feature.properties!.area_id]
