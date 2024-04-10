@@ -2,7 +2,7 @@ import { CalibrateDataResponse } from "../../generated"
 import { PlotName, plotNames } from "../plotSelections/plotSelections"
 import { mutations } from "./mutations"
 
-export type PlotData = CalibrateDataResponse["data"]
+export type PlotData = CalibrateDataResponse["data"] | Record<string, string | number>[]
 
 export type PlotDataState = {
     [P in PlotName]: PlotData
