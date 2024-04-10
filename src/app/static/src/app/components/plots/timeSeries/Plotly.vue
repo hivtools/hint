@@ -47,7 +47,6 @@ export default defineComponent({
 
         const drawChart = async () => {
             const drawData = getData();
-            console.log(drawData.data)
             await Plotly.newPlot(chart.value!, drawData.data, drawData.layout, drawConfig as any);
         };
 
