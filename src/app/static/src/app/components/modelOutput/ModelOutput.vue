@@ -1,7 +1,7 @@
 <template>
     <div>
         <ul class="nav nav-tabs">
-            <li v-for="plotName of plotNames" :key="plotName">
+            <li v-for="plotName of outputPlotNames" :key="plotName">
                 <a class="nav-link"
                    :class="selectedPlot === plotName ? 'active': ''"
                    v-translate="plotName"
@@ -10,9 +10,9 @@
         </ul>
         <div class="row">
             <div class="mt-2 col-md-3">
-                <plot-control-set/>
+                <plot-control-set :plot="selectedPlot"/>
                 <h4 v-translate="'filters'"/>
-                <filter-set/>
+                <filter-set :plot="selectedPlot"/>
             </div>
             <choropleth class="col-md-9" v-if="selectedPlot === 'choropleth'"/>
             <bubble class="col-md-9" v-if="selectedPlot === 'bubble'"/>
@@ -24,7 +24,7 @@
 import {computed, defineComponent} from "vue";
 import FilterSet from "../plots/FilterSet.vue";
 import PlotControlSet from "../plots/PlotControlSet.vue";
-import {PlotName, plotNames} from "../../store/plotSelections/plotSelections";
+import {OutputPlotName, outputPlotNames, PlotName} from "../../store/plotSelections/plotSelections";
 import {useStore} from "vuex";
 import {RootState} from "../../root";
 import { ModelOutputMutation } from "../../store/modelOutput/mutations";
@@ -36,9 +36,9 @@ export default defineComponent({
     setup() {
         const store = useStore<RootState>();
         const selectedPlot = computed(() => store.state.modelOutput.selectedTab);
-        const switchTab = (plotName: PlotName) => store.commit(`modelOutput/${ModelOutputMutation.TabSelected}`, {payload: plotName});
+        const switchTab = (plotName: OutputPlotName) => store.commit(`modelOutput/${ModelOutputMutation.TabSelected}`, {payload: plotName});
         return {
-            plotNames,
+            outputPlotNames,
             selectedPlot,
             switchTab,
         }
