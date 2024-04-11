@@ -11,17 +11,12 @@ import { PlotMetadataFrame } from "../metadata/metadata"
 import { GenericChartMutation } from "../genericChart/mutations"
 import { InputTimeSeriesKey } from "../plotData/plotData"
 
-type Selection = {
-    filter: {
-        filterId: string,
-        options: FilterOption[]
-    }
-} | {
-    plotSetting: {
-        id: string,
-        options: FilterOption[]
-    }
+type IdOptions = {
+    id: string,
+    options: FilterOption[]
 }
+
+type Selection = { filter: IdOptions } | { plotSetting: IdOptions }
 
 export type PlotSelectionActionUpdate = {
     plot: PlotName,
@@ -48,7 +43,7 @@ export const actions: ActionTree<PlotSelectionsState, RootState> & PlotSelection
         const metadata = getMetadataFromPlotName(rootState, plot);
         const updatedSelections: PlotSelectionsState[PlotName]  = {...state[plot]};
         if ("filter" in selection) {
-            const fIndex = updatedSelections.filters.findIndex(f => f.stateFilterId === selection.filter.filterId);
+            const fIndex = updatedSelections.filters.findIndex(f => f.stateFilterId === selection.filter.id);
             updatedSelections.filters[fIndex].selection = selection.filter.options;
         } else {
             const pIndex = updatedSelections.controls.findIndex(p => p.id === selection.plotSetting.id);

@@ -57,7 +57,7 @@ export default defineComponent({
                     plot: props.plot,
                     selection: {
                         filter: {
-                            filterId: props.stateFilterId,
+                            id: props.stateFilterId,
                             options: Array.isArray(newSelection) ? newSelection : [newSelection]
                         }
                     }
