@@ -1,9 +1,16 @@
-const mockAddFilteredData = vi.fn();
-const mockDownload = vi.fn();
-const mockExportService = vi.fn().mockReturnValue({
-    addFilteredData: mockAddFilteredData.mockReturnValue({
+const mocks = vi.hoisted(() => {
+    const mockAddFilteredData = vi.fn();
+    const mockDownload = vi.fn();
+    const mockExportService = vi.fn().mockReturnValue({
+        addFilteredData: mockAddFilteredData.mockReturnValue({
+            download: mockDownload
+        })
+    });
+    return {
+        exportService: mockExportService,
+        addFilteredData: mockAddFilteredData,
         download: mockDownload
-    })
+    }
 });
 
 import { shallowMount } from "@vue/test-utils";
@@ -14,7 +21,7 @@ import TableReshapeData from "../../../app/components/outputTable/TableReshapeDa
 import DownloadButton from "../../../app/components/downloadIndicator/DownloadButton.vue";
 
 vi.mock("../../../app/dataExportService", () => {
-    return { exportService: mockExportService };
+    return { exportService: mocks.exportService };
 });
 
 const mockFilters = [
@@ -149,7 +156,7 @@ describe("Output Table display table tests", () => {
         const wrapper = getWrapper("pop", "op1", 2);
         const downloadButton = wrapper.findComponent(DownloadButton);
         downloadButton.vm.$emit("click");
-        expect(mockExportService.mock.calls[0][0].data.filteredData).toStrictEqual([
+        expect(mocks.exportService.mock.calls[0][0].data.filteredData).toStrictEqual([
             {
                 area_level: 2, area_name: "", col_id_filter_1: "op1", id: 3,
                 indicator: "pop", parent_area_id: "", mode: 1, mean: 2, upper: 3,
@@ -157,14 +164,14 @@ describe("Output Table display table tests", () => {
                 formatted_lower: 40
             }
         ]);
-        expect(mockExportService.mock.calls[0][0].filename).toContain("ABC_naomi_table-data_");
-        expect(mockExportService.mock.calls[0][0].options).toStrictEqual({
+        expect(mocks.exportService.mock.calls[0][0].filename).toContain("ABC_naomi_table-data_");
+        expect(mocks.exportService.mock.calls[0][0].options).toStrictEqual({
             header: ["area_id", "area_name", "area_level", "parent_area_id",
                     "indicator", "calendar_quarter", "age_group", "sex",
                     "formatted_mode", "formatted_mean", "formatted_upper",
                     "formatted_lower", "mode", "mean", "upper", "lower"]
         });
-        expect(mockAddFilteredData.mock.calls.length).toBe(1);
-        expect(mockDownload.mock.calls.length).toBe(1);
+        expect(mocks.addFilteredData.mock.calls.length).toBe(1);
+        expect(mocks.download.mock.calls.length).toBe(1);
     });
 });

@@ -40,13 +40,17 @@ console.error = vi.fn();
 // Mock the components before we import the rooter as the app will call these components
 // on import of the router
 vi.mock("../app/components/Stepper.vue", () => ({
-    name: "Stepper",
-    template: "<div id='stepper-stub'/>"
+    default: {
+        name: "Stepper",
+        template: "<div id='stepper-stub'/>"
+    }
 }))
 
 vi.mock("../app/components/projects/Projects.vue", () => ({
-    name: "Projects",
-    template: "<div id='projects-stub'/>"
+    default: {
+        name: "Projects",
+        template: "<div id='projects-stub'/>"
+    }
 }))
 
 import {router, beforeEnter} from '../app/router';

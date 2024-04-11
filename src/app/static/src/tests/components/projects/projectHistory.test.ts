@@ -325,8 +325,7 @@ describe("Project history component", () => {
         expect(chevRight.isVisible()).toBe(true);
         expect(chevDown.isVisible()).toBe(false);
         await button.trigger("click");
-        await flushPromises();
-        expect(versionMenu.classes()).toStrictEqual(["collapse", "show"])
+        expect(versionMenu.classes()).toStrictEqual(["collapse", "show", "collapsing"])
         expect(chevRight.isVisible()).toBe(false);
         expect(chevDown.isVisible()).toBe(true);
     });
@@ -344,7 +343,7 @@ describe("Project history component", () => {
         await flushPromises();
         expect(chevRight.isVisible()).toBe(false);
         expect(chevDown.isVisible()).toBe(true);
-        expect(versionMenu.classes()).toStrictEqual(["collapse", "show"])
+        expect(versionMenu.classes()).toStrictEqual(["collapse", "show", "collapsing"])
         await button.trigger("click");
         await new Promise((r) => setTimeout(r, 200))
         expect(chevRight.isVisible()).toBe(true);

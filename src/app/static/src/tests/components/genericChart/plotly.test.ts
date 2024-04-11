@@ -254,7 +254,7 @@ describe("Plotly", () => {
 
         // Rendering flag should be set while rendering proceeds
         expect((wrapper.vm as any).rendering).toBe(true);
-        await nextTick();
+        await flushPromises();
         expect(mockPlotlyReact.mock.calls.length).toBe(1);
         expectPlotlyParams(mockPlotlyReact.mock.calls[0]);
         expect((wrapper.vm as any).rendering).toBe(false);

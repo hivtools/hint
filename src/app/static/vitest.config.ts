@@ -10,9 +10,6 @@ export default defineConfig({
     setupFiles: [
       './src/tests/setup.ts'
     ],
-    environmentOptions: {
-      url: 'http://localhost'
-    },
     coverage: {
       provider: "v8",
       reportsDirectory: "coverage",
