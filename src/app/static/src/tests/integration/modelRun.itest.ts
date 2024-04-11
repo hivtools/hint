@@ -51,11 +51,12 @@ describe("Model run actions", () => {
         const commit = vi.fn();
         const mockState = {status: {done: true}} as ModelRunState;
 
-        actions.poll({commit, state: mockState, dispatch: vi.fn(), rootState} as any, runId);
+        actions.poll({commit, state: mockState, dispatch: vi.fn(), rootState} as any, runId, 100);
+        await vi.waitUntil(() => commit.mock.calls.length >= 2, {
+            interval: 100,
+            timeout: 2000
+        });
         expect(commit.mock.calls[0][0]["type"]).toBe("PollingForStatusStarted");
-
-        vi.advanceTimersByTime(2000);
-        await flushPromises();
         expect(commit.mock.calls[1][0]["type"]).toBe("RunStatusUpdated");
     });
 

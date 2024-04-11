@@ -34,7 +34,7 @@ export interface ProjectsActions {
     createProject: (store: ActionContext<ProjectsState, RootState>, payload: CreateProjectPayload) => void,
     getProjects: (store: ActionContext<ProjectsState, RootState>) => void
     getCurrentProject: (store: ActionContext<ProjectsState, RootState>) => void
-    queueVersionStateUpload: (store: ActionContext<ProjectsState, RootState>) => void,
+    queueVersionStateUpload: (store: ActionContext<ProjectsState, RootState>, interval?: number | null) => void,
     newVersion: (store: ActionContext<ProjectsState, RootState>, note: string) => void,
     loadVersion: (store: ActionContext<ProjectsState, RootState>, version: VersionIds) => void
     deleteProject: (store: ActionContext<ProjectsState, RootState>, projectId: number) => void
@@ -130,7 +130,7 @@ export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
         }
     },
 
-    async queueVersionStateUpload(context) {
+    async queueVersionStateUpload(context, interval = null) {
         const {state, commit} = context;
         if (state.currentVersion) {
             // remove any existing queued upload, as this request should supersede it
@@ -142,7 +142,7 @@ export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
                     commit({type: ProjectsMutations.ClearQueuedVersionUpload});
                     immediateUploadVersionState(context);
                 }
-            }, 2000);
+            }, interval || 2000);
 
             // record the newly queued upload
             commit({type: ProjectsMutations.SetQueuedVersionUpload, payload: queuedId});

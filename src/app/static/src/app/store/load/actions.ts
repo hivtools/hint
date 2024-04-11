@@ -26,7 +26,7 @@ export interface LoadActions {
     loadFromVersion: (store: ActionContext<LoadState, RootState>, versionDetails: VersionDetails) => void
     updateStoreState: (store: ActionContext<LoadState, RootState>, savedState: Partial<RootState>) => void
     clearLoadState: (store: ActionContext<LoadState, RootState>) => void
-    pollRehydrate: (store: ActionContext<LoadState, RootState>) => void
+    pollRehydrate: (store: ActionContext<LoadState, RootState>, interval?: number | null) => void
 }
 
 export const actions: ActionTree<LoadState, RootState> & LoadActions = {
@@ -95,11 +95,11 @@ export const actions: ActionTree<LoadState, RootState> & LoadActions = {
         }
     },
 
-    async pollRehydrate(context) {
+    async pollRehydrate(context, interval = null) {
         const {commit} = context;
         const id = setInterval(() => {
             getRehydrateStatus(context)
-        }, 2000);
+        }, interval || 2000);
 
         commit({type: "RehydratePollingStarted", payload: id});
     }

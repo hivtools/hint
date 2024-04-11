@@ -21,12 +21,10 @@ describe("load actions", () => {
         const mockLocationReload = vi.fn();
         delete (window as any).location;
         window.location = {reload: mockLocationReload} as any;
-        vi.useFakeTimers();
     });
 
     afterAll(() => {
         window.location = realLocation;
-        vi.useRealTimers();
     });
 
     it("can submit model output ZIP file", async () => {
@@ -47,12 +45,13 @@ describe("load actions", () => {
         const dispatch = vi.fn()
         const state = {rehydrateId: "1"}
 
-        actions.pollRehydrate({commit, dispatch, state, rootState} as any);
-        vi.advanceTimersByTime(3000);
-        await flushPromises();
-        expect(commit.mock.calls.length).toBe(2)
+        actions.pollRehydrate({commit, dispatch, state, rootState} as any, 100);
+        await vi.waitUntil(() => commit.mock.calls.length >= 2, {
+            interval: 100,
+            timeout: 2000
+        });
         expect(commit.mock.calls[0][0].type).toBe("RehydratePollingStarted");
-        expect(commit.mock.calls[0][0].payload).toBeGreaterThan(-1);
+        expect(+commit.mock.calls[0][0].payload).toBeGreaterThan(-1);
         expect(commit.mock.calls[1][0].type).toBe("RehydrateStatusUpdated");
         expect(commit.mock.calls[1][0]["payload"].status).toBe("MISSING");
     });
