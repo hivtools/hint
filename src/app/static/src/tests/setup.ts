@@ -32,7 +32,6 @@ const store = new Vuex.Store<RootState>({});
 app.use(store);
 
 (global as any).currentUser = "some.user@example.com";
-(global as any).appUrl = "http://localhost:8080/";
 
 // Override console.error to throw an error
 global.console.error = (message: any) => {
