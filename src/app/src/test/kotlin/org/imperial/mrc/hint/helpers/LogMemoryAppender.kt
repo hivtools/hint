@@ -9,18 +9,18 @@ import java.util.stream.Collectors
 
 class LogMemoryAppender : ListAppender<ILoggingEvent?>() {
     fun reset() {
-        this.list.clear()
+        list.clear()
     }
 
     fun contains(string: String, level: Level): Boolean {
-        return this.list.stream()
+        return list.stream()
             .anyMatch(Predicate { event: ILoggingEvent? ->
                 event!!.toString().contains(string) && event.level == level
             })
     }
 
     fun countEventsForLogger(loggerName: String): Int {
-        return this.list.stream()
+        return list.stream()
             .filter(Predicate { event: ILoggingEvent? ->
                 event!!.loggerName.contains(loggerName)
             })
@@ -28,6 +28,6 @@ class LogMemoryAppender : ListAppender<ILoggingEvent?>() {
     }
 
     fun get(index: Int): ILoggingEvent? {
-        return this.list[index]
+        return list[index]
     }
 }
