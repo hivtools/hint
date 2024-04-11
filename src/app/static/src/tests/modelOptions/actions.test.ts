@@ -1,6 +1,7 @@
 import {actions} from "../../app/store/modelOptions/actions";
 import {ModelOptionsMutation} from "../../app/store/modelOptions/mutations";
 import {mockAxios, mockModelOptionsState, mockRootState, mockSuccess, mockFailure, mockError} from "../mocks";
+import { Mock } from "vitest";
 
 const rootState = mockRootState();
 describe("model run options actions", () => {
@@ -12,7 +13,7 @@ describe("model run options actions", () => {
     });
 
     afterEach(() => {
-        (console.log as vi.Mock).mockClear();
+        (console.log as Mock).mockClear();
     });
 
     it("fetches and commits model run options and version", async () => {

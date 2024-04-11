@@ -23,13 +23,14 @@ import {getters} from "../../../app/store/surveyAndProgram/getters";
 import {DataType, SurveyAndProgramState} from "../../../app/store/surveyAndProgram/surveyAndProgram";
 import {testUploadComponent} from "./fileUploads";
 import {RootState} from "../../../app/root";
+import { Mocked } from 'vitest';
 
 describe("UploadInputs upload component", () => {
 
-    let actions: vi.Mocked<BaselineActions>;
+    let actions: Mocked<BaselineActions>;
     let mutations = {};
 
-    let sapActions: vi.Mocked<SurveyAndProgramActions>;
+    let sapActions: Mocked<SurveyAndProgramActions>;
     let sapMutations = {};
 
     const mockStepperGetters = {

@@ -14,6 +14,7 @@ import {ProjectRehydrateStatusResponse} from "../../app/generated";
 import {DynamicControlType} from "@reside-ic/vue-next-dynamic-form";
 import {RootState} from "../../app/root";
 import {router} from "../../app/router";
+import { Mock } from "vitest";
 
 const rootState = mockRootState();
 
@@ -27,8 +28,8 @@ describe("Load actions", () => {
     });
 
     afterEach(() => {
-        (console.log as vi.Mock).mockClear();
-        (console.info as vi.Mock).mockClear();
+        (console.log as Mock).mockClear();
+        (console.info as Mock).mockClear();
     });
 
     it("clears loading state", async () => {

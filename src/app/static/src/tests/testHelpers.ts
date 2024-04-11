@@ -9,8 +9,8 @@ import ErrorReport from "../app/components/ErrorReport.vue";
 import { VueWrapper, mount, shallowMount } from "@vue/test-utils";
 import translate from "../app/directives/translate";
 import { nextTick } from "vue";
-import Mock = vi.Mock;
 import {RootState} from "../app/root";
+import { Mock } from "vitest";
 
 export function expectEqualsFrozen(args: PayloadWithType<any>, expected: PayloadWithType<any>) {
     expect(Object.isFrozen(args["payload"])).toBe(true);

@@ -55,6 +55,7 @@ import {ModelCalibrateMutation} from "../../app/store/modelCalibrate/mutations";
 import {LanguageMutation} from "../../app/store/language/mutations";
 import {Language} from "../../app/store/translations/locales";
 import { nextTick } from 'vue';
+import { Mock } from 'vitest';
 
 describe("App", () => {
 
@@ -64,8 +65,8 @@ describe("App", () => {
     });
 
     afterAll(() => {
-        (console.log as vi.Mock).mockClear();
-        (console.error as vi.Mock).mockClear();
+        (console.log as Mock).mockClear();
+        (console.error as Mock).mockClear();
     });
 
     const getStore = (ready: boolean = false) => {
@@ -82,24 +83,21 @@ describe("App", () => {
         return new Vuex.Store<RootState>(localStoreOptions);
     };
 
-    it("loads input data on mount", (done) => {
+    it("loads input data on mount", async () => {
         const store = getStore();
         mount(Hint, {
             global: {
                 plugins: [store]
             }
         });
-
-        setTimeout(() => {
-            expect(baselineActions.getBaselineData).toHaveBeenCalled();
-            expect(surveyAndProgramActions.getSurveyAndProgramData).toHaveBeenCalled();
-            expect(modelRunActions.getResult).toHaveBeenCalled();
-            expect(modelCalibrateActions.getResult).toHaveBeenCalled();
-            expect(adrActions.getSchemas).toHaveBeenCalled();
-            expect(projectsActions.getCurrentProject).toHaveBeenCalled();
-            expect(genericChartActions.getGenericChartMetadata).toHaveBeenCalled();
-            done();
-        });
+        await nextTick();
+        expect(baselineActions.getBaselineData).toHaveBeenCalled();
+        expect(surveyAndProgramActions.getSurveyAndProgramData).toHaveBeenCalled();
+        expect(modelRunActions.getResult).toHaveBeenCalled();
+        expect(modelCalibrateActions.getResult).toHaveBeenCalled();
+        expect(adrActions.getSchemas).toHaveBeenCalled();
+        expect(projectsActions.getCurrentProject).toHaveBeenCalled();
+        expect(genericChartActions.getGenericChartMetadata).toHaveBeenCalled();
     });
 
     it("gets language from state", () => {
