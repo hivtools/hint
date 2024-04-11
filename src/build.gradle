@@ -69,6 +69,10 @@ subprojects {
         enabled true
     }
 
+    tasks.withType(Test).configureEach {
+        maxParallelForks = Runtime.runtime.availableProcessors().intdiv(2) ?: 1
+    }
+
     tasks.test {
         useJUnitPlatform()
         testLogging {
