@@ -12,7 +12,7 @@
     "test": "vitest --run",
     "browser-test": "npx playwright test",
     "integration-test": "vitest --config ./test-integration-configs/integration.ts --run",
-    "adr-integration-test": "jest --testPathPattern adr-dataset -c jest.integration.adr.config.js",
+    "adr-integration-test": "vitest --config ./test-integration-configs/adr-integration.ts --run",
     "integration-test-docker": "jest --testPathIgnorePatterns adr-dataset -c jest.integration.docker.config.js",
     "adr-integration-test-docker": "jest --testPathPattern adr-dataset -c jest.integration.docker.adr.config.js",
     "lint": "npx eslint src --ext .js,.jsx,.ts,.tsx,vue"
