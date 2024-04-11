@@ -10,8 +10,8 @@ describe("Survey and programme actions", () => {
     beforeAll(async () => {
         await login();
 
-        const commit = jest.fn();
-        const dispatch = jest.fn();
+        const commit = vi.fn();
+        const dispatch = vi.fn();
         const formData = getFormData("malawi.geojson");
         await baselineActions.uploadShape({commit, dispatch, rootState} as any, formData);
 
@@ -22,8 +22,8 @@ describe("Survey and programme actions", () => {
 
     it("can upload survey", async () => {
 
-        const commit = jest.fn();
-        const dispatch = jest.fn();
+        const commit = vi.fn();
+        const dispatch = vi.fn();
 
         const formData = getFormData("survey.csv");
 
@@ -37,8 +37,8 @@ describe("Survey and programme actions", () => {
 
     it("can upload programme", async () => {
 
-        const commit = jest.fn();
-        const dispatch = jest.fn();
+        const commit = vi.fn();
+        const dispatch = vi.fn();
 
         const formData = getFormData("programme.csv");
 
@@ -54,7 +54,7 @@ describe("Survey and programme actions", () => {
 
     it("can upload anc", async () => {
 
-        const commit = jest.fn();
+        const commit = vi.fn();
         const formData = getFormData("anc.csv");
 
         await actions.uploadANC({commit, rootState} as any, formData);
@@ -67,7 +67,7 @@ describe("Survey and programme actions", () => {
     });
 
     it("can delete survey", async () => {
-        const commit = jest.fn();
+        const commit = vi.fn();
 
         const formData = getFormData("survey.csv");
 
@@ -88,7 +88,7 @@ describe("Survey and programme actions", () => {
     });
 
     it("can delete program", async () => {
-        const commit = jest.fn();
+        const commit = vi.fn();
 
         const formData = getFormData("programme.csv");
 
@@ -110,7 +110,7 @@ describe("Survey and programme actions", () => {
     });
 
     it("can delete ANC", async () => {
-        const commit = jest.fn();
+        const commit = vi.fn();
 
         const formData = getFormData("anc.csv");
 

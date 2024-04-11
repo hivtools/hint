@@ -50,7 +50,7 @@ describe("File upload component", () => {
         return store;
     };
 
-    const mockHideDropDown = jest.fn();
+    const mockHideDropDown = vi.fn();
     const dropdownWithMockedHideMethod = defineComponent({mixins: [BDropdown], methods: {hide: mockHideDropDown}});
 
     const createSut = (props?: any, slots?: any, storeOptions?: Store<RootState>) => {
@@ -64,7 +64,7 @@ describe("File upload component", () => {
             },
             props: {
                 uploading: false,
-                upload: jest.fn(),
+                upload: vi.fn(),
                 name: "pjnz",
                 accept: "csv",
                 ...props
@@ -76,7 +76,7 @@ describe("File upload component", () => {
     const testFile = mockFile("TEST FILE NAME", "TEST CONTENTS");
 
     beforeEach(() => {
-        jest.resetAllMocks();
+        vi.resetAllMocks();
     });
 
     it("renders hidden input", () => {
@@ -100,12 +100,12 @@ describe("File upload component", () => {
 
     it("calls upload when file is selected", async () => {
 
-        const uploader = jest.fn();
+        const uploader = vi.fn();
         const wrapper = createSut({
             upload: uploader
         });
 
-        jest.spyOn((wrapper.vm.$refs as any).pjnz, "files", "get").mockImplementation(() => [testFile]);
+        vi.spyOn((wrapper.vm.$refs as any).pjnz, "files", "get").mockImplementation(() => [testFile]);
         await wrapper.find("input").trigger("change");
 
         await nextTick();
@@ -115,7 +115,7 @@ describe("File upload component", () => {
     });
 
     it("calls upload function with formData", async () => {
-        const uploader = jest.fn();
+        const uploader = vi.fn();
         const wrapper = createSut({
             upload: uploader
         });
@@ -152,7 +152,7 @@ describe("File upload component", () => {
             },
             props: {
                 uploading: false,
-                upload: jest.fn(),
+                upload: vi.fn(),
                 name: "pjnz",
                 accept: "csv"
             }

@@ -41,8 +41,8 @@ describe("select release", () => {
             vmmc: null
         }
     }
-    const getReleasesMock = jest.fn();
-    const clearReleasesMock = jest.fn();
+    const getReleasesMock = vi.fn();
+    const clearReleasesMock = vi.fn();
     
     const getStore = (releases = releasesArray, selectedDataset: Dataset | null = null, getReleases = getReleasesMock) => {
         const store = new Vuex.Store({
@@ -54,12 +54,12 @@ describe("select release", () => {
                         releases
                     },
                     actions: {
-                        getDatasets: jest.fn(),
+                        getDatasets: vi.fn(),
                         getReleases
                     },
                     mutations: {
                         [ADRMutation.ClearReleases]: clearReleasesMock,
-                        [ADRMutation.SetReleases]: jest.fn()
+                        [ADRMutation.SetReleases]: vi.fn()
                     }
                 },
                 baseline: {
@@ -75,7 +75,7 @@ describe("select release", () => {
     }
 
     afterEach(() => {
-        jest.resetAllMocks();
+        vi.resetAllMocks();
     });
 
     it("renders select release", async () => {
@@ -160,7 +160,7 @@ describe("select release", () => {
     });
 
     it("can render tooltips in English", async () => {
-        const mockTooltip = jest.fn();
+        const mockTooltip = vi.fn();
         const store = getStore()
         
         const rendered = shallowMountWithTranslate(SelectRelease, store,
@@ -177,7 +177,7 @@ describe("select release", () => {
     });
 
     it("can render tooltips in French", async () => {
-        const mockTooltip = jest.fn();
+        const mockTooltip = vi.fn();
         const store = getStore()
         store.state.language = Language.fr;
         await nextTick();
@@ -196,7 +196,7 @@ describe("select release", () => {
     });
 
     it("can render tooltips in Portuguese", async () => {
-        const mockTooltip = jest.fn();
+        const mockTooltip = vi.fn();
         const store = getStore()
         store.state.language = Language.pt;
         await nextTick();
@@ -274,7 +274,7 @@ describe("select release", () => {
     });
 
     it("changes to datasetId and true open prop triggers getRelease method", async () => {
-        const spy = jest.fn()
+        const spy = vi.fn()
         let store = getStore(releasesArray, null, spy)
         const rendered = shallowMountWithTranslate(SelectRelease, store, {
             global: {

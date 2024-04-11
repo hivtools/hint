@@ -22,17 +22,17 @@ describe("Load actions", () => {
     beforeEach(() => {
         mockAxios.reset();
         // stop apiService logging to console
-        console.log = jest.fn();
-        console.info = jest.fn();
+        console.log = vi.fn();
+        console.info = vi.fn();
     });
 
     afterEach(() => {
-        (console.log as jest.Mock).mockClear();
-        (console.info as jest.Mock).mockClear();
+        (console.log as vi.Mock).mockClear();
+        (console.info as vi.Mock).mockClear();
     });
 
     it("clears loading state", async () => {
-        const commit = jest.fn();
+        const commit = vi.fn();
         await actions.clearLoadState({commit, rootState} as any);
         expect(commit.mock.calls[0][0]).toStrictEqual({type: "LoadStateCleared", payload: null});
     });
@@ -40,11 +40,11 @@ describe("Load actions", () => {
     it("loadVersion sets files and updates store state",  (done) => {
         mockAxios.onPost(`/session/files/`)
             .reply(200, mockSuccess({}));
-        const commit = jest.fn();
-        const dispatch = jest.fn();
+        const commit = vi.fn();
+        const dispatch = vi.fn();
         const state = mockLoadState({loadingState: LoadingState.UpdatingState});
 
-        const routerSpy = jest.spyOn(router, "push");
+        const routerSpy = vi.spyOn(router, "push");
 
         actions.loadFromVersion({commit, dispatch, state, rootState} as any, {
             files: "files",
@@ -102,11 +102,11 @@ describe("Load actions", () => {
     it("loadVersion pushes home route if not already there", async () => {
         mockAxios.onPost(`/session/files/`)
             .reply(200, mockSuccess({}));
-        const commit = jest.fn();
-        const dispatch = jest.fn();
+        const commit = vi.fn();
+        const dispatch = vi.fn();
         const state = mockLoadState({loadingState: LoadingState.UpdatingState});
 
-        const routerSpy = jest.spyOn(router, "push");
+        const routerSpy = vi.spyOn(router, "push");
         await router.push("/projects");
 
         actions.loadFromVersion({commit, dispatch, state, rootState} as any, {
@@ -119,10 +119,10 @@ describe("Load actions", () => {
     });
 
     it("updateStoreState saves file state to local storage and reloads page", async () => {
-        const mockSaveToLocalStorage = jest.fn();
+        const mockSaveToLocalStorage = vi.fn();
         localStorageManager.savePartialState = mockSaveToLocalStorage;
 
-        const mockLocationReload = jest.fn();
+        const mockLocationReload = vi.fn();
         delete (window as any).location
         delete (window as any).location
         window.location = {reload: mockLocationReload} as any;
@@ -135,10 +135,10 @@ describe("Load actions", () => {
     });
 
     it("extracts calibrate options from dynamicFormMeta and saves and loads file state", async () => {
-        const mockSaveToLocalStorage = jest.fn();
+        const mockSaveToLocalStorage = vi.fn();
         localStorageManager.savePartialState = mockSaveToLocalStorage;
 
-        const mockLocationReload = jest.fn();
+        const mockLocationReload = vi.fn();
         delete (window as any).location
         window.location = {reload: mockLocationReload} as any;
 
@@ -182,10 +182,10 @@ describe("Load actions", () => {
     });
 
     it("does not extracts calibrate options from dynamicFormMeta if model has not been calibrated", async () => {
-        const mockSaveToLocalStorage = jest.fn();
+        const mockSaveToLocalStorage = vi.fn();
         localStorageManager.savePartialState = mockSaveToLocalStorage;
 
-        const mockLocationReload = jest.fn();
+        const mockLocationReload = vi.fn();
         delete (window as any).location
         window.location = {reload: mockLocationReload} as any;
 
@@ -228,10 +228,10 @@ describe("Load actions", () => {
     });
 
     it("calibrate options returns empty object if no options to extract from dynamic form meta", async () => {
-        const mockSaveToLocalStorage = jest.fn();
+        const mockSaveToLocalStorage = vi.fn();
         localStorageManager.savePartialState = mockSaveToLocalStorage;
 
-        const mockLocationReload = jest.fn();
+        const mockLocationReload = vi.fn();
         delete (window as any).location
         window.location = {reload: mockLocationReload} as any;
 
@@ -258,8 +258,8 @@ describe("Load actions", () => {
         const fomData = new FormData()
         fomData.append("file", file)
 
-        const dispatch = jest.fn();
-        const commit = jest.fn();
+        const dispatch = vi.fn();
+        const commit = vi.fn();
         actions.preparingRehydrate({dispatch, commit, rootState} as any, fomData);
 
         const interval = setInterval(() => {
@@ -362,8 +362,8 @@ describe("Load actions", () => {
             }
         }
 
-        const commit = jest.fn();
-        const dispatch = jest.fn()
+        const commit = vi.fn();
+        const dispatch = vi.fn()
         const rootGetters = {isGuest: false}
         const state = mockLoadState({rehydrateId: "1", projectName: "testProject"} as any)
         actions.pollRehydrate({commit, dispatch, rootState, state, rootGetters} as any);
@@ -441,8 +441,8 @@ describe("Load actions", () => {
         mockAxios.onPost(`session/files/`)
             .reply(200, mockSuccess({}));
 
-        const commit = jest.fn();
-        const dispatch = jest.fn()
+        const commit = vi.fn();
+        const dispatch = vi.fn()
         const rootGetters = {isGuest: true}
         const state = mockLoadState({rehydrateId: "1"} as any)
         actions.pollRehydrate({commit, dispatch, rootState, state, rootGetters} as any);
@@ -463,8 +463,8 @@ describe("Load actions", () => {
         mockAxios.onGet(`rehydrate/status/1`)
             .reply(500, mockFailure("ERROR"));
 
-        const commit = jest.fn();
-        const dispatch = jest.fn()
+        const commit = vi.fn();
+        const dispatch = vi.fn()
         const state = mockLoadState({rehydrateId: "1"} as any)
         actions.pollRehydrate({commit, rootState, state, dispatch} as any);
 

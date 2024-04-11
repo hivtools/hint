@@ -14,7 +14,7 @@ import {
 import {SurveyAndProgramMutation} from "../../app/store/surveyAndProgram/mutations";
 import {expectEqualsFrozen} from "../testHelpers";
 import {DataType} from "../../app/store/surveyAndProgram/surveyAndProgram";
-import Mock = jest.Mock;
+import Mock = vi.Mock;
 import {expectValidAdrImportPayload} from "../baseline/actions.test";
 
 const rootState = mockRootState();
@@ -32,12 +32,12 @@ describe("Survey and programme actions", () => {
 
     beforeEach(() => {
         // stop apiService logging to console
-        console.log = jest.fn();
+        console.log = vi.fn();
         mockAxios.reset();
     });
 
     afterEach(() => {
-        (console.log as jest.Mock).mockClear();
+        (console.log as vi.Mock).mockClear();
     });
 
     it("sets data after surveys file upload", async () => {
@@ -45,7 +45,7 @@ describe("Survey and programme actions", () => {
         mockAxios.onPost(`/disease/survey/?strict=true`)
             .reply(200, mockSuccess({data: "SOME DATA", warnings: "TEST WARNINGS"}));
 
-        const commit = jest.fn();
+        const commit = vi.fn();
         await actions.uploadSurvey({commit, rootState} as any, mockFormData as any);
 
         checkSurveyImportUpload(commit);
@@ -56,7 +56,7 @@ describe("Survey and programme actions", () => {
         mockAxios.onPost(url)
             .reply(200, mockSuccess({data: "SOME DATA", warnings: "TEST WARNINGS"}));
 
-        const commit = jest.fn();
+        const commit = vi.fn();
         await actions.importSurvey({commit, rootState: root({survey: {id: "123"}})} as any, "some-url");
 
         expectValidAdrImportPayload(url)
@@ -94,7 +94,7 @@ describe("Survey and programme actions", () => {
         mockAxios.onPost(`/disease/survey/?strict=true`)
             .reply(500, mockFailure("error message"));
 
-        const commit = jest.fn();
+        const commit = vi.fn();
         await actions.uploadSurvey({commit, rootState} as any, mockFormData as FormData);
 
         checkFailedSurveyImportUpload(commit);
@@ -105,7 +105,7 @@ describe("Survey and programme actions", () => {
         mockAxios.onPost(`/adr/survey/?strict=true`)
             .reply(500, mockFailure("error message"));
 
-        const commit = jest.fn();
+        const commit = vi.fn();
         await actions.importSurvey({commit, rootState} as any, "some-url/file.txt");
 
         checkFailedSurveyImportUpload(commit);
@@ -139,7 +139,7 @@ describe("Survey and programme actions", () => {
         mockAxios.onPost(`/disease/programme/?strict=true`)
             .reply(200, mockSuccess({data: "TEST", warnings: "TEST WARNINGS"}));
 
-        const commit = jest.fn();
+        const commit = vi.fn();
         await actions.uploadProgram({commit, rootState} as any, mockFormData as any);
 
         checkProgrammeImportUpload(commit)
@@ -150,7 +150,7 @@ describe("Survey and programme actions", () => {
         mockAxios.onPost(url)
             .reply(200, mockSuccess({data: "TEST", warnings: "TEST WARNINGS"}));
 
-        const commit = jest.fn();
+        const commit = vi.fn();
         await actions.importProgram({commit, rootState: root({program: {id: "123"}})} as any, "some-url");
 
         expectValidAdrImportPayload(url)
@@ -159,28 +159,28 @@ describe("Survey and programme actions", () => {
     });
 
     it("does not call import programme if url is missing", async () => {
-        const commit = jest.fn();
+        const commit = vi.fn();
         await actions.importProgram({commit, rootState} as any, "");
 
         expect(commit.mock.calls.length).toBe(0);
     });
 
     it("does not call import survey if url is missing", async () => {
-        const commit = jest.fn();
+        const commit = vi.fn();
         await actions.importSurvey({commit, rootState} as any, "");
 
         expect(commit.mock.calls.length).toBe(0);
     });
 
     it("does not call import ANC if url is missing", async () => {
-        const commit = jest.fn();
+        const commit = vi.fn();
         await actions.importANC({commit, rootState} as any, "");
 
         expect(commit.mock.calls.length).toBe(0);
     });
 
     it("does not call import VMMC if url is missing", async () => {
-        const commit = jest.fn();
+        const commit = vi.fn();
         await actions.importVmmc({commit, rootState} as any, "");
 
         expect(commit.mock.calls.length).toBe(0);
@@ -226,7 +226,7 @@ describe("Survey and programme actions", () => {
         mockAxios.onPost(`/disease/programme/?strict=true`)
             .reply(500, mockFailure("error message"));
 
-        const commit = jest.fn();
+        const commit = vi.fn();
         await actions.uploadProgram({commit, rootState} as any, mockFormData as FormData);
 
         checkFailedProgramImportUpload(commit);
@@ -237,7 +237,7 @@ describe("Survey and programme actions", () => {
         mockAxios.onPost(`/adr/programme/?strict=true`)
             .reply(500, mockFailure("error message"));
 
-        const commit = jest.fn();
+        const commit = vi.fn();
         await actions.importProgram({commit, rootState} as any, "some-url/file.txt");
 
         checkFailedProgramImportUpload(commit);
@@ -277,7 +277,7 @@ describe("Survey and programme actions", () => {
         mockAxios.onPost(`/disease/anc/?strict=true`)
             .reply(200, mockSuccess({data: "TEST", warnings: "TEST WARNINGS"}));
 
-        const commit = jest.fn();
+        const commit = vi.fn();
         await actions.uploadANC({commit, rootState} as any, mockFormData as any);
 
         checkANCImportUpload(commit);
@@ -288,7 +288,7 @@ describe("Survey and programme actions", () => {
         mockAxios.onPost(url)
             .reply(200, mockSuccess({data: "TEST", warnings: "TEST WARNINGS"}));
 
-        const commit = jest.fn();
+        const commit = vi.fn();
 
         await actions.importANC({commit, rootState: root({anc: {id: "123"}})} as any, "some-url");
 
@@ -337,7 +337,7 @@ describe("Survey and programme actions", () => {
         mockAxios.onPost(`/disease/anc/?strict=true`)
             .reply(500, mockFailure("error message"));
 
-        const commit = jest.fn();
+        const commit = vi.fn();
         await actions.uploadANC({commit, rootState} as any, mockFormData as any);
 
         checkFailedANCImportUpload(commit);
@@ -348,7 +348,7 @@ describe("Survey and programme actions", () => {
         mockAxios.onPost(`/adr/anc/?strict=true`)
             .reply(500, mockFailure("error message"));
 
-        const commit = jest.fn();
+        const commit = vi.fn();
         await actions.importANC({commit, rootState} as any, "some-url/file.txt");
 
         checkFailedANCImportUpload(commit);
@@ -388,7 +388,7 @@ describe("Survey and programme actions", () => {
         mockAxios.onPost(`/disease/vmmc/?strict=true`)
             .reply(200, mockSuccess({data: "TEST", warnings: "TEST WARNINGS"}));
 
-        const commit = jest.fn();
+        const commit = vi.fn();
         await actions.uploadVmmc({commit, rootState} as any, mockFormData as any);
 
         checkVmmcImportUpload(commit);
@@ -399,7 +399,7 @@ describe("Survey and programme actions", () => {
         mockAxios.onPost(url)
             .reply(200, mockSuccess({data: "TEST", warnings: "TEST WARNINGS"}));
 
-        const commit = jest.fn();
+        const commit = vi.fn();
 
         await actions.importVmmc({commit, rootState: root({vmmc: {id: "123"}})} as any, "some-url");
 
@@ -443,7 +443,7 @@ describe("Survey and programme actions", () => {
         mockAxios.onPost(`/disease/vmmc/?strict=true`)
             .reply(500, mockFailure("error message"));
 
-        const commit = jest.fn();
+        const commit = vi.fn();
         await actions.uploadVmmc({commit, rootState} as any, mockFormData as any);
 
         checkFailedVmmcImportUpload(commit);
@@ -454,7 +454,7 @@ describe("Survey and programme actions", () => {
         mockAxios.onPost(`/adr/vmmc/?strict=true`)
             .reply(500, mockFailure("error message"));
 
-        const commit = jest.fn();
+        const commit = vi.fn();
         await actions.importVmmc({commit, rootState} as any, "some-url/file.txt");
 
         checkFailedVmmcImportUpload(commit);
@@ -503,7 +503,7 @@ describe("Survey and programme actions", () => {
         mockAxios.onGet(`/disease/vmmc/?strict=true`)
             .reply(200, mockSuccess(mockVmmcResponse()));
 
-        const commit = jest.fn();
+        const commit = vi.fn();
         await actions.getSurveyAndProgramData({commit, rootState} as any);
 
         const calls = commit.mock.calls.map((callArgs) => callArgs[0]["type"]);
@@ -532,7 +532,7 @@ describe("Survey and programme actions", () => {
         mockAxios.onGet(`/disease/vmmc/?strict=true`)
             .reply(200, mockSuccess(mockVmmcResponse()));
 
-        const commit = jest.fn();
+        const commit = vi.fn();
         await actions.validateSurveyAndProgramData({commit, rootState} as any);
 
         const calls = commit.mock.calls.map((callArgs) => callArgs[0]["type"]);
@@ -566,7 +566,7 @@ describe("Survey and programme actions", () => {
         mockAxios.onGet(`/disease/vmmc/?strict=true`)
             .reply(200, mockSuccess(mockVmmcResponse()));
 
-        const commit = jest.fn();
+        const commit = vi.fn();
         await actions.validateSurveyAndProgramData({commit, rootState} as any);
 
         const calls = commit.mock.calls.map((callArgs) => callArgs[0]["type"]);
@@ -597,7 +597,7 @@ describe("Survey and programme actions", () => {
         mockAxios.onGet(`/disease/vmmc/?strict=true`)
             .reply(500, mockFailure("Failed"));
 
-        const commit = jest.fn();
+        const commit = vi.fn();
         await actions.validateSurveyAndProgramData({commit, rootState} as any);
 
         const calls = commit.mock.calls.map((callArgs) => callArgs[0]["type"]);
@@ -627,7 +627,7 @@ describe("Survey and programme actions", () => {
         mockAxios.onGet(`/disease/vmmc/?strict=true`)
             .reply(500);
 
-        const commit = jest.fn();
+        const commit = vi.fn();
         await actions.getSurveyAndProgramData({commit, rootState} as any);
 
         expect(commit).toBeCalledTimes(1);
@@ -638,7 +638,7 @@ describe("Survey and programme actions", () => {
         mockAxios.onDelete("/disease/survey/")
             .reply(200, mockSuccess(true));
 
-        const commit = jest.fn();
+        const commit = vi.fn();
         await actions.deleteSurvey({
             commit, rootState,
             state: mockSurveyAndProgramState({selectedDataType: DataType.Survey, program: mockProgramResponse()})
@@ -669,7 +669,7 @@ describe("Survey and programme actions", () => {
         mockAxios.onDelete("/disease/programme/")
             .reply(200, mockSuccess(true));
 
-        const commit = jest.fn();
+        const commit = vi.fn();
         await actions.deleteProgram({
             commit,
             rootState,
@@ -707,7 +707,7 @@ describe("Survey and programme actions", () => {
         mockAxios.onDelete("/disease/anc/")
             .reply(200, mockSuccess(true));
 
-        const commit = jest.fn();
+        const commit = vi.fn();
         await actions.deleteANC({
             commit,
             rootState,
@@ -745,7 +745,7 @@ describe("Survey and programme actions", () => {
         mockAxios.onDelete("/disease/vmmc/")
             .reply(200, mockSuccess(true));
 
-        const commit = jest.fn();
+        const commit = vi.fn();
         await actions.deleteVmmc({
             commit,
             rootState,
@@ -792,7 +792,7 @@ describe("Survey and programme actions", () => {
         mockAxios.onDelete("/disease/vmmc/")
             .reply(200, mockSuccess(true));
 
-        const commit = jest.fn();
+        const commit = vi.fn();
         await actions.deleteAll({commit, rootState, state: mockSurveyAndProgramState()} as any);
         expect(mockAxios.history["delete"].length).toBe(4);
         expect(commit).toBeCalledTimes(11);
@@ -812,7 +812,7 @@ describe("Survey and programme actions", () => {
     });
 
     it("selects data type", () => {
-        const commit = jest.fn();
+        const commit = vi.fn();
         actions.selectDataType({commit} as any, DataType.ANC);
         expect(commit).toBeCalledTimes(1);
         expect(commit.mock.calls[0][0]["type"]).toBe(SurveyAndProgramMutation.SelectedDataTypeUpdated);

@@ -21,12 +21,12 @@ import {MetadataState} from "../../../app/store/metadata/metadata";
 describe(`uploadModal `, () => {
 
     beforeEach(() => {
-        jest.useFakeTimers();
+        vi.useFakeTimers();
     });
 
     afterEach(() => {
-        jest.resetAllMocks()
-        jest.useRealTimers()
+        vi.resetAllMocks()
+        vi.useRealTimers()
     });
 
     const fakeMetadata = {
@@ -98,7 +98,7 @@ describe(`uploadModal `, () => {
         comparison: mockDownloadResultsDependency({complete: false, preparing: false})
     } as any
 
-    const mockUploadFilesToADR = jest.fn();
+    const mockUploadFilesToADR = vi.fn();
 
     const createStore = (data: Dict<any> = fakeMetadata,
                          downloadResults: Partial<DownloadResultsState> = mockDownloadResults,
@@ -127,7 +127,7 @@ describe(`uploadModal `, () => {
                         uploadFilesToADR: mockUploadFilesToADR
                     },
                     mutations: {
-                        ADRUploadStarted: jest.fn()
+                        ADRUploadStarted: vi.fn()
                     }
                 },
                 adr: {
@@ -203,7 +203,7 @@ describe(`uploadModal `, () => {
     })
 
     it("can render tooltips in English, French, and Portuguese", async () => {
-        const mockTooltip = jest.fn();
+        const mockTooltip = vi.fn();
         const wrapper = getWrapper({"tooltip": mockTooltip})
 
         expect(mockTooltip.mock.calls[0][1].value).toBe("Create a labelled version in the ADR dataset, to include all input and output files");

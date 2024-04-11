@@ -3,14 +3,14 @@ import Vuex from "vuex";
 
 describe("Root", () => {
     afterEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
     });
 
     it("loads state for main app, from local storage on load", async () => {
-        const mockGetState = jest.spyOn(localStorageManager, "getState");
-        const mockSaveState = jest.spyOn(localStorageManager, "saveState");
+        const mockGetState = vi.spyOn(localStorageManager, "getState");
+        const mockSaveState = vi.spyOn(localStorageManager, "saveState");
 
-        const mockConsoleLog = jest.fn();
+        const mockConsoleLog = vi.fn();
         console.log = mockConsoleLog;
 
         const module = await import("../app/root");

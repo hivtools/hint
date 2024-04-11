@@ -9,7 +9,7 @@ import ErrorReport from "../app/components/ErrorReport.vue";
 import { VueWrapper, mount, shallowMount } from "@vue/test-utils";
 import translate from "../app/directives/translate";
 import { nextTick } from "vue";
-import Mock = jest.Mock;
+import Mock = vi.Mock;
 import {RootState} from "../app/root";
 
 export function expectEqualsFrozen(args: PayloadWithType<any>, expected: PayloadWithType<any>) {
@@ -30,9 +30,9 @@ export function testUploadErrorCommitted(url: string,
         mockAxios.onPost(url)
             .reply(500, mockFailure("Something went wrong"));
 
-        const commit = jest.fn();
+        const commit = vi.fn();
         const state = mockBaselineState();
-        const dispatch = jest.fn();
+        const dispatch = vi.fn();
         const rootState = mockRootState();
         await action({commit, state, dispatch, rootState} as any, formData);
 
