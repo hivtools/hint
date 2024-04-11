@@ -14,7 +14,7 @@ export enum PlotStateMutations {
 export const mutations: MutationTree<PlotState> = {
     [PlotStateMutations.updateOutputColourScales](state: PlotState, action: PayloadWithType<UpdateColourScale>) {
         const {indicatorId, newScaleSettings} = action.payload;
-        const newColourScales = {...state.output.colourScales};
+        const newColourScales = structuredClone(state.output.colourScales);
         newColourScales[indicatorId] = newScaleSettings;
         state.output.colourScales = newColourScales;
     },
