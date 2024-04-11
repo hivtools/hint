@@ -1,12 +1,19 @@
 // Mock the import of plotly so that we can spy on its exported 'newPlot' method - need to do this
 // before importing Plotly
 import Vuex from "vuex";
-
+import plotly from "plotly.js-basic-dist";
+const mocks = vi.hoisted(() => {
+    return {
+        newPlot: vi.fn(),
+        react: vi.fn()
+    }
+});
 vi.mock("plotly.js-basic-dist", () => ({
-    newPlot: vi.fn(),
-    react: vi.fn()
+    default: {
+        newPlot: mocks.newPlot,
+        react: mocks.react
+    }
 }));
-import * as plotly from "plotly.js-basic-dist";
 import Vue, { nextTick } from "vue";
 import { flushPromises, shallowMount } from "@vue/test-utils";
 import Plotly from "../../../app/components/genericChart/Plotly.vue";

@@ -379,7 +379,7 @@ describe("Load actions", () => {
         expect(JSON.parse(mockAxios.history.post[0]["data"])).toStrictEqual(sessionFilesPayload)
         expect(commit.mock.calls.length).toBe(4)
         expect(commit.mock.calls[0][0].type).toBe("RehydratePollingStarted")
-        expect(commit.mock.calls[0][0].payload).toBeGreaterThan(1)
+        expect(+commit.mock.calls[0][0].payload).toBeGreaterThan(1)
         expect(commit.mock.calls[1][0].type).toBe("RehydrateStatusUpdated")
         expect(commit.mock.calls[1][0].payload).toStrictEqual(RunningStatusResponse)
         expect(commit.mock.calls[2][0].type).toBe("RehydrateResult")
@@ -468,7 +468,7 @@ describe("Load actions", () => {
         await flushPromises();
         expect(commit.mock.calls.length).toBe(2)
         expect(commit.mock.calls[0][0].type).toBe("RehydratePollingStarted")
-        expect(commit.mock.calls[0][0].payload).toBeGreaterThan(1)
+        expect(+commit.mock.calls[0][0].payload).toBeGreaterThan(1)
         expect(commit.mock.calls[1][0].type).toBe("RehydrateResultError")
         expect(commit.mock.calls[1][0].payload).toStrictEqual(mockError("ERROR"))
         expect(dispatch).not.toHaveBeenCalled()
