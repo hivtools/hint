@@ -1,8 +1,10 @@
 on:
-    workflow_run:
-        workflows: [Make shared image]
-        types:
-            - completed
+    push:
+        branches:
+            - master
+    pull_request:
+        branches:
+            - "*"
 
 name: Test Front End
 
@@ -12,5 +14,8 @@ jobs:
         steps:
             - uses: actions/checkout@v4
 
-            - name: Run dependencies
+            - name: Make base image
+              run: github-action-scripts/make-base-image.sh
+
+            - name: Test front end
               run: ./buildkite/test-front-end.sh 
