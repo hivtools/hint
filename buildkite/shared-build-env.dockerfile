@@ -5,7 +5,7 @@ RUN apt-get install wget
 RUN wget -qO - https://packages.adoptium.net/artifactory/api/gpg/key/public | apt-key add -
 RUN add-apt-repository --yes https://packages.adoptium.net/artifactory/deb/
 RUN apt-get update
-RUN apt-get install temurin-11-jdk=11.0.20.1.0+1 -y
+RUN apt-get install temurin-17-jdk -y
 
 # Setup gradle
 COPY ./src/gradlew /hint/src/
