@@ -20,11 +20,14 @@ COPY ./src/config/ /hint/src/config/
 
 RUN ./gradlew
 RUN npm install codecov -g
+RUN npm install --global yarn
 
 # Install front-end dependencies
 COPY ./src/app/static/package.json /hint/src/app/static/package.json
 COPY ./src/app/static/package-lock.json /hint/src/app/static/package-lock.json
-RUN npm ci --prefix=app/static
+WORKDIR /hint/src/app/static
+RUN yarn install --frozen-lockfile
+WORKDIR /hint/src
 
 # Copy source
 COPY . /hint
