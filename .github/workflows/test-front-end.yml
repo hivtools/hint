@@ -32,7 +32,9 @@ jobs:
               run: npm run test --prefix=src/app/static
 
             - name: Integration tests
-              run: npm run integration-test --prefix=src/app/static
+              run: |
+                ./src/gradlew -p src app:bootrun &
+                npm run integration-test --prefix=src/app/static
 
             - name: Unit test CodeCov
               run: codecov -p . -f src/app/static/coverage/*.json
