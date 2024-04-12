@@ -19,6 +19,7 @@ import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import java.time.temporal.TemporalAccessor
 import java.time.temporal.ChronoUnit
 
 @ActiveProfiles(profiles = ["test"])
@@ -309,8 +310,8 @@ class ProjectRepositoryTests
         assertThat(p2.sharedBy).isEqualTo(null)
         assertThat(p2.versions.count()).isEqualTo(1)
         assertThat(p2.versions[0].id).isEqualTo("v2s1")
-        assertThat(p2.versions[0].created).isEqualTo(format(ago_3h))
-        assertThat(p2.versions[0].updated).isEqualTo(format(ago_1h))
+        assertThat(str2DateTimeStr(p2.versions[0].created)).isEqualTo(format(ago_3h))
+        assertThat(str2DateTimeStr(p2.versions[0].updated)).isEqualTo(format(ago_1h))
         assertThat(p2.versions[0].versionNumber).isEqualTo(1)
 
         val p1 = projects[1]
@@ -320,12 +321,12 @@ class ProjectRepositoryTests
         assertThat(p1.note).isEqualTo("test project note")
         assertThat(p1.versions.count()).isEqualTo(2)
         assertThat(p1.versions[0].id).isEqualTo("v1s2")
-        assertThat(p1.versions[0].created).isEqualTo(format(ago_2h))
-        assertThat(p1.versions[0].updated).isEqualTo(format(ago_2h))
+        assertThat(str2DateTimeStr(p1.versions[0].created)).isEqualTo(format(ago_2h))
+        assertThat(str2DateTimeStr(p1.versions[0].updated)).isEqualTo(format(ago_2h))
         assertThat(p1.versions[0].versionNumber).isEqualTo(2)
         assertThat(p1.versions[1].id).isEqualTo("v1s1")
-        assertThat(p1.versions[1].created).isEqualTo(format(ago_4h))
-        assertThat(p1.versions[1].updated).isEqualTo(format(ago_3h))
+        assertThat(str2DateTimeStr(p1.versions[1].created)).isEqualTo(format(ago_4h))
+        assertThat(str2DateTimeStr(p1.versions[1].updated)).isEqualTo(format(ago_3h))
         assertThat(p1.versions[1].versionNumber).isEqualTo(1)
     }
 
@@ -335,10 +336,16 @@ class ProjectRepositoryTests
         return userRepo.getUser(email)!!.id
     }
 
-    private fun format(time: LocalDateTime): String
+    private fun format(time: TemporalAccessor): String
     {
         val formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME
         return formatter.format(time)
+    }
+
+    private fun str2DateTimeStr(time: String): String
+    {
+        val formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME
+        return format(formatter.parse(time))
     }
 
     private fun insertProject(name: String, userId: String, sharedBy: String? = null, note: String? = null): Int
