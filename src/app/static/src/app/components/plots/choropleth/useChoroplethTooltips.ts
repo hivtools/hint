@@ -70,10 +70,14 @@ const tooltipContent = function (feature: Feature, featureIndicators: IndicatorV
             <br/>(${formatOutput(stringLower, format, scale, accuracy, true) + " - " +
         formatOutput(stringUpper, format, scale, accuracy, true)})
         </div>`;
-    } else {
+    } else if (stringVal) {
         return `<div>
             <strong>${area_name}</strong>
             <br/>${formatOutput(stringVal, format, scale, accuracy, true)}
+        </div>`;
+    } else {
+        return `<div>
+            <strong>${area_name}</strong>
         </div>`;
     }
 }

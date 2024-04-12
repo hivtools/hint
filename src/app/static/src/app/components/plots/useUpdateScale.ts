@@ -1,6 +1,7 @@
 import {useStore} from "vuex";
 import {RootState} from "../../root";
 import {ScaleSettings} from "../../store/plotState/plotState";
+import {getIndicatorMetadata, scaleStepFromMetadata} from "./utils";
 import {computed} from "vue";
 
 export const useUpdateScale = () => {
@@ -11,23 +12,36 @@ export const useUpdateScale = () => {
             return colourScaleStep.value;
         } else if (name === "size") {
             return sizeScaleStep.value;
+        } else {
+            throw new RangeError(`Scale type must be one of 'name' or 'colour', got ${name}`)
         }
     };
 
     const colourScaleStep = computed(() => {
-        return store.getters["modelCalibrate/colourScaleStep"];
+        const activePlot = store.state.modelOutput.selectedTab;
+        let indicator
+        if (activePlot === "choropleth") {
+            indicator = getIndicatorMetadata(store, choroplethColourIndicator.value)
+        } else {
+            indicator = getIndicatorMetadata(store, bubbleColourIndicator.value)
+        }
+        return scaleStepFromMetadata(indicator)
     });
 
     const sizeScaleStep = computed(() => {
-        return store.getters["modelCalibrate/sizeScaleStep"];
+        return scaleStepFromMetadata(getIndicatorMetadata(store, bubbleSizeIndicator.value))
     });
 
     const choroplethColourIndicator = computed(() => {
-        return store.getters["plotSelections/choroplethColourIndicator"];
+        return store.state.plotSelections.choropleth.filters.find(f => f.stateFilterId === "indicator")!.selection[0].id;
     });
 
     const bubbleColourIndicator = computed(() => {
-        return store.getters["plotSelections/bubbleColourIndicator"];
+        return store.state.plotSelections.bubble.filters.find(f => f.stateFilterId === "colourIndicator")!.selection[0].id;
+    });
+
+    const bubbleSizeIndicator = computed(() => {
+        return store.state.plotSelections.bubble.filters.find(f => f.stateFilterId === "sizeIndicator")!.selection[0].id;
     });
 
     const updateOutputScale = (name: string, newScaleSettings: ScaleSettings) => {
@@ -40,27 +54,23 @@ export const useUpdateScale = () => {
 
     const updateOutputColourScale = (newScaleSettings: ScaleSettings) => {
         const activePlot = store.state.modelOutput.selectedTab;
-        let indicatorId
+        let indicatorId;
         if (activePlot === "choropleth") {
-            indicatorId = choroplethColourIndicator.value
+            indicatorId = choroplethColourIndicator.value;
         } else {
-            indicatorId = bubbleColourIndicator.value
+            indicatorId = bubbleColourIndicator.value;
         }
         store.commit({
             type: 'plotState/updateOutputColourScales',
             payload: {indicatorId: indicatorId, newScaleSettings}
-        })
+        });
     };
-
-    const bubbleSizeIndicator = computed(() => {
-        return store.getters["plotSelections/bubbleSizeIndicator"];
-    });
 
     const updateOutputSizeScale = (newScaleSettings: ScaleSettings) => {
         store.commit({
             type: 'plotState/updateOutputSizeScales',
             payload: {indicatorId: bubbleSizeIndicator.value, newScaleSettings}
-        })
+        });
     };
 
     return {
