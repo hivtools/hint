@@ -336,12 +336,6 @@ class ProjectRepositoryTests
         return userRepo.getUser(email)!!.id
     }
 
-    // private fun format(time: TemporalAccessor): String
-    // {
-    //     val formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME
-    //     return formatter.format(time)
-    // }
-
     private fun roundToSec(dateTime: LocalDateTime): LocalDateTime
     {
         return dateTime.truncatedTo(ChronoUnit.SECONDS)
