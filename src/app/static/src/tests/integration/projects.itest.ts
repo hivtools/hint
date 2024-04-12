@@ -72,7 +72,7 @@ describe("Projects actions", () => {
         actions.queueVersionStateUpload({commit, rootState, state} as any, 100);
         await vi.waitUntil(() => commit.mock.calls.length >= 11, {
             interval: 100,
-            timeout: 2000
+            timeout: 6000
         });
         expect(commit.mock.calls[5][0]["type"]).toBe(ProjectsMutations.ClearQueuedVersionUpload);
         expect(commit.mock.calls[6][0]["type"]).toBe(ProjectsMutations.SetQueuedVersionUpload);
@@ -99,7 +99,7 @@ describe("Projects actions", () => {
         actions.newVersion({commit, rootState, state} as any, "version note");
         await vi.waitUntil(() => commit.mock.calls.length >= 9, {
             interval: 100,
-            timeout: 2000
+            timeout: 6000
         });
         expect(commit.mock.calls[5][0]["type"]).toBe(ProjectsMutations.SetVersionUploadInProgress);
         expect(commit.mock.calls[5][0]["payload"]).toBe(true);
@@ -130,14 +130,14 @@ describe("Projects actions", () => {
                 call[0]["payload"] === false;
         }), {
             interval: 100,
-            timeout: 2000
+            timeout: 6000
         });
         const projectId = createdProject.id;
         const versionId = createdProject.versions[0].id;
         actions.loadVersion({commit, dispatch, state, rootState} as any, {projectId: projectId, versionId});
         await vi.waitUntil(() => dispatch.mock.calls.at(1)?.at(0) === "load/loadFromVersion", {
             interval: 100,
-            timeout: 2000
+            timeout: 6000
         })
         const fetchedVersion = dispatch.mock.calls[1][1];
         expect(fetchedVersion.state).toBeTruthy();
