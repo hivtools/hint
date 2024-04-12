@@ -5,13 +5,15 @@ HERE=$(realpath "$(dirname $0)")
 if [ "$BUILDKITE" = "true" ]; then
     GIT_ID=${BUILDKITE_COMMIT:0:7}
 else
-    GIT_ID=$(git rev-parse --short=7 HEAD)
+    # env var from github actions runner
+    GIT_ID=$(git rev-parse --short=7 "$GITHUB_SHA")
 fi
 
 if [ "$BUILDKITE" = "true" ]; then
     GIT_BRANCH=$BUILDKITE_BRANCH
 else
-    GIT_BRANCH=$(git symbolic-ref --short HEAD)
+    # env var from github actions runner
+    GIT_BRANCH=$(git symbolic-ref --short "$GITHUB_REF")
 fi
 
 # Deal with dependabot tags which look like
