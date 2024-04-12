@@ -18,4 +18,6 @@ jobs:
               run: github-action-scripts/make-base-image.sh
 
             - name: Test front end
-              run: ./buildkite/test-front-end.sh 
+              run: github-action-scripts/test-front-end.sh
+              env:
+                CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
