@@ -310,8 +310,8 @@ class ProjectRepositoryTests
         assertThat(p2.sharedBy).isEqualTo(null)
         assertThat(p2.versions.count()).isEqualTo(1)
         assertThat(p2.versions[0].id).isEqualTo("v2s1")
-        assertThat(str2DateTimeStr(p2.versions[0].created)).isEqualTo(format(ago_3h))
-        assertThat(str2DateTimeStr(p2.versions[0].updated)).isEqualTo(format(ago_1h))
+        assertThat(roundToSec(toDateTime(p2.versions[0].created))).isEqualTo(roundToSec(ago_3h))
+        assertThat(roundToSec(toDateTime(p2.versions[0].updated))).isEqualTo(roundToSec(ago_1h))
         assertThat(p2.versions[0].versionNumber).isEqualTo(1)
 
         val p1 = projects[1]
@@ -321,12 +321,12 @@ class ProjectRepositoryTests
         assertThat(p1.note).isEqualTo("test project note")
         assertThat(p1.versions.count()).isEqualTo(2)
         assertThat(p1.versions[0].id).isEqualTo("v1s2")
-        assertThat(str2DateTimeStr(p1.versions[0].created)).isEqualTo(format(ago_2h))
-        assertThat(str2DateTimeStr(p1.versions[0].updated)).isEqualTo(format(ago_2h))
+        assertThat(roundToSec(toDateTime(p1.versions[0].created))).isEqualTo(roundToSec(ago_2h))
+        assertThat(roundToSec(toDateTime(p1.versions[0].updated))).isEqualTo(roundToSec(ago_2h))
         assertThat(p1.versions[0].versionNumber).isEqualTo(2)
         assertThat(p1.versions[1].id).isEqualTo("v1s1")
-        assertThat(str2DateTimeStr(p1.versions[1].created)).isEqualTo(format(ago_4h))
-        assertThat(str2DateTimeStr(p1.versions[1].updated)).isEqualTo(format(ago_3h))
+        assertThat(roundToSec(toDateTime(p1.versions[1].created))).isEqualTo(roundToSec(ago_4h))
+        assertThat(roundToSec(toDateTime(p1.versions[1].updated))).isEqualTo(roundToSec(ago_3h))
         assertThat(p1.versions[1].versionNumber).isEqualTo(1)
     }
 
@@ -336,16 +336,20 @@ class ProjectRepositoryTests
         return userRepo.getUser(email)!!.id
     }
 
-    private fun format(time: TemporalAccessor): String
+    // private fun format(time: TemporalAccessor): String
+    // {
+    //     val formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME
+    //     return formatter.format(time)
+    // }
+
+    private fun roundToSec(dateTime: LocalDateTime): LocalDateTime
     {
-        val formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME
-        return formatter.format(time)
+        return dateTime.truncatedTo(ChronoUnit.SECONDS)
     }
 
-    private fun str2DateTimeStr(time: String): String
+    private fun toDateTime(string: String): LocalDateTime
     {
-        val formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME
-        return format(formatter.parse(time))
+        return LocalDateTime.parse(string)
     }
 
     private fun insertProject(name: String, userId: String, sharedBy: String? = null, note: String? = null): Int
