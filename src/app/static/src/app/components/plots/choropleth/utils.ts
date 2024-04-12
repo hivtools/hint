@@ -152,15 +152,6 @@ export const getFeatureData = function (data: any[],
     return result;
 };
 
-export const initialiseScaleFromMetadata = function (meta: ChoroplethIndicatorMetadata | undefined) {
-    const result = initialScaleSettings();
-    if (meta) {
-        result.customMin = meta.min;
-        result.customMax = meta.max;
-    }
-    return result;
-};
-
 
 export const tooltipContent = function (feature: Feature, featureIndicators: IndicatorValuesDict,
                                         indicatorMetadata: ChoroplethIndicatorMetadata): string {

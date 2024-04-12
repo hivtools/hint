@@ -1,6 +1,6 @@
 import { MutationTree } from "vuex";
 import { PayloadWithType } from "../../types";
-import {PlotState, ScaleSettings} from "./plotState";
+import {PlotState, ScaleSelections, ScaleSettings} from "./plotState";
 
 export interface UpdateColourScale {
     indicatorId: string
@@ -8,10 +8,14 @@ export interface UpdateColourScale {
 }
 
 export enum PlotStateMutations {
+    setOutputColourScales = "setOutputColourScales",
     updateOutputColourScales = "updateOutputColourScales"
 }
 
 export const mutations: MutationTree<PlotState> = {
+    [PlotStateMutations.setOutputColourScales](state: PlotState, action: PayloadWithType<ScaleSelections>) {
+        state.output.colourScales = action.payload;
+    },
     [PlotStateMutations.updateOutputColourScales](state: PlotState, action: PayloadWithType<UpdateColourScale>) {
         const {indicatorId, newScaleSettings} = action.payload;
         const newColourScales = structuredClone(state.output.colourScales);

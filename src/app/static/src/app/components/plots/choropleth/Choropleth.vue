@@ -27,7 +27,6 @@ import { Feature } from "geojson";
 import {
     getVisibleFeatures,
     getFeatureData,
-    initialiseScaleFromMetadata,
 } from "./utils";
 import ResetMap from "./ResetMap.vue";
 import MapLegend from "./MapLegend.vue";
@@ -36,12 +35,10 @@ import {IndicatorValuesDict, NumericRange} from "../../../types";
 import {ChoroplethIndicatorMetadata} from "../../../generated";
 import { ScaleSettings } from "../../../store/plotState/plotState";
 import {useMapTooltips} from "../useMapTooltips";
-import {useUpdateScale} from "../useUpdateScale";
 
 const store = useStore<RootState>();
-const plotData = computed<PlotData>(() => store.state.plotData.choropleth);
+const plotData = ref<PlotData>(store.state.plotData.choropleth);
 
-const {updateOutputColourScale} = useUpdateScale();
 const selectedIndicator = computed<string>(() => {
     return store.state.plotSelections.choropleth.filters.find(f => f.stateFilterId === "indicator")!.selection[0].id
 })
@@ -61,6 +58,7 @@ const featureRefs = ref<typeof LGeoJson[]>([]);
 const {createTooltips, updateTooltips} = useMapTooltips(featureData, indicatorMetadata, currentFeatures, featureRefs)
 
 const updateMap = () => {
+    plotData.value = store.state.plotData.choropleth;
     updateFeatures();
     updateColourScales();
     updateTooltips();
@@ -73,10 +71,6 @@ const colourScales = computed(() => {
 const updateColourScales = () => {
     const colourScales = store.state.plotState.output.colourScales;
     selectedScale.value = colourScales[selectedIndicator.value];
-    if (!selectedScale.value) {
-        selectedScale.value = initialiseScaleFromMetadata(indicatorMetadata.value);
-        updateOutputColourScale(selectedIndicator.value, selectedScale.value);
-    }
     colourRange.value = getColourRange(indicatorMetadata.value, selectedScale.value, plotData.value);
     scaleLevels.value = getScaleLevels(indicatorMetadata.value, colourRange.value);
     featureData.value = getFeatureData(
@@ -116,9 +110,9 @@ const updateBounds = () => {
 // then quickly updates after new data has been fetched.
 // Instead manually watch on the plot data changes, and also trigger this when a user changes the
 // scale selection
-watch(plotData, updateMap)
 watch(colourScales, updateColourScales)
 watch(selectedAreaIds, updateBounds);
+watch(() => [store.state.plotSelections.choropleth], updateMap);
 
 const showColour = (feature: Feature) => {
     return featureData.value[feature.properties!.area_id]
