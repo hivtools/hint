@@ -24,9 +24,7 @@ RUN npm install codecov -g
 # Install front-end dependencies
 COPY ./src/app/static/package.json /hint/src/app/static/package.json
 COPY ./src/app/static/package-lock.json /hint/src/app/static/package-lock.json
-WORKDIR /hint/src/app/static
-RUN yarn install --frozen-lockfile
-WORKDIR /hint/src
+RUN npm ci --prefix=app/static
 
 # Copy source
 COPY . /hint
