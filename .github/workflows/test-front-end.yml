@@ -1,0 +1,41 @@
+on:
+    push:
+        branches:
+            - master
+    pull_request:
+        branches:
+            - "*"
+
+name: Test Front End
+
+jobs:
+    test:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Run dependencies
+              run: ./src/app/static/scripts/run-dependencies-for-integration-tests.sh 
+
+            - name: Setup Node
+              uses: actions/setup-node@v3
+              with:
+               node-version: 20.x
+
+            - name: Install Packages
+              run: npm ci --prefix=src/app/static
+
+            - name: Lint
+              run: npm run lint --prefix=src/app/static -- --quiet
+
+            - name: Unit tests
+              run: npm run test --prefix=src/app/static
+
+            - name: Integration tests
+              run: npm run integration-test-docker --prefix=src/app/static
+
+            - name: Unit test CodeCov
+              run: codecov -p . -f src/app/static/coverage/*.json
+
+            - name: Integration test CodeCov
+              run: codecov -p . -f src/app/static/coverage/integration/*.json
