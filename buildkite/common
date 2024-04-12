@@ -13,7 +13,7 @@ if [ "$BUILDKITE" = "true" ]; then
     GIT_BRANCH=$BUILDKITE_BRANCH
 else
     # env var from github actions runner
-    GIT_BRANCH=$(git symbolic-ref --short "$GITHUB_SHA")
+    GIT_BRANCH=${GITHUB_REF#refs/heads/}
 fi
 
 # Deal with dependabot tags which look like
