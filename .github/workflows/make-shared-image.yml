@@ -1,0 +1,18 @@
+on:
+    push:
+        branches:
+            - master
+    pull_request:
+        branches:
+            - "*"
+
+name: Make shared image
+
+jobs:
+    make-image:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Make shared image
+              run: github-action-scripts/make-shared-image.sh
