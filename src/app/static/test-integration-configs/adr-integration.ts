@@ -6,7 +6,6 @@ export default mergeConfig(
     defineConfig({
         test: {
             include: ["**/adr-dataset.itest.ts"],
-            coverage: { reportsDirectory: "./coverage/integration/" },
             testTimeout: 120000,
             setupFiles: ["./src/tests/setup.integration.ts"]
         }
