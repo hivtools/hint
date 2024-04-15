@@ -1,9 +1,16 @@
 import { ActionContext, Commit } from "vuex";
-import { CalibrateMetadataResponse, FilterOption, FilterTypes, PlotSettingOption } from "../../generated";
+import {
+    CalibrateMetadataResponse,
+    ChoroplethIndicatorMetadata,
+    FilterOption,
+    FilterTypes,
+    PlotSettingOption
+} from "../../generated";
 import { PlotName } from "./plotSelections";
 import { PlotSelectionUpdate, PlotSelectionsMutations } from "./mutations";
 import { RootState } from "../../root";
 import { getFilteredData } from "./actions";
+import {initialScaleSettings} from "../plotState/plotState";
 
 export const filtersAfterUseShapeRegions = (filterTypes: FilterTypes[], rootState: RootState) => {
     const filters = [...filterTypes];

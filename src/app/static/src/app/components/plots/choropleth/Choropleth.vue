@@ -28,10 +28,9 @@ import {PlotData} from "../../../store/plotData/plotData";
 import { LMap, LGeoJson } from "@vue-leaflet/vue-leaflet";
 import { Feature } from "geojson";
 import {
-    initialiseScaleFromMetadata,
     getVisibleFeatures,
-    getIndicatorRange,
-    getColourScaleLevels,
+    getColourRange,
+    getScaleLevels,
     debounce_leading,
     getIndicatorMetadata,
     ScaleLevels
@@ -42,14 +41,12 @@ import {IndicatorValuesDict, NumericRange} from "../../../types";
 import {ChoroplethIndicatorMetadata} from "../../../generated";
 import { ScaleSettings } from "../../../store/plotState/plotState";
 import {useChoroplethTooltips} from "./useChoroplethTooltips";
-import {useUpdateScale} from "../useUpdateScale";
 import {getFeatureData} from "./utils";
 import MapEmptyFeature from "../MapEmptyFeature.vue";
 
 const store = useStore<RootState>();
-const plotData = computed<PlotData>(() => store.state.plotData.choropleth);
+const plotData = ref<PlotData>(store.state.plotData.choropleth);
 
-const {updateOutputColourScale} = useUpdateScale();
 const selectedIndicator = computed<string>(() => {
     return store.state.plotSelections.choropleth.filters.find(f => f.stateFilterId === "indicator")!.selection[0].id
 });
@@ -71,6 +68,7 @@ const featureRefs = ref<typeof LGeoJson[]>([]);
 const {createTooltips, updateTooltips} = useChoroplethTooltips(featureData, indicatorMetadata, currentFeatures, featureRefs)
 
 const updateMap = () => {
+    plotData.value = store.state.plotData.choropleth;
     updateFeatures();
     updateMapColours();
     updateTooltips();
@@ -81,13 +79,9 @@ const colourScales = computed(() => {
 });
 
 const updateMapColours = () => {
-    selectedScale.value = colourScales.value[selectedIndicator.value];
-    if (!selectedScale.value) {
-        selectedScale.value = initialiseScaleFromMetadata(indicatorMetadata.value);
-        updateOutputColourScale(selectedScale.value);
-    }
-    colourRange.value = getIndicatorRange(indicatorMetadata.value, selectedScale.value, plotData.value);
-    scaleLevels.value = getColourScaleLevels(indicatorMetadata.value, colourRange.value);
+    selectedScale.value = colourScales[selectedIndicator.value];
+    colourRange.value = getColourRange(indicatorMetadata.value, selectedScale.value, plotData.value);
+    scaleLevels.value = getScaleLevels(indicatorMetadata.value, colourRange.value);
     featureData.value = getFeatureData(
         plotData.value,
         indicatorMetadata.value,
@@ -133,6 +127,7 @@ const updateBounds = debounce_leading(() => {
 watch(plotData, updateMap)
 watch(colourScales, updateMapColours)
 watch(selectedAreaIds, updateBounds);
+watch(() => [store.state.plotSelections.choropleth], updateMap);
 
 const showColour = (feature: Feature) => {
     return featureData.value[feature.properties!.area_id]
