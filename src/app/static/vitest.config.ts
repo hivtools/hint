@@ -12,13 +12,8 @@ export default defineConfig({
     ],
     coverage: {
       provider: "v8",
-      reportsDirectory: "coverage",
-      exclude: [
-        '/node_modules/',
-        './tests/mocks.ts',
-        './tests/testHelpers.ts',
-        './tests/.*/helpers.ts',
-      ],
+      reportsDirectory: "coverage/unit",
+      include: ["src/app"]
     },
   },
   plugins: [vue()]
