@@ -21,3 +21,6 @@ jobs:
               run: github-action-scripts/test-front-end.sh
               env:
                 CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+            - name: Setup tmate session
+              uses: mxschmitt/action-tmate@v3
