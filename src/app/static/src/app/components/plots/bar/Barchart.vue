@@ -1,11 +1,11 @@
 <template>
     <div>
         <Bar :data="chartData" :options="chartOptions"/>
-<!--        <div v-if="showNoDataMessage" id="noDataMessage" class="px-3 py-2 noDataMessage">-->
-<!--            <span class="lead">-->
-<!--                <strong>{{ noDataMessage }}</strong>-->
-<!--            </span>-->
-<!--        </div>-->
+        <div v-if="showNoDataMessage" id="noDataMessage" class="px-3 py-2 noDataMessage">
+            <span class="lead">
+                <strong v-translate="'noChartData'"></strong>
+            </span>
+        </div>
     </div>
 </template>
 
@@ -47,57 +47,53 @@ export default defineComponent({
 
         const plotData = computed<PlotData>(() => store.state.plotData.barchart);
         const chartData = ref<BarChartData>({datasets:[], labels: [], maxValuePlusError: 0});
-        const disaggregateBy = ref<FilterOption | null>(null);
-        const xAxis = ref<FilterOption | null>(null);
-        const disaggregateId = ref<string | null>(null);
-        const xAxisId = ref<string | null>(null);
-        const areaLevel = ref<string | undefined | null>(null);
-        const disaggregateSelections = ref<FilterOption[]>([]);
-        const xAxisSelections = ref<FilterOption[]>([]);
+        const displayErrorBars = ref<boolean>(false);
+
         const updateChart = () => {
-            console.log("updating chart")
             indicatorMetadata.value = store.getters["modelCalibrate/barchartIndicatorMetadata"];
-            console.log("features", store.state.baseline.shape?.data?.features)
-            console.log("plotdata", plotData.value)
-            disaggregateBy.value = controlSelectionFromId("barchart", "disagg_by");
-            xAxis.value = controlSelectionFromId("barchart", "x_axis");
-            console.log("xaxis is ", xAxis.value)
-            if (!disaggregateBy.value || !xAxis.value) {
+            const disaggregateBy = controlSelectionFromId("barchart", "disagg_by");
+            const xAxis = controlSelectionFromId("barchart", "x_axis");
+            if (!disaggregateBy || !xAxis) {
                 return
             }
-            disaggregateId.value = filterIdToColumnId(disaggregateBy.value.id)
-            xAxisId.value = filterIdToColumnId(xAxis.value.id)
-            areaLevel.value = store.state.plotSelections.barchart.filters.find(f => f.filterId == "detail")?.selection[0]?.id
-            disaggregateSelections.value = filterSelectionFromId("barchart", disaggregateBy.value.id)
-            xAxisSelections.value = filterSelectionFromId("barchart", xAxis.value.id)
-            console.log("filter types", store.state.modelCalibrate.metadata!.filterTypes)
-            console.log("xaxjs jd", xAxisId.value)
-            const xAxisOptions = store.state.modelCalibrate.metadata!.filterTypes.find(f => f.id === xAxis.value!.id)!.options
-            if (disaggregateId.value && xAxisId.value && areaLevel.value && plotData.value) {
-                console.log("disaggregate selections", disaggregateSelections.value)
-                console.log("xaxis ID", xAxisId.value)
-                console.log("xaxis selections", xAxisSelections.value)
+            const disaggregateId = filterIdToColumnId(disaggregateBy.id)
+            const xAxisId = filterIdToColumnId(xAxis.id)
+            const areaLevel = store.state.plotSelections.barchart.filters.find(f => f.filterId == "detail")?.selection[0]?.id
+            const disaggregateSelections = filterSelectionFromId("barchart", disaggregateBy.id)
+            const xAxisSelections = filterSelectionFromId("barchart", xAxis.id)
+            const xAxisOptions = store.state.modelCalibrate.metadata!.filterTypes.find(f => f.id === xAxis!.id)!.options
+            if (disaggregateId && xAxisId && areaLevel && plotData.value) {
+                hideAllErrorBars();
                 chartData.value = plotDataToChartData(plotData.value, indicatorMetadata.value,
-                        disaggregateId.value, disaggregateSelections.value,
-                        xAxisId.value, xAxisSelections.value, xAxisOptions,
-                        areaLevel.value, areaIdToLevelMap);
+                        disaggregateId, disaggregateSelections,
+                        xAxisId, xAxisSelections, xAxisOptions,
+                        areaLevel, areaIdToLevelMap);
             }
-            chartOptions.value = updateChartOptions();
-        }
-        const filterSelections = computed(() => {
-            console.log("found new filters", store.state.plotSelections.barchart.filters)
-            return store.state.plotSelections.barchart.filters
-        })
-        watch(filterSelections, updateChart, {onTrigger: event => console.log(event)})
+        };
+
+        const filterSelections = computed(() => store.state.plotSelections.barchart.filters);
+        watch(filterSelections, updateChart, {onTrigger: event => console.log(event)});
+
+        const showNoDataMessage = computed(() => {
+            return chartData.value.datasets.length == 0
+        });
 
         onMounted(() => {
-            updateChart()
+            updateChart();
+            updateChartOptions();
         });
+
+        const hideAllErrorBars = () => {
+            displayErrorBars.value = false;
+        };
+
+        const showAllErrorBars = () => {
+            console.log("showing error bars")
+            displayErrorBars.value = true;
+        };
 
         const chartOptions = ref();
         const updateChartOptions = () => {
-            console.log("updating chart options from computed")
-            console.log("indicator metadata", indicatorMetadata.value)
             const baseChartOptions = {
                 plugins: {
                     tooltip: {
@@ -122,11 +118,12 @@ export default defineComponent({
                 maintainAspectRatio: false
             }
 
+            console.log("props.showErrorBars", props.showErrorBars)
             if (props.showErrorBars) {
 
-                const errorLines = getErrorLineAnnotations(chartData.value);
+                const errorLines = getErrorLineAnnotations(chartData.value, displayErrorBars.value);
 
-                return {
+                chartOptions.value = {
                     ...baseChartOptions,
                     plugins: {
                         ...baseChartOptions.plugins,
@@ -151,19 +148,21 @@ export default defineComponent({
                             }
                         }
                     },
-                    // animation: {
-                    //     onComplete: this.showAllErrorBars
-                    // }
+                    animation: {
+                        onComplete: showAllErrorBars
+                    }
                 }
             } else {
-                console.log(baseChartOptions.plugins.tooltip.callbacks)
-                return baseChartOptions
+                chartOptions.value = baseChartOptions
             }
         };
 
+        watch(displayErrorBars, updateChartOptions);
+
         return {
             chartData,
-            chartOptions
+            chartOptions,
+            showNoDataMessage
         }
     },
     components: {

@@ -17,7 +17,7 @@
             <choropleth class="col-md-9" v-if="selectedPlot === 'choropleth'"/>
             <bubble class="col-md-9" v-if="selectedPlot === 'bubble'"/>
             <barchart class="col-md-9" v-if="selectedPlot === 'barchart'"
-                :show-error-bars="false"/>
+                :show-error-bars="true"/>
         </div>
     </div>
 </template>

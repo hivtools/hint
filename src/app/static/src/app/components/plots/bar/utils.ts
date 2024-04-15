@@ -57,25 +57,19 @@ export const plotDataToChartData = function (plotData: PlotData,
             map[opt.id] = opt.label;
             return map;
         }, {});
-    console.log("x axis selections are", xAxisSelections)
-    console.log("area Id to level map", areaIdToLevelMap)
-    const xAxisSelectionsMap: Dict<string> = xAxisSelections.reduce(
-        (map: Dict<string>, opt: FilterOption) => {
-            if (xAxisId === "area_id") {
-                // If it is x axis filtered on area we also want to include the area level
-                // in the filtering of the x axis
-                const level = areaIdToLevelMap[opt.id];
-                if (level.toString() === areaLevel) {
-                    map[opt.id] = opt.label;
-                }
-            } else {
-                map[opt.id] = opt.label;
-            }
-            return map;
-        }, {});
-    const xAxisLabels = Object.values(xAxisSelectionsMap)
-    const xAxisOrdering = xAxisOptions.map(opt => opt.label)
-    console.log("xAxisLabels", xAxisLabels)
+    const visibleXAxis = xAxisSelections.filter(opt => {
+        if (xAxisId === "area_id") {
+            // If it is x-axis filtered on area we also want to include the area level
+            // in the filtering of the x-axis
+            const level = areaIdToLevelMap[opt.id];
+            return level.toString() === areaLevel
+        } else {
+            return true
+        }
+    });
+    const xAxisOrdering = xAxisOptions.map(opt => opt.id)
+    visibleXAxis.sort((a, b) => xAxisOrdering.indexOf(a.id) - xAxisOrdering.indexOf(b.id));
+    const orderedXAxisIds = visibleXAxis.map(opt => opt.id);
 
     let maxValuePlusError = 0;
     const datasets: any[] = [];
@@ -87,8 +81,6 @@ export const plotDataToChartData = function (plotData: PlotData,
         const datasetLabel = disaggregateSelectionsMap[datasetValue];
 
         const xAxisValue = row[xAxisId];
-        console.log("xAxisValue", xAxisValue);
-        const xAxisLabel = xAxisSelectionsMap[xAxisValue];
 
         let dataset = datasets.filter(d => (d as any).label == datasetLabel)[0] || null;
         if (!dataset) {
@@ -109,32 +101,30 @@ export const plotDataToChartData = function (plotData: PlotData,
         }
 
         // Ensure bars displayed on x-axis in same order as we show them in the dropdown
-        const labelIdx = xAxisOrdering.indexOf(xAxisLabel.toString());
-        console.log("labelIdx", labelIdx)
-        console.log("dataset.data.length", dataset.data.length)
-        while (dataset.data.length <= labelIdx) {
+        const valueIdx = orderedXAxisIds.indexOf(xAxisValue);
+        while (dataset.data.length <= valueIdx) {
             dataset.data.push(0);
         }
-        dataset.data[labelIdx] = value;
-        // dataset.data.push(value);
+        dataset.data[valueIdx] = value;
 
         if (row[indicatorMetadata.error_high_column] > maxValuePlusError) {
             maxValuePlusError = row[indicatorMetadata.error_high_column]
         }
 
-        dataset.errorBars[xAxisLabel] = {};
-        dataset.errorBars[xAxisLabel].plus = row[indicatorMetadata.error_high_column];
-        dataset.errorBars[xAxisLabel].minus = row[indicatorMetadata.error_low_column];
+        dataset.errorBars[xAxisValue] = {};
+        dataset.errorBars[xAxisValue].plus = row[indicatorMetadata.error_high_column];
+        dataset.errorBars[xAxisValue].minus = row[indicatorMetadata.error_low_column];
     }
 
     return {
         maxValuePlusError,
-        labels: xAxisLabels,
+        labels: visibleXAxis.map(opt => opt.label),
         datasets
     }
 };
 
-export const getErrorLineAnnotations = function(chartData: BarChartData): AnnotationOptions[] {
+export const getErrorLineAnnotations = function(chartData: BarChartData,
+                                                displayErrorBars: boolean): AnnotationOptions[] {
     // amount of padding chart js uses by default for each bar
     const barPercentage = 0.8;
 
@@ -190,7 +180,7 @@ export const getErrorLineAnnotations = function(chartData: BarChartData): Annota
                     barMidPoint,
                     errorBarData[xLabel].minus,
                     errorBarData[xLabel].plus,
-                    true
+                    displayErrorBars
                 ));
                 errorLines.push(getErrorLineConfig(
                     label,
@@ -198,7 +188,7 @@ export const getErrorLineAnnotations = function(chartData: BarChartData): Annota
                     barMidPoint + errorBarWidth,
                     errorBarData[xLabel].plus,
                     errorBarData[xLabel].plus,
-                    true
+                    displayErrorBars
                 ));
                 errorLines.push(getErrorLineConfig(
                     label,
@@ -206,7 +196,7 @@ export const getErrorLineAnnotations = function(chartData: BarChartData): Annota
                     barMidPoint + errorBarWidth,
                     errorBarData[xLabel].minus,
                     errorBarData[xLabel].minus,
-                    true
+                    displayErrorBars
                 ));
             }
         })
