@@ -1,0 +1,23 @@
+on:
+    push:
+        branches:
+            - master
+    pull_request:
+        branches:
+            - "*"
+
+name: Test Back End
+
+jobs:
+    test:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Make base image
+              run: github-action-scripts/make-base-image.sh
+
+            - name: Test back end
+              run: github-action-scripts/test-back-end.sh
+              env:
+                CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
