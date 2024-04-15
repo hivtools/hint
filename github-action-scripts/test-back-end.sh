@@ -12,7 +12,7 @@ trap cleardocker EXIT
 docker build --tag=hint-test \
   --build-arg GIT_ID=$GIT_ID \
   --build-arg CODECOV_TOKEN=$CODECOV_TOKEN \
-  -f $HERE/test.dockerfile \
+  -f $HERE/test-back-end.dockerfile \
   .
 
 $HERE/../scripts/run-dependencies.sh
