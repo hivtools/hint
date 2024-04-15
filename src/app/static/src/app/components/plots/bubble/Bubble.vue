@@ -120,10 +120,6 @@ const updateMapColours = () => {
 const updateSizeScales = () => {
     sizeIndicator.value = getSizeIndicator();
     sizeScale.value = sizeScales.value[sizeIndicator.value];
-    if (!sizeScale.value) {
-        sizeScale.value = initialiseScaleFromMetadata(sizeIndicatorMetadata.value);
-        updateOutputSizeScale(sizeScale.value);
-    }
     sizeRange.value = getIndicatorRange(sizeIndicatorMetadata.value, sizeScale.value, plotData.value);
 }
 

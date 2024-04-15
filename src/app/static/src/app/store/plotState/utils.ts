@@ -18,6 +18,11 @@ export const commitInitialScaleSelections = (
             payload: newScaleSettings},
         { root: true }
     );
+    commit({
+            type: `plotState/${PlotStateMutations.setOutputSizeScales}`,
+            payload: newScaleSettings},
+        { root: true }
+    );
 };
 
 const initialiseScaleFromMetadata = (meta: CalibrateMetadataResponse["indicators"][0]): ScaleSettings => {
