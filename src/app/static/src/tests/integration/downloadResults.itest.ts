@@ -52,10 +52,10 @@ describe(`download results actions integration`, () => {
 
         const state = {summary: {downloadId: 123}}
 
-        actions.poll({commit, dispatch, state, rootState: root} as any, DOWNLOAD_TYPE.SUMMARY, 100);
+        actions.poll({commit, dispatch, state, rootState: root} as any, DOWNLOAD_TYPE.SUMMARY, 400);
         // have to wait slightly longer for async functions to finish after setInterval is ran
         await vi.waitUntil(() => commit.mock.calls.length >= 2, {
-            interval: 100,
+            interval: 400,
             timeout: 2000
         })
         expect(commit.mock.calls[0][0]["type"]).toBe("PollingStatusStarted");
@@ -135,9 +135,9 @@ describe(`download results actions integration`, () => {
 
         const state = {spectrum: {downloadId: 123}}
 
-        actions.poll({commit, dispatch, state, rootState: root} as any, DOWNLOAD_TYPE.SPECTRUM, 100);
+        actions.poll({commit, dispatch, state, rootState: root} as any, DOWNLOAD_TYPE.SPECTRUM, 400);
         await vi.waitUntil(() => commit.mock.calls.length >= 2, {
-            interval: 100,
+            interval: 400,
             timeout: 2000
         })
         expect(commit.mock.calls[0][0]["type"]).toBe("PollingStatusStarted");
@@ -175,9 +175,9 @@ describe(`download results actions integration`, () => {
 
         const state = {coarseOutput: {downloadId: 123}}
 
-        actions.poll({commit, dispatch, state, rootState: root} as any, DOWNLOAD_TYPE.COARSE, 100);
+        actions.poll({commit, dispatch, state, rootState: root} as any, DOWNLOAD_TYPE.COARSE, 400);
         await vi.waitUntil(() => commit.mock.calls.length >= 2, {
-            interval: 100,
+            interval: 400,
             timeout: 2000
         });
         expect(commit.mock.calls[0][0]["type"]).toBe("PollingStatusStarted");
@@ -215,9 +215,9 @@ describe(`download results actions integration`, () => {
 
         const state = {comparison: {downloadId: 123}}
 
-        actions.poll({commit, dispatch, state, rootState: root} as any, DOWNLOAD_TYPE.COMPARISON, 100);
+        actions.poll({commit, dispatch, state, rootState: root} as any, DOWNLOAD_TYPE.COMPARISON, 400);
         await vi.waitUntil(() => commit.mock.calls.length >= 2, {
-            interval: 100,
+            interval: 400,
             timeout: 2000
         });
         expect(commit.mock.calls[0][0]["type"]).toBe("PollingStatusStarted");
@@ -238,9 +238,9 @@ describe(`download results actions integration`, () => {
 
         const state = {comparison: {downloadId: ""}}
 
-        actions.poll({commit, dispatch, state, rootState: root} as any, DOWNLOAD_TYPE.COMPARISON, 100);
+        actions.poll({commit, dispatch, state, rootState: root} as any, DOWNLOAD_TYPE.COMPARISON, 400);
         await vi.waitUntil(() => commit.mock.calls.length >= 2, {
-            interval: 100,
+            interval: 400,
             timeout: 2000
         });
         expect(commit.mock.calls[0][0]["type"]).toBe("PollingStatusStarted");

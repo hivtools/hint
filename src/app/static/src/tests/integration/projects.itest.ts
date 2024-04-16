@@ -69,9 +69,9 @@ describe("Projects actions", () => {
         state.currentProject = createdProject;
         state.currentVersion = createdProject.versions[0];
 
-        actions.queueVersionStateUpload({commit, rootState, state} as any, 100);
+        actions.queueVersionStateUpload({commit, rootState, state} as any, 400);
         await vi.waitUntil(() => commit.mock.calls.length >= 11, {
-            interval: 100,
+            interval: 400,
             timeout: 2000
         });
         expect(commit.mock.calls[5][0]["type"]).toBe(ProjectsMutations.ClearQueuedVersionUpload);
@@ -98,7 +98,7 @@ describe("Projects actions", () => {
 
         actions.newVersion({commit, rootState, state} as any, "version note");
         await vi.waitUntil(() => commit.mock.calls.length >= 9, {
-            interval: 100,
+            interval: 400,
             timeout: 2000
         });
         expect(commit.mock.calls[5][0]["type"]).toBe(ProjectsMutations.SetVersionUploadInProgress);
@@ -124,19 +124,19 @@ describe("Projects actions", () => {
         state.currentProject = createdProject;
         state.currentVersion = createdProject.versions[0];
 
-        await actions.queueVersionStateUpload({commit, rootState, state} as any, 100);
+        await actions.queueVersionStateUpload({commit, rootState, state} as any, 400);
         await vi.waitUntil(() => commit.mock.calls.some(call => {
             return call[0]["type"] === ProjectsMutations.SetVersionUploadInProgress &&
                 call[0]["payload"] === false;
         }), {
-            interval: 100,
+            interval: 400,
             timeout: 2000
         });
         const projectId = createdProject.id;
         const versionId = createdProject.versions[0].id;
         actions.loadVersion({commit, dispatch, state, rootState} as any, {projectId: projectId, versionId});
         await vi.waitUntil(() => dispatch.mock.calls.at(1)?.at(0) === "load/loadFromVersion", {
-            interval: 100,
+            interval: 400,
             timeout: 2000
         })
         const fetchedVersion = dispatch.mock.calls[1][1];

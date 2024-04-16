@@ -45,9 +45,9 @@ describe("load actions", () => {
         const dispatch = vi.fn()
         const state = {rehydrateId: "1"}
 
-        actions.pollRehydrate({commit, dispatch, state, rootState} as any, 100);
+        actions.pollRehydrate({commit, dispatch, state, rootState} as any, 400);
         await vi.waitUntil(() => commit.mock.calls.length >= 2, {
-            interval: 100,
+            interval: 400,
             timeout: 2000
         });
         expect(commit.mock.calls[0][0].type).toBe("RehydratePollingStarted");
