@@ -1,0 +1,21 @@
+on:
+    push:
+        branches:
+            - master
+    pull_request:
+        branches:
+            - "*"
+
+name: Test Browser E2E
+
+jobs:
+    test:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Make base image
+              run: github-action-scripts/make-base-image.sh
+
+            - name: Test browser e2e
+              run: github-action-scripts/test-browser-e2e.sh
