@@ -1,0 +1,7 @@
+name: Make Shared Environment
+
+runs:
+  using: "composite"
+  steps:
+    - name: Make base image
+      run: github-action-scripts/make-base-image.sh
