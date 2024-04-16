@@ -1,0 +1,21 @@
+on:
+    push:
+        branches:
+            - master
+    pull_request:
+        branches:
+            - "*"
+
+name: Test ADR Front End
+
+jobs:
+    test:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Make base image
+              run: github-action-scripts/make-base-image.sh
+
+            - name: Test front end
+              run: github-action-scripts/test-adr-front-end.sh
