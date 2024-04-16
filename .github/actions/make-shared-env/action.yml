@@ -5,3 +5,4 @@ runs:
   steps:
     - name: Make base image
       run: github-action-scripts/make-base-image.sh
+      shell: bash
