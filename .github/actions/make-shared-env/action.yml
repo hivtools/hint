@@ -14,16 +14,12 @@ runs:
 
     - name: Cache npm deps
       uses: actions/cache@v3
-      id: npm-cache # use this to check for `cache-hit` ==> if: steps.npm-cache.outputs.cache-hit != 'true'
+      id: npm-cache
       with:
         path: ${{ steps.npm-cache-dir.outputs.dir }}
         key: node-${{ hashFiles('**/package-lock.json') }}
         restore-keys: |
           node-
-
-    - name: Does cache exist?
-      run: echo "${{ steps.npm-cache.outputs.cache-hit }}"
-      shell: bash
 
     - uses: actions/setup-java@v4
       with:
@@ -46,4 +42,8 @@ runs:
 
     - name: Compile kotlin
       run: src/gradlew -p src app:compileKotlin
+      shell: bash
+
+    - name: Common env vars
+      run: github-action-scripts/common
       shell: bash

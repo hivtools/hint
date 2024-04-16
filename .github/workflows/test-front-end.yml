@@ -17,7 +17,21 @@ jobs:
             - name: Make shared image
               uses: ./.github/actions/make-shared-env
 
-            # - name: Test front end
-            #   run: github-action-scripts/test-front-end.sh
-            #   env:
-            #     CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+            - name: Run deps for integration tests
+              run: github-action-scripts/run-dependencies-for-integration-tests.sh
+
+            - name: Lint
+              run: npm run lint --prefix=src/app/static -- --quiet
+
+            - name: Unit tests
+              run: npm run test --prefix=src/app/static
+
+            - name: Integration tests
+              run: npm run integration-test-docker --prefix=src/app/static
+
+            - name: CodeCov
+              run: |
+                codecov -p . -f src/app/static/coverage/unit/*.json
+                codecov -p . -f src/app/static/coverage/integration/*.json
+              env:
+                CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
