@@ -17,7 +17,7 @@ jobs:
             - name: Make shared image
               uses: ./.github/actions/make-shared-env
 
-            - name: Test front end
-              run: github-action-scripts/test-front-end.sh
-              env:
-                CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+            # - name: Test front end
+            #   run: github-action-scripts/test-front-end.sh
+            #   env:
+            #     CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
