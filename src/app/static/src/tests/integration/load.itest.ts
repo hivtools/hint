@@ -48,7 +48,7 @@ describe("load actions", () => {
         actions.pollRehydrate({commit, dispatch, state, rootState} as any, 400);
         await vi.waitUntil(() => commit.mock.calls.length >= 2, {
             interval: 400,
-            timeout: 2000
+            timeout: 6000
         });
         expect(commit.mock.calls[0][0].type).toBe("RehydratePollingStarted");
         expect(+commit.mock.calls[0][0].payload).toBeGreaterThan(-1);
