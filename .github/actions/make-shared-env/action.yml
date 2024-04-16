@@ -41,7 +41,7 @@ runs:
 
     - name: Install npm deps from cache
       if: steps.npm-cache.outputs.cache-hit == 'true'
-      run: npm ci --cache ${{ steps.npm-cache-dir.outputs.dir }} --prefer-offline --silent --prefix=src/app/static
+      run: npm ci --cache ${{ steps.npm-cache-dir.outputs.dir }} --prefer-offline --silent --no-audit --prefix=src/app/static
       shell: bash
 
     - name: Compile kotlin
