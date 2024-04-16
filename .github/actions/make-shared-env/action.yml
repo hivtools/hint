@@ -35,12 +35,12 @@ runs:
       shell: bash
 
     - name: Install npm deps
-      if: ${{ steps.npm-cache.outputs.cache-hit != "true" }}
+      if: steps.npm-cache.outputs.cache-hit != 'true'
       run: npm ci --silent --prefix=src/app/static
       shell: bash
 
     - name: Install npm deps from cache
-      if: ${{ steps.npm-cache.outputs.cache-hit == "true" }}
+      if: steps.npm-cache.outputs.cache-hit == 'true'
       run: npm ci --cache ${{ steps.npm-cache-dir.outputs.dir }} --prefer-offline --silent --prefix=src/app/static
       shell: bash
 
