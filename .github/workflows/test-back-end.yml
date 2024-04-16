@@ -14,7 +14,8 @@ jobs:
         steps:
             - uses: actions/checkout@v4
 
-            - uses: mrc-ide/hint/.github/workflows/make-shared-env.yml@mrc-5246
+            - name: Make shared image
+              uses: ./.github/actions/make-shared-env
 
             - name: Test back end
               run: github-action-scripts/test-back-end.sh

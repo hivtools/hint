@@ -20,7 +20,8 @@ jobs:
                 username: ${{ secrets.DOCKERHUB_USERNAME }}
                 password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-            - uses: mrc-ide/hint/.github/workflows/make-shared-env.yml@mrc-5246
+            - name: Make shared image
+              uses: ./.github/actions/make-shared-env
 
             - name: Build
               run: github-action-scripts/build.sh
