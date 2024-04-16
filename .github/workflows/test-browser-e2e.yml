@@ -14,8 +14,7 @@ jobs:
         steps:
             - uses: actions/checkout@v4
 
-            - name: Make base image
-              run: github-action-scripts/make-base-image.sh
+            - uses: mrc-ide/hint/.github/workflows/make-shared-env.yml@mrc-5246
 
             - name: Test browser e2e
               run: github-action-scripts/test-browser-e2e.sh
