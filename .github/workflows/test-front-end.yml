@@ -12,10 +12,7 @@ jobs:
     test:
         runs-on: ubuntu-latest
         steps:
-            - uses: actions/checkout@v4
-
-            - name: Make base image
-              run: github-action-scripts/make-base-image.sh
+            - uses: ./.github/actions/make-shared-env.yml
 
             - name: Test front end
               run: github-action-scripts/test-front-end.sh
