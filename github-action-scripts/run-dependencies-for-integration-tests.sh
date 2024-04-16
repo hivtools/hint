@@ -21,6 +21,6 @@ $HERE/../scripts/run-dependencies.sh
 
 nohup $HERE/../src/gradlew -p $HERE/../src app:bootrun
 
-sleep 30
+sleep 60
 
 curl http://localhost:8080
