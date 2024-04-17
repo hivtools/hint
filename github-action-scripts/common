@@ -26,6 +26,10 @@ GIT_BRANCH=$(echo $GIT_BRANCH | sed 's;/;-;g')
 BUILDKITE_DOCKER_AUTH_PATH=/var/lib/buildkite-agent/.docker/config.json
 
 # Export env vars needed for running test dependencies
+echo "\n\n\n\nGITHUB_SHA\n\n\n\n"
+echo $GITHUB_SHA
+echo "\n\n\n\nGIT_ID\n\n\n\n"
+echo $GIT_ID
 export ORG=mrcide
 export GIT_ID=$GIT_ID
 export GIT_BRANCH=$GIT_BRANCH
