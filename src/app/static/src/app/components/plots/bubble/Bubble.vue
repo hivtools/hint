@@ -32,7 +32,6 @@ import { LMap, LGeoJson } from "@vue-leaflet/vue-leaflet";
 import { Feature } from "geojson";
 import {
     getIndicatorMetadata,
-    initialiseScaleFromMetadata,
     ScaleLevels,
 } from "../utils";
 import ResetMap from "../ResetMap.vue";
@@ -46,15 +45,12 @@ import {
 import {BubbleIndicatorValuesDict, NumericRange} from "../../../types";
 import {ChoroplethIndicatorMetadata} from "../../../generated";
 import { ScaleSettings } from "../../../store/plotState/plotState";
-import {useUpdateScale} from "../useUpdateScale";
 import SizeLegend from "@/app/components/plots/bubble/SizeLegend.vue";
 import {circleMarker, CircleMarker} from "leaflet";
 import MapEmptyFeature from "../MapEmptyFeature.vue";
 import {getFeatureData, tooltipContent} from "./utils";
 
 const store = useStore<RootState>();
-
-const {updateOutputColourScale} = useUpdateScale();
 
 const plotData = computed<PlotData>(() => store.state.plotData.bubble);
 const getColourIndicator = () => {
@@ -108,10 +104,6 @@ const updateBubbleSizes = () => {
 const updateMapColours = () => {
     colourIndicator.value = getColourIndicator();
     colourScale.value = colourScales.value[colourIndicator.value];
-    if (!colourScale.value) {
-        colourScale.value = initialiseScaleFromMetadata(colourIndicatorMetadata.value);
-        updateOutputColourScale(colourScale.value);
-    }
     colourRange.value = getIndicatorRange(colourIndicatorMetadata.value, colourScale.value, plotData.value);
     colourScaleLevels.value = getColourScaleLevels(colourIndicatorMetadata.value, colourRange.value);
     updateFeatureData();
