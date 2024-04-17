@@ -7,6 +7,7 @@ import {ControlSelection} from "../../../store/plotSelections/plotSelections";
 import {Dict} from "../../../types";
 import {Store} from "vuex";
 import {DataExplorationState} from "../../../store/dataExploration/dataExploration";
+import {Ref} from "vue";
 
 export type BarchartIndicatorMetadata = BarchartMetadata["indicators"][0];
 export interface BarChartData extends ChartData {
@@ -69,7 +70,7 @@ export const plotDataToChartData = function (plotData: PlotData,
     });
     const xAxisOrdering = xAxisOptions.map(opt => opt.id)
     visibleXAxis.sort((a, b) => xAxisOrdering.indexOf(a.id) - xAxisOrdering.indexOf(b.id));
-    const orderedXAxisIds = visibleXAxis.map(opt => opt.id);
+    const orderedXAxisLabels = visibleXAxis.map(opt => opt.label);
 
     let maxValuePlusError = 0;
     const datasets: any[] = [];
@@ -81,6 +82,7 @@ export const plotDataToChartData = function (plotData: PlotData,
         const datasetLabel = disaggregateSelectionsMap[datasetValue];
 
         const xAxisValue = row[xAxisId];
+        const xAxisLabel = visibleXAxis.find(opt => opt.id == xAxisValue)?.label || "";
 
         let dataset = datasets.filter(d => (d as any).label == datasetLabel)[0] || null;
         if (!dataset) {
@@ -101,35 +103,36 @@ export const plotDataToChartData = function (plotData: PlotData,
         }
 
         // Ensure bars displayed on x-axis in same order as we show them in the dropdown
-        const valueIdx = orderedXAxisIds.indexOf(xAxisValue);
-        while (dataset.data.length <= valueIdx) {
+        const labelIdx = orderedXAxisLabels.indexOf(xAxisLabel);
+        while (dataset.data.length <= labelIdx) {
             dataset.data.push(0);
         }
-        dataset.data[valueIdx] = value;
+        dataset.data[labelIdx] = value;
 
         if (row[indicatorMetadata.error_high_column] > maxValuePlusError) {
             maxValuePlusError = row[indicatorMetadata.error_high_column]
         }
 
-        dataset.errorBars[xAxisValue] = {};
-        dataset.errorBars[xAxisValue].plus = row[indicatorMetadata.error_high_column];
-        dataset.errorBars[xAxisValue].minus = row[indicatorMetadata.error_low_column];
+        dataset.errorBars[xAxisLabel] = {};
+        dataset.errorBars[xAxisLabel].plus = row[indicatorMetadata.error_high_column];
+        dataset.errorBars[xAxisLabel].minus = row[indicatorMetadata.error_low_column];
     }
 
     return {
         maxValuePlusError,
-        labels: visibleXAxis.map(opt => opt.label),
+        labels: orderedXAxisLabels,
         datasets
     }
 };
 
 export const getErrorLineAnnotations = function(chartData: BarChartData,
-                                                displayErrorBars: boolean): AnnotationOptions[] {
+                                                displayErrorBars: boolean,
+                                                showLabelErrorBars: boolean[]): AnnotationOptions[] {
+    console.log("building error line annoatations")
     // amount of padding chart js uses by default for each bar
     const barPercentage = 0.8;
 
     const datasets = chartData.datasets as any[];
-    const showLabelErrorBars = datasets.map(() => true);
     const errorLines: AnnotationOptions[] = [];
 
     // the errorBars need to coordinate with what bar charts are visible

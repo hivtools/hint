@@ -21,10 +21,10 @@ import {
     plotDataToChartData,
     BarChartData,
     getErrorLineAnnotations,
-    buildTooltipCallback, BarchartIndicatorMetadata
+    buildTooltipCallback,
+    BarchartIndicatorMetadata
 } from "./utils";
 import {formatOutput} from "../utils";
-import {ChoroplethIndicatorMetadata, FilterOption} from "../../../generated";
 ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, annotationPlugin);
 
 export default defineComponent({
@@ -50,6 +50,7 @@ export default defineComponent({
         const displayErrorBars = ref<boolean>(false);
 
         const updateChart = () => {
+            hideAllErrorBars();
             indicatorMetadata.value = store.getters["modelCalibrate/barchartIndicatorMetadata"];
             const disaggregateBy = controlSelectionFromId("barchart", "disagg_by");
             const xAxis = controlSelectionFromId("barchart", "x_axis");
@@ -63,12 +64,12 @@ export default defineComponent({
             const xAxisSelections = filterSelectionFromId("barchart", xAxis.id)
             const xAxisOptions = store.state.modelCalibrate.metadata!.filterTypes.find(f => f.id === xAxis!.id)!.options
             if (disaggregateId && xAxisId && areaLevel && plotData.value) {
-                hideAllErrorBars();
                 chartData.value = plotDataToChartData(plotData.value, indicatorMetadata.value,
                         disaggregateId, disaggregateSelections,
                         xAxisId, xAxisSelections, xAxisOptions,
                         areaLevel, areaIdToLevelMap);
             }
+            showLabelErrorBars.value = chartData.value.datasets.map(() => true);
         };
 
         const filterSelections = computed(() => store.state.plotSelections.barchart.filters);
@@ -88,12 +89,39 @@ export default defineComponent({
         };
 
         const showAllErrorBars = () => {
-            console.log("showing error bars")
             displayErrorBars.value = true;
         };
 
+        const showLabelErrorBars = ref<boolean[]>(chartData.value.datasets.map(() => true));
+        /*
+            We need to pass a customLegendClick event into chartOptions so
+            that our state can update when a user clicks on the legend and
+            hides some bars. This is required to coordinate the chart with
+            the error bars.
+        */
+        const customLegendClick = (e: Event, legendItem: any, legend: any) => {
+            hideAllErrorBars();
+            const index = legendItem.datasetIndex;
+            const ci = legend.chart;
+            const isDatasetVisible = ci.isDatasetVisible(index);
+            showLabelErrorBars.value[index] = !isDatasetVisible;
+            legendItem.hidden = isDatasetVisible;
+            if (isDatasetVisible) {
+                setTimeout(() => {
+                    ci.hide(index);
+                }, 50);
+            } else {
+                setTimeout(() => {
+                    ci.show(index);
+                }, 50);
+            }
+            updateChartOptions();
+        };
+
+
         const chartOptions = ref();
         const updateChartOptions = () => {
+            console.log("updating chart options")
             const baseChartOptions = {
                 plugins: {
                     tooltip: {
@@ -118,10 +146,10 @@ export default defineComponent({
                 maintainAspectRatio: false
             }
 
-            console.log("props.showErrorBars", props.showErrorBars)
             if (props.showErrorBars) {
 
-                const errorLines = getErrorLineAnnotations(chartData.value, displayErrorBars.value);
+                const errorLines = getErrorLineAnnotations(chartData.value, displayErrorBars.value,
+                        showLabelErrorBars.value);
 
                 chartOptions.value = {
                     ...baseChartOptions,
@@ -130,9 +158,9 @@ export default defineComponent({
                         annotation: {
                             annotations: errorLines
                         },
-                        // legend: {
-                        //     onClick: this.customLegendClick
-                        // }
+                        legend: {
+                            onClick: customLegendClick
+                        }
                     },
                     scales: {
                         y: {
