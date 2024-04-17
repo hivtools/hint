@@ -17,5 +17,17 @@ jobs:
             - name: Make shared image
               uses: ./.github/actions/make-shared-env
 
+            - name: Run deps
+              run: scripts/run-dependencies.sh
+
+            - name: Start Kotlin server
+              run: github-action-scripts/run-kotlin-server.sh
+
+            - name: Install playwright et al
+              run: |
+                npm install @playwright/test@1.35.1 --prefix=src/app/static
+                npx playwright install chromium
+                npx playwright install-deps chromium
+
             - name: Test browser e2e
-              run: github-action-scripts/test-browser-e2e.sh
+              run: npm run browser-test --prefix=src/app/static
