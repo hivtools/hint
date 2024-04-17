@@ -29,7 +29,7 @@ jobs:
               run: src/gradlew -p src :app:bootDistTar
 
             - name: Build docker image
-              run: docker build -f /hint/Dockerfile --tag "${CI_ORG}/hint:${CI_SHA}" ..
+              run: docker build -f ./Dockerfile --tag "${CI_ORG}/hint:${CI_SHA}" src
 
             - name: Push image
               run: |
