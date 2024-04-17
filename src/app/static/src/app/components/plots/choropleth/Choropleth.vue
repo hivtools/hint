@@ -29,8 +29,8 @@ import { LMap, LGeoJson } from "@vue-leaflet/vue-leaflet";
 import { Feature } from "geojson";
 import {
     getVisibleFeatures,
-    getColourRange,
-    getScaleLevels,
+    getIndicatorRange,
+    getColourScaleLevels,
     debounce_leading,
     getIndicatorMetadata,
     ScaleLevels
@@ -79,9 +79,9 @@ const colourScales = computed(() => {
 });
 
 const updateMapColours = () => {
-    selectedScale.value = colourScales[selectedIndicator.value];
-    colourRange.value = getColourRange(indicatorMetadata.value, selectedScale.value, plotData.value);
-    scaleLevels.value = getScaleLevels(indicatorMetadata.value, colourRange.value);
+    selectedScale.value = colourScales.value[selectedIndicator.value];
+    colourRange.value = getIndicatorRange(indicatorMetadata.value, selectedScale.value, plotData.value);
+    scaleLevels.value = getColourScaleLevels(indicatorMetadata.value, colourRange.value);
     featureData.value = getFeatureData(
         plotData.value,
         indicatorMetadata.value,
