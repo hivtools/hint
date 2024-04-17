@@ -13,8 +13,6 @@
     "browser-test": "npx playwright test",
     "integration-test": "vitest --config ./test-integration-configs/integration.ts --run --coverage",
     "adr-integration-test": "vitest --config ./test-integration-configs/adr-integration.ts --run",
-    "integration-test-docker": "vitest --config ./test-integration-configs/docker-integration.ts --run",
-    "adr-integration-test-docker": "vitest --config ./test-integration-configs/adr-docker-integration.ts --run",
     "lint": "npx eslint src --ext .js,.jsx,.ts,.tsx,vue"
   },
   "author": "",
