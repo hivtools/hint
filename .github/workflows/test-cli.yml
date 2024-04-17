@@ -31,7 +31,7 @@ jobs:
 
             - name: Build docker image
               run: |
-                rm /etc/hint/config.properties
+                rm -f /etc/hint/config.properties
                 src/gradlew -p src :userCLI:docker -i -Pdocker_version=$GIT_ID
             
             - name: Push image
