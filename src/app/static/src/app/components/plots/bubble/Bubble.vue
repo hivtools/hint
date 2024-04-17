@@ -13,12 +13,10 @@
                 <reset-map @reset-view="updateBounds"></reset-map>
                 <map-legend :indicator-metadata="colourIndicatorMetadata"
                             :scale-levels="colourScaleLevels"
-                            :selected-scale="colourScale"
-                            @update:selected-scale="updateBubbleColours"></map-legend>
+                            :selected-scale="colourScale"></map-legend>
                 <size-legend :indicator-metadata="sizeIndicatorMetadata"
                              :indicator-range="sizeRange"
-                             :selected-size-scale="sizeScale"
-                             @update:selected-scale="updateBubbleSizes"></size-legend>
+                             :selected-size-scale="sizeScale"></size-legend>
             </template>
         </l-map>
     </div>
@@ -33,7 +31,9 @@ import {PlotData} from "../../../store/plotData/plotData";
 import { LMap, LGeoJson } from "@vue-leaflet/vue-leaflet";
 import { Feature } from "geojson";
 import {
+    getIndicatorMetadata,
     initialiseScaleFromMetadata,
+    ScaleLevels,
 } from "../utils";
 import ResetMap from "../ResetMap.vue";
 import MapLegend from "../MapLegend.vue";
@@ -53,21 +53,41 @@ import MapEmptyFeature from "../MapEmptyFeature.vue";
 import {getFeatureData, tooltipContent} from "./utils";
 
 const store = useStore<RootState>();
-const plotData = computed<PlotData>(() => store.state.plotData.bubble);
 
 const {updateOutputColourScale, updateOutputSizeScale} = useUpdateScale();
-const colourIndicatorMetadata = ref<ChoroplethIndicatorMetadata>(store.getters["modelCalibrate/bubbleColourMetadata"]);
-const sizeIndicatorMetadata = ref<ChoroplethIndicatorMetadata>(store.getters["modelCalibrate/bubbleSizeMetadata"]);
+
+const plotData = computed<PlotData>(() => store.state.plotData.bubble);
+const getColourIndicator = () => {
+    return store.state.plotSelections.bubble.filters.find(f => f.stateFilterId === "colourIndicator")!.selection[0].id
+}
+
+const getSizeIndicator = () => {
+    return store.state.plotSelections.bubble.filters.find(f => f.stateFilterId === "sizeIndicator")!.selection[0].id
+}
+const colourIndicator = ref<string>(getColourIndicator());
+const sizeIndicator = ref<string>(getSizeIndicator());
+const colourIndicatorMetadata = computed<ChoroplethIndicatorMetadata>(() => {
+    return getIndicatorMetadata(store, colourIndicator.value)
+});
+const sizeIndicatorMetadata = computed<ChoroplethIndicatorMetadata>(() => {
+    return  getIndicatorMetadata(store, sizeIndicator.value)
+});
 
 const colourRange = ref<NumericRange | null>(null);
-const colourScaleLevels = ref<any>(null);
+const colourScaleLevels = ref<ScaleLevels[]>([]);
 const colourScale = ref<ScaleSettings | null>(null);
+const colourScales = computed(() => {
+    return store.state.plotState.output.colourScales
+});
 
 const sizeScale = ref<ScaleSettings | null>(null);
 const sizeRange = ref<NumericRange | null>(null);
+const sizeScales = computed(() => {
+    return store.state.plotState.output.sizeScales
+});
 
 const features = store.state.baseline.shape ?
-    store.state.baseline.shape.data.features as Feature[] : [] as Feature[];
+        store.state.baseline.shape.data.features as Feature[] : [] as Feature[];
 const currentFeatures = ref<Feature[]>([]);
 const featureData = ref<BubbleIndicatorValuesDict>({});
 
@@ -76,73 +96,48 @@ const featureRefs = ref<typeof LGeoJson[]>([]);
 
 const updateMap = () => {
     updateFeatures();
-    updateColourScales();
     updateSizeScales();
-    updateFeatureData();
+    updateMapColours();
 };
-// Watch on the plotData only instead of using computed. Here we want to update the colours,
-// the features and the legend. If we use computed this will cause multiple updates
-// 1. When a selection changes it will update immediately
-// 2. After the plotData has been fetched async it will update again
-// This can cause the map to appear to flicker as it updates with old scales
-// then quickly updates after new data has been fetched.
-// Instead manually watch on the plot data changes, and also trigger this when a user changes the
-// scale selection
-watch([plotData], updateMap)
 
 const updateBubbleSizes = () => {
     updateSizeScales();
-    updateFeatureData()
-    updateBounds();
+    updateFeatureData();
 };
 
-const updateBubbleColours = () => {
-    updateColourScales();
-    updateFeatureData();
-}
-
-const updateColourScales = () => {
-    colourIndicatorMetadata.value = store.getters["modelCalibrate/bubbleColourMetadata"];
-    const colourScales = store.state.plotState.output.colourScales;
-    const colourIndicator = store.getters["plotSelections/bubbleColourIndicator"];
-    colourScale.value = colourScales[colourIndicator];
+const updateMapColours = () => {
+    colourIndicator.value = getColourIndicator();
+    colourScale.value = colourScales.value[colourIndicator.value];
     if (!colourScale.value) {
         colourScale.value = initialiseScaleFromMetadata(colourIndicatorMetadata.value);
         updateOutputColourScale(colourScale.value);
     }
     colourRange.value = getIndicatorRange(colourIndicatorMetadata.value, colourScale.value, plotData.value);
     colourScaleLevels.value = getColourScaleLevels(colourIndicatorMetadata.value, colourRange.value);
+    updateFeatureData();
 }
 
 const updateSizeScales = () => {
-    sizeIndicatorMetadata.value = store.getters["modelCalibrate/bubbleSizeMetadata"];
-    const sizeScales = store.state.plotState.output.sizeScales;
-    const sizeIndicator = store.getters["plotSelections/bubbleSizeIndicator"];
-    sizeScale.value = sizeScales[sizeIndicator];
-    if (!sizeScale.value) {
-        sizeScale.value = initialiseScaleFromMetadata(sizeIndicatorMetadata.value);
-        updateOutputSizeScale(sizeScale.value);
-    }
+    sizeIndicator.value = getSizeIndicator();
+    sizeScale.value = sizeScales.value[sizeIndicator.value];
     sizeRange.value = getIndicatorRange(sizeIndicatorMetadata.value, sizeScale.value, plotData.value);
 }
 
 const updateFeatures = () => {
-    colourIndicatorMetadata.value = store.getters["modelCalibrate/bubbleColourMetadata"];
     const selectedLevel = store.state.plotSelections.bubble.filters
-        .find(f => f.stateFilterId === "detail")!.selection;
-    // Don't filter on areas for bubble as we want to always show full map
+            .find(f => f.stateFilterId === "detail")!.selection;
     currentFeatures.value = getVisibleFeatures(features, selectedLevel, null);
 };
 
 const updateFeatureData = () => {
     featureData.value = getFeatureData(
-        plotData.value,
-        sizeIndicatorMetadata.value,
-        colourIndicatorMetadata.value,
-        sizeRange.value ? sizeRange.value : {max: 1, min: 0},
-        colourRange.value ? colourRange.value : {max: 1, min: 0},
-        10,
-        70
+            plotData.value,
+            sizeIndicatorMetadata.value,
+            colourIndicatorMetadata.value,
+            sizeRange.value ? sizeRange.value : {max: 1, min: 0},
+            colourRange.value ? colourRange.value : {max: 1, min: 0},
+            10,
+            70
     );
 };
 
@@ -170,10 +165,10 @@ const buildBubbles = () => {
                 color: getColour(feature),
                 fillColor: getColour(feature),
             }).bindTooltip(tooltipContent(
-                feature,
-                featureData.value,
-                colourIndicatorMetadata.value,
-                sizeIndicatorMetadata.value))
+                    feature,
+                    featureData.value,
+                    colourIndicatorMetadata.value,
+                    sizeIndicatorMetadata.value))
             circlesArray.push(circle)
         })
         circles.value = circlesArray
@@ -218,14 +213,25 @@ const getRadius = (feature: Feature) => {
     return featureData.value[feature.properties!.area_id].radius;
 };
 
+// Watch on the plotData only instead of using computed. Here we want to update the colours,
+// the features and the legend. If we use computed this will cause multiple updates
+// 1. When a selection changes it will update immediately
+// 2. After the plotData has been fetched async it will update again
+// This can cause the map to appear to flicker as it updates with old scales
+// then quickly updates after new data has been fetched.
+// Instead manually watch on the plot data changes, and also trigger this when a user changes the
+// scale selection
+watch(plotData, updateMap)
+watch(colourScales, updateMapColours)
+watch(sizeScales, updateBubbleSizes)
+
 const style = {
     className: "geojson-grey"
 };
 
-
 onMounted(() => {
     updateFeatures();
-    updateColourScales();
+    updateMapColours();
     updateSizeScales();
     updateFeatureData();
 });

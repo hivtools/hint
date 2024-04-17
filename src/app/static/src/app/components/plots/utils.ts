@@ -1,12 +1,23 @@
-import {IndicatorValuesDict, LevelLabel, NumericRange} from "../../types";
+import {NumericRange} from "../../types";
 import {ChoroplethIndicatorMetadata, FilterOption} from "../../generated";
 import * as d3ScaleChromatic from "d3-scale-chromatic";
 import {initialScaleSettings, ScaleSettings, ScaleType} from "../../store/plotState/plotState";
 import {PlotData} from "../../store/plotData/plotData";
 import {Feature} from "geojson";
 import numeral from "numeral";
+import {Store} from "vuex";
+import {RootState} from "../../root";
 
-export const getColourScaleLevels = (indicatorMetadata: ChoroplethIndicatorMetadata, colourRange: NumericRange) => {
+export const getIndicatorMetadata = (store: Store<RootState>, selectedIndicator: string): ChoroplethIndicatorMetadata => {
+    return store.state.modelCalibrate.metadata!.indicators.find(i => i.indicator == selectedIndicator)!
+}
+
+export interface ScaleLevels {
+    label: string
+    style: Partial<CSSStyleDeclaration>
+}
+
+export const getColourScaleLevels = (indicatorMetadata: ChoroplethIndicatorMetadata, colourRange: NumericRange): ScaleLevels[] => {
     if (!indicatorMetadata) {
         return [];
     }
@@ -24,7 +35,8 @@ export const getColourScaleLevels = (indicatorMetadata: ChoroplethIndicatorMetad
         }
         val = formatLegend(val, format, scale)
         return {
-            val, style: {background: colourFunction(valAsProportion)}
+            label: val,
+            style: {background: colourFunction(valAsProportion)}
         }
     });
 };
@@ -68,15 +80,10 @@ const colourFunctionFromName = function (name: string) {
     return result;
 };
 
-export const getVisibleFeatures = function(features: Feature[], selectedLevels: FilterOption[], selectedAreas: FilterOption[] | null) {
+export const getVisibleFeatures = function(features: Feature[], selectedLevels: FilterOption[]) {
     const levels = selectedLevels.map((l: FilterOption) => parseInt(l.id));
-    const areas = selectedAreas?.map((a: FilterOption) => a.id);
     return features.filter((feature: Feature) => {
-        let include = feature.properties && levels.includes(feature.properties["area_level"]);
-        if (areas && feature.properties) {
-            include = include && areas.includes(feature.properties["area_id"]);
-        }
-        return include;
+        return feature.properties && levels.includes(feature.properties["area_level"]);
     });
 };
 
