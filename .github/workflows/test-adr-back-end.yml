@@ -21,4 +21,4 @@ jobs:
               run: scripts/run-dependencies.sh
 
             - name: Test back end (ADR)
-              run: src/gradlew -p src :app:test --tests org.imperial.mrc.hint.integration.adr* --parallel -x app:compileFrontEnd
+              run: src/gradlew -p src :app:test --tests org.imperial.mrc.hint.integration.adr* --parallel -x app:compileFrontEnd -x app:copyAssets
