@@ -32,10 +32,10 @@ jobs:
             - name: Build docker image
               run: |
                 rm -f /etc/hint/config.properties
-                src/gradlew -p src :userCLI:docker -i -Pdocker_version=${CI_SHA}
+                src/gradlew -p src :userCLI:docker -i -Pdocker_version=${CI_SHA:0:7}
             
             - name: Push image
               run: |
-                docker tag "${CI_ORG}/hint-user-cli:${CI_SHA}" "${CI_ORG}/hint-user-cli:${CI_BRANCH}"
-                docker push "${CI_ORG}/hint-user-cli:${CI_SHA}"
+                docker tag "${CI_ORG}/hint-user-cli:${CI_SHA:0:7}" "${CI_ORG}/hint-user-cli:${CI_BRANCH}"
+                docker push "${CI_ORG}/hint-user-cli:${CI_SHA:0:7}"
                 docker push "${CI_ORG}/hint-user-cli:${CI_BRANCH}"

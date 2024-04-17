@@ -23,19 +23,6 @@ runs:
         echo "CI_SHA=${GITHUB_SHA}" >> ${GITHUB_ENV}
         echo "CI_BRANCH=${{ github.ref_name }}" >> ${GITHUB_ENV}
 
-    - name: Test common env vars
-      shell: bash
-      run: |
-        echo "ORG = ${CI_ORG}"
-        echo "GIT_ID = ${CI_SHA}"
-        echo "GIT_BRANCH = ${CI_BRANCH}"
-
-    - name: Show GitHub context
-      env:
-        GITHUB_CONTEXT: ${{ toJson(github) }}
-      run: echo "$GITHUB_CONTEXT"
-      shell: bash
-
     - name: Get npm cache directory
       id: npm-cache-dir
       shell: bash
@@ -53,7 +40,7 @@ runs:
     - uses: actions/setup-java@v4
       with:
         distribution: 'temurin'
-        java-version: '17'
+        java-version: '18'
 
     - name: Install CodeCov
       run: npm install codecov -g
