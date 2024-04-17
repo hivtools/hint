@@ -14,7 +14,6 @@ import org.junit.jupiter.api.Test
 import org.mockito.Mockito.verifyNoInteractions
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import java.util.*
 
 class ErrorReportControllerTests
 {
@@ -53,7 +52,7 @@ class ErrorReportControllerTests
     @Test
     fun `can post error report to teams`()
     {
-        val result = testFlowClient(ResponseEntity.ok("whatever"), Optional.of(1))
+        val result = testFlowClient(ResponseEntity.ok("whatever"), 1)
 
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
 
@@ -65,7 +64,7 @@ class ErrorReportControllerTests
     @Test
     fun `project not cloned when no project active`()
     {
-        val result = testFlowClient(ResponseEntity.ok("whatever"), Optional.empty())
+        val result = testFlowClient(ResponseEntity.ok("whatever"), null)
 
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
 
@@ -86,7 +85,7 @@ class ErrorReportControllerTests
 
         val sut = ErrorReportController(mockFlowClient, mockProjectVersionService, mockProperties)
 
-        val result = sut.postErrorReport(newData, Optional.of(1))
+        val result = sut.postErrorReport(newData, 1)
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
 
         assertThat(result.body).isEqualTo("whatever")
@@ -97,14 +96,14 @@ class ErrorReportControllerTests
     @Test
     fun `can return error response when request is unsuccessful`()
     {
-        val result = testFlowClient(ResponseEntity.badRequest().build(), Optional.of(1))
+        val result = testFlowClient(ResponseEntity.badRequest().build(), 1)
 
         assertThat(result.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
 
         verifyNoInteractions(mockProjectVersionService)
     }
 
-    private fun testFlowClient(response: ResponseEntity<String>, projectId: Optional<Int>): ResponseEntity<String>
+    private fun testFlowClient(response: ResponseEntity<String>, projectId: Int?): ResponseEntity<String>
     {
         val mockFlowClient = mock<FuelFlowClient>
         {
