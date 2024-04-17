@@ -1,12 +1,14 @@
 package org.imperial.mrc.hint.database
 
-import org.assertj.core.api.Assertions.*
+import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.assertj.core.api.AssertionsForClassTypes
 import org.imperial.mrc.hint.db.ProjectRepository
 import org.imperial.mrc.hint.db.VersionRepository
 import org.imperial.mrc.hint.db.tables.Project.PROJECT
 import org.imperial.mrc.hint.db.tables.ProjectVersion.PROJECT_VERSION
 import org.imperial.mrc.hint.exceptions.ProjectException
+import org.imperial.mrc.hint.helpers.TimeAssert
 import org.imperial.mrc.hint.logic.UserLogic
 import org.jooq.DSLContext
 import org.junit.jupiter.api.Test
@@ -306,8 +308,8 @@ class ProjectRepositoryTests
         assertThat(p2.sharedBy).isEqualTo(null)
         assertThat(p2.versions.count()).isEqualTo(1)
         assertThat(p2.versions[0].id).isEqualTo("v2s1")
-        assertThat(toDateTime(p2.versions[0].created)).isCloseTo(ago_3h, within(1, ChronoUnit.MICROS))
-        assertThat(toDateTime(p2.versions[0].updated)).isCloseTo(ago_1h, within(1, ChronoUnit.MICROS))
+        TimeAssert.assertThat(p2.versions[0].created).isSameTime(ago_3h)
+        TimeAssert.assertThat(p2.versions[0].updated).isSameTime(ago_1h)
         assertThat(p2.versions[0].versionNumber).isEqualTo(1)
 
         val p1 = projects[1]
@@ -317,12 +319,12 @@ class ProjectRepositoryTests
         assertThat(p1.note).isEqualTo("test project note")
         assertThat(p1.versions.count()).isEqualTo(2)
         assertThat(p1.versions[0].id).isEqualTo("v1s2")
-        assertThat(toDateTime(p1.versions[0].created)).isCloseTo(ago_2h, within(1, ChronoUnit.MICROS))
-        assertThat(toDateTime(p1.versions[0].updated)).isCloseTo(ago_2h, within(1, ChronoUnit.MICROS))
+        TimeAssert.assertThat(p1.versions[0].created).isSameTime(ago_2h)
+        TimeAssert.assertThat(p1.versions[0].updated).isSameTime(ago_2h)
         assertThat(p1.versions[0].versionNumber).isEqualTo(2)
         assertThat(p1.versions[1].id).isEqualTo("v1s1")
-        assertThat(toDateTime(p1.versions[1].created)).isCloseTo(ago_4h, within(1, ChronoUnit.MICROS))
-        assertThat(toDateTime(p1.versions[1].updated)).isCloseTo(ago_3h, within(1, ChronoUnit.MICROS))
+        TimeAssert.assertThat(p1.versions[1].created).isSameTime(ago_4h)
+        TimeAssert.assertThat(p1.versions[1].updated).isSameTime(ago_3h)
         assertThat(p1.versions[1].versionNumber).isEqualTo(1)
     }
 
