@@ -115,16 +115,13 @@ const updateBounds = debounce_leading(() => {
     }
 }, 50);
 
-// Watch on instead of using computed.
-// When the plotData updates, we want to update the colours, the features and the legend.
-// If we use computed this will cause multiple updates
-// 1. When a selection changes it will update immediately
-// 2. After the plotData has been fetched async it will update again
-// This can cause the map to appear to flicker as it updates with old scales
-// then quickly updates after new data has been fetched.
-// Instead manually watch on the plot data changes, and also trigger this when a user changes the
-// scale selection
-watch(plotData, updateMap)
+// Use watchers instead of computed
+// When the plotSelections updates, the new data will have been fetched from the backend already
+// so we can update the UI.
+// We also want to update the UI when scale selections get changed.
+// But updating the plotSelections will also update the scale selections
+// So using computed we end up with duplicate updates when plotSelections change.
+// So we use watch instead for more control over when things are updated.
 watch(colourScales, updateMapColours)
 watch(selectedAreaIds, updateBounds);
 watch(() => [store.state.plotSelections.choropleth], updateMap);
