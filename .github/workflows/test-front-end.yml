@@ -17,16 +17,14 @@ jobs:
             - name: Make shared image
               uses: ./.github/actions/make-shared-env
 
-            - name: Run deps for integration tests
-              run: github-action-scripts/run-dependencies-for-integration-tests.sh
-
             - name: Lint
               run: npm run lint --prefix=src/app/static -- --quiet
 
-            # - name: Setup tmate session
-            #   uses: mxschmitt/action-tmate@v3
-            # - name: Unit tests
-            #   run: npm run test --prefix=src/app/static
+            - name: Run deps for integration tests
+              run: scripts/run-dependencies.sh
+
+            - name: Start Kotlin server
+              run: github-action-scripts/run-kotlin-server.sh
 
             - name: Integration tests
               run: npm run integration-test --prefix=src/app/static
