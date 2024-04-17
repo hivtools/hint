@@ -7,6 +7,23 @@ runs:
       with:
         node-version: 20
 
+    - name: Common env vars
+      id: env-vars
+      run: github-action-scripts/common
+      shell: bash
+
+    - name: Test common env vars
+      shell: bash
+      run: |
+        echo "ORG = ${{ steps.env-vars.outputs.ORG }}"
+        echo "GIT_ID = ${{ steps.env-vars.outputs.GIT_ID }}"
+        echo "GIT_BRANCH = ${{ steps.env-vars.outputs.GIT_BRANCH }}"
+        echo "BUILD_ENV_TAG = ${{ steps.env-vars.outputs.BUILD_ENV_TAG }}"
+        echo "APP_DOCKER_COMMIT_TAG = ${{ steps.env-vars.outputs.APP_DOCKER_COMMIT_TAG }}"
+        echo "APP_DOCKER_BRANCH_TAG = ${{ steps.env-vars.outputs.APP_DOCKER_BRANCH_TAG }}"
+        echo "USER_CLI_COMMIT_TAG = ${{ steps.env-vars.outputs.USER_CLI_COMMIT_TAG }}"
+        echo "USER_CLI_BRANCH_TAG = ${{ steps.env-vars.outputs.USER_CLI_BRANCH_TAG }}"
+
     - name: Get npm cache directory
       id: npm-cache-dir
       shell: bash
@@ -42,8 +59,4 @@ runs:
 
     - name: Compile kotlin
       run: src/gradlew -p src app:compileKotlin
-      shell: bash
-
-    - name: Common env vars
-      run: github-action-scripts/common
       shell: bash

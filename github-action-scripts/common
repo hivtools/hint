@@ -26,15 +26,12 @@ GIT_BRANCH=$(echo $GIT_BRANCH | sed 's;/;-;g')
 BUILDKITE_DOCKER_AUTH_PATH=/var/lib/buildkite-agent/.docker/config.json
 
 # Export env vars needed for running test dependencies
-echo "\n\n\n\nGITHUB_SHA\n\n\n\n"
-echo $GITHUB_SHA
-echo "\n\n\n\nGIT_ID\n\n\n\n"
-echo $GIT_ID
-export ORG=mrcide
-export GIT_ID=$GIT_ID
-export GIT_BRANCH=$GIT_BRANCH
-export BUILD_ENV_TAG=$ORG/hint-shared-build-env:$GIT_ID
-export APP_DOCKER_COMMIT_TAG=$ORG/hint:$GIT_ID
-export APP_DOCKER_BRANCH_TAG=$ORG/hint:$GIT_BRANCH
-export USER_CLI_COMMIT_TAG=$ORG/hint-user-cli:$GIT_ID
-export USER_CLI_BRANCH_TAG=$ORG/hint-user-cli:$GIT_BRANCH
+ORG=mrcide
+echo "ORG=mrcide" >> $GITHUB_OUTPUT
+echo "GIT_ID=$GIT_ID" >> $GITHUB_OUTPUT
+echo "GIT_BRANCH=$GIT_BRANCH" >> $GITHUB_OUTPUT
+echo "BUILD_ENV_TAG=$ORG/hint-shared-build-env:$GIT_ID" >> $GITHUB_OUTPUT
+echo "APP_DOCKER_COMMIT_TAG=$ORG/hint:$GIT_ID" >> $GITHUB_OUTPUT
+echo "APP_DOCKER_BRANCH_TAG=$ORG/hint:$GIT_BRANCH" >> $GITHUB_OUTPUT
+echo "USER_CLI_COMMIT_TAG=$ORG/hint-user-cli:$GIT_ID" >> $GITHUB_OUTPUT
+echo "USER_CLI_BRANCH_TAG=$ORG/hint-user-cli:$GIT_BRANCH" >> $GITHUB_OUTPUT
