@@ -79,7 +79,7 @@ const colourScales = computed(() => {
 });
 
 const updateMapColours = () => {
-    selectedScale.value = colourScales[selectedIndicator.value];
+    selectedScale.value = colourScales.value[selectedIndicator.value];
     colourRange.value = getIndicatorRange(indicatorMetadata.value, selectedScale.value, plotData.value);
     scaleLevels.value = getColourScaleLevels(indicatorMetadata.value, colourRange.value);
     featureData.value = getFeatureData(
