@@ -6,7 +6,8 @@ runs:
     - uses: actions/setup-node@v4
       with:
         node-version: 20
-        cache: "npm"
+        cache: 'npm'
+        cache-dependency-path: 'src/app/static/package-lock.json'
 
     - name: Setup Environment (PR)
       if: ${{ github.event_name == 'pull_request' }}
