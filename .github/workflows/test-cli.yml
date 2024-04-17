@@ -27,12 +27,12 @@ jobs:
               run: scripts/run-dependencies.sh
 
             - name: Test CLI
-              run: src/gradlew -p src :userCLI:test
+              run: src/gradlew -p src :userCLI:test -x app:compileFrontEnd -x app:copyAssets
 
             - name: Build docker image
               run: |
                 rm -f /etc/hint/config.properties
-                src/gradlew -p src :userCLI:docker -i -Pdocker_version=${CI_SHA:0:7}
+                src/gradlew -p src :userCLI:docker -i -Pdocker_version=${CI_SHA:0:7} -x app:compileFrontEnd -x app:copyAssets
             
             - name: Push image
               run: |
