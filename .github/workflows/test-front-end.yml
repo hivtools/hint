@@ -23,6 +23,9 @@ jobs:
             - name: Run deps for integration tests
               run: scripts/run-dependencies.sh
 
+            - name: Setup tmate session
+              uses: mxschmitt/action-tmate@v3
+
             - name: Start Kotlin server
               run: github-action-scripts/run-kotlin-server.sh
 
