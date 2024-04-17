@@ -17,5 +17,8 @@ jobs:
             - name: Make shared image
               uses: ./.github/actions/make-shared-env
 
-            - name: Test back end
-              run: github-action-scripts/test-adr-back-end.sh
+            - name: Run deps
+              run: scripts/run-dependencies.sh
+
+            - name: Test back end (ADR)
+              run: src/gradlew -p src :app:test --tests org.imperial.mrc.hint.integration.adr*
