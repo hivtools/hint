@@ -17,5 +17,11 @@ jobs:
             - name: Make shared image
               uses: ./.github/actions/make-shared-env
 
-            - name: Test front end
-              run: github-action-scripts/test-adr-front-end.sh
+            - name: Run deps
+              run: scripts/run-dependencies.sh
+
+            - name: Start Kotlin server
+              run: github-action-scripts/run-kotlin-server.sh
+
+            - name: Test front end (ADR)
+              run: npm run adr-integration-test-docker --prefix=src/app/static
