@@ -20,6 +20,9 @@ jobs:
             - name: Run deps
               run: scripts/run-dependencies.sh
 
+            - uses: satackey/action-docker-layer-caching@v0.0.11
+              continue-on-error: true
+
             - name: Test back end
               run: |
                 src/gradlew -p src :app:detektMain -PexcludeADR=true :app:test :app:jacocoTestReport
