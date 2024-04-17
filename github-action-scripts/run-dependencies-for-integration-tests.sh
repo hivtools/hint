@@ -19,8 +19,8 @@ $HERE/../scripts/run-dependencies.sh
 #   -v $TEST_CONFIG:/etc/hint/config.properties \
 #   node
 
-nohup $HERE/../src/gradlew -p $HERE/../src app:bootrun
+nohup $HERE/../src/gradlew -p $HERE/../src app:bootrun -x app:compileFrontEnd -x app:copyAssets &
 
-sleep 60
+sleep 45
 
 curl http://localhost:8080
