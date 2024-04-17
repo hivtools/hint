@@ -55,7 +55,3 @@ runs:
       if: steps.npm-cache.outputs.cache-hit == 'true'
       run: npm ci --cache ${{ steps.npm-cache-dir.outputs.dir }} --prefer-offline --silent --no-audit --prefix=src/app/static
       shell: bash
-
-    - name: Compile kotlin
-      run: src/gradlew -p src app:compileKotlin
-      shell: bash
