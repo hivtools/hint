@@ -130,7 +130,6 @@ export const plotDataToChartData = function (plotData: PlotData,
 export const getErrorLineAnnotations = function(chartData: BarChartData,
                                                 displayErrorBars: boolean,
                                                 showLabelErrorBars: boolean[]): AnnotationOptions[] {
-    console.log("building error line annoatations")
     // amount of padding chart js uses by default for each bar
     const barPercentage = 0.8;
 

@@ -1,6 +1,6 @@
 <template>
     <div>
-        <Bar :data="chartData" :options="chartOptions"/>
+        <Bar ref="chart" :data="chartData" :options="chartOptions"/>
         <div v-if="showNoDataMessage" id="noDataMessage" class="px-3 py-2 noDataMessage">
             <span class="lead">
                 <strong v-translate="'noChartData'"></strong>
@@ -15,7 +15,7 @@ import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, Li
 import annotationPlugin from "chartjs-plugin-annotation";
 import {useStore} from "vuex";
 import {RootState} from "../../../root";
-import {computed, defineComponent, onMounted, ref, watch} from "vue";
+import {computed, defineComponent, ref, watch} from "vue";
 import {PlotData} from "../../../store/plotData/plotData";
 import {
     plotDataToChartData,
@@ -36,25 +36,22 @@ export default defineComponent({
         }
     },
     setup(props) {
+        const chart = ref<typeof Bar | null>(null);
         const store = useStore<RootState>();
 
-        const getIndicator = () => {
-            return store.state.plotSelections.barchart.filters.find(f => f.stateFilterId === "indicator")!.selection[0].id
-        }
-        const indicator = ref<string>(getIndicator());
         // Bit confusing this is using ChoroplethIndicatorMetadata here
         // TODO: make this type more generic in the hintr PR
+        const filterSelections = computed(() => store.state.plotSelections.barchart.filters);
         const indicatorMetadata = computed<ChoroplethIndicatorMetadata>(() => {
-            return getIndicatorMetadata(store, indicator.value)
+            const indicator = filterSelections.value.find(f => f.stateFilterId === "indicator")!.selection[0].id
+            return getIndicatorMetadata(store, indicator)
         });
+        const plotData = computed<PlotData>(() => store.state.plotData.barchart);
 
         const areaIdToLevelMap = store.getters["baseline/areaIdToLevelMap"];
         const controlSelectionFromId = store.getters["plotSelections/controlSelectionFromId"];
         const filterSelectionFromId = store.getters["plotSelections/filterSelectionFromId"];
         const filterIdToColumnId = store.getters["modelCalibrate/filterIdToColumnId"];
-
-        const plotData = computed<PlotData>(() => store.state.plotData.barchart);
-        const filterSelections = computed(() => store.state.plotSelections.barchart.filters);
 
         const chartData = ref<BarChartData>({datasets:[], labels: [], maxValuePlusError: 0});
         const chartOptions = ref({});
@@ -72,7 +69,7 @@ export default defineComponent({
             }
             const disaggregateId = filterIdToColumnId(disaggregateBy.id)
             const xAxisId = filterIdToColumnId(xAxis.id)
-            const areaLevel = store.state.plotSelections.barchart.filters.find(f => f.filterId == "detail")?.selection[0]?.id
+            const areaLevel = filterSelections.value.find(f => f.filterId == "detail")?.selection[0]?.id
             const disaggregateSelections = filterSelectionFromId("barchart", disaggregateBy.id)
             const xAxisSelections = filterSelectionFromId("barchart", xAxis.id)
             const xAxisOptions = store.state.modelCalibrate.metadata!.filterTypes.find(f => f.id === xAxis!.id)!.options
@@ -82,7 +79,6 @@ export default defineComponent({
                         xAxisId, xAxisSelections, xAxisOptions,
                         areaLevel, areaIdToLevelMap);
             }
-            showLabelErrorBars.value = chartData.value.datasets.map(() => true);
         };
 
         const hideAllErrorBars = () => {
@@ -93,7 +89,6 @@ export default defineComponent({
             displayErrorBars.value = true;
         };
 
-        const showLabelErrorBars = ref<boolean[]>(chartData.value.datasets.map(() => true));
         /*
             We need to pass a customLegendClick event into chartOptions so
             that our state can update when a user clicks on the legend and
@@ -101,11 +96,9 @@ export default defineComponent({
             the error bars.
         */
         const customLegendClick = (e: Event, legendItem: any, legend: any) => {
-            hideAllErrorBars();
             const index = legendItem.datasetIndex;
             const ci = legend.chart;
             const isDatasetVisible = ci.isDatasetVisible(index);
-            showLabelErrorBars.value[index] = !isDatasetVisible;
             legendItem.hidden = isDatasetVisible;
             if (isDatasetVisible) {
                 setTimeout(() => {
@@ -120,7 +113,6 @@ export default defineComponent({
         };
 
         const updateChartOptions = () => {
-            console.log("updating chart options")
             const baseChartOptions = {
                 plugins: {
                     tooltip: {
@@ -147,8 +139,15 @@ export default defineComponent({
 
             if (props.showErrorBars) {
 
-                const errorLines = getErrorLineAnnotations(chartData.value, displayErrorBars.value,
-                        showLabelErrorBars.value);
+                let showLabelErrorBars = [];
+                if (chart.value && chart.value.chart) {
+                    if (displayErrorBars.value) {
+                        showLabelErrorBars = chart.value.chart.legend.legendItems.map((item: any) => !item.hidden);
+                    } else {
+                        showLabelErrorBars = chart.value.chart.legend.legendItems.map(() => false);
+                    }
+                }
+                const errorLines = getErrorLineAnnotations(chartData.value, displayErrorBars.value, showLabelErrorBars);
 
                 chartOptions.value = {
                     ...baseChartOptions,
@@ -159,7 +158,7 @@ export default defineComponent({
                         },
                         legend: {
                             onClick: customLegendClick
-                        }
+                        },
                     },
                     scales: {
                         y: {
@@ -184,15 +183,11 @@ export default defineComponent({
             }
         };
 
-        onMounted(() => {
-            updateChart();
-            updateChartOptions();
-        });
-
         watch(filterSelections, updateChart, { immediate: true });
         watch(displayErrorBars, updateChartOptions, { immediate: true });
 
         return {
+            chart,
             chartData,
             chartOptions,
             showNoDataMessage
