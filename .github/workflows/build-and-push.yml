@@ -23,8 +23,16 @@ jobs:
             - name: Make shared image
               uses: ./.github/actions/make-shared-env
 
-            - name: Build
-              run: github-action-scripts/build.sh
+            - name: Build app
+              env:
+                NODE_ENV: production
+              run: src/gradlew -p src :app:bootDistTar
 
-            - name: Push
-              run: github-action-scripts/push.sh
+            - name: Build docker image
+              run: docker build -f /hint/Dockerfile --tag "${CI_ORG}/hint:${CI_SHA}" ..
+
+            - name: Push image
+              run: |
+                docker tag "${CI_ORG}/hint:${CI_SHA}" "${CI_ORG}/hint:${CI_BRANCH}"
+                docker push "${CI_ORG}/hint:${CI_SHA}"
+                docker push "${CI_ORG}/hint:${CI_BRANCH}"
