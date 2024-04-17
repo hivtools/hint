@@ -21,7 +21,7 @@ jobs:
               run: scripts/run-dependencies.sh
 
             - name: Start Kotlin server
-              run: github-action-scripts/run-kotlin-server.sh
+              run: scripts/run-kotlin-server.sh
 
             - name: Install playwright et al
               run: |
