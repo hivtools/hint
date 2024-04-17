@@ -23,13 +23,13 @@ jobs:
             - name: Lint
               run: npm run lint --prefix=src/app/static -- --quiet
 
-            - name: Setup tmate session
-              uses: mxschmitt/action-tmate@v3
+            # - name: Setup tmate session
+            #   uses: mxschmitt/action-tmate@v3
             # - name: Unit tests
             #   run: npm run test --prefix=src/app/static
 
             - name: Integration tests
-              run: npm run integration-test-docker --prefix=src/app/static
+              run: npm run integration-test --prefix=src/app/static
 
             - name: CodeCov
               run: |
