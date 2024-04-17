@@ -24,4 +24,4 @@ jobs:
               run: github-action-scripts/run-kotlin-server.sh
 
             - name: Test front end (ADR)
-              run: npm run adr-integration-test-docker --prefix=src/app/static
+              run: npm run adr-integration-test --prefix=src/app/static
