@@ -4,7 +4,7 @@ import org.imperial.mrc.hint.AppProperties
 import org.imperial.mrc.hint.clients.FuelFlowClient
 import org.imperial.mrc.hint.logging.GenericLoggerImpl
 import org.imperial.mrc.hint.models.ErrorReport
-import org.imperial.mrc.hint.service.ProjectVersionService
+import org.imperial.mrc.hint.service.ProjectService
 import org.slf4j.LoggerFactory
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*
 @RestController
 class ErrorReportController(
     private val fuelFlowClient: FuelFlowClient,
-    private val projectVersionService: ProjectVersionService,
+    private val projectService: ProjectService,
     private val appProperties: AppProperties,
 )
 {
@@ -34,7 +34,7 @@ class ErrorReportController(
         {
             if (projectId != null && errorReport.email != appProperties.supportEmail)
             {
-                projectVersionService.cloneProjectToUser(
+                projectService.cloneProjectToUser(
                     projectId,
                     listOf(appProperties.supportEmail)
                 )

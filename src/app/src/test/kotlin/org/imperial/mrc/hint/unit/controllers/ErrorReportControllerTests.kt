@@ -9,7 +9,7 @@ import org.imperial.mrc.hint.clients.FuelFlowClient
 import org.imperial.mrc.hint.controllers.ErrorReportController
 import org.imperial.mrc.hint.models.ErrorReport
 import org.imperial.mrc.hint.models.Errors
-import org.imperial.mrc.hint.service.ProjectVersionService
+import org.imperial.mrc.hint.service.ProjectService
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.verifyNoInteractions
 import org.springframework.http.HttpStatus
@@ -47,7 +47,7 @@ class ErrorReportControllerTests
             "2021-10-12T14:07:22.759Z"
     )
 
-    private val mockProjectVersionService = mock<ProjectVersionService>()
+    private val mockProjectService = mock<ProjectService>()
 
     @Test
     fun `can post error report to teams`()
@@ -58,7 +58,7 @@ class ErrorReportControllerTests
 
         assertThat(result.body).isEqualTo("whatever")
 
-        verify(mockProjectVersionService).cloneProjectToUser(1, listOf(mockProperties.supportEmail))
+        verify(mockProjectService).cloneProjectToUser(1, listOf(mockProperties.supportEmail))
     }
 
     @Test
@@ -70,7 +70,7 @@ class ErrorReportControllerTests
 
         assertThat(result.body).isEqualTo("whatever")
 
-        verifyNoInteractions(mockProjectVersionService)
+        verifyNoInteractions(mockProjectService)
     }
 
     @Test
@@ -83,14 +83,14 @@ class ErrorReportControllerTests
             on { notifyTeams(newData) } doReturn ResponseEntity.ok("whatever")
         }
 
-        val sut = ErrorReportController(mockFlowClient, mockProjectVersionService, mockProperties)
+        val sut = ErrorReportController(mockFlowClient, mockProjectService, mockProperties)
 
         val result = sut.postErrorReport(newData, 1)
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
 
         assertThat(result.body).isEqualTo("whatever")
 
-        verifyNoInteractions(mockProjectVersionService)
+        verifyNoInteractions(mockProjectService)
     }
 
     @Test
@@ -100,7 +100,7 @@ class ErrorReportControllerTests
 
         assertThat(result.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
 
-        verifyNoInteractions(mockProjectVersionService)
+        verifyNoInteractions(mockProjectService)
     }
 
     private fun testFlowClient(response: ResponseEntity<String>, projectId: Int?): ResponseEntity<String>
@@ -110,7 +110,7 @@ class ErrorReportControllerTests
             on { notifyTeams(data) } doReturn response
         }
 
-        val sut = ErrorReportController(mockFlowClient, mockProjectVersionService, mockProperties)
+        val sut = ErrorReportController(mockFlowClient, mockProjectService, mockProperties)
 
         return sut.postErrorReport(data, projectId)
     }

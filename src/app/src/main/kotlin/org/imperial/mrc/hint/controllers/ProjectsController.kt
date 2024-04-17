@@ -5,7 +5,7 @@ import org.imperial.mrc.hint.db.VersionRepository
 import org.imperial.mrc.hint.logging.GenericLogger
 import org.imperial.mrc.hint.models.*
 import org.imperial.mrc.hint.security.Session
-import org.imperial.mrc.hint.service.ProjectVersionService
+import org.imperial.mrc.hint.service.ProjectService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServletRequest
 class ProjectsController(private val session: Session,
                          private val versionRepository: VersionRepository,
                          private val projectRepository: ProjectRepository,
-                         private val projectVersionService: ProjectVersionService,
+                         private val projectService: ProjectService,
                          private val request: HttpServletRequest,
                          private val logger: GenericLogger
 )
@@ -44,7 +44,7 @@ class ProjectsController(private val session: Session,
                            @RequestParam("emails") emails: List<String>): ResponseEntity<String>
     {
 
-        projectVersionService.cloneProjectToUser(projectId, emails)
+        projectService.cloneProjectToUser(projectId, emails)
         return SuccessResponse(null).asResponseEntity()
     }
 

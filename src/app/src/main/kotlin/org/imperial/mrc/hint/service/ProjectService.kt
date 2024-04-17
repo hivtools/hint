@@ -10,23 +10,19 @@ import org.imperial.mrc.hint.security.Session
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 
-interface ProjectVersionService
-{
-    fun cloneProjectToUser(projectId: Int, emails: List<String>)
-}
 
 @Service
-class ProjectAndVersionService (
+class ProjectService (
     private val session: Session,
     private val versionRepository: VersionRepository,
     private val projectRepository: ProjectRepository,
     private val userLogic: UserLogic,
     private val properties: AppProperties
-) : ProjectVersionService
+)
 {
 
-    private val logger = GenericLoggerImpl(LoggerFactory.getLogger(ProjectAndVersionService::class.java))
-    override fun cloneProjectToUser(projectId: Int, emails: List<String>)
+    private val logger = GenericLoggerImpl(LoggerFactory.getLogger(ProjectService::class.java))
+    fun cloneProjectToUser(projectId: Int, emails: List<String>)
     {
         logger.info("Cloning project to users", mapOf("projectId" to projectId, "emails" to emails))
         val userIds = emails.map {

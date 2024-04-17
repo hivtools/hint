@@ -17,7 +17,7 @@ import org.imperial.mrc.hint.models.Version
 import org.imperial.mrc.hint.models.VersionDetails
 import org.imperial.mrc.hint.models.VersionFile
 import org.imperial.mrc.hint.security.Session
-import org.imperial.mrc.hint.service.ProjectVersionService
+import org.imperial.mrc.hint.service.ProjectService
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.verifyNoInteractions
 import org.mockito.internal.verification.Times
@@ -276,12 +276,12 @@ class ProjectsControllerTests
     @Test
     fun `can clone project to user`()
     {
-        val mockProjectVersionService = mock<ProjectVersionService> ()
-        val sut = ProjectsController(mock(), mock(), mock(), mockProjectVersionService, mock(), mockLogger)
+        val mockProjectService = mock<ProjectService> ()
+        val sut = ProjectsController(mock(), mock(), mock(), mockProjectService, mock(), mockLogger)
         sut.cloneProjectToUser(1, listOf("new.user@email.com", "a.user@email.com"))
 
         verifyNoInteractions(mockLogger)
-        verify(mockProjectVersionService).cloneProjectToUser(1, listOf("new.user@email.com", "a.user@email.com"))
+        verify(mockProjectService).cloneProjectToUser(1, listOf("new.user@email.com", "a.user@email.com"))
     }
 
     @Test

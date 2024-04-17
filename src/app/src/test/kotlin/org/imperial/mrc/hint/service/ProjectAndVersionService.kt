@@ -17,7 +17,7 @@ import org.junit.jupiter.api.Test
 import org.mockito.internal.verification.Times
 import org.pac4j.core.profile.CommonProfile
 
-class ProjectAndVersionServiceTest
+class ProjectServiceTest
 {
 
     private val mockProfile = mock<CommonProfile> {
@@ -67,7 +67,7 @@ class ProjectAndVersionServiceTest
             on { getUser("a.user@email.com") } doReturn CommonProfile().apply { id = "1" }
             on { getUser("new.user@email.com") } doReturn null as CommonProfile?
         }
-        val sut = ProjectAndVersionService(mockSession, mockVersionRepo, mockProjectRepo, mockLogic, mock())
+        val sut = ProjectService(mockSession, mockVersionRepo, mockProjectRepo, mockLogic, mock())
         val userList = listOf("a.user@email.com", "new.user@email.com")
         Assertions.assertThatThrownBy { sut.cloneProjectToUser(1, userList) }
             .isInstanceOf(UserException::class.java)
@@ -81,7 +81,7 @@ class ProjectAndVersionServiceTest
             on { getUser("new.user@email.com", loginMethod.oauth2LoginMethod) } doReturn CommonProfile().apply { id = "uid1" }
             on { getUser("a.user@email.com", loginMethod.oauth2LoginMethod) } doReturn CommonProfile().apply { id = "uid2" }
         }
-        val sut = ProjectAndVersionService(mockSession, mockVersionRepo, mockProjectRepo, mockLogic, loginMethod)
+        val sut = ProjectService(mockSession, mockVersionRepo, mockProjectRepo, mockLogic, loginMethod)
         sut.cloneProjectToUser(1, listOf("new.user@email.com", "a.user@email.com"))
 
         verify(mockVersionRepo).cloneVersion("v1", "testVersion", 2)
