@@ -1,5 +1,8 @@
 name: Make Shared Environment
 
+env:
+  CI_ORG: mrcide
+
 runs:
   using: "composite"
   steps:
@@ -7,22 +10,31 @@ runs:
       with:
         node-version: 20
 
-    - name: Common env vars
-      id: env
-      run: github-action-scripts/common
-      shell: bash
+    - name: Setup Environment (PR)  
+      if: ${{ github.event_name == 'pull_request' }}  
+      shell: bash  
+      run: |  
+        echo "CI_SHA=${{ github.event.pull_request.head.sha }}" >> ${GITHUB_ENV}  
+        echo "CI_BRANCH=${{ github.head_ref }}" >> ${GITHUB_ENV}  
+    
+    - name: Setup Environment (Push)  
+      if: ${{ github.event_name == 'push' }}  
+      shell: bash  
+      run: |  
+        echo "CI_SHA=${GITHUB_SHA}" >> ${GITHUB_ENV}
+        echo "CI_BRANCH=${{ github.ref_name }}" >> ${GITHUB_ENV}
+
+    # - name: Common env vars
+    #   id: env
+    #   run: github-action-scripts/common
+    #   shell: bash
 
     - name: Test common env vars
       shell: bash
       run: |
-        echo "ORG = ${{ steps.env.outputs.ORG }}"
-        echo "GIT_ID = ${{ steps.env.outputs.GIT_ID }}"
-        echo "GIT_BRANCH = ${{ steps.env.outputs.GIT_BRANCH }}"
-        echo "BUILD_ENV_TAG = ${{ steps.env.outputs.BUILD_ENV_TAG }}"
-        echo "APP_DOCKER_COMMIT_TAG = ${{ steps.env.outputs.APP_DOCKER_COMMIT_TAG }}"
-        echo "APP_DOCKER_BRANCH_TAG = ${{ steps.env.outputs.APP_DOCKER_BRANCH_TAG }}"
-        echo "USER_CLI_COMMIT_TAG = ${{ steps.env.outputs.USER_CLI_COMMIT_TAG }}"
-        echo "USER_CLI_BRANCH_TAG = ${{ steps.env.outputs.USER_CLI_BRANCH_TAG }}"
+        echo "ORG = ${CI_ORG}"
+        echo "GIT_ID = ${CI_SHA}"
+        echo "GIT_BRANCH = ${CI_BRANCH}"
 
     - name: Show GitHub context
       env:
