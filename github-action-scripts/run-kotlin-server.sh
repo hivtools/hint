@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-set -ex
 
+echo "Starting kotlin server"
 nohup src/gradlew -p src app:bootrun > kotlin-logs.out 2>&1 &
 
 sleep 20
