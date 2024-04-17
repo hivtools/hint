@@ -249,7 +249,7 @@ describe("root actions", () => {
     });
 
     it("posts error report to teams", async () => {
-        const url = "error-report?projectId=1"
+        const url = "error-report"
 
         mockAxios.onPost(url)
             .reply(200, mockSuccess("ok"));
@@ -313,6 +313,7 @@ describe("root actions", () => {
         const expected = {
             email: "test@example.com",
             country: "Malawi",
+            projectId: 1,
             projectName: "p1",
             timeStamp: new Date(),
             modelRunId: "1234",
@@ -335,6 +336,7 @@ describe("root actions", () => {
         expect(data.email).toStrictEqual(expected.email)
         expect(data.country).toStrictEqual(expected.country)
         expect(data.projectName).toStrictEqual(expected.projectName)
+        expect(data.projectId).toStrictEqual(expected.projectId)
         expect(data.browserAgent).toContain("Mozilla")
         expect(data.modelRunId).toStrictEqual(expected.modelRunId)
         expect(data.calibrateId).toStrictEqual(expected.calibrateId)
