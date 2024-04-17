@@ -54,7 +54,7 @@ import {getFeatureData, tooltipContent} from "./utils";
 
 const store = useStore<RootState>();
 
-const {updateOutputColourScale, updateOutputSizeScale} = useUpdateScale();
+const {updateOutputColourScale} = useUpdateScale();
 
 const plotData = computed<PlotData>(() => store.state.plotData.bubble);
 const getColourIndicator = () => {

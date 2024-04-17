@@ -1,5 +1,5 @@
 import {ChartData, ChartDataset} from "chart.js";
-import {BarchartMetadata, FilterOption} from "../../../generated";
+import {BarchartMetadata, ChoroplethIndicatorMetadata, FilterOption} from "../../../generated";
 import {AnnotationOptions} from "chartjs-plugin-annotation";
 import {formatOutput} from "../utils";
 import {PlotData} from "../../../store/plotData/plotData";
@@ -44,7 +44,7 @@ export type ChartDataSetsWithErrors =  ChartDataset & {
  *    maxValuePlusError - value for the highest value in the barchart + error, used for the height of the plot
  */
 export const plotDataToChartData = function (plotData: PlotData,
-                                             indicatorMetadata: BarchartIndicatorMetadata,
+                                             indicatorMetadata: ChoroplethIndicatorMetadata,
                                              disaggregateId: string,
                                              disaggregateSelections: FilterOption[],
                                              xAxisId: string,
@@ -109,13 +109,15 @@ export const plotDataToChartData = function (plotData: PlotData,
         }
         dataset.data[labelIdx] = value;
 
-        if (row[indicatorMetadata.error_high_column] > maxValuePlusError) {
-            maxValuePlusError = row[indicatorMetadata.error_high_column]
-        }
-
         dataset.errorBars[xAxisLabel] = {};
-        dataset.errorBars[xAxisLabel].plus = row[indicatorMetadata.error_high_column];
-        dataset.errorBars[xAxisLabel].minus = row[indicatorMetadata.error_low_column];
+        if (indicatorMetadata.error_high_column && indicatorMetadata.error_low_column) {
+            if (row[indicatorMetadata.error_high_column] > maxValuePlusError) {
+                maxValuePlusError = row[indicatorMetadata.error_high_column]
+            }
+
+            dataset.errorBars[xAxisLabel].plus = row[indicatorMetadata.error_high_column];
+            dataset.errorBars[xAxisLabel].minus = row[indicatorMetadata.error_low_column];
+        }
     }
 
     return {
@@ -231,7 +233,7 @@ export const getErrorLineConfig = function(
     }
 }
 
-export const buildTooltipCallback = function(indicatorMetadata: BarchartIndicatorMetadata, showErrorRange: boolean) {
+export const buildTooltipCallback = function(indicatorMetadata: ChoroplethIndicatorMetadata, showErrorRange: boolean) {
     const formatCallback = (value: number | string) => {
         return formatOutput(value,
             indicatorMetadata.format,

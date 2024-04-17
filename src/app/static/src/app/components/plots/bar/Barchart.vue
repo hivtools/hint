@@ -22,9 +22,9 @@ import {
     BarChartData,
     getErrorLineAnnotations,
     buildTooltipCallback,
-    BarchartIndicatorMetadata
 } from "./utils";
-import {formatOutput} from "../utils";
+import {formatOutput, getIndicatorMetadata} from "../utils";
+import {ChoroplethIndicatorMetadata} from "../../../generated";
 ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, annotationPlugin);
 
 export default defineComponent({
@@ -38,20 +38,33 @@ export default defineComponent({
     setup(props) {
         const store = useStore<RootState>();
 
-        const indicatorMetadata = ref<BarchartIndicatorMetadata>(
-                store.getters["modelCalibrate/barchartIndicatorMetadata"]);
+        const getIndicator = () => {
+            return store.state.plotSelections.barchart.filters.find(f => f.stateFilterId === "indicator")!.selection[0].id
+        }
+        const indicator = ref<string>(getIndicator());
+        // Bit confusing this is using ChoroplethIndicatorMetadata here
+        // TODO: make this type more generic in the hintr PR
+        const indicatorMetadata = computed<ChoroplethIndicatorMetadata>(() => {
+            return getIndicatorMetadata(store, indicator.value)
+        });
+
         const areaIdToLevelMap = store.getters["baseline/areaIdToLevelMap"];
         const controlSelectionFromId = store.getters["plotSelections/controlSelectionFromId"];
         const filterSelectionFromId = store.getters["plotSelections/filterSelectionFromId"];
         const filterIdToColumnId = store.getters["modelCalibrate/filterIdToColumnId"];
 
         const plotData = computed<PlotData>(() => store.state.plotData.barchart);
+        const filterSelections = computed(() => store.state.plotSelections.barchart.filters);
+
         const chartData = ref<BarChartData>({datasets:[], labels: [], maxValuePlusError: 0});
+        const chartOptions = ref({});
         const displayErrorBars = ref<boolean>(false);
+        const showNoDataMessage = computed(() => {
+            return chartData.value.datasets.length == 0
+        });
 
         const updateChart = () => {
             hideAllErrorBars();
-            indicatorMetadata.value = store.getters["modelCalibrate/barchartIndicatorMetadata"];
             const disaggregateBy = controlSelectionFromId("barchart", "disagg_by");
             const xAxis = controlSelectionFromId("barchart", "x_axis");
             if (!disaggregateBy || !xAxis) {
@@ -71,18 +84,6 @@ export default defineComponent({
             }
             showLabelErrorBars.value = chartData.value.datasets.map(() => true);
         };
-
-        const filterSelections = computed(() => store.state.plotSelections.barchart.filters);
-        watch(filterSelections, updateChart, {onTrigger: event => console.log(event)});
-
-        const showNoDataMessage = computed(() => {
-            return chartData.value.datasets.length == 0
-        });
-
-        onMounted(() => {
-            updateChart();
-            updateChartOptions();
-        });
 
         const hideAllErrorBars = () => {
             displayErrorBars.value = false;
@@ -118,8 +119,6 @@ export default defineComponent({
             updateChartOptions();
         };
 
-
-        const chartOptions = ref();
         const updateChartOptions = () => {
             console.log("updating chart options")
             const baseChartOptions = {
@@ -185,7 +184,13 @@ export default defineComponent({
             }
         };
 
-        watch(displayErrorBars, updateChartOptions);
+        onMounted(() => {
+            updateChart();
+            updateChartOptions();
+        });
+
+        watch(filterSelections, updateChart, { immediate: true });
+        watch(displayErrorBars, updateChartOptions, { immediate: true });
 
         return {
             chartData,

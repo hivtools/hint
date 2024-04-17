@@ -3,6 +3,7 @@ import {ReadyState, RootState, WarningsState} from "../../root";
 import {DynamicFormData, DynamicFormMeta} from "@reside-ic/vue-next-dynamic-form";
 import {mutations} from "./mutations";
 import {actions} from "./actions";
+import {getters} from "./getters";
 import {
     VersionInfo,
     Error,
@@ -65,5 +66,6 @@ export const modelCalibrate = (existingState: Partial<RootState> | null): Module
         state: {...initialModelCalibrateState(), ...existingState && existingState.modelCalibrate, ready: false},
         mutations,
         actions,
+        getters
     };
 };
