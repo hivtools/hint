@@ -22,5 +22,3 @@ $HERE/../scripts/run-dependencies.sh
 nohup $HERE/../src/gradlew -p $HERE/../src app:bootrun -x app:compileFrontEnd -x app:copyAssets &
 
 sleep 45
-
-curl http://localhost:8080
