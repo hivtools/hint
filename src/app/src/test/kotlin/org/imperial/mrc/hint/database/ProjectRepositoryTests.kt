@@ -286,7 +286,6 @@ class ProjectRepositoryTests
         val ago_3h = LocalDateTime.now().minus(3, ChronoUnit.HOURS)
         val ago_4h = LocalDateTime.now().minus(4, ChronoUnit.HOURS)
 
-
         val v1Id = insertProject("v1", userId, "another.user@example.com", "test project note")
         val v2Id = insertProject("v2", userId)
         val anotherProject = insertProject("v2", anotherUserId) //should not be returned

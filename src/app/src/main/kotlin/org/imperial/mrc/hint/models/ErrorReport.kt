@@ -3,6 +3,7 @@ package org.imperial.mrc.hint.models
 data class ErrorReport(
     val email: String,
     val country: String,
+    val projectId: Int?,
     val projectName: String,
     val section: String,
     val modelRunId: String,

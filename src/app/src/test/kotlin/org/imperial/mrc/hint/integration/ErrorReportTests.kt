@@ -38,9 +38,15 @@ class ErrorReportTests: SecureIntegrationTests()
     @Test
     fun `can post error report`()
     {
+        userRepo.addUser("naomi-support@imperial.ac.uk", "password")
+        val project = createProject()
+        val createProjectData = getResponseData(project)
+        val projectId = createProjectData["id"].asInt()
+
         val data = """{
             "email": "test.user@example.com",
             "country": "South Africa",
+            "projectId": $projectId,
             "projectName": "South 2 Worldpop",
             "section": "Fit model",
             "modelRunId": "job12",
@@ -75,18 +81,13 @@ class ErrorReportTests: SecureIntegrationTests()
             "timeStamp": "2021-10-12T14:07:22.759Z"
         }""".trimIndent()
 
-        userRepo.addUser("naomi-support@imperial.ac.uk", "password")
-        val project = createProject()
-        val createProjectData = getResponseData(project)
-        val projectId = createProjectData["id"].asInt()
-
         val headers = HttpHeaders()
 
         headers.contentType = MediaType.APPLICATION_JSON
 
         val entity = HttpEntity(data, headers)
 
-        val responseJson = testRestTemplate.postForEntity<String>("/error-report?projectId=${projectId}", entity)
+        val responseJson = testRestTemplate.postForEntity<String>("/error-report", entity)
 
         Assertions.assertThat(responseJson.statusCodeValue).isEqualTo(200)
 

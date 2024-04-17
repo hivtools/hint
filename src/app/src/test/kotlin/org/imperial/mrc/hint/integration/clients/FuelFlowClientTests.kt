@@ -19,6 +19,7 @@ class FuelFlowClientTests
         val data = ErrorReport(
                 "test.user@example.com",
                 "Kenya",
+                1,
                 "Kenya2022",
                 "Model",
                 "123",
@@ -62,6 +63,7 @@ class FuelFlowClientTests
         val data = ErrorReport(
                 "test.user@example.com",
                 "Kenya",
+                1,
                 "Kenya2022",
                 "Model",
                 "123",

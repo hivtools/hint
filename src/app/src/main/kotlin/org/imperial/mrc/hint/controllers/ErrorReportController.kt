@@ -7,7 +7,10 @@ import org.imperial.mrc.hint.models.ErrorReport
 import org.imperial.mrc.hint.service.ProjectService
 import org.slf4j.LoggerFactory
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.ResponseBody
+import org.springframework.web.bind.annotation.RestController
 
 @RestController
 class ErrorReportController(
@@ -20,22 +23,20 @@ class ErrorReportController(
 
     @PostMapping("/error-report")
     @ResponseBody
-    fun postErrorReport(@RequestBody errorReport: ErrorReport,
-                        @RequestParam("projectId", required = false) projectId: Int?
-    ): ResponseEntity<String>
+    fun postErrorReport(@RequestBody errorReport: ErrorReport): ResponseEntity<String>
     {
 
         val logDetails = mapOf(
-            "projectId" to projectId,
+            "projectId" to errorReport.projectId,
             "user" to errorReport.email)
         logger.info("Creating error report", logDetails)
         val teamsRes = fuelFlowClient.notifyTeams(errorReport)
         if (!teamsRes.statusCode.isError)
         {
-            if (projectId != null && errorReport.email != appProperties.supportEmail)
+            if (errorReport.projectId != null && errorReport.email != appProperties.supportEmail)
             {
                 projectService.cloneProjectToUser(
-                    projectId,
+                    errorReport.projectId,
                     listOf(appProperties.supportEmail)
                 )
             }

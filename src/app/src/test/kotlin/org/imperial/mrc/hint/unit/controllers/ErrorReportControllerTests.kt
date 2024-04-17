@@ -25,6 +25,7 @@ class ErrorReportControllerTests
     private val data = ErrorReport(
             "test.user@example.com",
             "Kenya",
+            1,
             "Kenya2022",
             "Model",
             "123",
@@ -52,7 +53,7 @@ class ErrorReportControllerTests
     @Test
     fun `can post error report to teams`()
     {
-        val result = testFlowClient(ResponseEntity.ok("whatever"), 1)
+        val result = testFlowClient(ResponseEntity.ok("whatever"))
 
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
 
@@ -64,7 +65,16 @@ class ErrorReportControllerTests
     @Test
     fun `project not cloned when no project active`()
     {
-        val result = testFlowClient(ResponseEntity.ok("whatever"), null)
+        val newData = data.copy(projectId = null);
+
+        val mockFlowClient = mock<FuelFlowClient>
+        {
+            on { notifyTeams(newData) } doReturn ResponseEntity.ok("whatever")
+        }
+
+        val sut = ErrorReportController(mockFlowClient, mockProjectService, mockProperties)
+
+        val result = sut.postErrorReport(newData)
 
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
 
@@ -85,7 +95,7 @@ class ErrorReportControllerTests
 
         val sut = ErrorReportController(mockFlowClient, mockProjectService, mockProperties)
 
-        val result = sut.postErrorReport(newData, 1)
+        val result = sut.postErrorReport(newData)
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
 
         assertThat(result.body).isEqualTo("whatever")
@@ -96,14 +106,14 @@ class ErrorReportControllerTests
     @Test
     fun `can return error response when request is unsuccessful`()
     {
-        val result = testFlowClient(ResponseEntity.badRequest().build(), 1)
+        val result = testFlowClient(ResponseEntity.badRequest().build())
 
         assertThat(result.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
 
         verifyNoInteractions(mockProjectService)
     }
 
-    private fun testFlowClient(response: ResponseEntity<String>, projectId: Int?): ResponseEntity<String>
+    private fun testFlowClient(response: ResponseEntity<String>): ResponseEntity<String>
     {
         val mockFlowClient = mock<FuelFlowClient>
         {
@@ -112,7 +122,7 @@ class ErrorReportControllerTests
 
         val sut = ErrorReportController(mockFlowClient, mockProjectService, mockProperties)
 
-        return sut.postErrorReport(data, projectId)
+        return sut.postErrorReport(data)
     }
 
 }

@@ -76,6 +76,7 @@ export const actions: ActionTree<RootState, RootState> & RootActions = {
         const data = {
             email: payload.email || rootState.currentUser,
             country: rootState.baseline.country || ErrorReportDefaultValue.country,
+            projectId: rootState.projects.currentProject?.id || null,
             projectName: rootState.projects.currentProject?.name || ErrorReportDefaultValue.project,
             browserAgent: navigator.userAgent,
             timeStamp: new Date().toISOString(),
@@ -89,14 +90,10 @@ export const actions: ActionTree<RootState, RootState> & RootActions = {
             errors: getters.errors
         }
         commit({type: `errors/${ErrorsMutation.SendingErrorReport}`, payload: true});
-        let url = "error-report"
-        if (rootState.projects.currentProject?.id) {
-            url = url + "?projectId=" + rootState.projects.currentProject.id
-        }
         await api<ErrorsMutation, ErrorsMutation>(context)
             .withSuccess(`errors/${ErrorsMutation.ErrorReportSuccess}` as ErrorsMutation, true)
             .withError(`errors/${ErrorsMutation.ErrorReportError}` as ErrorsMutation, true)
-            .postAndReturn(url, data)
+            .postAndReturn("error-report", data)
 
         commit({type: `errors/${ErrorsMutation.SendingErrorReport}`, payload: false});
     }
