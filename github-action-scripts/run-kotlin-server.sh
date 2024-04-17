@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -ex
 
-nohup $HERE/../src/gradlew -p $HERE/../src app:bootrun > kotlin-logs.out 2>&1 &
+nohup src/gradlew -p src app:bootrun > kotlin-logs.out 2>&1 &
 
 sleep 20
 
