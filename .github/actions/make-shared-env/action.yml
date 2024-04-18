@@ -39,7 +39,7 @@ runs:
         path: src/app/static/node_modules
         key: node-${{ env.NODE_VERSION }}-${{ hashFiles('**/package-lock.json') }}
         restore-keys: |
-          node-
+          node-${{ env.NODE_VERSION }}-
 
     - uses: actions/setup-java@v4
       with:
