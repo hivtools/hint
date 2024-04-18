@@ -21,15 +21,17 @@ import {expectTranslatedWithStoreType, mountWithTranslate, shallowMountWithTrans
 import {SurveyAndProgramActions} from "../../../app/store/surveyAndProgram/actions";
 import {getters} from "../../../app/store/surveyAndProgram/getters";
 import {DataType, SurveyAndProgramState} from "../../../app/store/surveyAndProgram/surveyAndProgram";
-import {testUploadComponent} from "./fileUploads";
+import {testUploadComponent} from "./fileUploads.";
 import {RootState} from "../../../app/root";
+import { MockInstance, Mocked } from 'vitest';
+import { flushPromises } from '@vue/test-utils';
 
 describe("UploadInputs upload component", () => {
 
-    let actions: vi.Mocked<BaselineActions>;
+    let actions: Mocked<BaselineActions>;
     let mutations = {};
 
-    let sapActions: vi.Mocked<SurveyAndProgramActions>;
+    let sapActions: Mocked<SurveyAndProgramActions>;
     let sapMutations = {};
 
     const mockStepperGetters = {
@@ -377,28 +379,28 @@ describe("UploadInputs upload component", () => {
         expect(wrapper.findAllComponents(ManageFile)[2].props("existingFileName")).toBe("errored file");
     });
 
-    it("upload pjnz dispatches baseline/uploadPJNZ", (done) => {
-        expectUploadToDispatchAction(0, () => actions.uploadPJNZ, done);
+    it("upload pjnz dispatches baseline/uploadPJNZ", async () => {
+        await expectUploadToDispatchAction(0, () => actions.uploadPJNZ);
     });
 
-    it("upload shape dispatches baseline/uploadShape", (done) => {
-        expectUploadToDispatchAction(1, () => actions.uploadShape, done);
+    it("upload shape dispatches baseline/uploadShape", async () => {
+        await expectUploadToDispatchAction(1, () => actions.uploadShape);
     });
 
-    it("upload population dispatches baseline/uploadPopulation", (done) => {
-        expectUploadToDispatchAction(2, () => actions.uploadPopulation, done);
+    it("upload population dispatches baseline/uploadPopulation", async () => {
+        await expectUploadToDispatchAction(2, () => actions.uploadPopulation);
     });
 
-    it("remove pjnz dispatches baseline/deletePJNZ", (done) => {
-        expectDeleteToDispatchAction(0, () => actions.deletePJNZ, done);
+    it("remove pjnz dispatches baseline/deletePJNZ", async () => {
+        await expectDeleteToDispatchAction(0, () => actions.deletePJNZ);
     });
 
-    it("remove shape dispatches baseline/deleteShape", (done) => {
-        expectDeleteToDispatchAction(1, () => actions.deleteShape, done);
+    it("remove shape dispatches baseline/deleteShape", async () => {
+        await expectDeleteToDispatchAction(1, () => actions.deleteShape);
     });
 
-    it("remove population dispatches baseline/deletePopulation", (done) => {
-        expectDeleteToDispatchAction(2, () => actions.deletePopulation, done);
+    it("remove population dispatches baseline/deletePopulation", async () => {
+        await expectDeleteToDispatchAction(2, () => actions.deletePopulation);
     });
 
     it("can return true when fromADR", async () => {
@@ -574,9 +576,8 @@ describe("UploadInputs upload component", () => {
 
     });
 
-    const expectUploadToDispatchAction = (index: number,
-                                          action: () => vi.MockInstance<any, any>,
-                                          done: vi.DoneCallback) => {
+    const expectUploadToDispatchAction = async (index: number,
+                                          action: () => MockInstance<any, any>) => {
         const store = createSut();
         const wrapper = shallowMountWithTranslate(UploadInputs, store, {
             global: {
@@ -585,15 +586,12 @@ describe("UploadInputs upload component", () => {
         });
 
         wrapper.findAllComponents(ManageFile)[index].props().upload({name: "TEST"});
-        setTimeout(() => {
-            expect(action().mock.calls[0][1]).toStrictEqual({name: "TEST"});
-            done();
-        });
+        await flushPromises();
+        expect(action().mock.calls[0][1]).toStrictEqual({name: "TEST"});
     };
 
-    const expectDeleteToDispatchAction = (index: number,
-                                          action: () => vi.MockInstance<any, any>,
-                                          done: vi.DoneCallback) => {
+    const expectDeleteToDispatchAction = async (index: number,
+                                          action: () => MockInstance<any, any>) => {
         const store = createSut();
         const wrapper = shallowMountWithTranslate(UploadInputs, store, {
             global: {
@@ -602,10 +600,8 @@ describe("UploadInputs upload component", () => {
         });
 
         wrapper.findAllComponents(ManageFile)[index].props().deleteFile();
-        setTimeout(() => {
-            expect(action().mock.calls.length).toBe(1);
-            done();
-        });
+        await flushPromises();
+        expect(action().mock.calls.length).toBe(1);
     }
 });
 

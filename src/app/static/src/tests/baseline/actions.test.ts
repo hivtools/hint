@@ -17,8 +17,8 @@ import {actions} from "../../app/store/baseline/actions";
 import {BaselineMutation} from "../../app/store/baseline/mutations";
 import {expectEqualsFrozen, testUploadErrorCommitted} from "../testHelpers";
 import {ADRSchemas} from "../../app/types";
-import Mock = vi.Mock;
 import {initialChorplethSelections} from "../../app/store/plottingSelections/plottingSelections";
+import { Mock } from "vitest";
 
 const adrSchemas: ADRSchemas = {
     baseUrl: "adr.com",
@@ -174,7 +174,7 @@ describe("Baseline actions", () => {
     });
 
     afterEach(() => {
-        (console.log as vi.Mock).mockClear();
+        (console.log as Mock).mockClear();
     });
 
     it("sets country and iso3 after PJNZ file upload, and fetches plotting metadata, and validates", async () => {

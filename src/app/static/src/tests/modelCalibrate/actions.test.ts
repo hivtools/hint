@@ -16,6 +16,8 @@ import {switches} from "../../app/featureSwitches";
 import {DownloadResultsMutation} from "../../app/store/downloadResults/mutations";
 import { ModelOutputTabs } from "../../app/types";
 import { BarchartIndicator } from "../../app/generated";
+import { Mock } from "vitest";
+import { flushPromises } from "@vue/test-utils";
 
 const rootState = mockRootState();
 describe("ModelCalibrate actions", () => {
@@ -26,8 +28,16 @@ describe("ModelCalibrate actions", () => {
     });
 
     afterEach(() => {
-        (console.log as vi.Mock).mockClear();
+        (console.log as Mock).mockClear();
     });
+
+    beforeAll(() => {
+        vi.useFakeTimers();
+    })
+
+    afterAll(() => {
+        vi.useRealTimers();
+    })
 
     it("fetchModelCalibrateOptions fetches options and commits mutations", async () => {
         const commit = vi.fn();
@@ -97,7 +107,7 @@ describe("ModelCalibrate actions", () => {
         expect(dispatch.mock.calls.length).toBe(0);
     });
 
-    it("poll commits status when successfully fetched", (done) => {
+    it("poll commits status when successfully fetched", async () => {
         mockAxios.onGet(`/calibrate/status/1234`)
             .reply(200, mockSuccess("TEST DATA"));
 
@@ -106,20 +116,17 @@ describe("ModelCalibrate actions", () => {
         const state = mockModelCalibrateState({calibrateId: "1234"});
 
         actions.poll({commit, dispatch, state, rootState} as any);
-
-        setTimeout(() => {
-            expect(commit.mock.calls.length).toBe(2);
-            expect(commit.mock.calls[0][0].type).toBe("PollingForStatusStarted");
-            expect(commit.mock.calls[0][0].payload).toBeGreaterThan(-1);
-            expect(commit.mock.calls[1][0].type).toBe("CalibrateStatusUpdated");
-            expect(commit.mock.calls[1][0].payload).toBe("TEST DATA");
-            expect(dispatch.mock.calls.length).toBe(0);
-
-            done();
-        }, 2100);
+        vi.advanceTimersByTime(2000);
+        await flushPromises();
+        expect(commit.mock.calls.length).toBe(2);
+        expect(commit.mock.calls[0][0].type).toBe("PollingForStatusStarted");
+        expect(+commit.mock.calls[0][0].payload).toBeGreaterThan(-1);
+        expect(commit.mock.calls[1][0].type).toBe("CalibrateStatusUpdated");
+        expect(commit.mock.calls[1][0].payload).toBe("TEST DATA");
+        expect(dispatch.mock.calls.length).toBe(0);
     });
 
-    it("poll commits error when unsuccessful fetch", (done) => {
+    it("poll commits error when unsuccessful fetch", async () => {
         mockAxios.onGet(`/calibrate/status/1234`)
             .reply(500, mockFailure("Test Error"));
 
@@ -128,22 +135,19 @@ describe("ModelCalibrate actions", () => {
         const state = mockModelCalibrateState({calibrateId: "1234"});
 
         actions.poll({commit, dispatch, state, rootState} as any);
+        vi.advanceTimersByTime(2000);
+        await flushPromises();
+        expect(commit.mock.calls.length).toBe(2);
+        expect(commit.mock.calls[0][0].type).toBe("PollingForStatusStarted");
 
-        setTimeout(() => {
-            expect(commit.mock.calls.length).toBe(2);
-            expect(commit.mock.calls[0][0].type).toBe("PollingForStatusStarted");
-
-            expect(commit.mock.calls[1][0]).toStrictEqual({
-                type: "SetError",
-                payload: mockError("Test Error")
-            });
-            expect(dispatch.mock.calls.length).toBe(0);
-
-            done();
-        }, 2100);
+        expect(commit.mock.calls[1][0]).toStrictEqual({
+            type: "SetError",
+            payload: mockError("Test Error")
+        });
+        expect(dispatch.mock.calls.length).toBe(0);
     });
 
-    it("poll dispatches getResult when status done", (done) => {
+    it("poll dispatches getResult when status done", async () => {
         mockAxios.onGet(`/calibrate/status/1234`)
             .reply(200, mockSuccess("TEST DATA"));
 
@@ -152,17 +156,14 @@ describe("ModelCalibrate actions", () => {
         const state = mockModelCalibrateState({calibrateId: "1234", status: {done: true, success: false} as any});
 
         actions.poll({commit, dispatch, state, rootState} as any);
+        vi.advanceTimersByTime(2000);
+        await flushPromises();
+        expect(commit.mock.calls.length).toBe(2);
+        expect(commit.mock.calls[0][0].type).toBe("PollingForStatusStarted");
+        expect(commit.mock.calls[1][0].type).toBe("CalibrateStatusUpdated");
 
-        setTimeout(() => {
-            expect(commit.mock.calls.length).toBe(2);
-            expect(commit.mock.calls[0][0].type).toBe("PollingForStatusStarted");
-            expect(commit.mock.calls[1][0].type).toBe("CalibrateStatusUpdated");
-
-            expect(dispatch.mock.calls.length).toBe(1);
-            expect(dispatch.mock.calls[0][0]).toBe("getResult");
-
-            done();
-        }, 2100);
+        expect(dispatch.mock.calls.length).toBe(1);
+        expect(dispatch.mock.calls[0][0]).toBe("getResult");
     });
 
     it("getResult commits result and warnings when successfully fetched, sets default plotting selections, and dispatches getCalibratePlot and getComparisonPlot", async () => {

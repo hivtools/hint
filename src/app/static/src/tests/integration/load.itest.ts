@@ -3,6 +3,7 @@ import {login, rootState} from "./integrationTest";
 import {actions as baselineActions} from "../../app/store/baseline/actions";
 import {ShapeResponse} from "../../app/generated";
 import {getFormData} from "./helpers";
+import { flushPromises } from "@vue/test-utils";
 
 describe("load actions", () => {
 
@@ -20,10 +21,12 @@ describe("load actions", () => {
         const mockLocationReload = vi.fn();
         delete (window as any).location;
         window.location = {reload: mockLocationReload} as any;
+        vi.useFakeTimers();
     });
 
     afterAll(() => {
         window.location = realLocation;
+        vi.useRealTimers();
     });
 
     it("can submit model output ZIP file", async () => {
@@ -39,20 +42,18 @@ describe("load actions", () => {
         expect(commit.mock.calls[1][0].payload).not.toBeNull();
     });
 
-    it("can poll model output ZIP status", (done) => {
+    it("can poll model output ZIP status", async () => {
         const commit = vi.fn();
         const dispatch = vi.fn()
         const state = {rehydrateId: "1"}
 
         actions.pollRehydrate({commit, dispatch, state, rootState} as any);
-
-        setTimeout(() => {
-            expect(commit.mock.calls.length).toBe(2)
-            expect(commit.mock.calls[0][0].type).toBe("RehydratePollingStarted");
-            expect(commit.mock.calls[0][0].payload).toBeGreaterThan(-1);
-            expect(commit.mock.calls[1][0].type).toBe("RehydrateStatusUpdated");
-            expect(commit.mock.calls[1][0]["payload"].status).toBe("MISSING");
-            done();
-        }, 3100)
+        vi.advanceTimersByTime(3000);
+        await flushPromises();
+        expect(commit.mock.calls.length).toBe(2)
+        expect(commit.mock.calls[0][0].type).toBe("RehydratePollingStarted");
+        expect(commit.mock.calls[0][0].payload).toBeGreaterThan(-1);
+        expect(commit.mock.calls[1][0].type).toBe("RehydrateStatusUpdated");
+        expect(commit.mock.calls[1][0]["payload"].status).toBe("MISSING");
     });
 });

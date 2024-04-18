@@ -27,9 +27,9 @@ import registerTranslations from "../../../app/store/translations/registerTransl
 import {expectTranslatedWithStoreType, mountWithTranslate, shallowMountWithTranslate} from "../../testHelpers";
 import {ADRState} from "../../../app/store/adr/adr";
 import ResetConfirmation from "../../../app/components/resetConfirmation/ResetConfirmation.vue";
-import Mock = vi.Mock;
 import HintTreeSelect from "../../../app/components/HintTreeSelect.vue";
 import {getters} from "../../../app/store/root/getters";
+import { Mock } from "vitest";
 
 describe("select dataset", () => {
 

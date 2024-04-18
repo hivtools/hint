@@ -1,12 +1,13 @@
 // Mock the import of plotly so that we can spy on its exported 'newPlot' method - need to do this
 // before importing Plotly
 import Vuex from "vuex";
-
+import plotly from "plotly.js-basic-dist";
 vi.mock("plotly.js-basic-dist", () => ({
-    newPlot: vi.fn(),
-    react: vi.fn()
+    default: {
+        newPlot: vi.fn(),
+        react: vi.fn()
+    }
 }));
-import * as plotly from "plotly.js-basic-dist";
 import Vue, { nextTick } from "vue";
 import { flushPromises, shallowMount } from "@vue/test-utils";
 import Plotly from "../../../app/components/genericChart/Plotly.vue";
@@ -241,20 +242,16 @@ describe("Plotly", () => {
         expect(plotlyParams[3]).toStrictEqual(expectedConfig);
     };
 
-    it("invokes Plotly on render with expected parameters", (done) => {
+    it("invokes Plotly on render with expected parameters", async () => {
         const props = { chartData: chartData(), layoutData } as any;
         const wrapper = shallowMount(Plotly, { props, store });
 
         // Rendering flag should be set while rendering proceeds
         expect((wrapper.vm as any).rendering).toBe(true);
-
-        setTimeout(() => {
-            expect(mockPlotlyReact.mock.calls.length).toBe(1);
-            expectPlotlyParams(mockPlotlyReact.mock.calls[0]);
-            expect((wrapper.vm as any).rendering).toBe(false);
-
-            done();
-        });
+        await flushPromises();
+        expect(mockPlotlyReact.mock.calls.length).toBe(1);
+        expectPlotlyParams(mockPlotlyReact.mock.calls[0]);
+        expect((wrapper.vm as any).rendering).toBe(false);
     });
 
     it("invokes Plotly newPlot when layout subplot rows has changed", async () => {
@@ -277,60 +274,50 @@ describe("Plotly", () => {
                 rows: 3
             }
         }, layoutData)
-        await nextTick();
+        await flushPromises();
         expect(mockPlotlyNewPlot.mock.calls.length).toBe(1);
         expectPlotlyParams(mockPlotlyNewPlot.mock.calls[0], 3);
         expect((wrapper.vm as any).rendering).toBe(false);
     });
 
-    it("invokes plotly again on data change", (done) => {
-       const props = { chartData: chartData(), layoutData } as any;
-       const wrapper = shallowMount(Plotly, { props, store });
-
-       setTimeout(async () => {
-            await wrapper.setProps({
-                chartData: chartData("date111", 1.5),
-                layoutData
-            });
-
-            (wrapper.vm as any).$options.watch.chartData.handler.call(wrapper.vm);
-            await nextTick();
-
-            setTimeout(() => {
-                expect(mockPlotlyReact.mock.calls.length).toBe(3);
-                const plotlyParams = mockPlotlyReact.mock.calls[1];
-                expect(plotlyParams[0].constructor.name).toBe("HTMLDivElement");
-                expect(plotlyParams[1]).toStrictEqual(expectedData("date111", 1.5));
-                expect(plotlyParams[2]).toStrictEqual(expectedLayout(2, "date111"));
-                expect(plotlyParams[3]).toStrictEqual(expectedConfig);
-
-                done();
-            });
-       });
-    });
-
-    it("invokes plotly again on layout change", (done) => {
+    it("invokes plotly again on data change", async () => {
         const props = { chartData: chartData(), layoutData } as any;
         const wrapper = shallowMount(Plotly, { props, store });
-        setTimeout(async () => {
-            await wrapper.setProps({
-                chartData: chartData(),
-                layoutData: {...layoutData, responsive: false}
-            });
-
-            (wrapper.vm as any).$options.watch.layoutData.call(wrapper.vm);
-            await nextTick();
-
-            setTimeout(() => {
-                expect(mockPlotlyReact.mock.calls.length).toBe(2);
-                const plotlyParams = mockPlotlyReact.mock.calls[1];
-                expect(plotlyParams[0].constructor.name).toBe("HTMLDivElement");
-                expect(plotlyParams[1]).toStrictEqual(expectedData());
-                expect(plotlyParams[2]).toStrictEqual(expectedLayout(2));
-                expect(plotlyParams[3]).toStrictEqual(expectedConfig);
-                done();
-            });
+        await nextTick(); 
+        await wrapper.setProps({
+            chartData: chartData("date111", 1.5),
+            layoutData
         });
+
+        (wrapper.vm as any).$options.watch.chartData.handler.call(wrapper.vm);
+        await flushPromises();
+
+        expect(mockPlotlyReact.mock.calls.length).toBe(3);
+        const plotlyParams = mockPlotlyReact.mock.calls[1];
+        expect(plotlyParams[0].constructor.name).toBe("HTMLDivElement");
+        expect(plotlyParams[1]).toStrictEqual(expectedData("date111", 1.5));
+        expect(plotlyParams[2]).toStrictEqual(expectedLayout(2, "date111"));
+        expect(plotlyParams[3]).toStrictEqual(expectedConfig);
+    });
+
+    it("invokes plotly again on layout change", async () => {
+        const props = { chartData: chartData(), layoutData } as any;
+        const wrapper = shallowMount(Plotly, { props, store });
+        await nextTick();
+        await wrapper.setProps({
+            chartData: chartData(),
+            layoutData: {...layoutData, responsive: false}
+        });
+
+        (wrapper.vm as any).$options.watch.layoutData.call(wrapper.vm);
+        await flushPromises();
+
+        expect(mockPlotlyReact.mock.calls.length).toBe(2);
+        const plotlyParams = mockPlotlyReact.mock.calls[1];
+        expect(plotlyParams[0].constructor.name).toBe("HTMLDivElement");
+        expect(plotlyParams[1]).toStrictEqual(expectedData());
+        expect(plotlyParams[2]).toStrictEqual(expectedLayout(2));
+        expect(plotlyParams[3]).toStrictEqual(expectedConfig);
     });
 
     it("does not render loading spinner when rendering flag is false", () => {

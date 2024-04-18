@@ -5,6 +5,7 @@ import Vuex from "vuex";
 import {mockRootState} from "./mocks";
 import {store} from "../app/main";
 import Hint from "../app/components/Hint.vue";
+import { Mock } from "vitest";
 
 // Mock the actions before import the router as the app will call
 // these actions on import
@@ -53,7 +54,7 @@ import {router, beforeEnter} from '../app/router';
 describe("Router", () => {
 
     afterAll(() => {
-        (console.error as vi.Mock).mockClear();
+        (console.error as Mock).mockClear();
     });
 
     it("has expected properties", async () => {
