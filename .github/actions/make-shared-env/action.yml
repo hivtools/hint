@@ -1,5 +1,10 @@
 name: Make Shared Environment
 
+inputs:
+  install-packages:
+    description: 'Whether or not to install npm packages'
+    default: 'true'
+
 runs:
   using: "composite"
   steps:
@@ -23,12 +28,8 @@ runs:
         echo "CI_SHA=${GITHUB_SHA}" >> ${GITHUB_ENV}
         echo "CI_BRANCH=${{ github.ref_name }}" >> ${GITHUB_ENV}
 
-    # - name: Get npm cache directory
-    #   id: npm-cache-dir
-    #   shell: bash
-    #   run: echo "dir=$(npm config get cache)" >> ${GITHUB_OUTPUT}
-
     - name: Cache npm deps
+      if: inputs.install-packages == 'true'
       uses: actions/cache@v3
       id: npm-cache
       with:
@@ -47,14 +48,9 @@ runs:
       shell: bash
 
     - name: Install npm deps
-      if: steps.npm-cache.outputs.cache-hit != 'true'
+      if: steps.npm-cache.outputs.cache-hit != 'true' && inputs.install-packages == 'true'
       run: npm ci --silent --prefix=src/app/static
       shell: bash
-
-    # - name: Install npm deps from cache
-    #   if: steps.npm-cache.outputs.cache-hit == 'true'
-    #   run: npm ci --cache ${{ steps.npm-cache-dir.outputs.dir }} --prefer-offline --silent --no-audit --prefix=src/app/static
-    #   shell: bash
 
     - name: Compile kotlin
       run: src/gradlew -p src app:compileKotlin

@@ -20,7 +20,7 @@ jobs:
                 username: ${{ secrets.DOCKERHUB_USERNAME }}
                 password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-            - name: Make shared image
+            - name: Make shared env
               uses: ./.github/actions/make-shared-env
 
             - name: Build app

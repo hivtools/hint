@@ -14,8 +14,10 @@ jobs:
         steps:
             - uses: actions/checkout@v4
 
-            - name: Make shared image
+            - name: Make shared env
               uses: ./.github/actions/make-shared-env
+              with:
+                install-packages: 'false'
 
             - name: Run deps
               run: scripts/run-dependencies.sh

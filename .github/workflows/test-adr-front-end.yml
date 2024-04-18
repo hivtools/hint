@@ -14,7 +14,7 @@ jobs:
         steps:
             - uses: actions/checkout@v4
 
-            - name: Make shared image
+            - name: Make shared env
               uses: ./.github/actions/make-shared-env
 
             - name: Run deps

@@ -6,7 +6,7 @@ on:
         branches:
             - "*"
 
-name: Test Back End
+name: Lint Back End
 
 jobs:
     test:
@@ -14,8 +14,10 @@ jobs:
         steps:
             - uses: actions/checkout@v4
 
-            - name: Make shared image
+            - name: Make shared env
               uses: ./.github/actions/make-shared-env
+              with:
+                install-packages: 'false'
 
             - name: Lint back end
               run: src/gradlew -p src app:detektMain -x app:compileFrontEnd -x app:copyAssets
