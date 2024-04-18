@@ -1,5 +1,8 @@
 name: Make Shared Environment
 
+env:
+  NODE_VERSION: 20
+
 inputs:
   install-packages:
     description: 'Whether or not to install npm packages'
@@ -10,7 +13,7 @@ runs:
   steps:
     - uses: actions/setup-node@v4
       with:
-        node-version: 20
+        node-version: $NODE_VERSION
 
     - name: Setup Environment (PR)
       if: ${{ github.event_name == 'pull_request' }}
@@ -34,7 +37,7 @@ runs:
       id: npm-cache
       with:
         path: src/app/static/node_modules
-        key: node-${{ hashFiles('**/package-lock.json') }}
+        key: node-$NODE_VERSION-${{ hashFiles('**/package-lock.json') }}
         restore-keys: |
           node-
 
