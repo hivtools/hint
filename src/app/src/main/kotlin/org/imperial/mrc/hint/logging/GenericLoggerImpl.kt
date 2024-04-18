@@ -37,6 +37,11 @@ class GenericLoggerImpl(
         logger.info("{}, {}", kv("msg", message), e(additionalData))
     }
 
+    override fun <K, V> error(message: String, additionalData: Map<K, V>?)
+    {
+        logger.error("{}, {}", kv("msg", message), e(additionalData))
+    }
+
     override fun error(request: HttpServletRequest, response: HttpServletResponse, message: String?)
     {
         val log = LogMetadata(
