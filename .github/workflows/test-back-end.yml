@@ -20,9 +20,15 @@ jobs:
             - name: Run deps
               run: scripts/run-dependencies.sh
 
+            - name: Prep back end tests
+              run: |
+                mkdir -p src/app/static/public
+                mkdir -p src/app/static/public/css
+                yes ".class {height: 500px;}" | head -n 200 >> src/app/static/public/css/app.css
+
             - name: Test back end
               run: |
-                src/gradlew -p src :app:detektMain -PexcludeADR=true :app:test :app:jacocoTestReport
+                src/gradlew -p src :app:detektMain -PexcludeADR=true :app:test :app:jacocoTestReport -x app:compileFrontEnd
                 codecov -p . -f src/app/coverage/test/*.xml
               env:
                 CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
