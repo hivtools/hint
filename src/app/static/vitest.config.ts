@@ -10,9 +10,6 @@ export default defineConfig({
     setupFiles: [
       './src/tests/setup.ts'
     ],
-    environmentOptions: {
-      url: 'http://localhost'
-    },
     coverage: {
       provider: "v8",
       reportsDirectory: "coverage",
@@ -23,6 +20,11 @@ export default defineConfig({
         './tests/.*/helpers.ts',
       ],
     },
+    environmentOptions: {
+      jsdom: {
+        url: "http://localhost"
+      }
+    }
   },
-  plugins: [vue()]
+  plugins: [vue()],
 });

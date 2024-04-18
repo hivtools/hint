@@ -1,4 +1,4 @@
-import {mount, shallowMount} from "@vue/test-utils";
+import {flushPromises, mount, shallowMount} from "@vue/test-utils";
 import ShareProject from "../../../app/components/projects/ShareProject.vue";
 import Modal from "../../../app/components/Modal.vue";
 import Vuex from "vuex";
@@ -286,6 +286,8 @@ describe("ShareProject", () => {
         await input.setValue("goodemail");
         await input.trigger("blur");
 
+        await flushPromises();
+
         const modal = wrapper.findComponent(Modal);
         expect(modal.find("input").classes()).not.toContain("is-invalid");
         expect(modal.find(".text-danger").exists()).toBe(false);
@@ -309,6 +311,8 @@ describe("ShareProject", () => {
         const input = wrapper.findComponent(Modal).find("input");
         await input.setValue("GOODEMAIL");
         await input.trigger("blur");
+
+        await flushPromises();
 
         const modal = wrapper.findComponent(Modal);
         expect(modal.find("input").classes()).not.toContain("is-invalid");
@@ -442,7 +446,7 @@ describe("ShareProject", () => {
             expect(inputs.length).toBe(1);
             await inputs[0].setValue("testing");
             await inputs[0].trigger("blur");
-
+            await flushPromises();
             expect(wrapper.findComponent(Modal).findAll("input").length).toBe(2);
             expect(wrapper.findComponent(Modal).find(".help-text").isVisible()).toBe(true);
 
@@ -528,7 +532,7 @@ describe("ShareProject", () => {
         const input = wrapper.findComponent(Modal).find("input");
         await input.setValue("testing");
         await input.trigger("blur");
-
+        await flushPromises();
         await wrapper.findComponent(Modal).find("button").trigger("click");
         expect(cloneProject.mock.calls[0][1]).toEqual({projectId: 1, emails: ["testing"]});
     });

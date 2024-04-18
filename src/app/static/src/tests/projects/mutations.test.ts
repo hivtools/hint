@@ -7,7 +7,7 @@ describe("Projects mutations", () => {
     const testNow = Date.now();
 
     beforeAll(() => {
-        vi.useFakeTimers('modern');
+        vi.useFakeTimers();
         vi.setSystemTime(testNow);
     });
 

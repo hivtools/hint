@@ -642,9 +642,8 @@ describe("select dataset", () => {
             }, 
         });
         await rendered.find("button").trigger("click");
-        const select = rendered.findComponent(TreeSelect);
+        const select = rendered.findComponent(HintTreeSelect);
         expect(select.props("multiple")).toBe(false);
-        expect(select.props("searchable")).toBe(true);
 
         const expectedOptions = [
             {

@@ -17,6 +17,7 @@ import MapEmptyFeature from "../../../../app/components/plots/MapEmptyFeature.vu
 import ResetMap from "../../../../app/components/plots/ResetMap.vue";
 import { mountWithTranslate } from "../../../testHelpers";
 import { nextTick } from "vue";
+import HintTreeSelect from "../../../../app/components/HintTreeSelect.vue";
 
 vi.mock("@vue-leaflet/vue-leaflet", () => {
     const LMap = {
@@ -82,7 +83,7 @@ const getWrapper = (customPropsData: any = {}) => {
 export const expectIndicatorSelect = (wrapper: VueWrapper<any>, divId: string, value: string) => {
     const indDiv = wrapper.find("#" + divId);
     expect(indDiv.classes()[0]).toBe("form-group");
-    const indSelect = indDiv.findComponent(Treeselect);
+    const indSelect = indDiv.findComponent(HintTreeSelect);
     expect(indSelect.props().multiple).toBe(false);
     expect(indSelect.props().clearable).toBe(false);
     expect(indSelect.props().options).toStrictEqual(props.indicators);
