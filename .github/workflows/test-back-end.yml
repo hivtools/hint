@@ -28,7 +28,7 @@ jobs:
 
             - name: Test back end
               run: |
-                src/gradlew -p src :app:detektMain -PexcludeADR=true :app:test :app:jacocoTestReport -x app:compileFrontEnd
+                src/gradlew -p src -PexcludeADR=true :app:test :app:jacocoTestReport -x app:compileFrontEnd
                 codecov -p . -f src/app/coverage/test/*.xml
               env:
                 CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
