@@ -293,7 +293,6 @@ describe("root actions", () => {
             errors: [err]
         }
         const commit = jest.fn();
-        const dispatch = jest.fn();
 
         const payload: ErrorReportManualDetails = {
             email: "test@example.com",
@@ -302,20 +301,19 @@ describe("root actions", () => {
             description: "desc"
         }
 
-        await actions.generateErrorReport({commit, rootState, getters, dispatch} as any, payload);
+        await actions.generateErrorReport({commit, rootState, getters} as any, payload);
 
         expect(commit.mock.calls.length).toEqual(3);
         expect(commit.mock.calls[0][0]).toEqual({payload: true, type: "errors/SendingErrorReport"});
         expect(commit.mock.calls[1][0]).toEqual({payload: "ok", type: "errors/ErrorReportSuccess"});
         expect(commit.mock.calls[2][0]).toEqual({payload: false, type: "errors/SendingErrorReport"});
-        expect(dispatch.mock.calls.length).toEqual(1);
-        expect(dispatch.mock.calls[0][0]).toEqual("projects/cloneProject");
         expect(mockAxios.history.post.length).toEqual(1)
         expect(mockAxios.history.post[0].url).toEqual(url)
 
         const expected = {
             email: "test@example.com",
             country: "Malawi",
+            projectId: 1,
             projectName: "p1",
             timeStamp: new Date(),
             modelRunId: "1234",
@@ -338,6 +336,7 @@ describe("root actions", () => {
         expect(data.email).toStrictEqual(expected.email)
         expect(data.country).toStrictEqual(expected.country)
         expect(data.projectName).toStrictEqual(expected.projectName)
+        expect(data.projectId).toStrictEqual(expected.projectId)
         expect(data.browserAgent).toContain("Mozilla")
         expect(data.modelRunId).toStrictEqual(expected.modelRunId)
         expect(data.calibrateId).toStrictEqual(expected.calibrateId)
