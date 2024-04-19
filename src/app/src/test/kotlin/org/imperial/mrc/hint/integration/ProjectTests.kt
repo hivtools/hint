@@ -27,7 +27,7 @@ class ProjectTests : VersionFileTests()
     fun `can create new project`(isAuthorized: IsAuthorized)
     {
         val result = createProject()
-        assertSecureWithSuccess(isAuthorized, result,null)
+        assertSecureWithSuccess(isAuthorized, result, null)
 
         if(isAuthorized == IsAuthorized.TRUE)
         {
