@@ -17,7 +17,7 @@
                     <br/>
                 </div>
                 <div v-if="!!colourScales" class="adjust-scale mt-1">
-                    <a @click="toggleAdjust" href="">
+                    <a @click.prevent="showAdjust = !showAdjust" href="">
                         <span v-if="showAdjust" v-translate="'done'"></span>
                         <span v-if="!showAdjust" v-translate="'adjustScale'"></span>
                     </a>
@@ -60,15 +60,9 @@ export default defineComponent({
 
         const showAdjust = ref<boolean>(false);
 
-        const toggleAdjust = (e: Event) => {
-            e.preventDefault();
-            showAdjust.value = !showAdjust.value;
-        };
-
         return {
             colourScales,
-            showAdjust,
-            toggleAdjust
+            showAdjust
         }
     },
     components: {

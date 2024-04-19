@@ -21,11 +21,10 @@ export const getFeaturesByLevel = function(features: Feature[], featureLevels: L
     return result;
 };
 
-export const getVisibleFeatures = function(features: Feature[], selectedLevels: FilterOption[], selectedAreas: FilterOption[]) {
+export const getVisibleFeatures = function(features: Feature[], selectedLevels: FilterOption[]) {
     const levels = selectedLevels.map((l: FilterOption) => parseInt(l.id));
-    const areas = selectedAreas.map((a: FilterOption) => a.id);
     return features.filter((feature: Feature) => {
-        return feature.properties && levels.includes(feature.properties["area_level"]) && areas.includes(feature.properties["area_id"]);
+        return feature.properties && levels.includes(feature.properties["area_level"]);
     });
 };
 
@@ -135,7 +134,6 @@ export const scaleStepFromMetadata = function (meta: ChoroplethIndicatorMetadata
     return (meta.max - meta.min) / 10;
 };
 
-
 export const getFeatureData = function (data: any[],
                                         indicatorMeta: ChoroplethIndicatorMetadata,
                                         colourRange: NumericRange): IndicatorValuesDict {
@@ -151,15 +149,6 @@ export const getFeatureData = function (data: any[],
         }
     }
 
-    return result;
-};
-
-export const initialiseScaleFromMetadata = function (meta: ChoroplethIndicatorMetadata | undefined) {
-    const result = initialScaleSettings();
-    if (meta) {
-        result.customMin = meta.min;
-        result.customMax = meta.max;
-    }
     return result;
 };
 
@@ -194,10 +183,14 @@ export const tooltipContent = function (feature: Feature, featureIndicators: Ind
             <br/>(${formatOutput(stringLower, format, scale, accuracy, true) + " - " +
             formatOutput(stringUpper, format, scale, accuracy, true)})
         </div>`;
-    } else {
+    } else if (stringVal) {
         return `<div>
             <strong>${area_name}</strong>
             <br/>${formatOutput(stringVal, format, scale, accuracy, true)}
+        </div>`;
+    } else {
+        return `<div>
+            <strong>${area_name}</strong>
         </div>`;
     }
 }

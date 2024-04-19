@@ -6,7 +6,7 @@
                         :key="feature.properties.area_id"
                         :geojson="feature"
                         :options="createTooltips"
-                        :options-style="getStyle(feature)">
+                        :options-style="() => getStyle(feature)">
             </l-geo-json>
             <reset-map @reset-view="updateBounds"></reset-map>
             <map-legend :indicator-metadata="indicatorMetadata"
@@ -27,22 +27,22 @@ import { Feature } from "geojson";
 import {
     getVisibleFeatures,
     getFeatureData,
-    initialiseScaleFromMetadata,
 } from "./utils";
 import ResetMap from "./ResetMap.vue";
 import MapLegend from "./MapLegend.vue";
-import {getColourRange, getScaleLevels} from "../utils";
+import {getColourRange, getIndicatorMetadata, getScaleLevels} from "../utils";
 import {IndicatorValuesDict, NumericRange} from "../../../types";
 import {ChoroplethIndicatorMetadata} from "../../../generated";
 import { ScaleSettings } from "../../../store/plotState/plotState";
 import {useMapTooltips} from "../useMapTooltips";
-import {useUpdateScale} from "../useUpdateScale";
 
 const store = useStore<RootState>();
 const plotData = computed<PlotData>(() => store.state.plotData.choropleth);
 
-const {updateOutputColourScale} = useUpdateScale();
-const indicatorMetadata = ref<ChoroplethIndicatorMetadata>(store.getters["modelCalibrate/indicatorMetadata"]);
+const selectedIndicator = computed<string>(() => {
+    return store.state.plotSelections.choropleth.filters.find(f => f.stateFilterId === "indicator")!.selection[0].id
+})
+const indicatorMetadata = computed<ChoroplethIndicatorMetadata>(() => getIndicatorMetadata(store, selectedIndicator.value))
 const colourRange = ref<NumericRange | null>(null);
 const scaleLevels = ref<any>(null);
 const selectedScale = ref<ScaleSettings | null>(null);
@@ -58,6 +58,7 @@ const featureRefs = ref<typeof LGeoJson[]>([]);
 const {createTooltips, updateTooltips} = useMapTooltips(featureData, indicatorMetadata, currentFeatures, featureRefs)
 
 const updateMap = () => {
+    plotData.value = store.state.plotData.choropleth;
     updateFeatures();
     updateColourScales();
     updateTooltips();
@@ -69,12 +70,7 @@ const colourScales = computed(() => {
 
 const updateColourScales = () => {
     const colourScales = store.state.plotState.output.colourScales;
-    const selectedIndicator =  store.getters["plotSelections/selectedIndicator"];
-    selectedScale.value = colourScales[selectedIndicator];
-    if (!selectedScale.value) {
-        selectedScale.value = initialiseScaleFromMetadata(indicatorMetadata.value);
-        updateOutputColourScale(selectedScale.value);
-    }
+    selectedScale.value = colourScales[selectedIndicator.value];
     colourRange.value = getColourRange(indicatorMetadata.value, selectedScale.value, plotData.value);
     scaleLevels.value = getScaleLevels(indicatorMetadata.value, colourRange.value);
     featureData.value = getFeatureData(
@@ -82,35 +78,39 @@ const updateColourScales = () => {
             indicatorMetadata.value,
             colourRange.value ? colourRange.value : {max: 1, min: 0}
     );
-}
+};
 
 const updateFeatures = () => {
-    indicatorMetadata.value = store.getters["modelCalibrate/indicatorMetadata"];
     const selectedLevel = store.state.plotSelections.choropleth.filters
             .find(f => f.stateFilterId === "detail")!.selection;
-    const selectedAreas = store.state.plotSelections.choropleth.filters
-            .find(f => f.stateFilterId === "area")!.selection;
-    currentFeatures.value = getVisibleFeatures(features, selectedLevel, selectedAreas);
-}
+    currentFeatures.value = getVisibleFeatures(features, selectedLevel);
+};
+
+const selectedAreaIds = computed(() => {
+    return store.state.plotSelections.choropleth.filters
+        .find(f => f.stateFilterId === "area")!.selection
+        .map(opt => opt.id);
+});
 
 const updateBounds = () => {
-    if (featureRefs.value.length > 0) {
-        map.value?.leafletObject.fitBounds(featureRefs.value.map(f => f.leafletObject.getBounds()));
+    const visibleRefs = featureRefs.value
+        .filter(f => selectedAreaIds.value.includes(f.geojson?.properties?.area_id))
+    if (visibleRefs.length > 0) {
+        map.value?.leafletObject.fitBounds(visibleRefs
+                .map(f => f.leafletObject.getBounds()));
     }
 };
 
-// Watch on instead of using computed.
-// When the plotData updates, we want to update the colours, the features and the legend.
-// If we use computed this will cause multiple updates
-// 1. When a selection changes it will update immediately
-// 2. After the plotData has been fetched async it will update again
-// This can cause the map to appear to flicker as it updates with old scales
-// then quickly updates after new data has been fetched.
-// Instead manually watch on the plot data changes, and also trigger this when a user changes the
-// scale selection
-watch(plotData, updateMap)
+// Use watchers instead of computed
+// When the plotSelections updates, the new data will have been fetched from the backend already
+// so we can update the UI.
+// We also want to update the UI when scale selections get changed.
+// But updating the plotSelections will also update the scale selections
+// So using computed we end up with duplicate updates when plotSelections change.
+// So we use watch instead for more control over when things are updated.
 watch(colourScales, updateColourScales)
-watch(featureRefs.value, updateBounds);
+watch(selectedAreaIds, updateBounds);
+watch(() => [store.state.plotSelections.choropleth], updateMap);
 
 const showColour = (feature: Feature) => {
     return featureData.value[feature.properties!.area_id]

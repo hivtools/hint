@@ -4,6 +4,12 @@ import * as d3ScaleChromatic from "d3-scale-chromatic";
 import {ScaleSettings, ScaleType} from "../../store/plotState/plotState";
 import {formatLegend, getIndicatorRange, roundToContext} from "./choropleth/utils";
 import {PlotData} from "../../store/plotData/plotData";
+import {Store} from "vuex";
+import {RootState} from "../../root";
+
+export const getIndicatorMetadata = (store: Store<RootState>, selectedIndicator: string): ChoroplethIndicatorMetadata => {
+    return store.state.modelCalibrate.metadata!.indicators.find(i => i.indicator == selectedIndicator)!
+}
 
 export const getColourRange = (indicatorMetadata: ChoroplethIndicatorMetadata, scaleSettings: ScaleSettings, plotData: PlotData): NumericRange => {
     if (!indicatorMetadata) {
