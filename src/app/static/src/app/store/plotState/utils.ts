@@ -15,7 +15,8 @@ export const commitInitialScaleSelections = (
     }, {} as Dict<ScaleSettings>)
     commit({
             type: `plotState/${PlotStateMutations.setOutputColourScales}`,
-            payload: newScaleSettings},
+            payload: newScaleSettings
+        },
         { root: true }
     );
 };
