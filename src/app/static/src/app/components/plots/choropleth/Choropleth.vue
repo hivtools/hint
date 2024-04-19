@@ -45,7 +45,7 @@ import {getFeatureData} from "./utils";
 import MapEmptyFeature from "../MapEmptyFeature.vue";
 
 const store = useStore<RootState>();
-const plotData = ref<PlotData>(store.state.plotData.choropleth);
+const plotData = computed<PlotData>(() => store.state.plotData.choropleth);
 
 const selectedIndicator = computed<string>(() => {
     return store.state.plotSelections.choropleth.filters.find(f => f.stateFilterId === "indicator")!.selection[0].id
