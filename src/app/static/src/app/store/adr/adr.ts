@@ -7,6 +7,7 @@ import {RootState} from "../../root";
 
 export interface ADRState {
     datasets: any[],
+    datasetsWithOutput: any[],
     releases: any[],
     fetchingDatasets: boolean,
     key: string | null,
@@ -20,6 +21,7 @@ export interface ADRState {
 export const initialADRState = (): ADRState => {
     return {
         datasets: [],
+        datasetsWithOutput: [],
         releases: [],
         key: null,
         keyError: null,

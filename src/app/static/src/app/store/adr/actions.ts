@@ -4,7 +4,7 @@ import qs from "qs";
 import {ADRState} from "./adr";
 import {ADRMutation} from "./mutations";
 import {datasetFromMetadata} from "../../utils";
-import {Organization, Release} from "../../types";
+import {ADRSchemas, Organization, Release} from "../../types";
 import {BaselineMutation} from "../baseline/mutations";
 import {RootState} from "../../root";
 
@@ -13,6 +13,7 @@ export interface ADRActions {
     saveKey: (store: ActionContext<ADRState, RootState>, key: string) => void;
     deleteKey: (store: ActionContext<ADRState, RootState>) => void;
     getDatasets: (store: ActionContext<ADRState, RootState>) => void;
+    getDatasetsWithOutput: (store: ActionContext<ADRState, RootState>) => void;
     getReleases: (store: ActionContext<ADRState, RootState>, id: string) => void;
     getDataset: (store: ActionContext<ADRState, RootState>, payload: GetDatasetPayload) => void;
     getSchemas: (store: ActionContext<ADRState, RootState>) => void;
@@ -34,6 +35,7 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
     },
 
     async ssoLoginMethod(context) {
+        console.log("calling sso login method")
         await api<ADRMutation, ADRMutation>(context)
             .ignoreErrors()
             .withSuccess(ADRMutation.SetSSOLogin)
@@ -41,6 +43,7 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
             .then((response) => {
                 if (response && response.data) {
                     context.dispatch("getDatasets")
+                    context.dispatch("getDatasetsWithOutput")
                 }
             })
     },
@@ -62,6 +65,7 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
     },
 
     async getDatasets(context) {
+        console.log("getting datasets")
         context.commit({type: ADRMutation.SetFetchingDatasets, payload: true});
         context.commit({type: ADRMutation.SetADRError, payload: null});
         await api<ADRMutation, ADRMutation>(context)
@@ -71,6 +75,32 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
             .then(() => {
                 context.commit({type: ADRMutation.SetFetchingDatasets, payload: false});
             });
+    },
+
+    async getDatasetsWithOutput(context) {
+        const {state, dispatch, commit} = context;
+        console.log("getting datasets with output resource")
+        commit({type: ADRMutation.SetFetchingDatasets, payload: true});
+        commit({type: ADRMutation.SetADRError, payload: null});
+        if (!state.schemas) {
+            await dispatch("getSchemas");
+        }
+
+        if (state.schemas?.outputZip) {
+            await api<ADRMutation, ADRMutation>(context)
+                .withError(ADRMutation.SetADRError)
+                .withSuccess(ADRMutation.SetDatasetsWithOutput)
+                .get(`/adr/datasetsWithResource?resourceType=${state.schemas.outputZip}`)
+                .then(() => {
+                    commit({type: ADRMutation.SetFetchingDatasets, payload: false});
+                });
+        } else {
+            commit({type: ADRMutation.SetFetchingDatasets, payload: false});
+            commit({type: ADRMutation.SetADRError, payload: {
+                error: "Failed to get output zip schema",
+                detail: "No schema for output zip type returned. Something went badly wrong, please contact a system administrator"
+            }})
+        }
     },
 
     async getReleases(context, selectedDatasetId) {

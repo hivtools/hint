@@ -1,5 +1,5 @@
 <template>
-    <div v-if="loggedIn" class="mb-5">
+    <div v-if="!isGuest" class="mb-5">
         <adr-key v-if="!ssoLogin"></adr-key>
         <div v-if="ssoLogin || key">
             <select-dataset></select-dataset>
@@ -13,7 +13,7 @@
     </div>
 </template>
 <script lang="ts">
-    import {mapActionByName, mapStateProp, mapGetterByName} from "../../utils";
+    import {mapActionByName, mapStateProp} from "../../utils";
     import AdrKey from "./ADRKey.vue";
     import SelectDataset from "./SelectDataset.vue";
     import {ADRState} from "../../store/adr/adr";
@@ -23,28 +23,21 @@
     import {BaselineState} from "../../store/baseline/baseline";
     import {Dataset} from "../../types";
     import {defineComponent} from "vue";
+    import {useADR} from "./useADR";
 
     const namespace = "adr";
 
     export default defineComponent({
+        setup() {
+            return useADR();
+        },
         components: {
             "adr-key": AdrKey,
             "select-dataset": SelectDataset
         },
         computed: {
-            isGuest: mapGetterByName(null, "isGuest"),
-            loggedIn(): boolean {
-                return !this.isGuest
-            },
-            ssoLogin: mapStateProp<ADRState, boolean>(namespace,
-                (state: ADRState) => state.ssoLogin),
-
-            key: mapStateProp<ADRState, string | null>(namespace,
-                (state: ADRState) => state.key),
-
             hasUploadPermission: mapStateProp<ADRState, boolean>(namespace,
                 (state: ADRState) => state.userCanUpload),
-
             currentLanguage: mapStateProp<RootState, Language>(
                 null,
                 (state: RootState) => state.language
@@ -54,9 +47,7 @@
         },
         methods: {
             getDatasets: mapActionByName(namespace, 'getDatasets'),
-            fetchADRKey: mapActionByName(namespace, "fetchKey"),
             getUserCanUpload: mapActionByName(namespace, 'getUserCanUpload'),
-            ssoLoginMethod: mapActionByName(namespace, "ssoLoginMethod"),
             handleUploadPermission: function (isADRWriter: boolean, isTooltip: boolean) {
                 let displayText = null;
                 switch (isADRWriter) {
@@ -82,14 +73,6 @@
                 });
             }
         },
-        beforeMount() {
-            if (this.loggedIn) {
-
-                if (!this.ssoLogin) {
-                    this.fetchADRKey();
-                }
-            }
-        },
         watch: {
             key() {
                 this.getDatasets();
@@ -101,10 +84,6 @@
         mounted() {
             if(this.selectedDataset) {
                 this.getUserCanUpload();
-            }
-
-            if (this.loggedIn) {
-                this.ssoLoginMethod()
             }
         }
     })

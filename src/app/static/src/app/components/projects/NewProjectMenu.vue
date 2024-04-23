@@ -25,22 +25,39 @@
                        style="display: none;" ref="loadZip"
                        @change="showLoadZipModal" accept=".zip">
             </b-dropdown-item>
+            <b-dropdown-item v-if="ssoLogin"
+                             id="load-from-adr-button"
+                             @click="showImportFromAdrModal">
+                <vue-feather type="download-cloud" size="20" class="icon align-middle"></vue-feather>
+                <span class="align-middle ml-2" v-translate="'adrImport'"></span>
+            </b-dropdown-item>
         </b-dropdown>
 
-        <new-project-create :open-modal="showUploadProjectModal"
-                            :submit-create="handleCreateProject"
-                            :cancel-create="cancelCreateProject"/>
+        <new-project-create
+            :open-modal="showUploadProjectModal"
+            :submit-create="handleCreateProject"
+            :cancel-create="cancelCreateProject"/>
+
+        <select-dataset-modal
+            v-if="ssoLogin"
+            :open="showAdrImportModal"
+            :fetching-dataset="fetchingDataset"
+            :datasets="datasets"
+            @fetch-datasets="getDatasetsWithOutput"
+            @confirm-import="confirmImport"
+            @close-modal="showAdrImportModal = !showAdrImportModal"/>
     </div>
 </template>
 <script lang="ts">
 import VueFeather from "vue-feather";
 import {getFormData} from "../../utils";
 import NewProjectCreate from "../load/NewProjectCreate.vue";
-import {defineComponent, ref} from "vue";
+import {computed, defineComponent, ref} from "vue";
 import {useStore} from "vuex";
 import {CreateProjectPayload} from "../../store/projects/actions";
 import {RootState} from "../../root";
-import {BDropdown, BDropdownItem, BDropdownText} from "bootstrap-vue-next";
+import {BDropdown, BDropdownItem} from "bootstrap-vue-next";
+import SelectDatasetModal from "../adr/SelectDatasetModal.vue";
 
 enum NewProjectType {
     NEW = "new",
@@ -50,6 +67,7 @@ enum NewProjectType {
 export default defineComponent({
     setup() {
         const showUploadProjectModal = ref(false);
+        const showAdrImportModal = ref(false);
         const newProjectType = ref<NewProjectType | null>(null);
         const fileToLoad = ref<File | null>(null);
         const loadZip = ref<HTMLInputElement | null>(null);
@@ -63,6 +81,10 @@ export default defineComponent({
         const showCreateProjectModal = () => {
             newProjectType.value = NewProjectType.NEW;
             showUploadProjectModal.value = true
+        }
+
+        const showImportFromAdrModal = () => {
+            showAdrImportModal.value = true;
         }
 
         const clearLoadZipInput = () => {
@@ -99,20 +121,40 @@ export default defineComponent({
             }
         }
 
+        const fetchingDataset = ref<boolean>(false);
+
+        const getDatasetsWithOutput = () => store.dispatch("adr/getDatasetsWithOutput");
+        const datasets = computed(() => store.state.adr.datasetsWithOutput);
+
+        const confirmImport = () => {
+            fetchingDataset.value = true;
+            // Get the data download then prepare rehydrate.
+            console.log("importing data");
+            showAdrImportModal.value = false;
+            fetchingDataset.value = false;
+        }
+
         return {
             showUploadProjectModal,
+            showAdrImportModal,
             showCreateProjectModal,
+            showImportFromAdrModal,
             showLoadZipModal,
             handleCreateProject,
             cancelCreateProject,
             loadZip,
             fileToLoad,
-            clearLoadZipInput
+            clearLoadZipInput,
+            datasets,
+            getDatasetsWithOutput,
+            fetchingDataset,
+            confirmImport
         }
     },
 
 
     components: {
+        SelectDatasetModal,
         VueFeather,
         NewProjectCreate,
         BDropdown,
