@@ -9,7 +9,7 @@ import com.nhaarman.mockito_kotlin.verify
 import net.logstash.logback.argument.StructuredArguments.kv
 import org.assertj.core.api.Assertions
 import org.imperial.mrc.hint.exceptions.HintException
-import org.imperial.mrc.hint.helpers.MemoryAppender
+import org.imperial.mrc.hint.helpers.LogMemoryAppender
 import org.imperial.mrc.hint.logging.*
 import org.imperial.mrc.hint.models.ErrorDetail
 import org.junit.jupiter.api.BeforeAll
@@ -27,24 +27,24 @@ class GenericLoggerImplTests
     companion object {
 
         lateinit var testLogger: org.slf4j.Logger
-        lateinit var memoryAppender: MemoryAppender
+        lateinit var memoryAppender: LogMemoryAppender
 
         @BeforeAll
         @JvmStatic
         fun setup() {
             testLogger = LoggerFactory.getLogger(GenericLoggerImpl::class.java) as Logger
-            memoryAppender = MemoryAppender()
+            memoryAppender = LogMemoryAppender()
             memoryAppender.context = LoggerFactory.getILoggerFactory() as LoggerContext
-            (testLogger as Logger).setLevel(Level.DEBUG)
+            (testLogger as Logger).level = Level.DEBUG
             (testLogger as Logger).addAppender(memoryAppender)
             memoryAppender.start()
         }
+    }
 
-        @BeforeEach
-        fun resetAppender()
-        {
-            memoryAppender.reset()
-        }
+    @BeforeEach
+    fun resetAppender()
+    {
+        memoryAppender.reset()
     }
 
     private val mockLogger = mock<org.slf4j.Logger>()
@@ -135,9 +135,22 @@ class GenericLoggerImplTests
             "thing" to 423
         )
         val logger = GenericLoggerImpl(testLogger)
-        logger.info("My example message", additionalData)
+        logger.info("My info message", additionalData)
         Assertions.assertThat(memoryAppender.countEventsForLogger("org.imperial.mrc.hint.logging.GenericLoggerImpl")).isEqualTo(1)
-        Assertions.assertThat(memoryAppender.get(0).toString()).isEqualTo("[INFO] msg=My example message, {foo=bar, thing=423}")
+        Assertions.assertThat(memoryAppender.get(0).toString()).isEqualTo("[INFO] msg=My info message, {foo=bar, thing=423}")
+    }
+
+    @Test
+    fun `can log error with generic additional data`()
+    {
+        val additionalData = mapOf(
+            "foo" to "bar",
+            "thing" to 423
+        )
+        val logger = GenericLoggerImpl(testLogger)
+        logger.error("My err message", additionalData)
+        Assertions.assertThat(memoryAppender.countEventsForLogger("org.imperial.mrc.hint.logging.GenericLoggerImpl")).isEqualTo(1)
+        Assertions.assertThat(memoryAppender.get(0).toString()).isEqualTo("[ERROR] msg=My err message, {foo=bar, thing=423}")
     }
 
     @Test

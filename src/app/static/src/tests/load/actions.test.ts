@@ -367,7 +367,7 @@ describe("Load actions", () => {
         const commit = vi.fn();
         const dispatch = vi.fn()
         const rootGetters = {isGuest: false}
-        const state = mockLoadState({rehydrateId: "1", projectName: "testProject"} as any)
+        const state = mockLoadState({rehydrateId: "1", newProjectName: "testProject"} as any)
         actions.pollRehydrate({commit, dispatch, rootState, state, rootGetters} as any);
         vi.advanceTimersByTime(2000);
         await flushPromises();
