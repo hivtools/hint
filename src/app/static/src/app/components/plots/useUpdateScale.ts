@@ -3,7 +3,7 @@ import {RootState} from "../../root";
 import {Scale, ScaleSettings} from "../../store/plotState/plotState";
 import {getIndicatorMetadata, scaleStepFromMetadata} from "./utils";
 import {computed} from "vue";
-import {ChoroplethIndicatorMetadata} from "../../generated";
+import {PlotStateMutations} from "../../store/plotState/mutations";
 
 export const useUpdateScale = () => {
     const store = useStore<RootState>();
@@ -47,7 +47,7 @@ export const useUpdateScale = () => {
 
     const updateOutputScale = (scale: Scale, indicatorId: string, newScaleSettings: ScaleSettings) => {
         store.commit({
-            type: 'plotState/updateOutputScale',
+            type: `plotState/${PlotStateMutations.updateOutputScale}`,
             payload: {scale, indicatorId, newScaleSettings}
         });
     };
