@@ -1,6 +1,6 @@
 <template>
     <div>
-        <l-map ref="map" style="height: 800px; width: 100%" @ready="updateBounds">
+        <l-map ref="map" style="height: 800px; width: 100%" @ready="updateBounds" @vue:updated="updateBounds">
             <l-geo-json v-for="feature in currentFeatures"
                         ref="featureRefs"
                         :key="feature.properties.area_id"
@@ -8,10 +8,13 @@
                         :options="createTooltips"
                         :options-style="() => getStyle(feature)">
             </l-geo-json>
-            <reset-map @reset-view="updateBounds"></reset-map>
-            <map-legend :indicator-metadata="indicatorMetadata"
-                        :scale-levels="scaleLevels"
-                        :selected-scale="selectedScale"></map-legend>
+            <map-empty-feature v-if="emptyFeature"></map-empty-feature>
+            <template v-else>
+                <reset-map @reset-view="updateBounds"></reset-map>
+                <map-legend :indicator-metadata="indicatorMetadata"
+                            :scale-levels="scaleLevels"
+                            :selected-scale="selectedScale"></map-legend>
+            </template>
         </l-map>
     </div>
 
@@ -26,25 +29,32 @@ import { LMap, LGeoJson } from "@vue-leaflet/vue-leaflet";
 import { Feature } from "geojson";
 import {
     getVisibleFeatures,
-    getFeatureData,
-} from "./utils";
-import ResetMap from "./ResetMap.vue";
-import MapLegend from "./MapLegend.vue";
-import {getColourRange, getIndicatorMetadata, getScaleLevels} from "../utils";
+    getIndicatorRange,
+    getColourScaleLevels,
+    debounce_leading,
+    getIndicatorMetadata,
+    ScaleLevels
+} from "../utils";
+import ResetMap from "../ResetMap.vue";
+import MapLegend from "../MapLegend.vue";
 import {IndicatorValuesDict, NumericRange} from "../../../types";
 import {ChoroplethIndicatorMetadata} from "../../../generated";
 import { ScaleSettings } from "../../../store/plotState/plotState";
-import {useMapTooltips} from "../useMapTooltips";
+import {useChoroplethTooltips} from "./useChoroplethTooltips";
+import {getFeatureData} from "./utils";
+import MapEmptyFeature from "../MapEmptyFeature.vue";
 
 const store = useStore<RootState>();
 const plotData = computed<PlotData>(() => store.state.plotData.choropleth);
 
 const selectedIndicator = computed<string>(() => {
     return store.state.plotSelections.choropleth.filters.find(f => f.stateFilterId === "indicator")!.selection[0].id
-})
-const indicatorMetadata = computed<ChoroplethIndicatorMetadata>(() => getIndicatorMetadata(store, selectedIndicator.value))
+});
+const indicatorMetadata = computed<ChoroplethIndicatorMetadata>(() => {
+    return getIndicatorMetadata(store, selectedIndicator.value)
+});
 const colourRange = ref<NumericRange | null>(null);
-const scaleLevels = ref<any>(null);
+const scaleLevels = ref<ScaleLevels[]>([]);
 const selectedScale = ref<ScaleSettings | null>(null);
 
 const features = store.state.baseline.shape ?
@@ -55,12 +65,12 @@ const featureData = ref<IndicatorValuesDict>({});
 const map = ref<typeof LMap | null>(null);
 const featureRefs = ref<typeof LGeoJson[]>([]);
 
-const {createTooltips, updateTooltips} = useMapTooltips(featureData, indicatorMetadata, currentFeatures, featureRefs)
+const {createTooltips, updateTooltips} = useChoroplethTooltips(featureData, indicatorMetadata, currentFeatures, featureRefs)
 
 const updateMap = () => {
     plotData.value = store.state.plotData.choropleth;
     updateFeatures();
-    updateColourScales();
+    updateMapColours();
     updateTooltips();
 };
 
@@ -68,21 +78,20 @@ const colourScales = computed(() => {
     return store.state.plotState.output.colourScales
 });
 
-const updateColourScales = () => {
-    const colourScales = store.state.plotState.output.colourScales;
-    selectedScale.value = colourScales[selectedIndicator.value];
-    colourRange.value = getColourRange(indicatorMetadata.value, selectedScale.value, plotData.value);
-    scaleLevels.value = getScaleLevels(indicatorMetadata.value, colourRange.value);
+const updateMapColours = () => {
+    selectedScale.value = colourScales.value[selectedIndicator.value];
+    colourRange.value = getIndicatorRange(indicatorMetadata.value, selectedScale.value, plotData.value);
+    scaleLevels.value = getColourScaleLevels(indicatorMetadata.value, colourRange.value);
     featureData.value = getFeatureData(
-            plotData.value,
-            indicatorMetadata.value,
-            colourRange.value ? colourRange.value : {max: 1, min: 0}
+        plotData.value,
+        indicatorMetadata.value,
+        colourRange.value ? colourRange.value : {max: 1, min: 0}
     );
 };
 
 const updateFeatures = () => {
     const selectedLevel = store.state.plotSelections.choropleth.filters
-            .find(f => f.stateFilterId === "detail")!.selection;
+        .find(f => f.stateFilterId === "detail")!.selection;
     currentFeatures.value = getVisibleFeatures(features, selectedLevel);
 };
 
@@ -92,14 +101,19 @@ const selectedAreaIds = computed(() => {
         .map(opt => opt.id);
 });
 
-const updateBounds = () => {
+// Update bounds can be called multiple times by v-node-updated, but
+// I can't find an appropriate thing to watch to trigger this only once
+// so debounce it instead. If the bound update is called twice in quick
+// succession, it kills the animation. Debouncing this means it should
+// update smoothly
+const updateBounds = debounce_leading(() => {
     const visibleRefs = featureRefs.value
         .filter(f => selectedAreaIds.value.includes(f.geojson?.properties?.area_id))
     if (visibleRefs.length > 0) {
         map.value?.leafletObject.fitBounds(visibleRefs
                 .map(f => f.leafletObject.getBounds()));
     }
-};
+}, 50);
 
 // Use watchers instead of computed
 // When the plotSelections updates, the new data will have been fetched from the backend already
@@ -108,7 +122,7 @@ const updateBounds = () => {
 // But updating the plotSelections will also update the scale selections
 // So using computed we end up with duplicate updates when plotSelections change.
 // So we use watch instead for more control over when things are updated.
-watch(colourScales, updateColourScales)
+watch(colourScales, updateMapColours)
 watch(selectedAreaIds, updateBounds);
 watch(() => [store.state.plotSelections.choropleth], updateMap);
 
@@ -133,9 +147,12 @@ const getStyle = (feature: Feature) => {
     }
 }
 
-onMounted(() => {
-    updateFeatures();
-    updateColourScales();
+const emptyFeature = computed(() => {
+    return selectedAreaIds.value.length == 0
 });
 
+onMounted(() => {
+    updateFeatures();
+    updateMapColours();
+});
 </script>
