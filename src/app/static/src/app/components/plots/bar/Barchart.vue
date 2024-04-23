@@ -1,7 +1,7 @@
 <template>
     <div>
         <Bar ref="chart" :data="chartData" :options="chartOptions"/>
-        <div v-if="showNoDataMessage" id="noDataMessage" class="px-3 py-2 noDataMessage">
+        <div v-if="chartData.value.datasets.length == 0" id="noDataMessage" class="px-3 py-2 noDataMessage">
             <span class="lead">
                 <strong v-translate="'noChartData'"></strong>
             </span>
@@ -56,9 +56,6 @@ export default defineComponent({
         const chartData = ref<BarChartData>({datasets:[], labels: [], maxValuePlusError: 0});
         const chartOptions = ref({});
         const displayErrorBars = ref<boolean>(false);
-        const showNoDataMessage = computed(() => {
-            return chartData.value.datasets.length == 0
-        });
 
         const updateChart = () => {
             hideAllErrorBars();
@@ -190,7 +187,6 @@ export default defineComponent({
             chart,
             chartData,
             chartOptions,
-            showNoDataMessage
         }
     },
     components: {

@@ -6,7 +6,7 @@ export const getters = {
         return state[plotName].controls.find((f: ControlSelection) => f.id === controlId)?.selection[0]
     },
     filterSelectionFromId: (state: PlotSelectionsState) => (plotName: PlotName, filterId: string): FilterOption[] => {
-        const filterSelection = state[plotName].filters.find((f: FilterSelection) => f.filterId === filterId);
+        const filterSelection = state[plotName].filters.find((f: FilterSelection) => f.stateFilterId === filterId);
         if (filterSelection === undefined) {
             return []
         } else {
