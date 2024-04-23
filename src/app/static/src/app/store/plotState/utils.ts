@@ -1,6 +1,6 @@
 import {CalibrateMetadataResponse} from "../../generated";
 import {Commit} from "vuex";
-import {initialScaleSettings, ScaleSettings} from "./plotState";
+import {initialScaleSettings, Scale, ScaleSettings} from "./plotState";
 import {Dict} from "../../types";
 import {PlotStateMutations} from "./mutations";
 
@@ -14,14 +14,15 @@ export const commitInitialScaleSelections = (
         return dict
     }, {} as Dict<ScaleSettings>)
     commit({
-            type: `plotState/${PlotStateMutations.setOutputColourScales}`,
-            payload: newScaleSettings
+            type: `plotState/${PlotStateMutations.setOutputScale}`,
+            payload: {scale: Scale.Colour, selections: newScaleSettings}
         },
         { root: true }
     );
     commit({
-            type: `plotState/${PlotStateMutations.setOutputSizeScales}`,
-            payload: newScaleSettings},
+            type: `plotState/${PlotStateMutations.setOutputScale}`,
+            payload: {scale: Scale.Size, selections: newScaleSettings}
+        },
         { root: true }
     );
 };

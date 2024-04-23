@@ -25,6 +25,8 @@ export interface ScaleSettings {
 
 export enum ScaleType {Default, Custom, DynamicFiltered}
 
+export enum Scale {Colour = "Colour", Size = "Size"}
+
 export const initialPlotState = (): PlotState => {
     return {
         input: {

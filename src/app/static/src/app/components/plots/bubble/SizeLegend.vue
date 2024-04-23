@@ -12,7 +12,7 @@
                     </text>
                 </svg>
                 <div class="adjust-scale mt-1">
-                    <a @click="toggleAdjust" href="" class="float-right">
+                    <a @click.prevent="showAdjust = !showAdjust" href="" class="float-right">
                         <span v-if="showAdjust" v-translate="'done'"></span>
                         <span v-if="!showAdjust" v-translate="'adjustScale'"></span>
                     </a>
@@ -20,7 +20,7 @@
             </div>
             <map-adjust-scale v-if="showAdjust"
                               class="legend-element legend-adjust map-control"
-                              name="size"
+                              :scale="Scale.Size"
                               :indicator-metadata="indicatorMetadata"
                               :selected-scale="selectedSizeScale"
                               @update:selected-scale="$emit('update:selectedScale')">
@@ -33,7 +33,7 @@
 import {computed, defineComponent, PropType, ref} from "vue";
 import {ChoroplethIndicatorMetadata} from "../../../generated";
 import MapAdjustScale from "../MapAdjustScale.vue";
-import {ScaleSettings} from "../../../store/plotState/plotState";
+import {Scale, ScaleSettings} from "../../../store/plotState/plotState";
 import { NumericRange } from "../../../types";
 import { formatLegend } from "../utils";
 import {getRadius} from "./utils";
@@ -112,18 +112,13 @@ export default defineComponent({
 
         const showAdjust = ref<boolean>(false);
 
-        const toggleAdjust = (e: Event) => {
-            e.preventDefault();
-            showAdjust.value = !showAdjust.value;
-        };
-
         return {
             showAdjust,
-            toggleAdjust,
             width,
             height,
             midX,
-            circles
+            circles,
+            Scale
         }
     }
 })

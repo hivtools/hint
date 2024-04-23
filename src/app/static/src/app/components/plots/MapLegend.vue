@@ -3,7 +3,7 @@
         <div class="legend-container">
             <map-adjust-scale v-if="showAdjust"
                               class="legend-element legend-adjust map-control"
-                              name="colour"
+                              :scale="Scale.Colour"
                               :indicator-metadata="indicatorMetadata"
                               :selected-scale="selectedScale"
                               @update:selected-scale="$emit('update:selectedScale')">
@@ -35,7 +35,7 @@ import MapAdjustScale from "./MapAdjustScale.vue";
 import {useStore} from "vuex";
 import {RootState} from "../../root";
 import {ChoroplethIndicatorMetadata} from "../../generated";
-import {ScaleSettings} from "../../store/plotState/plotState";
+import {Scale, ScaleSettings} from "../../store/plotState/plotState";
 import {ScaleLevels} from "./utils";
 
 export default defineComponent({
@@ -63,7 +63,8 @@ export default defineComponent({
 
         return {
             colourScales,
-            showAdjust
+            showAdjust,
+            Scale
         }
     },
     components: {
