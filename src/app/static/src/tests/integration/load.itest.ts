@@ -3,7 +3,6 @@ import {login, rootState} from "./integrationTest";
 import {actions as baselineActions} from "../../app/store/baseline/actions";
 import {ShapeResponse} from "../../app/generated";
 import {getFormData} from "./helpers";
-import { flushPromises } from "@vue/test-utils";
 
 describe("load actions", () => {
 
@@ -46,10 +45,7 @@ describe("load actions", () => {
         const state = {rehydrateId: "1"}
 
         actions.pollRehydrate({commit, dispatch, state, rootState} as any, 100);
-        await vi.waitUntil(() => commit.mock.calls.length >= 2, {
-            interval: 100,
-            timeout: 6000
-        });
+        await vi.waitUntil(() => commit.mock.calls.length >= 2, 100);
         expect(commit.mock.calls[0][0].type).toBe("RehydratePollingStarted");
         expect(+commit.mock.calls[0][0].payload).toBeGreaterThan(-1);
         expect(commit.mock.calls[1][0].type).toBe("RehydrateStatusUpdated");

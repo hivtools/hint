@@ -4,6 +4,7 @@ import {DOWNLOAD_TYPE} from "../../app/types";
 import {formatToLocalISODateTime} from "../../app/utils";
 
 describe(`download results actions integration`, () => {
+    const pollInterval = 400
     it.skip(`can download comparison output report`, async () => {
         const commit = vi.fn();
         const dispatch = vi.fn();
@@ -52,12 +53,9 @@ describe(`download results actions integration`, () => {
 
         const state = {summary: {downloadId: 123}}
 
-        actions.poll({commit, dispatch, state, rootState: root} as any, DOWNLOAD_TYPE.SUMMARY, 100);
+        actions.poll({commit, dispatch, state, rootState: root} as any, DOWNLOAD_TYPE.SUMMARY, pollInterval);
         // have to wait slightly longer for async functions to finish after setInterval is ran
-        await vi.waitUntil(() => commit.mock.calls.length >= 2, {
-            interval: 100,
-            timeout: 6000
-        })
+        await vi.waitUntil(() => commit.mock.calls.length >= 2, { interval: pollInterval })
         expect(commit.mock.calls[0][0]["type"]).toBe("PollingStatusStarted");
         expect(commit.mock.calls[0][0]["payload"].downloadType).toBe(DOWNLOAD_TYPE.SUMMARY);
         expect(+commit.mock.calls[0][0]["payload"].pollId).toBeGreaterThan(-1);
@@ -135,11 +133,8 @@ describe(`download results actions integration`, () => {
 
         const state = {spectrum: {downloadId: 123}}
 
-        actions.poll({commit, dispatch, state, rootState: root} as any, DOWNLOAD_TYPE.SPECTRUM, 100);
-        await vi.waitUntil(() => commit.mock.calls.length >= 2, {
-            interval: 100,
-            timeout: 6000
-        })
+        actions.poll({commit, dispatch, state, rootState: root} as any, DOWNLOAD_TYPE.SPECTRUM, pollInterval);
+        await vi.waitUntil(() => commit.mock.calls.length >= 2, { interval: pollInterval })
         expect(commit.mock.calls[0][0]["type"]).toBe("PollingStatusStarted");
         expect(commit.mock.calls[0][0]["payload"].downloadType).toBe(DOWNLOAD_TYPE.SPECTRUM);
         expect(+commit.mock.calls[0][0]["payload"].pollId).toBeGreaterThan(-1);
@@ -175,11 +170,8 @@ describe(`download results actions integration`, () => {
 
         const state = {coarseOutput: {downloadId: 123}}
 
-        actions.poll({commit, dispatch, state, rootState: root} as any, DOWNLOAD_TYPE.COARSE, 100);
-        await vi.waitUntil(() => commit.mock.calls.length >= 2, {
-            interval: 100,
-            timeout: 6000
-        });
+        actions.poll({commit, dispatch, state, rootState: root} as any, DOWNLOAD_TYPE.COARSE, pollInterval);
+        await vi.waitUntil(() => commit.mock.calls.length >= 2, { interval: pollInterval });
         expect(commit.mock.calls[0][0]["type"]).toBe("PollingStatusStarted");
         expect(commit.mock.calls[0][0]["payload"].downloadType).toBe(DOWNLOAD_TYPE.COARSE);
         expect(+commit.mock.calls[0][0]["payload"].pollId).toBeGreaterThan(-1);
@@ -215,11 +207,8 @@ describe(`download results actions integration`, () => {
 
         const state = {comparison: {downloadId: 123}}
 
-        actions.poll({commit, dispatch, state, rootState: root} as any, DOWNLOAD_TYPE.COMPARISON, 100);
-        await vi.waitUntil(() => commit.mock.calls.length >= 2, {
-            interval: 100,
-            timeout: 6000
-        });
+        actions.poll({commit, dispatch, state, rootState: root} as any, DOWNLOAD_TYPE.COMPARISON, pollInterval);
+        await vi.waitUntil(() => commit.mock.calls.length >= 2, { interval: pollInterval });
         expect(commit.mock.calls[0][0]["type"]).toBe("PollingStatusStarted");
         expect(commit.mock.calls[0][0]["payload"].downloadType).toBe(DOWNLOAD_TYPE.COMPARISON);
         expect(+commit.mock.calls[0][0]["payload"].pollId).toBeGreaterThan(-1);
@@ -238,11 +227,8 @@ describe(`download results actions integration`, () => {
 
         const state = {comparison: {downloadId: ""}}
 
-        actions.poll({commit, dispatch, state, rootState: root} as any, DOWNLOAD_TYPE.COMPARISON, 100);
-        await vi.waitUntil(() => commit.mock.calls.length >= 2, {
-            interval: 100,
-            timeout: 6000
-        });
+        actions.poll({commit, dispatch, state, rootState: root} as any, DOWNLOAD_TYPE.COMPARISON, pollInterval);
+        await vi.waitUntil(() => commit.mock.calls.length >= 2, { interval: pollInterval });
         expect(commit.mock.calls[0][0]["type"]).toBe("PollingStatusStarted");
         expect(commit.mock.calls[0][0]["payload"].downloadType).toBe(DOWNLOAD_TYPE.COMPARISON);
         expect(+commit.mock.calls[0][0]["payload"].pollId).toBeGreaterThan(-1);
