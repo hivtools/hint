@@ -1,3 +1,8 @@
+import { OutputPlotName, PlotDataType, PlotName, outputPlotNames, plotNameToDataType } from "./plotSelections";
+import { PlotSelectionUpdate, PlotSelectionsMutations } from "./mutations";
+import { RootState } from "../../root";
+import { getFilteredData, getTimeSeriesFilteredDataset } from "./actions";
+import { PlotMetadataFrame } from "../metadata/metadata";
 import { ActionContext, Commit } from "vuex";
 import {
     CalibrateMetadataResponse,
@@ -6,10 +11,6 @@ import {
     FilterTypes,
     PlotSettingOption
 } from "../../generated";
-import { PlotName } from "./plotSelections";
-import { PlotSelectionUpdate, PlotSelectionsMutations } from "./mutations";
-import { RootState } from "../../root";
-import { getFilteredData } from "./actions";
 import {initialScaleSettings} from "../plotState/plotState";
 
 export const filtersAfterUseShapeRegions = (filterTypes: FilterTypes[], rootState: RootState) => {
@@ -48,9 +49,9 @@ const getFullNestedFilters = (filterOptions: NestedFilterOption[]) => {
 export const filtersInfoFromPlotSettings = (
     settings: PlotSettingOption[],
     plotName: PlotName,
-    rootState: RootState
+    rootState: RootState,
+    metadata: PlotMetadataFrame
 ) => {
-    const metadata = rootState.modelCalibrate.metadata!;
     const filterTypes = filtersAfterUseShapeRegions(metadata.filterTypes, rootState);
     let filterRefs = metadata.plotSettingsControl[plotName].defaultFilterTypes;
     let multiFilters: string[] = [];
@@ -103,8 +104,18 @@ export const filtersInfoFromPlotSettings = (
     return filters;
 }
 
-export const commitPlotDefaultSelections = (
-    metadata: CalibrateMetadataResponse,
+export const getPlotData = async (payload: PlotSelectionUpdate, commit: Commit, rootState: RootState) => {
+    const name = payload.plot;
+    const plotDataType = plotNameToDataType[name];
+    if (plotDataType === PlotDataType.Output) {
+        await getFilteredData(name as OutputPlotName, payload.selections.filters, { commit, rootState });
+    } else if (plotDataType === PlotDataType.TimeSeries) {
+        await getTimeSeriesFilteredDataset(payload, commit, rootState);
+    }
+}
+
+export const commitPlotDefaultSelections = async (
+    metadata: PlotMetadataFrame,
     commit: Commit,
     rootState: RootState
 ) => {
@@ -129,10 +140,10 @@ export const commitPlotDefaultSelections = (
             }
         });
 
-        const filtersInfo = filtersInfoFromPlotSettings(defaultSettingOptions, name, rootState);
+        const filtersInfo = filtersInfoFromPlotSettings(defaultSettingOptions, name, rootState, metadata);
         payload.selections.filters = filtersInfo;
 
-        getFilteredData(name, payload.selections.filters, { commit, rootState })
+        await getPlotData(payload, commit, rootState);
 
         commit(
             `plotSelections/${PlotSelectionsMutations.updatePlotSelection}`,

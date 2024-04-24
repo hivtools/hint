@@ -1,10 +1,27 @@
-import { CalibrateMetadataResponse, Error, FilterOption, FilterRef } from "../../generated";
+import { CalibrateMetadataResponse, Error, FilterOption, FilterRef, ReviewInputFilterMetadataResponse } from "../../generated";
 import { mutations } from "./mutations";
 import { actions } from "./actions";
 import { getters } from "./getters";
 
-export type PlotName = keyof CalibrateMetadataResponse["plotSettingsControl"]
-export const plotNames: PlotName[] = ["barchart", "choropleth", "bubble", "table"]
+export type OutputPlotName = keyof CalibrateMetadataResponse["plotSettingsControl"]
+export type InputPlotName = keyof ReviewInputFilterMetadataResponse["plotSettingsControl"]
+
+export const outputPlotNames: OutputPlotName[] = ["barchart", "bubble", "choropleth", "table"];
+export const inputPlotNames: InputPlotName[] = ["timeSeries", "inputChoropleth"];
+
+export type PlotName = OutputPlotName | InputPlotName
+export const plotNames = [...outputPlotNames, ...inputPlotNames];
+
+export enum PlotDataType { Output, TimeSeries, Input }
+
+export const plotNameToDataType: Record<PlotName, PlotDataType> = {
+    barchart: PlotDataType.Output,
+    bubble: PlotDataType.Output,
+    choropleth: PlotDataType.Output,
+    table: PlotDataType.Output,
+    timeSeries: PlotDataType.TimeSeries,
+    inputChoropleth: PlotDataType.Input
+}
 
 export type FilterSelection = {
     multiple: boolean

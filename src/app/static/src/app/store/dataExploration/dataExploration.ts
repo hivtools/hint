@@ -79,7 +79,7 @@ export const storeOptions: StoreOptions<DataExplorationState> = {
         adr,
         genericChart,
         baseline: baseline(existingState),
-        metadata: metadata(existingState),
+        metadata: metadata(existingState) as any,
         surveyAndProgram: surveyAndProgram(existingState),
         plottingSelections: plottingSelections(existingState),
         stepper: dataExplorationStepper(existingState),

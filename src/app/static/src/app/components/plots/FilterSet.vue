@@ -4,13 +4,13 @@
         <label class="font-weight-bold">{{f.label}}</label>
         <!-- For some reason using filter is saying no component registered
         with this name, no idea why so using capital Filter -->
-        <Filter :state-filter-id="f.stateFilterId"/>
+        <Filter :state-filter-id="f.stateFilterId" :plot="plot"/>
     </div>
 
 </template>
 
 <script lang="ts">
-import {computed, defineComponent} from 'vue';
+import {PropType, computed, defineComponent} from 'vue';
 import {useStore} from "vuex";
 import {RootState} from "../../root";
 import Filter from "./Filter.vue";
@@ -20,11 +20,16 @@ export default defineComponent({
     components: {
         Filter
     },
-    setup() {
+    props: {
+        plot:{
+            type: String as PropType<PlotName>,
+            required: true
+        }
+    },
+    setup(props) {
         const store = useStore<RootState>();
         const filters = computed(() => {
-            const plotName: PlotName = store.state.modelOutput.selectedTab
-            return store.state.plotSelections[plotName].filters;
+            return store.state.plotSelections[props.plot].filters;
         });
 
         return {

@@ -6,12 +6,12 @@ import {mutations} from "./mutations";
 import {actions} from "./actions";
 import {rootOptionChildren} from "../../utils";
 import {UnadjustedBarchartSelections} from "../plottingSelections/plottingSelections";
-import {PlotName, plotNames} from "../plotSelections/plotSelections";
+import {OutputPlotName, outputPlotNames} from "../plotSelections/plotSelections";
 
 const namespaced = true;
 
 export interface ModelOutputState {
-    selectedTab: PlotName,
+    selectedTab: OutputPlotName,
     loading: {
         [k in ModelOutputTabs]: boolean
     }
@@ -114,7 +114,7 @@ const outputPlotFilters = (rootState: RootState, resultName: "metadata" | "compa
 
 export const initialModelOutputState = (): ModelOutputState => {
     return {
-        selectedTab: plotNames[0],
+        selectedTab: outputPlotNames[0],
         loading: {
             [ModelOutputTabs.Map]: false,
             [ModelOutputTabs.Bar]: false,
