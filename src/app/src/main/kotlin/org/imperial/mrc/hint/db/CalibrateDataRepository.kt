@@ -158,6 +158,7 @@ class JooqCalibrateDataRepository: CalibrateDataRepository
         }
     }
 
+    @Suppress("ReturnCount")
     override fun getFilteredCalibrateData(
         path: Path,
         filterQuery: FilterQuery): List<CalibrateResultRow>

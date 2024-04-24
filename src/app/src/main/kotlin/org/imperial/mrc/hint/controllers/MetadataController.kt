@@ -57,7 +57,7 @@ class MetadataController(val apiClient: HintrAPIClient,
                 "shape" -> FileType.Shape
                 else -> throw HintException("unknownReviewInputFileType", HttpStatus.BAD_REQUEST)
             }
-            it to fileManager.getFile(fileType)!!
+            it to fileManager.getFile(fileType)
         }.toMap()
         return apiClient.getReviewInputMetadata(iso3, files)
     } 

@@ -32,7 +32,7 @@ interface HintrAPIClient
     fun calibrateSubmit(runId: String, calibrationOptions: ModelOptions): ResponseEntity<String>
     fun getCalibrateStatus(id: String): ResponseEntity<String>
     fun getCalibrateResultMetadata(id: String): ResponseEntity<String>
-    fun getReviewInputMetadata(iso3: String, files: Map<String, VersionFileWithPath>): ResponseEntity<String>
+    fun getReviewInputMetadata(iso3: String, files: Map<String, VersionFileWithPath?>): ResponseEntity<String>
     fun getCalibrateResultData(id: String): ResponseEntity<String>
     fun getCalibratePlot(id: String): ResponseEntity<String>
     fun getComparisonPlot(id: String): ResponseEntity<String>
@@ -155,7 +155,7 @@ class HintrFuelAPIClient(
         return get("calibrate/result/metadata/${id}")
     }
 
-    override fun getReviewInputMetadata(iso3: String, files: Map<String, VersionFileWithPath>): ResponseEntity<String>
+    override fun getReviewInputMetadata(iso3: String, files: Map<String, VersionFileWithPath?>): ResponseEntity<String>
     {
         val json = objectMapper.writeValueAsString(
                 mapOf("data" to files, "iso3" to iso3))
