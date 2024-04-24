@@ -11,6 +11,8 @@ describe("Projects actions", () => {
     });
 
     const projectPayload = {name: "v1"}
+    const interval = 100;
+    const timeout = 6000;
 
     it("can check user exists", async () => {
         let result = await actions.userExists({rootState} as any, "test.user@example.com");
@@ -68,9 +70,8 @@ describe("Projects actions", () => {
         state.currentProject = createdProject;
         state.currentVersion = createdProject.versions[0];
 
-        await actions.queueVersionStateUpload({commit, rootState, state} as any);
-        await new Promise((r) => setTimeout(r, 2500))
-        expect(commit.mock.calls.length).toBe(11);
+        actions.queueVersionStateUpload({commit, rootState, state} as any, interval);
+        await vi.waitUntil(() => commit.mock.calls.length >= 11, { interval, timeout });
         expect(commit.mock.calls[5][0]["type"]).toBe(ProjectsMutations.ClearQueuedVersionUpload);
         expect(commit.mock.calls[6][0]["type"]).toBe(ProjectsMutations.SetQueuedVersionUpload);
         expect(commit.mock.calls[7][0]["type"]).toBe(ProjectsMutations.ClearQueuedVersionUpload);
@@ -93,9 +94,9 @@ describe("Projects actions", () => {
         state.currentProject = createdProject;
         state.currentVersion = createdProject.versions[0];
 
-        await actions.newVersion({commit, rootState, state} as any, "version note");
-        await new Promise((r) => setTimeout(r, 500))
-        expect(commit.mock.calls.length).toBe(9);
+        actions.newVersion({commit, rootState, state} as any, "version note");
+        await vi.waitUntil(() => commit.mock.calls.length >= 9, interval);
+
         expect(commit.mock.calls[5][0]["type"]).toBe(ProjectsMutations.SetVersionUploadInProgress);
         expect(commit.mock.calls[5][0]["payload"]).toBe(true);
         expect(commit.mock.calls[6][0]["type"]).toBe(ProjectsMutations.VersionUploadSuccess);
@@ -114,21 +115,20 @@ describe("Projects actions", () => {
         const commit = vi.fn();
         const dispatch = vi.fn();
         await actions.createProject({commit, dispatch, rootState, state} as any, projectPayload);
-
         const createdProject = commit.mock.calls[4][0]["payload"];
         expect(dispatch.mock.calls[0][0]).toBe("getProjects");
         state.currentProject = createdProject;
         state.currentVersion = createdProject.versions[0];
 
-        await actions.queueVersionStateUpload({commit, rootState, state} as any);
-
+        await actions.queueVersionStateUpload({commit, rootState, state} as any, interval);
+        await vi.waitUntil(() => commit.mock.calls.some(call => {
+            return call[0]["type"] === ProjectsMutations.SetVersionUploadInProgress &&
+                call[0]["payload"] === false;
+        }), { interval, timeout });
         const projectId = createdProject.id;
         const versionId = createdProject.versions[0].id;
-        await new Promise((r) => setTimeout(r, 2400))
-
-        await actions.loadVersion({commit, dispatch, state, rootState} as any, {projectId: projectId, versionId});
-        await new Promise((r) => setTimeout(r, 400))
-        expect(dispatch.mock.calls[1][0]).toBe("load/loadFromVersion");
+        actions.loadVersion({commit, dispatch, state, rootState} as any, {projectId: projectId, versionId});
+        await vi.waitUntil(() => dispatch.mock.calls.at(1)?.at(0) === "load/loadFromVersion", interval)
         const fetchedVersion = dispatch.mock.calls[1][1];
         expect(fetchedVersion.state).toBeTruthy();
         expect(fetchedVersion.files).toBeTruthy();

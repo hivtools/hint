@@ -7,7 +7,7 @@ import {ModelRunMutation} from "./mutations";
 
 export interface ModelRunActions {
     run: (store: ActionContext<ModelRunState, RootState>) => void
-    poll: (store: ActionContext<ModelRunState, RootState>, runId: string) => void
+    poll: (store: ActionContext<ModelRunState, RootState>, runId: string, interval?: number | null) => void
     getResult: (store: ActionContext<ModelRunState, RootState>) => void
     cancelRun: (store: ActionContext<ModelRunState, RootState>) => void
 }
@@ -28,7 +28,7 @@ export const actions: ActionTree<ModelRunState, RootState> & ModelRunActions = {
             .postAndReturn<ModelSubmitResponse>("/model/run/", {options, version})
     },
 
-    poll(context, runId) {
+    poll(context, runId, interval = null) {
         const {commit, dispatch, state} = context;
         const id = setInterval(() => {
             api<ModelRunMutation, ModelRunMutation>(context)
@@ -40,7 +40,7 @@ export const actions: ActionTree<ModelRunState, RootState> & ModelRunActions = {
                         dispatch("getResult", runId);
                     }
                 });
-        }, 2000);
+        }, interval || 2000);
 
         commit({type: "PollingForStatusStarted", payload: id})
     },
