@@ -19,6 +19,7 @@ jobs:
             - uses: actions/checkout@v4
 
             - name: Make shared env
+              id: ci-env
               uses: ./.github/actions/make-shared-env
               with:
                 dh-username: ${{ secrets.DOCKERHUB_USERNAME }}
@@ -29,8 +30,10 @@ jobs:
             - name: test env
               run: |
                 echo "$THIS"
+                echo "$THAT"
               env:
                 THIS: ${{steps.ci-env.outputs.CI_BRANCH}}
+                THAT: ${{steps.ci-env.outputs.CI_SHA}}
 
             - name: Run deps
               run: scripts/run-dependencies.sh

@@ -19,6 +19,7 @@ jobs:
             - uses: actions/checkout@v4
 
             - name: Make shared env
+              id: ci-env
               uses: ./.github/actions/make-shared-env
               with:
                 dh-username: ${{ secrets.DOCKERHUB_USERNAME }}

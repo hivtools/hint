@@ -13,6 +13,14 @@ inputs:
   ghcr-password:
     required: true
 
+outputs:
+  CI_SHA:
+    description: "Short SHA of current commit"
+    value: ${{ steps.ci-env.outputs.CI_SHA }}
+  CI_BRANCH:
+    description: "Current branch"
+    value: ${{ steps.ci-env.outputs.CI_BRANCH }}
+
 runs:
   using: "composite"
   steps:
