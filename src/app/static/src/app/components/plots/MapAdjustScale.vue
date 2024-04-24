@@ -4,70 +4,72 @@
             <label class="form-check-label">
                 <input id="type-input-dynamic-filtered" class="form-check-input" type="radio" :name="scaleTypeGroup"
                        :value="scaleType.DynamicFiltered"
-                       v-model="selectedScaleType">
-                <span v-translate="'filteredDataset'"></span>
+                       :checked="selectedScale.type === scaleType.DynamicFiltered"
+                       @change="updateScale({...selectedScale, type: parseInt($event.target.value)})">
+                <span class="scale-type-radio" v-translate="'filteredDataset'"></span>
             </label>
         </div>
         <div class="form-check mt-1 static-default">
             <label class="form-check-label">
                 <input id="type-input-default" class="form-check-input" type="radio" :name="scaleTypeGroup"
                        :value="scaleType.Default"
-                       v-model="selectedScaleType">
-                <span v-translate="'default'"></span>
+                       :checked="selectedScale.type === scaleType.Default"
+                       @change="updateScale({...selectedScale, type: parseInt($event.target.value)})">
+                <span class="scale-type-radio" v-translate="'default'"></span>
             </label>
         </div>
         <div class="form-check mt-1 static-custom">
             <label class="form-check-label">
                 <input id="type-input-custom" class="form-check-input" type="radio" :name="scaleTypeGroup"
                        :value="scaleType.Custom"
-                       v-model="selectedScaleType">
-                <span v-translate="'custom'"></span>
+                       :checked="selectedScale.type === scaleType.Custom"
+                       @change="updateScale({...selectedScale, type: parseInt($event.target.value)})">
+                <span class="scale-type-radio" v-translate="'custom'"></span>
             </label>
-        </div>
 
-        <div class="mt-2 ml-2 static-custom-values">
-            <form novalidate>
-                <div class="row p-0 mb-2">
-                    <label for="custom-min-input" class="col col-form-label col-2"><span v-translate="'min'"></span></label>
-                    <div class="col pt-1 pr-1">
-                        <input id="custom-min-input" type="number" :step="colourScaleStep"
-                               v-model.number="selectedScaleMin"
-                               :max="selectedScale.customMax"
-                               :disabled="disableCustom">
+            <div class="mt-2 static-custom-values">
+                <form novalidate>
+                    <div class="row p-0 mb-2">
+                        <label for="custom-min-input" class="col col-form-label col-2"><span v-translate="'min'"></span></label>
+                        <div class="col pt-1 pr-1">
+                            <input id="custom-min-input" type="number" :step="colourScaleStep"
+                                   :value="selectedScale.customMin"
+                                   @change="updateScale({...selectedScale, customMin: parseFloat($event.target.value)})"
+                                   :max="selectedScale.customMax"
+                                   :disabled="disableCustom">
+                        </div>
+                        <p v-if="selectedScale.customMin" class="col col-form-label pl-0">{{ scaleText }}</p>
                     </div>
-                    <p v-if="selectedScale.customMin" class="col col-form-label pl-0">{{ scaleText }}</p>
-                </div>
-                <div class="row">
-                    <label class="col col-form-label col-2" for="custom-max-input"><span v-translate="'max'"></span></label>
-                    <div class="col pt-1 pr-1">
-                        <input id="custom-max-input" type="number" :step="colourScaleStep"
-                               v-model.number="selectedScaleMax"
-                               :min="selectedScale.customMin"
-                               :disabled="disableCustom">
+                    <div class="row">
+                        <label class="col col-form-label col-2" for="custom-max-input"><span v-translate="'max'"></span></label>
+                        <div class="col pt-1 pr-1">
+                            <input id="custom-max-input" type="number" :step="colourScaleStep"
+                                   :value="selectedScale.customMax"
+                                   @change="updateScale({...selectedScale, customMax: parseFloat($event.target.value)})"
+                                   :min="selectedScale.customMin"
+                                   :disabled="disableCustom">
+                        </div>
+                        <p v-if="selectedScale.customMax" class="col col-form-label pl-0">{{ scaleText }}</p>
                     </div>
-                    <p v-if="selectedScale.customMax" class="col col-form-label pl-0">{{ scaleText }}</p>
-                </div>
-            </form>
+                </form>
+            </div>
+            <div class="text-danger mt-1 pr-1">{{ invalidMsg }}</div>
         </div>
-        <div class="text-danger">{{ invalidMsg }}</div>
     </div>
 </template>
 
 <script lang="ts">
 
 import {computed, defineComponent, PropType} from "vue";
-import {ScaleSettings, ScaleType} from "../../store/plotState/plotState";
+import {Scale, ScaleSettings, ScaleType} from "../../store/plotState/plotState";
 import i18next from "i18next";
-import {useStore} from "vuex";
-import {RootState} from "../../root";
 import {ChoroplethIndicatorMetadata} from "../../generated";
 import {useUpdateScale} from "./useUpdateScale";
 
 export default defineComponent({
-    emits: ['update:selectedScale'],
     props: {
-        name: {
-            type: String,
+        scale: {
+            type: String as PropType<Scale>,
             required: true
         },
         indicatorMetadata: {
@@ -79,10 +81,14 @@ export default defineComponent({
             required: true
         },
     },
-    setup(props, { emit }) {
+    setup(props) {
         const {getScaleStep, updateOutputScale} = useUpdateScale();
 
-        const scaleStep = computed(() => getScaleStep(props.name));
+        const updateScale = (newSettings: ScaleSettings) => {
+            updateOutputScale(props.scale, props.indicatorMetadata.indicator, newSettings);
+        }
+
+        const scaleStep = computed(() => getScaleStep(props.scale));
 
         const invalidMsg = computed(() => {
             let result = null;
@@ -109,43 +115,7 @@ export default defineComponent({
         });
 
         const scaleTypeGroup = computed(() => {
-            return `${props.name}-scaleType`;
-        });
-
-        const selectedScaleType = computed({
-            get() {
-                return props.selectedScale.type
-            },
-            set(newType: ScaleType) {
-                const newScaleSetting = {...props.selectedScale};
-                newScaleSetting.type = newType;
-                updateOutputScale(props.name, newScaleSetting)
-                emit('update:selectedScale')
-            }
-        });
-
-        const selectedScaleMin = computed({
-            get() {
-                return props.selectedScale.customMin
-            },
-            set(newMin: number) {
-                const newScaleSetting = {...props.selectedScale};
-                newScaleSetting.customMin = newMin;
-                updateOutputScale(props.name, newScaleSetting)
-                emit('update:selectedScale')
-            }
-        });
-
-        const selectedScaleMax = computed({
-            get() {
-                return props.selectedScale.customMax
-            },
-            set(newMax: number) {
-                const newScaleSetting = {...props.selectedScale};
-                newScaleSetting.customMax = newMax;
-                updateOutputScale(props.name, newScaleSetting)
-                emit('update:selectedScale')
-            }
+            return `${props.scale}-scaleType`;
         });
 
         return {
@@ -155,9 +125,7 @@ export default defineComponent({
             scaleTypeGroup,
             scaleType: ScaleType,
             colourScaleStep: scaleStep,
-            selectedScaleType,
-            selectedScaleMin,
-            selectedScaleMax
+            updateScale
         }
     }
 })

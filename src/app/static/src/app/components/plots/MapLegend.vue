@@ -3,7 +3,7 @@
         <div class="legend-container">
             <map-adjust-scale v-if="showAdjust"
                               class="legend-element legend-adjust map-control"
-                              name="colour"
+                              :scale="Scale.Colour"
                               :indicator-metadata="indicatorMetadata"
                               :selected-scale="selectedScale"
                               @update:selected-scale="$emit('update:selectedScale')">
@@ -12,12 +12,12 @@
                 <label>{{indicatorMetadata.name}}</label>
                 <div class="legend" v-for="(level, index) in scaleLevels" v-bind:key="index">
                     <i v-bind:style="level.style"></i>
-                    <span class="level">{{ level.val }}</span>
+                    <span class="level">{{ level.label }}</span>
                     <span class="hidden" style="display: none">{{ level.style }}</span>
                     <br/>
                 </div>
                 <div v-if="!!colourScales" class="adjust-scale mt-1">
-                    <a @click="toggleAdjust" href="">
+                    <a @click.prevent="showAdjust = !showAdjust" href="">
                         <span v-if="showAdjust" v-translate="'done'"></span>
                         <span v-if="!showAdjust" v-translate="'adjustScale'"></span>
                     </a>
@@ -35,7 +35,8 @@ import MapAdjustScale from "./MapAdjustScale.vue";
 import {useStore} from "vuex";
 import {RootState} from "../../root";
 import {ChoroplethIndicatorMetadata} from "../../generated";
-import {ScaleSettings} from "../../store/plotState/plotState";
+import {Scale, ScaleSettings} from "../../store/plotState/plotState";
+import {ScaleLevels} from "./utils";
 
 export default defineComponent({
     props: {
@@ -44,7 +45,7 @@ export default defineComponent({
             required: true
         },
         scaleLevels: {
-            type: Object,
+            type: Object as PropType<ScaleLevels[]>,
             required: true
         },
         selectedScale: {
@@ -60,15 +61,10 @@ export default defineComponent({
 
         const showAdjust = ref<boolean>(false);
 
-        const toggleAdjust = (e: Event) => {
-            e.preventDefault();
-            showAdjust.value = !showAdjust.value;
-        };
-
         return {
             colourScales,
             showAdjust,
-            toggleAdjust
+            Scale
         }
     },
     components: {

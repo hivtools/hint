@@ -20,6 +20,7 @@ import {DownloadResultsMutation} from "../downloadResults/mutations";
 import { ModelOutputMutation } from "../modelOutput/mutations";
 import {commitPlotDefaultSelections, filtersAfterUseShapeRegions} from "../plotSelections/utils";
 import { PlotDataType } from "../plotSelections/plotSelections";
+import {commitInitialScaleSelections} from "../plotState/utils";
 
 type ResultDataPayload = {
     indicatorId: string,
@@ -190,6 +191,7 @@ export const getResultMetadata = async function (context: ActionContext<ModelCal
         commit({type: ModelCalibrateMutation.MetadataFetched, payload: data});
 
         await commitPlotDefaultSelections(data, commit, rootState);
+        commitInitialScaleSelections(data, commit);
 
         commit(ModelCalibrateMutation.Calibrated);
 

@@ -41,7 +41,7 @@ export const actions: ActionTree<PlotSelectionsState, RootState> & PlotSelection
         const { plot, selection } = payload.payload;
         const { state, commit, rootState } = context;
         const metadata = getMetadataFromPlotName(rootState, plot);
-        const updatedSelections: PlotSelectionsState[PlotName]  = {...state[plot]};
+        const updatedSelections: PlotSelectionsState[PlotName]  = structuredClone(state[plot]);
         if ("filter" in selection) {
             const fIndex = updatedSelections.filters.findIndex(f => f.stateFilterId === selection.filter.id);
             updatedSelections.filters[fIndex].selection = selection.filter.options;

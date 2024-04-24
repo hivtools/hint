@@ -41,7 +41,7 @@ export const useChoroplethTooltips = (featureData: Ref<IndicatorValuesDict>,
 };
 
 const tooltipContent = function (feature: Feature, featureIndicators: IndicatorValuesDict,
-                                        indicatorMetadata: ChoroplethIndicatorMetadata): string {
+                                 indicatorMetadata: ChoroplethIndicatorMetadata): string {
     let format = "";
     let scale = 1;
     let accuracy: number | null = null;
@@ -70,10 +70,14 @@ const tooltipContent = function (feature: Feature, featureIndicators: IndicatorV
             <br/>(${formatOutput(stringLower, format, scale, accuracy, true) + " - " +
         formatOutput(stringUpper, format, scale, accuracy, true)})
         </div>`;
-    } else {
+    } else if (stringVal) {
         return `<div>
             <strong>${area_name}</strong>
             <br/>${formatOutput(stringVal, format, scale, accuracy, true)}
+        </div>`;
+    } else {
+        return `<div>
+            <strong>${area_name}</strong>
         </div>`;
     }
 }
