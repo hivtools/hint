@@ -8,24 +8,32 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Setup Common Environment
-      shell: bash
-      run: |
-        echo "CI_ORG=mrcide" >> ${GITHUB_ENV}
+    - name: Login to Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-    - name: Setup Environment (PR)
-      if: ${{ github.event_name == 'pull_request' }}
-      shell: bash
-      run: |
-        echo "CI_SHA=${{ github.event.pull_request.head.sha }}" >> ${GITHUB_ENV}
-        echo "CI_BRANCH=${{ github.head_ref }}" >> ${GITHUB_ENV}
+    - name: Login to GHCR (GitHub Packages)
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Setup Environment (Push)
-      if: ${{ github.event_name == 'push' }}
+    - id: ci-env
+      name: Setup Environment
       shell: bash
       run: |
-        echo "CI_SHA=${GITHUB_SHA}" >> ${GITHUB_ENV}
-        echo "CI_BRANCH=${{ github.ref_name }}" >> ${GITHUB_ENV}
+        if [ "${{github.event_name}}" = "pull_request" ];
+        then
+          long_sha=${{ github.event.pull_request.head.sha }}
+          echo "CI_BRANCH=${{ github.head_ref }}" >> $GITHUB_OUTPUT
+        else
+          long_sha=${GITHUB_SHA}
+          echo "CI_BRANCH=${{ github.ref_name }}" >> $GITHUB_OUTPUT
+        fi
+        echo "CI_SHA=${long_sha:0:7}" >> $GITHUB_OUTPUT
 
     - uses: actions/setup-node@v4
       with:

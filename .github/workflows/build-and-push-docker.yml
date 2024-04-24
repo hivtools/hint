@@ -1,0 +1,39 @@
+on:
+    push:
+        branches:
+            - master
+    pull_request:
+        branches:
+            - "*"
+
+name: Build and Push Image
+
+env:
+  TAG_DH: mrcide/hint
+  TAG_GHCR: mrc-ide/hint
+
+jobs:
+    test:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Make shared env
+              uses: ./.github/actions/make-shared-env
+
+            - name: Build app
+              env:
+                NODE_ENV: production
+              run: src/gradlew -p src :app:bootDistTar
+
+            - name: Build and push docker
+              uses: docker/build-push-action@v5
+              with:
+                context: src
+                file: ./Dockerfile
+                push: true
+                tags: |
+                  ${{env.TAG_DH}}:${{steps.ci-env.outputs.CI_SHA}}
+                  ${{env.TAG_DH}}:${{steps.ci-env.outputs.CI_BRANCH}}
+                  ghcr.io/${{env.TAG_GHCR}}:${{steps.ci-env.outputs.CI_SHA}}
+                  ghcr.io/${{env.TAG_GHCR}}:${{steps.ci-env.outputs.CI_BRANCH}}
