@@ -27,7 +27,7 @@ export const actions: ActionTree<MetadataState, RootState> & MetadataActions = {
         const { commit, rootState, state } = context;
         const iso3 = rootState.baseline.iso3;
         const sap = rootState.surveyAndProgram;
-        const fileTypes = [FileType.Shape]
+        const fileTypes = []
         if (!sap.ancError && sap.anc) {
             fileTypes.push(FileType.ANC)
         }
