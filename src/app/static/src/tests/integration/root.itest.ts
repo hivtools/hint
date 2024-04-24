@@ -1,12 +1,17 @@
 import {actions} from "../../app/store/root/actions";
+import {actions as projectActions} from "../../app/store/projects/actions";
 import {ErrorReportManualDetails} from "../../app/types";
 import {emptyState} from "../../app/root";
+import {login, rootState} from "./integrationTest";
 
 describe(`root actions`, () => {
+    beforeAll(async () => {
+        await login();
+    });
+
 
     it("can post error report", async () => {
         const commit = vi.fn();
-
         const dispatch = vi.fn();
 
         const state = {
@@ -34,8 +39,10 @@ describe(`root actions`, () => {
                     downloadId: "comparison123"
                 }
             },
-            projects: {currentProject: {name: "p1", id: 1, versions: []}}
+            projects: {currentProject: {name: "v1", id: 1, versions: []}}
         }
+        const projectPayload = {name: "v1"}
+        await projectActions.createProject({commit, dispatch, rootState, state: state} as any, projectPayload);
 
         const getters = {
             errors: []
@@ -48,6 +55,8 @@ describe(`root actions`, () => {
             description: "test"
         }
 
+        // Reset after all setup has completed
+        vi.resetAllMocks();
         await actions.generateErrorReport({commit, rootState: state, getters, dispatch} as any, payload);
         expect(commit.mock.calls.length).toBe(3)
         expect(commit.mock.calls[0][0]).toStrictEqual({payload: true, type: "errors/SendingErrorReport"})
@@ -60,13 +69,5 @@ describe(`root actions`, () => {
                 type: "errors/ErrorReportSuccess"
             });
         expect(commit.mock.calls[2][0]).toStrictEqual({payload: false, type: "errors/SendingErrorReport"})
-
-        expect(dispatch.mock.calls.length).toBe(1)
-        expect(dispatch.mock.calls[0][0]).toEqual("projects/cloneProject")
-        expect(dispatch.mock.calls[0][1]).toEqual(
-            {
-                "emails": ["naomi-support@imperial.ac.uk"],
-                "projectId": 1
-            })
     });
 })

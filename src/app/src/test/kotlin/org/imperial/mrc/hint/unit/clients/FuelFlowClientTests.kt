@@ -18,6 +18,7 @@ class FuelFlowClientTests
     private val data = ErrorReport(
             "test.user@example.com",
             "Kenya",
+            1,
             "Kenya2022",
             "Model",
             "123",
@@ -74,6 +75,7 @@ class FuelFlowClientTests
 
         assertThat(requestJson["email"].asText()).isEqualTo("test.user@example.com")
         assertThat(requestJson["country"].asText()).isEqualTo("Kenya")
+        assertThat(requestJson["projectId"].asInt()).isEqualTo(1)
         assertThat(requestJson["projectName"].asText()).isEqualTo("Kenya2022")
         assertThat(requestJson["section"].asText()).isEqualTo("Model")
         assertThat(requestJson["modelRunId"].asText()).isEqualTo("123")

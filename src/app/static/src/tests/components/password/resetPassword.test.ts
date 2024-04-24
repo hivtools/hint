@@ -93,7 +93,7 @@ describe("Reset password component", () => {
             "Por favor, solicite outra ligação aqui.",
             store);
         expect((wrapper.find("#request-new-link a").element as HTMLLinkElement).href)
-            .toEqual("http://localhost:3000/password/forgot-password");
+            .toEqual("http://localhost/password/forgot-password");
         expect(wrapper.findAll("#password-was-reset").length).toEqual(0);
     });
 

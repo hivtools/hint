@@ -7,8 +7,8 @@ import {
     mockPopulationResponse,
     mockRootState,
     mockShapeResponse,
-    mockStepperState,
-    mockSurveyAndProgramState
+    mockSurveyAndProgramState,
+    mockFile
 } from "../../mocks";
 import {BaselineState} from "../../../app/store/baseline/baseline";
 import UploadInputs from "../../../app/components/uploadInputs/UploadInputs.vue";
@@ -22,9 +22,8 @@ import {SurveyAndProgramActions} from "../../../app/store/surveyAndProgram/actio
 import {getters} from "../../../app/store/surveyAndProgram/getters";
 import {DataType, SurveyAndProgramState} from "../../../app/store/surveyAndProgram/surveyAndProgram";
 import {testUploadComponent} from "./fileUploads";
-import {RootState} from "../../../app/root";
 import { MockInstance, Mocked } from 'vitest';
-import { flushPromises } from '@vue/test-utils';
+import { flushPromises, VueWrapper } from '@vue/test-utils';
 
 describe("UploadInputs upload component", () => {
 
@@ -38,6 +37,8 @@ describe("UploadInputs upload component", () => {
         editsRequireConfirmation: () => true,
         changesToRelevantSteps: () => [{number: 4, textKey: "fitModel"}]
     };
+    const mockPreparingRehydrate = vi.fn()
+    const loadActions = {preparingRehydrate: mockPreparingRehydrate}
 
     testUploadComponent("surveys", 3);
     testUploadComponent("program", 4);
@@ -45,7 +46,8 @@ describe("UploadInputs upload component", () => {
 
     const createSut = (baselineState?: Partial<BaselineState>,
                        metadataState?: Partial<MetadataState>,
-                       surveyAndProgramState: Partial<SurveyAndProgramState> = {selectedDataType: DataType.Survey}) => {
+                       surveyAndProgramState: Partial<SurveyAndProgramState> = {selectedDataType: DataType.Survey},
+                       isGuest = false) => {
 
         actions = {
             refreshDatasetMetadata: vi.fn(),
@@ -65,6 +67,9 @@ describe("UploadInputs upload component", () => {
 
         const store = new Vuex.Store({
             state: mockRootState(),
+            getters: {
+                isGuest: () => isGuest
+            },
             modules: {
                 stepper: {
                     namespaced: true,
@@ -92,10 +97,11 @@ describe("UploadInputs upload component", () => {
                     mutations: {...sapMutations},
                     actions: {...sapActions},
                     getters: getters
+                },
+                load: {
+                    namespaced: true,
+                    actions: {...loadActions}
                 }
-            },
-            getters: {
-                isGuest: () => false
             }
         });
 
@@ -576,6 +582,32 @@ describe("UploadInputs upload component", () => {
 
     });
 
+    it("doesn't render upload zip when logged in", () =>{
+        const store = createSut({}, {}, {}, false);
+        const wrapper = shallowMountWithTranslate(UploadInputs, store, {
+            global: {
+                plugins: [store]
+            },
+        });
+        expect(wrapper.find("#load-zip").exists()).toBe(false)
+    });
+
+    it("can upload output zip when guest", async () =>{
+        const store = createSut({}, {}, {}, true);
+        const wrapper = shallowMountWithTranslate(UploadInputs, store, {
+            global: {
+                plugins: [store]
+            },
+        });
+        expect(wrapper.find("#load-zip").exists()).toBe(true)
+
+        const spy = vi.spyOn((wrapper.vm as any), "clearLoadZipInput")
+        const testFile = mockFile("test filename", "test file contents", "application/zip")
+        await triggerSelectZip(wrapper, testFile, "#upload-zip")
+        expect(mockPreparingRehydrate.mock.calls.length).toBe(1);
+        expect(spy).toHaveBeenCalledTimes(1)
+    });
+
     const expectUploadToDispatchAction = async (index: number,
                                           action: () => MockInstance<any, any>) => {
         const store = createSut();
@@ -622,3 +654,9 @@ const expectFileIsNotRequired = (store: Store<any>, index: number) => {
     });
     expect(wrapper.findAllComponents(ManageFile)[index].props().required).toBe(false);
 }
+
+const triggerSelectZip = async (wrapper: VueWrapper, testFile: File, id: string) => {
+    const input = wrapper.find(id);
+    vi.spyOn((wrapper.vm.$refs as any).loadZip, "files", "get").mockImplementation(() => [testFile]);
+    await input.trigger("change");
+};
