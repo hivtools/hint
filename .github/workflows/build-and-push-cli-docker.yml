@@ -45,7 +45,10 @@ jobs:
                 docker tag "$TAG_DH_SHA" "$TAG_DH_BRANCH"
                 docker tag "$TAG_DH_SHA" "$TAG_GHCR_SHA"
                 docker tag "$TAG_DH_SHA" "$TAG_GHCR_BRANCH"
-                docker push "$TAG_DH_SHA" "$TAG_DH_BRANCH" "$TAG_GHCR_SHA" "$TAG_GHCR_BRANCH"
+                docker push "$TAG_DH_SHA"
+                docker push "$TAG_DH_BRANCH"
+                docker push "$TAG_GHCR_SHA"
+                docker push "$TAG_GHCR_BRANCH"
               env:
                 TAG_DH_SHA: ${{env.TAG_DH}}:${{steps.ci-env.outputs.CI_SHA}}
                 TAG_DH_BRANCH: ${{env.TAG_DH}}:${{steps.ci-env.outputs.CI_BRANCH}}
