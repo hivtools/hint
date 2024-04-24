@@ -6,16 +6,16 @@ import {
     TableSelections
 } from "./plottingSelections";
 import {ModelOutputTabs, PayloadWithType} from "../../types";
-import {DataExplorationState} from "../dataExploration/dataExploration";
+import {RootState} from "../../root";
 
 export interface PlottingSelectionsActions {
-    updateBarchartSelections: (store: ActionContext<PlottingSelectionsState, DataExplorationState>, payload: PayloadWithType<BarchartSelections>) => void
-    updateChoroplethSelections: (store: ActionContext<PlottingSelectionsState, DataExplorationState>, payload: PayloadWithType<Partial<ChoroplethSelections>>) => void
-    updateBubblePlotSelections: (store: ActionContext<PlottingSelectionsState, DataExplorationState>, payload: PayloadWithType<Partial<BubblePlotSelections>>) => void
-    updateTableSelections: (store: ActionContext<PlottingSelectionsState, DataExplorationState>, payload: PayloadWithType<Partial<TableSelections>>) => void
+    updateBarchartSelections: (store: ActionContext<PlottingSelectionsState, RootState>, payload: PayloadWithType<BarchartSelections>) => void
+    updateChoroplethSelections: (store: ActionContext<PlottingSelectionsState, RootState>, payload: PayloadWithType<Partial<ChoroplethSelections>>) => void
+    updateBubblePlotSelections: (store: ActionContext<PlottingSelectionsState, RootState>, payload: PayloadWithType<Partial<BubblePlotSelections>>) => void
+    updateTableSelections: (store: ActionContext<PlottingSelectionsState, RootState>, payload: PayloadWithType<Partial<TableSelections>>) => void
 }
 
-export const actions: ActionTree<PlottingSelectionsState, DataExplorationState> & PlottingSelectionsActions = {
+export const actions: ActionTree<PlottingSelectionsState, RootState> & PlottingSelectionsActions = {
 
     async updateBarchartSelections(context, payload) {
         const {commit, dispatch} = context;

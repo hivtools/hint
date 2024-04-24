@@ -1,5 +1,5 @@
 import {baselineGetters} from "../../app/store/baseline/baseline";
-import { mockBaselineState, mockError, mockPopulationResponse, mockShapeResponse, mockDataExplorationState, mockADRState, mockDatasetResource } from "../mocks";
+import { mockBaselineState, mockError, mockPopulationResponse, mockShapeResponse, mockRootState, mockADRState, mockDatasetResource } from "../mocks";
 
 it("is complete iff all files are present", () => {
     let state = mockBaselineState({
@@ -52,37 +52,6 @@ it("is complete iff all files are present", () => {
     expect(baselineGetters.complete(state)).toBe(false);
 });
 
-it("is valid for data exploration iff consistent, no errors, and shape file is present", () => {
-    let state = mockBaselineState({
-        shape: mockShapeResponse(),
-        validatedConsistent: true
-    });
-    expect(baselineGetters.validForDataExploration(state)).toBe(true);
-
-    state = mockBaselineState({
-        pjnzError: mockError(""),
-        shape: mockShapeResponse(),
-        validatedConsistent: true
-    });
-    expect(baselineGetters.validForDataExploration(state)).toBe(false);
-
-    state = mockBaselineState({
-        populationError: mockError(""),
-        shape: mockShapeResponse(),
-        validatedConsistent: true
-    });
-    expect(baselineGetters.validForDataExploration(state)).toBe(false);
-
-    state = mockBaselineState({validatedConsistent: true});
-    expect(baselineGetters.validForDataExploration(state)).toBe(false);
-
-    state = mockBaselineState({
-        shape: mockShapeResponse(),
-        validatedConsistent: false
-    });
-    expect(baselineGetters.validForDataExploration(state)).toBe(false);
-});
-
 it("selectedDatasetAvailableResources only returns resources that the user has persmissions for (ie, exists in relevant dataset)", () => {
     const resources = [
         { resource_type: "inputs-unaids-spectrum-file" },
@@ -123,19 +92,19 @@ it("selectedDatasetAvailableResources only returns resources that the user has p
     let state = mockBaselineState({
         selectedDataset
     });
-    let rootState = mockDataExplorationState({
+    let rootState = mockRootState({
         adr: mockADRState({
             datasets
         })
     })
 
-    const getters = jest.fn()
+    const getters = vi.fn()
     expect(baselineGetters.selectedDatasetAvailableResources(state, getters, rootState)).toStrictEqual(selectedDataset.resources);
 
     state = mockBaselineState({
         selectedDataset
     });
-    rootState = mockDataExplorationState({
+    rootState = mockRootState({
         adr: mockADRState({
             datasets: [
                 {

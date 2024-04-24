@@ -18,7 +18,15 @@ import {
     mockRelease,
     mockStepperState,
     mockSurveyAndProgramState,
-    mockComparisonPlotResponse, mockRootState
+    mockComparisonPlotResponse,
+    mockRootState,
+    mockLoadState,
+    mockDownloadResultsState,
+    mockDownloadIndicatorData,
+    mockDownloadIndicatorState,
+    mockPlotData,
+    mockPlotSelections,
+    mockPlotState
 } from "./mocks";
 import {localStorageManager, serialiseState} from "../app/localStorageManager";
 import {RootState} from "../app/root";
@@ -28,14 +36,14 @@ import {Language} from "../app/store/translations/locales";
 import registerTranslations from "../app/store/translations/registerTranslations";
 import Vuex from 'vuex';
 import i18next from "i18next";
-import {DataExplorationState} from "../app/store/dataExploration/dataExploration";
+import {initialDownloadIndicatorState} from "../app/store/downloadIndicator/downloadIndicator";
 
 declare const currentUser: string; // set in jest config, or on the index page when run for real
 
 describe("LocalStorageManager", () => {
 
     afterEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
     })
 
     const modelCalibrateResponse = {
@@ -72,7 +80,6 @@ describe("LocalStorageManager", () => {
         const release = mockRelease();
         const mockRoot = {
             version: "1.0.0",
-            dataExplorationMode: false,
             currentUser: "some user",
             updatingLanguage: false,
             adr: mockADRState(),
@@ -94,8 +101,16 @@ describe("LocalStorageManager", () => {
                 comparisonPlotResult: mockComparisonPlotResponse()
             }),
             stepper: mockStepperState(),
+            load: mockLoadState(),
+            downloadResults: mockDownloadResultsState(),
+            downloadIndicator: mockDownloadIndicatorState(),
+            invalidSteps: [],
+            language: Language.en,
             metadata: mockMetadataState({plottingMetadataError: mockError("metadataError")}),
             plottingSelections: mockPlottingSelections(),
+            plotData: mockPlotData(),
+            plotSelections: mockPlotSelections(),
+            plotState: mockPlotState(),
             surveyAndProgram: mockSurveyAndProgramState({
                 selectedDataType: DataType.Survey,
                 warnings: [{text: "test warning", locations: ["review_inputs"]}]
@@ -128,52 +143,6 @@ describe("LocalStorageManager", () => {
         });
     });
 
-    it("serialises DataExplorationState as expected", () => {
-        const dataset = mockDataset();
-        const release = mockRelease();
-        const mockDataExploration = {
-            version: "1.0.0",
-            dataExplorationMode: true,
-            currentUser: "some user",
-            language: Language.en,
-            updatingLanguage: false,
-            adr: mockADRState(),
-            genericChart: mockGenericChartState(),
-            adrUpload: mockADRUploadState(),
-            hintrVersion: mockHintrVersionState(),
-            baseline: mockBaselineState({
-                selectedDataset: dataset,
-                selectedRelease: release,
-                selectedDatasetHasChanged: false
-            }) ,
-            metadata: mockMetadataState(),
-            surveyAndProgram: {
-                selectedDataType: DataType.Survey,
-                warnings: [{text: "test warning", locations: ["review_inputs"]}]
-            },
-            plottingSelections: mockPlottingSelections(),
-            errors: mockErrorsState(),
-            stepper: mockStepperState()
-        } as DataExplorationState;
-        const result = serialiseState(mockDataExploration);
-        expect(result).toStrictEqual({
-            version: "1.0.0",
-            baseline: {
-                selectedDataset: dataset,
-                selectedRelease: release,
-                selectedDatasetIsRefreshed: false
-            },
-            metadata: mockMetadataState(),
-            plottingSelections: mockPlottingSelections(),
-            surveyAndProgram: {
-                selectedDataType: DataType.Survey,
-                warnings: [{text: "test warning", locations: ["review_inputs"]}]
-            },
-            hintrVersion: mockHintrVersionState(),
-            stepper: mockStepperState()
-        });
-    });
-
     it("returns nothing and saves current user if local storage does not match current user", () => {
         localStorage.setItem("user", currentUser);
         localStorageManager.savePartialState({errors: {
@@ -181,37 +150,28 @@ describe("LocalStorageManager", () => {
             errorReportError: null,
             errorReportSuccess: false,
             sendingErrorReport: false
-        }}, false);
-        let result = localStorageManager.getState(false);
+        }});
+        let result = localStorageManager.getState();
         expect(result).not.toBe(null);
         expect(localStorage.getItem("user")).toBe(currentUser);
 
         localStorage.setItem("user", "bad-user");
-        result = localStorageManager.getState(false);
+        result = localStorageManager.getState();
         expect(result).toBe(null);
         expect(localStorage.getItem("user")).toBe(currentUser);
     });
 
     it("saves to local storage", () => {
-        const spy = jest.spyOn(Storage.prototype, "setItem");
+        const spy = vi.spyOn(Storage.prototype, "setItem");
         const testState = {baseline: mockBaselineState()};
-        localStorageManager.savePartialState(testState, false);
+        localStorageManager.savePartialState(testState);
 
         expect(spy.mock.calls[0][0]).toBe(`hintAppState_v${currentHintVersion}`);
         expect(spy.mock.calls[0][1]).toBe(JSON.stringify(testState));
     });
 
-    it("saves to local storage in Data Exploration mode", () => {
-        const spy = jest.spyOn(Storage.prototype, "setItem");
-        const testState = {baseline: mockBaselineState()};
-        localStorageManager.savePartialState(testState, true);
-
-        expect(spy.mock.calls[0][0]).toBe(`hintAppState_explore_v${currentHintVersion}`);
-        expect(spy.mock.calls[0][1]).toBe(JSON.stringify(testState));
-    });
-
     it("can set and get language from local storage", () => {
-        const spy = jest.spyOn(Storage.prototype, "setItem");
+        const spy = vi.spyOn(Storage.prototype, "setItem");
 
         localStorageManager.saveLanguage(Language.pt);
 
@@ -231,43 +191,12 @@ describe("LocalStorageManager", () => {
 
     it("can get from local storage", () => {
         const testState = {baseline: mockBaselineState(), language: Language.pt};
-        localStorageManager.savePartialState(testState, false);
-        const spy = jest.spyOn(Storage.prototype, "getItem");
+        localStorageManager.savePartialState(testState);
+        const spy = vi.spyOn(Storage.prototype, "getItem");
 
-        const result = localStorageManager.getState(false);
+        const result = localStorageManager.getState();
         expect(result).toStrictEqual(testState);
         expect(spy.mock.calls[1][0]).toBe(`hintAppState_v${currentHintVersion}`);
     });
 
-    it("can get from local storage in Data Exploration mode", () => {
-        const testState = {baseline: mockBaselineState(), language: Language.pt}
-        localStorageManager.savePartialState(testState, true);
-        const spy = jest.spyOn(Storage.prototype, "getItem");
-
-        const result = localStorageManager.getState(true);
-        expect(result).toStrictEqual(testState);
-        expect(spy.mock.calls[1][0]).toBe(`hintAppState_explore_v${currentHintVersion}`);
-    });
-
-    it("can delete state", () => {
-        const testState = {baseline: mockBaselineState()};
-        localStorageManager.savePartialState(testState, false);
-        const spy = jest.spyOn(Storage.prototype, "removeItem");
-
-        localStorageManager.deleteState(false);
-        expect(spy.mock.calls[0][0]).toBe(`hintAppState_v${currentHintVersion}`);
-        const saved = localStorageManager.getState(false);
-        expect(saved).toBeNull();
-    });
-
-    it("can delete state in data exploration mode", () => {
-        const testState = {baseline: mockBaselineState()};
-        localStorageManager.savePartialState(testState, true);
-        const spy = jest.spyOn(Storage.prototype, "removeItem");
-
-        localStorageManager.deleteState(true);
-        expect(spy.mock.calls[0][0]).toBe(`hintAppState_explore_v${currentHintVersion}`);
-        const saved = localStorageManager.getState(true);
-        expect(saved).toBeNull();
-    })
 });

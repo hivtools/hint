@@ -14,7 +14,7 @@ export interface DownloadResultsActions {
     prepareComparisonOutput: (store: ActionContext<DownloadResultsState, RootState>) => void
     prepareAgywTool: (store: ActionContext<DownloadResultsState, RootState>) => void
     prepareOutputs: (store: ActionContext<DownloadResultsState, RootState>) => void
-    poll: (store: ActionContext<DownloadResultsState, RootState>, downloadType: string) => void
+    poll: (store: ActionContext<DownloadResultsState, RootState>, downloadType: string, interval?: number | null) => void
     downloadComparisonReport: (store: ActionContext<DownloadResultsState, RootState>) => void
     downloadSpectrumOutput: (store: ActionContext<DownloadResultsState, RootState>) => void
     downloadSummaryReport: (store: ActionContext<DownloadResultsState, RootState>) => void
@@ -160,7 +160,7 @@ export const actions: ActionTree<DownloadResultsState, RootState> & DownloadResu
         }
     },
 
-    async poll(context, downloadType) {
+    async poll(context, downloadType, interval = null) {
         const {commit} = context;
         const id = setInterval(() => {
 
@@ -175,7 +175,7 @@ export const actions: ActionTree<DownloadResultsState, RootState> & DownloadResu
             } else if (downloadType === DOWNLOAD_TYPE.AGYW) {
                 getAgywDownloadStatus(context)
             }
-        }, 2000);
+        }, interval || 2000);
 
         commit({type: "PollingStatusStarted", payload: {pollId: id, downloadType: downloadType}});
     },

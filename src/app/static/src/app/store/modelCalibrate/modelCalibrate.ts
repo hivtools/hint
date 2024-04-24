@@ -11,7 +11,7 @@ import {
     CalibrateResultResponse,
     ComparisonPlotResponse,
     CalibrateDataResponse,
-    CalibrateMetadataResponse,
+    CalibrateMetadataResponse
 } from "../../generated";
 
 export interface ModelCalibrateState extends ReadyState, WarningsState {

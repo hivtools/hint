@@ -1,7 +1,7 @@
 <template>
     <div>
         <Bar ref="chart" :data="chartData" :options="chartOptions"/>
-        <div v-if="chartData.value.datasets.length == 0" id="noDataMessage" class="px-3 py-2 noDataMessage">
+        <div v-if="chartData.datasets.length == 0" id="noDataMessage" class="px-3 py-2 noDataMessage">
             <span class="lead">
                 <strong v-translate="'noChartData'"></strong>
             </span>

@@ -1,19 +1,16 @@
 import {Module} from 'vuex';
 import {actions} from './actions';
 import {mutations} from './mutations';
-import {ReadyState} from "../../root";
 import {
     NestedFilterOption,
     PjnzResponse,
     PopulationResponse,
     ShapeResponse,
     Error,
-    FilterOption
 } from "../../generated";
 import { Dataset, Release, Dict, DatasetResourceSet, DatasetResource } from "../../types";
+import {ReadyState, RootState} from "../../root";
 import {resourceTypes} from "../../utils";
-import {DataExplorationState} from "../dataExploration/dataExploration";
-import {Feature} from "geojson";
 
 export interface BaselineState extends ReadyState {
     selectedDataset: Dataset | null
@@ -67,12 +64,7 @@ export const baselineGetters = {
         return state.validatedConsistent &&
             !!state.country && !!state.iso3 && !!state.shape && !!state.population
     },
-    validForDataExploration: (state: BaselineState) => {
-        const validOrMissingPJNZ = !state.pjnzError
-        const validOrMissingPop = !state.populationError
-        return validOrMissingPJNZ && validOrMissingPop && state.validatedConsistent && !!state.shape
-    },
-    selectedDatasetAvailableResources: (state: BaselineState, getters: any, rootState: DataExplorationState): unknown => {
+    selectedDatasetAvailableResources: (state: BaselineState, getters: any, rootState: RootState): unknown => {
         const resources: { [k in keyof DatasetResourceSet]?: DatasetResource | null } = {}
         const { selectedDataset } = state
 
@@ -112,7 +104,7 @@ const getters = baselineGetters;
 
 const namespaced = true;
 
-export const baseline = (existingState: Partial<DataExplorationState> | null): Module<BaselineState, DataExplorationState> => {
+export const baseline = (existingState: Partial<RootState> | null): Module<BaselineState, RootState> => {
     return {
         namespaced,
             state: {...initialBaselineState(), ...existingState && existingState.baseline},

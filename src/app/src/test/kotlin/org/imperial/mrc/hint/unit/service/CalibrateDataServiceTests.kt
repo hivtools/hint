@@ -2,8 +2,11 @@ package org.imperial.mrc.hint.unit.service
 
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
+import org.assertj.core.api.Assertions
+import org.imperial.mrc.hint.AppProperties
 import org.imperial.mrc.hint.clients.HintrAPIClient
 import org.imperial.mrc.hint.db.CalibrateDataRepository
+import org.imperial.mrc.hint.exceptions.HintException
 import org.imperial.mrc.hint.models.CalibrateResultRow
 import org.imperial.mrc.hint.models.FilterQuery
 import org.imperial.mrc.hint.security.Session
@@ -13,11 +16,13 @@ import org.junit.jupiter.api.Test
 import org.mockito.ArgumentMatchers.anyString
 import org.pac4j.core.profile.CommonProfile
 import org.springframework.http.ResponseEntity
+import java.nio.file.Paths
+import kotlin.io.path.Path
 
 class CalibrateDataServiceTests
 {
     private val mockCalibratePathResponse = mock<ResponseEntity<String>> {
-        on { body } doReturn """{"data": {"path": "testPath"}}"""
+        on { body } doReturn """{"data": {"path": "test.duckdb"}}"""
     }
 
     private val mockResultRow = CalibrateResultRow(
@@ -35,7 +40,7 @@ class CalibrateDataServiceTests
         }
 
         val mockCalibrateDataRepo = mock<CalibrateDataRepository> {
-            on { getDataFromPath("testPath", "all") } doReturn listOf(mockResultRow)
+            on { getDataFromPath(Path("src/test/resources/duckdb/test.duckdb"), "all") } doReturn listOf(mockResultRow)
         }
 
         val mockSession = mock<Session> {
@@ -43,9 +48,13 @@ class CalibrateDataServiceTests
             on { getAccessToken() } doReturn "FAKE_TOKEN"
         }
 
-        val sut = CalibrateDataService(mockClient, mockCalibrateDataRepo, mockSession)
+        val mockProperties = mock<AppProperties> {
+            on { resultsDirectory } doReturn "src/test/resources/duckdb/"
+        }
 
-        val dataObj = sut.getCalibrateData("anyPath", "all")
+        val sut = CalibrateDataService(mockClient, mockCalibrateDataRepo, mockSession, mockProperties)
+
+        val dataObj = sut.getCalibrateData("calibrate_id", "all")
 
         assert(dataObj[0] == mockResultRow)
     }
@@ -58,7 +67,7 @@ class CalibrateDataServiceTests
         }
 
         val mockCalibrateDataRepo = mock<CalibrateDataRepository> {
-            on { getFilteredCalibrateData("testPath", filterQuery) } doReturn listOf(mockResultRow)
+            on { getFilteredCalibrateData(Paths.get("not/a/dir", "test.duckdb"), filterQuery) } doReturn listOf(mockResultRow)
         }
 
         val mockSession = mock<Session> {
@@ -66,10 +75,32 @@ class CalibrateDataServiceTests
             on { getAccessToken() } doReturn "FAKE_TOKEN"
         }
 
-        val sut = CalibrateDataService(mockClient, mockCalibrateDataRepo, mockSession)
+        val mockProperties = mock<AppProperties> {
+            on { resultsDirectory } doReturn "not/a/dir"
+        }
+
+        val sut = CalibrateDataService(mockClient, mockCalibrateDataRepo, mockSession, mockProperties)
 
         val dataObj = sut.getFilteredCalibrateData("anyPath", filterQuery)
 
         assert(dataObj[0] == mockResultRow)
+    }
+
+    @Test
+    fun `user friendly error returned if file does not exist`()
+    {
+        val mockClient = mock<HintrAPIClient> {
+            on { getCalibrateResultData(anyString()) } doReturn mockCalibratePathResponse
+        }
+
+        val mockProperties = mock<AppProperties> {
+            on { resultsDirectory } doReturn "not/a/dir"
+        }
+
+        val sut = CalibrateDataService(mockClient, mock(), mock(), mockProperties)
+
+        Assertions.assertThatThrownBy { sut.getCalibrateData("calibrate_id", "all") }
+            .isInstanceOf(HintException::class.java)
+            .matches { (it as HintException).key == "missingCalibrateData"}
     }
 }

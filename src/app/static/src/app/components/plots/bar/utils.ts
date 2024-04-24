@@ -3,11 +3,7 @@ import {BarchartMetadata, ChoroplethIndicatorMetadata, FilterOption} from "../..
 import {AnnotationOptions} from "chartjs-plugin-annotation";
 import {formatOutput} from "../utils";
 import {PlotData} from "../../../store/plotData/plotData";
-import {ControlSelection} from "../../../store/plotSelections/plotSelections";
 import {Dict} from "../../../types";
-import {Store} from "vuex";
-import {DataExplorationState} from "../../../store/dataExploration/dataExploration";
-import {Ref} from "vue";
 
 export type BarchartIndicatorMetadata = BarchartMetadata["indicators"][0];
 export interface BarChartData extends ChartData {

@@ -4,6 +4,10 @@
     :options="options"
     :model-value="modelValue"
     :multiple="multiple"
+    :disabled="!!disabled"
+    :clearable="!!clearable"
+    :placeholder="placeholder"
+    :searchable="searchable"
     @update:model-value="input">
     <!-- way to pass down all slots -->
     <template v-for="(_, slot) in $slots" v-slot:[slot]="scope">
@@ -38,6 +42,18 @@
                 type: [Array, String] as PropType<string | string[] | null>,
             },
             multiple: {
+                type: Boolean
+            },
+            disabled: {
+                type: Boolean
+            },
+            clearable: {
+                type: Boolean
+            },
+            placeholder: {
+                type: String
+            },
+            searchable: {
                 type: Boolean
             }
         },

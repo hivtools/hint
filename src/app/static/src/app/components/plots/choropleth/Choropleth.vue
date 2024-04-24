@@ -13,7 +13,7 @@
                 <reset-map @reset-view="updateBounds"></reset-map>
                 <map-legend :indicator-metadata="indicatorMetadata"
                             :scale-levels="scaleLevels"
-                            :selected-scale="selectedScale"></map-legend>
+                            :selected-scale="selectedScale!"></map-legend>
             </template>
         </l-map>
     </div>
@@ -38,14 +38,14 @@ import {
 import ResetMap from "../ResetMap.vue";
 import MapLegend from "../MapLegend.vue";
 import {IndicatorValuesDict, NumericRange} from "../../../types";
-import {ChoroplethIndicatorMetadata} from "../../../generated";
+import {CalibrateDataResponse, ChoroplethIndicatorMetadata} from "../../../generated";
 import { ScaleSettings } from "../../../store/plotState/plotState";
 import {useChoroplethTooltips} from "./useChoroplethTooltips";
 import {getFeatureData} from "./utils";
 import MapEmptyFeature from "../MapEmptyFeature.vue";
 
 const store = useStore<RootState>();
-const plotData = computed<PlotData>(() => store.state.plotData.choropleth);
+const plotData = computed(() => store.state.plotData.choropleth as CalibrateDataResponse["data"]);
 
 const selectedIndicator = computed<string>(() => {
     return store.state.plotSelections.choropleth.filters.find(f => f.stateFilterId === "indicator")!.selection[0].id
@@ -68,7 +68,6 @@ const featureRefs = ref<typeof LGeoJson[]>([]);
 const {createTooltips, updateTooltips} = useChoroplethTooltips(featureData, indicatorMetadata, currentFeatures, featureRefs)
 
 const updateMap = () => {
-    plotData.value = store.state.plotData.choropleth;
     updateFeatures();
     updateMapColours();
     updateTooltips();

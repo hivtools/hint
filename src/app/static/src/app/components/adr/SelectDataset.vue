@@ -84,7 +84,7 @@
             </template>
         </modal>
         <reset-confirmation
-            v-if="!dataExplorationMode && showConfirmation"
+            v-if="showConfirmation"
             :discard-step-warning="selectedDatasetIsRefreshed ? modelOptions : null"
             :continue-editing="continueEditing"
             :cancel-editing="cancelEditing"

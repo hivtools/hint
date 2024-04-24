@@ -1,7 +1,7 @@
 import {Module} from "vuex";
 import {Error} from "../../generated";
 import {mutations} from "./mutations";
-import {DataExplorationState} from "../dataExploration/dataExploration";
+import {RootState} from "../../root";
 
 export interface ErrorsState {
     errors: Error[],
@@ -29,7 +29,7 @@ export const initialErrorsState = (): ErrorsState => {
 
 const namespaced = true;
 
-export const errors: Module<ErrorsState, DataExplorationState> = {
+export const errors: Module<ErrorsState, RootState> = {
     namespaced,
     state: initialErrorsState(),
     mutations

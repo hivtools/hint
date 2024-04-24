@@ -50,9 +50,11 @@ import {ADRState, initialADRState} from "../app/store/adr/adr";
 import {ADRUploadState, initialADRUploadState} from "../app/store/adrUpload/adrUpload";
 import {DownloadResultsState, initialDownloadResultsState} from "../app/store/downloadResults/downloadResults";
 import {GenericChartState, initialGenericChartState} from "../app/store/genericChart/genericChart";
-import {DataExplorationState, initialDataExplorationState} from "../app/store/dataExploration/dataExploration";
 import {DynamicControlType, DynamicFormMeta} from "@reside-ic/vue-next-dynamic-form";
 import {initialPlotSelectionsState, PlotSelectionsState} from "../app/store/plotSelections/plotSelections";
+import {DownloadIndicatorState, initialDownloadIndicatorState} from "../app/store/downloadIndicator/downloadIndicator";
+import { PlotDataState, initialPlotDataState } from "../app/store/plotData/plotData";
+import { PlotState, initialPlotState } from "../app/store/plotState/plotState";
 
 export const mockAxios = new MockAdapter(axios);
 
@@ -169,6 +171,27 @@ export const mockPlottingSelections = (props?: Partial<PlottingSelectionsState>)
     }
 };
 
+export const mockPlotData = (props?: Partial<PlotDataState>) => {
+    return {
+        ...initialPlotDataState(),
+        ...props
+    }
+};
+
+export const mockPlotSelections = (props?: Partial<PlotSelectionsState>) => {
+    return {
+        ...initialPlotSelectionsState(),
+        ...props
+    }
+};
+
+export const mockPlotState = (props?: Partial<PlotState>) => {
+    return {
+        ...initialPlotState(),
+        ...props
+    }
+};
+
 export const mockPlotSelectionsState = (props?: Partial<PlotSelectionsState>): PlotSelectionsState => {
     return {
         ...initialPlotSelectionsState(),
@@ -197,16 +220,16 @@ export const mockGenericChartState =  (props?: Partial<GenericChartState>): Gene
     }
 };
 
+export const mockDownloadIndicatorState = (props?: Partial<DownloadIndicatorState>): DownloadIndicatorState => {
+    return {
+        ...initialDownloadIndicatorState(),
+        ...props
+    }
+}
+
 export const mockRootState = (props?: Partial<RootState>): RootState => {
     return {
         ...emptyState(),
-        ...props
-    }
-};
-
-export const mockDataExplorationState = (props?: Partial<DataExplorationState>): DataExplorationState => {
-    return {
-        ...initialDataExplorationState(),
         ...props
     }
 };

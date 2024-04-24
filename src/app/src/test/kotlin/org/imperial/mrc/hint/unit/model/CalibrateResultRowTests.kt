@@ -32,7 +32,7 @@ class CalibrateResultRowTests
         listOf("age1"),
         listOf("sex1", "sex2", "sex3"),
         listOf("area1"),
-        listOf(1, 2, 3, 4)
+        listOf("1", "2", "3", "4")
     )
 
     @Test

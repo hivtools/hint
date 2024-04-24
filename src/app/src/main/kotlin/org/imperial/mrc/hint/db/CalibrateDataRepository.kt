@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component
 import org.imperial.mrc.hint.models.CalibrateResultRow
 import org.imperial.mrc.hint.models.ResultData
 import org.imperial.mrc.hint.models.FilterQuery
+import java.nio.file.Path
 import java.sql.Connection
 import java.sql.DriverManager
 import java.sql.Statement
@@ -43,11 +44,11 @@ FROM data"""
 interface CalibrateDataRepository
 {
     fun getDataFromPath(
-        path: String,
+        path: Path,
         indicator: String): List<CalibrateResultRow>
     
     fun getFilteredCalibrateData(
-        path: String,
+        path: Path,
         filterQuery: FilterQuery): List<CalibrateResultRow>
 }
 
@@ -141,15 +142,15 @@ class JooqCalibrateDataRepository: CalibrateDataRepository
             }
     }
 
-    private fun getDBConnFromPathResponse(path: String): Connection {   
+    private fun getDBConnFromPathResponse(path: Path): Connection {   
         val readOnlyProp = Properties()
         readOnlyProp.setProperty("duckdb.read_only", "true")
-        val conn = DriverManager.getConnection("jdbc:duckdb:.${path}", readOnlyProp)
+        val conn = DriverManager.getConnection("jdbc:duckdb:${path.toRealPath()}", readOnlyProp)
         return conn
     }
 
     override fun getDataFromPath(
-        path: String,
+        path: Path,
         indicator: String): List<CalibrateResultRow>
     {
         getDBConnFromPathResponse(path).use { conn ->
@@ -158,7 +159,7 @@ class JooqCalibrateDataRepository: CalibrateDataRepository
     }
 
     override fun getFilteredCalibrateData(
-        path: String,
+        path: Path,
         filterQuery: FilterQuery): List<CalibrateResultRow>
     {
         if (filterQuery.indicator != null && filterQuery.indicator.size == 0) {

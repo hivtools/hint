@@ -15,7 +15,7 @@ import { flushPromises } from "@vue/test-utils";
 describe("Project history component", () => {
 
     afterEach(() => {
-        jest.resetAllMocks();
+        vi.resetAllMocks();
     });
 
     const isoDates = ["2020-07-30T15:00:00.000000",
@@ -23,13 +23,13 @@ describe("Project history component", () => {
         "2020-07-31T10:00:00.000000",
         "2020-08-01T11:00:00.000000"];
 
-    const mockDeleteProject = jest.fn();
-    const mockDeleteVersion = jest.fn();
-    const mockLoad = jest.fn();
-    const mockPromoteVersion = jest.fn();
-    const mockRenameProject = jest.fn();
-    const mockUpdateVersion = jest.fn();
-    const mockUpdateProjectNote = jest.fn();
+    const mockDeleteProject = vi.fn();
+    const mockDeleteVersion = vi.fn();
+    const mockLoad = vi.fn();
+    const mockPromoteVersion = vi.fn();
+    const mockRenameProject = vi.fn();
+    const mockUpdateVersion = vi.fn();
+    const mockUpdateProjectNote = vi.fn();
 
     function createStore(projects: Project[] = testProjects) {
         const store = new Vuex.Store({
@@ -143,7 +143,7 @@ describe("Project history component", () => {
     });
 
     it("can render tooltips without an error", () => {
-        const mockTooltip = jest.fn();
+        const mockTooltip = vi.fn();
         const store = createStore(testProjects)
         mountWithTranslate(ProjectHistory, store, {
             global: {
@@ -163,7 +163,7 @@ describe("Project history component", () => {
     });
 
     it("does not render tooltips if project length > 25", () => {
-        const mockTooltip = jest.fn();
+        const mockTooltip = vi.fn();
         const store = createStore(testProjectsLong(25))
         mountWithTranslate(ProjectHistory, store, {
             global: {
@@ -191,7 +191,7 @@ describe("Project history component", () => {
     });
 
     it("can render tooltips in french without an error", async () => {
-        const mockTooltip = jest.fn();
+        const mockTooltip = vi.fn();
         const store = createStore(testProjects)
         store.state.language = Language.fr;
         await nextTick();
@@ -213,7 +213,7 @@ describe("Project history component", () => {
     });
 
     it("can render tooltips in Portuguese without an error", async () => {
-        const mockTooltip = jest.fn();
+        const mockTooltip = vi.fn();
         const store = createStore(testProjects)
         store.state.language = Language.pt;
         await nextTick();
@@ -277,11 +277,9 @@ describe("Project history component", () => {
         expect(cells[7].classes()).toContain("copy-cell");
     };
 
-    it("renders as expected ", async () => {
+    it("renders as expected", async () => {
         const wrapper = getWrapper();
         const store = wrapper.vm.$store;
-
-        expect(wrapper.find("h5").text()).toBe("Project history");
 
         const headers = wrapper.find("#headers").findAll(".header-cell");
         expect(headers.length).toBe(9);
@@ -325,8 +323,7 @@ describe("Project history component", () => {
         expect(chevRight.isVisible()).toBe(true);
         expect(chevDown.isVisible()).toBe(false);
         await button.trigger("click");
-        await flushPromises();
-        expect(versionMenu.classes()).toStrictEqual(["collapse", "show"])
+        expect(versionMenu.classes()).toStrictEqual(["collapse", "show", "collapsing"])
         expect(chevRight.isVisible()).toBe(false);
         expect(chevDown.isVisible()).toBe(true);
     });
@@ -344,16 +341,23 @@ describe("Project history component", () => {
         await flushPromises();
         expect(chevRight.isVisible()).toBe(false);
         expect(chevDown.isVisible()).toBe(true);
-        expect(versionMenu.classes()).toStrictEqual(["collapse", "show"])
+        expect(versionMenu.classes()).toStrictEqual(["collapse", "show", "collapsing"])
         await button.trigger("click");
         await new Promise((r) => setTimeout(r, 200))
         expect(chevRight.isVisible()).toBe(true);
         expect(chevDown.isVisible()).toBe(false);
         expect(versionMenu.classes()).toStrictEqual(["collapse"])
     });
-    it("does not render if no previous projects", () => {
+
+    it("renders placeholder text if no previous projects", () => {
         const wrapper = getWrapper([]);
-        expect(wrapper.findAll("div").length).toBe(0);
+        const placeholderText = wrapper.find("div h5");
+        const store = wrapper.vm.$store;
+        expectTranslated(placeholderText,
+            'Projects will appear here.Use the "New" button to create a new project.',
+            'Les projets apparaissent ici.Utilisez le le bouton "Nouveau" pour créer un nouveau projet.',
+            'Os projectos aparecem aqui.Utilize o botão "Novo" para criar um novo projeto.',
+            store);
     });
 
     it("clicking version load link invokes loadVersion action", async () => {
@@ -510,7 +514,7 @@ describe("Project history component", () => {
 
     it("methods for rename and cancel rename work regardless of feature switch", async () => {
         const wrapper = getWrapper();
-        const mockPreventDefault = jest.fn()
+        const mockPreventDefault = vi.fn()
         const mockEvent = {preventDefault: mockPreventDefault}
         await wrapper.setData({projectToRename: null})
         const vm = wrapper.vm as any

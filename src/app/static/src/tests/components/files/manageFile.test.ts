@@ -4,17 +4,17 @@ import ErrorAlert from "../../../app/components/ErrorAlert.vue";
 import Tick from "../../../app/components/Tick.vue";
 import FileUpload from "../../../app/components/files/FileUpload.vue";
 import ManageFile from "../../../app/components/files/ManageFile.vue";
-import {mockDataExplorationState, mockError} from "../../mocks";
+import {mockRootState, mockError} from "../../mocks";
 import LoadingSpinner from "../../../app/components/LoadingSpinner.vue";
 import Vuex, {Store} from "vuex";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {expectTranslated, expectTranslatedWithStoreType, shallowMountWithTranslate} from "../../testHelpers";
-import {DataExplorationState, initialDataExplorationState} from "../../../app/store/dataExploration/dataExploration";
 import { nextTick } from 'vue';
+import {emptyState, RootState,} from "../../../app/root";
 
 describe("Manage file component", () => {
 
-    const createStore = (customStore = initialDataExplorationState(), requireConfirmation = false) => {
+    const createStore = (customStore = emptyState(), requireConfirmation = false) => {
         const store = new Vuex.Store({
             state: customStore,
             modules: {
@@ -28,7 +28,7 @@ describe("Manage file component", () => {
         return store;
     };
 
-    const createSut = (props?: any, slots?: any, storeOptions?: Store<DataExplorationState>) => {
+    const createSut = (props?: any, slots?: any, storeOptions?: Store<RootState>) => {
         const store = storeOptions || createStore();
         return shallowMountWithTranslate(ManageFile, store, {
             global: {
@@ -39,8 +39,8 @@ describe("Manage file component", () => {
                 error: null,
                 label: "PJNZ",
                 valid: true,
-                upload: jest.fn(),
-                deleteFile: jest.fn(),
+                upload: vi.fn(),
+                deleteFile: vi.fn(),
                 name: "pjnz",
                 accept: "csv",
                 ...props
@@ -58,7 +58,7 @@ describe("Manage file component", () => {
     });
 
     it("renders file upload", () => {
-        const uploadFn = jest.fn();
+        const uploadFn = vi.fn();
         const wrapper = createSut({
             name: "test-name",
             upload: uploadFn
@@ -71,7 +71,7 @@ describe("Manage file component", () => {
 
     it("renders can display ADR tag if file upload is from ADR", () => {
 
-        const uploadFn = jest.fn();
+        const uploadFn = vi.fn();
         const wrapper = createSut({
             name: "test-name",
             upload: uploadFn,
@@ -151,7 +151,7 @@ describe("Manage file component", () => {
     });
 
     it("renders remove link if existing filename is present", async () => {
-        const removeHandler = jest.fn();
+        const removeHandler = vi.fn();
         const wrapper = createSut({
             existingFileName: "File.csv",
             deleteFile: removeHandler
@@ -164,35 +164,8 @@ describe("Manage file component", () => {
         expect(removeHandler.mock.calls.length).toBe(1);
     });
 
-    it("renders remove link if existing filename is present when on data exploration mode", async () => {
-        const removeHandler = jest.fn();
-        const store = createStore(mockDataExplorationState(), true);
-        const wrapper = shallowMountWithTranslate(ManageFile, store, {
-            global: {
-                plugins: [store]
-            },
-            props: {
-                error: null,
-                label: "PJNZ",
-                valid: true,
-                upload: jest.fn(),
-                deleteFile: removeHandler,
-                name: "pjnz",
-                accept: "csv",
-                existingFileName: "File.csv"
-            }
-        });
-
-        const removeLink = wrapper.find("a");
-        expect(removeLink.text()).toBe("remove");
-
-        await removeLink.trigger("click");
-
-        expect(removeHandler.mock.calls.length).toBe(1);
-    });
-
     it("renders remove link if error is present", async () => {
-        const removeHandler = jest.fn();
+        const removeHandler = vi.fn();
         const wrapper = createSut({
             existingFileName: null,
             error: mockError("test error"),
@@ -232,7 +205,7 @@ describe("Manage file component", () => {
     });
 
     it("renders loading spinner while uploading with success", async () => {
-        const uploader = jest.fn();
+        const uploader = vi.fn();
         const wrapper = createSut({
             upload: uploader,
             valid: false
@@ -255,7 +228,7 @@ describe("Manage file component", () => {
     });
 
     it("renders loading spinner while uploading with error", async () => {
-        const uploader = jest.fn();
+        const uploader = vi.fn();
         const wrapper = createSut({
             upload: uploader,
             valid: false,

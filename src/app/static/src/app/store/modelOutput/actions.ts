@@ -1,14 +1,14 @@
 import {ActionContext, ActionTree} from "vuex";
 import {ModelOutputMutation} from "./mutations";
 import {ModelOutputTabs} from "../../types";
-import {DataExplorationState} from "../dataExploration/dataExploration";
 import {ModelOutputState} from "./modelOutput";
+import {RootState} from "../../root";
 
 export interface ModelOutputActions {
-    updateSelectedTab: (store: ActionContext<ModelOutputState, DataExplorationState>, tab: ModelOutputTabs) => void
+    updateSelectedTab: (store: ActionContext<ModelOutputState, RootState>, tab: ModelOutputTabs) => void
 }
 
-export const actions: ActionTree<ModelOutputState, DataExplorationState> & ModelOutputActions = {
+export const actions: ActionTree<ModelOutputState, RootState> & ModelOutputActions = {
 
     async updateSelectedTab(context, tab) {
         const {commit, rootState, dispatch} = context;

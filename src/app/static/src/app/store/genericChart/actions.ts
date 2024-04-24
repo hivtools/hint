@@ -3,12 +3,12 @@ import {api} from "../../apiService";
 import {GenericChartState} from "./genericChart";
 import {GenericChartMutation} from "./mutations";
 import {DatasetConfig, Dict, GenericChartDataset, GenericChartMetadata} from "../../types";
-import {DataExplorationState} from "../dataExploration/dataExploration";
+import {RootState} from "../../root";
 
 export interface MetadataActions {
-    getGenericChartMetadata: (store: ActionContext<GenericChartState, DataExplorationState>) => void
-    getDataset: (store: ActionContext<GenericChartState, DataExplorationState>, payload: getDatasetPayload) => void
-    refreshDatasets: (store: ActionContext<GenericChartState, DataExplorationState>) => void
+    getGenericChartMetadata: (store: ActionContext<GenericChartState, RootState>) => void
+    getDataset: (store: ActionContext<GenericChartState, RootState>, payload: getDatasetPayload) => void
+    refreshDatasets: (store: ActionContext<GenericChartState, RootState>) => void
 }
 
 export interface getDatasetPayload {
@@ -16,7 +16,7 @@ export interface getDatasetPayload {
     url: string
 }
 
-export const actions: ActionTree<GenericChartState, DataExplorationState> & MetadataActions = {
+export const actions: ActionTree<GenericChartState, RootState> & MetadataActions = {
     async getGenericChartMetadata(context) {
         await api<GenericChartMutation, "">(context)
             .withSuccess(GenericChartMutation.GenericChartMetadataFetched)

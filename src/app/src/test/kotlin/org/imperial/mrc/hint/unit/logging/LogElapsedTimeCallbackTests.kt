@@ -9,7 +9,7 @@ import com.nhaarman.mockito_kotlin.verify
 import org.assertj.core.api.Assertions
 import org.imperial.mrc.hint.clients.ADRClient
 import org.imperial.mrc.hint.clients.FuelClient
-import org.imperial.mrc.hint.helpers.MemoryAppender
+import org.imperial.mrc.hint.helpers.LogMemoryAppender
 import org.imperial.mrc.hint.logging.GenericLogger
 import org.imperial.mrc.hint.logging.GenericLoggerImpl
 import org.imperial.mrc.hint.logging.logADRRequestDuration
@@ -35,24 +35,24 @@ class LogElapsedTimeCallbackTests
     companion object {
 
         lateinit var testLogger: org.slf4j.Logger
-        lateinit var memoryAppender: MemoryAppender
+        lateinit var memoryAppender: LogMemoryAppender
 
         @BeforeAll
         @JvmStatic
         fun setup() {
             testLogger = LoggerFactory.getLogger(GenericLoggerImpl::class.java) as Logger
-            memoryAppender = MemoryAppender()
+            memoryAppender = LogMemoryAppender()
             memoryAppender.context = LoggerFactory.getILoggerFactory() as LoggerContext
             (testLogger as Logger).setLevel(Level.DEBUG)
             (testLogger as Logger).addAppender(memoryAppender)
             memoryAppender.start()
         }
+    }
 
-        @BeforeEach
-        fun resetAppender()
-        {
-            memoryAppender.reset()
-        }
+    @BeforeEach
+    fun resetAppender()
+    {
+        memoryAppender.reset()
     }
 
     @Test

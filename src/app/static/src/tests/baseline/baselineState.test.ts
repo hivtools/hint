@@ -2,7 +2,6 @@ declare const currentUser: string; // set in jest config, or on the index page w
 localStorage.setItem("user", currentUser);
 
 const existingState = {
-    dataExplorationMode: false,
     baseline: {
         selectedDataset: {id: "123"}
     },

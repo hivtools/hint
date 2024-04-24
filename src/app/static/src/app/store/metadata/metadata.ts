@@ -13,7 +13,6 @@ import {
     PlotSettingsControl
 } from "../../generated";
 import {DataType} from "../surveyAndProgram/surveyAndProgram";
-import {DataExplorationState} from "../dataExploration/dataExploration";
 import { RootState } from '../../root';
 
 export type PlotMetadataFrame = {
@@ -50,7 +49,7 @@ export const metadataGetters = {
     complete: (state: MetadataState) => {
         return !!state.plottingMetadata
     },
-    sapIndicatorsMetadata: (state: MetadataState, getters: any, rootState: DataExplorationState) => {
+    sapIndicatorsMetadata: (state: MetadataState, getters: any, rootState: RootState) => {
         const plottingMetadata = state.plottingMetadata;
 
         if (!plottingMetadata) {
@@ -88,7 +87,7 @@ export const metadataGetters = {
 
 const namespaced = true;
 
-export const metadata = (existingState: Partial<DataExplorationState> | null): Module<MetadataState, RootState> => {
+export const metadata = (existingState: Partial<RootState> | null): Module<MetadataState, RootState> => {
     return {
         namespaced,
         state: {...initialMetadataState(), ...existingState && existingState.metadata},

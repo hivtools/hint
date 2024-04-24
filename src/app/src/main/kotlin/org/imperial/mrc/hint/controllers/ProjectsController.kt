@@ -1,13 +1,11 @@
 package org.imperial.mrc.hint.controllers
 
-import org.imperial.mrc.hint.AppProperties
 import org.imperial.mrc.hint.db.ProjectRepository
 import org.imperial.mrc.hint.db.VersionRepository
-import org.imperial.mrc.hint.exceptions.UserException
 import org.imperial.mrc.hint.logging.GenericLogger
-import org.imperial.mrc.hint.logic.UserLogic
 import org.imperial.mrc.hint.models.*
 import org.imperial.mrc.hint.security.Session
+import org.imperial.mrc.hint.service.ProjectService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -17,10 +15,9 @@ import javax.servlet.http.HttpServletRequest
 class ProjectsController(private val session: Session,
                          private val versionRepository: VersionRepository,
                          private val projectRepository: ProjectRepository,
-                         private val userLogic: UserLogic,
+                         private val projectService: ProjectService,
                          private val request: HttpServletRequest,
-                         private val logger: GenericLogger,
-                         private val properties: AppProperties
+                         private val logger: GenericLogger
 )
 {
     @PostMapping("/project/")
@@ -47,16 +44,7 @@ class ProjectsController(private val session: Session,
                            @RequestParam("emails") emails: List<String>): ResponseEntity<String>
     {
 
-        val userIds = emails.map {
-            userLogic.getUser(it, properties.oauth2LoginMethod)?.id ?: throw UserException("userDoesNotExist")
-        }
-        val currentProject = projectRepository.getProject(projectId, userId())
-        userIds.forEach {
-            val newProjectId = projectRepository.saveNewProject(it, currentProject.name, userId())
-            currentProject.versions.forEach {
-                versionRepository.cloneVersion(it.id, session.generateVersionId(), newProjectId)
-            }
-        }
+        projectService.cloneProjectToUser(projectId, emails)
         return SuccessResponse(null).asResponseEntity()
     }
 

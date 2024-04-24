@@ -1,16 +1,16 @@
 package org.imperial.mrc.hint.controllers
 
+import org.imperial.mrc.hint.AppProperties
+import org.imperial.mrc.hint.models.SuccessResponse
+import org.imperial.mrc.hint.models.asResponseEntity
 import org.imperial.mrc.hint.security.Session
+import org.imperial.mrc.hint.security.oauth2.OAuth2AuthenticationRedirection
+import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.ui.set
 import org.springframework.web.bind.annotation.GetMapping
 import javax.servlet.http.HttpServletRequest
-import org.imperial.mrc.hint.AppProperties
-import org.imperial.mrc.hint.models.SuccessResponse
-import org.imperial.mrc.hint.models.asResponseEntity
-import org.imperial.mrc.hint.security.oauth2.OAuth2AuthenticationRedirection
-import org.springframework.http.ResponseEntity
 
 @Controller
 class LoginController(
@@ -38,16 +38,8 @@ class LoginController(
             "Username or password is incorrect"
         }
 
-        var redirectTo = request.getParameter("redirectTo")
-        model["appTitle"] = if (redirectTo == "explore")
-        {
-            redirectTo = "/callback/explore"
-            appProperties.exploreApplicationTitle
-        }
-        else
-        {
-            appProperties.applicationTitle
-        }
+        val redirectTo = request.getParameter("redirectTo")
+        model["appTitle"] = appProperties.applicationTitle
         model["continueTo"] = redirectTo ?: "/"
         session?.setRequestedUrl(redirectTo)
 

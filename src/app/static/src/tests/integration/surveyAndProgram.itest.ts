@@ -10,8 +10,8 @@ describe("Survey and programme actions", () => {
     beforeAll(async () => {
         await login();
 
-        const commit = jest.fn();
-        const dispatch = jest.fn();
+        const commit = vi.fn();
+        const dispatch = vi.fn();
         const formData = getFormData("malawi.geojson");
         await baselineActions.uploadShape({commit, dispatch, rootState} as any, formData);
 
@@ -22,8 +22,8 @@ describe("Survey and programme actions", () => {
 
     it("can upload survey", async () => {
 
-        const commit = jest.fn();
-        const dispatch = jest.fn();
+        const commit = vi.fn();
+        const dispatch = vi.fn();
 
         const formData = getFormData("survey.csv");
 
@@ -37,8 +37,8 @@ describe("Survey and programme actions", () => {
 
     it("can upload programme", async () => {
 
-        const commit = jest.fn();
-        const dispatch = jest.fn();
+        const commit = vi.fn();
+        const dispatch = vi.fn();
 
         const formData = getFormData("programme.csv");
 
@@ -54,7 +54,7 @@ describe("Survey and programme actions", () => {
 
     it("can upload anc", async () => {
 
-        const commit = jest.fn();
+        const commit = vi.fn();
         const formData = getFormData("anc.csv");
 
         await actions.uploadANC({commit, rootState} as any, formData);
@@ -66,23 +66,8 @@ describe("Survey and programme actions", () => {
         expect(commit.mock.calls[4][0]["type"]).toBe(SurveyAndProgramMutation.WarningsFetched);
     });
 
-    it("can upload data with lax validation", async () => {
-
-        const commit = jest.fn();
-        const formData = getFormData("anc-pos-greater-than-total.csv");
-        const root = {...rootState, dataExplorationMode: true}
-
-        await actions.uploadANC({commit, rootState: root} as any, formData);
-        expect(commit.mock.calls[2][0]["type"]).toBe("genericChart/ClearDataset");
-        expect(commit.mock.calls[2][0]["payload"]).toBe("anc");
-        expect(commit.mock.calls[3][0]["type"]).toBe(SurveyAndProgramMutation.ANCUpdated);
-        expect(commit.mock.calls[3][0]["payload"]["filename"])
-            .toBe("anc-pos-greater-than-total.csv");
-        expect(commit.mock.calls[4][0]["type"]).toBe(SurveyAndProgramMutation.WarningsFetched);
-    });
-
     it("can delete survey", async () => {
-        const commit = jest.fn();
+        const commit = vi.fn();
 
         const formData = getFormData("survey.csv");
 
@@ -103,7 +88,7 @@ describe("Survey and programme actions", () => {
     });
 
     it("can delete program", async () => {
-        const commit = jest.fn();
+        const commit = vi.fn();
 
         const formData = getFormData("programme.csv");
 
@@ -125,7 +110,7 @@ describe("Survey and programme actions", () => {
     });
 
     it("can delete ANC", async () => {
-        const commit = jest.fn();
+        const commit = vi.fn();
 
         const formData = getFormData("anc.csv");
 

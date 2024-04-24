@@ -6,7 +6,6 @@ import { FileType } from '../surveyAndProgram/surveyAndProgram';
 import { commitPlotDefaultSelections, filtersAfterUseShapeRegions } from '../plotSelections/utils';
 import { ReviewInputFilterMetadataResponse } from '../../generated';
 import { RootState } from '../../root';
-import { PlotDataType } from '../plotSelections/plotSelections';
 
 export interface MetadataActions {
     getPlottingMetadata: (store: ActionContext<MetadataState, RootState>, country: string) => void

@@ -2,14 +2,14 @@ import {exportService} from "../../dataExportService";
 import {ActionContext, ActionTree} from "vuex";
 import {DownloadIndicatorPayload} from "../../types";
 import {DownloadIndicatorState} from "./downloadIndicator";
-import {DataExplorationState} from "../dataExploration/dataExploration";
+import {RootState} from "../../root";
 import {DownloadIndicatorMutation} from "./mutations";
 
 export interface DownloadIndicatorActions {
-    downloadFile: (store: ActionContext<DownloadIndicatorState, DataExplorationState>, payload: DownloadIndicatorPayload) => void
+    downloadFile: (store: ActionContext<DownloadIndicatorState, RootState>, payload: DownloadIndicatorPayload) => void
 }
 
-export const actions: ActionTree<DownloadIndicatorState, DataExplorationState> & DownloadIndicatorActions = {
+export const actions: ActionTree<DownloadIndicatorState, RootState> & DownloadIndicatorActions = {
     downloadFile(context, payload) {
         const {commit} = context
         commit({type: DownloadIndicatorMutation.DownloadingIndicator, payload: true})

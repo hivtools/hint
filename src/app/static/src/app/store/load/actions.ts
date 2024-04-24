@@ -9,7 +9,6 @@ import {
 import {Dict, LocalSessionFile, VersionDetails} from "../../types";
 import {localStorageManager} from "../../localStorageManager";
 import {router} from "../../router";
-import {currentHintVersion} from "../../hintVersion";
 import {initialStepperState} from "../stepper/stepper";
 import {
     ModelStatusResponse,
@@ -17,16 +16,17 @@ import {
 } from "../../generated";
 import {DynamicFormData} from "@reside-ic/vue-next-dynamic-form";
 import {ModelCalibrateState} from "../modelCalibrate/modelCalibrate";
+import {LoadMutations} from "./mutations";
 
-export type LoadActionTypes = "UpdatingState" | "LoadSucceeded" | "ClearLoadError" | "PreparingRehydrate" | "SaveProjectName" | "RehydrateStatusUpdated" | "RehydratePollingStarted" | "RehydrateResult" | "SetProjectName" | "RehydrateCancel"
 export type LoadErrorActionTypes = "LoadFailed" | "RehydrateResultError"
+export type LoadActionTypes = keyof Omit<LoadMutations, LoadErrorActionTypes>
 
 export interface LoadActions {
     preparingRehydrate: (store: ActionContext<LoadState, RootState>, file: FormData) => void
     loadFromVersion: (store: ActionContext<LoadState, RootState>, versionDetails: VersionDetails) => void
     updateStoreState: (store: ActionContext<LoadState, RootState>, savedState: Partial<RootState>) => void
     clearLoadState: (store: ActionContext<LoadState, RootState>) => void
-    pollRehydrate: (store: ActionContext<LoadState, RootState>) => void
+    pollRehydrate: (store: ActionContext<LoadState, RootState>, interval?: number | null) => void
 }
 
 export const actions: ActionTree<LoadState, RootState> & LoadActions = {
@@ -74,7 +74,7 @@ export const actions: ActionTree<LoadState, RootState> & LoadActions = {
             }
         }
 
-        localStorageManager.savePartialState(savedState, false);
+        localStorageManager.savePartialState(savedState);
         location.reload();
     },
 
@@ -95,11 +95,11 @@ export const actions: ActionTree<LoadState, RootState> & LoadActions = {
         }
     },
 
-    async pollRehydrate(context) {
+    async pollRehydrate(context, interval = null) {
         const {commit} = context;
         const id = setInterval(() => {
             getRehydrateStatus(context)
-        }, 2000);
+        }, interval || 2000);
 
         commit({type: "RehydratePollingStarted", payload: id});
     }
@@ -119,7 +119,7 @@ const getRehydrateResult = async (context: ActionContext<LoadState, RootState>) 
         if (!rootGetters.isGuest) {
             await dispatch("projects/createProject",
                 {
-                    name: state.projectName,
+                    name: state.newProjectName,
                     isUploaded: true
                 }, {root: true});
             

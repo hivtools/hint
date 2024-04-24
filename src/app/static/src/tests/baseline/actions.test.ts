@@ -17,8 +17,8 @@ import {actions} from "../../app/store/baseline/actions";
 import {BaselineMutation} from "../../app/store/baseline/mutations";
 import {expectEqualsFrozen, testUploadErrorCommitted} from "../testHelpers";
 import {ADRSchemas} from "../../app/types";
-import Mock = jest.Mock;
 import {initialChorplethSelections} from "../../app/store/plottingSelections/plottingSelections";
+import { Mock } from "vitest";
 
 const adrSchemas: ADRSchemas = {
     baseUrl: "adr.com",
@@ -169,12 +169,12 @@ describe("Baseline actions", () => {
 
     beforeEach(() => {
         // stop apiService logging to console
-        console.log = jest.fn();
+        console.log = vi.fn();
         mockAxios.reset();
     });
 
     afterEach(() => {
-        (console.log as jest.Mock).mockClear();
+        (console.log as Mock).mockClear();
     });
 
     it("sets country and iso3 after PJNZ file upload, and fetches plotting metadata, and validates", async () => {
@@ -182,9 +182,9 @@ describe("Baseline actions", () => {
         mockAxios.onPost(`/baseline/pjnz/`)
             .reply(200, mockSuccess({data: {country: "Malawi", iso3: "MWI"}}));
 
-        const commit = jest.fn();
+        const commit = vi.fn();
         const state = mockBaselineState({iso3: "MWI"});
-        const dispatch = jest.fn();
+        const dispatch = vi.fn();
 
         await actions.uploadPJNZ({commit, state, dispatch, rootState} as any, mockFormData as any);
 
@@ -196,9 +196,9 @@ describe("Baseline actions", () => {
         mockAxios.onPost(url)
             .reply(200, mockSuccess({data: {country: "Malawi", iso3: "MWI"}}));
 
-        const commit = jest.fn();
+        const commit = vi.fn();
         const state = mockBaselineState({iso3: "MWI", selectedDataset: {id: "1", resources: {pjnz: {id: "123"}}}} as any);
-        const dispatch = jest.fn();
+        const dispatch = vi.fn();
         await actions.importPJNZ({commit, state, dispatch, rootState} as any, "some-url");
 
         expectValidAdrImportPayload(url)
@@ -228,9 +228,9 @@ describe("Baseline actions", () => {
         mockAxios.onPost(`/baseline/pjnz/`)
             .reply(400, mockFailure("test error"));
 
-        const commit = jest.fn();
+        const commit = vi.fn();
         const state = mockBaselineState();
-        const dispatch = jest.fn();
+        const dispatch = vi.fn();
         await actions.uploadPJNZ({commit, state, dispatch, rootState} as any, mockFormData as any);
 
         expect(dispatch.mock.calls.length).toBe(1);
@@ -241,9 +241,9 @@ describe("Baseline actions", () => {
         mockAxios.onPost(`/adr/pjnz/`)
             .reply(400, mockFailure("test error"));
 
-        const commit = jest.fn();
+        const commit = vi.fn();
         const state = mockBaselineState();
-        const dispatch = jest.fn();
+        const dispatch = vi.fn();
         await actions.importPJNZ({commit, state, dispatch, rootState} as any, "some-url/some-file.txt");
 
         expect(dispatch.mock.calls.length).toBe(1);
@@ -269,8 +269,8 @@ describe("Baseline actions", () => {
         mockAxios.onPost(`/baseline/shape/`)
             .reply(200, mockSuccess(mockShape));
 
-        const commit = jest.fn();
-        const dispatch = jest.fn();
+        const commit = vi.fn();
+        const dispatch = vi.fn();
         await actions.uploadShape({commit, dispatch, rootState} as any, mockFormData as any);
 
         checkShapeImportUpload(commit, dispatch, mockShape);
@@ -280,9 +280,9 @@ describe("Baseline actions", () => {
         mockAxios.onPost(`/adr/shape/`)
             .reply(400, mockFailure("test error"));
 
-        const commit = jest.fn();
+        const commit = vi.fn();
         const state = mockBaselineState();
-        const dispatch = jest.fn();
+        const dispatch = vi.fn();
         await actions.importShape({commit, state, dispatch, rootState} as any, "some-url/some-file.txt");
 
         expect(dispatch.mock.calls.length).toBe(1);
@@ -302,8 +302,8 @@ describe("Baseline actions", () => {
 
         const state = mockBaselineState({selectedDataset: {id: "1", resources: {shape: {id: "123"}}}} as any)
 
-        const commit = jest.fn();
-        const dispatch = jest.fn();
+        const commit = vi.fn();
+        const dispatch = vi.fn();
         await actions.importShape({commit, dispatch, state, rootState} as any, "some-url");
 
         expectValidAdrImportPayload(url)
@@ -352,8 +352,8 @@ describe("Baseline actions", () => {
         mockAxios.onPost(`/baseline/population/`)
             .reply(200, mockSuccess(mockPop));
 
-        const commit = jest.fn();
-        const dispatch = jest.fn();
+        const commit = vi.fn();
+        const dispatch = vi.fn();
         await actions.uploadPopulation({commit, dispatch, rootState} as any, mockFormData as any);
 
         checkPopulationImportUpload(commit, dispatch, mockPop);
@@ -368,8 +368,8 @@ describe("Baseline actions", () => {
 
         const state = mockBaselineState({selectedDataset: {id: "1", resources: {pop: {id: "123"}}}} as any)
 
-        const commit = jest.fn();
-        const dispatch = jest.fn();
+        const commit = vi.fn();
+        const dispatch = vi.fn();
         await actions.importPopulation({commit, dispatch, state, rootState} as any, "some-url");
 
         expectValidAdrImportPayload(url)
@@ -401,9 +401,9 @@ describe("Baseline actions", () => {
         mockAxios.onPost(`/adr/population/`)
             .reply(400, mockFailure("test error"));
 
-        const commit = jest.fn();
+        const commit = vi.fn();
         const state = mockBaselineState();
-        const dispatch = jest.fn();
+        const dispatch = vi.fn();
         await actions.importPopulation({commit, state, dispatch, rootState} as any, "some-url/some-file.txt");
 
         expect(dispatch.mock.calls.length).toBe(1);
@@ -443,8 +443,8 @@ describe("Baseline actions", () => {
 
         const state = {iso3: "Malawi"}
 
-        const commit = jest.fn();
-        const dispatch = jest.fn();
+        const commit = vi.fn();
+        const dispatch = vi.fn();
         await actions.getBaselineData({commit, dispatch, rootState, state} as any);
 
         const calls = commit.mock.calls.map((callArgs) => callArgs[0]["type"]);
@@ -468,7 +468,7 @@ describe("Baseline actions", () => {
         mockAxios.onGet(`/baseline/validate/`)
             .reply(200, mockSuccess(mockValidateResponse));
 
-        const commit = jest.fn();
+        const commit = vi.fn();
         await actions.validate({commit, rootState} as any);
 
         //commits to Validating first
@@ -488,7 +488,7 @@ describe("Baseline actions", () => {
         mockAxios.onGet(`/baseline/validate/`)
             .reply(400, mockFailure("Baseline is inconsistent"));
 
-        const commit = jest.fn();
+        const commit = vi.fn();
         await actions.validate({commit, rootState} as any);
 
         //commits to Validating first
@@ -515,8 +515,8 @@ describe("Baseline actions", () => {
         mockAxios.onGet(`/baseline/population/`)
             .reply(500);
 
-        const commit = jest.fn();
-        const dispatch = jest.fn();
+        const commit = vi.fn();
+        const dispatch = vi.fn();
         const state = {iso3: ""}
         await actions.getBaselineData({commit, dispatch, rootState, state} as any);
 
@@ -529,8 +529,8 @@ describe("Baseline actions", () => {
         mockAxios.onDelete("/baseline/pjnz/")
             .reply(200, mockSuccess(true));
 
-        const commit = jest.fn();
-        const dispatch = jest.fn();
+        const commit = vi.fn();
+        const dispatch = vi.fn();
         await actions.deletePJNZ({commit, dispatch, rootState} as any);
         expect(commit.mock.calls[0][0]["type"]).toBe(BaselineMutation.PJNZUpdated);
         expectValidationActionsDispatched(dispatch)
@@ -541,8 +541,8 @@ describe("Baseline actions", () => {
         mockAxios.onDelete("/baseline/shape/")
             .reply(200, mockSuccess(true));
 
-        const commit = jest.fn();
-        const dispatch = jest.fn();
+        const commit = vi.fn();
+        const dispatch = vi.fn();
         await actions.deleteShape({commit, dispatch, rootState} as any);
         expect(commit.mock.calls[0][0]["type"]).toBe(BaselineMutation.ShapeUpdated);
         expectValidationActionsDispatched(dispatch)
@@ -553,8 +553,8 @@ describe("Baseline actions", () => {
         mockAxios.onDelete("/baseline/population/")
             .reply(200, mockSuccess(true));
 
-        const commit = jest.fn();
-        const dispatch = jest.fn();
+        const commit = vi.fn();
+        const dispatch = vi.fn();
         await actions.deletePopulation({commit, dispatch, rootState} as any);
         expect(commit.mock.calls[0][0]["type"]).toBe(BaselineMutation.PopulationUpdated);
         expectValidationActionsDispatched(dispatch)
@@ -568,8 +568,8 @@ describe("Baseline actions", () => {
         mockAxios.onDelete("/baseline/population/")
             .reply(200, mockSuccess(true));
 
-        const commit = jest.fn();
-        const dispatch = jest.fn();
+        const commit = vi.fn();
+        const dispatch = vi.fn();
         await actions.deleteAll({commit, dispatch, rootState} as any);
         expect(mockAxios.history["delete"].length).toBe(3)
     });
@@ -581,7 +581,7 @@ describe("Baseline actions", () => {
                 resources: datasetResources
             }))
 
-        const commit = jest.fn();
+        const commit = vi.fn();
         const state = mockBaselineState({
             selectedDataset: mockDataset({ id: "1234" })
         });
@@ -611,7 +611,7 @@ describe("Baseline actions", () => {
                 ]
             }))
 
-        const commit = jest.fn();
+        const commit = vi.fn();
         const state = mockBaselineState({
             selectedDataset: mockDataset({id: "1234"})
         });
@@ -661,7 +661,7 @@ describe("Baseline actions", () => {
             vmmc: availableResources.vmmc
         }
 
-        const commit = jest.fn();
+        const commit = vi.fn();
         const state = mockBaselineState({
             selectedDataset: mockDataset({ id: "1234" })
         });
@@ -687,7 +687,7 @@ describe("Baseline actions", () => {
     });
 
     it("refreshDatasetMetadata does nothing if no dataset", async () => {
-        const commit = jest.fn();
+        const commit = vi.fn();
         const state = mockBaselineState();
         await actions.refreshDatasetMetadata({commit, rootState, state} as any);
         expect(commit.mock.calls.length).toBe(0);
@@ -697,7 +697,7 @@ describe("Baseline actions", () => {
         mockAxios.onGet("/adr/datasets/1234")
             .reply(500);
 
-        const commit = jest.fn();
+        const commit = vi.fn();
         const state = mockBaselineState({
             selectedDataset: mockDataset({id: "1234"})
         });
@@ -706,21 +706,21 @@ describe("Baseline actions", () => {
     });
 
     it("does not call import PJNZ if url is missing", async () => {
-        const commit = jest.fn();
+        const commit = vi.fn();
         await actions.importPJNZ({commit, rootState} as any, "");
 
         expect(commit.mock.calls.length).toBe(0);
     });
 
     it("does not call import shape if url is missing", async () => {
-        const commit = jest.fn();
+        const commit = vi.fn();
         await actions.importShape({commit, rootState} as any, "");
 
         expect(commit.mock.calls.length).toBe(0);
     });
 
     it("does not call import population if url is missing", async () => {
-        const commit = jest.fn();
+        const commit = vi.fn();
         await actions.importPopulation({commit, rootState} as any, "");
 
         expect(commit.mock.calls.length).toBe(0);
