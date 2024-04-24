@@ -15,6 +15,11 @@ export default defineConfig({
       reportsDirectory: "coverage/unit",
       include: ["src/app"]
     },
+    environmentOptions: {
+      jsdom: {
+        url: "http://localhost"
+      }
+    }
   },
-  plugins: [vue()]
+  plugins: [vue()],
 });

@@ -6,7 +6,6 @@ import {ModelRunState} from "../../app/store/modelRun/modelRun";
 import {api} from "../../app/apiService";
 import {ModelRunMutation} from "../../app/store/modelRun/mutations";
 import {Language} from "../../app/store/translations/locales";
-import { flushPromises } from "@vue/test-utils";
 
 describe("Model run actions", () => {
 
@@ -52,10 +51,7 @@ describe("Model run actions", () => {
         const mockState = {status: {done: true}} as ModelRunState;
 
         actions.poll({commit, state: mockState, dispatch: vi.fn(), rootState} as any, runId, 400);
-        await vi.waitUntil(() => commit.mock.calls.length >= 2, {
-            interval: 400,
-            timeout: 6000
-        });
+        await vi.waitUntil(() => commit.mock.calls.length >= 2, { interval: 400, timeout: 6000 });
         expect(commit.mock.calls[0][0]["type"]).toBe("PollingForStatusStarted");
         expect(commit.mock.calls[1][0]["type"]).toBe("RunStatusUpdated");
     });

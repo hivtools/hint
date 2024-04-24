@@ -736,7 +736,7 @@ describe("GenericChart component", () => {
         const wrapper = getWrapper(state);
         await flushPromises();
         wrapper.findAllComponents(DataSource)[0].vm.$emit("update", "dataset2");
-        await nextTick();
+        await flushPromises();
         expect(mockAxios.history.get.length).toBe(0);
     });
 

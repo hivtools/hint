@@ -51,3 +51,4 @@ docker run --rm --network=$NETWORK \
   -url=jdbc:postgresql://$DB/hint
 
 $HERE/add-test-user.sh
+$HERE/add-support-user.sh

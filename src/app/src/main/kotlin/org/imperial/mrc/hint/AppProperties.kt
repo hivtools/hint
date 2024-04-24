@@ -31,6 +31,7 @@ interface AppProperties
     val emailPassword: String
     val tokenIssuer: String
     val uploadDirectory: String
+    val resultsDirectory: String
     val dbUser: String
     val dbPassword: String
     val dbUrl: String
@@ -75,6 +76,7 @@ class ConfiguredAppProperties(private val props: HintProperties = properties) : 
     final override val emailPassword = propString("email_password")
     final override val tokenIssuer = propString("token_issuer")
     final override val uploadDirectory = propString("upload_dir")
+    final override val resultsDirectory = propString("results_dir")
     final override val dbUser: String = propString("db_user")
     final override val dbPassword: String = propString("db_password")
     final override val dbUrl: String = propString("db_url")
