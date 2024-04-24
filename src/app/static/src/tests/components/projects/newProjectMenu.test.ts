@@ -16,15 +16,15 @@ describe("New project menu component", () => {
         }
     }
 
-    const mockTranslate = jest.fn();
-    const mockCreateProject = jest.fn();
-    const mockPreparingRehydrate = jest.fn();
-    const mockNewProjectName = jest.fn()
+    const mockTranslate = vi.fn();
+    const mockCreateProject = vi.fn();
+    const mockPreparingRehydrate = vi.fn();
+    const mockNewProjectName = vi.fn()
     const testProjects = [{id: 2, name: "proj1", versions: []}];
     const mockState = mockLoadState({newProjectName: "mock name"})
 
     beforeEach(() => {
-        jest.resetAllMocks()
+        vi.resetAllMocks()
     })
 
     const createStore = () => {
@@ -243,6 +243,6 @@ describe("New project menu component", () => {
 
 const triggerSelectZip = async (wrapper: VueWrapper, testFile: File, id: string) => {
     const input = wrapper.find(id);
-    jest.spyOn((wrapper.vm.$refs as any).loadZip, "files", "get").mockImplementation(() => [testFile]);
+    vi.spyOn((wrapper.vm.$refs as any).loadZip, "files", "get").mockImplementation(() => [testFile]);
     await input.trigger("change");
 };

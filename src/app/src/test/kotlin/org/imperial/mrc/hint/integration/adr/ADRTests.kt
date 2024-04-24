@@ -147,127 +147,30 @@ class ADRTests : SecureIntegrationTests()
 
     @ParameterizedTest
     @EnumSource(IsAuthorized::class)
-    fun `can save pjnz from ADR`(isAuthorized: IsAuthorized)
+    fun `can save files from ADR`(isAuthorized: IsAuthorized)
     {
-        val resourceType = "inputs-unaids-spectrum-file"
-
-        val resourceId = extractResourceId(isAuthorized, resourceType)
-
-        val pjnz = extractUrl(isAuthorized, resourceType)
-        val result = testRestTemplate.postForEntity<String>("/adr/pjnz",
-            getPostEntityWithUrl(AdrResource(pjnz, getDatasetId(isAuthorized), resourceId)))
-        assertSecureWithSuccess(isAuthorized, result, "ValidateInputResponse")
-    }
-
-    @ParameterizedTest
-    @EnumSource(IsAuthorized::class)
-    fun `can save population from ADR`(isAuthorized: IsAuthorized)
-    {
-        val resourceType = "inputs-unaids-population"
-
-        val resourceId = extractResourceId(isAuthorized, resourceType)
-
-        val population = extractUrl(isAuthorized, resourceType)
-        val result = testRestTemplate.postForEntity<String>("/adr/population",
-                getPostEntityWithUrl(AdrResource(population, getDatasetId(isAuthorized), resourceId)))
-        assertSecureWithSuccess(isAuthorized, result, "ValidateInputResponse")
-    }
-
-    @ParameterizedTest
-    @EnumSource(IsAuthorized::class)
-    fun `can save shape from ADR`(isAuthorized: IsAuthorized)
-    {
-        val resourceType = "inputs-unaids-geographic"
-
-        val resourceId = extractResourceId(isAuthorized, resourceType)
-
-        val shape = extractUrl(isAuthorized, resourceType)
-        val result = testRestTemplate.postForEntity<String>("/adr/shape",
-                getPostEntityWithUrl(AdrResource(shape, getDatasetId(isAuthorized), resourceId)))
-        assertSecureWithSuccess(isAuthorized, result, "ValidateInputResponse")
-    }
-
-    @ParameterizedTest
-    @EnumSource(IsAuthorized::class)
-    fun `can save survey from ADR`(isAuthorized: IsAuthorized)
-    {
-        val resourceType = "inputs-unaids-survey"
-
-        val resourceId = extractResourceId(isAuthorized, resourceType)
+        saveFileFromADR("inputs-unaids-spectrum-file", isAuthorized, "pjnz")
+        saveFileFromADR("inputs-unaids-population", isAuthorized, "population")
+        saveFileFromADR("inputs-unaids-geographic", isAuthorized, "shape")
+        saveFileFromADR("inputs-unaids-naomi-output-zip", isAuthorized, "output")
 
         importGeoFiles(isAuthorized)
 
-        val survey = extractUrl(isAuthorized, resourceType)
-        val result = testRestTemplate.postForEntity<String>("/adr/survey",
-                getPostEntityWithUrl(AdrResource(survey, getDatasetId(isAuthorized), resourceId)))
-        assertSecureWithSuccess(isAuthorized, result, "ValidateInputResponse")
-    }
-
-    @ParameterizedTest
-    @EnumSource(IsAuthorized::class)
-    fun `can save ANC from ADR`(isAuthorized: IsAuthorized)
-    {
-        val resourceType = "inputs-unaids-anc"
-
-        val resourceId = extractResourceId(isAuthorized, resourceType)
-
-        importGeoFiles(isAuthorized)
-
-        val anc = extractUrl(isAuthorized, resourceType)
-        val result = testRestTemplate.postForEntity<String>("/adr/anc",
-                getPostEntityWithUrl(AdrResource(anc, getDatasetId(isAuthorized), resourceId)))
-        assertSecureWithSuccess(isAuthorized, result, "ValidateInputResponse")
-    }
-
-    @ParameterizedTest
-    @EnumSource(IsAuthorized::class)
-    fun `can save VMMC from ADR`(isAuthorized: IsAuthorized)
-    {
-        val resourceType = "inputs-unaids-vmmc-coverage-outputs"
-
-        val resourceId = extractResourceId(isAuthorized, resourceType)
-
-        importGeoFiles(isAuthorized)
-
-        val vmmc = extractUrl(isAuthorized, resourceType)
-        val result = testRestTemplate.postForEntity<String>("/adr/vmmc",
-            getPostEntityWithUrl(AdrResource(vmmc, getDatasetId(isAuthorized), resourceId)))
-        assertSecureWithSuccess(isAuthorized, result, "ValidateInputResponse")
-    }
-
-    @ParameterizedTest
-    @EnumSource(IsAuthorized::class)
-    fun `can save output zip from ADR`(isAuthorized: IsAuthorized)
-    {
-        val resourceType = "inputs-unaids-naomi-output-zip"
-
-        val resourceId = extractResourceId(isAuthorized, resourceType)
-
-        val outputZip = extractUrl(isAuthorized, resourceType)
-        val result = testRestTemplate.postForEntity<String>("/adr/output",
-            getPostEntityWithUrl(AdrResource(outputZip, getDatasetId(isAuthorized), resourceId)))
-        assertSecureWithSuccess(isAuthorized, result, null)
-    }
-
-    @ParameterizedTest
-    @EnumSource(IsAuthorized::class)
-    fun `can save programme from ADR`(isAuthorized: IsAuthorized)
-    {
-        importGeoFiles(isAuthorized)
-
-        val programme = extractUrl(isAuthorized, "inputs-unaids-art")
-        val result = testRestTemplate.postForEntity<String>("/adr/programme",
-                getPostEntityWithUrl(AdrResource(programme)))
+        saveFileFromADR("inputs-unaids-survey", isAuthorized, "survey")
+        saveFileFromADR("inputs-unaids-anc", isAuthorized, "anc")
+        saveFileFromADR("inputs-unaids-vmmc-coverage-outputs", isAuthorized, "vmmc")
 
         // this ADR file sometimes has an error, so allow for success or failure
         // but confirm expected response in each case
+        val programme = extractUrl(isAuthorized, "inputs-unaids-art")
+        val result = testRestTemplate.postForEntity<String>("/adr/programme",
+                getPostEntityWithUrl(AdrResource(programme)))
         when (isAuthorized)
         {
             IsAuthorized.TRUE ->
             {
                 assertThat(result.headers.contentType!!.toString())
                         .contains("application/json")
-
                 if (result.statusCode == HttpStatus.OK)
                 {
                     JSONValidator().validateSuccess(result.body!!, "ValidateInputResponse")
@@ -396,6 +299,15 @@ class ADRTests : SecureIntegrationTests()
                     .header("Authorization" to ADR_KEY)
                     .response()
         }
+    }
+
+    private fun saveFileFromADR(resourceType: String, isAuthorized: IsAuthorized, adrPath: String)
+    {
+        val resourceId = extractResourceId(isAuthorized, resourceType)
+        val file = extractUrl(isAuthorized, resourceType)
+        val result = testRestTemplate.postForEntity<String>("/adr/$adrPath",
+            getPostEntityWithUrl(AdrResource(file, getDatasetId(isAuthorized), resourceId)))
+        assertSecureWithSuccess(isAuthorized, result, null)
     }
 
     private fun getPostEntityWithKey(values: Map<String, List<String>> = emptyMap()): HttpEntity<LinkedMultiValueMap<String, String>>

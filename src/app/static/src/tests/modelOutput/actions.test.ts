@@ -7,8 +7,8 @@ import {mockBaselineState, mockRootState, mockHintrVersionState, mockPlottingSel
 describe("ModelOutput actions", () => {
 
     it("updateSelectedTab dispatches action to fetch data for current tab and commits mutation", async () => {
-        const commit = jest.fn();
-        const dispatch = jest.fn();
+        const commit = vi.fn();
+        const dispatch = vi.fn();
         const rootState = mockRootState({
             plottingSelections: mockPlottingSelections({
                 barchart: {

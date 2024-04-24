@@ -22,21 +22,22 @@ import {SurveyAndProgramActions} from "../../../app/store/surveyAndProgram/actio
 import {getters} from "../../../app/store/surveyAndProgram/getters";
 import {DataType, SurveyAndProgramState} from "../../../app/store/surveyAndProgram/surveyAndProgram";
 import {testUploadComponent} from "./fileUploads";
-import {VueWrapper} from "@vue/test-utils"
+import { MockInstance, Mocked } from 'vitest';
+import { flushPromises, VueWrapper } from '@vue/test-utils';
 
 describe("UploadInputs upload component", () => {
 
-    let actions: jest.Mocked<BaselineActions>;
+    let actions: Mocked<BaselineActions>;
     let mutations = {};
 
-    let sapActions: jest.Mocked<SurveyAndProgramActions>;
+    let sapActions: Mocked<SurveyAndProgramActions>;
     let sapMutations = {};
 
     const mockStepperGetters = {
         editsRequireConfirmation: () => true,
         changesToRelevantSteps: () => [{number: 4, textKey: "fitModel"}]
     };
-    const mockPreparingRehydrate = jest.fn()
+    const mockPreparingRehydrate = vi.fn()
     const loadActions = {preparingRehydrate: mockPreparingRehydrate}
 
     testUploadComponent("surveys", 3);
@@ -49,19 +50,19 @@ describe("UploadInputs upload component", () => {
                        isGuest = false) => {
 
         actions = {
-            refreshDatasetMetadata: jest.fn(),
-            importPJNZ: jest.fn(),
-            importPopulation: jest.fn(),
-            importShape: jest.fn(),
-            getBaselineData: jest.fn(),
-            uploadPJNZ: jest.fn(),
-            uploadShape: jest.fn(),
-            uploadPopulation: jest.fn(),
-            deletePJNZ: jest.fn(),
-            deleteShape: jest.fn(),
-            deletePopulation: jest.fn(),
-            deleteAll: jest.fn(),
-            validate: jest.fn()
+            refreshDatasetMetadata: vi.fn(),
+            importPJNZ: vi.fn(),
+            importPopulation: vi.fn(),
+            importShape: vi.fn(),
+            getBaselineData: vi.fn(),
+            uploadPJNZ: vi.fn(),
+            uploadShape: vi.fn(),
+            uploadPopulation: vi.fn(),
+            deletePJNZ: vi.fn(),
+            deleteShape: vi.fn(),
+            deletePopulation: vi.fn(),
+            deleteAll: vi.fn(),
+            validate: vi.fn()
         };
 
         const store = new Vuex.Store({
@@ -384,28 +385,28 @@ describe("UploadInputs upload component", () => {
         expect(wrapper.findAllComponents(ManageFile)[2].props("existingFileName")).toBe("errored file");
     });
 
-    it("upload pjnz dispatches baseline/uploadPJNZ", (done) => {
-        expectUploadToDispatchAction(0, () => actions.uploadPJNZ, done);
+    it("upload pjnz dispatches baseline/uploadPJNZ", async () => {
+        await expectUploadToDispatchAction(0, () => actions.uploadPJNZ);
     });
 
-    it("upload shape dispatches baseline/uploadShape", (done) => {
-        expectUploadToDispatchAction(1, () => actions.uploadShape, done);
+    it("upload shape dispatches baseline/uploadShape", async () => {
+        await expectUploadToDispatchAction(1, () => actions.uploadShape);
     });
 
-    it("upload population dispatches baseline/uploadPopulation", (done) => {
-        expectUploadToDispatchAction(2, () => actions.uploadPopulation, done);
+    it("upload population dispatches baseline/uploadPopulation", async () => {
+        await expectUploadToDispatchAction(2, () => actions.uploadPopulation);
     });
 
-    it("remove pjnz dispatches baseline/deletePJNZ", (done) => {
-        expectDeleteToDispatchAction(0, () => actions.deletePJNZ, done);
+    it("remove pjnz dispatches baseline/deletePJNZ", async () => {
+        await expectDeleteToDispatchAction(0, () => actions.deletePJNZ);
     });
 
-    it("remove shape dispatches baseline/deleteShape", (done) => {
-        expectDeleteToDispatchAction(1, () => actions.deleteShape, done);
+    it("remove shape dispatches baseline/deleteShape", async () => {
+        await expectDeleteToDispatchAction(1, () => actions.deleteShape);
     });
 
-    it("remove population dispatches baseline/deletePopulation", (done) => {
-        expectDeleteToDispatchAction(2, () => actions.deletePopulation, done);
+    it("remove population dispatches baseline/deletePopulation", async () => {
+        await expectDeleteToDispatchAction(2, () => actions.deletePopulation);
     });
 
     it("can return true when fromADR", async () => {
@@ -600,16 +601,15 @@ describe("UploadInputs upload component", () => {
         });
         expect(wrapper.find("#load-zip").exists()).toBe(true)
 
-        const spy = jest.spyOn((wrapper.vm as any), "clearLoadZipInput")
+        const spy = vi.spyOn((wrapper.vm as any), "clearLoadZipInput")
         const testFile = mockFile("test filename", "test file contents", "application/zip")
         await triggerSelectZip(wrapper, testFile, "#upload-zip")
         expect(mockPreparingRehydrate.mock.calls.length).toBe(1);
         expect(spy).toHaveBeenCalledTimes(1)
     });
 
-    const expectUploadToDispatchAction = (index: number,
-                                          action: () => jest.MockInstance<any, any>,
-                                          done: jest.DoneCallback) => {
+    const expectUploadToDispatchAction = async (index: number,
+                                          action: () => MockInstance<any, any>) => {
         const store = createSut();
         const wrapper = shallowMountWithTranslate(UploadInputs, store, {
             global: {
@@ -618,15 +618,12 @@ describe("UploadInputs upload component", () => {
         });
 
         wrapper.findAllComponents(ManageFile)[index].props().upload({name: "TEST"});
-        setTimeout(() => {
-            expect(action().mock.calls[0][1]).toStrictEqual({name: "TEST"});
-            done();
-        });
+        await flushPromises();
+        expect(action().mock.calls[0][1]).toStrictEqual({name: "TEST"});
     };
 
-    const expectDeleteToDispatchAction = (index: number,
-                                          action: () => jest.MockInstance<any, any>,
-                                          done: jest.DoneCallback) => {
+    const expectDeleteToDispatchAction = async (index: number,
+                                          action: () => MockInstance<any, any>) => {
         const store = createSut();
         const wrapper = shallowMountWithTranslate(UploadInputs, store, {
             global: {
@@ -635,10 +632,8 @@ describe("UploadInputs upload component", () => {
         });
 
         wrapper.findAllComponents(ManageFile)[index].props().deleteFile();
-        setTimeout(() => {
-            expect(action().mock.calls.length).toBe(1);
-            done();
-        });
+        await flushPromises();
+        expect(action().mock.calls.length).toBe(1);
     }
 });
 
@@ -662,6 +657,6 @@ const expectFileIsNotRequired = (store: Store<any>, index: number) => {
 
 const triggerSelectZip = async (wrapper: VueWrapper, testFile: File, id: string) => {
     const input = wrapper.find(id);
-    jest.spyOn((wrapper.vm.$refs as any).loadZip, "files", "get").mockImplementation(() => [testFile]);
+    vi.spyOn((wrapper.vm.$refs as any).loadZip, "files", "get").mockImplementation(() => [testFile]);
     await input.trigger("change");
 };

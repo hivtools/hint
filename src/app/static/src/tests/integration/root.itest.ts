@@ -11,8 +11,8 @@ describe(`root actions`, () => {
 
 
     it("can post error report", async () => {
-        const commit = jest.fn();
-        const dispatch = jest.fn();
+        const commit = vi.fn();
+        const dispatch = vi.fn();
 
         const state = {
             ...emptyState(),
@@ -56,7 +56,7 @@ describe(`root actions`, () => {
         }
 
         // Reset after all setup has completed
-        jest.resetAllMocks();
+        vi.resetAllMocks();
         await actions.generateErrorReport({commit, rootState: state, getters, dispatch} as any, payload);
         expect(commit.mock.calls.length).toBe(3)
         expect(commit.mock.calls[0][0]).toStrictEqual({payload: true, type: "errors/SendingErrorReport"})

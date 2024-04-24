@@ -1,0 +1,83 @@
+name: Make Shared Environment
+
+inputs:
+  install-packages:
+    description: 'Whether or not to install npm packages'
+    default: 'true'
+  dh-username:
+    required: true
+  dh-password:
+    required: true
+  ghcr-username:
+    required: true
+  ghcr-password:
+    required: true
+
+outputs:
+  CI_SHA:
+    description: "Short SHA of current commit"
+    value: ${{ steps.ci-env.outputs.CI_SHA }}
+  CI_BRANCH:
+    description: "Current branch"
+    value: ${{ steps.ci-env.outputs.CI_BRANCH }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Login to Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ inputs.dh-username }}
+        password: ${{ inputs.dh-password }}
+        
+    - name: Login to GHCR (GitHub Packages)
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ inputs.ghcr-username }}
+        password: ${{ inputs.ghcr-password }}
+    - id: ci-env
+      name: Setup Environment
+      shell: bash
+      run: |
+        if [ "${{github.event_name}}" = "pull_request" ];
+        then
+          long_sha=${{ github.event.pull_request.head.sha }}
+          echo "CI_BRANCH=${{ github.head_ref }}" >> $GITHUB_OUTPUT
+        else
+          long_sha=${GITHUB_SHA}
+          echo "CI_BRANCH=${{ github.ref_name }}" >> $GITHUB_OUTPUT
+        fi
+        echo "CI_SHA=${long_sha:0:7}" >> $GITHUB_OUTPUT
+
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 20
+
+    - name: Cache npm deps
+      if: inputs.install-packages == 'true'
+      uses: actions/cache@v3
+      id: npm-cache
+      with:
+        path: src/app/static/node_modules
+        key: node-20-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          node-20-
+
+    - uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: '18'
+
+    - name: Install CodeCov
+      run: npm install codecov -g
+      shell: bash
+
+    - name: Install npm deps
+      if: steps.npm-cache.outputs.cache-hit != 'true' && inputs.install-packages == 'true'
+      run: npm ci --silent --prefix=src/app/static
+      shell: bash
+
+    - name: Compile kotlin
+      run: src/gradlew -p src app:compileKotlin
+      shell: bash
