@@ -3,6 +3,7 @@ package org.imperial.mrc.hint.db
 import org.jooq.tools.json.JSONArray
 import org.springframework.stereotype.Component
 import org.imperial.mrc.hint.models.CalibrateResultRow
+import java.nio.file.Path
 import java.sql.Connection
 import java.sql.DriverManager
 import java.sql.Statement
@@ -38,7 +39,7 @@ FROM data"""
 interface CalibrateDataRepository
 {
     fun getDataFromPath(
-        path: String,
+        path: Path,
         indicator: String): List<CalibrateResultRow>
 }
 
@@ -87,15 +88,15 @@ class JooqCalibrateDataRepository: CalibrateDataRepository
         return arrayList
     }
 
-    private fun getDBConnFromPathResponse(path: String): Connection {   
+    private fun getDBConnFromPathResponse(path: Path): Connection {
         val readOnlyProp = Properties()
         readOnlyProp.setProperty("duckdb.read_only", "true")
-        val conn = DriverManager.getConnection("jdbc:duckdb:.${path}", readOnlyProp)
+        val conn = DriverManager.getConnection("jdbc:duckdb:${path.toRealPath()}", readOnlyProp)
         return conn
     }
 
     override fun getDataFromPath(
-        path: String,
+        path: Path,
         indicator: String): List<CalibrateResultRow>
     {
         getDBConnFromPathResponse(path).use { conn ->

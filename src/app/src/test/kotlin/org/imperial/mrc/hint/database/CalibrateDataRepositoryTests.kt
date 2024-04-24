@@ -7,6 +7,7 @@ import org.jooq.tools.json.JSONArray
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.assertj.core.api.Assertions.assertThat
 import com.fasterxml.jackson.databind.ObjectMapper
+import java.nio.file.Paths
 import java.sql.SQLException
 
 class CalibrateDataRepositoryTests
@@ -51,7 +52,7 @@ class CalibrateDataRepositoryTests
             2
         )
     ))
-    val path = "/src/test/resources/duckdb/test.duckdb"
+    val path = Paths.get("src/test/resources/duckdb/test.duckdb")
     val sut = JooqCalibrateDataRepository()
 
     @Test
@@ -83,8 +84,8 @@ class CalibrateDataRepositoryTests
     fun `throws error if connection is invalid`()
     {
         assertThatThrownBy {
-            sut.getDataFromPath("/src/test/resources/duckdb/test1.duckdb", "all")
-        }.isInstanceOf(SQLException::class.java)
-            .hasMessageContaining("database does not exist")
+            sut.getDataFromPath(Paths.get("src/test/resources/duckdb/test1.duckdb"), "all")
+        }.isInstanceOf(java.nio.file.NoSuchFileException::class.java)
+            .hasMessageContaining("src/test/resources/duckdb/test1.duckdb")
     }
 }

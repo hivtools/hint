@@ -20,6 +20,11 @@ export default defineConfig({
         './tests/.*/helpers.ts',
       ],
     },
+    environmentOptions: {
+      jsdom: {
+        url: "http://localhost"
+      }
+    }
   },
-  plugins: [vue()]
+  plugins: [vue()],
 });

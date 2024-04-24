@@ -59,6 +59,9 @@ export function testUploadComponent(name: string, position: number) {
         }
 
         return new Vuex.Store({
+            getters: {
+                isGuest: () => false
+            },
             modules: {
                 surveyAndProgram: {
                     namespaced: true,
