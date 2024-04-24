@@ -18,6 +18,10 @@ jobs:
               uses: ./.github/actions/make-shared-env
               with:
                 install-packages: 'false'
+                dh-username: ${{ secrets.DOCKERHUB_USERNAME }}
+                dh-password: ${{ secrets.DOCKERHUB_TOKEN }}
+                ghcr-username: ${{ github.actor }}
+                ghcr-password: ${{ secrets.GITHUB_TOKEN }}
 
             - name: Lint back end
               run: src/gradlew -p src app:detektMain -x app:compileFrontEnd -x app:copyAssets

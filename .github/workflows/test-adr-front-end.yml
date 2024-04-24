@@ -16,6 +16,11 @@ jobs:
 
             - name: Make shared env
               uses: ./.github/actions/make-shared-env
+              with:
+                dh-username: ${{ secrets.DOCKERHUB_USERNAME }}
+                dh-password: ${{ secrets.DOCKERHUB_TOKEN }}
+                ghcr-username: ${{ github.actor }}
+                ghcr-password: ${{ secrets.GITHUB_TOKEN }}
 
             - name: Run deps
               run: scripts/run-dependencies.sh

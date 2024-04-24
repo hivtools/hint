@@ -6,7 +6,7 @@ on:
         branches:
             - "*"
 
-name: Test CLI
+name: Build and Push CLI
 
 env:
   TAG_DH: mrcide/hint-user-cli
@@ -20,19 +20,17 @@ jobs:
 
             - name: Make shared env
               uses: ./.github/actions/make-shared-env
+              with:
+                dh-username: ${{ secrets.DOCKERHUB_USERNAME }}
+                dh-password: ${{ secrets.DOCKERHUB_TOKEN }}
+                ghcr-username: ${{ github.actor }}
+                ghcr-password: ${{ secrets.GITHUB_TOKEN }}
 
-            - name: Login to Docker Hub
-              uses: docker/login-action@v3
-              with:
-                username: ${{ secrets.DOCKERHUB_USERNAME }}
-                password: ${{ secrets.DOCKERHUB_TOKEN }}
-        
-            - name: Login to GHCR (GitHub Packages)
-              uses: docker/login-action@v3
-              with:
-                registry: ghcr.io
-                username: ${{ github.actor }}
-                password: ${{ secrets.GITHUB_TOKEN }}
+            - name: test env
+              run: |
+                echo "$THIS"
+              env:
+                THIS: ${{steps.ci-env.outputs.CI_BRANCH}}
 
             - name: Run deps
               run: scripts/run-dependencies.sh
