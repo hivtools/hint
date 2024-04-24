@@ -21,6 +21,19 @@ jobs:
             - name: Make shared env
               uses: ./.github/actions/make-shared-env
 
+            - name: Login to Docker Hub
+              uses: docker/login-action@v3
+              with:
+                username: ${{ secrets.DOCKERHUB_USERNAME }}
+                password: ${{ secrets.DOCKERHUB_TOKEN }}
+        
+            - name: Login to GHCR (GitHub Packages)
+              uses: docker/login-action@v3
+              with:
+                registry: ghcr.io
+                username: ${{ github.actor }}
+                password: ${{ secrets.GITHUB_TOKEN }}
+
             - name: Run deps
               run: scripts/run-dependencies.sh
 
