@@ -28,6 +28,11 @@ jobs:
 
             - name: Prep back end tests
               run: |
+                : # here we are creating a dummy build of the app
+                : # the back end testing only tests that it can serve
+                : # freemarker template files, access the css file and
+                : # gzip it, we need to create a sufficiently large file to
+                : # gzip which is what the last command does
                 mkdir -p src/app/static/public
                 mkdir -p src/app/static/public/css
                 yes ".class {height: 500px;}" | head -n 200 >> src/app/static/public/css/app.css
