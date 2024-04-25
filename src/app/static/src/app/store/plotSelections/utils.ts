@@ -9,6 +9,7 @@ import {
     ChoroplethIndicatorMetadata,
     FilterOption,
     FilterTypes,
+    PlotSettingEffect,
     PlotSettingOption
 } from "../../generated";
 import {initialScaleSettings} from "../plotState/plotState";
@@ -46,20 +47,18 @@ const getFullNestedFilters = (filterOptions: NestedFilterOption[]) => {
     return fullFilterOptions;
 };
 
-export const filtersInfoFromPlotSettings = (
-    settings: PlotSettingOption[],
-    plotName: PlotName,
+export const filtersInfoFromEffects = (
+    effects: PlotSettingEffect[],
     rootState: RootState,
     metadata: PlotMetadataFrame
 ) => {
     const filterTypes = filtersAfterUseShapeRegions(metadata.filterTypes, rootState);
-    let filterRefs = metadata.plotSettingsControl[plotName].defaultFilterTypes;
+    let filterRefs: PlotSettingEffect["setFilters"] = [];
     let multiFilters: string[] = [];
     let filterValues: Record<string, string[]> = {};
 
-    settings.forEach(setting => {
+    effects.forEach(effect => {
         // track which effects need to occur
-        const effect = setting.effect;
         if (effect.setFilters) {
             filterRefs = effect.setFilters;
         }
@@ -72,7 +71,7 @@ export const filtersInfoFromPlotSettings = (
         }
     });
 
-    const filters: PlotSelectionUpdate["selections"]["filters"] = filterRefs!.map(f => {
+    return filterRefs!.map(f => {
         const filter = filterTypes.find(filterType => filterType.id === f.filterId)!;
         const isMultiple = multiFilters.includes(f.stateFilterId);
         let selection: FilterOption[];
@@ -100,8 +99,7 @@ export const filtersInfoFromPlotSettings = (
             multiple: isMultiple,
             selection
         }
-    });
-    return filters;
+    }) as PlotSelectionUpdate["selections"]["filters"];
 }
 
 export const getPlotData = async (payload: PlotSelectionUpdate, commit: Commit, rootState: RootState) => {
@@ -127,20 +125,24 @@ export const commitPlotDefaultSelections = async (
             selections: { controls: [], filters: [] }
         };
         const control = plotControl[name];
-        const defaultSettingOptions: PlotSettingOption[] = [];
+
+        const effects = control.defaultEffect ? [control.defaultEffect] : [];
+        const selectedSettingOptions: PlotSelectionUpdate["selections"]["controls"] = [];
         control.plotSettings.forEach(setting => {
             const defaultOption = setting.options[0];
-            defaultSettingOptions.push(defaultOption);
-            if (setting.id !== "default") {
-                payload.selections.controls.push({
-                    id: setting.id,
-                    label: setting.label,
-                    selection: [{ id: defaultOption.id, label: defaultOption.label }]
-                });
-            }
+            effects.push(defaultOption.effect);
+            selectedSettingOptions.push({
+                id: setting.id,
+                label: setting.label,
+                selection: [{
+                    id: defaultOption.id,
+                    label: defaultOption.label
+                }]
+            });
         });
+        payload.selections.controls = selectedSettingOptions
 
-        const filtersInfo = filtersInfoFromPlotSettings(defaultSettingOptions, name, rootState, metadata);
+        const filtersInfo = filtersInfoFromEffects(effects, rootState, metadata);
         payload.selections.filters = filtersInfo;
 
         await getPlotData(payload, commit, rootState);
