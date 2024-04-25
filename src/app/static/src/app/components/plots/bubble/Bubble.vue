@@ -45,7 +45,7 @@ import {
 import {BubbleIndicatorValuesDict, NumericRange} from "../../../types";
 import {ChoroplethIndicatorMetadata} from "../../../generated";
 import { ScaleSettings } from "../../../store/plotState/plotState";
-import SizeLegend from "@/app/components/plots/bubble/SizeLegend.vue";
+import SizeLegend from "./SizeLegend.vue";
 import {circleMarker, CircleMarker} from "leaflet";
 import MapEmptyFeature from "../MapEmptyFeature.vue";
 import {getFeatureData, tooltipContent} from "./utils";
