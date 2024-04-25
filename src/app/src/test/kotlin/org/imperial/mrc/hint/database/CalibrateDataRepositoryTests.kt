@@ -55,13 +55,13 @@ class CalibrateDataRepositoryTests
     ))
     val query = FilterQuery(
         listOf("indicator_test_2"),
-        listOf(),
+        listOf("calendar_quarter_test"),
         listOf("age_group_test"),
         listOf("sex_test"),
         listOf("area_id_test"),
         listOf("2")
     )
-    val path = Paths.get("/src/test/resources/duckdb/test.duckdb")
+    val path = Paths.get("./src/test/resources/duckdb/test.duckdb")
     val sut = JooqCalibrateDataRepository()
 
     @Test
