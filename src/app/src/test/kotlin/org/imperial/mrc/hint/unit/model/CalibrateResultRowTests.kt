@@ -59,7 +59,7 @@ class CalibrateResultRowTests
             "age_group" to listOf("age1"),
             "sex" to listOf("sex1", "sex2", "sex3"),
             "area_id" to listOf("area1"),
-            "area_level" to listOf(1, 2, 3, 4)
+            "area_level" to listOf("1", "2", "3", "4")
         )
         val expectedJsonFilterQuery = convertToJson(expectedFilterJsonMap)
         val filterQueryJson = convertToJson(filterQuery)
