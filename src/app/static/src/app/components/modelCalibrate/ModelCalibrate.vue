@@ -39,10 +39,6 @@
             ></h4>
             <tick color="#e31837" width="20px"></tick>
         </div>
-        <div v-if="generatingCalibrationPlot" id="genCalibResults" class="mt-3">
-            <loading-spinner size="xs"></loading-spinner>
-            <span v-translate="'genCalibResults'"></span>
-        </div>
         <calibration-results
             v-if="showCalibrateResults"
         ></calibration-results>

@@ -185,7 +185,7 @@ describe("Model calibrate component", () => {
     });
 
     it("renders calibration plot and label if calibration is complete", async () => {
-        const store = getStore({complete: true, calibratePlotResult: {}});
+        const store = getStore({complete: true, calibratePlotResult: {data: []}});
         const wrapper = getWrapper(store);
         expect(wrapper.findComponent(CalibrationResults).exists()).toBe(true);
         await expectTranslated(wrapper.find("#reviewResults"), "(Review results below)",
@@ -193,7 +193,7 @@ describe("Model calibrate component", () => {
     });
 
     it("it does not render calibration plot and label if calibration is incomplete", () => {
-        const store = getStore({complete: false, calibratePlotResult: {}});
+        const store = getStore({complete: false, calibratePlotResult: {data: []}});
         const wrapper = getWrapper(store);
         expect(wrapper.findComponent(CalibrationResults).exists()).toBe(false);
         expect(wrapper.find("#reviewResults").exists()).toBe(false)

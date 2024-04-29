@@ -11,7 +11,7 @@ import {
     CalibrateResultResponse,
     ComparisonPlotResponse,
     CalibrateDataResponse,
-    CalibrateMetadataResponse
+    CalibrateMetadataResponse, CalibratePlotResponse
 } from "../../generated";
 
 export interface ModelCalibrateState extends ReadyState, WarningsState {
@@ -24,7 +24,7 @@ export interface ModelCalibrateState extends ReadyState, WarningsState {
     calibrating: boolean
     complete: boolean
     generatingCalibrationPlot: boolean
-    calibratePlotResult: any,
+    calibratePlotResult: CalibratePlotResponse | null,
     comparisonPlotResult: ComparisonPlotResponse | null,
     result: CalibrateDataResponse | CalibrateResultResponse | null
     fetchedIndicators: string[] | null

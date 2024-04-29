@@ -15,7 +15,7 @@ import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, Li
 import annotationPlugin from "chartjs-plugin-annotation";
 import {useStore} from "vuex";
 import {RootState} from "../../../root";
-import {computed, defineComponent, ref, watch} from "vue";
+import {computed, defineComponent, PropType, ref, watch} from "vue";
 import {PlotData} from "../../../store/plotData/plotData";
 import {
     plotDataToChartData,
@@ -25,15 +25,20 @@ import {
 } from "./utils";
 import {formatOutput, getIndicatorMetadata} from "../utils";
 import {ChoroplethIndicatorMetadata} from "../../../generated";
+import {PlotName} from "../../../store/plotSelections/plotSelections";
 ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, annotationPlugin);
 
 export default defineComponent({
     props: {
+        plot:{
+            type: String as PropType<PlotName>,
+            required: true
+        },
         showErrorBars: {
             type: Boolean,
             required: false,
             default: false
-        }
+        },
     },
     setup(props) {
         const chart = ref<typeof Bar | null>(null);
@@ -41,41 +46,25 @@ export default defineComponent({
 
         // Bit confusing this is using ChoroplethIndicatorMetadata here
         // TODO: make this type more generic in the hintr PR
-        const filterSelections = computed(() => store.state.plotSelections.barchart.filters);
+        const filterSelections = computed(() => store.state.plotSelections[props.plot].filters);
         const indicatorMetadata = computed<ChoroplethIndicatorMetadata>(() => {
             const indicator = filterSelections.value.find(f => f.stateFilterId === "indicator")!.selection[0].id
             return getIndicatorMetadata(store, indicator)
         });
-        const plotData = computed<PlotData>(() => store.state.plotData.barchart);
+        const plotData = computed<PlotData>(() => {
+            return store.state.plotData[props.plot]
+        });
 
-        const areaIdToLevelMap = store.getters["baseline/areaIdToLevelMap"];
-        const controlSelectionFromId = store.getters["plotSelections/controlSelectionFromId"];
-        const filterSelectionFromId = store.getters["plotSelections/filterSelectionFromId"];
-        const filterIdToColumnId = store.getters["modelCalibrate/filterIdToColumnId"];
 
+        const chartDataGetter = store.getters["plotSelections/chartData"];
         const chartData = ref<BarChartData>({datasets:[], labels: [], maxValuePlusError: 0});
         const chartOptions = ref({});
         const displayErrorBars = ref<boolean>(false);
 
         const updateChart = () => {
             hideAllErrorBars();
-            const disaggregateBy = controlSelectionFromId("barchart", "disagg_by");
-            const xAxis = controlSelectionFromId("barchart", "x_axis");
-            if (!disaggregateBy || !xAxis) {
-                return
-            }
-            const disaggregateId = filterIdToColumnId(disaggregateBy.id)
-            const xAxisId = filterIdToColumnId(xAxis.id)
-            const areaLevel = filterSelections.value.find(f => f.filterId == "detail")?.selection[0]?.id
-            const disaggregateSelections = filterSelectionFromId("barchart", disaggregateBy.id)
-            const xAxisSelections = filterSelectionFromId("barchart", xAxis.id)
-            const xAxisOptions = store.state.modelCalibrate.metadata!.filterTypes.find(f => f.id === xAxis!.id)!.options
-            if (disaggregateId && xAxisId && areaLevel && plotData.value) {
-                chartData.value = plotDataToChartData(plotData.value, indicatorMetadata.value,
-                        disaggregateId, disaggregateSelections,
-                        xAxisId, xAxisSelections, xAxisOptions,
-                        areaLevel, areaIdToLevelMap);
-            }
+            chartData.value = chartDataGetter(props.plot, plotData.value, indicatorMetadata.value,
+                    filterSelections.value)
         };
 
         const hideAllErrorBars = () => {

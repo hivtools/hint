@@ -8,11 +8,12 @@ export type InputPlotName = keyof ReviewInputFilterMetadataResponse["plotSetting
 
 export const outputPlotNames: OutputPlotName[] = ["barchart", "bubble", "choropleth", "table"];
 export const inputPlotNames: InputPlotName[] = ["timeSeries", "inputChoropleth"];
+export const calibratePlotName: OutputPlotName = "calibrate";
 
 export type PlotName = OutputPlotName | InputPlotName
-export const plotNames = [...outputPlotNames, ...inputPlotNames];
+export const plotNames = [...outputPlotNames, ...inputPlotNames, calibratePlotName];
 
-export enum PlotDataType { Output, TimeSeries, Input }
+export enum PlotDataType { Output, TimeSeries, Input, Calibrate}
 
 export const plotNameToDataType: Record<PlotName, PlotDataType> = {
     barchart: PlotDataType.Output,
@@ -20,7 +21,8 @@ export const plotNameToDataType: Record<PlotName, PlotDataType> = {
     choropleth: PlotDataType.Output,
     table: PlotDataType.Output,
     timeSeries: PlotDataType.TimeSeries,
-    inputChoropleth: PlotDataType.Input
+    inputChoropleth: PlotDataType.Input,
+    calibrate: PlotDataType.Calibrate,
 }
 
 export type FilterSelection = {

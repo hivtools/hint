@@ -4,6 +4,7 @@ import {AnnotationOptions} from "chartjs-plugin-annotation";
 import {formatOutput} from "../utils";
 import {PlotData} from "../../../store/plotData/plotData";
 import {Dict} from "../../../types";
+import {PlotName} from "../../../store/plotSelections/plotSelections";
 
 export type BarchartIndicatorMetadata = BarchartMetadata["indicators"][0];
 export interface BarChartData extends ChartData {
@@ -73,7 +74,6 @@ export const plotDataToChartData = function (plotData: PlotData,
 
     let colorIdx = 0;
     for (const row of plotData as any) {
-
         const datasetValue = row[disaggregateId];
         const datasetLabel = disaggregateSelectionsMap[datasetValue];
 

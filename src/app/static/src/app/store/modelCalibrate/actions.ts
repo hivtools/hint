@@ -32,7 +32,6 @@ export interface ModelCalibrateActions {
     submit: (store: ActionContext<ModelCalibrateState, RootState>, options: DynamicFormData) => void
     poll: (store: ActionContext<ModelCalibrateState, RootState>) => void
     getResult: (store: ActionContext<ModelCalibrateState, RootState>) => void
-    getCalibratePlot: (store: ActionContext<ModelCalibrateState, RootState>) => void
     getComparisonPlot: (store: ActionContext<ModelCalibrateState, RootState>) => void
     resumeCalibrate: (store: ActionContext<ModelCalibrateState, RootState>) => void
     getResultData: (store: ActionContext<ModelCalibrateState, RootState>, payload: ResultDataPayload) => void
@@ -87,22 +86,6 @@ export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrat
             await getResultMetadata(context);
         }
         commit(ModelCalibrateMutation.Ready);
-    },
-
-    async getCalibratePlot(context) {
-        const {commit, state} = context;
-        const calibrateId = state.calibrateId;
-        commit(ModelCalibrateMutation.CalibrationPlotStarted);
-
-        const response = await api<ModelCalibrateMutation, ModelCalibrateMutation>(context)
-            .ignoreSuccess()
-            .withError(ModelCalibrateMutation.SetError)
-            .freezeResponse()
-            .get<ModelResultResponse>(`calibrate/plot/${calibrateId}`);
-
-        if (response) {
-            commit(ModelCalibrateMutation.SetPlotData, response.data);
-        }
     },
 
     async getComparisonPlot(context) {
@@ -194,10 +177,6 @@ export const getResultMetadata = async function (context: ActionContext<ModelCal
         commitInitialScaleSelections(data, commit);
 
         commit(ModelCalibrateMutation.Calibrated);
-
-        if (switches.modelCalibratePlot) {
-            dispatch("getCalibratePlot");
-        }
         await dispatch("getComparisonPlot");
     }
 }

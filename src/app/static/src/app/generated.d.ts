@@ -275,6 +275,38 @@ export interface CalibrateMetadataResponse {
         }[];
       }[];
     };
+    calibrate: {
+      defaultEffect?: {
+        setFilters?: {
+          filterId: string;
+          label: string;
+          stateFilterId: string;
+        }[];
+        setMultiple?: string[];
+        setFilterValues?: {
+          [k: string]: string[];
+        };
+      };
+      plotSettings: {
+        id: string;
+        label: string;
+        options: {
+          id: string;
+          label: string;
+          effect: {
+            setFilters?: {
+              filterId: string;
+              label: string;
+              stateFilterId: string;
+            }[];
+            setMultiple?: string[];
+            setFilterValues?: {
+              [k: string]: string[];
+            };
+          };
+        }[];
+      }[];
+    };
   };
   warnings: {
     text: string;
@@ -312,42 +344,6 @@ export interface CalibratePlotResponse {
     mean: number | null;
     [k: string]: any;
   }[];
-  plottingMetadata: {
-    barchart: {
-      indicators: {
-        indicator: string;
-        value_column: string;
-        indicator_column: string;
-        indicator_value: string;
-        indicator_sort_order?: number;
-        name: string;
-        error_low_column: string;
-        error_high_column: string;
-        scale: number;
-        accuracy: number | null;
-        format: string;
-      }[];
-      filters: {
-        id: string;
-        column_id: string;
-        label: string;
-        options: {
-          label: string;
-          id: string;
-          description?: string;
-        }[];
-        use_shape_regions?: boolean | null;
-      }[];
-      defaults?: {
-        indicator_id: string;
-        x_axis_id: string;
-        disaggregate_by_id: string;
-        selected_filter_options: {
-          [k: string]: any;
-        };
-      };
-    };
-  };
 }
 export interface CalibratePlotRow {
   data_type: "spectrum" | "calibrated" | "raw" | "calibration_ratio";

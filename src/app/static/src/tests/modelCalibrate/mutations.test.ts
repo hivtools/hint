@@ -225,7 +225,7 @@ describe("ModelCalibrate mutations", () => {
     });
 
     it("sets calibration plot started and resets error and previous plot", () => {
-        const state = mockModelCalibrateState({error: mockError("TEST ERROR"), calibratePlotResult: {}});
+        const state = mockModelCalibrateState({error: mockError("TEST ERROR"), calibratePlotResult: {data: []}});
         mutations[ModelCalibrateMutation.CalibrationPlotStarted](state);
         expect(state.generatingCalibrationPlot).toBe(true);
         expect(state.calibratePlotResult).toBe(null);
