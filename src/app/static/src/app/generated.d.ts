@@ -148,11 +148,17 @@ export interface CalibrateMetadataResponse {
   }[];
   plotSettingsControl: {
     choropleth: {
-      defaultFilterTypes?: {
-        filterId: string;
-        label: string;
-        stateFilterId: string;
-      }[];
+      defaultEffect?: {
+        setFilters?: {
+          filterId: string;
+          label: string;
+          stateFilterId: string;
+        }[];
+        setMultiple?: string[];
+        setFilterValues?: {
+          [k: string]: string[];
+        };
+      };
       plotSettings: {
         id: string;
         label: string;
@@ -174,11 +180,17 @@ export interface CalibrateMetadataResponse {
       }[];
     };
     barchart: {
-      defaultFilterTypes?: {
-        filterId: string;
-        label: string;
-        stateFilterId: string;
-      }[];
+      defaultEffect?: {
+        setFilters?: {
+          filterId: string;
+          label: string;
+          stateFilterId: string;
+        }[];
+        setMultiple?: string[];
+        setFilterValues?: {
+          [k: string]: string[];
+        };
+      };
       plotSettings: {
         id: string;
         label: string;
@@ -200,11 +212,17 @@ export interface CalibrateMetadataResponse {
       }[];
     };
     table: {
-      defaultFilterTypes?: {
-        filterId: string;
-        label: string;
-        stateFilterId: string;
-      }[];
+      defaultEffect?: {
+        setFilters?: {
+          filterId: string;
+          label: string;
+          stateFilterId: string;
+        }[];
+        setMultiple?: string[];
+        setFilterValues?: {
+          [k: string]: string[];
+        };
+      };
       plotSettings: {
         id: string;
         label: string;
@@ -226,11 +244,17 @@ export interface CalibrateMetadataResponse {
       }[];
     };
     bubble: {
-      defaultFilterTypes?: {
-        filterId: string;
-        label: string;
-        stateFilterId: string;
-      }[];
+      defaultEffect?: {
+        setFilters?: {
+          filterId: string;
+          label: string;
+          stateFilterId: string;
+        }[];
+        setMultiple?: string[];
+        setFilterValues?: {
+          [k: string]: string[];
+        };
+      };
       plotSettings: {
         id: string;
         label: string;
@@ -1276,11 +1300,17 @@ export interface PlotSettingOption {
   };
 }
 export interface PlotSettingsControl {
-  defaultFilterTypes?: {
-    filterId: string;
-    label: string;
-    stateFilterId: string;
-  }[];
+  defaultEffect?: {
+    setFilters?: {
+      filterId: string;
+      label: string;
+      stateFilterId: string;
+    }[];
+    setMultiple?: string[];
+    setFilterValues?: {
+      [k: string]: string[];
+    };
+  };
   plotSettings: {
     id: string;
     label: string;
@@ -1616,11 +1646,17 @@ export interface ReviewInputFilterMetadataResponse {
   }[];
   plotSettingsControl: {
     timeSeries: {
-      defaultFilterTypes?: {
-        filterId: string;
-        label: string;
-        stateFilterId: string;
-      }[];
+      defaultEffect?: {
+        setFilters?: {
+          filterId: string;
+          label: string;
+          stateFilterId: string;
+        }[];
+        setMultiple?: string[];
+        setFilterValues?: {
+          [k: string]: string[];
+        };
+      };
       plotSettings: {
         id: string;
         label: string;
@@ -1642,11 +1678,17 @@ export interface ReviewInputFilterMetadataResponse {
       }[];
     };
     inputChoropleth: {
-      defaultFilterTypes?: {
-        filterId: string;
-        label: string;
-        stateFilterId: string;
-      }[];
+      defaultEffect?: {
+        setFilters?: {
+          filterId: string;
+          label: string;
+          stateFilterId: string;
+        }[];
+        setMultiple?: string[];
+        setFilterValues?: {
+          [k: string]: string[];
+        };
+      };
       plotSettings: {
         id: string;
         label: string;
