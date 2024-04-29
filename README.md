@@ -1,5 +1,6 @@
 ## HINT - HIV Indicators Tool
-[![Build status](https://badge.buildkite.com/852c7813506262f88e18bcd995db00e718bf63dc493a2bd4d2.svg?branch=master)](https://buildkite.com/mrc-ide/hint)
+[![Front-end build](https://github.com/mrc-ide/hint/actions/workflows/test.yml/badge.svg)](https://github.com/mrc-ide/hint/actions/workflows/test.yml)
+[![Back-end build](https://github.com/mrc-ide/hint/actions/workflows/testBack.yml/badge.svg)](https://github.com/mrc-ide/hint/actions/workflows/testBack.yml)
 [![codecov](https://codecov.io/gh/mrc-ide/hint/branch/master/graph/badge.svg)](https://codecov.io/gh/mrc-ide/hint)
 
 [SpringBoot](https://spring.io/projects/spring-boot) Kotlin web app for interfacing with the [Naomi model](https://github.com/mrc-ide/naomi) for joint small-area estimation of HIV prevalence, ART coverage, and HIV incidence via the [hintr package](https://github.com/mrc-ide/hintr).
