@@ -4,7 +4,7 @@ import {DisplayFilter} from "../../types";
 import {FilterOption} from "../../generated";
 import {rootOptionChildren} from "../../utils";
 import {Language} from "../translations/locales";
-import {DataExplorationState} from "../dataExploration/dataExploration";
+import {RootState} from "../../root";
 
 function response(state: SurveyAndProgramState) {
     switch (state.selectedDataType) {
@@ -30,11 +30,6 @@ export const getters = {
         return !!state.survey && !state.programError && !state.ancError
     },
 
-    validForDataExploration: (state: SurveyAndProgramState) => {
-        return (!!state.survey || !!state.program || !!state.anc) &&
-            !state.programError && !state.ancError && !state.surveyError
-    },
-
     hasChanges: (state: SurveyAndProgramState) => {
         return !!state.survey || !!state.program || !!state.anc
     },
@@ -44,11 +39,11 @@ export const getters = {
         return res ? res.data : null;
     },
 
-    countryAreaFilterOption: (state: SurveyAndProgramState, getters: any, rootState: DataExplorationState): FilterOption => {
+    countryAreaFilterOption: (state: SurveyAndProgramState, getters: any, rootState: RootState): FilterOption => {
         return rootState.baseline.shape!.filters!.regions as FilterOption;
     },
 
-    filters: (state: SurveyAndProgramState, getters: any, rootState: DataExplorationState): DisplayFilter[] => {
+    filters: (state: SurveyAndProgramState, getters: any, rootState: RootState): DisplayFilter[] => {
         const result = [] as DisplayFilter[];
 
         if (state.selectedDataType == null) {

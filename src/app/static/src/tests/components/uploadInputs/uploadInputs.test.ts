@@ -1,13 +1,14 @@
-import {VueWrapper, shallowMount} from '@vue/test-utils';
 import Vuex, {Store} from 'vuex';
 import {BaselineActions} from "../../../app/store/baseline/actions";
 import {
     mockBaselineState,
     mockError,
     mockMetadataState,
-    mockPopulationResponse, mockRootState,
+    mockPopulationResponse,
+    mockRootState,
     mockShapeResponse,
-    mockSurveyAndProgramState
+    mockSurveyAndProgramState,
+    mockFile
 } from "../../mocks";
 import {BaselineState} from "../../../app/store/baseline/baseline";
 import UploadInputs from "../../../app/components/uploadInputs/UploadInputs.vue";
@@ -21,14 +22,23 @@ import {SurveyAndProgramActions} from "../../../app/store/surveyAndProgram/actio
 import {getters} from "../../../app/store/surveyAndProgram/getters";
 import {DataType, SurveyAndProgramState} from "../../../app/store/surveyAndProgram/surveyAndProgram";
 import {testUploadComponent} from "./fileUploads";
+import { MockInstance, Mocked } from 'vitest';
+import { flushPromises, VueWrapper } from '@vue/test-utils';
 
 describe("UploadInputs upload component", () => {
 
-    let actions: jest.Mocked<BaselineActions>;
+    let actions: Mocked<BaselineActions>;
     let mutations = {};
 
-    let sapActions: jest.Mocked<SurveyAndProgramActions>;
+    let sapActions: Mocked<SurveyAndProgramActions>;
     let sapMutations = {};
+
+    const mockStepperGetters = {
+        editsRequireConfirmation: () => true,
+        changesToRelevantSteps: () => [{number: 4, textKey: "fitModel"}]
+    };
+    const mockPreparingRehydrate = vi.fn()
+    const loadActions = {preparingRehydrate: mockPreparingRehydrate}
 
     testUploadComponent("surveys", 3);
     testUploadComponent("program", 4);
@@ -37,27 +47,40 @@ describe("UploadInputs upload component", () => {
     const createSut = (baselineState?: Partial<BaselineState>,
                        metadataState?: Partial<MetadataState>,
                        surveyAndProgramState: Partial<SurveyAndProgramState> = {selectedDataType: DataType.Survey},
-                       isDataExploration = true) => {
+                       isGuest = false) => {
 
         actions = {
-            refreshDatasetMetadata: jest.fn(),
-            importPJNZ: jest.fn(),
-            importPopulation: jest.fn(),
-            importShape: jest.fn(),
-            getBaselineData: jest.fn(),
-            uploadPJNZ: jest.fn(),
-            uploadShape: jest.fn(),
-            uploadPopulation: jest.fn(),
-            deletePJNZ: jest.fn(),
-            deleteShape: jest.fn(),
-            deletePopulation: jest.fn(),
-            deleteAll: jest.fn(),
-            validate: jest.fn()
+            refreshDatasetMetadata: vi.fn(),
+            importPJNZ: vi.fn(),
+            importPopulation: vi.fn(),
+            importShape: vi.fn(),
+            getBaselineData: vi.fn(),
+            uploadPJNZ: vi.fn(),
+            uploadShape: vi.fn(),
+            uploadPopulation: vi.fn(),
+            deletePJNZ: vi.fn(),
+            deleteShape: vi.fn(),
+            deletePopulation: vi.fn(),
+            deleteAll: vi.fn(),
+            validate: vi.fn()
         };
 
         const store = new Vuex.Store({
-            state: mockRootState({dataExplorationMode: isDataExploration}),
+            state: mockRootState(),
+            getters: {
+                isGuest: () => isGuest
+            },
             modules: {
+                stepper: {
+                    namespaced: true,
+                    getters: mockStepperGetters
+                },
+                errors: {
+                    namespaced: true
+                },
+                projects: {
+                    namespaced: true,
+                },
                 baseline: {
                     namespaced: true,
                     state: mockBaselineState(baselineState),
@@ -74,6 +97,10 @@ describe("UploadInputs upload component", () => {
                     mutations: {...sapMutations},
                     actions: {...sapActions},
                     getters: getters
+                },
+                load: {
+                    namespaced: true,
+                    actions: {...loadActions}
                 }
             }
         });
@@ -92,65 +119,39 @@ describe("UploadInputs upload component", () => {
         expect(wrapper.findAllComponents(ManageFile)[0].props().accept).toBe("PJNZ,pjnz,.pjnz,.PJNZ,.zip,zip,ZIP,.ZIP");
     });
 
-    it("does not show required text in front of pjnz upload label when on data exploration mode", () => {
-        const store = createSut();
-        expectFileIsNotRequired(store, 0)
-    });
-
-    it("shows required text in front of pjnz upload label when not on data exploration mode", () => {
-        const store = createSut({}, {}, {}, false);
+    it("shows required text in front of pjnz upload label", () => {
+        const store = createSut({}, {}, {});
         expectFileIsRequired(store, 0)
     });
 
-    it("shows required text in front of area file upload label when on data exploration mode", () => {
-        const store = createSut();
+    it("shows required text in front of area file upload label", () => {
+        const store = createSut({}, {}, {});
         expectFileIsRequired(store, 1)
     });
 
-    it("shows required text in front of area file upload label when not on data exploration mode", () => {
-        const store = createSut({}, {}, {}, false);
-        expectFileIsRequired(store, 1)
-    });
 
-    it("does not show required text in front of population upload label when on data exploration mode", () => {
-        const store = createSut();
-        expectFileIsNotRequired(store, 2)
-    });
-
-    it("shows required text in front of population upload label when not on data exploration mode", () => {
-        const store = createSut({}, {}, {}, false);
+    it("shows required text in front of population upload label", () => {
+        const store = createSut({}, {}, {});
         expectFileIsRequired(store, 2)
     });
 
-    it("does not show required text in front of survey upload label when on data exploration mode", () => {
-        const store = createSut();
-        expectFileIsNotRequired(store, 3)
-    });
 
-    it("shows required text in front of survey upload label when not on data exploration mode", () => {
-        const store = createSut({}, {}, {}, false);
+    it("shows required text in front of survey upload label", () => {
+        const store = createSut({}, {}, {});
         expectFileIsRequired(store, 3)
     });
 
-    it("does not show required text in front of ART upload label when on data exploration mode", () => {
+    it("does not show required text in front of ART upload", () => {
         const store = createSut();
         expectFileIsNotRequired(store, 4)
     });
 
-    it("does not show required text in front of ART upload label when not on data exploration mode", () => {
-        const store = createSut();
-        expectFileIsNotRequired(store, 4)
-    });
 
-    it("does not show required text in front of ANC upload label when on data exploration mode", () => {
+    it("does not show required text in front of ANC upload label", () => {
         const store = createSut();
         expectFileIsNotRequired(store, 5)
     });
 
-    it("does not show required text in front of ANC upload label when not on data exploration mode", () => {
-        const store = createSut();
-        expectFileIsNotRequired(store, 5)
-    });
 
     it("pjnz is not valid if country is not present", () => {
         const store = createSut();
@@ -384,28 +385,28 @@ describe("UploadInputs upload component", () => {
         expect(wrapper.findAllComponents(ManageFile)[2].props("existingFileName")).toBe("errored file");
     });
 
-    it("upload pjnz dispatches baseline/uploadPJNZ", (done) => {
-        expectUploadToDispatchAction(0, () => actions.uploadPJNZ, done);
+    it("upload pjnz dispatches baseline/uploadPJNZ", async () => {
+        await expectUploadToDispatchAction(0, () => actions.uploadPJNZ);
     });
 
-    it("upload shape dispatches baseline/uploadShape", (done) => {
-        expectUploadToDispatchAction(1, () => actions.uploadShape, done);
+    it("upload shape dispatches baseline/uploadShape", async () => {
+        await expectUploadToDispatchAction(1, () => actions.uploadShape);
     });
 
-    it("upload population dispatches baseline/uploadPopulation", (done) => {
-        expectUploadToDispatchAction(2, () => actions.uploadPopulation, done);
+    it("upload population dispatches baseline/uploadPopulation", async () => {
+        await expectUploadToDispatchAction(2, () => actions.uploadPopulation);
     });
 
-    it("remove pjnz dispatches baseline/deletePJNZ", (done) => {
-        expectDeleteToDispatchAction(0, () => actions.deletePJNZ, done);
+    it("remove pjnz dispatches baseline/deletePJNZ", async () => {
+        await expectDeleteToDispatchAction(0, () => actions.deletePJNZ);
     });
 
-    it("remove shape dispatches baseline/deleteShape", (done) => {
-        expectDeleteToDispatchAction(1, () => actions.deleteShape, done);
+    it("remove shape dispatches baseline/deleteShape", async () => {
+        await expectDeleteToDispatchAction(1, () => actions.deleteShape);
     });
 
-    it("remove population dispatches baseline/deletePopulation", (done) => {
-        expectDeleteToDispatchAction(2, () => actions.deletePopulation, done);
+    it("remove population dispatches baseline/deletePopulation", async () => {
+        await expectDeleteToDispatchAction(2, () => actions.deletePopulation);
     });
 
     it("can return true when fromADR", async () => {
@@ -581,9 +582,34 @@ describe("UploadInputs upload component", () => {
 
     });
 
-    const expectUploadToDispatchAction = (index: number,
-                                          action: () => jest.MockInstance<any, any>,
-                                          done: jest.DoneCallback) => {
+    it("doesn't render upload zip when logged in", () =>{
+        const store = createSut({}, {}, {}, false);
+        const wrapper = shallowMountWithTranslate(UploadInputs, store, {
+            global: {
+                plugins: [store]
+            },
+        });
+        expect(wrapper.find("#load-zip").exists()).toBe(false)
+    });
+
+    it("can upload output zip when guest", async () =>{
+        const store = createSut({}, {}, {}, true);
+        const wrapper = shallowMountWithTranslate(UploadInputs, store, {
+            global: {
+                plugins: [store]
+            },
+        });
+        expect(wrapper.find("#load-zip").exists()).toBe(true)
+
+        const spy = vi.spyOn((wrapper.vm as any), "clearLoadZipInput")
+        const testFile = mockFile("test filename", "test file contents", "application/zip")
+        await triggerSelectZip(wrapper, testFile, "#upload-zip")
+        expect(mockPreparingRehydrate.mock.calls.length).toBe(1);
+        expect(spy).toHaveBeenCalledTimes(1)
+    });
+
+    const expectUploadToDispatchAction = async (index: number,
+                                          action: () => MockInstance<any, any>) => {
         const store = createSut();
         const wrapper = shallowMountWithTranslate(UploadInputs, store, {
             global: {
@@ -592,15 +618,12 @@ describe("UploadInputs upload component", () => {
         });
 
         wrapper.findAllComponents(ManageFile)[index].props().upload({name: "TEST"});
-        setTimeout(() => {
-            expect(action().mock.calls[0][1]).toStrictEqual({name: "TEST"});
-            done();
-        });
+        await flushPromises();
+        expect(action().mock.calls[0][1]).toStrictEqual({name: "TEST"});
     };
 
-    const expectDeleteToDispatchAction = (index: number,
-                                          action: () => jest.MockInstance<any, any>,
-                                          done: jest.DoneCallback) => {
+    const expectDeleteToDispatchAction = async (index: number,
+                                          action: () => MockInstance<any, any>) => {
         const store = createSut();
         const wrapper = shallowMountWithTranslate(UploadInputs, store, {
             global: {
@@ -609,10 +632,8 @@ describe("UploadInputs upload component", () => {
         });
 
         wrapper.findAllComponents(ManageFile)[index].props().deleteFile();
-        setTimeout(() => {
-            expect(action().mock.calls.length).toBe(1);
-            done();
-        });
+        await flushPromises();
+        expect(action().mock.calls.length).toBe(1);
     }
 });
 
@@ -633,3 +654,9 @@ const expectFileIsNotRequired = (store: Store<any>, index: number) => {
     });
     expect(wrapper.findAllComponents(ManageFile)[index].props().required).toBe(false);
 }
+
+const triggerSelectZip = async (wrapper: VueWrapper, testFile: File, id: string) => {
+    const input = wrapper.find(id);
+    vi.spyOn((wrapper.vm.$refs as any).loadZip, "files", "get").mockImplementation(() => [testFile]);
+    await input.trigger("change");
+};

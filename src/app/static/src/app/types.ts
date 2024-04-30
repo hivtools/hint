@@ -302,6 +302,7 @@ export interface ErrorReportManualDetails {
 export interface ErrorReport extends ErrorReportManualDetails {
     country: string,
     projectName: string | undefined,
+    projectId: number | undefined,
     browserAgent: string,
     timeStamp: string,
     modelRunId: string,

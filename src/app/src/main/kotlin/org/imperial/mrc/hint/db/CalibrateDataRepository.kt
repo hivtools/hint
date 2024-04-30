@@ -10,11 +10,12 @@ import java.sql.DriverManager
 import java.util.Properties
 import org.ktorm.database.*
 import org.ktorm.dsl.*
+import java.nio.file.Path
 
 interface CalibrateDataRepository
 {
     fun getFilteredCalibrateData(
-        path: String,
+        path: Path,
         filterQuery: FilterQuery): List<CalibrateResultRow>
 }
 
@@ -66,15 +67,15 @@ class JooqCalibrateDataRepository: CalibrateDataRepository
             }
     }
 
-    private fun getDBConnFromPathResponse(path: String): Connection {   
+    private fun getDBConnFromPathResponse(path: Path): Connection {
         val readOnlyProp = Properties()
         readOnlyProp.setProperty("duckdb.read_only", "true")
-        val conn = DriverManager.getConnection("jdbc:duckdb:.${path}", readOnlyProp)
+        val conn = DriverManager.getConnection("jdbc:duckdb:${path.toRealPath()}", readOnlyProp)
         return conn
     }
 
     override fun getFilteredCalibrateData(
-        path: String,
+        path: Path,
         filterQuery: FilterQuery): List<CalibrateResultRow>
     {
         getDBConnFromPathResponse(path).use { conn ->

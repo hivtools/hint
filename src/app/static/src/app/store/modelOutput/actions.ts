@@ -1,19 +1,19 @@
 import {ActionContext, ActionTree} from "vuex";
 import {ModelOutputMutation} from "./mutations";
 import {Dict, ModelOutputTabs} from "../../types";
-import {DataExplorationState} from "../dataExploration/dataExploration";
 import {ModelOutputState} from "./modelOutput";
-import { PayloadFilterOption, getData } from "../plottingSelections/actions";
+import {RootState} from "../../root";
+import {getData, PayloadFilterOption} from "../plottingSelections/actions";
 
 export interface ModelOutputActions {
-    updateSelectedTab: (store: ActionContext<ModelOutputState, DataExplorationState>, tab: ModelOutputTabs) => void
+    updateSelectedTab: (store: ActionContext<ModelOutputState, RootState>, tab: ModelOutputTabs) => void
 }
 
 const isObjEmpty = (object: object) => {
     return Object.keys(object).length === 0;
 };
 
-export const actions: ActionTree<ModelOutputState, DataExplorationState> & ModelOutputActions = {
+export const actions: ActionTree<ModelOutputState, RootState> & ModelOutputActions = {
 
     async updateSelectedTab(context, tab) {
         const { commit, rootState } = context;

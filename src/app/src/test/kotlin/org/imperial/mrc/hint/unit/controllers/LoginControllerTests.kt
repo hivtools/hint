@@ -7,16 +7,16 @@ import com.nhaarman.mockito_kotlin.verify
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.AssertionsForInterfaceTypes.assertThat
 import org.imperial.mrc.hint.AppProperties
+import org.imperial.mrc.hint.ConfiguredAppProperties
 import org.imperial.mrc.hint.controllers.LoginController
 import org.imperial.mrc.hint.security.Session
-import org.junit.jupiter.api.Test
-import org.springframework.ui.ConcurrentModel
-import javax.servlet.http.HttpServletRequest
-import org.imperial.mrc.hint.ConfiguredAppProperties
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
+import org.springframework.ui.ConcurrentModel
 import java.net.URI
+import javax.servlet.http.HttpServletRequest
 
 class LoginControllerTests
 {
@@ -102,24 +102,6 @@ class LoginControllerTests
         Assertions.assertThat(model["title"]).isEqualTo("Login")
         Assertions.assertThat(model["username"]).isEqualTo("")
         Assertions.assertThat(model["error"]).isEqualTo("Your session expired. Please log in again")
-    }
-
-    @Test
-    fun `sets redirect url if present and sets appTitle to Naomi Data Exploration`()
-    {
-        val model = ConcurrentModel()
-        val mockRequest = mock<HttpServletRequest> {
-            on { this.getParameter("redirectTo") } doReturn "explore"
-        }
-        val mockSession = mock<Session>()
-        val sut = LoginController(mockRequest, mockSession, ConfiguredAppProperties())
-
-        val result = sut.login(model)
-
-        Assertions.assertThat(result).isEqualTo("login")
-        Assertions.assertThat(model["appTitle"]).isEqualTo("Naomi Data Exploration")
-        Assertions.assertThat(model["continueTo"]).isEqualTo("/callback/explore")
-        verify(mockSession).setRequestedUrl("/callback/explore")
     }
 
     @Test

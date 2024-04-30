@@ -1,11 +1,10 @@
 import {Module} from 'vuex';
 import {actions} from './actions';
 import {mutations} from './mutations';
-import {ReadyState} from "../../root";
+import {ReadyState, RootState} from "../../root";
 import {NestedFilterOption, PjnzResponse, PopulationResponse, ShapeResponse, Error} from "../../generated";
 import { Dataset, Release, Dict, DatasetResourceSet, DatasetResource } from "../../types";
 import {resourceTypes} from "../../utils";
-import {DataExplorationState} from "../dataExploration/dataExploration";
 
 export interface BaselineState extends ReadyState {
     selectedDataset: Dataset | null
@@ -59,39 +58,25 @@ export const baselineGetters = {
         return state.validatedConsistent &&
             !!state.country && !!state.iso3 && !!state.shape && !!state.population
     },
-    validForDataExploration: (state: BaselineState) => {
-        const validOrMissingPJNZ = !state.pjnzError
-        const validOrMissingPop = !state.populationError
-        return validOrMissingPJNZ && validOrMissingPop && state.validatedConsistent && !!state.shape
-    },
-    selectedDatasetAvailableResources: (state: BaselineState, getters: any, rootState: DataExplorationState): unknown => {
+    selectedDatasetAvailableResources: (state: BaselineState, getters: any, rootState: RootState): unknown => {
         const resources: { [k in keyof DatasetResourceSet]?: DatasetResource | null } = {}
         const { selectedDataset } = state
 
         if (selectedDataset?.id && selectedDataset.resources) {
-            console.log("adr datasets are")
-            console.log(rootState.adr.datasets)
             const selectedDatasetFromDatasets = rootState.adr.datasets
                 .find(dataset => dataset.id === selectedDataset.id) || null
 
-            console.log("selected dataset from datasets");
-            console.log(selectedDatasetFromDatasets)
             const checkResourceAvailable = (resourceType: string) => {
                 const res = selectedDatasetFromDatasets?.resources
                     .some((resource: any) => resource.resource_type && resource.resource_type === resourceType)
-                console.log(`checking ${resourceType}`);
-                console.log(res);
                 return res
             }
 
             Object.entries(resourceTypes).forEach(([key, value]) => {
-                console.log(`checking resource ${key}`)
                 resources[key as keyof typeof resources] =
                     checkResourceAvailable(value) ? selectedDataset.resources[key as keyof typeof resources] : null
             })
         }
-        console.log(`Avaialble resources are ${resources}`)
-        console.log(resources)
         return resources
     },
 };
@@ -100,7 +85,7 @@ const getters = baselineGetters;
 
 const namespaced = true;
 
-export const baseline = (existingState: Partial<DataExplorationState> | null): Module<BaselineState, DataExplorationState> => {
+export const baseline = (existingState: Partial<RootState> | null): Module<BaselineState, RootState> => {
     return {
         namespaced,
             state: {...initialBaselineState(), ...existingState && existingState.baseline},

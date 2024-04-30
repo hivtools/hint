@@ -14,7 +14,7 @@
 <script lang="ts">
     import {mapActionByName, mapStateProp} from "../../utils";
     import DropDown from "./DropDown.vue";
-    import {DataExplorationState} from "../../store/dataExploration/dataExploration";
+    import { RootState } from "../../root";
     import { defineComponent } from "vue";
 
     interface Methods {
@@ -27,8 +27,8 @@
 
     export default defineComponent({
         computed: {
-            currentLanguage: mapStateProp<DataExplorationState, string>(null,
-                (state: DataExplorationState) => state.language.toUpperCase())
+            currentLanguage: mapStateProp<RootState, string>(null,
+                (state: RootState) => state.language.toUpperCase())
         },
         methods: {
             changeLanguage: mapActionByName<File>(null, "changeLanguage")

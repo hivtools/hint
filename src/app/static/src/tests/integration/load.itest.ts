@@ -11,13 +11,13 @@ describe("load actions", () => {
 
     beforeAll(async () => {
         await login();
-        const commit = jest.fn();
+        const commit = vi.fn();
         const formData = getFormData("../testdata/malawi.geojson");
 
-        await baselineActions.uploadShape({commit, dispatch: jest.fn(), rootState} as any, formData);
+        await baselineActions.uploadShape({commit, dispatch: vi.fn(), rootState} as any, formData);
         shape = (commit.mock.calls[1][0]["payload"] as ShapeResponse);
 
-        const mockLocationReload = jest.fn();
+        const mockLocationReload = vi.fn();
         delete (window as any).location;
         window.location = {reload: mockLocationReload} as any;
     });
@@ -27,8 +27,8 @@ describe("load actions", () => {
     });
 
     it("can submit model output ZIP file", async () => {
-        const commit = jest.fn();
-        const dispatch = jest.fn()
+        const commit = vi.fn();
+        const dispatch = vi.fn()
         const formData = getFormData("output.zip");
         const state = {rehydrateId: "1"}
 
@@ -39,20 +39,16 @@ describe("load actions", () => {
         expect(commit.mock.calls[1][0].payload).not.toBeNull();
     });
 
-    it("can poll model output ZIP status", (done) => {
-        const commit = jest.fn();
-        const dispatch = jest.fn()
+    it("can poll model output ZIP status", async () => {
+        const commit = vi.fn();
+        const dispatch = vi.fn()
         const state = {rehydrateId: "1"}
 
-        actions.pollRehydrate({commit, dispatch, state, rootState} as any);
-
-        setTimeout(() => {
-            expect(commit.mock.calls.length).toBe(2)
-            expect(commit.mock.calls[0][0].type).toBe("RehydratePollingStarted");
-            expect(commit.mock.calls[0][0].payload).toBeGreaterThan(-1);
-            expect(commit.mock.calls[1][0].type).toBe("RehydrateStatusUpdated");
-            expect(commit.mock.calls[1][0]["payload"].status).toBe("MISSING");
-            done();
-        }, 3100)
+        actions.pollRehydrate({commit, dispatch, state, rootState} as any, 400);
+        await vi.waitUntil(() => commit.mock.calls.length >= 2, { interval: 400, timeout: 6000 });
+        expect(commit.mock.calls[0][0].type).toBe("RehydratePollingStarted");
+        expect(+commit.mock.calls[0][0].payload).toBeGreaterThan(-1);
+        expect(commit.mock.calls[1][0].type).toBe("RehydrateStatusUpdated");
+        expect(commit.mock.calls[1][0]["payload"].status).toBe("MISSING");
     });
 });

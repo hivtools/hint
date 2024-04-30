@@ -17,8 +17,9 @@ import MapEmptyFeature from "../../../../app/components/plots/MapEmptyFeature.vu
 import ResetMap from "../../../../app/components/plots/ResetMap.vue";
 import { mountWithTranslate } from "../../../testHelpers";
 import { nextTick } from "vue";
+import HintTreeSelect from "../../../../app/components/HintTreeSelect.vue";
 
-jest.mock("@vue-leaflet/vue-leaflet", () => {
+vi.mock("@vue-leaflet/vue-leaflet", () => {
     const LMap = {
         template: "<div id='l-map-mock'><slot></slot></div>"
     }
@@ -82,7 +83,7 @@ const getWrapper = (customPropsData: any = {}) => {
 export const expectIndicatorSelect = (wrapper: VueWrapper<any>, divId: string, value: string) => {
     const indDiv = wrapper.find("#" + divId);
     expect(indDiv.classes()[0]).toBe("form-group");
-    const indSelect = indDiv.findComponent(Treeselect);
+    const indSelect = indDiv.findComponent(HintTreeSelect);
     expect(indSelect.props().multiple).toBe(false);
     expect(indSelect.props().clearable).toBe(false);
     expect(indSelect.props().options).toStrictEqual(props.indicators);
@@ -572,8 +573,8 @@ describe("BubblePlot component", () => {
 
     it("updateBounds updates bounds of map from features geojson", async () => {
         const wrapper = getWrapper();
-        const mockMapFitBounds = jest.fn();
-        const mockMapAddLayer = jest.fn();
+        const mockMapFitBounds = vi.fn();
+        const mockMapAddLayer = vi.fn();
 
         const vm = wrapper.vm as any;
         vm.$refs.map.leafletObject = {
@@ -587,8 +588,8 @@ describe("BubblePlot component", () => {
 
     it("clicking reset view button updates bounds of map from features geojson", () => {
         const wrapper = getWrapper();
-        const mockMapFitBounds = jest.fn();
-        const mockMapAddLayer = jest.fn();
+        const mockMapFitBounds = vi.fn();
+        const mockMapAddLayer = vi.fn();
 
         const vm = wrapper.vm as any;
         vm.$refs.map.leafletObject = {
@@ -709,7 +710,7 @@ describe("BubblePlot component", () => {
     });
 
     it("updates bounds when becomes initialised", async () => {
-        const mockUpdateBounds = jest.fn();
+        const mockUpdateBounds = vi.fn();
         const wrapper = getWrapper({ //this cannot initialise
             features: [...props.features],
             featureLevels: [...props.featureLevels],

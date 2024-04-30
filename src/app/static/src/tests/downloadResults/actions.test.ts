@@ -8,6 +8,7 @@ import {actions} from "../../app/store/downloadResults/actions";
 import {DOWNLOAD_TYPE} from "../../app/types";
 import {DownloadStatusResponse} from "../../app/generated";
 import {switches} from "../../app/featureSwitches";
+import { flushPromises } from "@vue/test-utils";
 
 const RunningStatusResponse: DownloadStatusResponse = {
     id: "db0c4957aea4b32c507ac02d63930110",
@@ -31,13 +32,21 @@ describe(`download Results actions`, () => {
 
     beforeEach(() => {
         // stop apiService logging to console
-        console.log = jest.fn();
+        console.log = vi.fn();
         mockAxios.reset();
     });
 
+    beforeAll(() => {
+        vi.useFakeTimers();
+    });
+
+    afterAll(() => {
+        vi.useRealTimers();
+    });
+
     it("prepare summary commits download id and starts polling for status", async () => {
-        const commit = jest.fn();
-        const dispatch = jest.fn();
+        const commit = vi.fn();
+        const dispatch = vi.fn();
         const partialDownloadResultsState = mockDownloadResultsDependency({downloadId: "1"});
         const root = mockRootState({
             modelCalibrate: mockModelCalibrateState({calibrateId: "calibrate1"})
@@ -63,7 +72,7 @@ describe(`download Results actions`, () => {
     });
 
     it("prepare summary does not do anything if downloadId is already present", async () => {
-        const commit = jest.fn();
+        const commit = vi.fn();
         const state = mockDownloadResultsState({
             summary: mockDownloadResultsDependency({downloadId: "1"})
         });
@@ -74,7 +83,7 @@ describe(`download Results actions`, () => {
     });
 
     it("prepare summary does not do anything if fetchingDownloadId is set", async () => {
-        const commit = jest.fn();
+        const commit = vi.fn();
         const state = mockDownloadResultsState({
             summary: mockDownloadResultsDependency({fetchingDownloadId: true})
         });
@@ -84,9 +93,9 @@ describe(`download Results actions`, () => {
         expect(commit.mock.calls.length).toBe(0);
     });
 
-    it("can poll for summary status, get pollId and commit result", (done) => {
-        const commit = jest.fn();
-        const dispatch = jest.fn()
+    it("can poll for summary status, get pollId and commit result", async () => {
+        const commit = vi.fn();
+        const dispatch = vi.fn()
         const partialDownloadResultsState = {downloadId: "1", status: CompleteStatusResponse};
 
         const state = mockDownloadResultsState({
@@ -97,22 +106,20 @@ describe(`download Results actions`, () => {
             .reply(200, mockSuccess(RunningStatusResponse));
 
         actions.poll({commit, state, dispatch, rootState: mockRootState()} as any, DOWNLOAD_TYPE.SUMMARY);
+        vi.advanceTimersByTime(2000);
+        await flushPromises();
+        expect(commit.mock.calls.length).toBe(2);
+        expect(commit.mock.calls[0][0]["type"]).toBe("PollingStatusStarted")
+        expect(+commit.mock.calls[0][0]["payload"].pollId).toBeGreaterThan(-1)
+        expect(commit.mock.calls[0][0]["payload"].downloadType).toEqual(DOWNLOAD_TYPE.SUMMARY)
 
-        setTimeout(() => {
-            expect(commit.mock.calls.length).toBe(2);
-            expect(commit.mock.calls[0][0]["type"]).toBe("PollingStatusStarted")
-            expect(commit.mock.calls[0][0]["payload"].pollId).toBeGreaterThan(-1)
-            expect(commit.mock.calls[0][0]["payload"].downloadType).toEqual(DOWNLOAD_TYPE.SUMMARY)
-
-            expect(commit.mock.calls[1][0]["type"]).toBe("SummaryReportStatusUpdated")
-            expect(commit.mock.calls[1][0]["payload"]).toEqual(RunningStatusResponse)
-            done()
-        }, 2100)
+        expect(commit.mock.calls[1][0]["type"]).toBe("SummaryReportStatusUpdated")
+        expect(commit.mock.calls[1][0]["payload"]).toEqual(RunningStatusResponse)
     });
 
     it("does not poll for summary status when submission is unsuccessful", async () => {
-        const commit = jest.fn();
-        const dispatch = jest.fn();
+        const commit = vi.fn();
+        const dispatch = vi.fn();
 
         const root = mockRootState({
             modelCalibrate: mockModelCalibrateState({calibrateId: "calibrate1"}),
@@ -139,9 +146,9 @@ describe(`download Results actions`, () => {
         await downloadReportAsExpected(actions.downloadSummaryReport, "SummaryOutputDownloadError")
     });
 
-    it("gets adr upload metadata if summary status is done", (done) => {
-        const commit = jest.fn();
-        const dispatch = jest.fn();
+    it("gets adr upload metadata if summary status is done", async () => {
+        const commit = vi.fn();
+        const dispatch = vi.fn();
 
         const state = mockDownloadResultsState({
             summary: mockDownloadResultsDependency({downloadId: "1"})
@@ -151,20 +158,18 @@ describe(`download Results actions`, () => {
             .reply(200, mockSuccess(CompleteStatusResponse));
 
         actions.poll({commit, state, dispatch, rootState: mockRootState()} as any, DOWNLOAD_TYPE.SUMMARY);
-
-        setTimeout(() => {
-            expect(commit.mock.calls[1][0]["type"]).toBe("SummaryReportStatusUpdated")
-            expect(commit.mock.calls[1][0]["payload"]).toEqual(CompleteStatusResponse)
-            expect(dispatch.mock.calls[0][0]).toBe("metadata/getAdrUploadMetadata")
-            expect(dispatch.mock.calls[0][1]).toBe(CompleteStatusResponse.id)
-            expect(dispatch.mock.calls[0][2]).toEqual({root: true})
-            done()
-        }, 2100)
+        vi.advanceTimersByTime(2000);
+        await flushPromises();
+        expect(commit.mock.calls[1][0]["type"]).toBe("SummaryReportStatusUpdated")
+        expect(commit.mock.calls[1][0]["payload"]).toEqual(CompleteStatusResponse)
+        expect(dispatch.mock.calls[0][0]).toBe("metadata/getAdrUploadMetadata")
+        expect(dispatch.mock.calls[0][1]).toBe(CompleteStatusResponse.id)
+        expect(dispatch.mock.calls[0][2]).toEqual({root: true})
     });
 
-    it("does get adr upload metadata error for summary if metadata request is successful",  (done) => {
-        const commit = jest.fn();
-        const dispatch = jest.fn();
+    it("does get adr upload metadata error for summary if metadata request is successful",  async () => {
+        const commit = vi.fn();
+        const dispatch = vi.fn();
 
         const state = mockDownloadResultsState({
             summary: mockDownloadResultsDependency(
@@ -175,24 +180,22 @@ describe(`download Results actions`, () => {
             .reply(200, mockSuccess(CompleteStatusResponse));
 
         actions.poll({commit, state, dispatch, rootState: mockRootState()} as any, DOWNLOAD_TYPE.SUMMARY);
+        vi.advanceTimersByTime(2000);
+        await flushPromises();
+        expect(commit.mock.calls[1][0]["type"]).toBe("SummaryReportStatusUpdated")
+        expect(commit.mock.calls[1][0]["payload"]).toEqual(CompleteStatusResponse)
 
-        setTimeout(() => {
-            expect(commit.mock.calls[1][0]["type"]).toBe("SummaryReportStatusUpdated")
-            expect(commit.mock.calls[1][0]["payload"]).toEqual(CompleteStatusResponse)
+        expect(commit.mock.calls[2][0]["type"]).toBe("SummaryMetadataError")
+        expect(commit.mock.calls[2][0]["payload"]).toBeNull()
 
-            expect(commit.mock.calls[2][0]["type"]).toBe("SummaryMetadataError")
-            expect(commit.mock.calls[2][0]["payload"]).toBeNull()
-
-            expect(dispatch.mock.calls[0][0]).toBe("metadata/getAdrUploadMetadata")
-            expect(dispatch.mock.calls[0][1]).toBe(CompleteStatusResponse.id)
-            expect(dispatch.mock.calls[0][2]).toEqual({root: true})
-            done()
-        }, 2100)
+        expect(dispatch.mock.calls[0][0]).toBe("metadata/getAdrUploadMetadata")
+        expect(dispatch.mock.calls[0][1]).toBe(CompleteStatusResponse.id)
+        expect(dispatch.mock.calls[0][2]).toEqual({root: true})
     });
 
-    it("can get adr upload metadata error for summary if metadata request is unsuccessful", (done) => {
-        const commit = jest.fn();
-        const dispatch = jest.fn();
+    it("can get adr upload metadata error for summary if metadata request is unsuccessful", async () => {
+        const commit = vi.fn();
+        const dispatch = vi.fn();
 
         const state = mockDownloadResultsState({
             summary: mockDownloadResultsDependency(
@@ -209,24 +212,22 @@ describe(`download Results actions`, () => {
             .reply(200, mockSuccess(CompleteStatusResponse));
 
         actions.poll({commit, state, dispatch, rootState} as any, DOWNLOAD_TYPE.SUMMARY);
+        vi.advanceTimersByTime(2000);
+        await flushPromises();
+        expect(commit.mock.calls[1][0]["type"]).toBe("SummaryReportStatusUpdated")
+        expect(commit.mock.calls[1][0]["payload"]).toEqual(CompleteStatusResponse)
 
-        setTimeout(() => {
-            expect(commit.mock.calls[1][0]["type"]).toBe("SummaryReportStatusUpdated")
-            expect(commit.mock.calls[1][0]["payload"]).toEqual(CompleteStatusResponse)
+        expect(dispatch.mock.calls[0][0]).toBe("metadata/getAdrUploadMetadata")
+        expect(dispatch.mock.calls[0][1]).toBe(CompleteStatusResponse.id)
+        expect(dispatch.mock.calls[0][2]).toEqual({root: true})
 
-            expect(dispatch.mock.calls[0][0]).toBe("metadata/getAdrUploadMetadata")
-            expect(dispatch.mock.calls[0][1]).toBe(CompleteStatusResponse.id)
-            expect(dispatch.mock.calls[0][2]).toEqual({root: true})
-
-            expect(commit.mock.calls[2][0]["type"]).toBe("SummaryMetadataError")
-            expect(commit.mock.calls[2][0]["payload"]).toEqual(mockError("METADATA REQUEST FAILED"))
-            done()
-        }, 2100)
+        expect(commit.mock.calls[2][0]["type"]).toBe("SummaryMetadataError")
+        expect(commit.mock.calls[2][0]["payload"]).toEqual(mockError("METADATA REQUEST FAILED"))
     });
 
-    it("does not continue to poll summary status when unsuccessful", (done) => {
-        const commit = jest.fn();
-        const dispatch = jest.fn();
+    it("does not continue to poll summary status when unsuccessful", async () => {
+        const commit = vi.fn();
+        const dispatch = vi.fn();
         const partialDownloadResultsState = mockDownloadResultsDependency({downloadId: "1"});
 
         const state = mockDownloadResultsState({
@@ -237,25 +238,23 @@ describe(`download Results actions`, () => {
             .reply(500, mockFailure("TEST FAILED"));
 
         actions.poll({commit, state, dispatch, rootState: mockRootState()} as any, DOWNLOAD_TYPE.SUMMARY);
+        vi.advanceTimersByTime(2000);
+        await flushPromises();
+        expect(commit.mock.calls.length).toBe(2)
 
-        setTimeout(() => {
-            expect(commit.mock.calls.length).toBe(2)
+        expect(commit.mock.calls[0][0]["type"]).toBe("PollingStatusStarted")
+        expect(+commit.mock.calls[0][0]["payload"].pollId).toBeGreaterThan(-1)
+        expect(commit.mock.calls[0][0]["payload"].downloadType).toEqual(DOWNLOAD_TYPE.SUMMARY)
 
-            expect(commit.mock.calls[0][0]["type"]).toBe("PollingStatusStarted")
-            expect(commit.mock.calls[0][0]["payload"].pollId).toBeGreaterThan(-1)
-            expect(commit.mock.calls[0][0]["payload"].downloadType).toEqual(DOWNLOAD_TYPE.SUMMARY)
-
-            expect(commit.mock.calls[1][0]).toStrictEqual({
-                type: "SummaryError",
-                payload: mockError("TEST FAILED")
-            });
-            done()
-        }, 2100)
+        expect(commit.mock.calls[1][0]).toStrictEqual({
+            type: "SummaryError",
+            payload: mockError("TEST FAILED")
+        });
     });
 
     it("can submit spectrum download request, commits and starts polling", async () => {
-        const commit = jest.fn();
-        const dispatch = jest.fn();
+        const commit = vi.fn();
+        const dispatch = vi.fn();
         const downloadId = {downloadId: "1"};
 
         const root = mockRootState({
@@ -285,7 +284,7 @@ describe(`download Results actions`, () => {
     });
 
     it("prepare spectrum does not do anything if downloadId is already present", async () => {
-        const commit = jest.fn();
+        const commit = vi.fn();
         const state = mockDownloadResultsState({
             spectrum: mockDownloadResultsDependency({downloadId: "1"})
         });
@@ -296,7 +295,7 @@ describe(`download Results actions`, () => {
     });
 
     it("prepare spectrum does not do anything if fetchingDownloadId is set", async () => {
-        const commit = jest.fn();
+        const commit = vi.fn();
         const state = mockDownloadResultsState({
             spectrum: mockDownloadResultsDependency({fetchingDownloadId: true})
         });
@@ -306,9 +305,9 @@ describe(`download Results actions`, () => {
         expect(commit.mock.calls.length).toBe(0);
     });
 
-    it("can invoke spectrum poll action, gets pollId, commits PollingStatusStarted",  (done) => {
-        const commit = jest.fn();
-        const dispatch = jest.fn();
+    it("can invoke spectrum poll action, gets pollId, commits PollingStatusStarted",  async () => {
+        const commit = vi.fn();
+        const dispatch = vi.fn();
 
         const root = mockRootState({
             modelCalibrate: mockModelCalibrateState({calibrateId: "calibrate1"}),
@@ -322,23 +321,20 @@ describe(`download Results actions`, () => {
             .reply(200, mockSuccess(RunningStatusResponse));
 
         actions.poll({commit, state, dispatch, rootState: root} as any, DOWNLOAD_TYPE.SPECTRUM);
+        vi.advanceTimersByTime(2000);
+        await flushPromises();
+        expect(commit.mock.calls.length).toBe(2);
+        expect(commit.mock.calls[0][0]["type"]).toBe("PollingStatusStarted")
+        expect(+commit.mock.calls[0][0]["payload"].pollId).toBeGreaterThan(-1)
+        expect(commit.mock.calls[0][0]["payload"].downloadType).toEqual(DOWNLOAD_TYPE.SPECTRUM)
 
-        setTimeout(() => {
-            expect(commit.mock.calls.length).toBe(2);
-            expect(commit.mock.calls[0][0]["type"]).toBe("PollingStatusStarted")
-            expect(commit.mock.calls[0][0]["payload"].pollId).toBeGreaterThan(-1)
-            expect(commit.mock.calls[0][0]["payload"].downloadType).toEqual(DOWNLOAD_TYPE.SPECTRUM)
-
-            expect(commit.mock.calls[1][0]["type"]).toBe("SpectrumOutputStatusUpdated")
-            expect(commit.mock.calls[1][0]["payload"]).toEqual(RunningStatusResponse)
-            done()
-
-        }, 2100)
+        expect(commit.mock.calls[1][0]["type"]).toBe("SpectrumOutputStatusUpdated")
+        expect(commit.mock.calls[1][0]["payload"]).toEqual(RunningStatusResponse)
     });
 
-    it("can poll for spectrum output status", (done) => {
-        const commit = jest.fn();
-        const dispatch = jest.fn();
+    it("can poll for spectrum output status", async () => {
+        const commit = vi.fn();
+        const dispatch = vi.fn();
 
         const state = mockDownloadResultsState({
             spectrum: mockDownloadResultsDependency({downloadId: "1"})
@@ -348,17 +344,15 @@ describe(`download Results actions`, () => {
             .reply(200, mockSuccess(RunningStatusResponse));
 
         actions.poll({commit, state, dispatch, rootState: mockRootState()} as any, DOWNLOAD_TYPE.SPECTRUM);
+        vi.advanceTimersByTime(2000);
+        await flushPromises();
+        expect(commit.mock.calls.length).toBe(2);
+        expect(commit.mock.calls[0][0]["type"]).toBe("PollingStatusStarted")
+        expect(+commit.mock.calls[0][0]["payload"].pollId).toBeGreaterThan(-1)
+        expect(commit.mock.calls[0][0]["payload"].downloadType).toEqual(DOWNLOAD_TYPE.SPECTRUM)
 
-        setTimeout(() => {
-            expect(commit.mock.calls.length).toBe(2);
-            expect(commit.mock.calls[0][0]["type"]).toBe("PollingStatusStarted")
-            expect(commit.mock.calls[0][0]["payload"].pollId).toBeGreaterThan(-1)
-            expect(commit.mock.calls[0][0]["payload"].downloadType).toEqual(DOWNLOAD_TYPE.SPECTRUM)
-
-            expect(commit.mock.calls[1][0]["type"]).toBe("SpectrumOutputStatusUpdated")
-            expect(commit.mock.calls[1][0]["payload"]).toEqual(RunningStatusResponse)
-            done()
-        }, 2100)
+        expect(commit.mock.calls[1][0]["type"]).toBe("SpectrumOutputStatusUpdated")
+        expect(commit.mock.calls[1][0]["payload"]).toEqual(RunningStatusResponse)
     });
 
     it("renders spectrum report download error", async () => {
@@ -369,9 +363,9 @@ describe(`download Results actions`, () => {
         await downloadReportAsExpected(actions.downloadSpectrumOutput, "SpectrumOutputDownloadError")
     });
 
-    it("gets adr upload metadata if spectrum status is done",  (done) => {
-        const commit = jest.fn();
-        const dispatch = jest.fn();
+    it("gets adr upload metadata if spectrum status is done",  async () => {
+        const commit = vi.fn();
+        const dispatch = vi.fn();
 
         const state = mockDownloadResultsState({
             spectrum: mockDownloadResultsDependency({downloadId: "1"})
@@ -381,20 +375,18 @@ describe(`download Results actions`, () => {
             .reply(200, mockSuccess(CompleteStatusResponse));
 
         actions.poll({commit, state, dispatch, rootState: mockRootState()} as any, DOWNLOAD_TYPE.SPECTRUM);
-
-        setTimeout(() => {
-            expect(commit.mock.calls[1][0]["type"]).toBe("SpectrumOutputStatusUpdated")
-            expect(commit.mock.calls[1][0]["payload"]).toEqual(CompleteStatusResponse)
-            expect(dispatch.mock.calls[0][0]).toBe("metadata/getAdrUploadMetadata")
-            expect(dispatch.mock.calls[0][1]).toBe(CompleteStatusResponse.id)
-            expect(dispatch.mock.calls[0][2]).toEqual({root: true})
-            done()
-        }, 2100)
+        vi.advanceTimersByTime(2000);
+        await flushPromises();
+        expect(commit.mock.calls[1][0]["type"]).toBe("SpectrumOutputStatusUpdated")
+        expect(commit.mock.calls[1][0]["payload"]).toEqual(CompleteStatusResponse)
+        expect(dispatch.mock.calls[0][0]).toBe("metadata/getAdrUploadMetadata")
+        expect(dispatch.mock.calls[0][1]).toBe(CompleteStatusResponse.id)
+        expect(dispatch.mock.calls[0][2]).toEqual({root: true})
     });
 
-    it("does get adr upload metadata error for spectrum if metadata request is successful", (done) => {
-        const commit = jest.fn();
-        const dispatch = jest.fn();
+    it("does get adr upload metadata error for spectrum if metadata request is successful", async () => {
+        const commit = vi.fn();
+        const dispatch = vi.fn();
 
         const state = mockDownloadResultsState({
             spectrum: mockDownloadResultsDependency(
@@ -405,24 +397,22 @@ describe(`download Results actions`, () => {
             .reply(200, mockSuccess(CompleteStatusResponse));
 
         actions.poll({commit, state, dispatch, rootState: mockRootState()} as any, DOWNLOAD_TYPE.SPECTRUM);
+        vi.advanceTimersByTime(2000);
+        await flushPromises();
+        expect(commit.mock.calls[1][0]["type"]).toBe("SpectrumOutputStatusUpdated")
+        expect(commit.mock.calls[1][0]["payload"]).toEqual(CompleteStatusResponse)
 
-        setTimeout(() => {
-            expect(commit.mock.calls[1][0]["type"]).toBe("SpectrumOutputStatusUpdated")
-            expect(commit.mock.calls[1][0]["payload"]).toEqual(CompleteStatusResponse)
+        expect(dispatch.mock.calls[0][0]).toBe("metadata/getAdrUploadMetadata")
+        expect(dispatch.mock.calls[0][1]).toBe(CompleteStatusResponse.id)
+        expect(dispatch.mock.calls[0][2]).toEqual({root: true})
 
-            expect(dispatch.mock.calls[0][0]).toBe("metadata/getAdrUploadMetadata")
-            expect(dispatch.mock.calls[0][1]).toBe(CompleteStatusResponse.id)
-            expect(dispatch.mock.calls[0][2]).toEqual({root: true})
-
-            expect(commit.mock.calls[2][0]["type"]).toBe("SpectrumMetadataError")
-            expect(commit.mock.calls[2][0]["payload"]).toBeNull()
-            done()
-        }, 2100)
+        expect(commit.mock.calls[2][0]["type"]).toBe("SpectrumMetadataError")
+        expect(commit.mock.calls[2][0]["payload"]).toBeNull()
     });
 
-    it("can get adr upload metadata error for spectrum if metadata request is unsuccessful",  (done) => {
-        const commit = jest.fn();
-        const dispatch = jest.fn();
+    it("can get adr upload metadata error for spectrum if metadata request is unsuccessful",  async () => {
+        const commit = vi.fn();
+        const dispatch = vi.fn();
 
         const state = mockDownloadResultsState({
             spectrum: mockDownloadResultsDependency(
@@ -439,24 +429,22 @@ describe(`download Results actions`, () => {
             .reply(200, mockSuccess(CompleteStatusResponse));
 
         actions.poll({commit, state, dispatch, rootState} as any, DOWNLOAD_TYPE.SPECTRUM);
+        vi.advanceTimersByTime(2000);
+        await flushPromises();
+        expect(commit.mock.calls[1][0]["type"]).toBe("SpectrumOutputStatusUpdated")
+        expect(commit.mock.calls[1][0]["payload"]).toEqual(CompleteStatusResponse)
 
-        setTimeout(() => {
-            expect(commit.mock.calls[1][0]["type"]).toBe("SpectrumOutputStatusUpdated")
-            expect(commit.mock.calls[1][0]["payload"]).toEqual(CompleteStatusResponse)
+        expect(dispatch.mock.calls[0][0]).toBe("metadata/getAdrUploadMetadata")
+        expect(dispatch.mock.calls[0][1]).toBe(CompleteStatusResponse.id)
+        expect(dispatch.mock.calls[0][2]).toEqual({root: true})
 
-            expect(dispatch.mock.calls[0][0]).toBe("metadata/getAdrUploadMetadata")
-            expect(dispatch.mock.calls[0][1]).toBe(CompleteStatusResponse.id)
-            expect(dispatch.mock.calls[0][2]).toEqual({root: true})
-
-            expect(commit.mock.calls[2][0]["type"]).toBe("SpectrumMetadataError")
-            expect(commit.mock.calls[2][0]["payload"]).toEqual(mockError("METADATA REQUEST FAILED"))
-            done()
-        }, 2100)
+        expect(commit.mock.calls[2][0]["type"]).toBe("SpectrumMetadataError")
+        expect(commit.mock.calls[2][0]["payload"]).toEqual(mockError("METADATA REQUEST FAILED"))
     });
 
     it("does not start polling for spectrum output status when submission is unsuccessful", async () => {
-        const commit = jest.fn();
-        const dispatch = jest.fn();
+        const commit = vi.fn();
+        const dispatch = vi.fn();
 
         const root = mockRootState({
             modelCalibrate: mockModelCalibrateState({calibrateId: "calibrate1"}),
@@ -477,9 +465,9 @@ describe(`download Results actions`, () => {
         });
     });
 
-    it("does not continue to poll spectrum status when unsuccessful", (done) => {
-        const commit = jest.fn();
-        const dispatch = jest.fn();
+    it("does not continue to poll spectrum status when unsuccessful", async () => {
+        const commit = vi.fn();
+        const dispatch = vi.fn();
 
         const state = mockDownloadResultsState({
             spectrum: mockDownloadResultsDependency({downloadId: "1"})
@@ -489,27 +477,23 @@ describe(`download Results actions`, () => {
             .reply(500, mockFailure("TEST FAILED"));
 
         actions.poll({commit, state, dispatch, rootState: mockRootState()} as any, DOWNLOAD_TYPE.SPECTRUM);
+        vi.advanceTimersByTime(2000);
+        await flushPromises();
+        expect(commit.mock.calls.length).toBe(2)
 
-        setTimeout(() => {
-            expect(commit.mock.calls.length).toBe(2)
+        expect(commit.mock.calls[0][0]["type"]).toBe("PollingStatusStarted")
+        expect(+commit.mock.calls[0][0]["payload"].pollId).toBeGreaterThan(-1)
+        expect(commit.mock.calls[0][0]["payload"].downloadType).toEqual(DOWNLOAD_TYPE.SPECTRUM)
 
-            expect(commit.mock.calls[0][0]["type"]).toBe("PollingStatusStarted")
-            expect(commit.mock.calls[0][0]["payload"].pollId).toBeGreaterThan(-1)
-            expect(commit.mock.calls[0][0]["payload"].downloadType).toEqual(DOWNLOAD_TYPE.SPECTRUM)
-
-            expect(commit.mock.calls[1][0]).toStrictEqual({
-                type: "SpectrumError",
-                payload: mockError("TEST FAILED")
-            });
-
-            done()
-
-        }, 2100)
+        expect(commit.mock.calls[1][0]).toStrictEqual({
+            type: "SpectrumError",
+            payload: mockError("TEST FAILED")
+        });
     });
 
     it("can prepare coarse output, commits and starts polling", async () => {
-        const commit = jest.fn();
-        const dispatch = jest.fn();
+        const commit = vi.fn();
+        const dispatch = vi.fn();
         const downloadId = {downloadId: "1"};
         const root = mockRootState({
             modelCalibrate: mockModelCalibrateState({calibrateId: "calibrate1"}),
@@ -535,7 +519,7 @@ describe(`download Results actions`, () => {
     });
 
     it("prepare coarse output does not do anything if downloadId is already present", async () => {
-        const commit = jest.fn();
+        const commit = vi.fn();
         const state = mockDownloadResultsState({
             coarseOutput: mockDownloadResultsDependency({downloadId: "1"})
         });
@@ -546,7 +530,7 @@ describe(`download Results actions`, () => {
     });
 
     it("prepare coarse output does not do anything if fetchingDownloadId is set", async () => {
-        const commit = jest.fn();
+        const commit = vi.fn();
         const state = mockDownloadResultsState({
             coarseOutput: mockDownloadResultsDependency({fetchingDownloadId: true})
         });
@@ -556,9 +540,9 @@ describe(`download Results actions`, () => {
         expect(commit.mock.calls.length).toBe(0);
     });
 
-    it("gets adr upload metadata if coarse output status is done",  (done) => {
-        const commit = jest.fn();
-        const dispatch = jest.fn();
+    it("gets adr upload metadata if coarse output status is done",  async () => {
+        const commit = vi.fn();
+        const dispatch = vi.fn();
 
         const state = mockDownloadResultsState({
             coarseOutput: mockDownloadResultsDependency({downloadId: "1"})
@@ -568,15 +552,13 @@ describe(`download Results actions`, () => {
             .reply(200, mockSuccess(CompleteStatusResponse));
 
         actions.poll({commit, state, dispatch, rootState: mockRootState()} as any, DOWNLOAD_TYPE.COARSE);
-
-        setTimeout(() => {
-            expect(commit.mock.calls[1][0]["type"]).toBe("CoarseOutputStatusUpdated")
-            expect(commit.mock.calls[1][0]["payload"]).toEqual(CompleteStatusResponse)
-            expect(dispatch.mock.calls[0][0]).toBe("metadata/getAdrUploadMetadata")
-            expect(dispatch.mock.calls[0][1]).toBe(CompleteStatusResponse.id)
-            expect(dispatch.mock.calls[0][2]).toEqual({root: true})
-            done()
-        }, 2100)
+        vi.advanceTimersByTime(2000);
+        await flushPromises();
+        expect(commit.mock.calls[1][0]["type"]).toBe("CoarseOutputStatusUpdated")
+        expect(commit.mock.calls[1][0]["payload"]).toEqual(CompleteStatusResponse)
+        expect(dispatch.mock.calls[0][0]).toBe("metadata/getAdrUploadMetadata")
+        expect(dispatch.mock.calls[0][1]).toBe(CompleteStatusResponse.id)
+        expect(dispatch.mock.calls[0][2]).toEqual({root: true})
     });
 
 
@@ -588,9 +570,9 @@ describe(`download Results actions`, () => {
         await downloadReportAsExpected(actions.downloadCoarseOutput, "CoarseOutputDownloadError")
     });
 
-    it("does get adr upload metadata error for coarseOutput if metadata request is successful",  (done) => {
-        const commit = jest.fn();
-        const dispatch = jest.fn();
+    it("does get adr upload metadata error for coarseOutput if metadata request is successful",  async () => {
+        const commit = vi.fn();
+        const dispatch = vi.fn();
 
         const state = mockDownloadResultsState({
             coarseOutput: mockDownloadResultsDependency(
@@ -601,24 +583,22 @@ describe(`download Results actions`, () => {
             .reply(200, mockSuccess(CompleteStatusResponse));
 
         actions.poll({commit, state, dispatch, rootState: mockRootState()} as any, DOWNLOAD_TYPE.COARSE);
+        vi.advanceTimersByTime(2000);
+        await flushPromises();
+        expect(commit.mock.calls[1][0]["type"]).toBe("CoarseOutputStatusUpdated")
+        expect(commit.mock.calls[1][0]["payload"]).toEqual(CompleteStatusResponse)
 
-        setTimeout(() => {
-            expect(commit.mock.calls[1][0]["type"]).toBe("CoarseOutputStatusUpdated")
-            expect(commit.mock.calls[1][0]["payload"]).toEqual(CompleteStatusResponse)
+        expect(dispatch.mock.calls[0][0]).toBe("metadata/getAdrUploadMetadata")
+        expect(dispatch.mock.calls[0][1]).toBe(CompleteStatusResponse.id)
+        expect(dispatch.mock.calls[0][2]).toEqual({root: true})
 
-            expect(dispatch.mock.calls[0][0]).toBe("metadata/getAdrUploadMetadata")
-            expect(dispatch.mock.calls[0][1]).toBe(CompleteStatusResponse.id)
-            expect(dispatch.mock.calls[0][2]).toEqual({root: true})
-
-            expect(commit.mock.calls[2][0]["type"]).toBe("CoarseOutputMetadataError")
-            expect(commit.mock.calls[2][0]["payload"]).toBeNull()
-            done()
-        }, 2100)
+        expect(commit.mock.calls[2][0]["type"]).toBe("CoarseOutputMetadataError")
+        expect(commit.mock.calls[2][0]["payload"]).toBeNull()
     });
 
-    it("can get adr upload metadata error for coarseOutput if metadata request is unsuccessful",  (done) => {
-        const commit = jest.fn();
-        const dispatch = jest.fn();
+    it("can get adr upload metadata error for coarseOutput if metadata request is unsuccessful",  async () => {
+        const commit = vi.fn();
+        const dispatch = vi.fn();
 
         const state = mockDownloadResultsState({
             coarseOutput: mockDownloadResultsDependency(
@@ -635,24 +615,22 @@ describe(`download Results actions`, () => {
             .reply(200, mockSuccess(CompleteStatusResponse));
 
         actions.poll({commit, state, dispatch, rootState} as any, DOWNLOAD_TYPE.COARSE);
+        vi.advanceTimersByTime(2000);
+        await flushPromises();
+        expect(commit.mock.calls[1][0]["type"]).toBe("CoarseOutputStatusUpdated")
+        expect(commit.mock.calls[1][0]["payload"]).toEqual(CompleteStatusResponse)
 
-        setTimeout(() => {
-            expect(commit.mock.calls[1][0]["type"]).toBe("CoarseOutputStatusUpdated")
-            expect(commit.mock.calls[1][0]["payload"]).toEqual(CompleteStatusResponse)
+        expect(dispatch.mock.calls[0][0]).toBe("metadata/getAdrUploadMetadata")
+        expect(dispatch.mock.calls[0][1]).toBe(CompleteStatusResponse.id)
+        expect(dispatch.mock.calls[0][2]).toEqual({root: true})
 
-            expect(dispatch.mock.calls[0][0]).toBe("metadata/getAdrUploadMetadata")
-            expect(dispatch.mock.calls[0][1]).toBe(CompleteStatusResponse.id)
-            expect(dispatch.mock.calls[0][2]).toEqual({root: true})
-
-            expect(commit.mock.calls[2][0]["type"]).toBe("CoarseOutputMetadataError")
-            expect(commit.mock.calls[2][0]["payload"]).toEqual(mockError("METADATA REQUEST FAILED"))
-            done()
-        }, 2100)
+        expect(commit.mock.calls[2][0]["type"]).toBe("CoarseOutputMetadataError")
+        expect(commit.mock.calls[2][0]["payload"]).toEqual(mockError("METADATA REQUEST FAILED"))
     });
 
-    it("can invoke coarse output poll action, get pollId and commit PollingStatusStarted",  (done) => {
-        const commit = jest.fn();
-        const dispatch = jest.fn();
+    it("can invoke coarse output poll action, get pollId and commit PollingStatusStarted", async () => {
+        const commit = vi.fn();
+        const dispatch = vi.fn();
 
         const state = mockDownloadResultsState({
             coarseOutput: mockDownloadResultsDependency({downloadId: "1"})
@@ -662,22 +640,20 @@ describe(`download Results actions`, () => {
             .reply(200, mockSuccess(RunningStatusResponse));
 
         actions.poll({commit, state, dispatch, rootState: mockRootState()} as any, DOWNLOAD_TYPE.COARSE);
+        vi.advanceTimersByTime(2000);
+        await flushPromises();
+        expect(commit.mock.calls.length).toBe(2);
+        expect(commit.mock.calls[0][0]["type"]).toBe("PollingStatusStarted")
+        expect(+commit.mock.calls[0][0]["payload"].pollId).toBeGreaterThan(-1)
+        expect(commit.mock.calls[0][0]["payload"].downloadType).toEqual(DOWNLOAD_TYPE.COARSE)
 
-        setTimeout(() => {
-            expect(commit.mock.calls.length).toBe(2);
-            expect(commit.mock.calls[0][0]["type"]).toBe("PollingStatusStarted")
-            expect(commit.mock.calls[0][0]["payload"].pollId).toBeGreaterThan(-1)
-            expect(commit.mock.calls[0][0]["payload"].downloadType).toEqual(DOWNLOAD_TYPE.COARSE)
-
-            expect(commit.mock.calls[1][0]["type"]).toBe("CoarseOutputStatusUpdated")
-            expect(commit.mock.calls[1][0]["payload"]).toEqual(RunningStatusResponse)
-            done()
-        }, 2100)
+        expect(commit.mock.calls[1][0]["type"]).toBe("CoarseOutputStatusUpdated")
+        expect(commit.mock.calls[1][0]["payload"]).toEqual(RunningStatusResponse)
     });
 
-    it("can get coarse output status results",  (done) => {
-        const commit = jest.fn();
-        const dispatch = jest.fn();
+    it("can get coarse output status results",  async () => {
+        const commit = vi.fn();
+        const dispatch = vi.fn();
 
         const state = mockDownloadResultsState({
             coarseOutput: mockDownloadResultsDependency({downloadId: "1"})
@@ -687,23 +663,20 @@ describe(`download Results actions`, () => {
             .reply(200, mockSuccess(RunningStatusResponse));
 
         actions.poll({commit, state, dispatch, rootState: mockRootState()} as any, DOWNLOAD_TYPE.COARSE);
+        vi.advanceTimersByTime(2000);
+        await flushPromises();
+        expect(commit.mock.calls.length).toBe(2);
+        expect(commit.mock.calls[0][0]["type"]).toBe("PollingStatusStarted")
+        expect(+commit.mock.calls[0][0]["payload"].pollId).toBeGreaterThan(-1)
+        expect(commit.mock.calls[0][0]["payload"].downloadType).toEqual(DOWNLOAD_TYPE.COARSE)
 
-        setTimeout(() => {
-            expect(commit.mock.calls.length).toBe(2);
-            expect(commit.mock.calls[0][0]["type"]).toBe("PollingStatusStarted")
-            expect(commit.mock.calls[0][0]["payload"].pollId).toBeGreaterThan(-1)
-            expect(commit.mock.calls[0][0]["payload"].downloadType).toEqual(DOWNLOAD_TYPE.COARSE)
-
-            expect(commit.mock.calls[1][0]["type"]).toBe("CoarseOutputStatusUpdated")
-            expect(commit.mock.calls[1][0]["payload"]).toEqual(RunningStatusResponse)
-
-            done()
-        }, 2100)
+        expect(commit.mock.calls[1][0]["type"]).toBe("CoarseOutputStatusUpdated")
+        expect(commit.mock.calls[1][0]["payload"]).toEqual(RunningStatusResponse)
     });
 
     it("does not poll for coarse output status when submission is unsuccessful", async () => {
-        const commit = jest.fn();
-        const dispatch = jest.fn();
+        const commit = vi.fn();
+        const dispatch = vi.fn();
         const root = mockRootState({
             modelCalibrate: mockModelCalibrateState({calibrateId: "calibrate1"}),
         });
@@ -721,9 +694,9 @@ describe(`download Results actions`, () => {
         });
     });
 
-    it("does not continue to poll coarse output status when unsuccessful",  (done) => {
-        const commit = jest.fn();
-        const dispatch = jest.fn();
+    it("does not continue to poll coarse output status when unsuccessful",  async () => {
+        const commit = vi.fn();
+        const dispatch = vi.fn();
         const partialDownloadResultsState = mockDownloadResultsDependency({downloadId: "1"});
 
         const state = mockDownloadResultsState({
@@ -734,25 +707,22 @@ describe(`download Results actions`, () => {
             .reply(500, mockFailure("TEST FAILED"));
 
         actions.poll({commit, state, dispatch, rootState: mockRootState()} as any, DOWNLOAD_TYPE.COARSE);
+        vi.advanceTimersByTime(2000);
+        await flushPromises();
+        expect(commit.mock.calls.length).toBe(2)
+        expect(commit.mock.calls[0][0]["type"]).toBe("PollingStatusStarted")
+        expect(+commit.mock.calls[0][0]["payload"].pollId).toBeGreaterThan(-1)
+        expect(commit.mock.calls[0][0]["payload"].downloadType).toEqual(DOWNLOAD_TYPE.COARSE)
 
-        setTimeout(() => {
-            expect(commit.mock.calls.length).toBe(2)
-            expect(commit.mock.calls[0][0]["type"]).toBe("PollingStatusStarted")
-            expect(commit.mock.calls[0][0]["payload"].pollId).toBeGreaterThan(-1)
-            expect(commit.mock.calls[0][0]["payload"].downloadType).toEqual(DOWNLOAD_TYPE.COARSE)
-
-            expect(commit.mock.calls[1][0]).toStrictEqual({
-                type: "CoarseOutputError",
-                payload: mockError("TEST FAILED")
-            });
-
-            done()
-        }, 2100)
+        expect(commit.mock.calls[1][0]).toStrictEqual({
+            type: "CoarseOutputError",
+            payload: mockError("TEST FAILED")
+        });
     });
 
     it("can submit comparison download request, commits and starts polling", async () => {
-        const commit = jest.fn();
-        const dispatch = jest.fn();
+        const commit = vi.fn();
+        const dispatch = vi.fn();
         const downloadId = {downloadId: "1"};
 
         const root = mockRootState({
@@ -779,7 +749,7 @@ describe(`download Results actions`, () => {
     });
 
     it("prepare comparison does not do anything if downloadId is already present", async () => {
-        const commit = jest.fn();
+        const commit = vi.fn();
         const state = mockDownloadResultsState({
             comparison: mockDownloadResultsDependency({downloadId: "1"})
         });
@@ -798,7 +768,7 @@ describe(`download Results actions`, () => {
     });
 
     it("prepare comparison does not do anything if fetchingDownloadId is set", async () => {
-        const commit = jest.fn();
+        const commit = vi.fn();
         const state = mockDownloadResultsState({
             comparison: mockDownloadResultsDependency({fetchingDownloadId: true})
         });
@@ -808,9 +778,9 @@ describe(`download Results actions`, () => {
         expect(commit.mock.calls.length).toBe(0);
     });
 
-    it("can invoke comparison poll action, gets pollId, commits PollingStatusStarted",  (done) => {
-        const commit = jest.fn();
-        const dispatch = jest.fn();
+    it("can invoke comparison poll action, gets pollId, commits PollingStatusStarted", async () => {
+        const commit = vi.fn();
+        const dispatch = vi.fn();
 
         const root = mockRootState({
             modelCalibrate: mockModelCalibrateState({calibrateId: "calibrate1"}),
@@ -824,23 +794,20 @@ describe(`download Results actions`, () => {
             .reply(200, mockSuccess(RunningStatusResponse));
 
         actions.poll({commit, state, dispatch, rootState: root} as any, DOWNLOAD_TYPE.COMPARISON);
+        vi.advanceTimersByTime(2000);
+        await flushPromises();
+        expect(commit.mock.calls.length).toBe(2);
+        expect(commit.mock.calls[0][0]["type"]).toBe("PollingStatusStarted")
+        expect(+commit.mock.calls[0][0]["payload"].pollId).toBeGreaterThan(-1)
+        expect(commit.mock.calls[0][0]["payload"].downloadType).toEqual(DOWNLOAD_TYPE.COMPARISON)
 
-        setTimeout(() => {
-            expect(commit.mock.calls.length).toBe(2);
-            expect(commit.mock.calls[0][0]["type"]).toBe("PollingStatusStarted")
-            expect(commit.mock.calls[0][0]["payload"].pollId).toBeGreaterThan(-1)
-            expect(commit.mock.calls[0][0]["payload"].downloadType).toEqual(DOWNLOAD_TYPE.COMPARISON)
-
-            expect(commit.mock.calls[1][0]["type"]).toBe("ComparisonOutputStatusUpdated")
-            expect(commit.mock.calls[1][0]["payload"]).toEqual(RunningStatusResponse)
-            done()
-
-        }, 2100)
+        expect(commit.mock.calls[1][0]["type"]).toBe("ComparisonOutputStatusUpdated")
+        expect(commit.mock.calls[1][0]["payload"]).toEqual(RunningStatusResponse)
     });
 
-    it("can poll for comparison output status", (done) => {
-        const commit = jest.fn();
-        const dispatch = jest.fn();
+    it("can poll for comparison output status", async () => {
+        const commit = vi.fn();
+        const dispatch = vi.fn();
 
         const state = mockDownloadResultsState({
             comparison: mockDownloadResultsDependency({downloadId: "1"})
@@ -850,22 +817,20 @@ describe(`download Results actions`, () => {
             .reply(200, mockSuccess(RunningStatusResponse));
 
         actions.poll({commit, state, dispatch, rootState: mockRootState()} as any, DOWNLOAD_TYPE.COMPARISON);
+        vi.advanceTimersByTime(2000);
+        await flushPromises();
+        expect(commit.mock.calls.length).toBe(2);
+        expect(commit.mock.calls[0][0]["type"]).toBe("PollingStatusStarted")
+        expect(+commit.mock.calls[0][0]["payload"].pollId).toBeGreaterThan(-1)
+        expect(commit.mock.calls[0][0]["payload"].downloadType).toEqual(DOWNLOAD_TYPE.COMPARISON)
 
-        setTimeout(() => {
-            expect(commit.mock.calls.length).toBe(2);
-            expect(commit.mock.calls[0][0]["type"]).toBe("PollingStatusStarted")
-            expect(commit.mock.calls[0][0]["payload"].pollId).toBeGreaterThan(-1)
-            expect(commit.mock.calls[0][0]["payload"].downloadType).toEqual(DOWNLOAD_TYPE.COMPARISON)
-
-            expect(commit.mock.calls[1][0]["type"]).toBe("ComparisonOutputStatusUpdated")
-            expect(commit.mock.calls[1][0]["payload"]).toEqual(RunningStatusResponse)
-            done()
-        }, 2100)
+        expect(commit.mock.calls[1][0]["type"]).toBe("ComparisonOutputStatusUpdated")
+        expect(commit.mock.calls[1][0]["payload"]).toEqual(RunningStatusResponse)
     });
 
-    it("gets adr upload metadata if comparison status is done",  (done) => {
-        const commit = jest.fn();
-        const dispatch = jest.fn();
+    it("gets adr upload metadata if comparison status is done", async () => {
+        const commit = vi.fn();
+        const dispatch = vi.fn();
 
         const state = mockDownloadResultsState({
             comparison: mockDownloadResultsDependency({downloadId: "1"})
@@ -875,21 +840,19 @@ describe(`download Results actions`, () => {
             .reply(200, mockSuccess(CompleteStatusResponse));
 
         actions.poll({commit, state, dispatch, rootState: mockRootState()} as any, DOWNLOAD_TYPE.COMPARISON);
-
-        setTimeout(() => {
-            expect(commit.mock.calls[1][0]["type"]).toBe("ComparisonOutputStatusUpdated")
-            expect(commit.mock.calls[1][0]["payload"]).toEqual(CompleteStatusResponse)
-            expect(dispatch.mock.calls[0][0]).toBe("metadata/getAdrUploadMetadata")
-            expect(dispatch.mock.calls[0][1]).toBe(CompleteStatusResponse.id)
-            expect(dispatch.mock.calls[0][2]).toEqual({root: true})
-            done()
-        }, 2100)
+        vi.advanceTimersByTime(2000);
+        await flushPromises();
+        expect(commit.mock.calls[1][0]["type"]).toBe("ComparisonOutputStatusUpdated")
+        expect(commit.mock.calls[1][0]["payload"]).toEqual(CompleteStatusResponse)
+        expect(dispatch.mock.calls[0][0]).toBe("metadata/getAdrUploadMetadata")
+        expect(dispatch.mock.calls[0][1]).toBe(CompleteStatusResponse.id)
+        expect(dispatch.mock.calls[0][2]).toEqual({root: true})
     });
 
 
-    it("does get adr upload metadata error for comparison if metadata request is successful",  (done) => {
-        const commit = jest.fn();
-        const dispatch = jest.fn();
+    it("does get adr upload metadata error for comparison if metadata request is successful", async () => {
+        const commit = vi.fn();
+        const dispatch = vi.fn();
 
         const state = mockDownloadResultsState({
             comparison: mockDownloadResultsDependency(
@@ -900,24 +863,22 @@ describe(`download Results actions`, () => {
             .reply(200, mockSuccess(CompleteStatusResponse));
 
         actions.poll({commit, state, dispatch, rootState: mockRootState()} as any, DOWNLOAD_TYPE.COMPARISON);
+        vi.advanceTimersByTime(2000);
+        await flushPromises();
+        expect(commit.mock.calls[1][0]["type"]).toBe("ComparisonOutputStatusUpdated")
+        expect(commit.mock.calls[1][0]["payload"]).toEqual(CompleteStatusResponse)
 
-        setTimeout(() => {
-            expect(commit.mock.calls[1][0]["type"]).toBe("ComparisonOutputStatusUpdated")
-            expect(commit.mock.calls[1][0]["payload"]).toEqual(CompleteStatusResponse)
+        expect(dispatch.mock.calls[0][0]).toBe("metadata/getAdrUploadMetadata")
+        expect(dispatch.mock.calls[0][1]).toBe(CompleteStatusResponse.id)
+        expect(dispatch.mock.calls[0][2]).toEqual({root: true})
 
-            expect(dispatch.mock.calls[0][0]).toBe("metadata/getAdrUploadMetadata")
-            expect(dispatch.mock.calls[0][1]).toBe(CompleteStatusResponse.id)
-            expect(dispatch.mock.calls[0][2]).toEqual({root: true})
-
-            expect(commit.mock.calls[2][0]["type"]).toBe("ComparisonOutputMetadataError")
-            expect(commit.mock.calls[2][0]["payload"]).toBeNull()
-            done()
-        }, 2100)
+        expect(commit.mock.calls[2][0]["type"]).toBe("ComparisonOutputMetadataError")
+        expect(commit.mock.calls[2][0]["payload"]).toBeNull()
     });
 
-    it("can get adr upload metadata error for comparison if metadata request is unsuccessful",  (done) => {
-        const commit = jest.fn();
-        const dispatch = jest.fn();
+    it("can get adr upload metadata error for comparison if metadata request is unsuccessful", async () => {
+        const commit = vi.fn();
+        const dispatch = vi.fn();
 
         const state = mockDownloadResultsState({
             comparison: mockDownloadResultsDependency(
@@ -934,24 +895,22 @@ describe(`download Results actions`, () => {
             .reply(200, mockSuccess(CompleteStatusResponse));
 
         actions.poll({commit, state, dispatch, rootState} as any, DOWNLOAD_TYPE.COMPARISON);
+        vi.advanceTimersByTime(2000);
+        await flushPromises();
+        expect(commit.mock.calls[1][0]["type"]).toBe("ComparisonOutputStatusUpdated")
+        expect(commit.mock.calls[1][0]["payload"]).toEqual(CompleteStatusResponse)
 
-        setTimeout(() => {
-            expect(commit.mock.calls[1][0]["type"]).toBe("ComparisonOutputStatusUpdated")
-            expect(commit.mock.calls[1][0]["payload"]).toEqual(CompleteStatusResponse)
+        expect(dispatch.mock.calls[0][0]).toBe("metadata/getAdrUploadMetadata")
+        expect(dispatch.mock.calls[0][1]).toBe(CompleteStatusResponse.id)
+        expect(dispatch.mock.calls[0][2]).toEqual({root: true})
 
-            expect(dispatch.mock.calls[0][0]).toBe("metadata/getAdrUploadMetadata")
-            expect(dispatch.mock.calls[0][1]).toBe(CompleteStatusResponse.id)
-            expect(dispatch.mock.calls[0][2]).toEqual({root: true})
-
-            expect(commit.mock.calls[2][0]["type"]).toBe("ComparisonOutputMetadataError")
-            expect(commit.mock.calls[2][0]["payload"]).toEqual(mockError("METADATA REQUEST FAILED"))
-            done()
-        }, 2100)
+        expect(commit.mock.calls[2][0]["type"]).toBe("ComparisonOutputMetadataError")
+        expect(commit.mock.calls[2][0]["payload"]).toEqual(mockError("METADATA REQUEST FAILED"))
     });
 
     it("does not start polling for comparison output status when submission is unsuccessful", async () => {
-        const commit = jest.fn();
-        const dispatch = jest.fn();
+        const commit = vi.fn();
+        const dispatch = vi.fn();
 
         const root = mockRootState({
             modelCalibrate: mockModelCalibrateState({calibrateId: "calibrate1"}),
@@ -970,9 +929,9 @@ describe(`download Results actions`, () => {
         });
     });
 
-    it("does not continue to poll comparison status when unsuccessful",  (done) => {
-        const commit = jest.fn();
-        const dispatch = jest.fn();
+    it("does not continue to poll comparison status when unsuccessful", async () => {
+        const commit = vi.fn();
+        const dispatch = vi.fn();
 
         const state = mockDownloadResultsState({
             comparison: mockDownloadResultsDependency({downloadId: "1"})
@@ -982,27 +941,23 @@ describe(`download Results actions`, () => {
             .reply(500, mockFailure("TEST FAILED"));
 
         actions.poll({commit, state, dispatch, rootState: mockRootState()} as any, DOWNLOAD_TYPE.COMPARISON);
+        vi.advanceTimersByTime(2000);
+        await flushPromises();
+        expect(commit.mock.calls.length).toBe(2)
 
-        setTimeout(() => {
-            expect(commit.mock.calls.length).toBe(2)
+        expect(commit.mock.calls[0][0]["type"]).toBe("PollingStatusStarted")
+        expect(+commit.mock.calls[0][0]["payload"].pollId).toBeGreaterThan(-1)
+        expect(commit.mock.calls[0][0]["payload"].downloadType).toEqual(DOWNLOAD_TYPE.COMPARISON)
 
-            expect(commit.mock.calls[0][0]["type"]).toBe("PollingStatusStarted")
-            expect(commit.mock.calls[0][0]["payload"].pollId).toBeGreaterThan(-1)
-            expect(commit.mock.calls[0][0]["payload"].downloadType).toEqual(DOWNLOAD_TYPE.COMPARISON)
-
-            expect(commit.mock.calls[1][0]).toStrictEqual({
-                type: "ComparisonError",
-                payload: mockError("TEST FAILED")
-            });
-
-            done()
-
-        }, 2100)
+        expect(commit.mock.calls[1][0]).toStrictEqual({
+            type: "ComparisonError",
+            payload: mockError("TEST FAILED")
+        });
     });
 
     it("can submit AGYW download request, commits and starts polling", async () => {
-        const commit = jest.fn();
-        const dispatch = jest.fn();
+        const commit = vi.fn();
+        const dispatch = vi.fn();
         const downloadId = {downloadId: "1"};
 
         const root = mockRootState({
@@ -1029,7 +984,7 @@ describe(`download Results actions`, () => {
     });
 
     it("prepare AGYW does not do anything if downloadId is already present", async () => {
-        const commit = jest.fn();
+        const commit = vi.fn();
         const state = mockDownloadResultsState({
             agyw: mockDownloadResultsDependency({downloadId: "1"})
         });
@@ -1048,7 +1003,7 @@ describe(`download Results actions`, () => {
     });
 
     it("prepare AGYW does not do anything if fetchingDownloadId is set", async () => {
-        const commit = jest.fn();
+        const commit = vi.fn();
         const state = mockDownloadResultsState({
             agyw: mockDownloadResultsDependency({fetchingDownloadId: true})
         });
@@ -1058,9 +1013,9 @@ describe(`download Results actions`, () => {
         expect(commit.mock.calls.length).toBe(0);
     });
 
-    it("can invoke AGYW poll action, gets pollId, commits PollingStatusStarted",  (done) => {
-        const commit = jest.fn();
-        const dispatch = jest.fn();
+    it("can invoke AGYW poll action, gets pollId, commits PollingStatusStarted", async () => {
+        const commit = vi.fn();
+        const dispatch = vi.fn();
 
         const root = mockRootState({
             modelCalibrate: mockModelCalibrateState({calibrateId: "calibrate1"}),
@@ -1074,23 +1029,20 @@ describe(`download Results actions`, () => {
             .reply(200, mockSuccess(RunningStatusResponse));
 
         actions.poll({commit, state, dispatch, rootState: root} as any, DOWNLOAD_TYPE.AGYW);
+        vi.advanceTimersByTime(2000);
+        await flushPromises();
+        expect(commit.mock.calls.length).toBe(2);
+        expect(commit.mock.calls[0][0]["type"]).toBe("PollingStatusStarted")
+        expect(+commit.mock.calls[0][0]["payload"].pollId).toBeGreaterThan(-1)
+        expect(commit.mock.calls[0][0]["payload"].downloadType).toEqual(DOWNLOAD_TYPE.AGYW)
 
-        setTimeout(() => {
-            expect(commit.mock.calls.length).toBe(2);
-            expect(commit.mock.calls[0][0]["type"]).toBe("PollingStatusStarted")
-            expect(commit.mock.calls[0][0]["payload"].pollId).toBeGreaterThan(-1)
-            expect(commit.mock.calls[0][0]["payload"].downloadType).toEqual(DOWNLOAD_TYPE.AGYW)
-
-            expect(commit.mock.calls[1][0]["type"]).toBe("AgywStatusUpdated")
-            expect(commit.mock.calls[1][0]["payload"]).toEqual(RunningStatusResponse)
-            done()
-
-        }, 2100)
+        expect(commit.mock.calls[1][0]["type"]).toBe("AgywStatusUpdated")
+        expect(commit.mock.calls[1][0]["payload"]).toEqual(RunningStatusResponse)
     });
 
     it("does not start polling for AGYW download status when submission is unsuccessful", async () => {
-        const commit = jest.fn();
-        const dispatch = jest.fn();
+        const commit = vi.fn();
+        const dispatch = vi.fn();
 
         const root = mockRootState({
             modelCalibrate: mockModelCalibrateState({calibrateId: "calibrate1"}),
@@ -1109,9 +1061,9 @@ describe(`download Results actions`, () => {
         });
     });
 
-    it("does not continue to poll AGYW status when unsuccessful",  (done) => {
-        const commit = jest.fn();
-        const dispatch = jest.fn();
+    it("does not continue to poll AGYW status when unsuccessful", async () => {
+        const commit = vi.fn();
+        const dispatch = vi.fn();
 
         const state = mockDownloadResultsState({
             agyw: mockDownloadResultsDependency({downloadId: "1"})
@@ -1121,27 +1073,23 @@ describe(`download Results actions`, () => {
             .reply(500, mockFailure("TEST FAILED"));
 
         actions.poll({commit, state, dispatch, rootState: mockRootState()} as any, DOWNLOAD_TYPE.AGYW);
+        vi.advanceTimersByTime(2000);
+        await flushPromises();
+        expect(commit.mock.calls.length).toBe(2)
 
-        setTimeout(() => {
-            expect(commit.mock.calls.length).toBe(2)
+        expect(commit.mock.calls[0][0]["type"]).toBe("PollingStatusStarted")
+        expect(+commit.mock.calls[0][0]["payload"].pollId).toBeGreaterThan(-1)
+        expect(commit.mock.calls[0][0]["payload"].downloadType).toEqual(DOWNLOAD_TYPE.AGYW)
 
-            expect(commit.mock.calls[0][0]["type"]).toBe("PollingStatusStarted")
-            expect(commit.mock.calls[0][0]["payload"].pollId).toBeGreaterThan(-1)
-            expect(commit.mock.calls[0][0]["payload"].downloadType).toEqual(DOWNLOAD_TYPE.AGYW)
-
-            expect(commit.mock.calls[1][0]).toStrictEqual({
-                type: "AgywError",
-                payload: mockError("TEST FAILED")
-            });
-
-            done()
-
-        }, 2100)
+        expect(commit.mock.calls[1][0]).toStrictEqual({
+            type: "AgywError",
+            payload: mockError("TEST FAILED")
+        });
     });
 
     it("can prepare all outputs and optionally AGYW", async () => {
-        const commit = jest.fn();
-        const dispatch = jest.fn();
+        const commit = vi.fn();
+        const dispatch = vi.fn();
 
         switches.agywDownload = false;
         actions.prepareOutputs({commit, dispatch} as any);
@@ -1166,17 +1114,17 @@ describe(`download Results actions`, () => {
 
 const downloadReportAsExpected = async (action: Function, mutationType: string) => {
 
-    window.URL.createObjectURL = jest.fn().mockReturnValueOnce("test");
-    window.URL.revokeObjectURL = jest.fn();
-    document.body.appendChild = jest.fn()
+    window.URL.createObjectURL = vi.fn().mockReturnValueOnce("test");
+    window.URL.revokeObjectURL = vi.fn();
+    document.body.appendChild = vi.fn()
 
     const data = new Blob(["test"], {type: "text/html"});
 
-    const mockClick = jest.fn()
-    const mockHref = jest.fn()
-    const mockAttr = jest.fn()
+    const mockClick = vi.fn()
+    const mockHref = vi.fn()
+    const mockAttr = vi.fn()
 
-    document.createElement = jest.fn().mockImplementation(() => {
+    document.createElement = vi.fn().mockImplementation(() => {
         return {
             setAttribute: mockAttr,
             href: mockHref,
@@ -1235,7 +1183,7 @@ const rendersDownloadErrorAsExpected = async (action: Function, mutationType: st
 }
 
 const downloadContext = () => {
-    const commit = jest.fn();
+    const commit = vi.fn();
 
     const root = mockRootState({
         modelCalibrate: mockModelCalibrateState({calibrateId: "calibrate1"}),

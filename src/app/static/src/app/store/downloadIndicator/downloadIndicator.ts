@@ -1,4 +1,4 @@
-import {DataExplorationState} from "../dataExploration/dataExploration";
+import {RootState} from "../../root";
 import {Module} from "vuex";
 import {actions} from "./actions";
 import {mutations} from "./mutations";
@@ -15,7 +15,7 @@ export const initialDownloadIndicatorState = (): DownloadIndicatorState => {
 
 const namespaced = true
 
-export const downloadIndicator: Module<DownloadIndicatorState, DataExplorationState> = {
+export const downloadIndicator: Module<DownloadIndicatorState, RootState> = {
     namespaced,
     state: {...initialDownloadIndicatorState()},
     actions,

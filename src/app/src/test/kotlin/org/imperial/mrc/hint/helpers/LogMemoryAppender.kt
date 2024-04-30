@@ -7,7 +7,7 @@ import java.util.*
 import java.util.function.Predicate
 import java.util.stream.Collectors
 
-class MemoryAppender : ListAppender<ILoggingEvent?>() {
+class LogMemoryAppender : ListAppender<ILoggingEvent?>() {
     fun reset() {
         list.clear()
     }
@@ -20,8 +20,6 @@ class MemoryAppender : ListAppender<ILoggingEvent?>() {
     }
 
     fun countEventsForLogger(loggerName: String): Int {
-        print(list)
-        print(list.count())
         return list.stream()
             .filter(Predicate { event: ILoggingEvent? ->
                 event!!.loggerName.contains(loggerName)

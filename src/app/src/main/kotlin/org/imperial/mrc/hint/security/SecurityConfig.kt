@@ -47,7 +47,6 @@ class Session(
     companion object
     {
         private const val VERSION_ID = "version_id"
-        private const val MODE = "mode"
         private const val ACCESS_TOKEN = "access_token"
     }
 
@@ -83,16 +82,6 @@ class Session(
         return getUserProfile().id == GUEST_USER
     }
 
-    fun setMode(mode: String)
-    {
-        val savedMode = pac4jConfig.sessionStore.get(webContext, MODE).orElse(null)
-        if (savedMode != mode)
-        {
-            // If mode has changed, clear the session version id too
-            pac4jConfig.sessionStore.set(webContext, MODE, mode)
-            setVersionId(null)
-        }
-    }
 
     fun setRequestedUrl(url: String?)
     {

@@ -8,6 +8,7 @@ import org.jooq.tools.json.JSONArray
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.assertj.core.api.Assertions.assertThat
 import com.fasterxml.jackson.databind.ObjectMapper
+import java.nio.file.Paths
 import java.sql.SQLException
 
 class CalibrateDataRepositoryTests
@@ -68,17 +69,8 @@ class CalibrateDataRepositoryTests
         listOf("area_id_test"),
         listOf(2)
     )
-    val path = "/src/test/resources/duckdb/test.duckdb"
+    val path = Paths.get("/src/test/resources/duckdb/test.duckdb")
     val sut = JooqCalibrateDataRepository()
-
-    @Test
-    fun `throws error if connection is invalid`()
-    {
-        assertThatThrownBy {
-            sut.getFilteredCalibrateData("/src/test/resources/duckdb/test1.duckdb", query)
-        }.isInstanceOf(SQLException::class.java)
-            .hasMessageContaining("database does not exist")
-    }
 
     @Test
     fun `can get filtered data`()
@@ -96,5 +88,14 @@ class CalibrateDataRepositoryTests
         val plotDataTree = ObjectMapper().readTree(JSONArray(plotData).toString())
         val expectedTree = ObjectMapper().readTree(expectedRow.toString())
         assert(plotDataTree.equals(expectedTree))
+    }
+
+    @Test
+    fun `throws error if connection is invalid`()
+    {
+        assertThatThrownBy {
+            sut.getFilteredCalibrateData(Paths.get("src/test/resources/duckdb/test1.duckdb"), queryAll)
+        }.isInstanceOf(java.nio.file.NoSuchFileException::class.java)
+            .hasMessageContaining("src/test/resources/duckdb/test1.duckdb")
     }
 }

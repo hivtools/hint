@@ -5,16 +5,15 @@ import {
     PlottingSelectionsState,
     TableSelections
 } from "./plottingSelections";
-import {Dict, Filter, ModelOutputTabs, PayloadWithType} from "../../types";
-import {DataExplorationState} from "../dataExploration/dataExploration";
-import { CalibrateDataResponse, FilterOption } from "../../generated";
+import { Dict, Filter, ModelOutputTabs, PayloadWithType } from "../../types";
+import { CalibrateDataResponse } from "../../generated";
 import { RootState } from "../../root";
 
 export interface PlottingSelectionsActions {
-    updateBarchartSelections: (store: ActionContext<PlottingSelectionsState, DataExplorationState>, payload: PayloadWithType<BarchartSelections>) => void
-    updateChoroplethSelections: (store: ActionContext<PlottingSelectionsState, DataExplorationState>, payload: PayloadWithType<ChoroplethSelections>) => void
-    updateBubblePlotSelections: (store: ActionContext<PlottingSelectionsState, DataExplorationState>, payload: PayloadWithType<BubblePlotSelections>) => void
-    updateTableSelections: (store: ActionContext<PlottingSelectionsState, DataExplorationState>, payload: PayloadWithType<TableSelections>) => void
+    updateBarchartSelections: (store: ActionContext<PlottingSelectionsState, RootState>, payload: PayloadWithType<BarchartSelections>) => void
+    updateChoroplethSelections: (store: ActionContext<PlottingSelectionsState, RootState>, payload: PayloadWithType<ChoroplethSelections>) => void
+    updateBubblePlotSelections: (store: ActionContext<PlottingSelectionsState, RootState>, payload: PayloadWithType<BubblePlotSelections>) => void
+    updateTableSelections: (store: ActionContext<PlottingSelectionsState, RootState>, payload: PayloadWithType<TableSelections>) => void
 }
 
 type DataPoint = CalibrateDataResponse["data"][number];
@@ -81,7 +80,7 @@ const getFullFilters = (rootState: RootState, getters: any) => {
 };
 
 export const getData = async (
-    context: ActionContext<PlottingSelectionsState, DataExplorationState>,
+    context: ActionContext<PlottingSelectionsState, RootState>,
     filterSelections: Dict<PayloadFilterOption[]>,
     tab: ModelOutputTabs,
 ) => {
@@ -91,7 +90,7 @@ export const getData = async (
     await dispatch("modelCalibrate/getResultData", resultDataPayload, { root:true });
 }
 
-export const actions: ActionTree<PlottingSelectionsState, DataExplorationState> & PlottingSelectionsActions = {
+export const actions: ActionTree<PlottingSelectionsState, RootState> & PlottingSelectionsActions = {
 
     async updateBarchartSelections(context, payload) {
         const { state, commit } = context;

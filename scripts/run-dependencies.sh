@@ -45,9 +45,10 @@ docker run --rm -d \
   --inputs-dir=/uploads
 
 # Need to give the database a little time to initialise before we can run the migration
-docker exec -it $DB wait-for-db
+docker exec -i $DB wait-for-db
 docker run --rm --network=$NETWORK \
   $DB_MIGRATE_IMAGE \
   -url=jdbc:postgresql://$DB/hint
 
 $HERE/add-test-user.sh
+$HERE/add-support-user.sh

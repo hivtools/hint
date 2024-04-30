@@ -2,13 +2,13 @@ import { ActionContext, ActionTree } from "vuex";
 import { api } from "../../apiService";
 import { HintrVersionState } from "./hintrVersion";
 import { HintrVersionMutation } from "./mutations";
-import {DataExplorationState} from "../dataExploration/dataExploration";
+import {RootState} from "../../root";
 
 export interface HintrVersionActions {
-    getHintrVersion: (store: ActionContext<HintrVersionState, DataExplorationState>) => void
+    getHintrVersion: (store: ActionContext<HintrVersionState, RootState>) => void
 }
 
-export const actions: ActionTree<HintrVersionState, DataExplorationState> & HintrVersionActions = {
+export const actions: ActionTree<HintrVersionState, RootState> & HintrVersionActions = {
 
     async getHintrVersion(context) 
     {

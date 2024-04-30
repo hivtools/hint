@@ -1,6 +1,5 @@
-import {mount, shallowMount} from '@vue/test-utils';
+import {flushPromises, mount, shallowMount} from '@vue/test-utils';
 import MapControl from "../../../app/components/plots/MapControl.vue";
-import Treeselect from "vue3-treeselect";
 import HintTreeSelect from '../../../app/components/HintTreeSelect.vue';
 import Vuex from "vuex";
 import {emptyState} from "../../../app/root";
@@ -12,11 +11,15 @@ const store = new Vuex.Store({
 });
 registerTranslations(store);
 
-jest.mock("@vue-leaflet/vue-leaflet", () => {
+vi.mock("@vue-leaflet/vue-leaflet", async () => {
+    const actual = await vi.importActual("@vue-leaflet/vue-leaflet")
     const LControl = {
         template: "<div id='l-control-mock'><slot></slot></div>"
     }
-    return { LControl }
+    return {
+        ...actual,
+        LControl
+    }
 });
 
 describe("Map control component", () => {
@@ -42,19 +45,19 @@ describe("Map control component", () => {
     it("renders tree selects with expected properties", () => {
         const wrapper = mount(MapControl, {props, global: {plugins: [store]}});
 
-        expect(wrapper.findAllComponents(Treeselect)[0].props("searchable")).toBe(false);
-        expect(wrapper.findAllComponents(Treeselect)[0].props("multiple")).toBe(false);
-        expect(wrapper.findAllComponents(Treeselect)[0].props("clearable")).toBe(false);
+        expect(wrapper.findAllComponents(HintTreeSelect)[0].props("searchable")).toBe(false);
+        expect(wrapper.findAllComponents(HintTreeSelect)[0].props("multiple")).toBe(false);
+        expect(wrapper.findAllComponents(HintTreeSelect)[0].props("clearable")).toBe(false);
 
-        expect(wrapper.findAllComponents(Treeselect)[1].props("searchable")).toBe(false);
-        expect(wrapper.findAllComponents(Treeselect)[1].props("multiple")).toBe(false);
-        expect(wrapper.findAllComponents(Treeselect)[1].props("clearable")).toBe(false);
+        expect(wrapper.findAllComponents(HintTreeSelect)[1].props("searchable")).toBe(false);
+        expect(wrapper.findAllComponents(HintTreeSelect)[1].props("multiple")).toBe(false);
+        expect(wrapper.findAllComponents(HintTreeSelect)[1].props("clearable")).toBe(false);
     });
 
     it("renders indicator options", () => {
         const wrapper = mount(MapControl, {props, global: {plugins: [store]}});
 
-        expect(wrapper.findAllComponents(Treeselect)[0].props("options"))
+        expect(wrapper.findAllComponents(HintTreeSelect)[0].props("options"))
             .toStrictEqual([{id: "art_coverage", label: "ART coverage"},
                 {id: "prevalence", label: "Prevalence"}]);
     });
@@ -62,7 +65,7 @@ describe("Map control component", () => {
     it("renders detail options", () => {
         const wrapper = mount(MapControl, {props, global: {plugins: [store]}});
 
-        expect(wrapper.findAllComponents(Treeselect)[1].props("options"))
+        expect(wrapper.findAllComponents(HintTreeSelect)[1].props("options"))
             .toStrictEqual([{id: 4, label: "Admin Level 4"},
                 {id: 5, label: "Admin Level 5"}]);
     });

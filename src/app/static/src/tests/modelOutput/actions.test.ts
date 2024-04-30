@@ -2,14 +2,14 @@ import {actions} from "../../app/store/modelOutput/actions";
 import {BarchartSelections,} from "../../app/store/plottingSelections/plottingSelections";
 import {ModelOutputTabs} from "../../app/types";
 import {ModelOutputMutation} from "../../app/store/modelOutput/mutations";
-import {mockBaselineState, mockDataExplorationState, mockHintrVersionState, mockPlottingSelections} from "../mocks";
+import {mockBaselineState, mockRootState, mockHintrVersionState, mockPlottingSelections} from "../mocks";
 
 describe("ModelOutput actions", () => {
 
     it("updateSelectedTab dispatches action to fetch data for current tab and commits mutation", async () => {
-        const commit = jest.fn();
-        const dispatch = jest.fn();
-        const rootState = mockDataExplorationState({
+        const commit = vi.fn();
+        const dispatch = vi.fn();
+        const rootState = mockRootState({
             plottingSelections: mockPlottingSelections({
                 barchart: {
                     indicatorId: "barchart-indicator",
