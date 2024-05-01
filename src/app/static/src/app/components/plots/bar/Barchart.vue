@@ -49,14 +49,16 @@ export default defineComponent({
         const filterSelections = computed(() => store.state.plotSelections[props.plot].filters);
         const indicatorMetadata = computed<ChoroplethIndicatorMetadata>(() => {
             const indicator = filterSelections.value.find(f => f.stateFilterId === "indicator")!.selection[0].id
-            return getIndicatorMetadata(store, indicator)
+            const meta = getIndicatorMetadata(store, props.plot, indicator);
+            console.log("indicator metadata", meta);
+            return meta
         });
         const plotData = computed<PlotData>(() => {
             return store.state.plotData[props.plot]
         });
 
 
-        const chartDataGetter = store.getters["plotSelections/chartData"];
+        const chartDataGetter = store.getters["plotSelections/barchartData"];
         const chartData = ref<BarChartData>({datasets:[], labels: [], maxValuePlusError: 0});
         const chartOptions = ref({});
         const displayErrorBars = ref<boolean>(false);
@@ -99,6 +101,7 @@ export default defineComponent({
         };
 
         const updateChartOptions = () => {
+            console.log("updating chart options")
             const baseChartOptions = {
                 plugins: {
                     tooltip: {
@@ -120,7 +123,10 @@ export default defineComponent({
                     }
                 },
                 responsive: true,
-                maintainAspectRatio: false
+                maintainAspectRatio: false,
+                animation: {
+                    onComplete: showAllErrorBars
+                }
             }
 
             if (props.showErrorBars) {
@@ -155,7 +161,7 @@ export default defineComponent({
                                         formatOutput(value,
                                             indicatorMetadata.value.format,
                                             indicatorMetadata.value.scale,
-                                            indicatorMetadata.value.accuracy)
+                                            indicatorMetadata.value.accuracy).toString()
                                 })
                             }
                         }

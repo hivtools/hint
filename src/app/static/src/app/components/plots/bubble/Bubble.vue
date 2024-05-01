@@ -63,10 +63,10 @@ const getSizeIndicator = () => {
 const colourIndicator = ref<string>(getColourIndicator());
 const sizeIndicator = ref<string>(getSizeIndicator());
 const colourIndicatorMetadata = computed<ChoroplethIndicatorMetadata>(() => {
-    return getIndicatorMetadata(store, colourIndicator.value)
+    return getIndicatorMetadata(store, "bubble", colourIndicator.value)
 });
 const sizeIndicatorMetadata = computed<ChoroplethIndicatorMetadata>(() => {
-    return  getIndicatorMetadata(store, sizeIndicator.value)
+    return  getIndicatorMetadata(store, "bubble", sizeIndicator.value)
 });
 
 const colourRange = ref<NumericRange | null>(null);

@@ -3,6 +3,8 @@ import {CalibratePlotRow, ChoroplethIndicatorMetadata, FilterOption} from "../..
 import {BarChartData, plotDataToChartData} from "../../components/plots/bar/utils";
 import {RootState} from "../../root";
 import {PlotData} from "../plotData/plotData";
+import {Dict} from "../../types";
+import {getMetadataFromPlotName} from "./actions";
 
 export const getters = {
     controlSelectionFromId: (state: PlotSelectionsState) => (plotName: PlotName, controlId: string): FilterOption | undefined => {
@@ -16,56 +18,34 @@ export const getters = {
             return filterSelection.selection
         }
     },
-    chartData: (state: PlotSelectionsState, getters: any, rootState: RootState, rootGetters: any) =>
+    barchartData: (state: PlotSelectionsState, getters: any, rootState: RootState, rootGetters: any) =>
         (plotName: PlotName,  plotData: PlotData, indicatorMetadata: ChoroplethIndicatorMetadata,
          filterSelections: FilterSelection[]): BarChartData => {
-        let disaggregateId;
-        let xAxisId;
-        let areaLevel;
-        let disaggregateSelections;
-        let xAxisSelections;
-        let xAxisOptions;
-        let areaIdToLevelMap;
+        const disaggregateBy = getters.controlSelectionFromId(plotName, "disagg_by");
+        const xAxis = getters.controlSelectionFromId(plotName, "x_axis");
         const emptyData = {datasets:[], labels: [], maxValuePlusError: 0} as BarChartData;
+        if (!disaggregateBy || !xAxis) {
+            return emptyData
+        }
+        const disaggregateId = rootGetters["modelCalibrate/filterIdToColumnId"](plotName, disaggregateBy.id);
+        const xAxisId = rootGetters["modelCalibrate/filterIdToColumnId"](plotName, xAxis.id);
+        const disaggregateSelections = getters.filterSelectionFromId(plotName, disaggregateBy.id);
+        const xAxisSelections = getters.filterSelectionFromId(plotName, xAxis.id);
+        const metadata = getMetadataFromPlotName(rootState, plotName);
+        const xAxisOptions = metadata.filterTypes.find(f => f.id === xAxis!.id)!.options;
+        // For calibrate barchart we never have detail level on the x-axis as it is fixed. So we
+        // can just keep these as empty.
+        let areaIdToLevelMap = {} as Dict<number>;
+        let areaLevel = null;
         if (plotName == "barchart") {
-            const disaggregateBy = getters.controlSelectionFromId(plotName, "disagg_by");
-            const xAxis = getters.controlSelectionFromId(plotName, "x_axis");
-            if (!disaggregateBy || !xAxis) {
-                return emptyData
-            }
-            disaggregateId = rootGetters["modelCalibrate/filterIdToColumnId"](disaggregateBy.id);
-            xAxisId = rootGetters["modelCalibrate/filterIdToColumnId"](xAxis.id);
-            areaLevel = filterSelections.find(f => f.filterId == "detail")?.selection[0]?.id;
-            disaggregateSelections = getters.filterSelectionFromId(plotName, disaggregateBy.id);
-            xAxisSelections = getters.filterSelectionFromId(plotName, xAxis.id);
-            xAxisOptions = rootState.modelCalibrate.metadata!.filterTypes.find(f => f.id === xAxis!.id)!.options
             areaIdToLevelMap = rootGetters["baseline/areaIdToLevelMap"];
-        } else if (plotName == "calibrate") {
-            disaggregateId = "data_type";
-            disaggregateSelections = [
-                {id: "calibrated", label: "Calibrated"},
-                {id: "raw", label: "Unadjusted"},
-                {id: "spectrum", label: "Spectrum"}
-            ] as FilterOption[];
-            xAxisId = "spectrum_region_code";
-            const xAxisMap: Map<string, FilterOption> = rootState.modelCalibrate.calibratePlotResult!.data
-                .reduce((optsMap: Map<string, FilterOption>, row: CalibratePlotRow) => {
-                    if (!optsMap.has(row.spectrum_region_code)) {
-                        optsMap.set(row.spectrum_region_code, {id: row.spectrum_region_code, label: row.spectrum_region_name})
-                    }
-                    return optsMap;
-                }, new Map<string, FilterOption>())
-            xAxisSelections = [...xAxisMap.values()] as FilterOption[];
-            xAxisOptions = xAxisSelections;
-            areaLevel = null;
-            areaIdToLevelMap = new Map();
+            areaLevel = filterSelections.find(f => f.filterId == "detail")?.selection[0]?.id;
         }
         if (disaggregateId && xAxisId && xAxisOptions && plotData) {
-            const p = plotDataToChartData(plotData, indicatorMetadata,
+            return plotDataToChartData(plotData, indicatorMetadata,
                 disaggregateId, disaggregateSelections,
                 xAxisId, xAxisSelections, xAxisOptions,
                 areaLevel, areaIdToLevelMap);
-            return p
         } else {
             return emptyData
         }

@@ -22,15 +22,15 @@ export const useUpdateScale = () => {
         const activePlot = store.state.modelOutput.selectedTab;
         let indicator
         if (activePlot === "choropleth") {
-            indicator = getIndicatorMetadata(store, choroplethColourIndicator.value)
+            indicator = getIndicatorMetadata(store, activePlot, choroplethColourIndicator.value)
         } else {
-            indicator = getIndicatorMetadata(store, bubbleColourIndicator.value)
+            indicator = getIndicatorMetadata(store, activePlot, bubbleColourIndicator.value)
         }
         return scaleStepFromMetadata(indicator)
     });
 
     const sizeScaleStep = computed(() => {
-        return scaleStepFromMetadata(getIndicatorMetadata(store, bubbleSizeIndicator.value))
+        return scaleStepFromMetadata(getIndicatorMetadata(store, "bubble", bubbleSizeIndicator.value))
     });
 
     const choroplethColourIndicator = computed(() => {

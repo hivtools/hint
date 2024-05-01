@@ -1,16 +1,24 @@
-import { CalibrateMetadataResponse, Error, FilterOption, FilterRef, ReviewInputFilterMetadataResponse } from "../../generated";
+import {
+    CalibrateMetadataResponse,
+    CalibratePlotResponse,
+    Error,
+    FilterOption,
+    FilterRef,
+    ReviewInputFilterMetadataResponse
+} from "../../generated";
 import { mutations } from "./mutations";
 import { actions } from "./actions";
 import { getters } from "./getters";
 
 export type OutputPlotName = keyof CalibrateMetadataResponse["plotSettingsControl"]
 export type InputPlotName = keyof ReviewInputFilterMetadataResponse["plotSettingsControl"]
+export type CalibratePlotName = keyof CalibratePlotResponse["metadata"]["plotSettingsControl"]
 
 export const outputPlotNames: OutputPlotName[] = ["barchart", "bubble", "choropleth", "table"];
 export const inputPlotNames: InputPlotName[] = ["timeSeries", "inputChoropleth"];
-export const calibratePlotName: OutputPlotName = "calibrate";
+export const calibratePlotName: CalibratePlotName = "calibrate";
 
-export type PlotName = OutputPlotName | InputPlotName
+export type PlotName = OutputPlotName | InputPlotName | CalibratePlotName
 export const plotNames = [...outputPlotNames, ...inputPlotNames, calibratePlotName];
 
 export enum PlotDataType { Output, TimeSeries, Input, Calibrate}

@@ -27,7 +27,7 @@ import {
     DownloadSubmitRequest,
     ComparisonPlotResponse,
     CalibrateMetadataResponse,
-    VmmcResponse
+    VmmcResponse, CalibratePlotResponse
 } from "../app/generated";
 import {initialModelRunState, ModelRunState} from "../app/store/modelRun/modelRun";
 import {emptyState, RootState} from "../app/root";
@@ -448,6 +448,27 @@ export const mockCalibrateResultResponse = (props: Partial<CalibrateResultRespon
         ...props
     }
 };
+
+export const mockCalibratePlotResponse = (props: Partial<CalibratePlotResponse> = {}): CalibratePlotResponse => {
+    return {
+        data: [],
+        metadata: {
+            filterTypes: [],
+            indicators: [],
+            plotSettingsControl: {
+                calibrate: {
+                    plotSettings: [
+                        {
+                            id: "1",
+                            label: "setting",
+                            options: []
+                        }
+                    ]
+                }
+            }
+        }
+    }
+}
 
 export const mockComparisonPlotResponse = (props: Partial<ComparisonPlotResponse> = {}): ComparisonPlotResponse => {
     return {

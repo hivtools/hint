@@ -43,7 +43,7 @@ export const getMetadataFromPlotName = (rootState: RootState, plotName: PlotName
         case PlotDataType.Output: return rootState.modelCalibrate.metadata!;
         case PlotDataType.Input: return rootState.metadata.reviewInputMetadata!;
         case PlotDataType.TimeSeries: return rootState.metadata.reviewInputMetadata!;
-        case PlotDataType.Calibrate: return rootState.modelCalibrate.metadata!;
+        case PlotDataType.Calibrate: return rootState.modelCalibrate.calibratePlotResult!.metadata!;
     }
 }
 
@@ -164,20 +164,11 @@ export const getTimeSeriesFilteredDataset = async (payload: PlotSelectionUpdate,
 };
 
 export const getCalibrateFilteredDataset = async (payload: PlotSelectionUpdate, commit: Commit, rootState: RootState) => {
-    if (!rootState.modelCalibrate.calibratePlotResult) {
-        // If the plot data is not present, fetch it first
-        const calibrateId = rootState.modelCalibrate.calibrateId;
-        commit(ModelCalibrateMutation.CalibrationPlotStarted);
-        const response = await api<ModelCalibrateMutation, ModelCalibrateMutation>({commit, rootState})
-            .ignoreSuccess()
-            .withError(ModelCalibrateMutation.SetError)
-            .freezeResponse()
-            .get<CalibratePlotResponse>(`calibrate/plot/${calibrateId}`);
-        if (response) {
-            commit(ModelCalibrateMutation.SetPlotData, response.data);
-        }
+    const calibratePlotResult = rootState.modelCalibrate.calibratePlotResult;
+    if (!calibratePlotResult) {
+        return;
     }
-    const data = rootState.modelCalibrate.calibratePlotResult!.data;
+    const data = calibratePlotResult.data;
 
     // Filter the data on the current selections
     const metadata = getMetadataFromPlotName(rootState, payload.plot);

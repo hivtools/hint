@@ -128,6 +128,7 @@ export interface CalibrateMetadataResponse {
       description?: string;
     }[];
     use_shape_regions?: boolean;
+    visible?: boolean;
   }[];
   indicators: {
     indicator: string;
@@ -177,6 +178,7 @@ export interface CalibrateMetadataResponse {
             };
           };
         }[];
+        visible?: boolean;
       }[];
     };
     barchart: {
@@ -209,6 +211,7 @@ export interface CalibrateMetadataResponse {
             };
           };
         }[];
+        visible?: boolean;
       }[];
     };
     table: {
@@ -241,6 +244,7 @@ export interface CalibrateMetadataResponse {
             };
           };
         }[];
+        visible?: boolean;
       }[];
     };
     bubble: {
@@ -273,8 +277,64 @@ export interface CalibrateMetadataResponse {
             };
           };
         }[];
+        visible?: boolean;
       }[];
     };
+  };
+  warnings: {
+    text: string;
+    locations: (
+      | "review_inputs"
+      | "model_options"
+      | "model_fit"
+      | "model_calibrate"
+      | "review_output"
+      | "download_results"
+    )[];
+  }[];
+  [k: string]: any;
+}
+export type CalibratePlotData = {
+  data_type: "spectrum" | "calibrated" | "raw" | "calibration_ratio";
+  spectrum_region_code: string;
+  spectrum_region_name: string;
+  sex: string;
+  age_group: string;
+  calendar_quarter: string;
+  indicator: string;
+  mean: number | null;
+  [k: string]: any;
+}[];
+export interface CalibratePlotMetadata {
+  filterTypes: {
+    id: string;
+    column_id: string;
+    options: {
+      label: string;
+      id: string;
+      description?: string;
+    }[];
+    use_shape_regions?: boolean;
+    visible?: boolean;
+  }[];
+  indicators: {
+    indicator: string;
+    value_column: string;
+    error_low_column?: string;
+    error_high_column?: string;
+    indicator_column?: string;
+    indicator_value?: string;
+    indicator_sort_order?: number;
+    name: string;
+    min: number;
+    max: number;
+    colour: string;
+    invert_scale: boolean;
+    scale: number;
+    accuracy: number | null;
+    format: string;
+  }[];
+  plotSettingsControl: {
     calibrate: {
       defaultEffect?: {
         setFilters?: {
@@ -305,33 +365,12 @@ export interface CalibrateMetadataResponse {
             };
           };
         }[];
+        visible?: boolean;
       }[];
     };
   };
-  warnings: {
-    text: string;
-    locations: (
-      | "review_inputs"
-      | "model_options"
-      | "model_fit"
-      | "model_calibrate"
-      | "review_output"
-      | "download_results"
-    )[];
-  }[];
   [k: string]: any;
 }
-export type CalibratePlotData = {
-  data_type: "spectrum" | "calibrated" | "raw" | "calibration_ratio";
-  spectrum_region_code: string;
-  spectrum_region_name: string;
-  sex: string;
-  age_group: string;
-  calendar_quarter: string;
-  indicator: string;
-  mean: number | null;
-  [k: string]: any;
-}[];
 export interface CalibratePlotResponse {
   data: {
     data_type: "spectrum" | "calibrated" | "raw" | "calibration_ratio";
@@ -344,6 +383,72 @@ export interface CalibratePlotResponse {
     mean: number | null;
     [k: string]: any;
   }[];
+  metadata: {
+    filterTypes: {
+      id: string;
+      column_id: string;
+      options: {
+        label: string;
+        id: string;
+        description?: string;
+      }[];
+      use_shape_regions?: boolean;
+      visible?: boolean;
+    }[];
+    indicators: {
+      indicator: string;
+      value_column: string;
+      error_low_column?: string;
+      error_high_column?: string;
+      indicator_column?: string;
+      indicator_value?: string;
+      indicator_sort_order?: number;
+      name: string;
+      min: number;
+      max: number;
+      colour: string;
+      invert_scale: boolean;
+      scale: number;
+      accuracy: number | null;
+      format: string;
+    }[];
+    plotSettingsControl: {
+      calibrate: {
+        defaultEffect?: {
+          setFilters?: {
+            filterId: string;
+            label: string;
+            stateFilterId: string;
+          }[];
+          setMultiple?: string[];
+          setFilterValues?: {
+            [k: string]: string[];
+          };
+        };
+        plotSettings: {
+          id: string;
+          label: string;
+          options: {
+            id: string;
+            label: string;
+            effect: {
+              setFilters?: {
+                filterId: string;
+                label: string;
+                stateFilterId: string;
+              }[];
+              setMultiple?: string[];
+              setFilterValues?: {
+                [k: string]: string[];
+              };
+            };
+          }[];
+          visible?: boolean;
+        }[];
+      };
+    };
+    [k: string]: any;
+  };
 }
 export interface CalibratePlotRow {
   data_type: "spectrum" | "calibrated" | "raw" | "calibration_ratio";
@@ -756,6 +861,7 @@ export interface FilterTypes {
     description?: string;
   }[];
   use_shape_regions?: boolean;
+  visible?: boolean;
 }
 export interface HintrVersionResponse {
   [k: string]: string;
@@ -1268,6 +1374,7 @@ export interface PlotSetting {
       };
     };
   }[];
+  visible?: boolean;
 }
 export interface PlotSettingEffect {
   setFilters?: {
@@ -1325,6 +1432,7 @@ export interface PlotSettingsControl {
         };
       };
     }[];
+    visible?: boolean;
   }[];
 }
 export interface PlottingMetadataResponse {
@@ -1622,6 +1730,7 @@ export interface ReviewInputFilterMetadataResponse {
       description?: string;
     }[];
     use_shape_regions?: boolean;
+    visible?: boolean;
   }[];
   indicators: {
     indicator: string;
@@ -1671,6 +1780,7 @@ export interface ReviewInputFilterMetadataResponse {
             };
           };
         }[];
+        visible?: boolean;
       }[];
     };
     inputChoropleth: {
@@ -1703,6 +1813,7 @@ export interface ReviewInputFilterMetadataResponse {
             };
           };
         }[];
+        visible?: boolean;
       }[];
     };
   };

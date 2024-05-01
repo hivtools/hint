@@ -15,5 +15,4 @@ import Barchart from "../plots/bar/Barchart.vue";
 import {calibratePlotName} from "../../store/plotSelections/plotSelections";
 import FilterSet from "../plots/FilterSet.vue";
 
-
 </script>

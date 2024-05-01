@@ -7,7 +7,7 @@ import {ModelCalibrateMutation} from "./mutations";
 import {
     BarchartIndicator,
     CalibrateDataResponse,
-    CalibrateMetadataResponse,
+    CalibrateMetadataResponse, CalibratePlotResponse,
     CalibrateResultResponse,
     FilterOption,
     ModelResultResponse,
@@ -80,12 +80,29 @@ export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrat
     },
 
     async getResult(context) {
-        const {commit, state} = context;
+        const {commit, state, rootState} = context;
 
         if (state.status.done) {
             await getResultMetadata(context);
         }
         commit(ModelCalibrateMutation.Ready);
+    },
+
+    async getCalibratePlot(context) {
+        const {commit, state, rootState} = context;
+        const calibrateId = state.calibrateId;
+        commit(ModelCalibrateMutation.CalibrationPlotStarted);
+
+        const response = await api<ModelCalibrateMutation, ModelCalibrateMutation>(context)
+            .ignoreSuccess()
+            .withError(ModelCalibrateMutation.SetError)
+            .freezeResponse()
+            .get<CalibratePlotResponse>(`calibrate/plot/${calibrateId}`);
+
+        if (response) {
+            commit(ModelCalibrateMutation.SetCalibratePlotResult, response.data);
+            await commitPlotDefaultSelections(response.data.metadata, commit, rootState);
+        }
     },
 
     async getComparisonPlot(context) {
@@ -177,6 +194,7 @@ export const getResultMetadata = async function (context: ActionContext<ModelCal
         commitInitialScaleSelections(data, commit);
 
         commit(ModelCalibrateMutation.Calibrated);
+        await dispatch("getCalibratePlot");
         await dispatch("getComparisonPlot");
     }
 }
