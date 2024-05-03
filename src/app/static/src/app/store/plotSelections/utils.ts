@@ -14,7 +14,6 @@ import {
     PlotSettingEffect,
 } from "../../generated";
 
-
 export const filtersAfterUseShapeRegions = (filterTypes: FilterTypes[], rootState: RootState) => {
     const filters = [...filterTypes];
     const area = filters.find(f => f.id == "area");
