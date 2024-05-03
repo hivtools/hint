@@ -19,6 +19,9 @@
             <barchart class="col-md-9" v-if="selectedPlot === 'barchart'"
                       :plot="selectedPlot"
                       :show-error-bars="true"/>
+            <barchart class="col-md-9" v-if="selectedPlot === 'comparison'"
+                      :plot="selectedPlot"
+                      :show-error-bars="true"/>
         </div>
     </div>
 </template>
@@ -27,7 +30,7 @@
 import {computed, defineComponent} from "vue";
 import FilterSet from "../plots/FilterSet.vue";
 import PlotControlSet from "../plots/PlotControlSet.vue";
-import {OutputPlotName, outputPlotNames, PlotName} from "../../store/plotSelections/plotSelections";
+import {OutputPlotName, outputPlotNames} from "../../store/plotSelections/plotSelections";
 import {useStore} from "vuex";
 import {RootState} from "../../root";
 import { ModelOutputMutation } from "../../store/modelOutput/mutations";

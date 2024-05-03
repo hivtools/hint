@@ -1,8 +1,9 @@
 <template>
-
     <div class="form-group" v-for="control of plotControls" :key="control.id">
-        <label class="font-weight-bold">{{control.label}}</label>
-        <plot-control :plot-control-id="control.id" :plot="plot"/>
+        <div v-if="!isHidden(control.id)">
+            <label class="font-weight-bold">{{control.label}}</label>
+            <plot-control :plot-control-id="control.id" :plot="plot"/>
+        </div>
     </div>
     <hr v-if="plotControls.length > 0" class="mt-1 mb-2"/>
 
@@ -14,6 +15,7 @@ import {useStore} from "vuex";
 import {RootState} from "../../root";
 import PlotControl from "./PlotControl.vue";
 import {PlotName} from "../../store/plotSelections/plotSelections";
+import {getMetadataFromPlotName} from "../../store/plotSelections/actions";
 
 export default defineComponent({
     components: {
@@ -31,8 +33,14 @@ export default defineComponent({
             return store.state.plotSelections[props.plot].controls;
         });
 
+        const isHidden = computed(() => (controlId: string) => {
+            const metadata = getMetadataFromPlotName(store.state, props.plot);
+            return metadata.plotSettingsControl[props.plot].plotSettings.find(c => c.id === controlId)!.hidden;
+        });
+
         return {
-            plotControls
+            plotControls,
+            isHidden
         }
     }
 })

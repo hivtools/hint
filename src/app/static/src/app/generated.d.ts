@@ -650,6 +650,7 @@ export interface ComparisonBarchartMetadata {
 export type ComparisonPlotData = {
   area_id: string;
   area_name: string;
+  area_level?: number;
   sex: string;
   age_group: string;
   calendar_quarter: string;
@@ -660,10 +661,77 @@ export type ComparisonPlotData = {
   upper: number | null;
   [k: string]: any;
 }[];
+export interface ComparisonPlotMetadata {
+  filterTypes: {
+    id: string;
+    column_id: string;
+    options: {
+      label: string;
+      id: string;
+      description?: string;
+    }[];
+    use_shape_regions?: boolean;
+    visible?: boolean;
+  }[];
+  indicators: {
+    indicator: string;
+    value_column: string;
+    error_low_column?: string;
+    error_high_column?: string;
+    indicator_column?: string;
+    indicator_value?: string;
+    indicator_sort_order?: number;
+    name: string;
+    min: number;
+    max: number;
+    colour: string;
+    invert_scale: boolean;
+    scale: number;
+    accuracy: number | null;
+    format: string;
+  }[];
+  plotSettingsControl: {
+    comparison: {
+      defaultEffect?: {
+        setFilters?: {
+          filterId: string;
+          label: string;
+          stateFilterId: string;
+        }[];
+        setMultiple?: string[];
+        setFilterValues?: {
+          [k: string]: string[];
+        };
+      };
+      plotSettings: {
+        id: string;
+        label: string;
+        options: {
+          id: string;
+          label: string;
+          effect: {
+            setFilters?: {
+              filterId: string;
+              label: string;
+              stateFilterId: string;
+            }[];
+            setMultiple?: string[];
+            setFilterValues?: {
+              [k: string]: string[];
+            };
+          };
+        }[];
+        visible?: boolean;
+      }[];
+    };
+  };
+  [k: string]: any;
+}
 export interface ComparisonPlotResponse {
   data: {
     area_id: string;
     area_name: string;
+    area_level?: number;
     sex: string;
     age_group: string;
     calendar_quarter: string;
@@ -674,54 +742,77 @@ export interface ComparisonPlotResponse {
     upper: number | null;
     [k: string]: any;
   }[];
-  plottingMetadata: {
-    barchart: {
-      indicators: {
-        indicator: string;
-        value_column: string;
-        indicator_column: string;
-        indicator_value: string;
-        indicator_sort_order?: number;
-        name: string;
-        error_low_column: string;
-        error_high_column: string;
-        scale: number;
-        accuracy: number | null;
-        format: string;
-      }[];
-      filters: {
-        id: string;
-        column_id: string;
+  metadata: {
+    filterTypes: {
+      id: string;
+      column_id: string;
+      options: {
         label: string;
-        options: {
-          label: string;
+        id: string;
+        description?: string;
+      }[];
+      use_shape_regions?: boolean;
+      visible?: boolean;
+    }[];
+    indicators: {
+      indicator: string;
+      value_column: string;
+      error_low_column?: string;
+      error_high_column?: string;
+      indicator_column?: string;
+      indicator_value?: string;
+      indicator_sort_order?: number;
+      name: string;
+      min: number;
+      max: number;
+      colour: string;
+      invert_scale: boolean;
+      scale: number;
+      accuracy: number | null;
+      format: string;
+    }[];
+    plotSettingsControl: {
+      comparison: {
+        defaultEffect?: {
+          setFilters?: {
+            filterId: string;
+            label: string;
+            stateFilterId: string;
+          }[];
+          setMultiple?: string[];
+          setFilterValues?: {
+            [k: string]: string[];
+          };
+        };
+        plotSettings: {
           id: string;
-          description?: string;
+          label: string;
+          options: {
+            id: string;
+            label: string;
+            effect: {
+              setFilters?: {
+                filterId: string;
+                label: string;
+                stateFilterId: string;
+              }[];
+              setMultiple?: string[];
+              setFilterValues?: {
+                [k: string]: string[];
+              };
+            };
+          }[];
+          visible?: boolean;
         }[];
-        use_shape_regions?: boolean | null;
-      }[];
-      defaults: {
-        indicator_id: string;
-        x_axis_id: string;
-        disaggregate_by_id: string;
-        selected_filter_options: {
-          [k: string]: any;
-        };
       };
-      selections: {
-        indicator_id: string;
-        x_axis_id: string;
-        disaggregate_by_id: string;
-        selected_filter_options: {
-          [k: string]: any;
-        };
-      }[];
     };
+    [k: string]: any;
   };
 }
 export interface ComparisonPlotRow {
   area_id: string;
   area_name: string;
+  area_level?: number;
   sex: string;
   age_group: string;
   calendar_quarter: string;

@@ -1,5 +1,5 @@
 import {ControlSelection, FilterSelection, PlotName, PlotSelectionsState} from "./plotSelections";
-import {CalibratePlotRow, ChoroplethIndicatorMetadata, FilterOption} from "../../generated";
+import {ChoroplethIndicatorMetadata, FilterOption} from "../../generated";
 import {BarChartData, plotDataToChartData} from "../../components/plots/bar/utils";
 import {RootState} from "../../root";
 import {PlotData} from "../plotData/plotData";
@@ -37,7 +37,7 @@ export const getters = {
         // can just keep these as empty.
         let areaIdToLevelMap = {} as Dict<number>;
         let areaLevel = null;
-        if (plotName == "barchart") {
+        if (plotName === "barchart" || plotName === "comparison") {
             areaIdToLevelMap = rootGetters["baseline/areaIdToLevelMap"];
             areaLevel = filterSelections.find(f => f.filterId == "detail")?.selection[0]?.id;
         }

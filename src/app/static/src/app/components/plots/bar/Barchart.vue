@@ -54,7 +54,6 @@ export default defineComponent({
             return store.state.plotData[props.plot]
         });
 
-
         const chartDataGetter = store.getters["plotSelections/barchartData"];
         const chartData = ref<BarChartData>({datasets:[], labels: [], maxValuePlusError: 0});
         const chartOptions = ref({});

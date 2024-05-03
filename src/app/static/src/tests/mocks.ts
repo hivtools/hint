@@ -473,14 +473,6 @@ export const mockCalibratePlotResponse = (props: Partial<CalibratePlotResponse> 
 
 export const mockComparisonPlotResponse = (props: Partial<ComparisonPlotResponse> = {}): ComparisonPlotResponse => {
     return {
-        plottingMetadata: {
-            barchart: {
-                indicators: [],
-                filters: [],
-                defaults: {} as any,
-                selections: []
-            }
-        },
         data: [{
             area_id: "MWI",
             area_name: "Test area",
@@ -495,6 +487,21 @@ export const mockComparisonPlotResponse = (props: Partial<ComparisonPlotResponse
             mode: 0.5,
             upper: 0.5
         }],
+        metadata: {
+            filterTypes: [],
+            indicators: [],
+            plotSettingsControl: {
+                comparison: {
+                    plotSettings: [
+                        {
+                            id: "1",
+                            label: "setting",
+                            options: []
+                        }
+                    ]
+                }
+            }
+        },
         ...props
     }
 };
