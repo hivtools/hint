@@ -466,7 +466,8 @@ export const mockCalibratePlotResponse = (props: Partial<CalibratePlotResponse> 
                     ]
                 }
             }
-        }
+        },
+        ...props
     }
 }
 

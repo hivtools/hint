@@ -102,6 +102,7 @@ export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrat
         if (response) {
             commit(ModelCalibrateMutation.SetCalibratePlotResult, response.data);
             await commitPlotDefaultSelections(response.data.metadata, commit, rootState);
+            commit(ModelCalibrateMutation.CalibratePlotFetched);
         }
     },
 

@@ -48,9 +48,8 @@ export default defineComponent({
         // TODO: make this type more generic in the hintr PR
         const filterSelections = computed(() => store.state.plotSelections[props.plot].filters);
         const indicatorMetadata = computed<ChoroplethIndicatorMetadata>(() => {
-            const indicator = filterSelections.value.find(f => f.stateFilterId === "indicator")!.selection[0].id
-            const meta = getIndicatorMetadata(store, props.plot, indicator);
-            return meta
+            const indicator = filterSelections.value.find(f => f.stateFilterId === "indicator")!.selection[0].id;
+            return getIndicatorMetadata(store, props.plot, indicator);
         });
         const plotData = computed<PlotData>(() => {
             return store.state.plotData[props.plot]
