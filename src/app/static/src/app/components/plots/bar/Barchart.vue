@@ -50,7 +50,6 @@ export default defineComponent({
         const indicatorMetadata = computed<ChoroplethIndicatorMetadata>(() => {
             const indicator = filterSelections.value.find(f => f.stateFilterId === "indicator")!.selection[0].id
             const meta = getIndicatorMetadata(store, props.plot, indicator);
-            console.log("indicator metadata", meta);
             return meta
         });
         const plotData = computed<PlotData>(() => {
@@ -64,9 +63,21 @@ export default defineComponent({
         const displayErrorBars = ref<boolean>(false);
 
         const updateChart = () => {
-            hideAllErrorBars();
             chartData.value = chartDataGetter(props.plot, plotData.value, indicatorMetadata.value,
                     filterSelections.value)
+            if (props.showErrorBars) {
+                /*
+                    We hide the error bars when data changes otherwise the animation can get quite wild
+                    Chart options are updated via a watch on error bar visibility as when the data updates we want to
+                    1. Hide the error bars and update the chart data
+                    2. Wait for animation to finish
+                    3. Redraw the error bars
+                    So in the case error bars are on, hide them and let the watcher handle updating chart options.
+                */
+                hideAllErrorBars();
+            } else {
+                updateChartOptions()
+            }
         };
 
         const hideAllErrorBars = () => {
@@ -101,7 +112,6 @@ export default defineComponent({
         };
 
         const updateChartOptions = () => {
-            console.log("updating chart options")
             const baseChartOptions = {
                 plugins: {
                     tooltip: {
@@ -123,10 +133,7 @@ export default defineComponent({
                     }
                 },
                 responsive: true,
-                maintainAspectRatio: false,
-                animation: {
-                    onComplete: showAllErrorBars
-                }
+                maintainAspectRatio: false
             }
 
             if (props.showErrorBars) {
