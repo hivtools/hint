@@ -128,7 +128,6 @@ export interface CalibrateMetadataResponse {
       description?: string;
     }[];
     use_shape_regions?: boolean;
-    visible?: boolean;
   }[];
   indicators: {
     indicator: string;
@@ -159,6 +158,7 @@ export interface CalibrateMetadataResponse {
         setFilterValues?: {
           [k: string]: string[];
         };
+        setHidden?: string[];
       };
       plotSettings: {
         id: string;
@@ -176,6 +176,7 @@ export interface CalibrateMetadataResponse {
             setFilterValues?: {
               [k: string]: string[];
             };
+            setHidden?: string[];
           };
         }[];
         visible?: boolean;
@@ -192,6 +193,7 @@ export interface CalibrateMetadataResponse {
         setFilterValues?: {
           [k: string]: string[];
         };
+        setHidden?: string[];
       };
       plotSettings: {
         id: string;
@@ -209,6 +211,7 @@ export interface CalibrateMetadataResponse {
             setFilterValues?: {
               [k: string]: string[];
             };
+            setHidden?: string[];
           };
         }[];
         visible?: boolean;
@@ -225,6 +228,7 @@ export interface CalibrateMetadataResponse {
         setFilterValues?: {
           [k: string]: string[];
         };
+        setHidden?: string[];
       };
       plotSettings: {
         id: string;
@@ -242,6 +246,7 @@ export interface CalibrateMetadataResponse {
             setFilterValues?: {
               [k: string]: string[];
             };
+            setHidden?: string[];
           };
         }[];
         visible?: boolean;
@@ -258,6 +263,7 @@ export interface CalibrateMetadataResponse {
         setFilterValues?: {
           [k: string]: string[];
         };
+        setHidden?: string[];
       };
       plotSettings: {
         id: string;
@@ -275,6 +281,7 @@ export interface CalibrateMetadataResponse {
             setFilterValues?: {
               [k: string]: string[];
             };
+            setHidden?: string[];
           };
         }[];
         visible?: boolean;
@@ -315,7 +322,6 @@ export interface CalibratePlotMetadata {
       description?: string;
     }[];
     use_shape_regions?: boolean;
-    visible?: boolean;
   }[];
   indicators: {
     indicator: string;
@@ -346,6 +352,7 @@ export interface CalibratePlotMetadata {
         setFilterValues?: {
           [k: string]: string[];
         };
+        setHidden?: string[];
       };
       plotSettings: {
         id: string;
@@ -363,6 +370,7 @@ export interface CalibratePlotMetadata {
             setFilterValues?: {
               [k: string]: string[];
             };
+            setHidden?: string[];
           };
         }[];
         visible?: boolean;
@@ -393,7 +401,6 @@ export interface CalibratePlotResponse {
         description?: string;
       }[];
       use_shape_regions?: boolean;
-      visible?: boolean;
     }[];
     indicators: {
       indicator: string;
@@ -424,6 +431,7 @@ export interface CalibratePlotResponse {
           setFilterValues?: {
             [k: string]: string[];
           };
+          setHidden?: string[];
         };
         plotSettings: {
           id: string;
@@ -441,6 +449,7 @@ export interface CalibratePlotResponse {
               setFilterValues?: {
                 [k: string]: string[];
               };
+              setHidden?: string[];
             };
           }[];
           visible?: boolean;
@@ -861,7 +870,6 @@ export interface FilterTypes {
     description?: string;
   }[];
   use_shape_regions?: boolean;
-  visible?: boolean;
 }
 export interface HintrVersionResponse {
   [k: string]: string;
@@ -1372,6 +1380,7 @@ export interface PlotSetting {
       setFilterValues?: {
         [k: string]: string[];
       };
+      setHidden?: string[];
     };
   }[];
   visible?: boolean;
@@ -1386,6 +1395,7 @@ export interface PlotSettingEffect {
   setFilterValues?: {
     [k: string]: string[];
   };
+  setHidden?: string[];
 }
 export interface PlotSettingOption {
   id: string;
@@ -1400,6 +1410,7 @@ export interface PlotSettingOption {
     setFilterValues?: {
       [k: string]: string[];
     };
+    setHidden?: string[];
   };
 }
 export interface PlotSettingsControl {
@@ -1413,6 +1424,7 @@ export interface PlotSettingsControl {
     setFilterValues?: {
       [k: string]: string[];
     };
+    setHidden?: string[];
   };
   plotSettings: {
     id: string;
@@ -1430,6 +1442,7 @@ export interface PlotSettingsControl {
         setFilterValues?: {
           [k: string]: string[];
         };
+        setHidden?: string[];
       };
     }[];
     visible?: boolean;
@@ -1730,7 +1743,6 @@ export interface ReviewInputFilterMetadataResponse {
       description?: string;
     }[];
     use_shape_regions?: boolean;
-    visible?: boolean;
   }[];
   indicators: {
     indicator: string;
@@ -1761,6 +1773,7 @@ export interface ReviewInputFilterMetadataResponse {
         setFilterValues?: {
           [k: string]: string[];
         };
+        setHidden?: string[];
       };
       plotSettings: {
         id: string;
@@ -1778,6 +1791,7 @@ export interface ReviewInputFilterMetadataResponse {
             setFilterValues?: {
               [k: string]: string[];
             };
+            setHidden?: string[];
           };
         }[];
         visible?: boolean;
@@ -1794,6 +1808,7 @@ export interface ReviewInputFilterMetadataResponse {
         setFilterValues?: {
           [k: string]: string[];
         };
+        setHidden?: string[];
       };
       plotSettings: {
         id: string;
@@ -1811,6 +1826,7 @@ export interface ReviewInputFilterMetadataResponse {
             setFilterValues?: {
               [k: string]: string[];
             };
+            setHidden?: string[];
           };
         }[];
         visible?: boolean;

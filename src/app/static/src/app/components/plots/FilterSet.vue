@@ -1,6 +1,6 @@
 <template>
     <div class="form-group" v-for="f of filters" :key="f.stateFilterId">
-        <div v-if="isVisible(f.filterId)">
+        <div v-if="f.visible">
             <label class="font-weight-bold">{{f.label}}</label>
             <!-- For some reason using filter is saying no component registered
             with this name, no idea why so using capital Filter -->
@@ -33,14 +33,8 @@ export default defineComponent({
             return store.state.plotSelections[props.plot].filters;
         });
 
-        const isVisible = computed(() => (filterId: string) => {
-            const metadata = getMetadataFromPlotName(store.state, props.plot);
-            return metadata.filterTypes.find(f => f.id === filterId)!.visible ?? true;
-        });
-
         return {
-            filters,
-            isVisible
+            filters
         }
     }
 })

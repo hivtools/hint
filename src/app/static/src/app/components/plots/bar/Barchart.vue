@@ -18,7 +18,6 @@ import {RootState} from "../../../root";
 import {computed, defineComponent, PropType, ref, watch} from "vue";
 import {PlotData} from "../../../store/plotData/plotData";
 import {
-    plotDataToChartData,
     BarChartData,
     getErrorLineAnnotations,
     buildTooltipCallback,
