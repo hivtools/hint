@@ -1,6 +1,7 @@
 import {expectAllMutationsDefined} from "../testHelpers";
 import {ModelCalibrateMutation, mutations} from "../../app/store/modelCalibrate/mutations";
 import {
+    mockCalibratePlotResponse,
     mockCalibrateResultResponse,
     mockError,
     mockModelCalibrateState,
@@ -225,7 +226,7 @@ describe("ModelCalibrate mutations", () => {
     });
 
     it("sets calibration plot started and resets error and previous plot", () => {
-        const state = mockModelCalibrateState({error: mockError("TEST ERROR"), calibratePlotResult: {}});
+        const state = mockModelCalibrateState({error: mockError("TEST ERROR"), calibratePlotResult: mockCalibratePlotResponse()});
         mutations[ModelCalibrateMutation.CalibrationPlotStarted](state);
         expect(state.generatingCalibrationPlot).toBe(true);
         expect(state.calibratePlotResult).toBe(null);
@@ -235,7 +236,7 @@ describe("ModelCalibrate mutations", () => {
     it("sets calibration plot data", () => {
         const state = mockModelCalibrateState({generatingCalibrationPlot: true});
         const payload = { data: "TEST DATA" };
-        mutations[ModelCalibrateMutation.SetPlotData](state, {payload});
+        mutations[ModelCalibrateMutation.SetCalibratePlotResult](state, {payload});
         expect(state.calibratePlotResult).toStrictEqual({ payload });
         expect(state.generatingCalibrationPlot).toBe(false);
     });

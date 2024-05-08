@@ -24,7 +24,6 @@
 import {computed, onMounted, ref, watch} from "vue";
 import {useStore} from "vuex";
 import {RootState} from "../../../root";
-import {PlotData} from "../../../store/plotData/plotData";
 import { LMap, LGeoJson } from "@vue-leaflet/vue-leaflet";
 import { Feature } from "geojson";
 import {
@@ -51,7 +50,7 @@ const selectedIndicator = computed<string>(() => {
     return store.state.plotSelections.choropleth.filters.find(f => f.stateFilterId === "indicator")!.selection[0].id
 });
 const indicatorMetadata = computed<ChoroplethIndicatorMetadata>(() => {
-    return getIndicatorMetadata(store, selectedIndicator.value)
+    return getIndicatorMetadata(store, "choropleth", selectedIndicator.value)
 });
 const colourRange = ref<NumericRange | null>(null);
 const scaleLevels = ref<ScaleLevels[]>([]);

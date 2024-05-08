@@ -7,7 +7,7 @@ import {ModelCalibrateMutation} from "./mutations";
 import {
     BarchartIndicator,
     CalibrateDataResponse,
-    CalibrateMetadataResponse,
+    CalibrateMetadataResponse, CalibratePlotResponse,
     CalibrateResultResponse,
     FilterOption,
     ModelResultResponse,
@@ -32,7 +32,6 @@ export interface ModelCalibrateActions {
     submit: (store: ActionContext<ModelCalibrateState, RootState>, options: DynamicFormData) => void
     poll: (store: ActionContext<ModelCalibrateState, RootState>) => void
     getResult: (store: ActionContext<ModelCalibrateState, RootState>) => void
-    getCalibratePlot: (store: ActionContext<ModelCalibrateState, RootState>) => void
     getComparisonPlot: (store: ActionContext<ModelCalibrateState, RootState>) => void
     resumeCalibrate: (store: ActionContext<ModelCalibrateState, RootState>) => void
     getResultData: (store: ActionContext<ModelCalibrateState, RootState>, payload: ResultDataPayload) => void
@@ -81,7 +80,7 @@ export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrat
     },
 
     async getResult(context) {
-        const {commit, state} = context;
+        const {commit, state, rootState} = context;
 
         if (state.status.done) {
             await getResultMetadata(context);
@@ -90,7 +89,7 @@ export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrat
     },
 
     async getCalibratePlot(context) {
-        const {commit, state} = context;
+        const {commit, state, rootState} = context;
         const calibrateId = state.calibrateId;
         commit(ModelCalibrateMutation.CalibrationPlotStarted);
 
@@ -98,10 +97,12 @@ export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrat
             .ignoreSuccess()
             .withError(ModelCalibrateMutation.SetError)
             .freezeResponse()
-            .get<ModelResultResponse>(`calibrate/plot/${calibrateId}`);
+            .get<CalibratePlotResponse>(`calibrate/plot/${calibrateId}`);
 
         if (response) {
-            commit(ModelCalibrateMutation.SetPlotData, response.data);
+            commit(ModelCalibrateMutation.SetCalibratePlotResult, response.data);
+            await commitPlotDefaultSelections(response.data.metadata, commit, rootState);
+            commit(ModelCalibrateMutation.CalibratePlotFetched);
         }
     },
 
@@ -194,10 +195,7 @@ export const getResultMetadata = async function (context: ActionContext<ModelCal
         commitInitialScaleSelections(data, commit);
 
         commit(ModelCalibrateMutation.Calibrated);
-
-        if (switches.modelCalibratePlot) {
-            dispatch("getCalibratePlot");
-        }
+        await dispatch("getCalibratePlot");
         await dispatch("getComparisonPlot");
     }
 }

@@ -82,7 +82,6 @@
                 loading: (state: ModelCalibrateState) => state.fetching,
                 calibrating: (state: ModelCalibrateState) => state.calibrating,
                 generatingCalibrationPlot: (state: ModelCalibrateState) => state.generatingCalibrationPlot,
-                calibrationPlotGenerated: (state: ModelCalibrateState) => !!state.calibratePlotResult,
                 error: (state: ModelCalibrateState) => state.error,
                 progressMessage: (state: ModelCalibrateState) => {
                     if (
@@ -100,7 +99,7 @@
                 }
             }),
             showCalibrateResults(): boolean {
-                return this.calibrationPlotGenerated && this.complete
+                return !this.generatingCalibrationPlot && this.complete
             },
             currentLanguage: mapStateProp<RootState, Language>(
                 null,

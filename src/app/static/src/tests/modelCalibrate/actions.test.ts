@@ -166,7 +166,7 @@ describe("ModelCalibrate actions", () => {
         expect(dispatch.mock.calls[0][0]).toBe("getResult");
     });
 
-    it("getResult commits result and warnings when successfully fetched, sets default plotting selections, and dispatches getCalibratePlot and getComparisonPlot", async () => {
+    it("getResult commits result and warnings when successfully fetched, sets default plotting selections, and dispatches getComparisonPlot", async () => {
         switches.modelCalibratePlot = true;
         const testResult = {
             plottingMetadata: {
@@ -231,51 +231,9 @@ describe("ModelCalibrate actions", () => {
 
         expect(commit.mock.calls[2][0]).toBe("Calibrated");
         expect(commit.mock.calls[3][0]).toBe("Ready");
-        expect(dispatch.mock.calls[0][0]).toBe("getCalibratePlot");
         expect(dispatch.mock.calls[1][0]).toBe("getComparisonPlot");
 
         expect(spy).toHaveBeenCalledWith(mockResponse);
-    });
-
-    it("getResult metadata does not dispatch getCalibratePlot if switch is off", async () => {
-        switches.modelCalibratePlot = false;
-        const testResult = {
-            data: "TEST DATA",
-            plottingMetadata: {
-                barchart: {
-                    defaults: {
-                        indicator_id: "test indicator",
-                        x_axis_id: "test_x",
-                        disaggregate_by_id: "test_dis",
-                        selected_filter_options: {
-                            type: [{id: "test", label: "test"}]
-                        }
-                    },
-                    indicators: []
-                }
-            },
-            uploadMetadata: {
-                outputZip: {description: "spectrum output info"},
-                outputSummary: {description: "summary output info"}
-            }
-        };
-        mockAxios.onGet(`/calibrate/result/metadata/1234`)
-            .reply(200, mockSuccess(testResult));
-
-        const commit = vi.fn();
-        const dispatch = vi.fn();
-        const state = mockModelCalibrateState({
-            calibrateId: "1234",
-            status: {
-                success: true,
-                done: true
-            } as any
-        });
-
-        await actions.getResult({commit, state, rootState, dispatch} as any);
-
-        expect(dispatch.mock.calls.length).toBe(1);
-        expect(dispatch.mock.calls[0][0]).toBe("getComparisonPlot");
     });
 
     it("fetchFirstNIndicators works as expected", () => {
@@ -402,54 +360,6 @@ describe("ModelCalibrate actions", () => {
 
         expect(mockAxios.history.get.length).toBe(0);
         expect(commit.mock.calls.length).toBe(0);
-    });
-
-    it("getCalibratePlot fetches the calibrate plot data and sets it when successful", async () => {
-        const testResult = {data: "TEST DATA"};
-        mockAxios.onGet(`/calibrate/plot/1234`)
-            .reply(200, mockSuccess(testResult));
-
-        const commit = vi.fn();
-        const state = mockModelCalibrateState({
-            calibrateId: "1234",
-            status: {
-                success: true,
-                done: true
-            } as any
-        });
-
-        await actions.getCalibratePlot({commit, state, rootState} as any);
-
-        expect(commit.mock.calls.length).toBe(2);
-        expect(commit.mock.calls[0][0]).toStrictEqual("CalibrationPlotStarted");
-        expect(commit.mock.calls[1][0]).toBe("SetPlotData");
-        expect(commit.mock.calls[1][1]).toStrictEqual({data: "TEST DATA"});
-        expect(mockAxios.history.get.length).toBe(1);
-    });
-
-    it("getCalibratePlot commits error with unsuccessful fetch", async () => {
-        const testResult = {data: "TEST DATA"};
-        mockAxios.onGet(`/calibrate/plot/1234`)
-            .reply(500, mockFailure("Test Error"));
-
-        const commit = vi.fn();
-        const state = mockModelCalibrateState({
-            calibrateId: "1234",
-            status: {
-                success: true,
-                done: true
-            } as any
-        });
-
-        await actions.getCalibratePlot({commit, state, rootState} as any);
-
-        expect(commit.mock.calls.length).toBe(2);
-        expect(commit.mock.calls[0][0]).toStrictEqual("CalibrationPlotStarted");
-        expect(commit.mock.calls[1][0]).toStrictEqual({
-            type: "SetError",
-            payload: mockError("Test Error")
-        });
-        expect(mockAxios.history.get.length).toBe(1);
     });
 
     it("getComparisonPlot fetches the comparison plot data and sets it with default filter values when successful", async () => {

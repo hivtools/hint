@@ -6,9 +6,12 @@ import {Feature} from "geojson";
 import numeral from "numeral";
 import {Store} from "vuex";
 import {RootState} from "../../root";
+import {getMetadataFromPlotName} from "../../store/plotSelections/actions";
+import {PlotName} from "../../store/plotSelections/plotSelections";
 
-export const getIndicatorMetadata = (store: Store<RootState>, selectedIndicator: string): ChoroplethIndicatorMetadata => {
-    return store.state.modelCalibrate.metadata!.indicators.find(i => i.indicator == selectedIndicator)!
+export const getIndicatorMetadata = (store: Store<RootState>, plotName: PlotName, selectedIndicator: string): ChoroplethIndicatorMetadata => {
+    const metadata = getMetadataFromPlotName(store.state, plotName);
+    return metadata.indicators.find(i => i.indicator == selectedIndicator)!
 }
 
 export interface ScaleLevels {

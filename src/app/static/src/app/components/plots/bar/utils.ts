@@ -73,7 +73,6 @@ export const plotDataToChartData = function (plotData: PlotData,
 
     let colorIdx = 0;
     for (const row of plotData as any) {
-
         const datasetValue = row[disaggregateId];
         const datasetLabel = disaggregateSelectionsMap[datasetValue];
 

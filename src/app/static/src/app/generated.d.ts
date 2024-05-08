@@ -158,6 +158,7 @@ export interface CalibrateMetadataResponse {
         setFilterValues?: {
           [k: string]: string[];
         };
+        setHidden?: string[];
       };
       plotSettings: {
         id: string;
@@ -175,8 +176,10 @@ export interface CalibrateMetadataResponse {
             setFilterValues?: {
               [k: string]: string[];
             };
+            setHidden?: string[];
           };
         }[];
+        hidden?: boolean;
       }[];
     };
     barchart: {
@@ -190,6 +193,7 @@ export interface CalibrateMetadataResponse {
         setFilterValues?: {
           [k: string]: string[];
         };
+        setHidden?: string[];
       };
       plotSettings: {
         id: string;
@@ -207,8 +211,10 @@ export interface CalibrateMetadataResponse {
             setFilterValues?: {
               [k: string]: string[];
             };
+            setHidden?: string[];
           };
         }[];
+        hidden?: boolean;
       }[];
     };
     table: {
@@ -222,6 +228,7 @@ export interface CalibrateMetadataResponse {
         setFilterValues?: {
           [k: string]: string[];
         };
+        setHidden?: string[];
       };
       plotSettings: {
         id: string;
@@ -239,8 +246,10 @@ export interface CalibrateMetadataResponse {
             setFilterValues?: {
               [k: string]: string[];
             };
+            setHidden?: string[];
           };
         }[];
+        hidden?: boolean;
       }[];
     };
     bubble: {
@@ -254,6 +263,7 @@ export interface CalibrateMetadataResponse {
         setFilterValues?: {
           [k: string]: string[];
         };
+        setHidden?: string[];
       };
       plotSettings: {
         id: string;
@@ -271,8 +281,10 @@ export interface CalibrateMetadataResponse {
             setFilterValues?: {
               [k: string]: string[];
             };
+            setHidden?: string[];
           };
         }[];
+        hidden?: boolean;
       }[];
     };
   };
@@ -300,6 +312,73 @@ export type CalibratePlotData = {
   mean: number | null;
   [k: string]: any;
 }[];
+export interface CalibratePlotMetadata {
+  filterTypes: {
+    id: string;
+    column_id: string;
+    options: {
+      label: string;
+      id: string;
+      description?: string;
+    }[];
+    use_shape_regions?: boolean;
+  }[];
+  indicators: {
+    indicator: string;
+    value_column: string;
+    error_low_column?: string;
+    error_high_column?: string;
+    indicator_column?: string;
+    indicator_value?: string;
+    indicator_sort_order?: number;
+    name: string;
+    min: number;
+    max: number;
+    colour: string;
+    invert_scale: boolean;
+    scale: number;
+    accuracy: number | null;
+    format: string;
+  }[];
+  plotSettingsControl: {
+    calibrate: {
+      defaultEffect?: {
+        setFilters?: {
+          filterId: string;
+          label: string;
+          stateFilterId: string;
+        }[];
+        setMultiple?: string[];
+        setFilterValues?: {
+          [k: string]: string[];
+        };
+        setHidden?: string[];
+      };
+      plotSettings: {
+        id: string;
+        label: string;
+        options: {
+          id: string;
+          label: string;
+          effect: {
+            setFilters?: {
+              filterId: string;
+              label: string;
+              stateFilterId: string;
+            }[];
+            setMultiple?: string[];
+            setFilterValues?: {
+              [k: string]: string[];
+            };
+            setHidden?: string[];
+          };
+        }[];
+        hidden?: boolean;
+      }[];
+    };
+  };
+  [k: string]: any;
+}
 export interface CalibratePlotResponse {
   data: {
     data_type: "spectrum" | "calibrated" | "raw" | "calibration_ratio";
@@ -312,41 +391,72 @@ export interface CalibratePlotResponse {
     mean: number | null;
     [k: string]: any;
   }[];
-  plottingMetadata: {
-    barchart: {
-      indicators: {
-        indicator: string;
-        value_column: string;
-        indicator_column: string;
-        indicator_value: string;
-        indicator_sort_order?: number;
-        name: string;
-        error_low_column: string;
-        error_high_column: string;
-        scale: number;
-        accuracy: number | null;
-        format: string;
-      }[];
-      filters: {
-        id: string;
-        column_id: string;
+  metadata: {
+    filterTypes: {
+      id: string;
+      column_id: string;
+      options: {
         label: string;
-        options: {
-          label: string;
-          id: string;
-          description?: string;
-        }[];
-        use_shape_regions?: boolean | null;
+        id: string;
+        description?: string;
       }[];
-      defaults?: {
-        indicator_id: string;
-        x_axis_id: string;
-        disaggregate_by_id: string;
-        selected_filter_options: {
-          [k: string]: any;
+      use_shape_regions?: boolean;
+    }[];
+    indicators: {
+      indicator: string;
+      value_column: string;
+      error_low_column?: string;
+      error_high_column?: string;
+      indicator_column?: string;
+      indicator_value?: string;
+      indicator_sort_order?: number;
+      name: string;
+      min: number;
+      max: number;
+      colour: string;
+      invert_scale: boolean;
+      scale: number;
+      accuracy: number | null;
+      format: string;
+    }[];
+    plotSettingsControl: {
+      calibrate: {
+        defaultEffect?: {
+          setFilters?: {
+            filterId: string;
+            label: string;
+            stateFilterId: string;
+          }[];
+          setMultiple?: string[];
+          setFilterValues?: {
+            [k: string]: string[];
+          };
+          setHidden?: string[];
         };
+        plotSettings: {
+          id: string;
+          label: string;
+          options: {
+            id: string;
+            label: string;
+            effect: {
+              setFilters?: {
+                filterId: string;
+                label: string;
+                stateFilterId: string;
+              }[];
+              setMultiple?: string[];
+              setFilterValues?: {
+                [k: string]: string[];
+              };
+              setHidden?: string[];
+            };
+          }[];
+          hidden?: boolean;
+        }[];
       };
     };
+    [k: string]: any;
   };
 }
 export interface CalibratePlotRow {
@@ -1270,8 +1380,10 @@ export interface PlotSetting {
       setFilterValues?: {
         [k: string]: string[];
       };
+      setHidden?: string[];
     };
   }[];
+  hidden?: boolean;
 }
 export interface PlotSettingEffect {
   setFilters?: {
@@ -1283,6 +1395,7 @@ export interface PlotSettingEffect {
   setFilterValues?: {
     [k: string]: string[];
   };
+  setHidden?: string[];
 }
 export interface PlotSettingOption {
   id: string;
@@ -1297,6 +1410,7 @@ export interface PlotSettingOption {
     setFilterValues?: {
       [k: string]: string[];
     };
+    setHidden?: string[];
   };
 }
 export interface PlotSettingsControl {
@@ -1310,6 +1424,7 @@ export interface PlotSettingsControl {
     setFilterValues?: {
       [k: string]: string[];
     };
+    setHidden?: string[];
   };
   plotSettings: {
     id: string;
@@ -1327,8 +1442,10 @@ export interface PlotSettingsControl {
         setFilterValues?: {
           [k: string]: string[];
         };
+        setHidden?: string[];
       };
     }[];
+    hidden?: boolean;
   }[];
 }
 export interface PlottingMetadataResponse {
@@ -1656,6 +1773,7 @@ export interface ReviewInputFilterMetadataResponse {
         setFilterValues?: {
           [k: string]: string[];
         };
+        setHidden?: string[];
       };
       plotSettings: {
         id: string;
@@ -1673,8 +1791,10 @@ export interface ReviewInputFilterMetadataResponse {
             setFilterValues?: {
               [k: string]: string[];
             };
+            setHidden?: string[];
           };
         }[];
+        hidden?: boolean;
       }[];
     };
     inputChoropleth: {
@@ -1688,6 +1808,7 @@ export interface ReviewInputFilterMetadataResponse {
         setFilterValues?: {
           [k: string]: string[];
         };
+        setHidden?: string[];
       };
       plotSettings: {
         id: string;
@@ -1705,8 +1826,10 @@ export interface ReviewInputFilterMetadataResponse {
             setFilterValues?: {
               [k: string]: string[];
             };
+            setHidden?: string[];
           };
         }[];
+        hidden?: boolean;
       }[];
     };
   };

@@ -26,7 +26,7 @@ import {
     mockDownloadIndicatorState,
     mockPlotData,
     mockPlotSelections,
-    mockPlotState
+    mockPlotState, mockCalibratePlotResponse
 } from "./mocks";
 import {localStorageManager, serialiseState} from "../app/localStorageManager";
 import {RootState} from "../app/root";
@@ -97,7 +97,7 @@ describe("LocalStorageManager", () => {
             modelCalibrate: mockModelCalibrateState({
                 result: mockCalibrateResultResponse(),
                 fetchedIndicators: [],
-                calibratePlotResult: {data: "test calibrate plot result"},
+                calibratePlotResult: mockCalibratePlotResponse(),
                 comparisonPlotResult: mockComparisonPlotResponse()
             }),
             stepper: mockStepperState(),

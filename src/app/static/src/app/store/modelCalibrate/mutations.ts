@@ -5,6 +5,7 @@ import {CalibrateResultWithType, PayloadWithType} from "../../types";
 import {parseAndFillForm} from "../../utils";
 import {
     CalibrateMetadataResponse,
+    CalibratePlotResponse,
     CalibrateStatusResponse,
     CalibrateSubmitResponse,
     ComparisonPlotResponse,
@@ -27,7 +28,8 @@ export enum ModelCalibrateMutation {
     Ready = "Ready",
     CalibrationPlotStarted = "CalibrationPlotStarted",
     ComparisonPlotStarted = "ComparisonPlotStarted",
-    SetPlotData = "SetPlotData",
+    SetCalibratePlotResult = "SetCalibratePlotResult",
+    CalibratePlotFetched = "CalibratePlotFetched",
     SetComparisonPlotData = "SetComparisonPlotData",
     CalibrateResultFetched = "CalibrateResultFetched",
     ClearWarnings = "ClearWarnings",
@@ -97,9 +99,12 @@ export const mutations: MutationTree<ModelCalibrateState> = {
         state.comparisonPlotError = null;
     },
 
-    [ModelCalibrateMutation.SetPlotData](state: ModelCalibrateState, action: PayloadWithType<any>) {
-        state.generatingCalibrationPlot = false;
+    [ModelCalibrateMutation.SetCalibratePlotResult](state: ModelCalibrateState, action: CalibratePlotResponse) {
         state.calibratePlotResult = action;
+    },
+
+    [ModelCalibrateMutation.CalibratePlotFetched](state: ModelCalibrateState) {
+        state.generatingCalibrationPlot = false;
     },
 
     [ModelCalibrateMutation.SetComparisonPlotData](state: ModelCalibrateState, action: ComparisonPlotResponse) {

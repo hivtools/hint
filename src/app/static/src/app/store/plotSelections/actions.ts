@@ -1,15 +1,23 @@
 import { ActionContext, ActionTree, Commit } from "vuex"
 import { OutputPlotName, PlotDataType, PlotName, PlotSelectionsState, plotNameToDataType } from "./plotSelections"
 import { RootState } from "../../root"
-import { GenericChartDataset, PayloadWithType } from "../../types"
-import { CalibrateDataResponse, FilterOption, InputTimeSeriesData, InputTimeSeriesRow, PlotSettingEffect, PlotSettingOption } from "../../generated"
+import {Dict, GenericChartDataset, PayloadWithType} from "../../types"
+import {
+    CalibrateDataResponse,
+    CalibratePlotData,
+    FilterOption,
+    InputTimeSeriesData,
+    InputTimeSeriesRow,
+    PlotSettingEffect,
+    PlotSettingOption
+} from "../../generated"
 import { PlotSelectionUpdate, PlotSelectionsMutations } from "./mutations"
 import { filtersInfoFromEffects, getPlotData } from "./utils"
 import { api } from "../../apiService"
 import { PlotDataMutations, PlotDataUpdate } from "../plotData/mutations"
 import { PlotMetadataFrame } from "../metadata/metadata"
 import { GenericChartMutation } from "../genericChart/mutations"
-import { InputTimeSeriesKey } from "../plotData/plotData"
+import {InputTimeSeriesKey} from "../plotData/plotData"
 
 type IdOptions = {
     id: string,
@@ -33,6 +41,7 @@ export const getMetadataFromPlotName = (rootState: RootState, plotName: PlotName
         case PlotDataType.Output: return rootState.modelCalibrate.metadata!;
         case PlotDataType.Input: return rootState.metadata.reviewInputMetadata!;
         case PlotDataType.TimeSeries: return rootState.metadata.reviewInputMetadata!;
+        case PlotDataType.Calibrate: return rootState.modelCalibrate.calibratePlotResult!.metadata!;
     }
 }
 
@@ -140,6 +149,38 @@ export const getTimeSeriesFilteredDataset = async (payload: PlotSelectionUpdate,
         for (const column_id in filterObject) {
             const key = column_id as InputTimeSeriesKey;
             if (!filterObject[key].includes(currRow[key] as string | number)) {
+                continue outer;
+            }
+        }
+        filteredData.push(currRow);
+    }
+    const plotDataPayload: PlotDataUpdate = {
+        plot: payload.plot,
+        data: filteredData
+    };
+    commit(`plotData/${PlotDataMutations.updatePlotData}`, { payload: plotDataPayload }, { root: true });
+};
+
+export const getCalibrateFilteredDataset = async (payload: PlotSelectionUpdate, commit: Commit, rootState: RootState) => {
+    const calibratePlotResult = rootState.modelCalibrate.calibratePlotResult;
+    if (!calibratePlotResult) {
+        return;
+    }
+    const data = calibratePlotResult.data;
+
+    // Filter the data on the current selections
+    const metadata = getMetadataFromPlotName(rootState, payload.plot);
+    const { filters } = payload.selections;
+    const filterObject: Dict<(string| number)[]> = {};
+    filters.forEach(f => {
+        const filterType = metadata.filterTypes.find(ft => ft.id === f.filterId)!;
+        filterObject[filterType.column_id] = f.selection.map(s => s.id);
+    });
+    const filteredData: CalibratePlotData = [];
+    outer: for (let i = 0; i < data.length; i++) {
+        const currRow = data[i];
+        for (const column_id in filterObject) {
+            if (!filterObject[column_id].includes(currRow[column_id] as string | number)) {
                 continue outer;
             }
         }

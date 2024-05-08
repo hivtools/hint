@@ -1,18 +1,14 @@
 import { OutputPlotName, PlotDataType, PlotName, outputPlotNames, plotNameToDataType } from "./plotSelections";
 import { PlotSelectionUpdate, PlotSelectionsMutations } from "./mutations";
 import { RootState } from "../../root";
-import { getFilteredData, getTimeSeriesFilteredDataset } from "./actions";
+import {getCalibrateFilteredDataset, getFilteredData, getTimeSeriesFilteredDataset} from "./actions";
 import { PlotMetadataFrame } from "../metadata/metadata";
-import { ActionContext, Commit } from "vuex";
+import { Commit } from "vuex";
 import {
-    CalibrateMetadataResponse,
-    ChoroplethIndicatorMetadata,
     FilterOption,
     FilterTypes,
     PlotSettingEffect,
-    PlotSettingOption
 } from "../../generated";
-import {initialScaleSettings} from "../plotState/plotState";
 
 export const filtersAfterUseShapeRegions = (filterTypes: FilterTypes[], rootState: RootState) => {
     const filters = [...filterTypes];
@@ -56,6 +52,7 @@ export const filtersInfoFromEffects = (
     let filterRefs: PlotSettingEffect["setFilters"] = [];
     let multiFilters: string[] = [];
     let filterValues: Record<string, string[]> = {};
+    let hiddenFilters: string[] = [];
 
     effects.forEach(effect => {
         // track which effects need to occur
@@ -69,11 +66,15 @@ export const filtersInfoFromEffects = (
         if (effect.setFilterValues) {
             filterValues = {...filterValues, ...effect.setFilterValues};
         }
+        if (effect.setHidden) {
+            hiddenFilters = [...new Set([...hiddenFilters, ...effect.setHidden])];
+        }
     });
 
     return filterRefs!.map(f => {
         const filter = filterTypes.find(filterType => filterType.id === f.filterId)!;
         const isMultiple = multiFilters.includes(f.stateFilterId);
+        const isHidden = hiddenFilters.includes(f.stateFilterId);
         let selection: FilterOption[];
 
         if (f.stateFilterId in filterValues) {
@@ -97,7 +98,8 @@ export const filtersInfoFromEffects = (
         return {
             ...f,
             multiple: isMultiple,
-            selection
+            selection,
+            hidden: isHidden
         }
     }) as PlotSelectionUpdate["selections"]["filters"];
 }
@@ -109,6 +111,8 @@ export const getPlotData = async (payload: PlotSelectionUpdate, commit: Commit, 
         await getFilteredData(name as OutputPlotName, payload.selections.filters, { commit, rootState });
     } else if (plotDataType === PlotDataType.TimeSeries) {
         await getTimeSeriesFilteredDataset(payload, commit, rootState);
+    } else if (plotDataType === PlotDataType.Calibrate) {
+        await getCalibrateFilteredDataset(payload, commit, rootState);
     }
 }
 
