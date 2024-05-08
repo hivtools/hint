@@ -77,7 +77,7 @@ export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrat
     },
 
     async getResult(context) {
-        const {commit, state, rootState} = context;
+        const {commit, state} = context;
 
         if (state.status.done) {
             await getResultMetadata(context);

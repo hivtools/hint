@@ -1,8 +1,10 @@
 <template>
-    <table-reshape-data :data="plotData"/>
-    <download-button :name="'downloadFilteredData'"
-                     :disabled="false"
-                     @click="handleDownload"/>
+    <div>
+        <table-reshape-data :data="plotData" :plot="plotName"/>
+        <download-button :name="'downloadFilteredData'"
+                         :disabled="false"
+                         @click="handleDownload"/>
+    </div>
 </template>
 
 <script lang="ts">
@@ -11,11 +13,12 @@ import { RootState } from '../../../root';
 import { useStore } from 'vuex';
 import {ChoroplethIndicatorMetadata} from '../../../generated';
 import TableReshapeData from './TableReshapeData.vue';
-import DownloadButton from '../downloadIndicator/DownloadButton.vue';
+import DownloadButton from '../../downloadIndicator/DownloadButton.vue';
 import { exportService } from '../../../dataExportService';
 import { appendCurrentDateTime } from '../../../utils';
 import {formatOutput, getIndicatorMetadata} from '../utils';
 import {PlotData} from "../../../store/plotData/plotData";
+import {PlotName} from "../../../store/plotSelections/plotSelections";
 
 // defines the order of headers on the excel download
 const header = [ "area_id", "area_name", "area_level",
@@ -30,17 +33,18 @@ export default defineComponent({
         DownloadButton
     },
     setup() {
+        const plotName = "table" as PlotName;
         const store = useStore<RootState>();
-        const plotData = computed<PlotData>(() => store.state.plotData.table);
-        const filterSelections = computed(() => store.state.plotSelections.table.filters);
+        const plotData = computed<PlotData>(() => store.state.plotData[plotName]);
+        const filterSelections = computed(() => store.state.plotSelections[plotName].filters);
         const indicatorMetadata = computed<ChoroplethIndicatorMetadata>(() => {
             const indicator = filterSelections.value.find(f => f.stateFilterId === "indicator")!.selection[0].id;
-            return getIndicatorMetadata(store, "table", indicator);
+            return getIndicatorMetadata(store, plotName, indicator);
         });
         const getDownloadData = () => {
             return plotData.value.map(d => {
                 const features = store.state.baseline.shape?.data.features || [];
-                const feature = features.value.find(f => f.properties.area_id === d.area_id);
+                const feature = features.find((f: any) => f.properties.area_id === d.area_id);
                 const format = (value: number) => formatOutput(value,
                         indicatorMetadata.value.format || "",
                         indicatorMetadata.value.scale || null,
@@ -49,10 +53,10 @@ export default defineComponent({
                     ...d,
                     area_name: feature?.properties.area_name || "",
                     parent_area_id: feature?.properties.parent_area_id || "",
-                    formatted_mode: format(d.mode),
-                    formatted_mean: format(d.mean),
-                    formatted_upper: format(d.upper),
-                    formatted_lower: format(d.lower)
+                    formatted_mode: 'mode' in d ? format(d.mode) : "",
+                    formatted_mean: 'mean' in d && d.mean ? format(d.mean) : "",
+                    formatted_upper: 'upper' in d ? format(d.upper) : "",
+                    formatted_lower: 'lower' in d ? format(d.lower) : "",
                 }
             });
         };
@@ -66,6 +70,7 @@ export default defineComponent({
         };
         return {
             plotData,
+            plotName,
             handleDownload
         };
     }

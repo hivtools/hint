@@ -1,59 +1,50 @@
 <template>
-    <table-display :data="reshapedData" :header-name="tableLabelHeader"/>
+    <table-display :plot="plot"
+                   :data="reshapedData"
+                   :table-metadata="tableMetadata"
+                   :header-name="tableLabelHeader"/>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent } from 'vue';
+import {computed, defineComponent, PropType} from 'vue';
 import TableDisplay from './TableDisplay.vue';
 import { useStore } from 'vuex';
 import { RootState } from '../../../root';
-import { Filter, FilterOption } from '../../../generated';
+import {FilterOption, TableMetadata} from '../../../generated';
+import {FilterSelection, PlotName} from "../../../store/plotSelections/plotSelections";
+
 export default defineComponent({
     components: {
         TableDisplay
     },
     props: {
-        data: Object
+        data: {
+            type: Object,
+            required: true
+        },
+        plot: {
+            type: String as PropType<PlotName>,
+            required: true
+        }
     },
     setup(props) {
         const store = useStore<RootState>();
-        const features = computed(() => store.state.baseline.shape?.data.features);
-        const selections = computed(() => store.state.plottingSelections.table);
-        const filterDataIdtoId = computed(() => {
-            const filters: Filter[] = store.getters["modelOutput/tableFilters"] || [];
-            const dataIdToId: Record<string, string> = {};
-            filters.forEach(f => {
-                dataIdToId[f.column_id] = f.id;
-            });
-            return dataIdToId;
+        const selectedPreset = computed<FilterOption>(() => {
+            return store.getters["plotSelections/controlSelectionFromId"](props.plot, "presets");
         });
 
-        const presetMetadata = computed(() => {
-            const currentPreset = store.state.plottingSelections.table.preset;
-            const presetMetadata = store.state.modelCalibrate.metadata?.tableMetadata.presets;
-            const metadata = presetMetadata?.find(m => m.defaults.id === currentPreset);
-            if (currentPreset && presetMetadata && metadata) {
-                return { row: metadata.defaults.row, column: metadata.defaults.column };
-            }
-            return null;
+        const tableMetadata = computed<TableMetadata | undefined>(() => {
+            return store.getters["plotSelections/tableMetadata"](props.plot, selectedPreset.value);
         });
+
         const reshapedData = computed(() => {
             const data = props.data;
-            if (presetMetadata.value && data) {
+            if (tableMetadata.value && data) {
                 const tableData: any[] = [];
-                const rowKey = presetMetadata.value.row.id;
-                let rowOptions: FilterOption[] = [];
-                // If rows are per area, generate pseudo filter options from all features in shape data
-                if (rowKey === "area_id") {
-                    if (features.value) {
-                        rowOptions = features.value.map(f => {
-                            return { id: f.properties.area_id, label: f.properties.area_name };
-                        });
-                    }
-                } else {
-                    rowOptions = selections.value.selectedFilterOptions[filterDataIdtoId.value[rowKey]];
-                }
-                const columnKey = presetMetadata.value.column.id;
+                const rowId = tableMetadata.value.row[0];
+                const rowKey = store.getters["modelCalibrate/filterIdToColumnId"](props.plot, rowId);
+                const rowOptions: FilterOption[] = store.getters["plotSelections/filterSelectionFromId"](props.plot, rowId);
+                const columnKey = tableMetadata.value.column[0];
                 for (let i = 0; i < data.length; i++) {
                     const currentRow = data[i];
                     const rowVal = currentRow[rowKey];
@@ -76,9 +67,21 @@ export default defineComponent({
             }
             return [];
         });
-        const tableLabelHeader = computed(() => presetMetadata.value?.row.label || "");
+
+        const filterSelections = computed(() => store.state.plotSelections[props.plot].filters);
+
+        const tableLabelHeader = computed(() => {
+            const rowFilter = filterSelections.value.find((f: FilterSelection) => f.filterId == tableMetadata.value?.row[0]);
+            if (!rowFilter) {
+                return "";
+            } else {
+                return rowFilter.label;
+            }
+        });
+
         return {
             reshapedData,
+            tableMetadata,
             tableLabelHeader
         }
     },

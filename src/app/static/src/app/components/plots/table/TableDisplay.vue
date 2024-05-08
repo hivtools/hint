@@ -4,20 +4,23 @@
                  :defaultColDef="defaultColDef"
                  :columnDefs="columnDefs"
                  :rowData="data"
+                 :grid-options="gridOptions"
                  @grid-ready="onGridReady">
     </ag-grid-vue>
 </template>
 
 <script lang="ts">
-import { ref, defineComponent, computed, onUpdated } from "vue";
+import {ref, defineComponent, computed, onUpdated, PropType} from "vue";
 import { AgGridVue } from "ag-grid-vue3";
 import { AgGridEvent } from "ag-grid-community";
 import "ag-grid-community/styles//ag-grid.css";
 import "ag-grid-community/styles//ag-theme-alpine.css";
 import { useStore } from "vuex";
 import { RootState } from "../../../root";
-import { formatOutput } from "../utils";
-import { DisplayFilter } from "../../../types";
+import {formatOutput, getIndicatorMetadata} from "../utils";
+import {FilterSelection, PlotName} from "../../../store/plotSelections/plotSelections";
+import {ChoroplethIndicatorMetadata, FilterOption, TableMetadata} from "../../../generated";
+
 const defaultColDef = {
     // Set the default filter type
     filter: 'agNumberColumnFilter',
@@ -33,15 +36,33 @@ const defaultColDef = {
     sortable: true,
     // Stop the columns from being draggable to rearrange order or remove them
     suppressMovable: true,
+};
+const gridOptions = {
     // our auto resize will apply to columns not shown on the screen
     // e.g. if they are off to the side, we wont get auto resize
     // because ag grid does this automatically
-    suppressColumnVirtualisation: true
-};
+    suppressColumnVirtualisation: true,
+}
+
+
 export default defineComponent({
     props: {
-        data: Object,
-        headerName: String
+        plot:{
+            type: String as PropType<PlotName>,
+            required: true
+        },
+        data: {
+            type: Object,
+            required: true
+        },
+        tableMetadata: {
+            type: Object as PropType<TableMetadata>,
+            required: true
+        },
+        headerName: {
+            type: String,
+            required: true
+        }
     },
     components: {
         AgGridVue
@@ -76,31 +97,26 @@ export default defineComponent({
             ensureColumnsWideEnough(event);
         };
         const store = useStore<RootState>();
-        const selections = computed(() => store.state.plottingSelections.table);
-        const presets = computed(() => store.state.modelCalibrate.metadata?.tableMetadata.presets);
-        const filters = computed<DisplayFilter[]>(() => store.getters["modelOutput/tableFilters"] || []);
-        const indicatorFormatConfig = computed(() => {
-            const indicators = store.state.modelCalibrate.metadata?.plottingMetadata.choropleth.indicators;
-            if (!indicators) return { format: null, scale: null, accuracy: null };
-            const currentIndicator = selections.value.indicator;
-            const indicatorConfig = indicators.find(ind => ind.indicator === currentIndicator)!;
-            return {
-                format: indicatorConfig.format,
-                scale: indicatorConfig.scale,
-                accuracy: indicatorConfig.accuracy
-            }
+        const filterSelections = computed(() => store.state.plotSelections[props.plot].filters);
+        const indicatorMetadata = computed<ChoroplethIndicatorMetadata>(() => {
+            const indicator = filterSelections.value.find(f => f.stateFilterId === "indicator")!.selection[0].id;
+            return getIndicatorMetadata(store, props.plot, indicator);
         });
         const formatValue = (value: number) => {
-            const cfg = indicatorFormatConfig.value;
-            return formatOutput(value, cfg.format || "", cfg.scale, cfg.accuracy);
+            const cfg = indicatorMetadata.value;
+            return formatOutput(value, cfg.format, cfg.scale, cfg.accuracy);
         };
+        // TODO: Make these work with any column type, for now fine to stick with sex as that
+        // is the only example we have in the data
         const getValue = (sex: string) => {
             return (params: any) => params.data["mean_" + sex];
         };
         const getFormat = (sex: string) => {
             return (params: any) => {
-                const sexSelections = selections.value.selectedFilterOptions["sex"].map(op => op.id);
-                if (!sexSelections.includes(sex)) return "";
+                const sexSelections = filterSelections.value
+                        .find(f => f.stateFilterId === "sex")?.selection
+                        .map((op: FilterOption)  => op.id);
+                if (!sexSelections || !sexSelections.includes(sex)) return "";
                 const mean = formatValue(params.value);
                 const lower = formatValue(params.data["lower_" + sex]);
                 const upper = formatValue(params.data["upper_" + sex]);
@@ -108,12 +124,9 @@ export default defineComponent({
             };
         };
         const columnDefs = computed(() => {
-            if (!presets.value) return [];
-            const currentPreset = presets.value.find(p => p.defaults.id === selections.value.preset)!;
-            const columnFilter = filters.value.find(f => f.column_id === currentPreset.defaults.column.id);
-            if (!columnFilter) return [];
-            const columnSelections = selections.value.selectedFilterOptions[columnFilter.id];
-            const columnHeaders = columnSelections.map(selection => {
+            const columnId = props.tableMetadata.column[0];
+            const columnSelection = filterSelections.value.find((f: FilterSelection) => f.filterId == columnId);
+            const columnHeaders = (!columnSelection) ? [] : columnSelection?.selection.map((selection: FilterOption) => {
                 return {
                     headerName: selection.label,
                     valueGetter: getValue(selection.id),
@@ -140,9 +153,7 @@ export default defineComponent({
             onGridReady,
             columnDefs,
             defaultColDef,
-            getValue,
-            getFormat,
-            gridApi
+            gridOptions
         }
     }
 });
