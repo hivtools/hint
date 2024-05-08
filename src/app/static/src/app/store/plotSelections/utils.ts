@@ -99,7 +99,7 @@ export const filtersInfoFromEffects = (
             ...f,
             multiple: isMultiple,
             selection,
-            visible: !isHidden
+            hidden: isHidden
         }
     }) as PlotSelectionUpdate["selections"]["filters"];
 }

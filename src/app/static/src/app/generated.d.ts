@@ -179,7 +179,7 @@ export interface CalibrateMetadataResponse {
             setHidden?: string[];
           };
         }[];
-        visible?: boolean;
+        hidden?: boolean;
       }[];
     };
     barchart: {
@@ -214,7 +214,7 @@ export interface CalibrateMetadataResponse {
             setHidden?: string[];
           };
         }[];
-        visible?: boolean;
+        hidden?: boolean;
       }[];
     };
     table: {
@@ -249,7 +249,7 @@ export interface CalibrateMetadataResponse {
             setHidden?: string[];
           };
         }[];
-        visible?: boolean;
+        hidden?: boolean;
       }[];
     };
     bubble: {
@@ -284,7 +284,7 @@ export interface CalibrateMetadataResponse {
             setHidden?: string[];
           };
         }[];
-        visible?: boolean;
+        hidden?: boolean;
       }[];
     };
   };
@@ -373,7 +373,7 @@ export interface CalibratePlotMetadata {
             setHidden?: string[];
           };
         }[];
-        visible?: boolean;
+        hidden?: boolean;
       }[];
     };
   };
@@ -452,7 +452,7 @@ export interface CalibratePlotResponse {
               setHidden?: string[];
             };
           }[];
-          visible?: boolean;
+          hidden?: boolean;
         }[];
       };
     };
@@ -1383,7 +1383,7 @@ export interface PlotSetting {
       setHidden?: string[];
     };
   }[];
-  visible?: boolean;
+  hidden?: boolean;
 }
 export interface PlotSettingEffect {
   setFilters?: {
@@ -1445,7 +1445,7 @@ export interface PlotSettingsControl {
         setHidden?: string[];
       };
     }[];
-    visible?: boolean;
+    hidden?: boolean;
   }[];
 }
 export interface PlottingMetadataResponse {
@@ -1794,7 +1794,7 @@ export interface ReviewInputFilterMetadataResponse {
             setHidden?: string[];
           };
         }[];
-        visible?: boolean;
+        hidden?: boolean;
       }[];
     };
     inputChoropleth: {
@@ -1829,7 +1829,7 @@ export interface ReviewInputFilterMetadataResponse {
             setHidden?: string[];
           };
         }[];
-        visible?: boolean;
+        hidden?: boolean;
       }[];
     };
   };

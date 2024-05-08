@@ -4,10 +4,10 @@ import { RootState } from "../../root"
 import {Dict, GenericChartDataset, PayloadWithType} from "../../types"
 import {
     CalibrateDataResponse,
-    CalibratePlotData, CalibratePlotResponse,
+    CalibratePlotData,
     FilterOption,
     InputTimeSeriesData,
-    InputTimeSeriesRow, ModelResultResponse,
+    InputTimeSeriesRow,
     PlotSettingEffect,
     PlotSettingOption
 } from "../../generated"
@@ -17,9 +17,7 @@ import { api } from "../../apiService"
 import { PlotDataMutations, PlotDataUpdate } from "../plotData/mutations"
 import { PlotMetadataFrame } from "../metadata/metadata"
 import { GenericChartMutation } from "../genericChart/mutations"
-import {InputTimeSeriesKey, PlotData} from "../plotData/plotData"
-import {ModelCalibrateMutation} from "../modelCalibrate/mutations";
-import {BarChartData} from "../../components/plots/bar/utils";
+import {InputTimeSeriesKey} from "../plotData/plotData"
 
 type IdOptions = {
     id: string,

@@ -36,7 +36,7 @@ export const plotNameToDataType: Record<PlotName, PlotDataType> = {
 export type FilterSelection = {
     multiple: boolean
     selection: FilterOption[],
-    visible: boolean
+    hidden: boolean
 } & FilterRef
 
 export type ControlSelection = {

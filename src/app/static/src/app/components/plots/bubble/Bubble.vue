@@ -51,22 +51,23 @@ import MapEmptyFeature from "../MapEmptyFeature.vue";
 import {getFeatureData, tooltipContent} from "./utils";
 
 const store = useStore<RootState>();
+const plotName = "bubble";
 
-const plotData = computed<PlotData>(() => store.state.plotData.bubble);
+const plotData = computed<PlotData>(() => store.state.plotData[plotName]);
 const getColourIndicator = () => {
-    return store.state.plotSelections.bubble.filters.find(f => f.stateFilterId === "colourIndicator")!.selection[0].id
+    return store.state.plotSelections[plotName].filters.find(f => f.stateFilterId === "colourIndicator")!.selection[0].id
 }
 
 const getSizeIndicator = () => {
-    return store.state.plotSelections.bubble.filters.find(f => f.stateFilterId === "sizeIndicator")!.selection[0].id
+    return store.state.plotSelections[plotName].filters.find(f => f.stateFilterId === "sizeIndicator")!.selection[0].id
 }
 const colourIndicator = ref<string>(getColourIndicator());
 const sizeIndicator = ref<string>(getSizeIndicator());
 const colourIndicatorMetadata = computed<ChoroplethIndicatorMetadata>(() => {
-    return getIndicatorMetadata(store, "bubble", colourIndicator.value)
+    return getIndicatorMetadata(store, plotName, colourIndicator.value)
 });
 const sizeIndicatorMetadata = computed<ChoroplethIndicatorMetadata>(() => {
-    return  getIndicatorMetadata(store, "bubble", sizeIndicator.value)
+    return  getIndicatorMetadata(store, plotName, sizeIndicator.value)
 });
 
 const colourRange = ref<NumericRange | null>(null);
@@ -116,7 +117,7 @@ const updateSizeScales = () => {
 }
 
 const updateFeatures = () => {
-    const selectedLevel = store.state.plotSelections.bubble.filters
+    const selectedLevel = store.state.plotSelections[plotName].filters
             .find(f => f.stateFilterId === "detail")!.selection;
     currentFeatures.value = getVisibleFeatures(features, selectedLevel, null);
 };
@@ -212,7 +213,7 @@ const getRadius = (feature: Feature) => {
 // But updating the plotSelections will also update the scale selections
 // So using computed we end up with duplicate updates when plotSelections change.
 // So we use watch instead for more control over when things are updated.
-watch(() => [store.state.plotSelections.bubble], updateMap);
+watch(() => [store.state.plotSelections[plotName]], updateMap);
 watch(colourScales, updateMapColours)
 watch(sizeScales, updateBubbleSizes)
 
