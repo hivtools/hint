@@ -6,12 +6,12 @@
 </template>
 
 <script lang="ts">
-import {computed, defineComponent, PropType} from 'vue';
+import { computed, defineComponent, PropType } from 'vue';
 import TableDisplay from './TableDisplay.vue';
 import { useStore } from 'vuex';
 import { RootState } from '../../../root';
-import {FilterOption, TableMetadata} from '../../../generated';
-import {FilterSelection, PlotName} from "../../../store/plotSelections/plotSelections";
+import { FilterOption, TableMetadata } from '../../../generated';
+import { FilterSelection, PlotName } from "../../../store/plotSelections/plotSelections";
 
 export default defineComponent({
     components: {

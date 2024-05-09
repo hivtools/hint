@@ -10,7 +10,7 @@
 </template>
 
 <script lang="ts">
-import {ref, defineComponent, computed, onUpdated, PropType} from "vue";
+import { ref, defineComponent, computed, onUpdated, PropType } from "vue";
 import { AgGridVue } from "ag-grid-vue3";
 import { AgGridEvent } from "ag-grid-community";
 import "ag-grid-community/styles//ag-grid.css";
@@ -18,8 +18,8 @@ import "ag-grid-community/styles//ag-theme-alpine.css";
 import { useStore } from "vuex";
 import { RootState } from "../../../root";
 import {formatOutput, getIndicatorMetadata} from "../utils";
-import {FilterSelection, PlotName} from "../../../store/plotSelections/plotSelections";
-import {ChoroplethIndicatorMetadata, FilterOption, TableMetadata} from "../../../generated";
+import { FilterSelection, PlotName } from "../../../store/plotSelections/plotSelections";
+import { ChoroplethIndicatorMetadata, FilterOption, TableMetadata } from "../../../generated";
 
 const defaultColDef = {
     // Set the default filter type
