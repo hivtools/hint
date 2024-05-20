@@ -1,6 +1,6 @@
 import {
     CalibrateMetadataResponse,
-    CalibratePlotResponse, ComparisonPlotResponse,
+    CalibratePlotResponse, ComparisonPlotResponse, CustomPlotMetadata,
     Error,
     FilterOption,
     FilterRef,

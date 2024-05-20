@@ -22,6 +22,7 @@
             <barchart class="col-md-9" v-if="selectedPlot === 'comparison'"
                       :plot="selectedPlot"
                       :show-error-bars="true"/>
+            <Table class="col-md-9" v-if="selectedPlot === 'table'"/>
         </div>
     </div>
 </template>
@@ -37,6 +38,7 @@ import { ModelOutputMutation } from "../../store/modelOutput/mutations";
 import Choropleth from "../plots/choropleth/Choropleth.vue";
 import Bubble from "../plots/bubble/Bubble.vue";
 import Barchart from "../plots/bar/Barchart.vue";
+import Table from "../plots/table/Table.vue";
 
 export default defineComponent({
 
@@ -55,6 +57,7 @@ export default defineComponent({
         Barchart,
         Choropleth,
         Bubble,
+        Table,
         FilterSet,
         PlotControlSet
     }

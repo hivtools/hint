@@ -159,6 +159,10 @@ export interface CalibrateMetadataResponse {
           [k: string]: string[];
         };
         setHidden?: string[];
+        customPlotEffect?: {
+          row: string[];
+          column: string[];
+        };
       };
       plotSettings: {
         id: string;
@@ -177,6 +181,10 @@ export interface CalibrateMetadataResponse {
               [k: string]: string[];
             };
             setHidden?: string[];
+            customPlotEffect?: {
+              row: string[];
+              column: string[];
+            };
           };
         }[];
         hidden?: boolean;
@@ -194,6 +202,10 @@ export interface CalibrateMetadataResponse {
           [k: string]: string[];
         };
         setHidden?: string[];
+        customPlotEffect?: {
+          row: string[];
+          column: string[];
+        };
       };
       plotSettings: {
         id: string;
@@ -212,6 +224,10 @@ export interface CalibrateMetadataResponse {
               [k: string]: string[];
             };
             setHidden?: string[];
+            customPlotEffect?: {
+              row: string[];
+              column: string[];
+            };
           };
         }[];
         hidden?: boolean;
@@ -229,6 +245,10 @@ export interface CalibrateMetadataResponse {
           [k: string]: string[];
         };
         setHidden?: string[];
+        customPlotEffect?: {
+          row: string[];
+          column: string[];
+        };
       };
       plotSettings: {
         id: string;
@@ -247,6 +267,10 @@ export interface CalibrateMetadataResponse {
               [k: string]: string[];
             };
             setHidden?: string[];
+            customPlotEffect?: {
+              row: string[];
+              column: string[];
+            };
           };
         }[];
         hidden?: boolean;
@@ -264,6 +288,10 @@ export interface CalibrateMetadataResponse {
           [k: string]: string[];
         };
         setHidden?: string[];
+        customPlotEffect?: {
+          row: string[];
+          column: string[];
+        };
       };
       plotSettings: {
         id: string;
@@ -282,6 +310,10 @@ export interface CalibrateMetadataResponse {
               [k: string]: string[];
             };
             setHidden?: string[];
+            customPlotEffect?: {
+              row: string[];
+              column: string[];
+            };
           };
         }[];
         hidden?: boolean;
@@ -353,6 +385,10 @@ export interface CalibratePlotMetadata {
           [k: string]: string[];
         };
         setHidden?: string[];
+        customPlotEffect?: {
+          row: string[];
+          column: string[];
+        };
       };
       plotSettings: {
         id: string;
@@ -371,6 +407,10 @@ export interface CalibratePlotMetadata {
               [k: string]: string[];
             };
             setHidden?: string[];
+            customPlotEffect?: {
+              row: string[];
+              column: string[];
+            };
           };
         }[];
         hidden?: boolean;
@@ -432,6 +472,10 @@ export interface CalibratePlotResponse {
             [k: string]: string[];
           };
           setHidden?: string[];
+          customPlotEffect?: {
+            row: string[];
+            column: string[];
+          };
         };
         plotSettings: {
           id: string;
@@ -450,6 +494,10 @@ export interface CalibratePlotResponse {
                 [k: string]: string[];
               };
               setHidden?: string[];
+              customPlotEffect?: {
+                row: string[];
+                column: string[];
+              };
             };
           }[];
           hidden?: boolean;
@@ -671,7 +719,6 @@ export interface ComparisonPlotMetadata {
       description?: string;
     }[];
     use_shape_regions?: boolean;
-    visible?: boolean;
   }[];
   indicators: {
     indicator: string;
@@ -702,6 +749,11 @@ export interface ComparisonPlotMetadata {
         setFilterValues?: {
           [k: string]: string[];
         };
+        setHidden?: string[];
+        customPlotEffect?: {
+          row: string[];
+          column: string[];
+        };
       };
       plotSettings: {
         id: string;
@@ -719,9 +771,14 @@ export interface ComparisonPlotMetadata {
             setFilterValues?: {
               [k: string]: string[];
             };
+            setHidden?: string[];
+            customPlotEffect?: {
+              row: string[];
+              column: string[];
+            };
           };
         }[];
-        visible?: boolean;
+        hidden?: boolean;
       }[];
     };
   };
@@ -752,7 +809,6 @@ export interface ComparisonPlotResponse {
         description?: string;
       }[];
       use_shape_regions?: boolean;
-      visible?: boolean;
     }[];
     indicators: {
       indicator: string;
@@ -783,6 +839,11 @@ export interface ComparisonPlotResponse {
           setFilterValues?: {
             [k: string]: string[];
           };
+          setHidden?: string[];
+          customPlotEffect?: {
+            row: string[];
+            column: string[];
+          };
         };
         plotSettings: {
           id: string;
@@ -800,9 +861,14 @@ export interface ComparisonPlotResponse {
               setFilterValues?: {
                 [k: string]: string[];
               };
+              setHidden?: string[];
+              customPlotEffect?: {
+                row: string[];
+                column: string[];
+              };
             };
           }[];
-          visible?: boolean;
+          hidden?: boolean;
         }[];
       };
     };
@@ -822,6 +888,12 @@ export interface ComparisonPlotRow {
   lower: number | null;
   upper: number | null;
   [k: string]: any;
+}
+export type CustomPlotMetadata = TableMetadata;
+
+export interface TableMetadata {
+  row: string[];
+  column: string[];
 }
 export interface DownloadStatusResponse {
   id: string;
@@ -1472,6 +1544,10 @@ export interface PlotSetting {
         [k: string]: string[];
       };
       setHidden?: string[];
+      customPlotEffect?: {
+        row: string[];
+        column: string[];
+      };
     };
   }[];
   hidden?: boolean;
@@ -1487,6 +1563,10 @@ export interface PlotSettingEffect {
     [k: string]: string[];
   };
   setHidden?: string[];
+  customPlotEffect?: {
+    row: string[];
+    column: string[];
+  };
 }
 export interface PlotSettingOption {
   id: string;
@@ -1502,6 +1582,10 @@ export interface PlotSettingOption {
       [k: string]: string[];
     };
     setHidden?: string[];
+    customPlotEffect?: {
+      row: string[];
+      column: string[];
+    };
   };
 }
 export interface PlotSettingsControl {
@@ -1516,6 +1600,10 @@ export interface PlotSettingsControl {
       [k: string]: string[];
     };
     setHidden?: string[];
+    customPlotEffect?: {
+      row: string[];
+      column: string[];
+    };
   };
   plotSettings: {
     id: string;
@@ -1534,6 +1622,10 @@ export interface PlotSettingsControl {
           [k: string]: string[];
         };
         setHidden?: string[];
+        customPlotEffect?: {
+          row: string[];
+          column: string[];
+        };
       };
     }[];
     hidden?: boolean;
@@ -1865,6 +1957,10 @@ export interface ReviewInputFilterMetadataResponse {
           [k: string]: string[];
         };
         setHidden?: string[];
+        customPlotEffect?: {
+          row: string[];
+          column: string[];
+        };
       };
       plotSettings: {
         id: string;
@@ -1883,6 +1979,10 @@ export interface ReviewInputFilterMetadataResponse {
               [k: string]: string[];
             };
             setHidden?: string[];
+            customPlotEffect?: {
+              row: string[];
+              column: string[];
+            };
           };
         }[];
         hidden?: boolean;
@@ -1900,6 +2000,10 @@ export interface ReviewInputFilterMetadataResponse {
           [k: string]: string[];
         };
         setHidden?: string[];
+        customPlotEffect?: {
+          row: string[];
+          column: string[];
+        };
       };
       plotSettings: {
         id: string;
@@ -1918,6 +2022,10 @@ export interface ReviewInputFilterMetadataResponse {
               [k: string]: string[];
             };
             setHidden?: string[];
+            customPlotEffect?: {
+              row: string[];
+              column: string[];
+            };
           };
         }[];
         hidden?: boolean;
@@ -1996,42 +2104,6 @@ export type SurveyResponseData = {
   ci_upper: number | null;
   [k: string]: any;
 }[];
-export interface TableMetadata {
-  presets: TablePreset[];
-}
-export interface TablePreset {
-  filters: {
-    id: string;
-    column_id: string;
-    label: string;
-    options: {
-      label: string;
-      id: string;
-      description?: string;
-    }[];
-    use_shape_regions?: boolean | null;
-  }[];
-  defaults: TableDefaults;
-}
-export interface TableDefaults {
-  id: string;
-  label: string;
-  column: {
-    id: string;
-    label: string;
-  };
-  row: {
-    id: string;
-    label: string;
-  };
-  selected_filter_options?: {
-    /**
-     * This interface was referenced by `undefined`'s JSON-Schema definition
-     * via the `patternProperty` "^.*$".
-     */
-    [k: string]: string[];
-  };
-}
 export type URI = string;
 export interface ValidateBaselineRequest {
   pjnz: string | null;

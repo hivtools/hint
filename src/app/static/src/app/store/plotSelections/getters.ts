@@ -1,10 +1,11 @@
 import {ControlSelection, FilterSelection, PlotName, PlotSelectionsState} from "./plotSelections";
-import {ChoroplethIndicatorMetadata, FilterOption} from "../../generated";
+import {ChoroplethIndicatorMetadata, FilterOption, TableMetadata} from "../../generated";
 import {BarChartData, plotDataToChartData} from "../../components/plots/bar/utils";
 import {RootState} from "../../root";
 import {PlotData} from "../plotData/plotData";
 import {Dict} from "../../types";
 import {getMetadataFromPlotName} from "./actions";
+import {PlotMetadataFrame} from "../metadata/metadata";
 
 export const getters = {
     controlSelectionFromId: (state: PlotSelectionsState) => (plotName: PlotName, controlId: string): FilterOption | undefined => {
@@ -49,5 +50,13 @@ export const getters = {
         } else {
             return emptyData
         }
+    },
+    tableMetadata: (state: PlotSelectionsState, getters: any, rootState: RootState) =>
+        (plotName: PlotName, selectedPreset: FilterOption): TableMetadata | undefined => {
+        const tableMetadata: PlotMetadataFrame = getMetadataFromPlotName(rootState, plotName);
+        const currentPreset = tableMetadata.plotSettingsControl[plotName].plotSettings
+            .find(s => s.id === "presets")?.options
+            .find(o => o.id === selectedPreset.id);
+        return currentPreset?.effect.customPlotEffect;
     }
 };
