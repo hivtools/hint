@@ -33,10 +33,11 @@ export default defineComponent({
             return store.state.plotSelections[props.plot].controls;
         });
 
-        const isHidden = computed(() => (controlId: string) => {
-            const metadata = getMetadataFromPlotName(store.state, props.plot);
-            return metadata.plotSettingsControl[props.plot].plotSettings.find(c => c.id === controlId)!.hidden;
-        });
+        const plotMetadata = computed(() => getMetadataFromPlotName(store.state, props.plot));
+
+        const isHidden = (controlId: string) => {
+            return plotMetadata.value.plotSettingsControl[props.plot].plotSettings.find(c => c.id === controlId)!.hidden;
+        };
 
         return {
             plotControls,
