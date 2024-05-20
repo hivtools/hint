@@ -1,13 +1,15 @@
 <template>
-    <single-select :options="controlOptions"
+    <div :key="`${plot}.${plotControlId}`">
+        <single-select :options="controlOptions"
                    :model-value="selected"
                    :placeholder="placeholder"
                    @update:model-value="updateControlSelection"/>
+    </div>
 </template>
 
 <script lang="ts">
 import { SingleSelect } from "@reside-ic/vue-nested-multiselect";
-import {computed, defineComponent, PropType, ref} from 'vue';
+import {computed, defineComponent, PropType} from 'vue';
 import i18next from "i18next";
 import {useStore} from "vuex";
 import {RootState} from "../../root";
@@ -32,11 +34,11 @@ export default defineComponent({
         const controlOptions = computed(() => {
             const metadata = getMetadataFromPlotName(store.state, props.plot);
             return metadata.plotSettingsControl[props.plot].plotSettings
-                .find(f => f.id === props.plotControlId)!.options;
+                .find(f => f.id === props.plotControlId)!.options
         });
 
         const selected = computed(() => {
-            const controls =  store.state.plotSelections[props.plot].controls
+            const controls = store.state.plotSelections[props.plot].controls
             return controls.find(control => control.id == props.plotControlId)!.selection[0]?.id;
         });
 

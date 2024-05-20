@@ -5,6 +5,7 @@ import {Dict, GenericChartDataset, PayloadWithType} from "../../types"
 import {
     CalibrateDataResponse,
     CalibratePlotData,
+    ComparisonPlotData,
     FilterOption,
     InputTimeSeriesData,
     InputTimeSeriesRow,
@@ -41,7 +42,8 @@ export const getMetadataFromPlotName = (rootState: RootState, plotName: PlotName
         case PlotDataType.Output: return rootState.modelCalibrate.metadata!;
         case PlotDataType.Input: return rootState.metadata.reviewInputMetadata!;
         case PlotDataType.TimeSeries: return rootState.metadata.reviewInputMetadata!;
-        case PlotDataType.Calibrate: return rootState.modelCalibrate.calibratePlotResult!.metadata!;
+        case PlotDataType.Calibrate: return rootState.modelCalibrate.calibratePlotResult!.metadata;
+        case PlotDataType.Comparison: return rootState.modelCalibrate.comparisonPlotResult!.metadata;
     }
 }
 
@@ -180,7 +182,41 @@ export const getCalibrateFilteredDataset = async (payload: PlotSelectionUpdate, 
     outer: for (let i = 0; i < data.length; i++) {
         const currRow = data[i];
         for (const column_id in filterObject) {
-            if (!filterObject[column_id].includes(currRow[column_id] as string | number)) {
+            // Filter values are always strings, so we cast the data to a string so the comparison works
+            if (!filterObject[column_id].includes(currRow[column_id].toString())) {
+                continue outer;
+            }
+        }
+        filteredData.push(currRow);
+    }
+    const plotDataPayload: PlotDataUpdate = {
+        plot: payload.plot,
+        data: filteredData
+    };
+    commit(`plotData/${PlotDataMutations.updatePlotData}`, { payload: plotDataPayload }, { root: true });
+};
+
+export const getComparisonFilteredDataset = async (payload: PlotSelectionUpdate, commit: Commit, rootState: RootState) => {
+    const comparisonPlotResult = rootState.modelCalibrate.comparisonPlotResult;
+    if (!comparisonPlotResult) {
+        return;
+    }
+    const data = comparisonPlotResult.data;
+
+    // Filter the data on the current selections
+    const metadata = getMetadataFromPlotName(rootState, payload.plot);
+    const { filters } = payload.selections;
+    const filterObject: Dict<(string| number)[]> = {};
+    filters.forEach(f => {
+        const filterType = metadata.filterTypes.find(ft => ft.id === f.filterId)!;
+        filterObject[filterType.column_id] = f.selection.map(s => s.id);
+    });
+    const filteredData: ComparisonPlotData = [];
+    outer: for (let i = 0; i < data.length; i++) {
+        const currRow = data[i];
+        for (const column_id in filterObject) {
+            // Filter values are always strings, so we cast the data to a string so the comparison works
+            if (!filterObject[column_id].includes(currRow[column_id].toString())) {
                 continue outer;
             }
         }

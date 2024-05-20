@@ -1,5 +1,5 @@
 <template>
-    <div :key="filter.filterId">
+    <div :key="`${plot}.${filter.filterId}`">
         <multi-select v-if="filter.multiple"
                       :options="options"
                       :model-value="selected"

@@ -1,5 +1,5 @@
 import {ModelCalibrateState} from "./modelCalibrate";
-import {ActionContext, ActionTree, Commit, Dispatch} from "vuex";
+import {ActionContext, ActionTree, Dispatch} from "vuex";
 import {DynamicFormData, DynamicFormMeta} from "@reside-ic/vue-next-dynamic-form";
 import {api} from "../../apiService";
 import {RootState} from "../../root";
@@ -7,19 +7,16 @@ import {ModelCalibrateMutation} from "./mutations";
 import {
     BarchartIndicator,
     CalibrateDataResponse,
-    CalibrateMetadataResponse, CalibratePlotResponse,
-    CalibrateResultResponse,
-    FilterOption,
-    ModelResultResponse,
+    CalibrateMetadataResponse,
+    CalibratePlotResponse,
+    ComparisonPlotResponse,
     ModelStatusResponse,
     ModelSubmitResponse
 } from "../../generated";
-import {switches} from "../../featureSwitches";
-import {CalibrateResultWithType, Dict, ModelOutputTabs} from "../../types";
+import {CalibrateResultWithType, ModelOutputTabs} from "../../types";
 import {DownloadResultsMutation} from "../downloadResults/mutations";
 import { ModelOutputMutation } from "../modelOutput/mutations";
 import {commitPlotDefaultSelections, filtersAfterUseShapeRegions} from "../plotSelections/utils";
-import { PlotDataType } from "../plotSelections/plotSelections";
 import {commitInitialScaleSelections} from "../plotState/utils";
 
 type ResultDataPayload = {
@@ -107,22 +104,20 @@ export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrat
     },
 
     async getComparisonPlot(context) {
-        const {commit, state} = context;
+        const {commit, state, rootState} = context;
         const calibrateId = state.calibrateId;
         commit(ModelCalibrateMutation.ComparisonPlotStarted);
 
         const response = await api<ModelCalibrateMutation, ModelCalibrateMutation>(context)
             .withError(ModelCalibrateMutation.SetComparisonPlotError)
             .ignoreSuccess()
-            .freezeResponse()
-            .get<CalibrateResultResponse>(`model/comparison/plot/${calibrateId}`);
+            .get<ComparisonPlotResponse>(`model/comparison/plot/${calibrateId}`);
 
         if (response) {
-            if (response.data) {
-                // TODO:PC
-                // selectFilterDefaults(response.data, commit, PlottingSelectionsMutations.updateComparisonPlotSelections)
-            }
             commit(ModelCalibrateMutation.SetComparisonPlotData, response.data);
+            const metadata= response.data.metadata
+            metadata.filterTypes = filtersAfterUseShapeRegions(metadata.filterTypes, rootState);
+            await commitPlotDefaultSelections(metadata, commit, rootState);
         }
     },
 
