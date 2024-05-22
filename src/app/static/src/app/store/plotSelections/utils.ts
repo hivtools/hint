@@ -1,11 +1,6 @@
 import { OutputPlotName, PlotDataType, PlotName, plotNameToDataType } from "./plotSelections";
 import { PlotSelectionUpdate, PlotSelectionsMutations } from "./mutations";
 import { RootState } from "../../root";
-import {
-    getCalibrateFilteredDataset,
-    getComparisonFilteredDataset,
-    getFilteredData,
-    getTimeSeriesFilteredDataset} from "./actions";
 import { PlotMetadataFrame } from "../metadata/metadata";
 import { Commit } from "vuex";
 import {
@@ -13,6 +8,13 @@ import {
     FilterTypes,
     PlotSettingEffect,
 } from "../../generated";
+import {
+    getCalibrateFilteredDataset,
+    getComparisonFilteredDataset,
+    getInputChoroplethFilteredData,
+    getOutputFilteredData,
+    getTimeSeriesFilteredDataset
+} from "../plotData/filter";
 
 export const filtersAfterUseShapeRegions = (filterTypes: FilterTypes[], rootState: RootState) => {
     const filters = [...filterTypes];
@@ -112,13 +114,15 @@ export const getPlotData = async (payload: PlotSelectionUpdate, commit: Commit, 
     const name = payload.plot;
     const plotDataType = plotNameToDataType[name];
     if (plotDataType === PlotDataType.Output) {
-        await getFilteredData(name as OutputPlotName, payload.selections.filters, { commit, rootState });
+        await getOutputFilteredData(name as OutputPlotName, payload.selections.filters, { commit, rootState });
     } else if (plotDataType === PlotDataType.TimeSeries) {
         await getTimeSeriesFilteredDataset(payload, commit, rootState);
     } else if (plotDataType === PlotDataType.Calibrate) {
         await getCalibrateFilteredDataset(payload, commit, rootState);
     } else if (plotDataType === PlotDataType.Comparison) {
         await getComparisonFilteredDataset(payload, commit, rootState);
+    } else if (plotDataType === PlotDataType.InputChoropleth) {
+        await getInputChoroplethFilteredData(payload, commit, rootState);
     }
 }
 

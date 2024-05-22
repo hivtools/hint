@@ -14,8 +14,8 @@
                 <h4 v-translate="'filters'"/>
                 <filter-set :plot="activePlot"/>
             </div>
-            <time-series v-if="activePlot === 'timeSeries'" class="col-md-9"/>
-            <!-- <choropleth class="col-md-9"/> -->
+            <time-series v-if="activePlot === 'timeSeries' && isTimeSeries" class="col-md-9"/>
+            <choropleth class="col-md-9" v-if="activePlot === 'inputChoropleth'" :plot="'inputChoropleth'"/>
         </div>
     </div>
 </template>
@@ -24,17 +24,18 @@
 import { computed, defineComponent, onBeforeMount, onMounted, ref } from 'vue';
 import { useStore } from 'vuex';
 import { RootState } from '../../root';
-import { FileType } from "../../store/surveyAndProgram/surveyAndProgram"
 import PlotControlSet from '../plots/PlotControlSet.vue';
 import FilterSet from '../plots/FilterSet.vue';
 import { InputPlotName, inputPlotNames } from '../../store/plotSelections/plotSelections';
 import TimeSeries from "../plots/timeSeries/TimeSeries.vue";
+import Choropleth from '../plots/choropleth/Choropleth.vue';
 
 export default defineComponent({
     components: {
         PlotControlSet,
         FilterSet,
-        TimeSeries
+        TimeSeries,
+        Choropleth
     },
     setup() {
         const store = useStore<RootState>();
@@ -42,6 +43,7 @@ export default defineComponent({
         const changePlot = (plot: InputPlotName) => {
             activePlot.value = plot;
         }
+        const isTimeSeries = computed(() => !!store.state.surveyAndProgram.anc || !!store.state.surveyAndProgram.program)
         const fetched = computed(() => store.state.metadata.reviewInputMetadataFetched);
 
         onBeforeMount(async () => {
@@ -52,7 +54,8 @@ export default defineComponent({
             inputPlotNames,
             activePlot,
             changePlot,
-            fetched
+            fetched,
+            isTimeSeries
         }
     }
 })

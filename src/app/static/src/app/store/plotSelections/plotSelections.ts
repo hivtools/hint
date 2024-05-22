@@ -22,7 +22,7 @@ export const calibratePlotName: CalibratePlotName = "calibrate";
 export type PlotName = OutputPlotName | InputPlotName | CalibratePlotName
 export const plotNames = [...outputPlotNames, ...inputPlotNames, calibratePlotName];
 
-export enum PlotDataType { Output, TimeSeries, Input, Calibrate, Comparison}
+export enum PlotDataType { Output, TimeSeries, InputChoropleth, Calibrate, Comparison}
 
 export const plotNameToDataType: Record<PlotName, PlotDataType> = {
     barchart: PlotDataType.Output,
@@ -30,7 +30,7 @@ export const plotNameToDataType: Record<PlotName, PlotDataType> = {
     choropleth: PlotDataType.Output,
     table: PlotDataType.Output,
     timeSeries: PlotDataType.TimeSeries,
-    inputChoropleth: PlotDataType.Input,
+    inputChoropleth: PlotDataType.InputChoropleth,
     calibrate: PlotDataType.Calibrate,
     comparison: PlotDataType.Comparison
 }

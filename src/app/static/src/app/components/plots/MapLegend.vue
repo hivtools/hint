@@ -6,7 +6,8 @@
                               :scale="Scale.Colour"
                               :indicator-metadata="indicatorMetadata"
                               :selected-scale="selectedScale"
-                              @update:selected-scale="$emit('update:selectedScale')">
+                              @update:selected-scale="$emit('update:selectedScale')"
+                              :plot="plot">
             </map-adjust-scale>
             <div class="legend-element map-control p-3">
                 <label>{{indicatorMetadata.name}}</label>
@@ -37,6 +38,7 @@ import {RootState} from "../../root";
 import {ChoroplethIndicatorMetadata} from "../../generated";
 import {Scale, ScaleSettings} from "../../store/plotState/plotState";
 import {ScaleLevels} from "./utils";
+import { PlotName } from "../../store/plotSelections/plotSelections";
 
 export default defineComponent({
     props: {
@@ -52,6 +54,10 @@ export default defineComponent({
             type: Object as PropType<ScaleSettings>,
             required: true
         },
+        plot: {
+            type: String as PropType<PlotName>,
+            required: true
+        }
     },
     setup(props) {
         const store = useStore<RootState>();

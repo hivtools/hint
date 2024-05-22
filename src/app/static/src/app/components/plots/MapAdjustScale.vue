@@ -5,7 +5,7 @@
                 <input id="type-input-dynamic-filtered" class="form-check-input" type="radio" :name="scaleTypeGroup"
                        :value="scaleType.DynamicFiltered"
                        :checked="selectedScale.type === scaleType.DynamicFiltered"
-                       @change="updateScale({...selectedScale, type: parseInt($event.target.value)})">
+                       @change="updateScale({...selectedScale, type: parseInt(($event.target as HTMLInputElement).value)})">
                 <span class="scale-type-radio" v-translate="'filteredDataset'"></span>
             </label>
         </div>
@@ -14,7 +14,7 @@
                 <input id="type-input-default" class="form-check-input" type="radio" :name="scaleTypeGroup"
                        :value="scaleType.Default"
                        :checked="selectedScale.type === scaleType.Default"
-                       @change="updateScale({...selectedScale, type: parseInt($event.target.value)})">
+                       @change="updateScale({...selectedScale, type: parseInt(($event.target as HTMLInputElement).value)})">
                 <span class="scale-type-radio" v-translate="'default'"></span>
             </label>
         </div>
@@ -23,7 +23,7 @@
                 <input id="type-input-custom" class="form-check-input" type="radio" :name="scaleTypeGroup"
                        :value="scaleType.Custom"
                        :checked="selectedScale.type === scaleType.Custom"
-                       @change="updateScale({...selectedScale, type: parseInt($event.target.value)})">
+                       @change="updateScale({...selectedScale, type: parseInt(($event.target as HTMLInputElement).value)})">
                 <span class="scale-type-radio" v-translate="'custom'"></span>
             </label>
 
@@ -34,7 +34,7 @@
                         <div class="col pt-1 pr-1">
                             <input id="custom-min-input" type="number" :step="colourScaleStep"
                                    :value="selectedScale.customMin"
-                                   @change="updateScale({...selectedScale, customMin: parseFloat($event.target.value)})"
+                                   @change="updateScale({...selectedScale, customMin: parseFloat(($event.target as HTMLInputElement).value)})"
                                    :max="selectedScale.customMax"
                                    :disabled="disableCustom">
                         </div>
@@ -45,7 +45,7 @@
                         <div class="col pt-1 pr-1">
                             <input id="custom-max-input" type="number" :step="colourScaleStep"
                                    :value="selectedScale.customMax"
-                                   @change="updateScale({...selectedScale, customMax: parseFloat($event.target.value)})"
+                                   @change="updateScale({...selectedScale, customMax: parseFloat(($event.target as HTMLInputElement).value)})"
                                    :min="selectedScale.customMin"
                                    :disabled="disableCustom">
                         </div>
@@ -65,6 +65,7 @@ import {Scale, ScaleSettings, ScaleType} from "../../store/plotState/plotState";
 import i18next from "i18next";
 import {ChoroplethIndicatorMetadata} from "../../generated";
 import {useUpdateScale} from "./useUpdateScale";
+import { PlotName } from "../../store/plotSelections/plotSelections";
 
 export default defineComponent({
     props: {
@@ -80,9 +81,13 @@ export default defineComponent({
             type: Object as PropType<ScaleSettings>,
             required: true
         },
+        plot: {
+            type: String as PropType<PlotName>,
+            required: true
+        }
     },
     setup(props) {
-        const {getScaleStep, updateOutputScale} = useUpdateScale();
+        const {getScaleStep, updateOutputScale} = useUpdateScale(props.plot);
 
         const updateScale = (newSettings: ScaleSettings) => {
             updateOutputScale(props.scale, props.indicatorMetadata.indicator, newSettings);
