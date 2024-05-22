@@ -51,8 +51,8 @@ export const actions: ActionTree<MetadataState, RootState> & MetadataActions = {
             metadata.filterTypes = filtersAfterUseShapeRegions(metadata.filterTypes, rootState);
             await commitPlotDefaultSelections(metadata, commit, rootState);
             commitInitialScaleSelections(metadata.indicators, commit);
-            commit({ type: MetadataMutations.ReviewInputsMetadataToggleComplete, payload: true });
         }
+        commit({ type: MetadataMutations.ReviewInputsMetadataToggleComplete, payload: true });
     },
 
     async getAdrUploadMetadata(context, downloadId) {
