@@ -2,8 +2,8 @@ import {
     mockADRState,
     mockADRUploadState,
     mockBaselineState,
+    mockCalibrateDataResponse,
     mockCalibratePlotResponse,
-    mockCalibrateResultResponse,
     mockComparisonPlotResponse,
     mockDataset,
     mockDownloadIndicatorState,
@@ -93,7 +93,7 @@ describe("LocalStorageManager", () => {
             modelOptions: mockModelOptionsState(),
             modelOutput: mockModelOutputState(),
             modelCalibrate: mockModelCalibrateState({
-                result: mockCalibrateResultResponse(),
+                result: {data: mockCalibrateDataResponse()},
                 fetchedIndicators: [],
                 calibratePlotResult: mockCalibratePlotResponse(),
                 comparisonPlotResult: mockComparisonPlotResponse()

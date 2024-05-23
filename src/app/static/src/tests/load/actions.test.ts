@@ -1,6 +1,6 @@
 import {
     mockAxios,
-    mockCalibrateResultResponse,
+    mockCalibrateDataResponse,
     mockError,
     mockFailure,
     mockLoadState,
@@ -152,7 +152,7 @@ describe("Load actions", () => {
 
         const testState = mockRootState({
             modelCalibrate: mockModelCalibrateState({
-                result: mockCalibrateResultResponse(),
+                result: {data: mockCalibrateDataResponse()},
                 optionsFormMeta: mockOptionsFormMeta({
                     controlSections: [{
                         label: "Test Section",
