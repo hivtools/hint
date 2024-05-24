@@ -15,7 +15,7 @@ import {ModelCalibrateMutation} from "../../app/store/modelCalibrate/mutations";
 import {freezer} from "../../app/utils";
 import {switches} from "../../app/featureSwitches";
 import {DownloadResultsMutation} from "../../app/store/downloadResults/mutations";
-import * as plotSelectionActions from "../../app/store/plotSelections/actions";
+import * as filter from "../../app/store/plotData/filter";
 import {Scale} from "../../app/store/plotState/plotState";
 import {Mock} from "vitest";
 import {flushPromises} from "@vue/test-utils";
@@ -177,8 +177,8 @@ describe("ModelCalibrate actions", () => {
 
         const commit = vi.fn();
         const dispatch = vi.fn();
-        const getFilteredDataSpy = vi
-            .spyOn(plotSelectionActions, "getFilteredData")
+        const getOutputFilteredDataSpy = vi
+            .spyOn(filter, "getOutputFilteredData")
             .mockImplementation(async (payload, commit, rootState) => {});
         const state = mockModelCalibrateState({
             calibrateId: "1234",
@@ -250,7 +250,7 @@ describe("ModelCalibrate actions", () => {
         expect(commit.mock.calls[8][0]).toBe("Ready");
 
         // Dispatches to get plot data
-        expect(getFilteredDataSpy.mock.calls.length).toBe(4) // The number of plots we have
+        expect(getOutputFilteredDataSpy.mock.calls.length).toBe(4) // The number of plots we have
         expect(dispatch.mock.calls[0][0]).toBe("getCalibratePlot");
         expect(dispatch.mock.calls[1][0]).toBe("getComparisonPlot");
     });

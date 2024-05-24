@@ -3,6 +3,7 @@ import {Mock} from "vitest";
 import {commitInitialScaleSelections} from "../../app/store/plotState/utils";
 import {PlotStateMutations} from "../../app/store/plotState/mutations";
 import {Scale, ScaleType} from "../../app/store/plotState/plotState";
+import {CalibrateMetadataResponse} from "../../app/generated";
 
 describe("plotState utils", () => {
 
@@ -19,35 +20,33 @@ describe("plotState utils", () => {
     it("can commit initial scale selections", () => {
         const commit = vi.fn();
 
-        const mockMetadata = mockCalibrateMetadataResponse({
-            indicators: [
-                {
-                    indicator: "prevalence",
-                    value_column: "value",
-                    name: "Prevalence",
-                    min: 0,
-                    max: 0.5,
-                    colour: "blue",
-                    invert_scale: false,
-                    scale: 1,
-                    accuracy: null,
-                    format: "0.0%"
-                },
-                {
-                    indicator: "population",
-                    value_column: "value",
-                    name: "Prevalence",
-                    min: 0,
-                    max: 10000,
-                    colour: "blue",
-                    invert_scale: false,
-                    scale: 1,
-                    accuracy: null,
-                    format: "0.0%"
-                }
-            ]
-        });
-        commitInitialScaleSelections(mockMetadata, commit);
+        const mockIndicators: CalibrateMetadataResponse["indicators"] = [
+            {
+                indicator: "prevalence",
+                value_column: "value",
+                name: "Prevalence",
+                min: 0,
+                max: 0.5,
+                colour: "blue",
+                invert_scale: false,
+                scale: 1,
+                accuracy: null,
+                format: "0.0%"
+            },
+            {
+                indicator: "population",
+                value_column: "value",
+                name: "Prevalence",
+                min: 0,
+                max: 10000,
+                colour: "blue",
+                invert_scale: false,
+                scale: 1,
+                accuracy: null,
+                format: "0.0%"
+            }
+        ];
+        commitInitialScaleSelections(mockIndicators, commit);
 
         expect(commit.mock.calls.length).toBe(2);
         const expectedSelections = {

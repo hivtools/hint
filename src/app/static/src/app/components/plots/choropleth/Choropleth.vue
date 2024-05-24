@@ -22,7 +22,7 @@
 </template>
 
 <script setup lang="ts">
-import {PropType, computed, onMounted, ref, toRefs, watch, defineProps} from "vue";
+import {PropType, computed, onMounted, ref, toRefs, watch} from "vue";
 import {useStore} from "vuex";
 import {RootState} from "../../../root";
 import { LMap, LGeoJson } from "@vue-leaflet/vue-leaflet";
@@ -45,6 +45,7 @@ import {getFeatureData} from "./utils";
 import MapEmptyFeature from "../MapEmptyFeature.vue";
 import { PlotName } from "../../../store/plotSelections/plotSelections";
 
+// eslint-disable-next-line no-undef
 const props = defineProps({
     plot: {
         type: String as PropType<PlotName>,

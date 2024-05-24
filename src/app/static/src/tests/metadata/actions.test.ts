@@ -15,6 +15,9 @@ import {actions} from "../../app/store/metadata/actions";
 import {Mock} from "vitest";
 import * as utils from "../../app/store/plotSelections/utils";
 import {FileType} from "../../app/store/surveyAndProgram/surveyAndProgram";
+import {MetadataMutations} from "../../app/store/metadata/mutations";
+import {PlotStateMutations} from "../../app/store/plotState/mutations";
+import {Scale} from "../../app/store/plotState/plotState";
 
 const rootState = mockRootState({baseline: mockBaselineState({iso3: "MWI"})});
 describe("Metadata actions", () => {
@@ -86,23 +89,27 @@ describe("Metadata actions", () => {
         await actions.getReviewInputMetadata({commit, rootState} as any);
 
         expect(JSON.parse(mockAxios.history["post"][0]["data"]))
-            .toStrictEqual({"types": [FileType.Shape]})
+            .toStrictEqual({"types": [FileType.Shape]});
 
-        expect(commit.mock.calls.length).toBe(3);
+        expect(commit.mock.calls.length).toBe(5);
         expect(commit.mock.calls[0][0]).toStrictEqual({
-            type: "ReviewInputsMetadataToggleComplete",
+            type: MetadataMutations.ReviewInputsMetadataToggleComplete,
             payload: false
-        })
+        });
         expect(commit.mock.calls[1][0]).toStrictEqual({
-            type: "ReviewInputsMetadataFetched",
+            type: MetadataMutations.ReviewInputsMetadataFetched,
             payload: mockMetadata
-        })
-        expect(commit.mock.calls[2][0]).toStrictEqual({
-            type: "ReviewInputsMetadataToggleComplete",
+        });
+        expect(commit.mock.calls[2][0].type).toStrictEqual(`plotState/${PlotStateMutations.setOutputScale}`);
+        expect(commit.mock.calls[2][0].payload.scale).toStrictEqual(Scale.Colour)
+        expect(commit.mock.calls[3][0].type).toStrictEqual(`plotState/${PlotStateMutations.setOutputScale}`);
+        expect(commit.mock.calls[3][0].payload.scale).toStrictEqual(Scale.Size)
+        expect(commit.mock.calls[4][0]).toStrictEqual({
+            type: MetadataMutations.ReviewInputsMetadataToggleComplete,
             payload: true
-        })
-        expect(mockCommitPlotDefaultSelections.mock.calls.length).toBe(1)
-        expect(mockCommitPlotDefaultSelections.mock.calls[0][0]).toStrictEqual(mockMetadata)
+        });
+        expect(mockCommitPlotDefaultSelections.mock.calls.length).toBe(1);
+        expect(mockCommitPlotDefaultSelections.mock.calls[0][0]).toStrictEqual(mockMetadata);
     });
 
     it("commits review inputs for all available survey and programme files", async () => {
@@ -126,10 +133,10 @@ describe("Metadata actions", () => {
         await actions.getReviewInputMetadata({commit, rootState: rState} as any);
 
         expect(JSON.parse(mockAxios.history["post"][0]["data"]))
-            .toStrictEqual({"types": [FileType.Shape, FileType.ANC, FileType.Programme, FileType.Survey]})
+            .toStrictEqual({"types": [FileType.Shape, FileType.ANC, FileType.Programme, FileType.Survey]});
     });
 
-    it("commits review input metadata error after failing to fetch", async () => {
+    it("commits review input metadata error after failing to fetch metadata", async () => {
         mockAxios.onPost(`/meta/review-inputs/MWI`)
             .reply(400, mockFailure("Metadata Fetch Failed"));
 
@@ -138,17 +145,17 @@ describe("Metadata actions", () => {
 
         expect(commit.mock.calls.length).toBe(3);
         expect(commit.mock.calls[0][0]).toStrictEqual({
-            type: "ReviewInputsMetadataToggleComplete",
+            type: MetadataMutations.ReviewInputsMetadataToggleComplete,
             payload: false
-        })
+        });
         expect(commit.mock.calls[1][0]).toStrictEqual({
-            type: "ReviewInputsMetadataError",
+            type: MetadataMutations.ReviewInputsMetadataError,
             payload: mockError("Metadata Fetch Failed")
         });
         expect(commit.mock.calls[2][0]).toStrictEqual({
-            type: "ReviewInputsMetadataToggleComplete",
+            type: MetadataMutations.ReviewInputsMetadataToggleComplete,
             payload: true
-        })
+        });
     });
 
     async function testPlottingMetadataError(statusCode: number) {
