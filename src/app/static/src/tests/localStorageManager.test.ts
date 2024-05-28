@@ -106,7 +106,7 @@ describe("LocalStorageManager", () => {
             language: Language.en,
             metadata: mockMetadataState({plottingMetadataError: mockError("metadataError")}),
             plottingSelections: mockPlottingSelections(),
-            plotData: mockPlotData(),
+            plotData: mockPlotDataState(),
             plotSelections: mockPlotSelections(),
             plotState: mockPlotState(),
             surveyAndProgram: mockSurveyAndProgramState({
