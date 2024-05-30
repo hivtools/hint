@@ -156,7 +156,7 @@ const getStyle = (feature: Feature) => {
 }
 
 const emptyFeature = computed(() => {
-    return plotData.value.length === 0
+    return selectedAreaIds.value.length === 0
 });
 
 onMounted(() => {
