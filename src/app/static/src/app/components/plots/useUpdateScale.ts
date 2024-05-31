@@ -1,12 +1,26 @@
-import {useStore} from "vuex";
+import {Store, useStore} from "vuex";
 import {RootState} from "../../root";
 import {Scale, ScaleSettings} from "../../store/plotState/plotState";
 import {getIndicatorMetadata, scaleStepFromMetadata} from "./utils";
 import {computed} from "vue";
 import {PlotStateMutations} from "../../store/plotState/mutations";
+import { PlotName } from "../../store/plotSelections/plotSelections";
 
-export const useUpdateScale = () => {
+export const useUpdateScale = (activePlot: PlotName) => {
     const store = useStore<RootState>();
+
+    const getScaleStepFromState = (store: Store<RootState>, stateFilterId: string) => {
+        const indicator = store.state.plotSelections[activePlot].filters.find(f => f.stateFilterId === stateFilterId)!.selection[0].id;
+        const indicatorMetadata = getIndicatorMetadata(store, activePlot, indicator);
+        return scaleStepFromMetadata(indicatorMetadata);
+    };
+
+    const colourScaleStep = computed(() => {
+        const indicatorStateFilterId = activePlot === "bubble" ? "colourIndicator" : "indicator";
+        return getScaleStepFromState(store, indicatorStateFilterId);
+    });
+
+    const sizeScaleStep = computed(() => getScaleStepFromState(store, "sizeIndicator"));
 
     const getScaleStep = (scale: Scale) => {
         if (scale === Scale.Colour) {
@@ -17,33 +31,6 @@ export const useUpdateScale = () => {
             throw new RangeError(`Scale type must be one of 'name' or 'colour', got ${scale}`)
         }
     };
-
-    const colourScaleStep = computed(() => {
-        const activePlot = store.state.modelOutput.selectedTab;
-        let indicator
-        if (activePlot === "choropleth") {
-            indicator = getIndicatorMetadata(store, activePlot, choroplethColourIndicator.value)
-        } else {
-            indicator = getIndicatorMetadata(store, activePlot, bubbleColourIndicator.value)
-        }
-        return scaleStepFromMetadata(indicator)
-    });
-
-    const sizeScaleStep = computed(() => {
-        return scaleStepFromMetadata(getIndicatorMetadata(store, "bubble", bubbleSizeIndicator.value))
-    });
-
-    const choroplethColourIndicator = computed(() => {
-        return store.state.plotSelections.choropleth.filters.find(f => f.stateFilterId === "indicator")!.selection[0].id;
-    });
-
-    const bubbleColourIndicator = computed(() => {
-        return store.state.plotSelections.bubble.filters.find(f => f.stateFilterId === "colourIndicator")!.selection[0].id;
-    });
-
-    const bubbleSizeIndicator = computed(() => {
-        return store.state.plotSelections.bubble.filters.find(f => f.stateFilterId === "sizeIndicator")!.selection[0].id;
-    });
 
     const updateOutputScale = (scale: Scale, indicatorId: string, newScaleSettings: ScaleSettings) => {
         store.commit({

@@ -6,6 +6,8 @@ import { FileType } from '../surveyAndProgram/surveyAndProgram';
 import { commitPlotDefaultSelections, filtersAfterUseShapeRegions } from '../plotSelections/utils';
 import { ReviewInputFilterMetadataResponse } from '../../generated';
 import { RootState } from '../../root';
+import { commitInitialScaleSelections } from '../plotState/utils';
+import { addAreaLevelsToSAPData } from '../plotData/utils';
 
 export interface MetadataActions {
     getPlottingMetadata: (store: ActionContext<MetadataState, RootState>, country: string) => void
@@ -23,18 +25,21 @@ export const actions: ActionTree<MetadataState, RootState> & MetadataActions = {
     },
 
     async getReviewInputMetadata(context) {
-        const { commit, rootState, state } = context;
+        const { commit, rootState } = context;
         const iso3 = rootState.baseline.iso3;
         const sap = rootState.surveyAndProgram;
         const fileTypes = [FileType.Shape]
         if (!sap.ancError && sap.anc) {
-            fileTypes.push(FileType.ANC)
+            fileTypes.push(FileType.ANC);
+            addAreaLevelsToSAPData(rootState, "anc", commit);
         }
         if (!sap.programError && sap.program) {
-            fileTypes.push(FileType.Programme)
+            fileTypes.push(FileType.Programme);
+            addAreaLevelsToSAPData(rootState, "program", commit);
         }
         if (!sap.surveyError && sap.survey) {
-            fileTypes.push(FileType.Survey)
+            fileTypes.push(FileType.Survey);
+            addAreaLevelsToSAPData(rootState, "survey", commit);
         }
         commit({ type: MetadataMutations.ReviewInputsMetadataToggleComplete, payload: false });
         const response = await api<MetadataMutations, MetadataMutations>(context)
@@ -45,6 +50,7 @@ export const actions: ActionTree<MetadataState, RootState> & MetadataActions = {
             const metadata = response.data;
             metadata.filterTypes = filtersAfterUseShapeRegions(metadata.filterTypes, rootState);
             await commitPlotDefaultSelections(metadata, commit, rootState);
+            commitInitialScaleSelections(metadata.indicators, commit);
             commit({ type: MetadataMutations.ReviewInputsMetadataToggleComplete, payload: true });
         }
     },

@@ -187,7 +187,7 @@ export const getResultMetadata = async function (context: ActionContext<ModelCal
         commit({type: ModelCalibrateMutation.MetadataFetched, payload: data});
 
         await commitPlotDefaultSelections(data, commit, rootState);
-        commitInitialScaleSelections(data, commit);
+        commitInitialScaleSelections(data.indicators, commit);
 
         commit(ModelCalibrateMutation.Calibrated);
         await dispatch("getCalibratePlot");

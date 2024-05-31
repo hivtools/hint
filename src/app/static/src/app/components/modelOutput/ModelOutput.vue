@@ -14,7 +14,7 @@
                 <h4 v-translate="'filters'"/>
                 <filter-set :plot="selectedPlot"/>
             </div>
-            <choropleth class="col-md-9" v-if="selectedPlot === 'choropleth'"/>
+            <choropleth class="col-md-9" v-if="selectedPlot === 'choropleth'" :plot="'choropleth'"/>
             <bubble class="col-md-9" v-if="selectedPlot === 'bubble'"/>
             <barchart class="col-md-9" v-if="selectedPlot === 'barchart'"
                       :plot="selectedPlot"

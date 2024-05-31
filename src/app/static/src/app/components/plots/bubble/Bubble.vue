@@ -3,7 +3,7 @@
         <l-map ref="map" style="height: 800px; width: 100%" @ready="updateBounds" @vue:updated="updateBounds">
             <l-geo-json v-for="feature in currentFeatures"
                         ref="featureRefs"
-                        :key="feature.properties.area_id"
+                        :key="feature.properties!.area_id"
                         :geojson="feature"
                         :options-style="() => style">
             </l-geo-json>
@@ -13,10 +13,12 @@
                 <reset-map @reset-view="updateBounds"></reset-map>
                 <map-legend :indicator-metadata="colourIndicatorMetadata"
                             :scale-levels="colourScaleLevels"
-                            :selected-scale="colourScale"></map-legend>
+                            :selected-scale="colourScale!"
+                            :plot="plotName"></map-legend>
                 <size-legend :indicator-metadata="sizeIndicatorMetadata"
-                             :indicator-range="sizeRange"
-                             :selected-size-scale="sizeScale"></size-legend>
+                             :indicator-range="sizeRange!"
+                             :selected-size-scale="sizeScale!"
+                             :plot="plotName"></size-legend>
             </template>
         </l-map>
     </div>
@@ -43,7 +45,7 @@ import {
     debounce_leading
 } from "../utils";
 import {BubbleIndicatorValuesDict, NumericRange} from "../../../types";
-import {ChoroplethIndicatorMetadata} from "../../../generated";
+import {CalibrateDataResponse, ChoroplethIndicatorMetadata} from "../../../generated";
 import { ScaleSettings } from "../../../store/plotState/plotState";
 import SizeLegend from "./SizeLegend.vue";
 import {circleMarker, CircleMarker} from "leaflet";
@@ -52,6 +54,7 @@ import {getFeatureData, tooltipContent} from "./utils";
 
 const store = useStore<RootState>();
 const plotName = "bubble";
+type OutputData = CalibrateDataResponse["data"]
 
 const plotData = computed<PlotData>(() => store.state.plotData[plotName]);
 const getColourIndicator = () => {
@@ -105,7 +108,7 @@ const updateBubbleSizes = () => {
 const updateMapColours = () => {
     colourIndicator.value = getColourIndicator();
     colourScale.value = colourScales.value[colourIndicator.value];
-    colourRange.value = getIndicatorRange(colourIndicatorMetadata.value, colourScale.value, plotData.value);
+    colourRange.value = getIndicatorRange(colourIndicatorMetadata.value, colourScale.value, plotData.value as OutputData);
     colourScaleLevels.value = getColourScaleLevels(colourIndicatorMetadata.value, colourRange.value);
     updateFeatureData();
 }
@@ -113,13 +116,13 @@ const updateMapColours = () => {
 const updateSizeScales = () => {
     sizeIndicator.value = getSizeIndicator();
     sizeScale.value = sizeScales.value[sizeIndicator.value];
-    sizeRange.value = getIndicatorRange(sizeIndicatorMetadata.value, sizeScale.value, plotData.value);
+    sizeRange.value = getIndicatorRange(sizeIndicatorMetadata.value, sizeScale.value, plotData.value as OutputData);
 }
 
 const updateFeatures = () => {
     const selectedLevel = store.state.plotSelections[plotName].filters
             .find(f => f.stateFilterId === "detail")!.selection;
-    currentFeatures.value = getVisibleFeatures(features, selectedLevel, null);
+    currentFeatures.value = getVisibleFeatures(features, selectedLevel);
 };
 
 const updateFeatureData = () => {

@@ -8,6 +8,7 @@ import {Store} from "vuex";
 import {RootState} from "../../root";
 import {getMetadataFromPlotName} from "../../store/plotSelections/actions";
 import {PlotName} from "../../store/plotSelections/plotSelections";
+import { StyleValue } from "vue";
 
 export const getIndicatorMetadata = (store: Store<RootState>, plotName: PlotName, selectedIndicator: string): ChoroplethIndicatorMetadata => {
     const metadata = getMetadataFromPlotName(store.state, plotName);
@@ -16,7 +17,7 @@ export const getIndicatorMetadata = (store: Store<RootState>, plotName: PlotName
 
 export interface ScaleLevels {
     label: string
-    style: Partial<CSSStyleDeclaration>
+    style: StyleValue
 }
 
 export const getColourScaleLevels = (indicatorMetadata: ChoroplethIndicatorMetadata, colourRange: NumericRange): ScaleLevels[] => {
@@ -161,6 +162,8 @@ export const formatOutput = function (value: number | string, format: string, sc
 };
 
 const getPlotDataForIndicator = (indicatorMetadata: ChoroplethIndicatorMetadata, plotData: CalibrateDataResponse["data"]) => {
+    // if plotData doesn't have indicator key then we don't filter by it
+    if (!plotData?.at(0)?.hasOwnProperty("indicator")) return plotData;
     return plotData.filter((row) => row.indicator == indicatorMetadata.indicator);
 }
 

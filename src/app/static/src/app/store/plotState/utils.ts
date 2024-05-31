@@ -5,11 +5,11 @@ import {Dict} from "../../types";
 import {PlotStateMutations} from "./mutations";
 
 export const commitInitialScaleSelections = (
-    metadata: CalibrateMetadataResponse,
+    indicators: CalibrateMetadataResponse["indicators"],
     commit: Commit
 ) => {
 
-    const newScaleSettings = metadata.indicators.reduce((dict, meta) => {
+    const newScaleSettings = indicators.reduce((dict, meta) => {
         dict[meta.indicator] = initialiseScaleFromMetadata(meta);
         return dict
     }, {} as Dict<ScaleSettings>)

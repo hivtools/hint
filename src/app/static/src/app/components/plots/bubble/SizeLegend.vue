@@ -23,6 +23,7 @@
                               :scale="Scale.Size"
                               :indicator-metadata="indicatorMetadata"
                               :selected-scale="selectedSizeScale"
+                              :plot="plot"
                               @update:selected-scale="$emit('update:selectedScale')">
             </map-adjust-scale>
         </div>
@@ -38,6 +39,7 @@ import { NumericRange } from "../../../types";
 import { formatLegend } from "../utils";
 import {getRadius} from "./utils";
 import {LControl} from "@vue-leaflet/vue-leaflet";
+import { PlotName } from "../../../store/plotSelections/plotSelections";
 
 export default defineComponent({
     components: {LControl, MapAdjustScale},
@@ -54,6 +56,10 @@ export default defineComponent({
             type: Object as PropType<ScaleSettings>,
             required: true
         },
+        plot: {
+            type: String as PropType<PlotName>,
+            required: true
+        }
     },
     setup(props) {
         const minRadius = 10;
