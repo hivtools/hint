@@ -6,8 +6,8 @@ import {initialSurveyAndProgramState, SurveyAndProgramState} from "../app/store/
 
 import {
     AncResponse,
+    CalibrateDataResponse,
     CalibratePlotResponse,
-    CalibrateResultResponse,
     ComparisonPlotResponse,
     DownloadSubmitRequest,
     Error,
@@ -19,6 +19,7 @@ import {
     ProgrammeFilters,
     ProgrammeResponse,
     Response,
+    ReviewInputFilterMetadataResponse,
     ShapeResponse,
     SurveyFilters,
     SurveyResponse,
@@ -34,16 +35,15 @@ import {initialLoadState, LoadState} from "../app/store/load/state";
 import {initialModelOptionsState, ModelOptionsState} from "../app/store/modelOptions/modelOptions";
 import {initialModelOutputState, ModelOutputState} from "../app/store/modelOutput/modelOutput";
 import {
-    ColourScalesState,
-    initialColourScalesState,
     initialPlottingSelectionsState,
     PlottingSelectionsState
 } from "../app/store/plottingSelections/plottingSelections";
 import {ErrorsState, initialErrorsState} from "../app/store/errors/errors";
+import {ColourScalesState, initialColourScalesState} from "../app/store/plottingSelections/plottingSelections";
 import {Dataset, DatasetResource, DownloadIndicatorDataset, DownloadResultsDependency, Release} from "../app/types";
 import {initialProjectsState, ProjectsState} from "../app/store/projects/projects";
 import {initialModelCalibrateState, ModelCalibrateState} from "../app/store/modelCalibrate/modelCalibrate";
-import {HintrVersionState, initialHintrVersionState} from "../app/store/hintrVersion/hintrVersion";
+import { HintrVersionState, initialHintrVersionState } from "../app/store/hintrVersion/hintrVersion";
 import {ADRState, initialADRState} from "../app/store/adr/adr";
 import {ADRUploadState, initialADRUploadState} from "../app/store/adrUpload/adrUpload";
 import {DownloadResultsState, initialDownloadResultsState} from "../app/store/downloadResults/downloadResults";
@@ -51,8 +51,8 @@ import {GenericChartState, initialGenericChartState} from "../app/store/genericC
 import {DynamicControlType, DynamicFormMeta} from "@reside-ic/vue-next-dynamic-form";
 import {initialPlotSelectionsState, PlotSelectionsState} from "../app/store/plotSelections/plotSelections";
 import {DownloadIndicatorState, initialDownloadIndicatorState} from "../app/store/downloadIndicator/downloadIndicator";
-import {initialPlotDataState, PlotDataState} from "../app/store/plotData/plotData";
-import {initialPlotState, PlotState} from "../app/store/plotState/plotState";
+import { PlotDataState, initialPlotDataState } from "../app/store/plotData/plotData";
+import { PlotState, initialPlotState } from "../app/store/plotState/plotState";
 
 export const mockAxios = new MockAdapter(axios);
 
@@ -413,39 +413,20 @@ export const mockModelResultResponse = (props: Partial<ModelResultResponse> = {}
     };
 };
 
-export const mockCalibrateResultResponse = (props: Partial<CalibrateResultResponse> = {}): CalibrateResultResponse => {
-    return {
-        plottingMetadata: {
-            barchart: {
-                indicators: [], filters: []
-            },
-            choropleth: {
-                indicators: [], filters: []
-            }
-        },
-        tableMetadata: {
-            presets: []
-        },
-        uploadMetadata: {
-            outputSummary: {description: "Naomi output files"},
-            outputZip: {description:"Naomi output files"}
-        },
-        data: [{
-            area_id: "MWI",
-            sex: "both",
-            age_group: "1",
-            calendar_quarter: "1",
-            indicator_id: 1,
-            indicator: 'mock',
-            lower: 0.5,
-            mean: 0.5,
-            mode: 0.5,
-            upper: 0.5
-        }],
-        warnings: [],
-        ...props
-    }
-};
+export const mockCalibrateDataResponse = (): CalibrateDataResponse["data"] => {
+    return [{
+        area_id: "MWI",
+        sex: "both",
+        age_group: "1",
+        calendar_quarter: "1",
+        indicator_id: 1,
+        indicator: 'mock',
+        lower: 0.5,
+        mean: 0.5,
+        mode: 0.5,
+        upper: 0.5
+    }]
+}
 
 export const mockCalibratePlotResponse = (props: Partial<CalibratePlotResponse> = {}): CalibratePlotResponse => {
     return {
@@ -465,6 +446,29 @@ export const mockCalibratePlotResponse = (props: Partial<CalibratePlotResponse> 
                 }
             }
         },
+        ...props
+    }
+}
+
+export const mockCalibrateMetadataResponse = (props: Partial<CalibrateMetadataResponse> = {}): CalibrateMetadataResponse => {
+    return {
+        filterTypes: [],
+        indicators: [],
+        plotSettingsControl: {
+            choropleth: {
+                plotSettings: []
+            },
+            barchart: {
+                plotSettings: []
+            },
+            table: {
+                plotSettings: []
+            },
+            bubble: {
+                plotSettings: []
+            },
+        },
+        warnings: [],
         ...props
     }
 }
@@ -490,20 +494,14 @@ export const mockComparisonPlotResponse = (props: Partial<ComparisonPlotResponse
             indicators: [],
             plotSettingsControl: {
                 comparison: {
-                    plotSettings: [
-                        {
-                            id: "1",
-                            label: "setting",
-                            options: []
-                        }
-                    ]
+                    plotSettings: []
                 }
-            }
+            },
+            warnings: []
         },
         ...props
     }
 };
-
 
 
 export const mockPlottingMetadataResponse = (props: Partial<PlottingMetadataResponse> = {}): PlottingMetadataResponse => {
@@ -658,6 +656,46 @@ export const mockDownloadIndicatorData = (props: Partial<DownloadIndicatorDatase
                 "value": 20
             }
         ],
+        ...props
+    }
+}
+
+export const mockReviewInputMetadata = (props: Partial<ReviewInputFilterMetadataResponse> = {}): ReviewInputFilterMetadataResponse => {
+    return {
+        filterTypes: [
+            {
+                id: "1",
+                column_id: "1",
+                options: [
+                    {
+                        id: "op1",
+                        label: "lab1"
+                    }
+                ]
+            }
+        ],
+        indicators: [
+            {
+                indicator: "prevalence",
+                value_column: "iindicator",
+                name: "Prevalence",
+                min: 0,
+                max: 1,
+                colour: "red",
+                invert_scale: false,
+                scale: 1,
+                accuracy: null,
+                format: "0.0%"
+            }
+        ],
+        plotSettingsControl: {
+            timeSeries: {
+                plotSettings: []
+            },
+            inputChoropleth: {
+                plotSettings: []
+            }
+        },
         ...props
     }
 }
