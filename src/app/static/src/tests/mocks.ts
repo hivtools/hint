@@ -8,6 +8,7 @@ import {
     AncResponse,
     CalibrateDataResponse,
     CalibratePlotResponse,
+    ChoroplethIndicatorMetadata,
     ComparisonPlotResponse,
     DownloadSubmitRequest,
     Error,
@@ -169,7 +170,7 @@ export const mockPlottingSelections = (props?: Partial<PlottingSelectionsState>)
     }
 };
 
-export const mockPlotData = (props?: Partial<PlotDataState>) => {
+export const mockPlotDataState = (props?: Partial<PlotDataState>) => {
     return {
         ...initialPlotDataState(),
         ...props

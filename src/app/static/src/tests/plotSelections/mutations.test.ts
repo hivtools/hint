@@ -9,11 +9,11 @@ describe("Plot selections mutations", () => {
         };
         const payload = {
             plot: "barchart",
-            selections: { filter: "testFilter" }
+            selections: {filter: "testFilter"}
         };
-        mutations.updatePlotSelection(testState as any, { payload });
+        mutations.updatePlotSelection(testState as any, {payload});
         expect(testState).toStrictEqual({
-            barchart: { filter: "testFilter" },
+            barchart: {filter: "testFilter"},
             choropleth: {}
         });
     });
@@ -24,7 +24,7 @@ describe("Plot selections mutations", () => {
             barchart: {},
             choropleth: {}
         };
-        mutations.setError(testState as any, { payload: testError });
+        mutations.setError(testState as any, {payload: testError});
         expect(testState).toStrictEqual({
             barchart: {},
             choropleth: {},

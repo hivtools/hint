@@ -18,7 +18,7 @@ import {
     mockModelOptionsState,
     mockModelOutputState,
     mockModelRunState,
-    mockPlotData,
+    mockPlotDataState,
     mockPlotSelections,
     mockPlotState,
     mockPlottingSelections,

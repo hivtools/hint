@@ -1,7 +1,7 @@
 import {ModelCalibrateState} from "./modelCalibrate";
 import {getMetadataFromPlotName} from "../plotSelections/actions";
 import {RootState} from "../../root";
-import {PlotName, PlotSelectionsState} from "../plotSelections/plotSelections";
+import {PlotName} from "../plotSelections/plotSelections";
 import {FilterOption, TableMetadata} from "../../generated";
 import {PlotMetadataFrame} from "../metadata/metadata";
 

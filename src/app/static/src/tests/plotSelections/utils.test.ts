@@ -5,13 +5,14 @@ import {
     getPlotData
 } from "../../app/store/plotSelections/utils";
 import {PlotSelectionsMutations} from "../../app/store/plotSelections/mutations";
-import * as actions from "../../app/store/plotSelections/actions";
+import * as filter from "../../app/store/plotData/filter";
 import {
     getCalibrateFilteredDataset,
     getComparisonFilteredDataset,
-    getFilteredData,
-    getTimeSeriesFilteredDataset
-} from "../../app/store/plotSelections/actions";
+    getOutputFilteredData,
+    getTimeSeriesFilteredDataset,
+    getInputChoroplethFilteredData
+} from "../../app/store/plotData/filter";
 import {mockPlotMetadataFrame, mockRootState} from "../mocks";
 
 describe("Plot selections utils", () => {
@@ -21,20 +22,24 @@ describe("Plot selections utils", () => {
 
     const commit = vi.fn();
 
-    const mockGetFilteredData = vi
-        .spyOn(actions, "getFilteredData")
+    const mockGetOutputFilteredData = vi
+        .spyOn(filter, "getOutputFilteredData")
         .mockImplementation(async (...args) => {return});
 
     const mockGetTimeSeriesFilteredDataset = vi
-        .spyOn(actions, "getTimeSeriesFilteredDataset")
+        .spyOn(filter, "getTimeSeriesFilteredDataset")
         .mockImplementation(async (...args) => {return});
 
     const mockGetCalibrateFilteredDataset = vi
-        .spyOn(actions, "getCalibrateFilteredDataset")
+        .spyOn(filter, "getCalibrateFilteredDataset")
         .mockImplementation(async (...args) => {return});
 
     const mockGetComparisonFilteredDataset = vi
-        .spyOn(actions, "getComparisonFilteredDataset")
+        .spyOn(filter, "getComparisonFilteredDataset")
+        .mockImplementation(async (...args) => {return});
+
+    const mockGetInputChoroplethFilteredData = vi
+        .spyOn(filter, "getInputChoroplethFilteredData")
         .mockImplementation(async (...args) => {return});
 
     const rootState = mockRootState();
@@ -64,7 +69,7 @@ describe("Plot selections utils", () => {
         const metadata = mockPlotMetadataFrame();
         await commitPlotDefaultSelections(metadata, commit, rootState);
 
-        expect(mockGetFilteredData.mock.calls.length).toBe(1);
+        expect(mockGetOutputFilteredData.mock.calls.length).toBe(1);
 
         expect(commit.mock.calls.length).toBe(1);
         expect(commit.mock.calls[0][0]).toBe(`plotSelections/${PlotSelectionsMutations.updatePlotSelection}`);
@@ -233,7 +238,7 @@ describe("Plot selections utils", () => {
         });
         await commitPlotDefaultSelections(metadata, commit, rootState);
 
-        expect(mockGetFilteredData.mock.calls.length).toBe(1);
+        expect(mockGetOutputFilteredData.mock.calls.length).toBe(1);
 
         expect(commit.mock.calls.length).toBe(1);
         expect(commit.mock.calls[0][0]).toBe(`plotSelections/${PlotSelectionsMutations.updatePlotSelection}`);
@@ -313,7 +318,7 @@ describe("Plot selections utils", () => {
         const rootState = mockRootState();
         await commitPlotDefaultSelections(metadata, commit, rootState);
 
-        expect(mockGetFilteredData.mock.calls.length).toBe(1);
+        expect(mockGetOutputFilteredData.mock.calls.length).toBe(1);
 
         expect(commit.mock.calls.length).toBe(1);
         expect(commit.mock.calls[0][0]).toBe(`plotSelections/${PlotSelectionsMutations.updatePlotSelection}`);
@@ -330,31 +335,42 @@ describe("Plot selections utils", () => {
     it("gets appropriate plot data depending on plot name", async () => {
         await getPlotData({plot: "choropleth", selections: { controls: [], filters: [] }}, commit, rootState);
 
-        expect(mockGetFilteredData.mock.calls.length).toBe(1);
+        expect(mockGetOutputFilteredData.mock.calls.length).toBe(1);
         expect(mockGetTimeSeriesFilteredDataset.mock.calls.length).toBe(0);
         expect(mockGetCalibrateFilteredDataset.mock.calls.length).toBe(0);
         expect(mockGetComparisonFilteredDataset.mock.calls.length).toBe(0);
+        expect(mockGetInputChoroplethFilteredData.mock.calls.length).toBe(0);
 
         await getPlotData({plot: "timeSeries", selections: { controls: [], filters: [] }}, commit, rootState);
 
-        expect(mockGetFilteredData.mock.calls.length).toBe(1);
+        expect(mockGetOutputFilteredData.mock.calls.length).toBe(1);
         expect(mockGetTimeSeriesFilteredDataset.mock.calls.length).toBe(1);
         expect(mockGetCalibrateFilteredDataset.mock.calls.length).toBe(0);
         expect(mockGetComparisonFilteredDataset.mock.calls.length).toBe(0);
+        expect(mockGetInputChoroplethFilteredData.mock.calls.length).toBe(0);
 
         await getPlotData({plot: "calibrate", selections: { controls: [], filters: [] }}, commit, rootState);
 
-        expect(mockGetFilteredData.mock.calls.length).toBe(1);
+        expect(mockGetOutputFilteredData.mock.calls.length).toBe(1);
         expect(mockGetTimeSeriesFilteredDataset.mock.calls.length).toBe(1);
         expect(mockGetCalibrateFilteredDataset.mock.calls.length).toBe(1);
         expect(mockGetComparisonFilteredDataset.mock.calls.length).toBe(0);
 
         await getPlotData({plot: "comparison", selections: { controls: [], filters: [] }}, commit, rootState);
 
-        expect(mockGetFilteredData.mock.calls.length).toBe(1);
+        expect(mockGetOutputFilteredData.mock.calls.length).toBe(1);
         expect(mockGetTimeSeriesFilteredDataset.mock.calls.length).toBe(1);
         expect(mockGetCalibrateFilteredDataset.mock.calls.length).toBe(1);
         expect(mockGetComparisonFilteredDataset.mock.calls.length).toBe(1);
+        expect(mockGetInputChoroplethFilteredData.mock.calls.length).toBe(0);
+
+        await getPlotData({plot: "inputChoropleth", selections: { controls: [], filters: [] }}, commit, rootState);
+
+        expect(mockGetOutputFilteredData.mock.calls.length).toBe(1);
+        expect(mockGetTimeSeriesFilteredDataset.mock.calls.length).toBe(1);
+        expect(mockGetCalibrateFilteredDataset.mock.calls.length).toBe(1);
+        expect(mockGetComparisonFilteredDataset.mock.calls.length).toBe(1);
+        expect(mockGetInputChoroplethFilteredData.mock.calls.length).toBe(1);
     });
 
     it("filtersInfoFromEffects runs setFilters effect correctly", async () => {
