@@ -90,9 +90,8 @@ time. In this case, you should give your branch its own new version number, rath
 version number as changes from another branch.
 
 ### Distribution
-A docker image containing the app is created as part of the BuildKite build. To create such an image locally,
-run `./buildkite/make-build-env.sh` followed by `./buildkite/build.sh`. A CLI image is also created as part of
-the BuildKite build, using `./buildkite/build-cli.sh`.
+A docker image containing the app is created as part of the GitHub actions build. A CLI image is also created as part of
+the GitHub build.
 
 Run `docker run -p 8080:8080 --name hint mrcide/hint:branch_name` to run a built image. The app will not start until
 config is provided at `/etc/hint/config.properties`. This config is added during deployment with

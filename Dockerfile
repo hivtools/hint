@@ -4,6 +4,8 @@ RUN mkdir /static/public -p
 
 COPY ./app/static/public /static/public
 COPY ./docker/entrypoint /entrypoint
+COPY ./docker/entrypoint_azure /entrypoint_azure
+COPY ./docker/config.properties /config.properties
 
 ADD ./app/build/distributions/app-boot.tar /
 

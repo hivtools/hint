@@ -1,0 +1,75 @@
+#!/usr/bin/env bash
+set -e
+
+HERE=$(dirname $0)
+
+mkdir -p /tmp/hint/token_dir
+PATH_CONFIG=/tmp/hint/config.properties
+
+fetch_and_set_env_vars() {
+    local AVENIR_AUTH_URL="https://api.authadmin.avenirhealth.org/v1/api/roles/fetchuserskeys"
+
+    if [ -z "$AVENIR_ACCESS_TOKEN" ]; then
+        echo "Error: 'AVENIR_ACCESS_TOKEN' environment variable is not set."
+        exit 1
+    fi
+
+    RESPONSE=$(curl -s -w "\n%{http_code}" -X POST -H "Content-Type: application/json" -d "{\"keyAccessToken\": \"$AVENIR_ACCESS_TOKEN\"}" "$AVENIR_AUTH_URL")
+
+    HTTP_CODE=$(tail -n1 <<< "$RESPONSE")  # get the last line
+    CONTENT=$(sed '$ d' <<< "$RESPONSE")
+
+    if [ "$HTTP_CODE" -ne 200 ]; then
+        echo "Error: Failed to fetch data from URL. HTTP status code: $HTTP_CODE"
+            cat CONTENT  # Print the response for debugging
+            exit 1
+    fi
+
+    # Extract values from the response and set environment variables
+    VALUES=$(jq -r '.keys[] | select(.name == "AVENIR_NM_DB_PASSWORD" or
+        .name == "AVENIR_NM_EMAIL_PASSWORD" or
+        .name == "AVENIR_NM_ISSUE_REPORT_URL") | "\(.name)=\(.value)"' <<< "$CONTENT")
+
+    if [ -z "$VALUES" ]; then
+        echo "Error: Required keys not found in the response."
+        exit 1
+    fi
+
+    # Set the extracted values as environment variables
+    while IFS= read -r line; do
+        export $line
+    done <<< "$VALUES"
+
+    echo "Environment read from Avenir Auth server"
+}
+
+check_required_env_vars() {
+    local required_vars=("AVENIR_NM_DB_PASSWORD" "AVENIR_NM_EMAIL_PASSWORD" "AVENIR_NM_ISSUE_REPORT_URL" \
+      "APPLICATION_URL" "HINTR_URL" "DB_URL")
+    local missing_vars=()
+
+    for var in "${required_vars[@]}"; do
+        if [ -z "${!var}" ]; then
+            missing_vars+=("$var")
+        fi
+    done
+
+    if [ ${#missing_vars[@]} -ne 0 ]; then
+        echo "Error: The following required environment variables are not set:"
+        for var in "${missing_vars[@]}"; do
+            echo "  - $var"
+        done
+        exit 1
+    else
+        echo "All required environment variables are set."
+    fi
+}
+
+echo "Creating configuration at '$PATH_CONFIG'"
+fetch_and_set_env_vars
+cp "$HERE"/config.properties $PATH_CONFIG
+
+check_required_env_vars
+
+echo "Starting app"
+/app-boot/bin/app
