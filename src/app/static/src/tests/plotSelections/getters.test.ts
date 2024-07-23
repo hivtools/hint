@@ -3,6 +3,7 @@ import {
     mockCalibrateMetadataResponse,
     mockCalibratePlotResponse,
     mockChoroplethIndicatorMetadata,
+    mockFilterSelection,
     mockModelCalibrateState,
     mockPlotSelectionsState,
     mockRootState
@@ -12,25 +13,7 @@ import {PlotName} from "../../app/store/plotSelections/plotSelections";
 import * as barUtils from "../../app/components/plots/bar/utils";
 
 describe("plotSelections getters", () => {
-    const filterSelections = [
-        {
-            filterId: "detail",
-            stateFilterId: "detailFilter",
-            label: "Detail filter",
-            selection: [
-                {
-                    label: "Option A",
-                    id: "detailOptA"
-                },
-                {
-                    label: "Option A",
-                    id: "detailOptB"
-                }
-            ],
-            multiple: true,
-            hidden: false
-        }
-    ]
+    const filterSelections = [mockFilterSelection()]
 
     const xAxisOptions = [
         {

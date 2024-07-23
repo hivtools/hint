@@ -7,6 +7,7 @@ import {initialSurveyAndProgramState, SurveyAndProgramState} from "../app/store/
 import {
     AncResponse,
     CalibrateDataResponse,
+    CalibrateMetadataResponse,
     CalibratePlotResponse,
     ChoroplethIndicatorMetadata,
     ComparisonPlotResponse,
@@ -50,7 +51,11 @@ import {ADRUploadState, initialADRUploadState} from "../app/store/adrUpload/adrU
 import {DownloadResultsState, initialDownloadResultsState} from "../app/store/downloadResults/downloadResults";
 import {GenericChartState, initialGenericChartState} from "../app/store/genericChart/genericChart";
 import {DynamicControlType, DynamicFormMeta} from "@reside-ic/vue-next-dynamic-form";
-import {initialPlotSelectionsState, PlotSelectionsState} from "../app/store/plotSelections/plotSelections";
+import {
+    FilterSelection,
+    initialPlotSelectionsState,
+    PlotSelectionsState
+} from "../app/store/plotSelections/plotSelections";
 import {DownloadIndicatorState, initialDownloadIndicatorState} from "../app/store/downloadIndicator/downloadIndicator";
 import { PlotDataState, initialPlotDataState } from "../app/store/plotData/plotData";
 import { PlotState, initialPlotState } from "../app/store/plotState/plotState";
@@ -218,6 +223,27 @@ export const mockPlotSelectionsState = (props?: Partial<PlotSelectionsState>): P
         ...props
     }
 };
+
+export const mockFilterSelection = (props?: Partial<FilterSelection>): FilterSelection => {
+    return {
+        filterId: "detail",
+        stateFilterId: "detailFilter",
+        label: "Detail filter",
+        selection: [
+            {
+                label: "Option A",
+                id: "detailOptA"
+            },
+            {
+                label: "Option A",
+                id: "detailOptB"
+            }
+        ],
+        multiple: true,
+        hidden: false,
+        ...props
+    }
+}
 
 export const mockColourScales = (props?: Partial<ColourScalesState>) => {
     return {

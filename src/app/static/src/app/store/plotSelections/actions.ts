@@ -21,7 +21,7 @@ type IdOptions = {
     options: FilterOption[]
 }
 
-type Selection = { filter: IdOptions } | { plotSetting: IdOptions }
+export type Selection = { filter: IdOptions } | { plotSetting: IdOptions }
 
 export type PlotSelectionActionUpdate = {
     plot: PlotName,
@@ -67,8 +67,7 @@ export const actions: ActionTree<PlotSelectionsState, RootState> & PlotSelection
             });
             const effects: PlotSettingEffect[] = plotMetadata.defaultEffect ? [plotMetadata.defaultEffect] : [];
             plotSettingOptions.forEach(pso => effects.push(pso.effect));
-            const filtersInfo = filtersInfoFromEffects(effects, rootState, metadata);
-            updatedSelections.filters = filtersInfo;
+            updatedSelections.filters = filtersInfoFromEffects(effects, rootState, metadata);
         }
 
         const updatePayload = {plot, selections: updatedSelections} as PlotSelectionUpdate;
