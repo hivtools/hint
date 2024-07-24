@@ -37,7 +37,7 @@ fetch_and_set_env_vars() {
 
     # Set the extracted values as environment variables
     while IFS= read -r line; do
-        export line
+        export $line
     done <<< "$VALUES"
 
     echo "Environment read from Avenir Auth server"

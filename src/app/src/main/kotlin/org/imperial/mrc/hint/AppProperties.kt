@@ -1,10 +1,13 @@
 package org.imperial.mrc.hint
 
+import org.apache.commons.text.StringSubstitutor
+import org.apache.commons.text.lookup.StringLookup
 import org.springframework.stereotype.Component
 import java.io.File
 import java.io.FileNotFoundException
 import java.net.URL
 import java.util.*
+
 
 interface AppProperties
 {
@@ -51,7 +54,9 @@ interface AppProperties
 class HintProperties : Properties()
 
 @Component
-class ConfiguredAppProperties(private val props: HintProperties = properties) : AppProperties
+class ConfiguredAppProperties(
+    private val props: HintProperties = properties,
+    private val envPropertyResolver: StringSubstitutor = StringSubstitutor(EnvLookUp())) : AppProperties
 {
     final override val adrANCSchema = propString("adr_anc_schema")
     final override val adrARTSchema = propString("adr_art_schema")
@@ -123,7 +128,23 @@ class ConfiguredAppProperties(private val props: HintProperties = properties) : 
 
     private fun propString(propName: String): String
     {
-        return props[propName].toString()
+        return envPropertyResolver.replace(props[propName].toString())
+    }
+}
+
+class EnvLookUp: StringLookup
+{
+    // Wrapping this for testing purposes, env vars are final in Java making it very difficult to test this
+    fun getEnvVar(key: String): String?
+    {
+        return System.getenv(key)
+    }
+
+    override fun lookup(key: String): String
+    {
+        val value = getEnvVar(key)
+        require(!value.isNullOrBlank()) { "Key '$key' is not found in the env variables." }
+        return value
     }
 }
 
