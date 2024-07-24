@@ -3,8 +3,8 @@ set -e
 
 HERE=$(dirname $0)
 
-mkdir -p /tmp/hint/token_dir
-PATH_CONFIG=/tmp/hint/config.properties
+mkdir -p /etc/hint/token_dir
+PATH_CONFIG=/etc/hint/config.properties
 
 fetch_and_set_env_vars() {
     local AVENIR_AUTH_URL="https://api.authadmin.avenirhealth.org/v1/api/roles/fetchuserskeys"
@@ -37,7 +37,7 @@ fetch_and_set_env_vars() {
 
     # Set the extracted values as environment variables
     while IFS= read -r line; do
-        export $line
+        export line
     done <<< "$VALUES"
 
     echo "Environment read from Avenir Auth server"

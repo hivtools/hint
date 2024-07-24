@@ -15,4 +15,7 @@ ENV SPRING_PROFILES_ACTIVE $SPRING_PROFILES_ACTIVE
 # This path is needed for the eventual configuration
 RUN mkdir -p /etc/hint
 
+# Install jq to parse secrets from Avenir Auth server
+RUN microdnf install jq
+
 ENTRYPOINT ["/entrypoint"]
