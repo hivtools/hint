@@ -1,11 +1,19 @@
 package org.imperial.mrc.hint.unit
 
+import com.nhaarman.mockito_kotlin.spy
+import com.nhaarman.mockito_kotlin.times
+import com.nhaarman.mockito_kotlin.verify
+import com.nhaarman.mockito_kotlin.whenever
+import org.apache.commons.text.StringSubstitutor
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.imperial.mrc.hint.ConfiguredAppProperties
+import org.imperial.mrc.hint.EnvLookUp
 import org.imperial.mrc.hint.helpers.readPropsFromTempFile
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.io.File
+
 
 class AppPropertiesTests
 {
@@ -204,5 +212,44 @@ class AppPropertiesTests
         val props = readPropsFromTempFile("oauth2_login_method=false")
         val sut = ConfiguredAppProperties(props)
         assertEquals(sut.oauth2LoginMethod, false)
+    }
+
+    @Test
+    fun `can use env var in config properties`()
+    {
+        val envLookUp = spy(EnvLookUp())
+        whenever(envLookUp.getEnvVar("MY_VARIABLE")).thenReturn("test")
+
+        val mockEnvPropertyResolver = StringSubstitutor(envLookUp)
+
+        val props = readPropsFromTempFile("application_url=\${MY_VARIABLE}")
+        val sut = ConfiguredAppProperties(props, mockEnvPropertyResolver)
+
+        assertEquals(sut.applicationUrl, "test")
+
+        verify(envLookUp, times(1)).getEnvVar("MY_VARIABLE")
+        verify(envLookUp, times(1)).lookup("MY_VARIABLE")
+
+        whenever(envLookUp.getEnvVar("EXT")).thenReturn("com")
+        val props2 = readPropsFromTempFile("application_url=https://\${MY_VARIABLE}.\${EXT}")
+        val sut2 = ConfiguredAppProperties(props2, mockEnvPropertyResolver)
+
+        assertEquals(sut2.applicationUrl, "https://test.com")
+
+        verify(envLookUp, times(2)).getEnvVar("MY_VARIABLE")
+        verify(envLookUp, times(2)).lookup("MY_VARIABLE")
+        verify(envLookUp, times(1)).getEnvVar("EXT")
+        verify(envLookUp, times(1)).lookup("EXT")
+    }
+
+    @Test
+    fun `useful error returned if required variable not found`()
+    {
+        val props = readPropsFromTempFile("application_url=\${MISSING_VAR}")
+
+        assertThatThrownBy {
+            ConfiguredAppProperties(props)
+        }.isInstanceOf(IllegalArgumentException::class.java)
+            .hasMessageContaining("Key 'MISSING_VAR' is not found in the env variables.")
     }
 }
