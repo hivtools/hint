@@ -42,7 +42,14 @@ import {
 } from "../app/store/plottingSelections/plottingSelections";
 import {ErrorsState, initialErrorsState} from "../app/store/errors/errors";
 import {ColourScalesState, initialColourScalesState} from "../app/store/plottingSelections/plottingSelections";
-import {Dataset, DatasetResource, DownloadIndicatorDataset, DownloadResultsDependency, Release} from "../app/types";
+import {
+    Dataset,
+    DatasetResource,
+    DownloadIndicatorDataset,
+    DownloadResultsDependency,
+    GenericChartDataset,
+    Release
+} from "../app/types";
 import {initialProjectsState, ProjectsState} from "../app/store/projects/projects";
 import {initialModelCalibrateState, ModelCalibrateState} from "../app/store/modelCalibrate/modelCalibrate";
 import { HintrVersionState, initialHintrVersionState } from "../app/store/hintrVersion/hintrVersion";
@@ -52,6 +59,7 @@ import {DownloadResultsState, initialDownloadResultsState} from "../app/store/do
 import {GenericChartState, initialGenericChartState} from "../app/store/genericChart/genericChart";
 import {DynamicControlType, DynamicFormMeta} from "@reside-ic/vue-next-dynamic-form";
 import {
+    ControlSelection,
     FilterSelection,
     initialPlotSelectionsState,
     PlotSelectionsState
@@ -245,6 +253,24 @@ export const mockFilterSelection = (props?: Partial<FilterSelection>): FilterSel
     }
 }
 
+export const mockControlSelection = (props?: Partial<ControlSelection>): ControlSelection => {
+    return {
+        id: "controlId",
+        label: "Plot control",
+        selection: [
+            {
+                label: "Option A",
+                id: "detailOptA"
+            },
+            {
+                label: "Option A",
+                id: "detailOptB"
+            }
+        ],
+        ...props
+    }
+}
+
 export const mockColourScales = (props?: Partial<ColourScalesState>) => {
     return {
         ...initialColourScalesState(),
@@ -265,6 +291,20 @@ export const mockGenericChartState =  (props?: Partial<GenericChartState>): Gene
         ...props
     }
 };
+
+export const mockGenericChartDataset = (props?: Partial<GenericChartDataset>): GenericChartDataset => {
+    return {
+        data: [],
+        metadata: {
+            columns: [],
+            defaults: {
+                selected_filter_options: {}
+            }
+        },
+        warnings: [mockWarning()],
+        ...props
+    }
+}
 
 export const mockDownloadIndicatorState = (props?: Partial<DownloadIndicatorState>): DownloadIndicatorState => {
     return {

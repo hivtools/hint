@@ -1,7 +1,7 @@
 import {NumericRange} from "../../types";
 import {CalibrateDataResponse, ChoroplethIndicatorMetadata, FilterOption} from "../../generated";
 import * as d3ScaleChromatic from "d3-scale-chromatic";
-import {initialScaleSettings, ScaleSettings, ScaleType} from "../../store/plotState/plotState";
+import {ScaleSettings, ScaleType} from "../../store/plotState/plotState";
 import {Feature} from "geojson";
 import numeral from "numeral";
 import {Store} from "vuex";
@@ -241,13 +241,4 @@ export const debounce_leading = (fn: Function, ms = 300) => {
         clearTimeout(timeoutId);
         timeoutId = setTimeout(() => timeoutId = undefined, ms);
     };
-};
-
-export const initialiseScaleFromMetadata = function (meta: ChoroplethIndicatorMetadata | undefined) {
-    const result = initialScaleSettings();
-    if (meta) {
-        result.customMin = meta.min;
-        result.customMax = meta.max;
-    }
-    return result;
 };

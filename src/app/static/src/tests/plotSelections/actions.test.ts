@@ -72,7 +72,7 @@ describe("Projects actions", () => {
         await actions.updateSelections({commit, state, rootState} as any, payload);
 
         expect(getPlotDataMock.mock.calls.length).toBe(1);
-        expect(getPlotDataMock.mock.calls[0][0].plot).toBe("choropleth")
+        expect(getPlotDataMock.mock.calls[0][0].plot).toBe("choropleth");
 
         const expectedPayload = choroplethSelections
         expectedPayload.filters[0].selection = selectedOptions
