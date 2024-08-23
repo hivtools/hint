@@ -1,18 +1,9 @@
 import {ActionContext, ActionTree} from "vuex"
-import {
-    PlotDataType,
-    PlotName,
-    PlotSelectionsState,
-    plotNameToDataType
-} from "./plotSelections"
+import {PlotDataType, PlotName, plotNameToDataType, PlotSelectionsState} from "./plotSelections"
 import {RootState} from "../../root"
 import {PayloadWithType} from "../../types"
-import {
-    FilterOption,
-    PlotSettingEffect,
-    PlotSettingOption,
-} from "../../generated"
-import {PlotSelectionUpdate, PlotSelectionsMutations} from "./mutations"
+import {FilterOption, PlotSettingEffect, PlotSettingOption,} from "../../generated"
+import {PlotSelectionsMutations, PlotSelectionUpdate} from "./mutations"
 import {filtersInfoFromEffects, getPlotData} from "./utils"
 import {PlotMetadataFrame} from "../metadata/metadata"
 
