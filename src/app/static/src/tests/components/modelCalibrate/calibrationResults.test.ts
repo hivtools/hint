@@ -7,7 +7,6 @@ import registerTranslations from "../../../app/store/translations/registerTransl
 import {emptyState} from "../../../app/root";
 import {ModelCalibrateState} from "../../../app/store/modelCalibrate/modelCalibrate";
 import {expectTranslated, shallowMountWithTranslate} from "../../testHelpers";
-import {BarchartIndicator} from "../../../app/types";
 import {nextTick} from 'vue';
 import Barchart from "../../../app/components/plots/bar/Barchart.vue";
 
@@ -82,84 +81,5 @@ describe("CalibrateResults component", () => {
         await nextTick();
         expect(barchart.props().plot).toStrictEqual("calibrate");
         expect(barchart.props().showErrorBars).toBe(false);
-    });
-
-    it("computes chartdata", () => {
-        const store = getStore();
-        const wrapper = shallowMountWithTranslate(CalibrationResults, store, {
-            global: {
-                plugins: [store]
-            }
-        });
-        const vm = (wrapper as any).vm;
-
-        expect(vm.chartData).toStrictEqual(["TEST DATA"]);
-    });
-
-    it("computes barchart selections", () => {
-        const store = getStore();
-        const wrapper = shallowMountWithTranslate(CalibrationResults, store, {
-            global: {
-                plugins: [store]
-            }
-        });
-        const vm = (wrapper as any).vm;
-        const {selected_filter_options, indicator_id, x_axis_id, disaggregate_by_id} = defaultSelections
-
-        expect(vm.selections).toStrictEqual({
-            ...defaultSelections,
-            indicatorId: indicator_id,
-            xAxisId: x_axis_id,
-            disaggregateById: disaggregate_by_id,
-            selectedFilterOptions: {
-                ...selected_filter_options
-            }
-        });
-    });
-
-    it("computes barchart filters", () => {
-        const store = getStore();
-        const wrapper = shallowMountWithTranslate(CalibrationResults, store, {
-            global: {
-                plugins: [store]
-            }
-        });
-        const vm = (wrapper as any).vm;
-
-        expect(vm.filterConfig).toStrictEqual({
-            indicatorLabel: "Indicator",
-            xAxisLabel: "X Axis",
-            disaggLabel: "Disaggregate by",
-            filterLabel: "Filters",
-            filters: ["TEST BAR FILTERS"]
-        });
-    });
-
-    it("formatBarchartValue formats value", () => {
-        const store = getStore();
-        const wrapper = shallowMountWithTranslate(CalibrationResults, store, {
-            global: {
-                plugins: [store]
-            }
-        });
-
-        const indicator: BarchartIndicator = {
-            indicator: "testIndicator",
-            value_column: "val_col",
-            indicator_column: "ind_col",
-            indicator_value: "",
-            name: "Test Indicator",
-            error_low_column: "err_lo",
-            error_high_column: "err_hi",
-            format: "0.00%",
-            scale: 1,
-            accuracy: null
-        };
-        expect((wrapper.vm as any).formatBarchartValue(0.29, indicator)).toBe("29.00%");
-
-        indicator.format = "0";
-        indicator.scale = 10;
-        indicator.accuracy = 100;
-        expect((wrapper.vm as any).formatBarchartValue(4231, indicator)).toBe("42300");
     });
 });

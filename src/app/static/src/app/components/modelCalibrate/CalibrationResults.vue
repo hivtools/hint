@@ -1,4 +1,7 @@
 <template>
+    <hr />
+    <h3 v-translate="'calibrateResultsHeader'"></h3>
+    <p class="text-muted" v-translate="'calibrateResultsDesc'"></p>
     <div class="row">
         <div class="mt-2 col-md-3">
             <h4 v-translate="'filters'"/>
