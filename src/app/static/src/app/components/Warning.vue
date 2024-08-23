@@ -80,8 +80,8 @@
             // will be truncated to one line and the show more button will appear. If there is 
             // only one warning message, it will be truncated after the max number of lines
             lineStyling(){
-                if (this.warningsLengthy && !this.showFullBox){
-                    if (this.warnings.length === 1){
+                if (this.warningsLengthy && !this.showFullBox) {
+                    if (this.warnings.length === 1) {
                         return {
                             height: `${this.maxBoxHeight}px`,
                             overflow: "hidden",

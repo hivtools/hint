@@ -155,7 +155,8 @@ describe("Warning component", () => {
         await wrapper.setProps(mockPropsModelRun)
         await nextTick()
         expect(wrapper.findAll("li").length).toBe(1);
-        expect(wrapper.find("li > div").attributes("style")).toBe("height: 48px; overflow: hidden; display: -webkit-box;");
+        expect(wrapper.find("li > div").attributes("style"))
+            .toBe("height: 48px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2;");
     });
 
 })

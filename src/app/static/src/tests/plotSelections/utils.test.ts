@@ -432,8 +432,6 @@ describe("Plot selections utils", () => {
 
         const update = filtersInfoFromEffects(effects, rootState, metadata);
 
-        // getFullNestedFilters is reversing the order of options passed in,
-        // is this fine? Or a problem?
         expect(update).toStrictEqual([
             {
                 filterId: "filterType1",
@@ -441,12 +439,12 @@ describe("Plot selections utils", () => {
                 stateFilterId: "stateFilterId1",
                 selection: [
                     {
-                        id: "op2",
-                        label: "lab2"
-                    },
-                    {
                         id: "op1",
                         label: "lab1"
+                    },
+                    {
+                        id: "op2",
+                        label: "lab2"
                     }
                 ],
                 multiple: true,

@@ -5,11 +5,11 @@ import {mutations as modelCalibrateMutations} from "../../../app/store/modelCali
 import {mutations as plottingSelectionMutations} from "../../../app/store/plottingSelections/mutations";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {emptyState} from "../../../app/root";
-import BarChartWithFilters from '../../../app/vue-chart/src/bar/BarChartWithFilters.vue';
 import {ModelCalibrateState} from "../../../app/store/modelCalibrate/modelCalibrate";
 import {expectTranslated, shallowMountWithTranslate} from "../../testHelpers";
 import {BarchartIndicator} from "../../../app/types";
 import {nextTick} from 'vue';
+import Barchart from "../../../app/components/plots/bar/Barchart.vue";
 
 const defaultSelections = {
     indicator_id: "TestIndicator",
@@ -78,14 +78,10 @@ describe("CalibrateResults component", () => {
     it("renders barchart", async () => {
         const store = getStore();
         const wrapper = shallowMountWithTranslate(CalibrationResults, store, {global: {plugins: [store]}});
-        const barchart = wrapper.findComponent(BarChartWithFilters);
+        const barchart = wrapper.findComponent(Barchart);
         await nextTick();
-        const vm = wrapper.vm as any;
-        expect(barchart.props().chartData).toStrictEqual(["TEST DATA"]);
-        expect(barchart.props().filterConfig).toBe(vm.filterConfig);
-        expect(barchart.props().indicators).toStrictEqual(["TEST BARCHART INDICATORS"]);
-        expect(barchart.props().selections).toBe(vm.selections);
-        expect(barchart.props().formatFunction).toBe(vm.formatBarchartValue);
+        expect(barchart.props().plot).toStrictEqual("calibrate");
+        expect(barchart.props().showErrorBars).toBe(false);
     });
 
     it("computes chartdata", () => {
