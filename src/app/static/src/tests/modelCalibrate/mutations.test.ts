@@ -1,7 +1,13 @@
 import {expectAllMutationsDefined} from "../testHelpers";
 import {ModelCalibrateMutation, mutations} from "../../app/store/modelCalibrate/mutations";
-import {mockCalibratePlotResponse, mockError, mockModelCalibrateState, mockWarning,} from "../mocks";
-import {ComparisonPlotResponse, VersionInfo} from "../../app/generated";
+import {
+    mockCalibrateMetadataResponse,
+    mockCalibratePlotResponse,
+    mockError,
+    mockModelCalibrateState,
+    mockWarning,
+} from "../mocks";
+import {CalibrateMetadataResponse, ComparisonPlotResponse, VersionInfo} from "../../app/generated";
 
 describe("ModelCalibrate mutations", () => {
     afterEach(() => {
@@ -253,7 +259,9 @@ describe("ModelCalibrate mutations", () => {
 
     it("sets and clears metadata", () => {
         const testState = mockModelCalibrateState();
-        const metadata = {plottingMetadata: "Test metadata", warnings: [mockWarning()]}
+        const metadata = mockCalibrateMetadataResponse({
+            warnings: [mockWarning()]
+        });
         mutations.MetadataFetched(testState, {payload: metadata});
         expect(testState.warnings).toEqual([mockWarning()]);
         expect(testState.metadata).toEqual(metadata);

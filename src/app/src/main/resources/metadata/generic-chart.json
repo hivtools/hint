@@ -2,7 +2,7 @@
   "input-time-series": {
     "datasets": [
       {
-        "id": "art",
+        "id": "programme",
         "label": "ART",
         "url":  "/chart-data/input-time-series/programme",
         "filters": [

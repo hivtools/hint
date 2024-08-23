@@ -196,29 +196,6 @@ describe("UploadInputs upload component", () => {
         expect(wrapper.findAllComponents(ManageFile)[0].props().error).toStrictEqual(error);
     });
 
-    it("shows metadata error if present", () => {
-        const plottingMetadataError = mockError("Metadata went wrong");
-        const store = createSut({}, {plottingMetadataError});
-        const wrapper = shallowMountWithTranslate(UploadInputs, store, {
-            global: {
-                plugins: [store]
-            },
-        });
-        expect(wrapper.findAllComponents(ManageFile)[0].props().error).toStrictEqual(plottingMetadataError);
-    });
-
-    it("shows pjnz error, not metadata error, if both are present", () => {
-        const pjnzError = mockError("File upload went wrong");
-        const plottingMetadataError = mockError("Metadata went wrong");
-        const store = createSut({pjnzError}, {plottingMetadataError});
-        const wrapper = shallowMountWithTranslate(UploadInputs, store, {
-            global: {
-                plugins: [store]
-            },
-        });
-        expect(wrapper.findAllComponents(ManageFile)[0].props().error).toStrictEqual(pjnzError);
-    });
-
     it("shows baseline error if present", () => {
         const error = mockError("Baseline is inconsistent");
         const store = createSut({baselineError: error});

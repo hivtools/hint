@@ -10,19 +10,11 @@ import { commitInitialScaleSelections } from '../plotState/utils';
 import { addAreaLevelsToSAPData } from '../plotData/utils';
 
 export interface MetadataActions {
-    getPlottingMetadata: (store: ActionContext<MetadataState, RootState>, country: string) => void
     getReviewInputMetadata: (store: ActionContext<MetadataState, RootState>) => void
     getAdrUploadMetadata: (store: ActionContext<MetadataState, RootState>, downloadId: string) => Promise<void>
 }
 
 export const actions: ActionTree<MetadataState, RootState> & MetadataActions = {
-
-    async getPlottingMetadata(context, iso3) {
-        await api<MetadataMutations, MetadataMutations>(context)
-            .withSuccess(MetadataMutations.PlottingMetadataFetched)
-            .withError(MetadataMutations.PlottingMetadataError)
-            .get(`/meta/plotting/${iso3}`);
-    },
 
     async getReviewInputMetadata(context) {
         const { commit, rootState } = context;

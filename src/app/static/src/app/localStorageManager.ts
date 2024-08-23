@@ -14,7 +14,7 @@ export const serialiseState = (state: RootState): Partial<RootState> => {
         selectedDataType: state.surveyAndProgram.selectedDataType,
         warnings: state.surveyAndProgram.warnings
     } as any;
-    const metadata =  {...state.metadata, plottingMetadataError: null};
+    const metadata =  {...state.metadata, reviewInputMetadataError: null};
     return {
         version: state.version,
         baseline,

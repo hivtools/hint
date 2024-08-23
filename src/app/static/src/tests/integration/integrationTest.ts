@@ -9,7 +9,7 @@ declare let appUrl: string; // configured by jest
 
 export const rootState = {
     language: Language.en,
-    metadata: {plottingMetadata: null}
+    metadata: {}
 };
 
 export const login = async (username = "test.user@example.com", password = "password") => {

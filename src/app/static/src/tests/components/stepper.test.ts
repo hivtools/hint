@@ -9,7 +9,6 @@ import {
     mockModelCalibrateState,
     mockModelOptionsState,
     mockModelRunState,
-    mockPlottingMetadataResponse,
     mockPopulationResponse,
     mockProjectsState,
     mockRootState,
@@ -335,7 +334,7 @@ describe("Stepper component", () => {
     it("step connector is enabled if next step is", () => {
         const wrapper = createReadySut(completedBaselineState,
             completedSurveyAndProgramState,
-            {plottingMetadata: "TEST DATA" as any});
+            {reviewInputMetadata: ["TEST METADATA"] as any});
         const connectors = wrapper.findAll(".step-connector");
 
         expect(connectors[0].classes()).toContain("enabled");
@@ -361,7 +360,7 @@ describe("Stepper component", () => {
     it("Review inputs step is enabled when baseline step is complete", () => {
         const wrapper = createReadySut(completedBaselineState,
             completedSurveyAndProgramState,
-            {plottingMetadata: "TEST DATA" as any});
+            {reviewInputMetadata: ["TEST METADATA"] as any});
         const steps = wrapper.findAllComponents(Step);
         expect(steps[0].props().enabled).toBe(true);
         expect(steps[1].props().enabled).toBe(true);
@@ -380,21 +379,9 @@ describe("Stepper component", () => {
         expect([3, 4, 5].filter(i => steps[i].props().enabled).length).toBe(0);
     });
 
-    it("Review inputs step is not enabled if metadata state is not complete", () => {
-        const wrapper = createReadySut(completedBaselineState,
-            completedSurveyAndProgramState,
-            {plottingMetadata: null});
-        const steps = wrapper.findAllComponents(Step);
-        expect(steps[0].props().enabled).toBe(true);
-        expect(steps[1].props().enabled).toBe(false);
-        expect(steps[0].props().complete).toBe(false);
-        expect([1, 2, 3, 4, 5].filter(i => steps[i].props().enabled).length).toBe(0);
-    });
-
     it("updates active step when jump event is emitted", async () => {
         const wrapper = createReadySut(completedBaselineState,
-            completedSurveyAndProgramState,
-            {plottingMetadata: "TEST DATA" as any});
+            completedSurveyAndProgramState);
         const steps = wrapper.findAllComponents(Step);
         steps[1].vm.$emit("jump", 2);
         await nextTick();
@@ -415,8 +402,7 @@ describe("Stepper component", () => {
 
     it("can continue when the active step is complete", async () => {
         const wrapper = createReadySut(completedBaselineState,
-            completedSurveyAndProgramState,
-            {plottingMetadata: "TEST DATA" as any});
+            completedSurveyAndProgramState);
         const vm = wrapper.vm as any;
         expect(vm.navigationProps.nextDisabled).toBe(false);
 
@@ -439,7 +425,7 @@ describe("Stepper component", () => {
                 population: mockPopulationResponse()
             },
             {},
-            {plottingMetadata: "TEST DATA" as any},
+            {},
             {},
             {activeStep: 2});
 
@@ -461,8 +447,7 @@ describe("Stepper component", () => {
             ready: true
         };
         const wrapper = createReadySut(baselineState,
-            completedSurveyAndProgramState,
-            {plottingMetadata: "TEST DATA" as any});
+            completedSurveyAndProgramState);
         const vm = wrapper.vm as any;
         expect(vm.navigationProps.nextDisabled).toBe(true);
 
@@ -479,7 +464,7 @@ describe("Stepper component", () => {
 
         const wrapper = createSut(completedBaselineState,
             completedSurveyAndProgramState,
-            {plottingMetadata: mockPlottingMetadataResponse()},
+            {},
             {ready: true},
             {activeStep: 2});
 
@@ -496,9 +481,7 @@ describe("Stepper component", () => {
         const wrapper = createSut(
             completedBaselineState,
             completedSurveyAndProgramState,
-            {
-                plottingMetadata: "TEST DATA" as any
-            },
+            {},
             {ready: true});
 
         let steps = wrapper.findAllComponents(Step);
@@ -513,7 +496,7 @@ describe("Stepper component", () => {
 
         const wrapper = createSut(completedBaselineState,
             completedSurveyAndProgramState,
-            {plottingMetadata: "TEST DATA" as any},
+            {},
             {ready: true});
         let steps = wrapper.findAllComponents(Step);
         expect(steps.filter(s => s.props().enabled).length).toBe(0);
@@ -527,7 +510,7 @@ describe("Stepper component", () => {
 
         const wrapper = createSut(completedBaselineState,
             {},
-            {plottingMetadata: "TEST DATA" as any},
+            {},
             {ready: true});
 
         let steps = wrapper.findAllComponents(Step);
@@ -612,7 +595,7 @@ describe("Stepper component", () => {
             {
                 survey: ["TEST SURVEY"] as any
             },
-            {plottingMetadata: ["TEST METADATA"] as any},
+            {reviewInputMetadata: ["TEST METADATA"] as any},
             {},
             {activeStep: 4},
             {},
@@ -764,7 +747,7 @@ describe("Stepper component", () => {
 
         const wrapper = createSut(completedBaselineState,
             completedSurveyAndProgramState,
-            {plottingMetadata: mockPlottingMetadataResponse()},
+            {},
             {ready: true, status: {success: true} as any, result: {complete: true} as any},
             {activeStep: 7},
             {},
@@ -807,7 +790,7 @@ describe("Stepper component", () => {
             {
                 survey: ["TEST SURVEY"] as any
             },
-            {plottingMetadata: ["TEST METADATA"] as any},
+            {},
             {
                 warnings: [{
                     text: "Model Run warning",
@@ -865,7 +848,7 @@ describe("Stepper component", () => {
             {
                 survey: ["TEST SURVEY"] as any
             },
-            {plottingMetadata: ["TEST METADATA"] as any},
+            {},
             {},
             {activeStep: 3},
             {},
@@ -910,7 +893,7 @@ describe("Stepper component", () => {
             {
                 survey: ["TEST SURVEY"] as any
             },
-            {plottingMetadata: ["TEST METADATA"] as any},
+            {},
             {},
             {activeStep: 2},
             {},

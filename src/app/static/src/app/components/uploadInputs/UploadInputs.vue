@@ -22,7 +22,7 @@
                                  :required="true"
                                  :valid="pjnz.valid"
                                  :fromADR="pjnz.fromADR"
-                                 :error="pjnz.error || plottingMetadataError"
+                                 :error="pjnz.error"
                                  :upload="uploadPJNZ"
                                  :delete-file="deletePJNZ"
                                  :existingFileName="pjnz.existingFileName"
@@ -123,8 +123,6 @@
 
     const namespace = 'baseline';
 
-    type PlottingMetadataError = Record<"plottingMetadataError", (this: CustomVue, state: MetadataState) => Error | null>
-
     export default defineComponent({
         name: "UploadInputs",
         computed: {
@@ -152,9 +150,6 @@
                 hasBaselineError: (state: BaselineState) => !!state.baselineError,
                 baselineError: (state: BaselineState) => state.baselineError,
                 validating: (state: BaselineState) => state.validating
-            }),
-            ...mapState<MetadataState, PlottingMetadataError>("metadata", {
-                plottingMetadataError: (state: MetadataState) => state.plottingMetadataError
             }),
             ...mapRootStateProps({
                 anc: ({surveyAndProgram}: {surveyAndProgram: SurveyAndProgramState}) => ({
@@ -199,7 +194,6 @@
                 deleteProgram: 'surveyAndProgram/deleteProgram',
                 deleteANC: 'surveyAndProgram/deleteANC',
                 deleteVmmc: 'surveyAndProgram/deleteVmmc',
-                getPlottingMetadata: 'metadata/getPlottingMetadata',
                 preparingRehydrate: 'load/preparingRehydrate',
             }),
             loadZip() {

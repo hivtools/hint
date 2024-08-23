@@ -16,7 +16,6 @@ import {
     ModelResultResponse,
     ModelStatusResponse,
     PjnzResponse,
-    PlottingMetadataResponse,
     PopulationResponse,
     ProgrammeFilters,
     ProgrammeResponse,
@@ -567,25 +566,6 @@ export const mockComparisonPlotResponse = (props: Partial<ComparisonPlotResponse
                 }
             },
             warnings: []
-        },
-        ...props
-    }
-};
-
-
-export const mockPlottingMetadataResponse = (props: Partial<PlottingMetadataResponse> = {}): PlottingMetadataResponse => {
-    return {
-        anc: {
-            choropleth: {indicators: []}
-        },
-        output: {
-            choropleth: {indicators: []}
-        },
-        programme: {
-            choropleth: {indicators: []}
-        },
-        survey: {
-            choropleth: {indicators: []}
         },
         ...props
     }

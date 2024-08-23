@@ -34,23 +34,6 @@ class MetadataControllerTests
     }
 
     @Test
-    fun `gets plotting metadata`()
-    {
-        val mockResponse = mock<ResponseEntity<String>>()
-
-        val mockAPIClient = mock<HintrAPIClient> {
-            on { getPlottingMetadata("MWI") } doReturn mockResponse
-        }
-
-        val mockFileManager = mock<FileManager> {}
-        val mockClassLoader = mock<ClassLoader> {}
-
-        val sut = MetadataController(mockAPIClient, mockClassLoader, mockFileManager)
-        val result = sut.plotting("MWI")
-        assertThat(result).isSameAs(mockResponse)
-    }
-
-    @Test
     fun `getting hintr version`()
     {
         val mockResponse = mock<ResponseEntity<String>>()
