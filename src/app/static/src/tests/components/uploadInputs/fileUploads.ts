@@ -7,7 +7,6 @@ import {
     mockBaselineState,
     mockError,
     mockMetadataState,
-    mockPlottingSelections,
     mockSurveyAndProgramState
 } from "../../mocks";
 import UploadInputs from "../../../app/components/uploadInputs/UploadInputs.vue";
@@ -72,10 +71,6 @@ export function testUploadComponent(name: string, position: number) {
                 baseline: {
                     namespaced: true,
                     state: mockBaselineState()
-                },
-                plottingSelections: {
-                    namespaced: true,
-                    state: mockPlottingSelections()
                 },
                 metadata: {
                     namespaced: true,

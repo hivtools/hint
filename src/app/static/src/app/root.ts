@@ -21,11 +21,6 @@ import {ModelOptionsMutation, ModelOptionsUpdates} from "./store/modelOptions/mu
 import {SurveyAndProgramMutation, SurveyAndProgramUpdates} from "./store/surveyAndProgram/mutations";
 import {BaselineDatasetUpdates, BaselineMutation, BaselineUpdates} from "./store/baseline/mutations";
 import {stripNamespace} from "./utils";
-import {
-    initialPlottingSelectionsState,
-    plottingSelections,
-    PlottingSelectionsState
-} from "./store/plottingSelections/plottingSelections";
 import {errors, ErrorsState, initialErrorsState} from "./store/errors/errors";
 import {Language} from "./store/translations/locales";
 import {modelCalibrate, initialModelCalibrateState, ModelCalibrateState} from "./store/modelCalibrate/modelCalibrate";
@@ -67,7 +62,6 @@ export interface RootState extends TranslatableState {
     modelRun: ModelRunState,
     modelCalibrate: ModelCalibrateState,
     modelOutput: ModelOutputState,
-    plottingSelections: PlottingSelectionsState,
     // Output data used for plotting
     plotData: PlotDataState,
     // Control and filter selections for output plots
@@ -177,7 +171,6 @@ export const emptyState = (): RootState => {
         modelRun: initialModelRunState(),
         stepper: initialStepperState(),
         load: initialLoadState(),
-        plottingSelections: initialPlottingSelectionsState(),
         plotData: initialPlotDataState(),
         plotSelections: initialPlotSelectionsState(),
         plotState: initialPlotState(),
@@ -205,7 +198,6 @@ export const storeOptions: StoreOptions<RootState> = {
         modelOptions: modelOptions(existingState),
         modelRun: modelRun(existingState),
         modelOutput: modelOutput(existingState),
-        plottingSelections: plottingSelections(existingState),
         plotData,
         plotSelections,
         plotState,

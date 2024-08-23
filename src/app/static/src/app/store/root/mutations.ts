@@ -3,7 +3,6 @@ import {emptyState, RootState} from "../../root";
 import {initialModelOptionsState} from "../modelOptions/modelOptions";
 import {initialModelRunState} from "../modelRun/modelRun";
 import {initialModelOutputState} from "../modelOutput/modelOutput";
-import {initialPlottingSelectionsState} from "../plottingSelections/plottingSelections";
 import {initialLoadState} from "../load/state";
 import {initialMetadataState} from "../metadata/metadata";
 import {initialErrorsState} from "../errors/errors";
@@ -58,7 +57,6 @@ export const mutations: MutationTree<RootState> = {
             modelRun: maxValidStep < 4 ? initialModelRunState() : state.modelRun,
             modelCalibrate: initialModelCalibrateState(),
             modelOutput: initialModelOutputState(),
-            plottingSelections: initialPlottingSelectionsState(),
             plotData: initialPlotDataState(),
             plotSelections: initialPlotSelectionsState(),
             plotState: initialPlotState(),
@@ -164,13 +162,6 @@ export const mutations: MutationTree<RootState> = {
         Object.assign(state.modelCalibrate, initialModelCalibrateState());
         state.modelCalibrate.ready = true;
         Object.assign(state.modelOutput, initialModelOutputState());
-        const sapSelections = state.plottingSelections.sapChoropleth;
-        const colourScales = state.plottingSelections.colourScales;
-        Object.assign(state.plottingSelections, {
-            ...initialPlottingSelectionsState(),
-            sapChoropleth: sapSelections,
-            colourScales: colourScales
-        });
         Object.assign(state.adrUpload, initialADRUploadState());
         Object.assign(state.downloadResults, initialDownloadResultsState());
     },

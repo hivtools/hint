@@ -15,12 +15,10 @@ export const serialiseState = (state: RootState): Partial<RootState> => {
         warnings: state.surveyAndProgram.warnings
     } as any;
     const metadata =  {...state.metadata, plottingMetadataError: null};
-    const plottingSelections = state.plottingSelections;
     return {
         version: state.version,
         baseline,
         metadata,
-        plottingSelections,
         surveyAndProgram,
         modelRun: {
             ...state.modelRun,

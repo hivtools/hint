@@ -5,7 +5,6 @@ import {PjnzResponse, PopulationResponse, ShapeResponse, ValidateBaselineRespons
 import {BaselineMutation} from "./mutations";
 import {buildData, findResource, getFilenameFromImportUrl, getFilenameFromUploadFormData} from "../../utils";
 import {DatasetResourceSet, DatasetResource, ADRSchemas, UploadImportPayload} from "../../types";
-import {initialChorplethSelections} from "../plottingSelections/plottingSelections";
 import {RootState} from "../../root";
 
 export interface BaselineActions {
@@ -83,12 +82,6 @@ async function uploadOrImportShape(context: ActionContext<BaselineState, RootSta
             uploadCallback(dispatch, response);
             if (!response) {
                 commit({type: BaselineMutation.ShapeErroredFile, payload: filename});
-            } else {
-                // Clear SAP Choropleth Selections as new shape file may have different area levels
-                commit({
-                    type: "plottingSelections/updateSAPChoroplethSelections",
-                    payload: initialChorplethSelections()
-                }, {root: true})
             }
         });
 }

@@ -2,7 +2,6 @@ import Vuex from 'vuex';
 import CalibrationResults from "../../../app/components/modelCalibrate/CalibrationResults.vue";
 import {mockCalibratePlotResponse} from "../../mocks";
 import {mutations as modelCalibrateMutations} from "../../../app/store/modelCalibrate/mutations";
-import {mutations as plottingSelectionMutations} from "../../../app/store/plottingSelections/mutations";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {emptyState} from "../../../app/root";
 import {ModelCalibrateState} from "../../../app/store/modelCalibrate/modelCalibrate";
@@ -38,17 +37,6 @@ function getStore(modelCalibrateState: Partial<ModelCalibrateState> = {}, partia
                 },
                 mutations: modelCalibrateMutations
             },
-            plottingSelections: {
-                namespaced: true,
-                state: {
-                    calibratePlot: defaultSelections,
-                    ...partialSelections
-                },
-                getters: {
-                    ...partialGetters
-                },
-                mutations: plottingSelectionMutations
-            }
         }
     });
     registerTranslations(store);

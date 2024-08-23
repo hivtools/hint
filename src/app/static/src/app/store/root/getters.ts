@@ -90,7 +90,6 @@ export const getters: RootGetters & GetterTree<RootState, RootState> = {
             modelCalibrate,
             modelOptions,
             modelOutput,
-            plottingSelections,
             projects,
             surveyAndProgram
         } = state;
@@ -104,7 +103,6 @@ export const getters: RootGetters & GetterTree<RootState, RootState> = {
             extractErrors(modelCalibrate),
             extractErrors(modelOptions),
             extractErrors(modelOutput),
-            extractErrors(plottingSelections),
             extractErrors(projects),
             extractErrors(surveyAndProgram),
             state.modelRun.errors,
