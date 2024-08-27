@@ -13,7 +13,7 @@ import {
     getTimeSeriesFilteredDataset,
     getInputChoroplethFilteredData
 } from "../../app/store/plotData/filter";
-import {mockPlotMetadataFrame, mockRootState} from "../mocks";
+import {mockBaselineState, mockPlotMetadataFrame, mockRootState, mockShapeResponse} from "../mocks";
 
 describe("Plot selections utils", () => {
     beforeEach(() => {
@@ -551,6 +551,80 @@ describe("Plot selections utils", () => {
                 ],
                 multiple: false,
                 hidden: true
+            }
+        ]);
+    });
+
+    it("filtersInfoFromEffects selects all nested filters for area if using multiselect", async () => {
+        const metadata = mockPlotMetadataFrame({
+            filterTypes: [
+                {
+                    id: "area",
+                    column_id: "1",
+                    options: [],
+                    use_shape_regions: true
+                }
+            ]
+        });
+        const northernOption = {
+            id: "MWI_1",
+            label: "Northern",
+            children: {
+                id: "MWI_1_1",
+                lab: "Northern1",
+                children: {id: "MWI_1_1_1", lab: "Northern1A"}
+            }
+        };
+        const centralOption = {
+            id: "MWI_2",
+            label: "Central",
+            children: {id: "MWI_2_1", lab: "Central1"}
+        }
+        const countryOption = {
+            label: "Malawi",
+            id: "mwi",
+            children: [
+                northernOption,
+                centralOption
+            ]
+        };
+        const rootState = mockRootState({
+            baseline: mockBaselineState({
+                shape: mockShapeResponse({
+                    filters: {
+                        level_labels: [
+                            {id: 1, area_level_label: "Country", display: true},
+                            {id: 2, area_level_label: "Region", display: true},
+                            {id: 3, area_level_label: "District", display: true}
+                        ],
+                        regions: countryOption
+                    }
+                })
+            })
+        });
+        const effects = [{
+            setFilters: [
+                {
+                    filterId: "area",
+                    label: "Area",
+                    stateFilterId: "area"
+                }
+            ],
+            setMultiple: ["area"]
+        }];
+
+        const update = filtersInfoFromEffects(effects, rootState, metadata);
+
+        // TODO: this is a bit of a weird result, is this really what we want?
+        // Selected top level, and 1 step of children too but not below?
+        expect(update).toStrictEqual([
+            {
+                filterId: "area",
+                label: "Area",
+                stateFilterId: "area",
+                selection: [countryOption, centralOption, northernOption],
+                multiple: true,
+                hidden: false
             }
         ]);
     });

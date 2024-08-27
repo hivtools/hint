@@ -2,17 +2,14 @@ import {Module} from 'vuex';
 import {actions} from './actions';
 import {mutations} from './mutations';
 import {
-    Error,
-    Metadata,
     AdrMetadataResponse,
-    FilterOption,
     ChoroplethIndicatorMetadata,
-    ReviewInputFilterMetadataResponse,
+    Error,
     FilterTypes,
-    PlotSettingsControl
+    PlotSettingsControl,
+    ReviewInputFilterMetadataResponse
 } from "../../generated";
-import {DataType} from "../surveyAndProgram/surveyAndProgram";
-import { RootState } from '../../root';
+import {RootState} from '../../root';
 
 export type PlotMetadataFrame = {
     filterTypes: FilterTypes[],
