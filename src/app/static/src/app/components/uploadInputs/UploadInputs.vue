@@ -109,15 +109,13 @@
 </template>
 
 <script lang="ts">
-    import {CustomVue, mapActions, mapGetters, mapState} from "vuex";
+    import {mapActions, mapGetters} from "vuex";
     import {BaselineState} from "../../store/baseline/baseline";
-    import {MetadataState} from "../../store/metadata/metadata";
     import ErrorAlert from "../ErrorAlert.vue";
     import LoadingSpinner from "../LoadingSpinner.vue";
     import ManageFile from "../files/ManageFile.vue";
     import {SurveyAndProgramState} from "../../store/surveyAndProgram/surveyAndProgram";
     import {getFormData, mapRootStateProps, mapStateProps} from "../../utils";
-    import { Error } from "../../generated";
     import { defineComponent } from "vue";
     import VueFeather from "vue-feather";
 

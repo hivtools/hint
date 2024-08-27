@@ -7,7 +7,7 @@ import {
     FilterOption,
     FilterTypes,
     PlotSettingEffect,
-    PlotSettingOption, ShapeResponse,
+    PlotSettingOption,
 } from "../../generated";
 import {
     getCalibrateFilteredDataset,

@@ -4,8 +4,6 @@ import {LanguageMutation} from "./mutations";
 import {Language} from "../translations/locales";
 import {TranslatableState} from "../../types";
 import {RootState} from "../../root";
-import {baselineGetters} from "../baseline/baseline";
-import {getters as surveyAndProgramGetters} from "../surveyAndProgram/getters";
 
 export async function changeLanguage<T extends TranslatableState>({commit}: ActionContext<T, T>, lang: Language) {
     await i18next.changeLanguage(lang);
