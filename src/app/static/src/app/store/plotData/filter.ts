@@ -22,8 +22,13 @@ export const getOutputFilteredData = async (plot: OutputPlotName, selections: Pl
     const filterTypes = rootState.modelCalibrate.metadata!.filterTypes;
     const dataFetchPayload: Record<string, string[]> = {};
     selections.forEach(sel => {
-        const colId = filterTypes.find(f => f.id === sel.filterId)!.column_id;
+        const colId = filterTypes.find(f => f.id === sel.filterId)?.column_id;
         const opIds = sel.selection.map(s => s.id);
+        if (!colId) {
+            // This should never happen in a real app, but if we request
+            // filters for a type not in the metadata then just don't filter on this
+            return
+        }
         if (colId in dataFetchPayload) {
             dataFetchPayload[colId] = [...dataFetchPayload[colId], ...opIds];
         } else {
@@ -48,7 +53,16 @@ export const getOutputFilteredData = async (plot: OutputPlotName, selections: Pl
 
 export const getTimeSeriesFilteredDataset = async (payload: PlotSelectionUpdate, commit: Commit, rootState: RootState) => {
     commit(`genericChart/${GenericChartMutation.SetError}`, { payload: null }, { root: true });
-    const dataSource = payload.selections.controls.find(c => c.id === "time_series_data_source")!.selection[0].id;
+    const dataSource = payload.selections.controls.find(c => c.id === "time_series_data_source")?.selection[0].id;
+    if (!dataSource) {
+        // If this error occurs it is probably because metadata from hintr is broken.
+        const err = {
+            error: "TIME_SERIES_DATASOURCE_MISSING",
+            detail: "Failed to update time series, time series data source is missing. Please report this to a system administrator."
+        }
+        commit(`genericChart/${GenericChartMutation.SetError}`, { payload: err }, { root: true });
+        return
+    }
     // fetch dataset
     if (!(dataSource in rootState.genericChart.datasets)) {
         const response = await api<GenericChartMutation, GenericChartMutation>({commit, rootState})
@@ -66,15 +80,22 @@ export const getTimeSeriesFilteredDataset = async (payload: PlotSelectionUpdate,
             commit(`genericChart/${GenericChartMutation.WarningsFetched}`, { payload: data.warnings }, { root: true });
         }
     }
+    if (!(dataSource in rootState.genericChart.datasets)) {
+        // This should not happen, and if it does then something bad happened above and there should be an
+        // error shown in the generic chart
+        return
+    }
     // filter
     const metadata = getMetadataFromPlotName(rootState, payload.plot);
     const { filters } = payload.selections;
     const filterObject: Record<InputTimeSeriesKey, (string| number)[]> = {} as any;
     filters.forEach(f => {
-        const filterType = metadata.filterTypes.find(ft => ft.id === f.filterId)!;
-        filterObject[filterType.column_id as InputTimeSeriesKey] = filterType.column_id === "area_level" ?
-            f.selection.map(s => parseInt(s.id)) :
-            f.selection.map(s => s.id);
+        const filterType = metadata.filterTypes.find(ft => ft.id === f.filterId);
+        if (filterType) {
+            filterObject[filterType.column_id as InputTimeSeriesKey] = filterType.column_id === "area_level" ?
+                f.selection.map(s => parseInt(s.id)) :
+                f.selection.map(s => s.id);
+        }
     });
     const { data } = rootState.genericChart.datasets[dataSource];
     const filteredData: InputTimeSeriesData = [];
@@ -176,6 +197,7 @@ export const getInputChoroplethFilteredData = async (payload: PlotSelectionUpdat
             data: []
         };
         commit(`plotData/${PlotDataMutations.updatePlotData}`, { payload: plotDataPayload }, { root: true });
+        return
     }
     const { filters } = payload.selections;
     const { data } = response as SurveyResponse | AncResponse | ProgrammeResponse;
@@ -192,16 +214,15 @@ const filterData = (filters: FilterSelection[], data: any[], filterTypes: Filter
     const filterObject: Record<string, (string| number)[]> = {} as any;
     filters.forEach(f => {
         const filterType = filterTypes.find(ft => ft.id === f.filterId)!;
-        filterObject[filterType.column_id] = filterType.column_id === "area_level" || filterType.column_id === "year" ?
-            f.selection.map(s => parseInt(s.id)) :
-            f.selection.map(s => s.id);
+        if (filterType) {
+            filterObject[filterType.column_id] = filterType.column_id === "area_level" || filterType.column_id === "year" ?
+                f.selection.map(s => parseInt(s.id)) :
+                f.selection.map(s => s.id);
+        }
     });
     const filteredData: typeof data = [];
     const dataKeys = data.length === 0 ? [] : Object.keys(data[0]);
     const filterableKeys = dataKeys.filter(key => Object.keys(filterObject).includes(key));
-    console.log({filterObject})
-    console.log({data})
-    console.log({filterableKeys})
     if (filterableKeys.length === 0) return data;
     outer: for (let i = 0; i < data.length; i++) {
         const currRow = data[i];

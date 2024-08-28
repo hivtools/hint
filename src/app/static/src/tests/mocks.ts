@@ -7,7 +7,9 @@ import {initialSurveyAndProgramState, SurveyAndProgramState} from "../app/store/
 import {
     AncResponse,
     CalibrateDataResponse,
+    CalibrateMetadataResponse,
     CalibratePlotResponse,
+    ChoroplethIndicatorMetadata,
     ComparisonPlotResponse,
     DownloadSubmitRequest,
     Error,
@@ -30,7 +32,7 @@ import {
 import {initialModelRunState, ModelRunState} from "../app/store/modelRun/modelRun";
 import {emptyState, RootState} from "../app/root";
 import {initialStepperState, StepperState} from "../app/store/stepper/stepper";
-import {initialMetadataState, MetadataState} from "../app/store/metadata/metadata";
+import {initialMetadataState, MetadataState, PlotMetadataFrame} from "../app/store/metadata/metadata";
 import {initialLoadState, LoadState} from "../app/store/load/state";
 import {initialModelOptionsState, ModelOptionsState} from "../app/store/modelOptions/modelOptions";
 import {initialModelOutputState, ModelOutputState} from "../app/store/modelOutput/modelOutput";
@@ -40,7 +42,14 @@ import {
 } from "../app/store/plottingSelections/plottingSelections";
 import {ErrorsState, initialErrorsState} from "../app/store/errors/errors";
 import {ColourScalesState, initialColourScalesState} from "../app/store/plottingSelections/plottingSelections";
-import {Dataset, DatasetResource, DownloadIndicatorDataset, DownloadResultsDependency, Release} from "../app/types";
+import {
+    Dataset,
+    DatasetResource,
+    DownloadIndicatorDataset,
+    DownloadResultsDependency,
+    GenericChartDataset,
+    Release
+} from "../app/types";
 import {initialProjectsState, ProjectsState} from "../app/store/projects/projects";
 import {initialModelCalibrateState, ModelCalibrateState} from "../app/store/modelCalibrate/modelCalibrate";
 import { HintrVersionState, initialHintrVersionState } from "../app/store/hintrVersion/hintrVersion";
@@ -49,7 +58,12 @@ import {ADRUploadState, initialADRUploadState} from "../app/store/adrUpload/adrU
 import {DownloadResultsState, initialDownloadResultsState} from "../app/store/downloadResults/downloadResults";
 import {GenericChartState, initialGenericChartState} from "../app/store/genericChart/genericChart";
 import {DynamicControlType, DynamicFormMeta} from "@reside-ic/vue-next-dynamic-form";
-import {initialPlotSelectionsState, PlotSelectionsState} from "../app/store/plotSelections/plotSelections";
+import {
+    ControlSelection,
+    FilterSelection,
+    initialPlotSelectionsState,
+    PlotSelectionsState
+} from "../app/store/plotSelections/plotSelections";
 import {DownloadIndicatorState, initialDownloadIndicatorState} from "../app/store/downloadIndicator/downloadIndicator";
 import { PlotDataState, initialPlotDataState } from "../app/store/plotData/plotData";
 import { PlotState, initialPlotState } from "../app/store/plotState/plotState";
@@ -169,11 +183,32 @@ export const mockPlottingSelections = (props?: Partial<PlottingSelectionsState>)
     }
 };
 
-export const mockPlotData = (props?: Partial<PlotDataState>) => {
+export const mockPlotDataState = (props?: Partial<PlotDataState>) => {
     return {
         ...initialPlotDataState(),
         ...props
     }
+};
+
+
+export const mockChoroplethIndicatorMetadata = (props?: Partial<ChoroplethIndicatorMetadata>): ChoroplethIndicatorMetadata => {
+    return {
+        indicator: "prevalence",
+        value_column: "mean",
+        indicator_column: "indicator",
+        indicator_value: "prevalence",
+        name: "Prevalence",
+        error_low_column: "lower",
+        error_high_column: "upper",
+        min: 0,
+        max: 1,
+        colour: "interpolateReds",
+        invert_scale: false,
+        format: "0.00",
+        scale: 1,
+        accuracy: null,
+        ...props
+    };
 };
 
 export const mockPlotSelections = (props?: Partial<PlotSelectionsState>) => {
@@ -197,6 +232,45 @@ export const mockPlotSelectionsState = (props?: Partial<PlotSelectionsState>): P
     }
 };
 
+export const mockFilterSelection = (props?: Partial<FilterSelection>): FilterSelection => {
+    return {
+        filterId: "detail",
+        stateFilterId: "detailFilter",
+        label: "Detail filter",
+        selection: [
+            {
+                label: "Option A",
+                id: "detailOptA"
+            },
+            {
+                label: "Option A",
+                id: "detailOptB"
+            }
+        ],
+        multiple: true,
+        hidden: false,
+        ...props
+    }
+}
+
+export const mockControlSelection = (props?: Partial<ControlSelection>): ControlSelection => {
+    return {
+        id: "controlId",
+        label: "Plot control",
+        selection: [
+            {
+                label: "Option A",
+                id: "detailOptA"
+            },
+            {
+                label: "Option A",
+                id: "detailOptB"
+            }
+        ],
+        ...props
+    }
+}
+
 export const mockColourScales = (props?: Partial<ColourScalesState>) => {
     return {
         ...initialColourScalesState(),
@@ -217,6 +291,20 @@ export const mockGenericChartState =  (props?: Partial<GenericChartState>): Gene
         ...props
     }
 };
+
+export const mockGenericChartDataset = (props?: Partial<GenericChartDataset>): GenericChartDataset => {
+    return {
+        data: [],
+        metadata: {
+            columns: [],
+            defaults: {
+                selected_filter_options: {}
+            }
+        },
+        warnings: [mockWarning()],
+        ...props
+    }
+}
 
 export const mockDownloadIndicatorState = (props?: Partial<DownloadIndicatorState>): DownloadIndicatorState => {
     return {
@@ -677,7 +765,7 @@ export const mockReviewInputMetadata = (props: Partial<ReviewInputFilterMetadata
         indicators: [
             {
                 indicator: "prevalence",
-                value_column: "iindicator",
+                value_column: "indicator",
                 name: "Prevalence",
                 min: 0,
                 max: 1,
@@ -698,4 +786,56 @@ export const mockReviewInputMetadata = (props: Partial<ReviewInputFilterMetadata
         },
         ...props
     }
+}
+
+
+export const mockPlotMetadataFrame = (props: Partial<PlotMetadataFrame> = {}): PlotMetadataFrame => {
+    return {
+        filterTypes: [
+            {
+                id: "filterType1",
+                column_id: "1",
+                options: [
+                    {
+                        id: "op1",
+                        label: "lab1"
+                    },
+                    {
+                        id: "op2",
+                        label: "lab2"
+                    }
+                ]
+            },
+            {
+                id: "filterType2",
+                column_id: "1",
+                options: [
+                    {
+                        id: "op2",
+                        label: "lab2"
+                    }
+                ]
+            }
+        ],
+        indicators: [
+            {
+                indicator: "prevalence",
+                value_column: "indicator",
+                name: "Prevalence",
+                min: 0,
+                max: 1,
+                colour: "red",
+                invert_scale: false,
+                scale: 1,
+                accuracy: null,
+                format: "0.0%"
+            }
+        ],
+        plotSettingsControl: {
+            choropleth: {
+                plotSettings: []
+            }
+        },
+        ...props
+    };
 }

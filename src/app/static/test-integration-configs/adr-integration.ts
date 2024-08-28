@@ -7,7 +7,7 @@ export default mergeConfig(
         test: {
             include: ["**/adr-dataset.itest.ts"],
             testTimeout: 120000,
-            setupFiles: ["./src/tests/setup.integration.mts"]
+            setupFiles: ["./src/tests/setup.integration.ts"]
         }
     })
 );

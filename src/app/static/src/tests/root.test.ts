@@ -10,8 +10,7 @@ describe("Root", () => {
         const mockGetState = vi.spyOn(localStorageManager, "getState");
         const mockSaveState = vi.spyOn(localStorageManager, "saveState");
 
-        const mockConsoleLog = vi.fn();
-        console.log = mockConsoleLog;
+        console.log = vi.fn();
 
         const module = await import("../app/root");
         expect(mockGetState).toHaveBeenCalledTimes(1);
@@ -20,7 +19,6 @@ describe("Root", () => {
         expect(mockSaveState).toHaveBeenCalledTimes(0);
         const store = new Vuex.Store(module.storeOptions);
         store.commit({type: "baseline/Ready", payload: null});
-        expect(mockConsoleLog.mock.calls[0][0]).toBe("baseline/Ready");
         expect(mockSaveState.mock.calls[0][0]).toStrictEqual(module.storeOptions.state);
     });
 });

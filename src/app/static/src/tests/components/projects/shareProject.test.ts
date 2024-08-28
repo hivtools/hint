@@ -427,34 +427,38 @@ describe("ShareProject", () => {
         expect(wrapper.findComponent(Modal).findAll("input").length).toBe(2);
     });
 
-    it("if email is deleted , input is removed from list and validation message refreshed",
-        async () => {
-            const store = createStore(vi.fn().mockResolvedValue(false));
-            const wrapper = mountWithTranslate(ShareProject, store, {
-                props: {
-                    project: {id: 1, name: "p1"}
-                },
-                global: {
-                    plugins: [store]
-                }
-            });
+    it("if email is deleted, input is removed from list and validation message refreshed", async () => {
+        const div = document.createElement('div');
+        div.id = 'root';
+        document.body.appendChild(div);
 
-            const link = wrapper.find("button");
-            await link.trigger("click");
-            const inputs = wrapper.findComponent(Modal).findAll("input");
-            expect(inputs.length).toBe(1);
-            await inputs[0].setValue("testing");
-            await inputs[0].trigger("blur");
-            await flushPromises();
-            expect(wrapper.findComponent(Modal).findAll("input").length).toBe(2);
-            expect(wrapper.findComponent(Modal).find(".help-text").isVisible()).toBe(true);
-
-            await inputs[0].setValue("");
-            await inputs[0].trigger("keyup.delete");
-            await nextTick();
-            expect(wrapper.findComponent(Modal).findAll("input").length).toBe(1);
-            expect(wrapper.findComponent(Modal).find(".help-text").isVisible()).toBe(false);
+        const store = createStore(vi.fn().mockResolvedValue(false));
+        const wrapper = mountWithTranslate(ShareProject, store, {
+            props: {
+                project: {id: 1, name: "p1"}
+            },
+            global: {
+                plugins: [store]
+            },
+            attachTo: "#root"
         });
+
+        const link = wrapper.find("button");
+        await link.trigger("click");
+        const inputs = wrapper.findComponent(Modal).findAll("input");
+        expect(inputs.length).toBe(1);
+        await inputs[0].setValue("testing");
+        await inputs[0].trigger("blur");
+        await flushPromises();
+        expect(wrapper.findComponent(Modal).findAll("input").length).toBe(2);
+        expect(wrapper.findComponent(Modal).find(".help-text").isVisible()).toBe(true);
+
+        await inputs[0].setValue("");
+        await inputs[0].trigger("keyup.delete");
+        await nextTick();
+        expect(wrapper.findComponent(Modal).findAll("input").length).toBe(1);
+        expect(wrapper.findComponent(Modal).find(".help-text").isVisible()).toBe(false);
+    });
 
     it("if email characters are deleted nothing happens", async () => {
         const store = createStore();

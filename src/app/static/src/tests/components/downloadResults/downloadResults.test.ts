@@ -5,7 +5,7 @@ import {
     mockADRUploadState,
     mockDownloadResultsDependency,
     mockDownloadResultsState,
-    mockModelCalibrateState
+    mockModelCalibrateState,
 } from "../../mocks";
 import DownloadResults from "../../../app/components/downloadResults/DownloadResults.vue";
 import registerTranslations from "../../../app/store/translations/registerTranslations";

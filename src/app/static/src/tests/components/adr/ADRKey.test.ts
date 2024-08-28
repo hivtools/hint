@@ -169,11 +169,16 @@ describe("ADR Key", function () {
     });
 
     it("can cancel editing", async () => {
+        const div = document.createElement('div');
+        div.id = 'root';
+        document.body.appendChild(div);
+
         const store = createStore();
         const rendered = shallowMountWithTranslate(ADRKey, store, {
             global: {
                 plugins: [store]
-            }
+            },
+            attachTo: "#root"
         });
         let input = rendered.findAll(".input-group");
         expect(input.length).toBe(1);
@@ -188,7 +193,6 @@ describe("ADR Key", function () {
         const buttons = rendered.findAll(".btn")
         expect(buttons[1].text()).toBe("Cancel");
         await buttons[1].trigger("click");
-
 
         input = rendered.findAll(".input-group")
         expect(input.length).toBe(1);
