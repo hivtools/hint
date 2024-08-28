@@ -7,10 +7,11 @@ import FilterSet from "../../../app/components/plots/FilterSet.vue";
 import Choropleth from "../../../app/components/plots/choropleth/Choropleth.vue";
 import ReviewInputs from "../../../app/components/reviewInputs/ReviewInputs.vue";
 import TimeSeries from "../../../app/components/plots/timeSeries/TimeSeries.vue";
-import {mockAncResponse, mockMetadataState, mockSurveyAndProgramState, mockSurveyResponse} from "../../mocks";
+import {mockAncResponse, mockGenericChartState, mockMetadataState, mockSurveyAndProgramState, mockSurveyResponse} from "../../mocks";
 import {initialSurveyAndProgramState} from "../../../app/store/surveyAndProgram/surveyAndProgram";
 import {nextTick} from "vue";
 import {initialMetadataState} from "../../../app/store/metadata/metadata";
+import { genericChart } from "../../../app/store/genericChart/genericChart";
 
 describe("Review inputs page", () => {
     const getWrapper = (store: Store<RootState>) => {
@@ -33,11 +34,12 @@ describe("Review inputs page", () => {
                         survey: mockSurveyResponse()
                     }): initialSurveyAndProgramState()
                 },
+                genericChart: {
+                    namespaced: true,
+                    state: mockGenericChartState({loading: !dataFetched}),
+                },
                 metadata: {
                     namespaced: true,
-                    state: dataFetched ? mockMetadataState({
-                        reviewInputMetadataFetched: true
-                    }): initialMetadataState(),
                     actions: {
                         getReviewInputMetadata: mockGetReviewInputMetadata
                     }

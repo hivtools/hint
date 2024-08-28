@@ -75,19 +75,4 @@ describe("Metadata mutations", () => {
         });
         expect(testState.reviewInputMetadataError).toBe(error);
     });
-
-    it("can toggle state of ReviewInputsMetadataToggleComplete", () => {
-        const testState = mockMetadataState();
-        expect(testState.reviewInputMetadataFetched).toBe(false);
-
-        mutations.ReviewInputsMetadataToggleComplete(testState, {
-            payload: true
-        });
-        expect(testState.reviewInputMetadataFetched).toBe(true);
-
-        mutations.ReviewInputsMetadataToggleComplete(testState, {
-            payload: false
-        });
-        expect(testState.reviewInputMetadataFetched).toBe(false);
-    });
 });

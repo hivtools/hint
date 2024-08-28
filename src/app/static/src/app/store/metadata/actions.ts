@@ -8,6 +8,7 @@ import { ReviewInputFilterMetadataResponse } from '../../generated';
 import { RootState } from '../../root';
 import { commitInitialScaleSelections } from '../plotState/utils';
 import { addAreaLevelsToSAPData } from '../plotData/utils';
+import { GenericChartMutation } from '../genericChart/mutations';
 
 export interface MetadataActions {
     getReviewInputMetadata: (store: ActionContext<MetadataState, RootState>) => void
@@ -33,7 +34,7 @@ export const actions: ActionTree<MetadataState, RootState> & MetadataActions = {
             fileTypes.push(FileType.Survey);
             addAreaLevelsToSAPData(rootState, "survey", commit);
         }
-        commit({ type: MetadataMutations.ReviewInputsMetadataToggleComplete, payload: false });
+        commit(`genericChart/${GenericChartMutation.SetLoading}`, {payload: true}, {root:true});
         const response = await api<MetadataMutations, MetadataMutations>(context)
             .withSuccess(MetadataMutations.ReviewInputsMetadataFetched) 
             .withError(MetadataMutations.ReviewInputsMetadataError)
@@ -44,7 +45,7 @@ export const actions: ActionTree<MetadataState, RootState> & MetadataActions = {
             await commitPlotDefaultSelections(metadata, commit, rootState);
             commitInitialScaleSelections(metadata.indicators, commit);
         }
-        commit({ type: MetadataMutations.ReviewInputsMetadataToggleComplete, payload: true });
+        commit(`genericChart/${GenericChartMutation.SetLoading}`, {payload: false}, {root: true});
     },
 
     async getAdrUploadMetadata(context, downloadId) {

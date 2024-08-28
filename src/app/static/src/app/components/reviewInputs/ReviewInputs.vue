@@ -8,7 +8,10 @@
                    @click="changePlot(plotName)"></a>
             </li>
         </ul>
-        <div class="row" v-if="fetched">
+        <!-- <div class="d-flex align-items-center justify-content-center" v-if="loading">
+            <loading-spinner size="lg"/>
+        </div> -->
+        <div class="row" v-if="!loading">
             <div class="mt-2 col-md-3">
                 <plot-control-set :plot="activePlot"/>
                 <h4 v-translate="'filters'"/>
@@ -29,13 +32,15 @@ import FilterSet from '../plots/FilterSet.vue';
 import {InputPlotName, inputPlotNames} from '../../store/plotSelections/plotSelections';
 import TimeSeries from "../plots/timeSeries/TimeSeries.vue";
 import Choropleth from '../plots/choropleth/Choropleth.vue';
+import LoadingSpinner from "../LoadingSpinner.vue";
 
 export default defineComponent({
     components: {
         PlotControlSet,
         FilterSet,
         TimeSeries,
-        Choropleth
+        Choropleth,
+        LoadingSpinner
     },
     setup() {
         const store = useStore<RootState>();
@@ -44,7 +49,7 @@ export default defineComponent({
             activePlot.value = plot;
         }
         const isTimeSeries = computed(() => !!store.state.surveyAndProgram.anc || !!store.state.surveyAndProgram.program)
-        const fetched = computed(() => store.state.metadata.reviewInputMetadataFetched);
+        const loading = computed(() => store.state.genericChart.loading);
 
         onBeforeMount(async () => {
             await store.dispatch("metadata/getReviewInputMetadata", {}, { root: true });
@@ -54,8 +59,8 @@ export default defineComponent({
             inputPlotNames,
             activePlot,
             changePlot,
-            fetched,
-            isTimeSeries
+            isTimeSeries,
+            loading
         }
     }
 })
