@@ -8,10 +8,10 @@
                    @click="changePlot(plotName)"></a>
             </li>
         </ul>
-        <!-- <div class="d-flex align-items-center justify-content-center" v-if="loading">
+        <div class="d-flex align-items-center justify-content-center" v-if="loading">
             <loading-spinner size="lg"/>
-        </div> -->
-        <div class="row" v-if="!loading">
+        </div>
+        <div class="row" v-else>
             <div class="mt-2 col-md-3">
                 <plot-control-set :plot="activePlot"/>
                 <h4 v-translate="'filters'"/>
