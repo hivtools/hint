@@ -14,6 +14,7 @@ import {
     getInputChoroplethFilteredData
 } from "../../app/store/plotData/filter";
 import {mockBaselineState, mockPlotMetadataFrame, mockRootState, mockShapeResponse} from "../mocks";
+import {ShapeResponse} from "../../app/generated";
 
 describe("Plot selections utils", () => {
     beforeEach(() => {
@@ -566,21 +567,24 @@ describe("Plot selections utils", () => {
                 }
             ]
         });
+        const northernNestedChild = {id: "MWI_1_1_1", lab: "Northern1A"};
+        const northernChild = {
+            id: "MWI_1_1",
+            lab: "Northern1",
+            children: [northernNestedChild]
+        };
         const northernOption = {
             id: "MWI_1",
             label: "Northern",
-            children: {
-                id: "MWI_1_1",
-                lab: "Northern1",
-                children: {id: "MWI_1_1_1", lab: "Northern1A"}
-            }
+            children: [northernChild]
         };
+        const centralChild = {id: "MWI_2_1", lab: "Central1"};
         const centralOption = {
             id: "MWI_2",
             label: "Central",
-            children: {id: "MWI_2_1", lab: "Central1"}
+            children: [centralChild]
         }
-        const countryOption = {
+        const countryOption: ShapeResponse["filters"]["regions"] = {
             label: "Malawi",
             id: "mwi",
             children: [
@@ -615,14 +619,12 @@ describe("Plot selections utils", () => {
 
         const update = filtersInfoFromEffects(effects, rootState, metadata);
 
-        // TODO: this is a bit of a weird result, is this really what we want?
-        // Selected top level, and 1 step of children too but not below?
         expect(update).toStrictEqual([
             {
                 filterId: "area",
                 label: "Area",
                 stateFilterId: "area",
-                selection: [countryOption, centralOption, northernOption],
+                selection: [countryOption, centralOption, centralChild, northernOption, northernChild, northernNestedChild],
                 multiple: true,
                 hidden: false
             }
