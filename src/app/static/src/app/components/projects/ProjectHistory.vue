@@ -67,13 +67,13 @@
                     {{ format(p.versions[0].updated) }}
                 </div>
                 <div class="col-md-1 project-cell load-cell">
-                    <button v-if="showTooltip" class=" btn btn-sm btn-red-icons"
+                    <button v-if="showTooltip" class="btn btn-sm btn-red-icons btn-load"
                             v-tooltip="getTranslatedValue('load')"
                             v-translate:aria-label="'load'"
                             @click="loadVersion($event, p.id, p.versions[0].id)">
                         <vue-feather type="refresh-cw" size="20"></vue-feather>
                     </button>
-                    <button v-else class=" btn btn-sm btn-red-icons"
+                    <button v-else class=" btn btn-sm btn-red-icons btn-load"
                             v-translate:aria-label="'load'"
                             @click="loadVersion($event, p.id, p.versions[0].id)">
                         <vue-feather type="refresh-cw" size="20"></vue-feather>
@@ -160,13 +160,13 @@
                         {{ format(v.updated) }}
                     </div>
                     <div class="col-md-1 version-cell load-cell">
-                        <button v-if="showTooltip" class=" btn btn-sm btn-red-icons"
+                        <button v-if="showTooltip" class=" btn btn-sm btn-red-icons btn-load"
                                 v-tooltip="getTranslatedValue('load')"
                                 v-translate:aria-label="'load'"
                                 @click="loadVersion($event, p.id, v.id)">
                             <vue-feather type="refresh-cw" size="20"></vue-feather>
                         </button>
-                        <button v-else class=" btn btn-sm btn-red-icons"
+                        <button v-else class=" btn btn-sm btn-red-icons btn-load"
                                 v-translate:aria-label="'load'"
                                 @click="loadVersion($event, p.id, v.id)">
                             <vue-feather type="refresh-cw" size="20"></vue-feather>

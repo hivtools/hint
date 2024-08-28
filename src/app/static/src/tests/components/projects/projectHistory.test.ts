@@ -80,12 +80,17 @@ describe("Project history component", () => {
     };
 
     const getWrapper = (projects = testProjects) => {
+        const div = document.createElement('div');
+        div.id = 'root';
+        document.body.appendChild(div);
+
         const store = createStore(projects)
         return mountWithTranslate(ProjectHistory, store, {
             global: {
                 plugins: [store],
                 stubs: ["share-project"]
-            }
+            },
+            attachTo: "#root"
         })
     };
 
@@ -441,7 +446,7 @@ describe("Project history component", () => {
 
     const testLoadVersionLink = async function (elementId: string, projectId: number, versionId: string) {
         const wrapper = getWrapper(testProjects);
-        const versionLink = wrapper.find(elementId).findAll("button")[1];
+        const versionLink = wrapper.find(elementId).find(".btn-load");
         await versionLink.trigger("click");
         await nextTick();
         expect(mockLoad.mock.calls.length).toBe(1);
