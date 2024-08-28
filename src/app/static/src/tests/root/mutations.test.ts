@@ -16,7 +16,6 @@ import {
     mockModelOptionsState,
     mockModelOutputState,
     mockModelRunState,
-    mockPlottingSelections,
     mockRootState,
     mockStepperState,
     mockSurveyAndProgramState,
@@ -24,11 +23,6 @@ import {
 } from "../mocks";
 import {DataType} from "../../app/store/surveyAndProgram/surveyAndProgram";
 import {RootState} from "../../app/root";
-import {
-    BarchartSelections,
-    initialPlottingSelectionsState,
-    ScaleType
-} from "../../app/store/plottingSelections/plottingSelections";
 import {initialMetadataState} from "../../app/store/metadata/metadata";
 import {initialModelOutputState} from "../../app/store/modelOutput/modelOutput";
 import {initialLoadState} from "../../app/store/load/state";
@@ -38,7 +32,6 @@ import {Language} from "../../app/store/translations/locales";
 import {router} from "../../app/router";
 import {initialModelCalibrateState} from "../../app/store/modelCalibrate/modelCalibrate";
 import {initialDownloadResultsState} from "../../app/store/downloadResults/downloadResults";
-import {ModelOutputTabs} from "../../app/types";
 import {outputPlotNames} from "../../app/store/plotSelections/plotSelections";
 
 describe("Root mutations", () => {
@@ -74,13 +67,12 @@ describe("Root mutations", () => {
                 }
             } as any),
             baseline: mockBaselineState({country: "Test Country", ready: true}),
-            metadata: mockMetadataState({plottingMetadataError: mockError("Test Metadata Error")}),
+            metadata: mockMetadataState({reviewInputMetadataError: mockError("Test Metadata Error")}),
             surveyAndProgram: mockSurveyAndProgramState({surveyError: mockError("Test Survey Error"), ready: true}),
             modelOptions: mockModelOptionsState({valid: true}),
             modelOutput: mockModelOutputState({selectedTab: "barchart"}),
             modelRun: mockModelRunState({modelRunId: "123", ready: true}),
             modelCalibrate: mockModelCalibrateState({complete: true, ready: true}),
-            plottingSelections: mockPlottingSelections({barchart: {indicatorId: "Test Indicator"} as BarchartSelections}),
             stepper: mockStepperState({activeStep: 7}),
             load: mockLoadState({loadError: mockError("Test Load Error")}),
             errors: mockErrorsState({errors: [mockError("Test Error")]}),
@@ -116,7 +108,6 @@ describe("Root mutations", () => {
         //These modules are always reset
         expect(state.modelCalibrate).toStrictEqual({...initialModelCalibrateState(), ready: true});
         expect(state.modelOutput).toStrictEqual(initialModelOutputState());
-        expect(state.plottingSelections).toStrictEqual(initialPlottingSelectionsState());
         expect(state.load).toStrictEqual(initialLoadState());
         expect(state.errors).toStrictEqual(initialErrorsState());
 
@@ -252,25 +243,13 @@ describe("Root mutations", () => {
             modelCalibrate: mockModelCalibrateState({complete: true})
         });
 
-        state.plottingSelections.barchart.xAxisId = "test";
-        state.plottingSelections.outputChoropleth.detail = 4;
         state.adrUpload.uploadComplete = true;
 
-        //These should not be reset
-        state.plottingSelections.sapChoropleth.detail = 2;
-        state.plottingSelections.colourScales.anc = {
-            testIndicator: {type: ScaleType.Custom} as any
-        };
         state.adr.key = "abc";
 
         mutations.ResetOutputs(state);
         expect(state.modelRun).toStrictEqual({...initialModelRunState(), ready: true});
         expect(state.modelOutput.selectedTab).toBe(outputPlotNames[0]);
-
-        expect(state.plottingSelections.barchart.xAxisId).toBe("");
-        expect(state.plottingSelections.outputChoropleth.detail).toBe(-1);
-        expect(state.plottingSelections.sapChoropleth.detail).toBe(2);
-        expect(state.plottingSelections.colourScales.anc.testIndicator.type).toBe(ScaleType.Custom);
 
         expect(state.modelCalibrate).toStrictEqual({...initialModelCalibrateState(), ready: true})
 

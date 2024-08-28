@@ -24,7 +24,6 @@ type DataRow = any;
 
 const getDataWithAreaLevel = (data: DataRow[], features: Feature[]) => {
     const newData = structuredClone(data);
-    console.log({features});
     for (let i = 0; i < data.length; i++) {
         const areaLevel = features.find(f => f.properties!.area_id === data[i].area_id)!.properties!.area_level;
         newData[i]["area_level"] = areaLevel;

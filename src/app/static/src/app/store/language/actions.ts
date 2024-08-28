@@ -4,6 +4,8 @@ import {LanguageMutation} from "./mutations";
 import {Language} from "../translations/locales";
 import {TranslatableState} from "../../types";
 import {RootState} from "../../root";
+import {baselineGetters} from "../baseline/baseline";
+import {getters as surveyAndProgramGetters} from "../surveyAndProgram/getters";
 
 export async function changeLanguage<T extends TranslatableState>({commit}: ActionContext<T, T>, lang: Language) {
     await i18next.changeLanguage(lang);
@@ -12,7 +14,7 @@ export async function changeLanguage<T extends TranslatableState>({commit}: Acti
 
 export const ChangeLanguageAction = async (context: ActionContext<RootState, RootState>, payload: Language) => {
 
-    const {commit, dispatch, rootState} = context;
+    const {commit, dispatch, rootState, rootGetters} = context;
 
     if (rootState.language === payload) {
         return;
@@ -24,8 +26,8 @@ export const ChangeLanguageAction = async (context: ActionContext<RootState, Roo
 
     const actions: Promise<unknown>[] = [];
 
-    if (rootState.baseline?.iso3) {
-        actions.push(dispatch("metadata/getPlottingMetadata", rootState.baseline.iso3));
+    if (rootState.baseline?.iso3 && rootGetters["baseline/complete"] && rootGetters["surveyAndProgramme/complete"]) {
+        actions.push(dispatch("metadata/getReviewInputMetadata", rootState.baseline.iso3));
     }
 
     if (rootState.modelCalibrate.status.done) {

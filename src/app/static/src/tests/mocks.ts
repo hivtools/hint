@@ -16,7 +16,6 @@ import {
     ModelResultResponse,
     ModelStatusResponse,
     PjnzResponse,
-    PlottingMetadataResponse,
     PopulationResponse,
     ProgrammeFilters,
     ProgrammeResponse,
@@ -36,12 +35,7 @@ import {initialMetadataState, MetadataState, PlotMetadataFrame} from "../app/sto
 import {initialLoadState, LoadState} from "../app/store/load/state";
 import {initialModelOptionsState, ModelOptionsState} from "../app/store/modelOptions/modelOptions";
 import {initialModelOutputState, ModelOutputState} from "../app/store/modelOutput/modelOutput";
-import {
-    initialPlottingSelectionsState,
-    PlottingSelectionsState
-} from "../app/store/plottingSelections/plottingSelections";
 import {ErrorsState, initialErrorsState} from "../app/store/errors/errors";
-import {ColourScalesState, initialColourScalesState} from "../app/store/plottingSelections/plottingSelections";
 import {
     Dataset,
     DatasetResource,
@@ -176,13 +170,6 @@ export const mockModelOutputState = (props?: Partial<ModelOutputState>): ModelOu
     }
 }
 
-export const mockPlottingSelections = (props?: Partial<PlottingSelectionsState>) => {
-    return {
-        ...initialPlottingSelectionsState(),
-        ...props
-    }
-};
-
 export const mockPlotDataState = (props?: Partial<PlotDataState>) => {
     return {
         ...initialPlotDataState(),
@@ -270,13 +257,6 @@ export const mockControlSelection = (props?: Partial<ControlSelection>): Control
         ...props
     }
 }
-
-export const mockColourScales = (props?: Partial<ColourScalesState>) => {
-    return {
-        ...initialColourScalesState(),
-        ...props
-    }
-};
 
 export const mockProjectsState = (props?: Partial<ProjectsState>) => {
     return {
@@ -586,25 +566,6 @@ export const mockComparisonPlotResponse = (props: Partial<ComparisonPlotResponse
                 }
             },
             warnings: []
-        },
-        ...props
-    }
-};
-
-
-export const mockPlottingMetadataResponse = (props: Partial<PlottingMetadataResponse> = {}): PlottingMetadataResponse => {
-    return {
-        anc: {
-            choropleth: {indicators: []}
-        },
-        output: {
-            choropleth: {indicators: []}
-        },
-        programme: {
-            choropleth: {indicators: []}
-        },
-        survey: {
-            choropleth: {indicators: []}
         },
         ...props
     }

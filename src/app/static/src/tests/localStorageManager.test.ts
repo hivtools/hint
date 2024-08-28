@@ -21,7 +21,6 @@ import {
     mockPlotDataState,
     mockPlotSelections,
     mockPlotState,
-    mockPlottingSelections,
     mockProjectsState,
     mockRelease,
     mockStepperState,
@@ -104,8 +103,7 @@ describe("LocalStorageManager", () => {
             downloadIndicator: mockDownloadIndicatorState(),
             invalidSteps: [],
             language: Language.en,
-            metadata: mockMetadataState({plottingMetadataError: mockError("metadataError")}),
-            plottingSelections: mockPlottingSelections(),
+            metadata: mockMetadataState({reviewInputMetadataError: mockError("metadataError")}),
             plotData: mockPlotDataState(),
             plotSelections: mockPlotSelections(),
             plotState: mockPlotState(),
@@ -132,7 +130,6 @@ describe("LocalStorageManager", () => {
             modelCalibrate: modelCalibrateResponse,
             stepper: mockStepperState(),
             metadata: mockMetadataState(),
-            plottingSelections: mockPlottingSelections(),
             surveyAndProgram: {
                 selectedDataType: DataType.Survey,
                 warnings: [{text: "test warning", locations: ["review_inputs"]}]

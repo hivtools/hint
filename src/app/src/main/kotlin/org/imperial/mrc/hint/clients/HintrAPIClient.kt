@@ -26,7 +26,6 @@ interface HintrAPIClient
     fun submit(data: Map<String, VersionFileWithPath>, modelRunOptions: ModelOptions): ResponseEntity<String>
     fun getStatus(id: String): ResponseEntity<String>
     fun getResult(id: String): ResponseEntity<String>
-    fun getPlottingMetadata(iso3: String): ResponseEntity<String>
     fun getModelRunOptions(files: Map<String, VersionFileWithPath>): ResponseEntity<String>
     fun getModelCalibrationOptions(iso3: String): ResponseEntity<String>
     fun calibrateSubmit(runId: String, calibrationOptions: ModelOptions): ResponseEntity<String>
@@ -175,11 +174,6 @@ class HintrFuelAPIClient(
     override fun getComparisonPlot(id: String): ResponseEntity<String>
     {
         return get("comparison/plot/${id}")
-    }
-
-    override fun getPlottingMetadata(iso3: String): ResponseEntity<String>
-    {
-        return get("meta/plotting/${iso3}")
     }
 
     override fun getModelRunOptions(files: Map<String, VersionFileWithPath>): ResponseEntity<String>

@@ -5,7 +5,6 @@ import {PjnzResponse, PopulationResponse, ShapeResponse, ValidateBaselineRespons
 import {BaselineMutation} from "./mutations";
 import {buildData, findResource, getFilenameFromImportUrl, getFilenameFromUploadFormData} from "../../utils";
 import {DatasetResourceSet, DatasetResource, ADRSchemas, UploadImportPayload} from "../../types";
-import {initialChorplethSelections} from "../plottingSelections/plottingSelections";
 import {RootState} from "../../root";
 
 export interface BaselineActions {
@@ -47,9 +46,7 @@ async function uploadOrImportPJNZ(context: ActionContext<BaselineState, RootStat
         .postAndReturn<PjnzResponse>(options.url, options.payload)
         .then((response) => {
             uploadCallback(dispatch, response);
-            if (response) {
-                dispatch('metadata/getPlottingMetadata', state.iso3, {root: true});
-            } else {
+            if (!response) {
                 commit({type: BaselineMutation.PJNZErroredFile, payload: filename});
             }
         });
@@ -83,12 +80,6 @@ async function uploadOrImportShape(context: ActionContext<BaselineState, RootSta
             uploadCallback(dispatch, response);
             if (!response) {
                 commit({type: BaselineMutation.ShapeErroredFile, payload: filename});
-            } else {
-                // Clear SAP Choropleth Selections as new shape file may have different area levels
-                commit({
-                    type: "plottingSelections/updateSAPChoroplethSelections",
-                    payload: initialChorplethSelections()
-                }, {root: true})
             }
         });
 }
@@ -215,7 +206,7 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
     },
 
     async getBaselineData(context) {
-        const {commit, dispatch, state, rootState} = context;
+        const {commit, dispatch} = context;
         await Promise.all([
             api<BaselineMutation, BaselineMutation>(context)
                 .ignoreErrors()
@@ -233,11 +224,6 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
                 .freezeResponse()
                 .get<PjnzResponse>("/baseline/shape/")
         ]);
-
-        if (!rootState.metadata.plottingMetadata && state.iso3) {
-            // plot metadata should be fetched synchronously to avoid race issues while displaying charts
-             dispatch('metadata/getPlottingMetadata', state.iso3, {root: true});
-        }
 
         await dispatch('validate');
 

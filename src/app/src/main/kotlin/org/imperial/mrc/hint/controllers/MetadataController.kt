@@ -21,13 +21,6 @@ class MetadataController(val apiClient: HintrAPIClient,
                          private val classLoader: ClassLoader = MetadataController::class.java.classLoader,
                          val fileManager: FileManager)
 {
-    @GetMapping("/plotting/{iso3}")
-    @ResponseBody
-    fun plotting(@PathVariable("iso3") iso3: String): ResponseEntity<String>
-    {
-        return apiClient.getPlottingMetadata(iso3)
-    }
-
     @GetMapping("/hintr/version")
     @ResponseBody
     fun version(): ResponseEntity<String>

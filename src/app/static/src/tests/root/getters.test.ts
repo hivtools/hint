@@ -142,20 +142,6 @@ describe("root getters", () => {
         expect(result).toEqual([err]);
     });
 
-    it("gets metadata errors", async () => {
-
-        const errPlot = mockError("errPlot")
-        const errUpload = mockError("errUpload")
-
-        const stateWithErrors = mockMetadataState({
-            plottingMetadataError: errPlot,
-            adrUploadMetadataError: errUpload
-        });
-
-        const result = getResult({metadata: stateWithErrors});
-        expectArraysEqual(result, [errPlot, errUpload]);
-    });
-
     it("gets calibration errors", async () => {
 
         const err = mockError("err");
