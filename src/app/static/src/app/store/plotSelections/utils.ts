@@ -39,9 +39,7 @@ type NestedFilterOption = {
 
 const getFullNestedFilters = (filterOptions: NestedFilterOption[]) => {
     const fullFilterOptions: NestedFilterOption[] = [];
-    // Reverse this so that order is the preserved when we use pop later.
-    // Could alternatively use shift but this is much slower than popping.
-    const q = [...filterOptions].reverse();
+    const q = [...filterOptions];
     while (q.length !== 0) {
         const currentOption = q.pop()!;
         fullFilterOptions.push(currentOption);

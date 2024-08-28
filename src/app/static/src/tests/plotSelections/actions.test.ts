@@ -255,7 +255,7 @@ describe("Projects actions", () => {
                     stateFilterId: "age",
                     label: "Age",
                     multiple: true,
-                    selection: ageOpts
+                    selection: [ageOpts[1], ageOpts[0]]
                 })
             ]
         }

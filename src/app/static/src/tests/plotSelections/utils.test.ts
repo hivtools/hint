@@ -439,12 +439,12 @@ describe("Plot selections utils", () => {
                 stateFilterId: "stateFilterId1",
                 selection: [
                     {
-                        id: "op1",
-                        label: "lab1"
-                    },
-                    {
                         id: "op2",
                         label: "lab2"
+                    },
+                    {
+                        id: "op1",
+                        label: "lab1"
                     }
                 ],
                 multiple: true,
