@@ -11,14 +11,18 @@ import {mockAncResponse, mockMetadataState, mockSurveyAndProgramState, mockSurve
 import {initialSurveyAndProgramState} from "../../../app/store/surveyAndProgram/surveyAndProgram";
 import {nextTick} from "vue";
 import {initialMetadataState} from "../../../app/store/metadata/metadata";
+import {shallowMountWithTranslate} from "../../testHelpers";
 
 describe("Review inputs page", () => {
     const getWrapper = (store: Store<RootState>) => {
-        return shallowMount(ReviewInputs, {
-            global: {
-                plugins: [store]
+        return shallowMountWithTranslate(ReviewInputs,
+            store,
+            {
+                global: {
+                    plugins: [store]
+                }
             }
-        })
+        )
     };
 
     const mockGetReviewInputMetadata = vi.fn();
@@ -74,6 +78,7 @@ describe("Review inputs page", () => {
         expect(wrapper.findComponent(FilterSet).exists()).toBeTruthy();
         expect(wrapper.findComponent(TimeSeries).exists()).toBeTruthy();
         expect(wrapper.findComponent(Choropleth).exists()).toBeFalsy();
+        expect(wrapper.find("#plot-description").text()).toContain("Values are shown in red when");
 
         plotTabs[1].trigger("click");
         await nextTick();
@@ -82,5 +87,6 @@ describe("Review inputs page", () => {
         expect(plotTabsPostClick[1].classes()).contains("active");
         expect(wrapper.findComponent(TimeSeries).exists()).toBeFalsy();
         expect(wrapper.findComponent(Choropleth).exists()).toBeTruthy();
+        expect(wrapper.find("#plot-description").exists()).toBeFalsy();
     });
 });
