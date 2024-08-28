@@ -116,6 +116,38 @@ describe("filter tests", () => {
             expect(commit.mock.calls[0][2]).toStrictEqual({root: true});
         });
 
+        it("multiple filters on same column get appended", async () => {
+            mockAxios.onPost(`/calibrate/result/filteredData/id123`)
+                .reply(200, mockSuccess(mockData));
+
+            const selections: PlotSelectionUpdate["selections"]["filters"] = [
+                mockFilterSelection({
+                    filterId: "filter1",
+                    selection: [options[1]]
+                }),
+                mockFilterSelection({
+                    filterId: "filter1",
+                    selection: [options[2]]
+                })
+            ];
+
+            await getOutputFilteredData("choropleth", selections, {commit, rootState});
+
+            expect(mockAxios.history.post.length).toBe(1);
+            expect(mockAxios.history.post[0].data).toStrictEqual('{"column1":["detailOptB","detailOptC"]}');
+
+            expect(commit.mock.calls.length).toBe(1);
+            const expectedPayload = {
+                plot: "choropleth",
+                data: mockData
+            } as PlotDataUpdate
+            expect(commit.mock.calls[0][0]).toStrictEqual(`plotData/${PlotDataMutations.updatePlotData}`);
+            expect(commit.mock.calls[0][1]).toStrictEqual({
+                payload: expectedPayload
+            });
+            expect(commit.mock.calls[0][2]).toStrictEqual({root: true});
+        });
+
         it("handles case when selection is not in filter types", async () => {
             mockAxios.onPost(`/calibrate/result/filteredData/id123`)
                 .reply(200, mockSuccess(mockData));

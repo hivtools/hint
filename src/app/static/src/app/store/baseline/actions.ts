@@ -37,7 +37,7 @@ interface UploadImportOptions {
 
 
 async function uploadOrImportPJNZ(context: ActionContext<BaselineState, RootState>, options: UploadImportOptions, filename: string) {
-    const {commit, dispatch, state} = context;
+    const {commit, dispatch} = context;
     commit({type: BaselineMutation.PJNZUpdated, payload: null});
     await api<BaselineMutation, BaselineMutation>(context)
         .withSuccess(BaselineMutation.PJNZUpdated)
