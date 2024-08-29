@@ -9,7 +9,8 @@ export enum GenericChartMutation {
     ClearDataset = "ClearDataset",
     SetError = "SetError",
     ClearWarnings = "ClearWarnings",
-    WarningsFetched = "WarningsFetched"
+    WarningsFetched = "WarningsFetched",
+    SetLoading = "SetLoading"
 }
 
 export interface SetDatasetPayload {
@@ -36,5 +37,8 @@ export const mutations: MutationTree<GenericChartState> = {
     },
     [GenericChartMutation.ClearWarnings](state: GenericChartState) {
         state.warnings = []
+    },
+    [GenericChartMutation.SetLoading](state: GenericChartState, action: PayloadWithType<boolean>) {
+        state.loading = action.payload;
     }
 };

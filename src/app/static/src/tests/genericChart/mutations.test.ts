@@ -18,6 +18,13 @@ describe("genericChart mutations", () => {
         expect(state.selectionDatasetId).toStrictEqual("dataset1");
     });
 
+    it("sets loading",  () => {
+        const state = mockGenericChartState();
+        const payload = true;
+        mutations.SetLoading(state, {payload});
+        expect(state.loading).toBe(true);
+    });
+
     it("can clear anc datasets", () => {
         const datasets = {
             art: {

@@ -22,7 +22,6 @@ export type PlotMetadataFrame = {
 export interface MetadataState {
     reviewInputMetadata: ReviewInputFilterMetadataResponse | null
     reviewInputMetadataError: Error | null
-    reviewInputMetadataFetched: boolean
     adrUploadMetadata: AdrMetadataResponse[]
     adrUploadMetadataError: Error | null
 }
@@ -31,7 +30,6 @@ export const initialMetadataState = (): MetadataState => {
     return {
         reviewInputMetadata: null,
         reviewInputMetadataError: null,
-        reviewInputMetadataFetched: false,
         adrUploadMetadataError: null,
         adrUploadMetadata: [] as AdrMetadataResponse[]
     }

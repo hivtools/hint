@@ -6,7 +6,6 @@ import {PayloadWithType} from "../../types";
 export enum MetadataMutations {
     ReviewInputsMetadataFetched = "ReviewInputsMetadataFetched",
     ReviewInputsMetadataError = "ReviewInputsMetadataError",
-    ReviewInputsMetadataToggleComplete = "ReviewInputsMetadataToggleComplete",
     AdrUploadMetadataFetched = "AdrUploadMetadataFetched",
     AdrUploadMetadataError = "AdrUploadMetadataError"
 }
@@ -19,10 +18,6 @@ export const mutations: MutationTree<MetadataState> = {
 
     [MetadataMutations.ReviewInputsMetadataError](state: MetadataState, action: PayloadWithType<Error>) {
         state.reviewInputMetadataError = action.payload;
-    },
-
-    [MetadataMutations.ReviewInputsMetadataToggleComplete](state: MetadataState, action: PayloadWithType<boolean>) {
-        state.reviewInputMetadataFetched = action.payload;
     },
 
     [MetadataMutations.AdrUploadMetadataError](state: MetadataState, action: PayloadWithType<Error>) {

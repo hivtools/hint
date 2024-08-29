@@ -10,7 +10,8 @@ export interface GenericChartState extends WarningsState{
     genericChartMetadata: GenericChartMetadataResponse | null
     datasets: Record<string, GenericChartDataset>
     selectionDatasetId: string
-    genericChartError: Error | null
+    genericChartError: Error | null,
+    loading: boolean
 }
 
 export const initialGenericChartState = (): GenericChartState => {
@@ -19,7 +20,8 @@ export const initialGenericChartState = (): GenericChartState => {
         datasets: {},
         genericChartError: null,
         selectionDatasetId: "",
-        warnings: []
+        warnings: [],
+        loading: false
     }
 };
 
