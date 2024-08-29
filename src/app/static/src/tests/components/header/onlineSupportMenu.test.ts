@@ -270,7 +270,7 @@ describe("Online support menu", () => {
                     plugins: [router, createStore()]
                 }
             })
-        expect(wrapper.vm.$route.path).toBe("/");
+        expect((wrapper.vm as any).$route.path).toBe("/");
         await wrapper.setData({errorReportOpen: true});
         expect((wrapper.findComponent(ErrorReport).find("#section").element as HTMLSelectElement).value).toBe("uploadInputs");
 

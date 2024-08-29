@@ -103,7 +103,7 @@
                 return (this.choiceADR === "useLatest") || !!this.releaseId;
             },
             releaseOptions() {
-                return this.releases.map((d) => ({
+                return this.releases.map((d: Release) => ({
                     id: d.id,
                     label: d.name,
                 customLabel: `${d.name}
@@ -128,10 +128,10 @@
             clearReleases: mapMutationByName(namespace, ADRMutation.ClearReleases),
             preSelectRelease(){
                 const selectedReleaseId = this.initialRelease
-                if (selectedReleaseId && this.releases.some((release) => release.id === selectedReleaseId)){
+                if (selectedReleaseId && this.releases.some((release: Release) => release.id === selectedReleaseId)){
                     this.choiceADR = "useRelease"
                     this.releaseId = selectedReleaseId;
-                } else if (selectedReleaseId && !this.releases.some((release) => release.id === selectedReleaseId)) {
+                } else if (selectedReleaseId && !this.releases.some((release: Release) => release.id === selectedReleaseId)) {
                     this.choiceADR = "useLatest"
                 }
             }
@@ -150,7 +150,7 @@
                 }
             },
             releaseId() {
-                this.$emit("selected-dataset-release", this.releases.find((release) => release.id === this.releaseId))
+                this.$emit("selected-dataset-release", this.releases.find((release: Release) => release.id === this.releaseId))
             },
             valid() {
                 this.$emit("valid", this.valid);

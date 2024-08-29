@@ -341,7 +341,7 @@ describe(`uploadModal `, () => {
             }, 
         })
 
-        await wrapper.setProps({open: true})
+        await wrapper.setProps({open: true} as any)
         const modal = wrapper.find(".modal");
         expect(modal.classes()).toContain("show");
 
