@@ -1,5 +1,5 @@
 <template>
-    <div class="form-group">
+    <div id="input-file" class="form-group">
         <label class="font-weight-bold mb-0" v-translate="label"></label>
         <span id="required" v-if="required"
               class="ml-1"

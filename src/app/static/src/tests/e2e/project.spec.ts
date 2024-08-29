@@ -18,7 +18,6 @@ test('can create and delete a project', async ({ projectPage }) => {
     await projectPage.goToProjectPage();
 
     // Then project is shown in list
-    console.log(projectName)
     let projectExists = await projectPage.findProjectByName(projectName).isVisible();
     expect(projectExists).toBeTruthy();
 

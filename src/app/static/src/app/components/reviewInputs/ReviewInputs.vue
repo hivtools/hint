@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div id="review-inputs">
         <ul class="nav nav-tabs">
             <li v-for="plotName of inputPlotNames" :key="plotName">
                 <a class="nav-link"
@@ -8,7 +8,7 @@
                    @click="changePlot(plotName)"></a>
             </li>
         </ul>
-        <div class="d-flex align-items-center justify-content-center" v-if="loading">
+        <div id="review-loading" class="d-flex align-items-center justify-content-center" v-if="loading">
             <loading-spinner size="lg"/>
         </div>
         <div class="row" v-else>

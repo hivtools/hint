@@ -1,19 +1,14 @@
 import type {Locator, Page} from '@playwright/test';
 import {test as base} from '@playwright/test';
 import {generateId} from "zoo-ids";
-import {baseURL} from "../../../../playwright.config";
 
-export class ProjectPage {
+class ProjectPage {
     private readonly projectNames: string[];
     private readonly deletedProjectNames: string[];
 
     constructor(public readonly page: Page) {
         this.projectNames = [];
         this.deletedProjectNames = [];
-    };
-
-    async goto() {
-        await this.page.goto(baseURL);
     };
 
     async createProject(prefix: string = "") {
@@ -30,18 +25,18 @@ export class ProjectPage {
 
     async deleteProject(projectName: string) {
         await this.goToProjectPage();
-        const projRow = await this.findProjectByName(projectName);
+        const projRow = this.findProjectByName(projectName);
         await projRow.locator('.delete-cell button').click();
         await this.page.getByRole('button', { name: 'OK' }).click();
         this.deletedProjectNames.push(projectName);
     };
 
     async deleteAllProjects() {
-        this.projectNames
-            .filter((projectName: string) => !this.deletedProjectNames.includes(projectName))
-            .forEach((projectName: string) => {
-                this.deleteProject(projectName);
-            });
+        for (const projectName of this.projectNames) {
+            if (!this.deletedProjectNames.includes(projectName)) {
+                await this.deleteProject(projectName);
+            }
+        }
     };
 
     findProjectByName(projectName: string): Locator {
@@ -60,9 +55,13 @@ export class ProjectPage {
 export const test = base.extend<{ projectPage: ProjectPage }>({
     projectPage: async ({ page }, use) => {
         const projectPage = new ProjectPage(page);
-        await projectPage.goto();
-        await use(projectPage);
-        await projectPage.deleteAllProjects();
+        await projectPage.page.goto("/");
+        try {
+            await use(projectPage);
+        } finally {
+            // Cleanup project even if error occurs
+            await projectPage.deleteAllProjects();
+        }
     },
 });
 export { expect } from '@playwright/test';
