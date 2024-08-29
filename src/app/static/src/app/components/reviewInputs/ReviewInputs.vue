@@ -16,6 +16,10 @@
                 <plot-control-set :plot="activePlot"/>
                 <h4 v-translate="'filters'"/>
                 <filter-set :plot="activePlot"/>
+                <div id="plot-description"
+                     v-if="plotDescription"
+                     v-translate="plotDescription"
+                     class="text-muted mt-v"/>
             </div>
             <time-series v-if="activePlot === 'timeSeries' && isTimeSeries" class="col-md-9"/>
             <choropleth class="col-md-9" v-if="activePlot === 'inputChoropleth'" :plot="'inputChoropleth'"/>
@@ -51,6 +55,14 @@ export default defineComponent({
         const isTimeSeries = computed(() => !!store.state.surveyAndProgram.anc || !!store.state.surveyAndProgram.program)
         const loading = computed(() => store.state.genericChart.loading);
 
+        const plotDescription = computed(() => {
+            if (activePlot.value === "timeSeries") {
+                return "inputTimeSeriesDescription"
+            } else {
+                return null
+            }
+        })
+
         onBeforeMount(async () => {
             await store.dispatch("metadata/getReviewInputMetadata", {}, { root: true });
         });
@@ -60,7 +72,8 @@ export default defineComponent({
             activePlot,
             changePlot,
             isTimeSeries,
-            loading
+            loading,
+            plotDescription
         }
     }
 })
