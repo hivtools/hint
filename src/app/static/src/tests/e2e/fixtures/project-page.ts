@@ -51,7 +51,6 @@ class ProjectPage {
     };
 }
 
-// Extend basic test by providing a "todoPage" fixture.
 export const test = base.extend<{ projectPage: ProjectPage }>({
     projectPage: async ({ page }, use) => {
         const projectPage = new ProjectPage(page);
