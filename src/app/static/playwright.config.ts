@@ -15,7 +15,9 @@ const config: PlaywrightTestConfig = {
             use: {
                 ...devices['Desktop Chrome'],
                 baseURL,
-                trace: 'retain-on-failure',
+                trace: 'on-first-retry',
+                // For debugging on CI
+                //trace: 'retain-on-failure',
             }
         },
     ],
