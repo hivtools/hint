@@ -37,3 +37,10 @@ jobs:
 
             - name: Test browser e2e
               run: npm run browser-test --prefix=src/app/static
+
+            - uses: actions/upload-artifact@v4
+              if: ${{ !cancelled() }}
+              with:
+                name: test-results
+                path: src/app/static/test-results/
+                retention-days: 7
