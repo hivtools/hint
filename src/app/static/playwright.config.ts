@@ -15,7 +15,7 @@ const config: PlaywrightTestConfig = {
             use: {
                 ...devices['Desktop Chrome'],
                 baseURL,
-                trace: 'on-first-retry',
+                trace: 'retain-on-failure',
             }
         },
     ],
