@@ -12,7 +12,7 @@ export const test = baseTest.extend<{}, { workerStorageState: string }>({
     workerStorageState: [async ({ browser }, use) => {
         // Use parallelIndex as a unique identifier for each worker.
         const id = test.info().parallelIndex;
-        const fileName = path.resolve(`.playwright-auth/${id}.json`);
+        const fileName = path.resolve(test.info().project.outputDir, `.auth/${id}.json`);
 
         if (fs.existsSync(fileName)) {
             // Reuse existing authentication state if any.

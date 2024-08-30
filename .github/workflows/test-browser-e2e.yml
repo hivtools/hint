@@ -43,4 +43,5 @@ jobs:
               with:
                 name: test-results
                 path: src/app/static/test-results/
+                if-no-files-found: 'ignore'
                 retention-days: 7
