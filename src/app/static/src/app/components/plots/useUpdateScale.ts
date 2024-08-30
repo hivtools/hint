@@ -1,7 +1,7 @@
 import {Store, useStore} from "vuex";
 import {RootState} from "../../root";
 import {Scale, ScaleSettings} from "../../store/plotState/plotState";
-import {getIndicatorMetadata, scaleStepFromMetadata} from "./utils";
+import {getIndicatorMetadata} from "./utils";
 import {computed} from "vue";
 import {PlotStateMutations} from "../../store/plotState/mutations";
 import { PlotName } from "../../store/plotSelections/plotSelections";
@@ -12,7 +12,7 @@ export const useUpdateScale = (activePlot: PlotName) => {
     const getScaleStepFromState = (store: Store<RootState>, stateFilterId: string) => {
         const indicator = store.state.plotSelections[activePlot].filters.find(f => f.stateFilterId === stateFilterId)!.selection[0].id;
         const indicatorMetadata = getIndicatorMetadata(store, activePlot, indicator);
-        return scaleStepFromMetadata(indicatorMetadata);
+        return (indicatorMetadata.max - indicatorMetadata.min) / 10;
     };
 
     const colourScaleStep = computed(() => {
