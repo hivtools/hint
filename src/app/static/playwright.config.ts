@@ -11,26 +11,11 @@ const config: PlaywrightTestConfig = {
     testDir: './src/tests/e2e',
     projects: [
         {
-            name: 'setup',
-            testMatch: /login\.setup\.ts/,
-            use: {
-                baseURL
-            }
-        },
-        {
             name: 'chromium',
-            dependencies: ['setup'],
             use: {
                 ...devices['Desktop Chrome'],
                 baseURL,
                 trace: 'on-first-retry',
-                /**
-                 *  StorageState.json stores signed-in state as configured in tests/e2e/login.setup.ts.
-                 *  This ensures test suites can reuse the login state and not having to re-login
-                 *  for each test.
-                 *
-                 */
-                storageState: 'storageState.json'
             }
         },
     ],

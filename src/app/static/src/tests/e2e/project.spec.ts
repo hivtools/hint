@@ -1,4 +1,4 @@
-import { test, expect } from "./fixtures/project-page"
+import {expect, test} from "./fixtures/project-page"
 import {getActiveStepIndex} from "./utils/stepper-utils";
 
 test('can create and delete a project', async ({ projectPage }) => {

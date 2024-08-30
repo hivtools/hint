@@ -1,5 +1,5 @@
 import type {Locator, Page} from '@playwright/test';
-import {test as base} from '@playwright/test';
+import {test as base} from './worker-login';
 import {generateId} from "zoo-ids";
 
 class ProjectPage {

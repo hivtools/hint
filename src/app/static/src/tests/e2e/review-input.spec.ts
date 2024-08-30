@@ -1,4 +1,4 @@
-import {test, expect} from "./fixtures/project-page";
+import {expect, test} from "./fixtures/project-page";
 import {uploadAllTestFiles} from "./utils/upload-utils";
 
 test('can view review input plots', async ({ projectPage }) => {

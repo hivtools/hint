@@ -1,7 +1,6 @@
-import {expect, test} from '@playwright/test';
+import {expect, test} from './fixtures/worker-login';
 
 test.describe("login test", () => {
-
     test("can login to root page", async ({page}) => {
         await page.goto("/");
         await expect(page).toHaveTitle("Naomi");
