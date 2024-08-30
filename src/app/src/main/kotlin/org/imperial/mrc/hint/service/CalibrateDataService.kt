@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.imperial.mrc.hint.models.FilterQuery
+import java.nio.file.Path
 import java.nio.file.Paths
 import kotlin.io.path.exists
 
@@ -46,13 +47,7 @@ class CalibrateDataService(
         val jsonBody = ObjectMapper().readTree(res.body?.toString())
         val filePath = jsonBody.get("data").get("path").textValue()
         val path = Paths.get(appProperties.resultsDirectory, filePath)
-
-        if (!path.exists()) {
-            logger.error("Calibrate data missing where it should exist", mapOf(
-                "path" to path.toAbsolutePath(),
-                "calibrateId" to id))
-            throw HintException("missingCalibrateData", HttpStatus.BAD_REQUEST)
-        }
+        this.assertCalibrateDataExists(id, path)
 
         val userId = this.session.getUserProfile().id
         val logData = mutableMapOf(
@@ -75,6 +70,17 @@ class CalibrateDataService(
         val jsonBody = ObjectMapper().readTree(res.body?.toString())
         val filePath = jsonBody.get("data").get("path").textValue()
         val path = Paths.get(appProperties.resultsDirectory, filePath)
+        this.assertCalibrateDataExists(id, path)
+
         return calibrateDataRepository.getFilteredCalibrateData(path, filterQuery)
+    }
+
+    private fun assertCalibrateDataExists(id: String, path: Path) {
+        if (!path.exists()) {
+            logger.error("Calibrate data missing where it should exist", mapOf(
+                "path" to path.toAbsolutePath(),
+                "calibrateId" to id))
+            throw HintException("missingCalibrateData", HttpStatus.BAD_REQUEST)
+        }
     }
 }

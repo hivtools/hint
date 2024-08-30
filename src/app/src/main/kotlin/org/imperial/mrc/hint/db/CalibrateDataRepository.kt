@@ -1,21 +1,18 @@
 package org.imperial.mrc.hint.db
 
-import org.jooq.tools.json.JSONArray
-import org.jooq.tools.jdbc.SingleConnectionDataSource
-import org.springframework.stereotype.Component
 import org.imperial.mrc.hint.models.CalibrateResultRow
-import org.imperial.mrc.hint.models.ResultData
 import org.imperial.mrc.hint.models.FilterQuery
-import java.nio.file.Path
-import java.sql.Connection
-import java.sql.DriverManager
-import java.sql.Statement
-import java.util.Properties
-import java.sql.ResultSet
-import java.sql.SQLException
-import java.sql.PreparedStatement
-import org.ktorm.database.*
+import org.imperial.mrc.hint.models.ResultData
+import org.jooq.tools.jdbc.SingleConnectionDataSource
+import org.ktorm.database.Database
+import org.ktorm.database.use
 import org.ktorm.dsl.*
+import org.ktorm.schema.Column
+import org.ktorm.schema.ColumnDeclaring
+import org.springframework.stereotype.Component
+import java.nio.file.Path
+import java.sql.*
+import java.util.*
 
 const val INDICATOR_QUERY = """SELECT
 age_group,area_id,
@@ -41,23 +38,23 @@ ROUND(upper, 4) AS upper,
 area_level,
 FROM data"""
 
-interface CalibrateDataRepository
-{
+interface CalibrateDataRepository {
     fun getDataFromPath(
         path: Path,
-        indicator: String): List<CalibrateResultRow>
-    
+        indicator: String
+    ): List<CalibrateResultRow>
+
     fun getFilteredCalibrateData(
         path: Path,
-        filterQuery: FilterQuery): List<CalibrateResultRow>
+        filterQuery: FilterQuery
+    ): List<CalibrateResultRow>
 }
 
 @Component
-class JooqCalibrateDataRepository: CalibrateDataRepository
-{
+class JooqCalibrateDataRepository : CalibrateDataRepository {
 
     private fun convertDataToArrayList(resultSet: ResultSet): List<CalibrateResultRow> {
-            resultSet.use {
+        resultSet.use {
             return generateSequence {
                 if (it.next()) {
                     CalibrateResultRow(
@@ -81,7 +78,8 @@ class JooqCalibrateDataRepository: CalibrateDataRepository
 
     private fun getDataFromConnection(
         conn: Connection,
-        indicator: String): List<CalibrateResultRow> {
+        indicator: String
+    ): List<CalibrateResultRow> {
         val resultSet: ResultSet
         if (indicator == "all") {
             val query = DEFAULT_QUERY
@@ -92,67 +90,66 @@ class JooqCalibrateDataRepository: CalibrateDataRepository
             stmt.setString(1, indicator)
             resultSet = stmt.executeQuery()
         }
-        
+
         val arrayList = convertDataToArrayList(resultSet)
         return arrayList
     }
 
+    // Ktorm doesn't have a nullable type :( so we have to use the unsafe
     @Suppress("UnsafeCallOnNullableType")
     private fun getFilteredDataFromConnection(
         conn: Connection,
-        filterQuery: FilterQuery): List<CalibrateResultRow>
-    {
+        filterQuery: FilterQuery
+    ): List<CalibrateResultRow> {
         val dataSource = SingleConnectionDataSource(conn)
         return Database.connect(dataSource)
             .from(ResultData)
             .select()
-            .whereWithConditions {
-                if (filterQuery.indicator != null) {
-                    it += ResultData.indicator inList filterQuery.indicator
-                }
-                if (filterQuery.calendarQuarter != null) {
-                    it += ResultData.calendarQuarter inList filterQuery.calendarQuarter
-                }
-                if (filterQuery.ageGroup != null) {
-                    it += ResultData.ageGroup inList filterQuery.ageGroup
-                }
-                if (filterQuery.sex != null) {
-                    it += ResultData.sex inList filterQuery.sex
-                }
-                if (filterQuery.areaId != null) {
-                    it += ResultData.areaId inList filterQuery.areaId
-                }
-                if (filterQuery.areaLevel != null) {
-                    it += ResultData.areaLevel inList filterQuery.areaLevel.map { it.toInt() }
-                }
+            .whereWithConditions { it ->
+                conditionalAddWhere(it, filterQuery.indicator, ResultData.indicator)
+                conditionalAddWhere(it, filterQuery.calendarQuarter, ResultData.calendarQuarter)
+                conditionalAddWhere(it, filterQuery.ageGroup, ResultData.ageGroup)
+                conditionalAddWhere(it, filterQuery.sex, ResultData.sex)
+                conditionalAddWhere(it, filterQuery.areaId, ResultData.areaId)
+                conditionalAddWhere(it, filterQuery.areaLevel?.map { it.toInt() }, ResultData.areaLevel)
             }
             .map { it ->
                 CalibrateResultRow(
-                    it.getString("indicator")!!,
-                    it.getString("calendar_quarter")!!,
-                    it.getString("age_group")!!,
-                    it.getString("sex")!!,
-                    it.getString("area_id")!!,
-                    it.getFloat("mode"),
-                    it.getFloat("mean"),
-                    it.getFloat("lower"),
-                    it.getFloat("upper"),
-                    it.getInt("area_level")
+                    it[ResultData.indicator]!!,
+                    it[ResultData.calendarQuarter]!!,
+                    it[ResultData.ageGroup]!!,
+                    it[ResultData.sex]!!,
+                    it[ResultData.areaId]!!,
+                    it[ResultData.mode]!!,
+                    it[ResultData.mean]!!,
+                    it[ResultData.lower]!!,
+                    it[ResultData.upper]!!,
+                    it[ResultData.areaLevel]!!,
                 )
             }
     }
 
-    private fun getDBConnFromPathResponse(path: Path): Connection {   
+    private fun getDBConnFromPathResponse(path: Path): Connection {
         val readOnlyProp = Properties()
         readOnlyProp.setProperty("duckdb.read_only", "true")
         val conn = DriverManager.getConnection("jdbc:duckdb:${path.toRealPath()}", readOnlyProp)
         return conn
     }
 
+    private fun <T : Any> conditionalAddWhere(
+        conditions: MutableList<ColumnDeclaring<Boolean>>,
+        queryCondition: List<T>?,
+        column: Column<T>
+    ) {
+        if (queryCondition != null) {
+            conditions += column inList queryCondition
+        }
+    }
+
     override fun getDataFromPath(
         path: Path,
-        indicator: String): List<CalibrateResultRow>
-    {
+        indicator: String
+    ): List<CalibrateResultRow> {
         getDBConnFromPathResponse(path).use { conn ->
             return getDataFromConnection(conn, indicator)
         }
@@ -161,8 +158,8 @@ class JooqCalibrateDataRepository: CalibrateDataRepository
     @Suppress("ReturnCount")
     override fun getFilteredCalibrateData(
         path: Path,
-        filterQuery: FilterQuery): List<CalibrateResultRow>
-    {
+        filterQuery: FilterQuery
+    ): List<CalibrateResultRow> {
         if (filterQuery.indicator != null && filterQuery.indicator.size == 0) {
             return listOf()
         }
