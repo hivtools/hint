@@ -67,7 +67,7 @@ class CalibrateDataServiceTests
         }
 
         val mockCalibrateDataRepo = mock<CalibrateDataRepository> {
-            on { getFilteredCalibrateData(Paths.get("not/a/dir", "test.duckdb"), filterQuery) } doReturn listOf(mockResultRow)
+            on { getFilteredCalibrateData(Path("src/test/resources/duckdb/test.duckdb"), filterQuery) } doReturn listOf(mockResultRow)
         }
 
         val mockSession = mock<Session> {
@@ -76,7 +76,7 @@ class CalibrateDataServiceTests
         }
 
         val mockProperties = mock<AppProperties> {
-            on { resultsDirectory } doReturn "not/a/dir"
+            on { resultsDirectory } doReturn "src/test/resources/duckdb/"
         }
 
         val sut = CalibrateDataService(mockClient, mockCalibrateDataRepo, mockSession, mockProperties)

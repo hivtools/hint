@@ -43,11 +43,7 @@ class CalibrateDataService(
         id: String,
         indicator: String): List<CalibrateResultRow>
     {
-        val res = apiClient.getCalibrateResultData(id)
-        val jsonBody = ObjectMapper().readTree(res.body?.toString())
-        val filePath = jsonBody.get("data").get("path").textValue()
-        val path = Paths.get(appProperties.resultsDirectory, filePath)
-        this.assertCalibrateDataExists(id, path)
+        val path = this.getCalibrateDataPath(id)
 
         val userId = this.session.getUserProfile().id
         val logData = mutableMapOf(
@@ -66,21 +62,21 @@ class CalibrateDataService(
         id: String,
         filterQuery: FilterQuery): List<CalibrateResultRow>
     {
+        val path = this.getCalibrateDataPath(id)
+        return calibrateDataRepository.getFilteredCalibrateData(path, filterQuery)
+    }
+
+    private fun getCalibrateDataPath(id: String): Path {
         val res = apiClient.getCalibrateResultData(id)
         val jsonBody = ObjectMapper().readTree(res.body?.toString())
         val filePath = jsonBody.get("data").get("path").textValue()
         val path = Paths.get(appProperties.resultsDirectory, filePath)
-        this.assertCalibrateDataExists(id, path)
-
-        return calibrateDataRepository.getFilteredCalibrateData(path, filterQuery)
-    }
-
-    private fun assertCalibrateDataExists(id: String, path: Path) {
         if (!path.exists()) {
             logger.error("Calibrate data missing where it should exist", mapOf(
                 "path" to path.toAbsolutePath(),
                 "calibrateId" to id))
             throw HintException("missingCalibrateData", HttpStatus.BAD_REQUEST)
         }
+        return path
     }
 }
