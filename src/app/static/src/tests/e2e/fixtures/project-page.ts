@@ -44,7 +44,7 @@ class ProjectPage {
     };
 
     async goToProjectPage() {
-        const projectsHeading = this.page.getByRole('heading', { name: 'Projects' });
+        const projectsHeading = this.page.getByRole('heading', { name: 'Projects', exact: true });
         if (!(await projectsHeading.isVisible())) {
             await this.page.getByRole('link', { name: 'Projects' }).click();
         }
@@ -56,12 +56,8 @@ export const test = base.extend<{ projectPage: ProjectPage }>({
     projectPage: async ({ page }, use) => {
         const projectPage = new ProjectPage(page);
         await projectPage.page.goto("/");
-        try {
-            await use(projectPage);
-        } finally {
-            // Cleanup project even if error occurs
-            await projectPage.deleteAllProjects();
-        }
+        await use(projectPage);
+        await projectPage.deleteAllProjects();
     },
 });
 export { expect } from '@playwright/test';
