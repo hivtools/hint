@@ -11,6 +11,7 @@
         <div class="d-flex align-items-center justify-content-center" v-if="loading">
             <loading-spinner size="lg"/>
         </div>
+        <error-alert v-else-if="!!error" :error="error!"></error-alert>
         <div class="row" v-else>
             <div class="mt-2 col-md-3">
                 <plot-control-set :plot="activePlot"/>
@@ -37,9 +38,11 @@ import {InputPlotName, inputPlotNames} from '../../store/plotSelections/plotSele
 import TimeSeries from "../plots/timeSeries/TimeSeries.vue";
 import Choropleth from '../plots/choropleth/Choropleth.vue';
 import LoadingSpinner from "../LoadingSpinner.vue";
+import ErrorAlert from "../ErrorAlert.vue";
 
 export default defineComponent({
     components: {
+        ErrorAlert,
         PlotControlSet,
         FilterSet,
         TimeSeries,
@@ -61,7 +64,11 @@ export default defineComponent({
             } else {
                 return null
             }
-        })
+        });
+
+        const error = computed(() => {
+            return store.state.metadata.reviewInputMetadataError
+        });
 
         onBeforeMount(async () => {
             await store.dispatch("metadata/getReviewInputMetadata", {}, { root: true });
@@ -73,7 +80,8 @@ export default defineComponent({
             changePlot,
             isTimeSeries,
             loading,
-            plotDescription
+            plotDescription,
+            error
         }
     }
 })
