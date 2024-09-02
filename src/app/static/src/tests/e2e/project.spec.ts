@@ -6,7 +6,7 @@ test('can create and delete a project', async ({ projectPage }) => {
     const projectName = await projectPage.createProject();
 
     // Then Stepper is shown
-    expect(await projectPage.page.locator("#stepper").isVisible());
+    await expect(projectPage.page.locator("#stepper")).isVisible();
 
     // And the first step is active
     expect(await getActiveStepIndex(projectPage.page)).toBe(0);
