@@ -6,31 +6,29 @@ test('can create and delete a project', async ({ projectPage }) => {
     const projectName = await projectPage.createProject();
 
     // Then Stepper is shown
-    await expect(projectPage.page.locator("#stepper")).isVisible();
+    await expect(projectPage.page.locator("#stepper")).toBeVisible();
 
     // And the first step is active
     expect(await getActiveStepIndex(projectPage.page)).toBe(0);
 
     // And project name and version is shown
-    expect(await projectPage.page.getByText(`Project: ${projectName} v1`).isVisible());
+    await expect(projectPage.page.getByText(`Project: ${projectName} v1`)).toBeVisible();
 
     // When I go back to projects page
     await projectPage.goToProjectPage();
 
     // Then project is shown in list
-    let projectExists = await projectPage.findProjectByName(projectName).isVisible();
-    expect(projectExists).toBeTruthy();
+    await expect(projectPage.findProjectByName(projectName)).toBeVisible()
 
     // And return to current project button is shown
-    expect(await projectPage.page.getByRole('link', { name: 'Return to current project' }).isVisible()).toBeTruthy();
+    await expect(projectPage.page.getByRole('link', { name: 'Return to current project' })).toBeVisible();
 
     // When I delete the project
     await projectPage.deleteProject(projectName);
 
     // Then project has disappeared from list
-    projectExists = await projectPage.findProjectByName(projectName).isVisible();
-    expect(projectExists).toBeFalsy();
+    await expect(projectPage.findProjectByName(projectName)).toHaveCount(0);
 
-    // And continue button is now shown
-    expect(await projectPage.page.getByRole('link', { name: 'Return to current project' }).isVisible()).toBeFalsy();
+    // And return to project button is not shown
+    await expect(projectPage.page.getByRole('link', { name: 'Return to current project' })).toHaveCount(0);
 });

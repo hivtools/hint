@@ -40,12 +40,14 @@ class ProjectPage {
     };
 
     findProjectByName(projectName: string): Locator {
-        return this.page.locator(`#projects-table .row:has(.name-cell:has-text("${projectName}"))`);
+        return this.page.locator(`#projects-table .row:has(.name-cell:has-text("${projectName}"))`).nth(0);
     };
 
     async goToProjectPage() {
         const projectsHeading = this.page.getByRole('heading', { name: 'Projects', exact: true });
-        if (!(await projectsHeading.isVisible())) {
+        const count = await projectsHeading.count();
+
+        if (count === 0) {
             await this.page.getByRole('link', { name: 'Projects' }).click();
         }
     };
