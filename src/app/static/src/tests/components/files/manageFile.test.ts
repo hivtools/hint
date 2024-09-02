@@ -219,7 +219,7 @@ describe("Manage file component", () => {
         expect(wrapper.findAllComponents(LoadingSpinner).length).toBe(1);
         expect(wrapper.findAllComponents(Tick).length).toBe(0);
 
-        await wrapper.setProps({valid: true});
+        await wrapper.setProps({valid: true} as any);
 
         expect(wrapper.findAllComponents(LoadingSpinner).length).toBe(0);
         expect(wrapper.findAllComponents(Tick).length).toBe(1);
@@ -243,7 +243,7 @@ describe("Manage file component", () => {
         expect(wrapper.findAllComponents(LoadingSpinner).length).toBe(1);
         expect(wrapper.findAllComponents(Tick).length).toBe(0);
 
-        await wrapper.setProps({error: "Some error"});
+        await wrapper.setProps({error: "Some error"} as any);
 
         expect(wrapper.findAllComponents(LoadingSpinner).length).toBe(0);
         expect(wrapper.findAllComponents(Tick).length).toBe(0);

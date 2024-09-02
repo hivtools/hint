@@ -2,7 +2,7 @@
     <div v-if="projects.length == 0" class="text-center">
         <h5 class="mt-5" v-translate="'projectPlaceholderText'"></h5>
     </div>
-    <div v-else>
+    <div id="projects-table" v-else>
         <div id="headers" class="row font-weight-bold pt-2">
             <div class="col-md-1 header-cell"></div>
             <div class="col-md-3 header-cell" v-translate="'projectName'"></div>

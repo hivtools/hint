@@ -1,4 +1,4 @@
-import { defineConfig } from 'vitest/config';
+import {configDefaults, defineConfig} from 'vitest/config';
 import vue from '@vitejs/plugin-vue';
 
 // https://vitejs.dev/config/
@@ -9,6 +9,10 @@ export default defineConfig({
     maxConcurrency: 4,
     setupFiles: [
       './src/tests/setup.ts'
+    ],
+    exclude: [
+        ...configDefaults.exclude,
+        "./src/tests/e2e/*"
     ],
     coverage: {
       provider: "v8",

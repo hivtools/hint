@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div id="stepper">
         <div class="row">
             <template v-for="step in steps" :key="step.number">
                 <step :active="isActive(step.number)"
