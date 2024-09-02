@@ -158,7 +158,7 @@ export const getErrorLineAnnotations = function(chartData: BarChartData,
         const label = dataset.label;
         Object.keys(errorBarData).forEach((xLabel) => {
             const labelIndex = chartData.labels?.indexOf(xLabel)
-            if (labelIndex == undefined) {
+            if (labelIndex === undefined) {
                 return;
             }
             const barMidPoint = labelIndex + halfBarWidth * (indexDataset * 2 + 1) - barPercentage / 2;
@@ -208,7 +208,7 @@ export const getErrorLineAnnotations = function(chartData: BarChartData,
     return errorLines;
 }
 
-export const getErrorLineConfig = function(
+const getErrorLineConfig = function(
     label: string,
     xMin: number,
     xMax: number,
