@@ -7,7 +7,7 @@ import { PropType, computed, defineComponent, onMounted, ref, watch } from 'vue'
 import { InputTimeSeriesData } from '../../../generated';
 import { useStore } from 'vuex';
 import { RootState } from '../../../root';
-import { drawConfig, getScatterPointsFromAreaIds, Layout, getLayoutFromData } from "./utils";
+import {drawConfig, getScatterPointsFromAreaIds, Layout, getLayoutFromData, getChartDataByArea} from "./utils";
 import Plotly from "plotly.js-basic-dist";
 
 
@@ -32,14 +32,11 @@ export default defineComponent({
 
         const getData = () => {
             if (!props.chartData) return { data: [], layout: {} };
-            const dataByArea = props.chartData.reduce((obj, data) => {
-                obj[data.area_id] = obj[data.area_id] || [];
-                obj[data.area_id].push(data);
-                return obj;
-            }, {} as Record<string, InputTimeSeriesData>);
+            const dataByArea = getChartDataByArea(props.chartData);
+            const timePeriods = props.chartData.map(dataPoint => dataPoint.time_period).sort() || [];
             const areaIds = Object.keys(dataByArea);
             const data = getScatterPointsFromAreaIds(areaIds, dataByArea, currentLanguage.value);
-            const layout = getLayoutFromData(areaIds, dataByArea, props.layout, props.chartData);    
+            const layout = getLayoutFromData(areaIds, dataByArea, props.layout, timePeriods);
             return { data, layout };
         }
 
