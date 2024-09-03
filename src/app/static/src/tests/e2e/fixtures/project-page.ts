@@ -13,7 +13,7 @@ class ProjectPage {
 
     async createProject(prefix: string = "") {
         await this.goToProjectPage();
-        const projectName = `${prefix}${generateId()}`;
+        const projectName = `${prefix}${generateId(Math.random())}`;
         await this.page.getByRole('button', { name: 'New', exact: true }).click();
         await this.page.getByRole('button', { name: 'Create project' }).click();
         await this.page.getByRole('textbox', { name: 'Project name' }).click();

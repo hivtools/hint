@@ -21,3 +21,8 @@ export const buildWaitForUpdateCallback = async (locator: Locator, timeout: numb
         throw new Error("Content did not update within the allowed retries");
     };
 };
+
+
+export const waitForAnimations = async (locator: Locator) => {
+    await locator.evaluate(e => Promise.all(e.getAnimations({subtree: true}).map(animation => animation.finished)));
+}
