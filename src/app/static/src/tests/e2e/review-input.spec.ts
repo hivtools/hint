@@ -1,6 +1,6 @@
 import {expect, test} from "./fixtures/project-page";
 import {uploadAllTestFiles} from "./utils/upload-utils";
-import {buildWaitForUpdateCallback, waitForAnimations} from "./utils/utils";
+import {waitForAnimations} from "./utils/utils";
 
 test("can view time series plot", async ({ projectPage }) => {
     const page = projectPage.page;
@@ -19,7 +19,6 @@ test("can view time series plot", async ({ projectPage }) => {
     // Review inputs page matches screenshot after data fetched
     await expect(page.locator("#review-loading")).toHaveCount(0, {timeout: 10000});
     await expect(page.locator("#review-inputs")).toHaveScreenshot("time-series-landing.png");
-    const waitForPlotUpdate = await buildWaitForUpdateCallback(page.locator(".plot-container.plotly"), 100, 20);
 
     // and we're on first page
     await expect(page.locator("#page-number")).toHaveText("Page 1 of 3");
@@ -35,8 +34,7 @@ test("can view time series plot", async ({ projectPage }) => {
     await expect(page.getByRole("button", { name: "Next page" })).not.toBeDisabled();
 
     // Plot has updated
-    await waitForPlotUpdate();
-    await expect(page.locator("#review-inputs")).toHaveScreenshot("time-series-page2.png");
+    await expect(page.locator("#review-inputs")).toHaveScreenshot("time-series-page2.png", {timeout: 6000});
 
     // When I click to open next page
     await page.getByRole("button", { name: "Next page" }).click();
@@ -51,8 +49,7 @@ test("can view time series plot", async ({ projectPage }) => {
     await page.locator("a").filter({ hasText: "Region" }).click();
 
     // Plot has updated
-    await waitForPlotUpdate();
-    await expect(page.locator("#review-inputs")).toHaveScreenshot("time-series-region.png");
+    await expect(page.locator("#review-inputs")).toHaveScreenshot("time-series-region.png", {timeout: 6000})
 
     // Paging is hidden
     await expect(page.locator("#page-number")).toHaveCount(0);
@@ -62,8 +59,12 @@ test("can view time series plot", async ({ projectPage }) => {
     await page.locator("a").filter({ hasText: "ANC testing" }).click();
 
     // Plot has updated
-    await waitForPlotUpdate();
-    await expect(page.locator("#review-inputs")).toHaveScreenshot("time-series-anc.png");
+    // Note we need to wrap this with an expect.toPass. Fetching ANC data takes a while,
+    // toHaveScreenshot checks the expectation as soon as 2 sequential screenshots return the same data. So because
+    // ANC data fetch takes a while, this is taking 2 screenshots before the UI updates, returning and erroring.
+    await expect(async() => {
+        await expect(page.locator("#review-inputs")).toHaveScreenshot("time-series-anc.png")
+    }).toPass();
 });
 
 test("can view input map plot", async ({ projectPage }) => {
@@ -85,7 +86,6 @@ test("can view input map plot", async ({ projectPage }) => {
     await expect(page.locator("#review-loading")).toHaveCount(0, {timeout: 10000});
     await expect(page.locator(".leaflet-container")).toBeVisible();
     await expect(page.locator("#review-inputs")).toHaveScreenshot("input-map-landing.png");
-    const waitForPlotUpdate = await buildWaitForUpdateCallback(page.locator(".leaflet-container"));
 
     // When I change indicator
     await page.getByRole("button", { name: "HIV prevalence" }).click();
@@ -94,7 +94,7 @@ test("can view input map plot", async ({ projectPage }) => {
     // Updated map is rendered
     await expect(page.locator("#review-inputs")).toHaveScreenshot("input-map-vls.png");
 
-    // When I change data source
+    // When I open data source menu
     await page.getByRole("button", { name: "Household survey" }).click();
 
     // All data sources are shown
@@ -106,7 +106,6 @@ test("can view input map plot", async ({ projectPage }) => {
     await page.locator("a").filter({ hasText: "ANC testing" }).click();
 
     // Updated map is rendered
-    await waitForPlotUpdate();
     await expect(page.locator("#review-inputs")).toHaveScreenshot("input-map-anc.png");
 
     // When I select a sub-region of the map
@@ -119,7 +118,6 @@ test("can view input map plot", async ({ projectPage }) => {
     await page.locator("a").filter({ hasText: /^Central$/ }).click();
 
     // Updated map is shown
-    await waitForPlotUpdate();
     await expect(page.locator("#review-inputs")).toHaveScreenshot("input-map-southern.png");
 
     // When I click to adjust scale
@@ -142,6 +140,5 @@ test("can view input map plot", async ({ projectPage }) => {
     await page.getByLabel('Min').click();
 
     // Then plot colours have been updated
-    await waitForPlotUpdate();
     await expect(page.locator("#review-inputs")).toHaveScreenshot("input-map-custom-scale.png");
 });
