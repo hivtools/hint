@@ -3,10 +3,11 @@ import {DataType, SurveyAndProgramState} from "./surveyAndProgram";
 import {api} from "../../apiService";
 import {AncResponse, ProgrammeResponse, SurveyResponse} from "../../generated";
 import {SurveyAndProgramMutation} from "./mutations";
-import {buildData, getFilenameFromImportUrl, getFilenameFromUploadFormData} from "../../utils";
+import {buildData, freezer, getFilenameFromImportUrl, getFilenameFromUploadFormData} from "../../utils";
 import {GenericChartMutation} from "../genericChart/mutations";
 import {UploadImportPayload} from "../../types";
 import { RootState } from '../../root';
+import {Feature} from "geojson";
 
 export interface SurveyAndProgramActions {
     importSurvey: (store: ActionContext<SurveyAndProgramState, RootState>, url: string) => void,
@@ -25,6 +26,9 @@ export interface SurveyAndProgramActions {
     deleteAll: (store: ActionContext<SurveyAndProgramState, RootState>) => void
     selectDataType: (store: ActionContext<SurveyAndProgramState, RootState>, payload: DataType) => void
     validateSurveyAndProgramData: (store: ActionContext<SurveyAndProgramState, RootState>) => void;
+    setSurveyResponse: (store: ActionContext<SurveyAndProgramState, RootState>, data: SurveyResponse) => void;
+    setProgramResponse: (store: ActionContext<SurveyAndProgramState, RootState>, data: ProgrammeResponse) => void;
+    setAncResponse: (store: ActionContext<SurveyAndProgramState, RootState>, data: AncResponse) => void;
 }
 
 const enum DATASET_TYPE {
@@ -49,18 +53,18 @@ interface UploadImportOptions {
 
 async function uploadOrImportANC(context: ActionContext<SurveyAndProgramState, RootState>, options: UploadImportOptions,
                                  filename: string) {
-    const {commit} = context;
+    const {commit, dispatch} = context;
     commit({type: SurveyAndProgramMutation.ANCUpdated, payload: null});
     commit({type: SurveyAndProgramMutation.WarningsFetched, payload: {type: DataType.ANC, warnings: []}});
     commitClearGenericChartDataset(commit, DATASET_TYPE.ANC);
 
     await api<SurveyAndProgramMutation, SurveyAndProgramMutation>(context)
         .withError(SurveyAndProgramMutation.ANCError)
-        .withSuccess(SurveyAndProgramMutation.ANCUpdated)
-        .freezeResponse()
+        .ignoreSuccess()
         .postAndReturn<ProgrammeResponse>(getUrlWithQuery(options.url), options.payload)
-        .then((response) => {
+        .then(async (response) => {
             if (response) {
+                await dispatch("setAncResponse", response.data)
                 commit({
                     type: SurveyAndProgramMutation.WarningsFetched,
                     payload: {type: DataType.ANC, warnings: response.data.warnings}
@@ -74,18 +78,18 @@ async function uploadOrImportANC(context: ActionContext<SurveyAndProgramState, R
 
 async function uploadOrImportProgram(context: ActionContext<SurveyAndProgramState, RootState>, options: UploadImportOptions,
                                      filename: string) {
-    const {commit} = context;
+    const {commit, dispatch} = context;
     commit({type: SurveyAndProgramMutation.ProgramUpdated, payload: null});
     commit({type: SurveyAndProgramMutation.WarningsFetched, payload: {type: DataType.Program, warnings: []}});
     commitClearGenericChartDataset(commit, DATASET_TYPE.ART);
 
     await api<SurveyAndProgramMutation, SurveyAndProgramMutation>(context)
         .withError(SurveyAndProgramMutation.ProgramError)
-        .withSuccess(SurveyAndProgramMutation.ProgramUpdated)
-        .freezeResponse()
+        .ignoreSuccess()
         .postAndReturn<ProgrammeResponse>(getUrlWithQuery(options.url), options.payload)
-        .then((response) => {
+        .then(async (response) => {
             if (response) {
+                await dispatch("setProgramResponse", response.data)
                 commit({
                     type: SurveyAndProgramMutation.WarningsFetched,
                     payload: {type: DataType.Program, warnings: response.data.warnings}
@@ -99,17 +103,17 @@ async function uploadOrImportProgram(context: ActionContext<SurveyAndProgramStat
 
 async function uploadOrImportSurvey(context: ActionContext<SurveyAndProgramState, RootState>, options: UploadImportOptions,
                                     filename: string) {
-    const {commit} = context;
+    const {commit, dispatch} = context;
     commit({type: SurveyAndProgramMutation.SurveyUpdated, payload: null});
     commit({type: SurveyAndProgramMutation.WarningsFetched, payload: {type: DataType.Survey, warnings: []}});
 
     await api<SurveyAndProgramMutation, SurveyAndProgramMutation>(context)
         .withError(SurveyAndProgramMutation.SurveyError)
-        .withSuccess(SurveyAndProgramMutation.SurveyUpdated)
-        .freezeResponse()
+        .ignoreSuccess()
         .postAndReturn<SurveyResponse>(getUrlWithQuery(options.url), options.payload)
-        .then((response) => {
+        .then(async (response) => {
             if (response) {
+                await dispatch("setSurveyResponse", response.data)
                 commit({
                     type: SurveyAndProgramMutation.WarningsFetched,
                     payload: {type: DataType.Survey, warnings: response.data.warnings}
@@ -286,24 +290,37 @@ export const actions: ActionTree<SurveyAndProgramState, RootState> & SurveyAndPr
     },
 
     async getSurveyAndProgramData(context) {
-        const {commit} = context;
+        console.log("Getting survey and programme data")
+        const {commit, dispatch} = context;
         await Promise.all(
             [
                 api<SurveyAndProgramMutation, SurveyAndProgramMutation>(context)
                     .ignoreErrors()
-                    .withSuccess(SurveyAndProgramMutation.SurveyUpdated)
-                    .freezeResponse()
-                    .get<SurveyResponse>(getUrlWithQuery("/disease/survey/")),
+                    .ignoreSuccess()
+                    .get<SurveyResponse>(getUrlWithQuery("/disease/survey/"))
+                    .then(async(response) => {
+                        if (response && response.data) {
+                            await dispatch("setSurveyResponse", response.data)
+                        }
+                    }),
                 api<SurveyAndProgramMutation, SurveyAndProgramMutation>(context)
                     .ignoreErrors()
-                    .withSuccess(SurveyAndProgramMutation.ProgramUpdated)
-                    .freezeResponse()
-                    .get<ProgrammeResponse>(getUrlWithQuery("/disease/programme/")),
+                    .ignoreSuccess()
+                    .get<ProgrammeResponse>(getUrlWithQuery("/disease/programme/"))
+                    .then(async (response) => {
+                        if (response && response.data) {
+                            await dispatch("setProgramResponse", response.data)
+                        }
+                    }),
                 api<SurveyAndProgramMutation, SurveyAndProgramMutation>(context)
                     .ignoreErrors()
-                    .withSuccess(SurveyAndProgramMutation.ANCUpdated)
-                    .freezeResponse()
-                    .get<AncResponse>(getUrlWithQuery("/disease/anc/")),
+                    .ignoreSuccess()
+                    .get<AncResponse>(getUrlWithQuery("/disease/anc/"))
+                    .then(async (response) => {
+                        if (response && response.data) {
+                            await dispatch("setAncResponse", response.data)
+                        }
+                    }),
                 api<SurveyAndProgramMutation, SurveyAndProgramMutation>(context)
                     .ignoreErrors()
                     .withSuccess(SurveyAndProgramMutation.VmmcUpdated)
@@ -315,7 +332,7 @@ export const actions: ActionTree<SurveyAndProgramState, RootState> & SurveyAndPr
     },
 
     async validateSurveyAndProgramData(context) {
-        const {commit, rootState} = context;
+        const {commit, rootState, dispatch} = context;
         const successfulDataTypes: DataType[] = []
         const initialSelectedDataType = rootState.surveyAndProgram.selectedDataType
 
@@ -323,31 +340,31 @@ export const actions: ActionTree<SurveyAndProgramState, RootState> & SurveyAndPr
             [
                 api<SurveyAndProgramMutation, SurveyAndProgramMutation>(context)
                     .withError(SurveyAndProgramMutation.SurveyError)
-                    .withSuccess(SurveyAndProgramMutation.SurveyUpdated)
-                    .freezeResponse()
+                    .ignoreSuccess()
                     .get<SurveyResponse>(getUrlWithQuery("/disease/survey/"))
-                    .then((response) => {
+                    .then(async (response) => {
                         if (response && response.data) {
+                            await dispatch("setSurveyResponse", response.data)
                             successfulDataTypes.push(DataType.Survey)
                         }
                     }),
                 api<SurveyAndProgramMutation, SurveyAndProgramMutation>(context)
                     .withError(SurveyAndProgramMutation.ProgramError)
-                    .withSuccess(SurveyAndProgramMutation.ProgramUpdated)
-                    .freezeResponse()
+                    .ignoreSuccess()
                     .get<ProgrammeResponse>(getUrlWithQuery("/disease/programme/"))
-                    .then((response) => {
+                    .then(async (response) => {
                         if (response && response.data) {
+                            await dispatch("setProgramResponse", response.data)
                             successfulDataTypes.push(DataType.Program)
                         }
                     }),
                 api<SurveyAndProgramMutation, SurveyAndProgramMutation>(context)
                     .withError(SurveyAndProgramMutation.ANCError)
-                    .withSuccess(SurveyAndProgramMutation.ANCUpdated)
-                    .freezeResponse()
+                    .ignoreSuccess()
                     .get<AncResponse>(getUrlWithQuery("/disease/anc/"))
-                    .then((response) => {
+                    .then(async (response) => {
                         if (response && response.data) {
+                            await dispatch("setAncResponse", response.data)
                             successfulDataTypes.push(DataType.ANC)
                         }
                     }),
@@ -368,9 +385,46 @@ export const actions: ActionTree<SurveyAndProgramState, RootState> & SurveyAndPr
             commitSelectedDataTypeUpdated(commit, newSelectedDataType!)
         }
         commit({type: SurveyAndProgramMutation.Ready, payload: true});
+    },
+
+    async setSurveyResponse(context: ActionContext<SurveyAndProgramState, RootState>, response: SurveyResponse) {
+        const {commit, rootState} = context;
+        const shapeData = rootState.baseline.shape;
+        if (shapeData) {
+            response.data = getDataWithAreaLevel(response.data, shapeData.data.features as Feature[])
+        }
+        commit({type: SurveyAndProgramMutation.SurveyUpdated, payload: freezer.deepFreeze(response)})
+    },
+
+    async setProgramResponse(context: ActionContext<SurveyAndProgramState, RootState>, response: ProgrammeResponse) {
+        const {commit, rootState} = context;
+        const shapeData = rootState.baseline.shape;
+        if (shapeData) {
+            response.data = getDataWithAreaLevel(response.data, shapeData.data.features as Feature[])
+        }
+        commit({type: SurveyAndProgramMutation.ProgramUpdated, payload: freezer.deepFreeze(response)})
+    },
+
+    async setAncResponse(context: ActionContext<SurveyAndProgramState, RootState>, response: AncResponse) {
+        const {commit, rootState} = context;
+        const shapeData = rootState.baseline.shape;
+        if (shapeData) {
+            response.data = getDataWithAreaLevel(response.data, shapeData.data.features as Feature[])
+        }
+        commit({type: SurveyAndProgramMutation.ANCUpdated, payload: freezer.deepFreeze(response)})
     }
 };
 
 function getUrlWithQuery(url: string) {
     return `${url}?strict=true`
 }
+
+type InputData = AncResponse["data"] | SurveyResponse["data"] | ProgrammeResponse["data"]
+
+const getDataWithAreaLevel = <T extends InputData>(data: T, features: Feature[]) => {
+    const newData = structuredClone(data);
+    for (let i = 0; i < data.length; i++) {
+        newData[i]["area_level"] = features.find(f => f.properties!.area_id === data[i].area_id)!.properties!.area_level;
+    }
+    return newData;
+};

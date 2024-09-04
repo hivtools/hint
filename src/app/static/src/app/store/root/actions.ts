@@ -29,6 +29,9 @@ export const actions: ActionTree<RootState, RootState> & RootActions = {
         const invalidSteps = state.stepper.steps.map((s: StepDescription) => s.number)
             .filter((i: number) => i < maxCompleteOrActive && !completeSteps.includes(i));
 
+        console.log("completeSteps", completeSteps);
+        console.log("invalidSteps", invalidSteps);
+
         commit({type: RootMutation.SetInvalidSteps, payload: invalidSteps});
     },
 
