@@ -349,7 +349,13 @@ export interface StepperNavigationProps {
 }
 
 export enum Step {
-    ModelOptions = 3
+    UploadInputs = 1,
+    ReviewInputs = 2,
+    ModelOptions = 3,
+    FitModel = 4,
+    CalibrateModel = 5,
+    ReviewOutput = 6,
+    SaveResults = 7
 }
 
 export interface PollingState {

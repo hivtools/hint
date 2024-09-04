@@ -1,5 +1,6 @@
 import {expect, test} from "./fixtures/project-page"
-import {getActiveStepIndex} from "./utils/stepper-utils";
+import {getActiveStep} from "./utils/stepper-utils";
+import {Step} from "../../app/types";
 
 test('can create and delete a project', async ({ projectPage }) => {
     // When I create a project
@@ -9,7 +10,7 @@ test('can create and delete a project', async ({ projectPage }) => {
     await expect(projectPage.page.locator("#stepper")).toBeVisible();
 
     // And the first step is active
-    expect(await getActiveStepIndex(projectPage.page)).toBe(0);
+    expect(await getActiveStep(projectPage.page)).toBe(Step.UploadInputs);
 
     // And project name and version is shown
     await expect(projectPage.page.getByText(`Project: ${projectName} v1`)).toBeVisible();

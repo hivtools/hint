@@ -1,6 +1,8 @@
 import type {Locator, Page} from '@playwright/test';
 import {test as base} from './worker-login';
 import {generateId} from "zoo-ids";
+import {Step} from "../../../app/types";
+import {uploadAllTestFiles} from "../utils/upload-utils";
 
 class ProjectPage {
     private readonly projectNames: string[];
@@ -51,6 +53,32 @@ class ProjectPage {
             await this.page.getByRole('link', { name: 'Projects' }).click();
         }
     };
+
+    async goToStep(step: Step) {
+        const goToInputsUpload = async () => this.createProject();
+        const goToReviewInputs = async () => {
+            await uploadAllTestFiles(this.page);
+            const continueButton = this.page.locator("#continue").nth(0);
+            await continueButton.click();
+        };
+        const goToModelOptions = async () => {};
+        const goToFitModel = async () => {};
+        const goToCalibrate = async () => {};
+        const goToReviewOutput = async () => {};
+        const goToSaveResults = async () => {};
+        const steps = [
+            goToInputsUpload,
+            goToReviewInputs,
+            goToModelOptions,
+            goToFitModel,
+            goToCalibrate,
+            goToReviewOutput,
+            goToSaveResults
+        ]
+        for (let i = 0; i <= step; i++) {
+            await steps[i]();
+        }
+    }
 }
 
 export const test = base.extend<{ projectPage: ProjectPage }>({

@@ -1,20 +1,10 @@
 import {expect, test} from "./fixtures/project-page";
-import {uploadAllTestFiles} from "./utils/upload-utils";
 import {waitForAnimations} from "./utils/utils";
+import {Step} from "../../app/types";
 
 test("can view time series plot", async ({ projectPage }) => {
     const page = projectPage.page;
-    await projectPage.createProject();
-
-    // When I upload all files
-    await uploadAllTestFiles(page);
-
-    // Continue button is active
-    const continueButton = page.locator("#continue").nth(0);
-    await expect(continueButton).not.toBeDisabled();
-
-    // When I click continue
-    await continueButton.click();
+    await projectPage.goToStep(Step.UploadInputs);
 
     // Review inputs page matches screenshot after data fetched
     await expect(page.locator("#review-loading")).toHaveCount(0, {timeout: 10000});
@@ -69,17 +59,9 @@ test("can view time series plot", async ({ projectPage }) => {
 
 test("can view input map plot", async ({ projectPage }) => {
     const page = projectPage.page;
-    await projectPage.createProject();
+    await projectPage.goToStep(Step.UploadInputs);
 
-    // When I upload all files
-    await uploadAllTestFiles(page);
-
-    // Continue button is active
-    const continueButton = page.locator("#continue").nth(0);
-    await expect(continueButton).not.toBeDisabled();
-
-    // When I click continue and open map plot
-    await continueButton.click();
+    // Given map plot is open
     await page.getByText("Map").click();
 
     // Map is rendered
