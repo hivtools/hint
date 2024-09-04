@@ -27,7 +27,6 @@ export const actions: ActionTree<GenericChartState, RootState> & MetadataActions
     async getDataset(context, payload) {
         const {commit} = context;
         commit({type: GenericChartMutation.SetError, payload: null});
-        console.log("getting dataset)", payload.url)
         await api<GenericChartMutation, GenericChartMutation>(context)
             .ignoreSuccess()
             .withError(GenericChartMutation.SetError)
@@ -62,13 +61,9 @@ export const actions: ActionTree<GenericChartState, RootState> & MetadataActions
                                 return urls;
                             }, {});
 
-        console.log(Object.keys(state.datasets))
-        console.log(datasetUrls)
-
         const getDatasetActions: Promise<unknown>[] = [];
         Object.keys(state.datasets).forEach((datasetId: string) => {
             const url = datasetUrls[datasetId];
-            console.log("refreshing dataset")
             getDatasetActions.push(dispatch("getDataset", {datasetId, url}));
         });
         await Promise.all(getDatasetActions);

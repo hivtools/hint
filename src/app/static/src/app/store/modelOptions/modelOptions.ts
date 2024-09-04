@@ -34,7 +34,6 @@ export const initialModelOptionsState = (): ModelOptionsState => {
 
 export const modelOptionsGetters = {
     complete: (state: ModelOptionsState) => {
-        console.log("model options state state is", state.valid);
         return state.valid
     },
     hasChanges: (state: ModelOptionsState) => {

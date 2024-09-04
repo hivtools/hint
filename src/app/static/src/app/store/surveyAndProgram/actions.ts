@@ -290,7 +290,6 @@ export const actions: ActionTree<SurveyAndProgramState, RootState> & SurveyAndPr
     },
 
     async getSurveyAndProgramData(context) {
-        console.log("Getting survey and programme data")
         const {commit, dispatch} = context;
         await Promise.all(
             [
