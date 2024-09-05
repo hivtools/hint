@@ -85,9 +85,9 @@ export const handlePlotControlOverrides = (selections: PlotSelectionsState[PlotN
         const indicatorToDefaultXAxis: Dict<string> = {
             prevalence: "age",
             art_coverage: "age",
-            art_current: "sex",
-            anc_prevalence_age_matched: "sex",
-            anc_art_coverage_age_matched: "sex",
+            art_current: "area",
+            anc_prevalence_age_matched: "area",
+            anc_art_coverage_age_matched: "area",
         };
         const setXAxisTo = indicatorToDefaultXAxis[selection.plotSetting.options[0].id];
         if (setXAxisTo) {
