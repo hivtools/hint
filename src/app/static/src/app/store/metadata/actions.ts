@@ -7,7 +7,6 @@ import { commitPlotDefaultSelections, filtersAfterUseShapeRegions } from '../plo
 import { ReviewInputFilterMetadataResponse } from '../../generated';
 import { RootState } from '../../root';
 import { commitInitialScaleSelections } from '../plotState/utils';
-import { addAreaLevelsToSAPData } from '../plotData/utils';
 import { GenericChartMutation } from '../genericChart/mutations';
 
 export interface MetadataActions {
@@ -24,15 +23,12 @@ export const actions: ActionTree<MetadataState, RootState> & MetadataActions = {
         const fileTypes = [FileType.Shape]
         if (!sap.ancError && sap.anc) {
             fileTypes.push(FileType.ANC);
-            addAreaLevelsToSAPData(rootState, "anc", commit);
         }
         if (!sap.programError && sap.program) {
             fileTypes.push(FileType.Programme);
-            addAreaLevelsToSAPData(rootState, "program", commit);
         }
         if (!sap.surveyError && sap.survey) {
             fileTypes.push(FileType.Survey);
-            addAreaLevelsToSAPData(rootState, "survey", commit);
         }
         commit(`genericChart/${GenericChartMutation.SetLoading}`, {payload: true}, {root:true});
         const response = await api<MetadataMutations, MetadataMutations>(context)

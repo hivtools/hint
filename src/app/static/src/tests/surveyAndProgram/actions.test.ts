@@ -1,13 +1,18 @@
 import {actions} from "../../app/store/surveyAndProgram/actions";
 import {
+    mockAncData,
     mockAncResponse,
     mockAxios,
+    mockBaselineState,
     mockError,
     mockFailure,
+    mockProgramData,
     mockProgramResponse,
     mockRootState,
+    mockShapeResponse,
     mockSuccess,
     mockSurveyAndProgramState,
+    mockSurveyData,
     mockSurveyResponse,
     mockVmmcResponse
 } from "../mocks";
@@ -46,9 +51,10 @@ describe("Survey and programme actions", () => {
             .reply(200, mockSuccess({data: "SOME DATA", warnings: "TEST WARNINGS"}));
 
         const commit = vi.fn();
-        await actions.uploadSurvey({commit, rootState} as any, mockFormData as any);
+        const dispatch = vi.fn();
+        await actions.uploadSurvey({commit, rootState, dispatch} as any, mockFormData as any);
 
-        checkSurveyImportUpload(commit);
+        checkSurveyImportUpload(commit, dispatch);
     });
 
     it("sets data after surveys file import", async () => {
@@ -57,14 +63,15 @@ describe("Survey and programme actions", () => {
             .reply(200, mockSuccess({data: "SOME DATA", warnings: "TEST WARNINGS"}));
 
         const commit = vi.fn();
-        await actions.importSurvey({commit, rootState: root({survey: {id: "123"}})} as any, "some-url");
+        const dispatch = vi.fn();
+        await actions.importSurvey({commit, dispatch, rootState: root({survey: {id: "123"}})} as any, "some-url");
 
         expectValidAdrImportPayload(url)
 
-        checkSurveyImportUpload(commit);
+        checkSurveyImportUpload(commit, dispatch);
     });
 
-    const checkSurveyImportUpload = (commit: Mock) => {
+    const checkSurveyImportUpload = (commit: Mock, dispatch: Mock) => {
         expect(commit.mock.calls[0][0]).toStrictEqual({
             type: SurveyAndProgramMutation.SurveyUpdated,
             payload: null
@@ -75,18 +82,16 @@ describe("Survey and programme actions", () => {
             payload: {type: DataType.Survey, warnings: []}
         });
 
-        expectEqualsFrozen(commit.mock.calls[2][0], {
-            type: SurveyAndProgramMutation.SurveyUpdated,
-            payload: {data: "SOME DATA", warnings: "TEST WARNINGS"}
+        expect(commit.mock.calls[2][0]).toStrictEqual({
+            type: "WarningsFetched",
+            payload: {type: 2, warnings: "TEST WARNINGS"}
         });
 
-        expect(commit.mock.calls[3][0]).toStrictEqual(
-            {type: "WarningsFetched",
-                payload: {type: 2, warnings: "TEST WARNINGS"}
-            });
-
         //Should also have set selectedDataType
-        expect(commit.mock.calls[4][0]).toStrictEqual({type: "SelectedDataTypeUpdated", payload: DataType.Survey});
+        expect(commit.mock.calls[3][0]).toStrictEqual({type: "SelectedDataTypeUpdated", payload: DataType.Survey});
+
+        expect(dispatch.mock.calls[0][0]).toStrictEqual("setSurveyResponse");
+        expect(dispatch.mock.calls[0][1]).toStrictEqual({data: "SOME DATA", warnings: "TEST WARNINGS"})
     }
 
     it("sets error message after failed surveys upload", async () => {
@@ -140,9 +145,10 @@ describe("Survey and programme actions", () => {
             .reply(200, mockSuccess({data: "TEST", warnings: "TEST WARNINGS"}));
 
         const commit = vi.fn();
-        await actions.uploadProgram({commit, rootState} as any, mockFormData as any);
+        const dispatch = vi.fn();
+        await actions.uploadProgram({commit, rootState, dispatch} as any, mockFormData as any);
 
-        checkProgrammeImportUpload(commit)
+        checkProgrammeImportUpload(commit, dispatch)
     });
 
     it("sets data after programme file import", async () => {
@@ -151,11 +157,12 @@ describe("Survey and programme actions", () => {
             .reply(200, mockSuccess({data: "TEST", warnings: "TEST WARNINGS"}));
 
         const commit = vi.fn();
-        await actions.importProgram({commit, rootState: root({program: {id: "123"}})} as any, "some-url");
+        const dispatch = vi.fn();
+        await actions.importProgram({commit, rootState: root({program: {id: "123"}}), dispatch} as any, "some-url");
 
         expectValidAdrImportPayload(url)
 
-        checkProgrammeImportUpload(commit)
+        checkProgrammeImportUpload(commit, dispatch)
     });
 
     it("does not call import programme if url is missing", async () => {
@@ -186,7 +193,7 @@ describe("Survey and programme actions", () => {
         expect(commit.mock.calls.length).toBe(0);
     });
 
-    const checkProgrammeImportUpload = (commit: Mock) => {
+    const checkProgrammeImportUpload = (commit: Mock, dispatch: Mock) => {
         expect(commit.mock.calls[0][0]).toStrictEqual({
             type: SurveyAndProgramMutation.ProgramUpdated,
             payload: null
@@ -202,23 +209,21 @@ describe("Survey and programme actions", () => {
             payload: "art"
         });
 
-        expectEqualsFrozen(commit.mock.calls[3][0], {
-            type: SurveyAndProgramMutation.ProgramUpdated,
-            payload: {data: "TEST", warnings: "TEST WARNINGS"}
-        });
-
-        expect(commit.mock.calls[4][0]).toStrictEqual(
+        expect(commit.mock.calls[3][0]).toStrictEqual(
             {
                 type: "WarningsFetched",
                 payload: {type: 1, warnings: "TEST WARNINGS"}
             });
 
         //Should also have set selectedDataType
-        expect(commit.mock.calls[5][0]).toStrictEqual(
+        expect(commit.mock.calls[4][0]).toStrictEqual(
             {
                 type: "SelectedDataTypeUpdated",
                 payload: DataType.Program
             });
+
+        expect(dispatch.mock.calls[0][0]).toStrictEqual("setProgramResponse");
+        expect(dispatch.mock.calls[0][1]).toStrictEqual({data: "TEST", warnings: "TEST WARNINGS"})
     }
 
     it("sets error message after failed programme upload", async () => {
@@ -278,9 +283,10 @@ describe("Survey and programme actions", () => {
             .reply(200, mockSuccess({data: "TEST", warnings: "TEST WARNINGS"}));
 
         const commit = vi.fn();
-        await actions.uploadANC({commit, rootState} as any, mockFormData as any);
+        const dispatch = vi.fn();
+        await actions.uploadANC({commit, rootState, dispatch} as any, mockFormData as any);
 
-        checkANCImportUpload(commit);
+        checkANCImportUpload(commit, dispatch);
     });
 
     it("sets data after anc file import", async () => {
@@ -289,15 +295,16 @@ describe("Survey and programme actions", () => {
             .reply(200, mockSuccess({data: "TEST", warnings: "TEST WARNINGS"}));
 
         const commit = vi.fn();
+        const dispatch = vi.fn();
 
-        await actions.importANC({commit, rootState: root({anc: {id: "123"}})} as any, "some-url");
+        await actions.importANC({commit, rootState: root({anc: {id: "123"}}), dispatch} as any, "some-url");
 
         expectValidAdrImportPayload(url)
 
-        checkANCImportUpload(commit);
+        checkANCImportUpload(commit, dispatch);
     });
 
-    const checkANCImportUpload = (commit: Mock) => {
+    const checkANCImportUpload = (commit: Mock, dispatch: Mock) => {
         expect(commit.mock.calls[0][0]).toStrictEqual({
             type: SurveyAndProgramMutation.ANCUpdated,
             payload: null
@@ -313,23 +320,21 @@ describe("Survey and programme actions", () => {
             payload: "anc"
         });
 
-        expectEqualsFrozen(commit.mock.calls[3][0], {
-            type: SurveyAndProgramMutation.ANCUpdated,
-            payload: {data: "TEST", warnings: "TEST WARNINGS"}
-        });
-
-        expect(commit.mock.calls[4][0]).toStrictEqual(
+        expect(commit.mock.calls[3][0]).toStrictEqual(
             {
                 type: "WarningsFetched",
                 payload: {type: 0, warnings: "TEST WARNINGS"}
             });
 
         //Should also have set selectedDataType
-        expect(commit.mock.calls[5][0]).toStrictEqual(
+        expect(commit.mock.calls[4][0]).toStrictEqual(
             {
                 type: "SelectedDataTypeUpdated",
                 payload: DataType.ANC
             });
+
+        expect(dispatch.mock.calls[0][0]).toStrictEqual("setAncResponse");
+        expect(dispatch.mock.calls[0][1]).toStrictEqual({data: "TEST", warnings: "TEST WARNINGS"})
     }
 
     it("sets error message after failed anc upload", async () => {
@@ -504,18 +509,20 @@ describe("Survey and programme actions", () => {
             .reply(200, mockSuccess(mockVmmcResponse()));
 
         const commit = vi.fn();
-        await actions.getSurveyAndProgramData({commit, rootState} as any);
+        const dispatch = vi.fn();
+        await actions.getSurveyAndProgramData({commit, rootState, dispatch} as any);
 
-        const calls = commit.mock.calls.map((callArgs) => callArgs[0]["type"]);
-        expect(calls).toContain(SurveyAndProgramMutation.SurveyUpdated);
-        expect(calls).toContain(SurveyAndProgramMutation.ProgramUpdated);
-        expect(calls).toContain(SurveyAndProgramMutation.ANCUpdated);
-        expect(calls).toContain(SurveyAndProgramMutation.VmmcUpdated);
-        expect(calls).toContain(SurveyAndProgramMutation.Ready);
+        const commitCalls = commit.mock.calls.map((callArgs) => callArgs[0]["type"]);
+        const dispatchCalls = dispatch.mock.calls.map((callArgs) => callArgs[0]);
+        expect(dispatchCalls).toContain("setSurveyResponse");
+        expect(dispatchCalls).toContain("setProgramResponse");
+        expect(dispatchCalls).toContain("setAncResponse");
+        expect(commitCalls).toContain(SurveyAndProgramMutation.VmmcUpdated);
+        expect(commitCalls).toContain(SurveyAndProgramMutation.Ready);
 
         const payloads = commit.mock.calls.map((callArgs) => callArgs[0]["payload"]);
-        expect(payloads.filter(p => Object.isFrozen(p)).length).toBe(5);
-        //ready payload is true, which is frozen by definition
+        // ready payload is true, which is frozen by definition
+        expect(payloads.filter(p => Object.isFrozen(p)).length).toBe(2);
     });
 
     it("it validates, commits and marks state ready", async () => {
@@ -533,22 +540,19 @@ describe("Survey and programme actions", () => {
             .reply(200, mockSuccess(mockVmmcResponse()));
 
         const commit = vi.fn();
-        await actions.validateSurveyAndProgramData({commit, rootState} as any);
+        const dispatch = vi.fn();
+        await actions.validateSurveyAndProgramData({commit, rootState, dispatch} as any);
 
-        const calls = commit.mock.calls.map((callArgs) => callArgs[0]["type"]);
-        expect(calls).toContain(SurveyAndProgramMutation.SurveyUpdated);
-        expect(calls).toContain(SurveyAndProgramMutation.ProgramUpdated);
-        expect(calls).toContain(SurveyAndProgramMutation.ANCUpdated);
-        expect(calls).toContain(SurveyAndProgramMutation.VmmcUpdated);
-        expect(calls).toContain(SurveyAndProgramMutation.Ready);
-        expect(commit.mock.calls[4][0]).toStrictEqual(
-            {
-                type: "SelectedDataTypeUpdated",
-                payload: DataType.Survey
-            });
+        const commitCalls = commit.mock.calls.map((callArgs) => callArgs[0]["type"]);
+        const dispatchCalls = dispatch.mock.calls.map((callArgs) => callArgs[0]);
+        expect(dispatchCalls).toContain("setSurveyResponse");
+        expect(dispatchCalls).toContain("setProgramResponse");
+        expect(dispatchCalls).toContain("setAncResponse");
+        expect(commitCalls).toContain(SurveyAndProgramMutation.VmmcUpdated);
+        expect(commitCalls).toContain(SurveyAndProgramMutation.Ready);
 
         const payloads = commit.mock.calls.map((callArgs) => callArgs[0]["payload"]);
-        expect(payloads.filter(p => Object.isFrozen(p)).length).toBe(6);
+        expect(payloads.filter(p => Object.isFrozen(p)).length).toBe(3);
         //ready payload is true, which is frozen by definition
     });
 
@@ -567,20 +571,21 @@ describe("Survey and programme actions", () => {
             .reply(200, mockSuccess(mockVmmcResponse()));
 
         const commit = vi.fn();
-        await actions.validateSurveyAndProgramData({commit, rootState} as any);
+        const dispatch = vi.fn();
+        await actions.validateSurveyAndProgramData({commit, rootState, dispatch} as any);
 
-        const calls = commit.mock.calls.map((callArgs) => callArgs[0]["type"]);
-        expect(calls).toContain(SurveyAndProgramMutation.SurveyError);
-        expect(calls).toContain(SurveyAndProgramMutation.ProgramUpdated);
-        expect(calls).toContain(SurveyAndProgramMutation.ANCUpdated);
-        expect(calls).toContain(SurveyAndProgramMutation.VmmcUpdated);
-        expect(calls).toContain(SurveyAndProgramMutation.Ready);
-        expect(commit.mock.calls[4][0]).toStrictEqual({type: "SelectedDataTypeUpdated", payload: DataType.Program});
+        const commitCalls = commit.mock.calls.map((callArgs) => callArgs[0]["type"]);
+        const dispatchCalls = dispatch.mock.calls.map((callArgs) => callArgs[0]);
+        expect(commitCalls).toContain(SurveyAndProgramMutation.SurveyError);
+        expect(dispatchCalls).not.toContain("setSurveyResponse");
+        expect(dispatchCalls).toContain("setProgramResponse");
+        expect(dispatchCalls).toContain("setAncResponse");
+        expect(commitCalls).toContain(SurveyAndProgramMutation.VmmcUpdated);
+        expect(commitCalls).toContain(SurveyAndProgramMutation.Ready);
 
         const payloads = commit.mock.calls.map((callArgs) => callArgs[0]["payload"]);
-        expect(payloads.filter(p => Object.isFrozen(p)).length).toBe(5);
+        expect(payloads.filter(p => Object.isFrozen(p)).length).toBe(3);
         //ready payload is true, which is frozen by definition
-
     });
 
     it("it runs validation, fails all and commits correctly", async () => {
@@ -819,4 +824,82 @@ describe("Survey and programme actions", () => {
         expect(commit.mock.calls[0][0]["payload"]).toBe(DataType.ANC);
     });
 
+    it("commits survey data without area level", () => {
+        const commit = vi.fn();
+        const surveyData = [mockSurveyData()];
+        const surveyResponse = mockSurveyResponse({
+            data: surveyData
+        });
+        actions.setSurveyResponse({commit, rootState} as any, surveyResponse)
+
+        expectEqualsFrozen(commit.mock.calls[0][0], {
+            type: SurveyAndProgramMutation.SurveyUpdated,
+            payload: surveyResponse
+        });
+    });
+
+    const rootStateWithShapeData = mockRootState({
+        baseline: mockBaselineState({
+            iso3: "MWI",
+            shape: mockShapeResponse({
+                data: {
+                    "type": "FeatureCollection",
+                    "features": [{
+                        properties: {
+                            area_id: "MWI",
+                            area_level: 1
+                        }
+                    }]
+                }
+            })
+        }),
+    })
+
+    it("commits survey data with area level", () => {
+        const commit = vi.fn();
+        const surveyData = [mockSurveyData()];
+        expect(surveyData[0]["area_level"]).toBeUndefined();
+        const surveyResponse = mockSurveyResponse({
+            data: surveyData
+        });
+        actions.setSurveyResponse({commit, rootState: rootStateWithShapeData} as any, surveyResponse)
+
+        expectEqualsFrozen(commit.mock.calls[0][0], {
+            type: SurveyAndProgramMutation.SurveyUpdated,
+            payload: surveyResponse
+        });
+        expect(surveyResponse.data[0]["area_level"]).toBe(1);
+    });
+
+    it("commits programme data with area level", () => {
+        const commit = vi.fn();
+        const programData = [mockProgramData()];
+        expect(programData[0]["area_level"]).toBeUndefined();
+        const programResponse = mockProgramResponse({
+            data: programData
+        });
+        actions.setProgramResponse({commit, rootState: rootStateWithShapeData} as any, programResponse)
+
+        expectEqualsFrozen(commit.mock.calls[0][0], {
+            type: SurveyAndProgramMutation.ProgramUpdated,
+            payload: programResponse
+        });
+        expect(programResponse.data[0]["area_level"]).toBe(1);
+    });
+
+    it("commits ANC data with area level", () => {
+        const commit = vi.fn();
+        const ancData = [mockAncData()];
+        expect(ancData[0]["area_level"]).toBeUndefined();
+        const ancResponse = mockAncResponse({
+            data: ancData
+        });
+        actions.setAncResponse({commit, rootState: rootStateWithShapeData} as any, ancResponse)
+
+        expectEqualsFrozen(commit.mock.calls[0][0], {
+            type: SurveyAndProgramMutation.ANCUpdated,
+            payload: ancResponse
+        });
+        expect(ancResponse.data[0]["area_level"]).toBe(1);
+    });
 });

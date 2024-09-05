@@ -29,10 +29,10 @@ describe("Survey and programme actions", () => {
 
         await actions.uploadSurvey({commit, dispatch, rootState} as any, formData);
 
-        expect(commit.mock.calls[2][0]["type"]).toBe(SurveyAndProgramMutation.SurveyUpdated);
-        expect(commit.mock.calls[2][0]["payload"]["filename"])
-            .toBe("survey.csv")
-        expect(commit.mock.calls[3][0]["type"]).toBe(SurveyAndProgramMutation.WarningsFetched);
+        expect(dispatch.mock.calls[0][0]).toBe("setSurveyResponse");
+        expect(dispatch.mock.calls[0][1]["filename"]).toBe("survey.csv");
+
+        expect(commit.mock.calls[2][0]["type"]).toBe(SurveyAndProgramMutation.WarningsFetched);
     });
 
     it("can upload programme", async () => {
@@ -46,33 +46,50 @@ describe("Survey and programme actions", () => {
 
         expect(commit.mock.calls[2][0]["type"]).toBe("genericChart/ClearDataset");
         expect(commit.mock.calls[2][0]["payload"]).toBe("art");
-        expect(commit.mock.calls[3][0]["type"]).toBe(SurveyAndProgramMutation.ProgramUpdated);
-        expect(commit.mock.calls[3][0]["payload"]["filename"])
-            .toBe("programme.csv")
-        expect(commit.mock.calls[4][0]["type"]).toBe(SurveyAndProgramMutation.WarningsFetched);
+
+        expect(dispatch.mock.calls[0][0]).toBe("setProgramResponse");
+        expect(dispatch.mock.calls[0][1]["filename"]).toBe("programme.csv");
+
+        expect(commit.mock.calls[3][0]["type"]).toBe(SurveyAndProgramMutation.WarningsFetched);
     });
 
     it("can upload anc", async () => {
 
         const commit = vi.fn();
+        const dispatch = vi.fn();
         const formData = getFormData("anc.csv");
 
-        await actions.uploadANC({commit, rootState} as any, formData);
+        await actions.uploadANC({commit, rootState, dispatch} as any, formData);
         expect(commit.mock.calls[2][0]["type"]).toBe("genericChart/ClearDataset");
         expect(commit.mock.calls[2][0]["payload"]).toBe("anc");
-        expect(commit.mock.calls[3][0]["type"]).toBe(SurveyAndProgramMutation.ANCUpdated);
+
+        expect(dispatch.mock.calls[0][0]).toBe("setAncResponse");
+        expect(dispatch.mock.calls[0][1]["filename"]).toBe("anc.csv");
+
+        expect(commit.mock.calls[3][0]["type"]).toBe(SurveyAndProgramMutation.WarningsFetched);
+    });
+
+    it("can upload VMMC", async () => {
+        const commit = vi.fn();
+
+        const formData = getFormData("vmmc.xlsx");
+
+        await actions.uploadVmmc({commit, rootState} as any, formData);
+
+        expect(commit.mock.calls[3][0]["type"]).toBe(SurveyAndProgramMutation.VmmcUpdated);
         expect(commit.mock.calls[3][0]["payload"]["filename"])
-            .toBe("anc.csv");
+            .toBe("vmmc.xlsx")
         expect(commit.mock.calls[4][0]["type"]).toBe(SurveyAndProgramMutation.WarningsFetched);
     });
 
     it("can delete survey", async () => {
         const commit = vi.fn();
+        const dispatch = vi.fn();
 
         const formData = getFormData("survey.csv");
 
         // upload
-        await actions.uploadSurvey({commit, rootState} as any, formData);
+        await actions.uploadSurvey({commit, rootState, dispatch} as any, formData);
 
         commit.mockReset();
 
@@ -80,20 +97,21 @@ describe("Survey and programme actions", () => {
         await actions.deleteSurvey({commit, rootState, state: {selectedDataType: DataType.Survey}} as any);
         expect(commit.mock.calls[0][0]["type"]).toBe(SurveyAndProgramMutation.SurveyUpdated);
 
-        commit.mockReset();
+        dispatch.mockReset();
 
-        // if the file has been deleted, data should come back null
-        await actions.getSurveyAndProgramData({commit, rootState} as any);
-        expect(commit.mock.calls.find(c => c[0]["type"] == SurveyAndProgramMutation.SurveyUpdated)[0]["payload"]).toBe(null);
+        // if the file has been deleted, data should come back null so action not dispatched
+        await actions.getSurveyAndProgramData({commit, rootState, dispatch} as any);
+        expect(dispatch.mock.calls.find(c => c[0] == "setSurveyResponse")).toBeUndefined();
     });
 
     it("can delete program", async () => {
         const commit = vi.fn();
+        const dispatch = vi.fn();
 
         const formData = getFormData("programme.csv");
 
         // upload
-        await actions.uploadProgram({commit, rootState} as any, formData);
+        await actions.uploadProgram({commit, rootState, dispatch} as any, formData);
 
         commit.mockReset();
 
@@ -102,20 +120,21 @@ describe("Survey and programme actions", () => {
         expect(commit.mock.calls[0][0]["type"]).toBe(SurveyAndProgramMutation.ProgramUpdated);
         expect(commit.mock.calls[1][0]["type"]).toBe("genericChart/ClearDataset");
 
-        commit.mockReset();
+        dispatch.mockReset();
 
-        // if the file has been deleted, data should come back null
-        await actions.getSurveyAndProgramData({commit, rootState} as any);
-        expect(commit.mock.calls.find(c => c[0]["type"] == SurveyAndProgramMutation.ProgramUpdated)[0]["payload"]).toBe(null);
+        // if the file has been deleted, data should come back null and so action not triggered
+        await actions.getSurveyAndProgramData({commit, rootState, dispatch} as any);
+        expect(dispatch.mock.calls.find(c => c[0] == "setProgramResponse")).toBeUndefined();
     });
 
     it("can delete ANC", async () => {
         const commit = vi.fn();
+        const dispatch = vi.fn();
 
         const formData = getFormData("anc.csv");
 
         // upload
-        await actions.uploadANC({commit, rootState} as any, formData);
+        await actions.uploadANC({commit, rootState, dispatch} as any, formData);
 
         commit.mockReset();
 
@@ -124,11 +143,33 @@ describe("Survey and programme actions", () => {
         expect(commit.mock.calls[0][0]["type"]).toBe(SurveyAndProgramMutation.ANCUpdated);
         expect(commit.mock.calls[1][0]["type"]).toBe("genericChart/ClearDataset");
 
+        dispatch.mockReset();
+
+        // if the file has been deleted, data should come back null and so action not triggered
+        await actions.getSurveyAndProgramData({commit, rootState, dispatch} as any);
+        expect(dispatch.mock.calls.find(c => c[0] == "setAncResponse")).toBeUndefined();
+    });
+
+    it("can delete VMMC", async () => {
+        const commit = vi.fn();
+        const dispatch = vi.fn()
+
+        const formData = getFormData("vmmc.xlsx");
+
+        // upload
+        await actions.uploadVmmc({commit, rootState} as any, formData);
+
+        commit.mockReset();
+
+        // delete
+        await actions.deleteVmmc({commit, rootState, state: {selectedDataType: DataType.Vmmc}} as any);
+        expect(commit.mock.calls[0][0]["type"]).toBe(SurveyAndProgramMutation.VmmcUpdated);
+        expect(commit.mock.calls[1][0]["type"]).toBe("genericChart/ClearDataset");
+
         commit.mockReset();
 
         // if the file has been deleted, data should come back null
-        await actions.getSurveyAndProgramData({commit, rootState} as any);
-        expect(commit.mock.calls.find(c => c[0]["type"] == SurveyAndProgramMutation.ANCUpdated)[0]["payload"]).toBe(null);
+        await actions.getSurveyAndProgramData({commit, dispatch, rootState} as any);
+        expect(commit.mock.calls.find(c => c[0]["type"] == SurveyAndProgramMutation.VmmcUpdated)[0]["payload"]).toBe(null);
     });
-
 });

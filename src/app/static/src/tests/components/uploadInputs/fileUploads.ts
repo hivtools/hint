@@ -39,7 +39,10 @@ export function testUploadComponent(name: string, position: number) {
             deleteVmmc: vi.fn(),
             getSurveyAndProgramData: vi.fn(),
             selectDataType: vi.fn(),
-            validateSurveyAndProgramData: vi.fn()
+            validateSurveyAndProgramData: vi.fn(),
+            setSurveyResponse: vi.fn(),
+            setProgramResponse: vi.fn(),
+            setAncResponse: vi.fn(),
         };
 
         switch (name) {

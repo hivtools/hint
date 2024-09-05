@@ -389,6 +389,24 @@ export const mockSurveyResponse = (props: Partial<SurveyResponse> = {}): SurveyR
     }
 };
 
+export const mockSurveyData = (props?: Partial<SurveyResponse["data"][0]>): SurveyResponse["data"][0] => {
+    return {
+        indicator: "prevalence",
+        survey_id: "survey1",
+        survey_year: 2000,
+        area_id: "MWI",
+        sex: "Both",
+        age_group: "Y15-49",
+        n_clusters: 10,
+        n_observations: 100,
+        estimate: 0.2,
+        std_error: 0.02,
+        ci_lower: 0.18,
+        ci_upper: 0.20,
+        ...props
+    };
+};
+
 export const mockProgramResponse = (props: Partial<ProgrammeResponse> = {}): ProgrammeResponse => {
     return {
         type: "programme",
@@ -397,6 +415,17 @@ export const mockProgramResponse = (props: Partial<ProgrammeResponse> = {}): Pro
         hash: "1234.csv",
         filters: {"age": [], "calendar_quarter": [], indicators: []},
         warnings: [],
+        ...props
+    }
+};
+
+export const mockProgramData = (props?: Partial<ProgrammeResponse["data"][0]>): ProgrammeResponse["data"][0] => {
+    return {
+        area_id: "MWI",
+        calendar_quarter: "Y2000Q3",
+        sex: "both",
+        age_group: "Y015-049",
+        art_current: 300,
         ...props
     }
 };
@@ -412,6 +441,23 @@ export const mockAncResponse = (props: Partial<AncResponse> = {}): AncResponse =
         ...props
     }
 };
+
+export const mockAncData = (props?: Partial<AncResponse["data"][0]>): AncResponse["data"][0] => {
+    return {
+        area_id: "MWI",
+        age_group: "Y015-049",
+        year: 2000,
+        anc_clients: 300,
+        anc_hiv_status: 300,
+        anc_known_pos: 300,
+        anc_already_art: 300,
+        anc_tested: 300,
+        anc_tested_pos: 300,
+        anc_prevalence: 300,
+        anc_art_coverage: 300,
+        ...props
+    }
+}
 
 export const mockVmmcResponse = (props: Partial<VmmcResponse> = {}): VmmcResponse => {
     return {
