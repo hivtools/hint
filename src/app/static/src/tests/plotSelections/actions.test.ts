@@ -1,6 +1,6 @@
 import {
     mockAxios,
-    mockCalibrateMetadataResponse,
+    mockCalibrateMetadataResponse, mockComparisonPlotResponse,
     mockControlSelection,
     mockFilterSelection,
     mockModelCalibrateState,
@@ -8,10 +8,18 @@ import {
     mockRootState
 } from "../mocks";
 import {Mock, MockInstance} from "vitest";
-import {actions, PlotSelectionActionUpdate, Selection} from "../../app/store/plotSelections/actions";
+import {
+    actions,
+    handlePlotControlOverrides,
+    PlotSelectionActionUpdate,
+    Selection
+} from "../../app/store/plotSelections/actions";
 import * as plotSelectionsUtils from "../../app/store/plotSelections/utils";
 import {PayloadWithType} from "../../app/types";
 import {PlotSelectionsMutations} from "../../app/store/plotSelections/mutations";
+import {PlotName, PlotSelectionsState} from "../../app/store/plotSelections/plotSelections";
+import {RootState} from "../../app/root";
+import {PlotMetadataFrame} from "../../app/store/metadata/metadata";
 
 describe("Projects actions", () => {
     let getPlotDataMock: MockInstance;
@@ -26,7 +34,6 @@ describe("Projects actions", () => {
     afterEach(() => {
         (console.log as Mock).mockClear();
     });
-
 
     getPlotDataMock = vi.spyOn(
         plotSelectionsUtils,
@@ -266,5 +273,158 @@ describe("Projects actions", () => {
         expect(commit.mock.calls[0][0].payload.plot).toBe("choropleth");
         expect(commit.mock.calls[0][0].payload.selections).toStrictEqual(expectedSelections);
     });
-})
-;
+
+    describe("control overrides", () => {
+        const selections: PlotSelectionsState[PlotName] = {
+            controls: [
+                mockControlSelection({
+                    id: "indicator_control",
+                    label: "Indicator",
+                    selection: [{
+                        label: "Prevalence",
+                        id: "prevalence"
+                    }]
+                }),
+                mockControlSelection({
+                    id: "x_axis",
+                    label: "X axis",
+                    selection: [
+                        {
+                            label: "Sex",
+                            id: "sex"
+                        }
+                    ]
+                })
+            ],
+            filters: []
+        }
+
+        const metadata: PlotMetadataFrame = {
+            filterTypes: [],
+            indicators: [],
+            plotSettingsControl: {
+                comparison: {
+                    plotSettings: [{
+                        id: "x_axis",
+                        label: "X Axis",
+                        value: "sex",
+                        options: [
+                            {
+                                id: "sex",
+                                label: "Sex",
+                                effect: {
+                                    setFilters: []
+                                }
+                            },
+                            {
+                                id: "age",
+                                label: "Age",
+                                effect: {
+                                    setFilters: []
+                                }
+                            }
+                        ]
+                    }]
+                }
+            }
+        }
+
+        const indicatorSelection = {
+            plotSetting: {
+                id: "indicator_control",
+                options: [
+                    {
+                        id: "prevalence",
+                        label: "Prevalence"
+                    }
+                ]
+            }
+        }
+
+
+        it("can run control overrides for comparison plot if setting indicator", () => {
+            const localSelections = structuredClone(selections);
+            handlePlotControlOverrides(localSelections, "comparison", indicatorSelection, metadata);
+
+            expect(localSelections.controls.length).toBe(2);
+            expect(localSelections.controls[1].id).toBe("x_axis")
+            expect(localSelections.controls[1].selection.length).toBe(1);
+            expect(localSelections.controls[1].selection[0].id).toBe("age")
+        });
+
+        it("doesn't run control overrides if not comparison plot", () => {
+            const localSelections = structuredClone(selections);
+            handlePlotControlOverrides(localSelections, "bubble", indicatorSelection, metadata);
+            expect(localSelections).toStrictEqual(selections);
+        });
+
+        it("doesn't run control overrides if x-axis was updated", () => {
+            const localSelections = structuredClone(selections);
+            const xAxisSelection = {
+                plotSetting: {
+                    id: "x_axis",
+                    options: [
+                        {
+                            id: "age",
+                            label: "Age"
+                        }
+                    ]
+                }
+            }
+            handlePlotControlOverrides(localSelections, "comparison", xAxisSelection, metadata);
+            expect(localSelections).toStrictEqual(selections);
+        });
+
+        it("doesn't run control overrides if mapping not configured for this indicator", () => {
+            const localSelections = structuredClone(selections);
+            const nonMappedIndicator = {
+                plotSetting: {
+                    id: "indicator_control",
+                    options: [
+                        {
+                            id: "unknown",
+                            label: "Unknown"
+                        }
+                    ]
+                }
+            }
+            handlePlotControlOverrides(localSelections, "comparison", nonMappedIndicator, metadata);
+            expect(localSelections).toStrictEqual(selections);
+        });
+
+        it("doesn't run control overrides if can't find configured x-axis in metadata", () => {
+            const localSelections = structuredClone(selections);
+            const metadata: PlotMetadataFrame = {
+                filterTypes: [],
+                indicators: [],
+                plotSettingsControl: {
+                    comparison: {
+                        plotSettings: []
+                    }
+                }
+            }
+            handlePlotControlOverrides(localSelections, "comparison", indicatorSelection, metadata);
+            expect(localSelections).toStrictEqual(selections);
+        });
+
+        it("doesn't run control overrides if can't find x-axis in controls", () => {
+            const localSelections: PlotSelectionsState[PlotName] = {
+                controls: [
+                    mockControlSelection({
+                        id: "indicator_control",
+                        label: "Indicator",
+                        selection: [{
+                            label: "Prevalence",
+                            id: "prevalence"
+                        }]
+                    }),
+                ],
+                filters: []
+            }
+            const expectedSelections = structuredClone(localSelections);
+            handlePlotControlOverrides(localSelections, "comparison", indicatorSelection, metadata);
+            expect(localSelections).toStrictEqual(expectedSelections);
+        });
+    })
+
+});

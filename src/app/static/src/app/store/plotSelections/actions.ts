@@ -1,7 +1,7 @@
 import {ActionContext, ActionTree} from "vuex"
 import {PlotDataType, PlotName, plotNameToDataType, PlotSelectionsState} from "./plotSelections"
 import {RootState} from "../../root"
-import {PayloadWithType} from "../../types"
+import {Dict, PayloadWithType} from "../../types"
 import {FilterOption, PlotSettingEffect, PlotSettingOption,} from "../../generated"
 import {PlotSelectionsMutations, PlotSelectionUpdate} from "./mutations"
 import {filtersInfoFromEffects, getPlotData} from "./utils"
@@ -12,7 +12,8 @@ type IdOptions = {
     options: FilterOption[]
 }
 
-export type Selection = { filter: IdOptions } | { plotSetting: IdOptions }
+type PlotSettingSelection = { plotSetting: IdOptions }
+export type Selection = { filter: IdOptions } | PlotSettingSelection
 
 export type PlotSelectionActionUpdate = {
     plot: PlotName,
@@ -52,6 +53,7 @@ export const actions: ActionTree<PlotSelectionsState, RootState> & PlotSelection
             const plotMetadata = metadata.plotSettingsControl[plot];
             const pIndex = updatedSelections.controls.findIndex(p => p.id === selection.plotSetting.id);
             updatedSelections.controls[pIndex].selection = selection.plotSetting.options;
+            handlePlotControlOverrides(updatedSelections, plot, selection, metadata);
             const plotSettingOptions: PlotSettingOption[] = updatedSelections.controls.map(c => {
                 const plotSetting = plotMetadata.plotSettings.find(ps => ps.id === c.id);
                 return plotSetting!.options.find(op => op.id === c.selection[0].id)!;
@@ -68,5 +70,36 @@ export const actions: ActionTree<PlotSelectionsState, RootState> & PlotSelection
             type: PlotSelectionsMutations.updatePlotSelection,
             payload: updatePayload
         });
+    }
+}
+
+// For the comparison plot we want some special override behaviour
+// If the user sets an indicator, we want to update the x-axis plot control based on this
+// Handle any special plot overrides here. If there are some common patterns emerging, consider turning
+// this into some plot control effect.
+export const handlePlotControlOverrides = (selections: PlotSelectionsState[PlotName],
+                                           plot: PlotName,
+                                           selection: PlotSettingSelection,
+                                           metadata: PlotMetadataFrame) => {
+    if (plot === "comparison" && selection.plotSetting.id === "indicator_control") {
+        const indicatorToDefaultXAxis: Dict<string> = {
+            prevalence: "age",
+            art_coverage: "age",
+            art_current: "sex",
+            anc_prevalence_age_matched: "sex",
+            anc_art_coverage_age_matched: "sex",
+        };
+        const setXAxisTo = indicatorToDefaultXAxis[selection.plotSetting.options[0].id];
+        if (setXAxisTo) {
+            const xAxisControl = selections.controls.find(p => p.id === "x_axis");
+            const xAxisMetadata = metadata.plotSettingsControl.comparison.plotSettings.find(p => p.id === "x_axis");
+            if (xAxisControl && xAxisMetadata) {
+                const xAxisSelection = xAxisMetadata.options.find(o => o.id === setXAxisTo)
+                xAxisControl.selection = [{
+                    id: xAxisSelection!.id,
+                    label: xAxisSelection!.label
+                }];
+            }
+        }
     }
 }
