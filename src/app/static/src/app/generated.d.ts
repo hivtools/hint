@@ -585,23 +585,6 @@ export interface CalibrateSubmitRequest {
 export interface CalibrateSubmitResponse {
   id: string;
 }
-export interface ChoroplethIndicatorMetadata {
-  indicator: string;
-  value_column: string;
-  error_low_column?: string;
-  error_high_column?: string;
-  indicator_column?: string;
-  indicator_value?: string;
-  indicator_sort_order?: number;
-  name: string;
-  min: number;
-  max: number;
-  colour: string;
-  invert_scale: boolean;
-  scale: number;
-  accuracy: number | null;
-  format: string;
-}
 export interface ChoroplethMetadata {
   indicators: {
     indicator: string;
@@ -1047,6 +1030,23 @@ export interface HintrVersionResponse {
 }
 export interface HintrWorkerStatus {
   [k: string]: "BUSY" | "IDLE" | "PAUSED" | "EXITED" | "LOST";
+}
+export interface IndicatorMetadata {
+  indicator: string;
+  value_column: string;
+  error_low_column?: string;
+  error_high_column?: string;
+  indicator_column?: string;
+  indicator_value?: string;
+  indicator_sort_order?: number;
+  name: string;
+  min: number;
+  max: number;
+  colour: string;
+  invert_scale: boolean;
+  scale: number;
+  accuracy: number | null;
+  format: string;
 }
 export interface InputDatasets {
   pjnz: {

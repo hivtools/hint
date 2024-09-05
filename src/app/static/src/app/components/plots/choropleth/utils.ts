@@ -1,9 +1,9 @@
 import {IndicatorValuesDict, NumericRange} from "../../../types";
-import {ChoroplethIndicatorMetadata} from "../../../generated";
+import {IndicatorMetadata} from "../../../generated";
 import {getColour} from "../utils";
 
 export const getFeatureData = function (data: any[],
-                                        indicatorMeta: ChoroplethIndicatorMetadata,
+                                        indicatorMeta: IndicatorMetadata,
                                         colourRange: NumericRange): IndicatorValuesDict {
 
     const result = {} as IndicatorValuesDict;

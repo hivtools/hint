@@ -35,7 +35,7 @@ import {LControl} from "@vue-leaflet/vue-leaflet";
 import MapAdjustScale from "./MapAdjustScale.vue";
 import {useStore} from "vuex";
 import {RootState} from "../../root";
-import {ChoroplethIndicatorMetadata} from "../../generated";
+import {IndicatorMetadata} from "../../generated";
 import {Scale, ScaleSettings} from "../../store/plotState/plotState";
 import {ScaleLevels} from "./utils";
 import { PlotName } from "../../store/plotSelections/plotSelections";
@@ -43,7 +43,7 @@ import { PlotName } from "../../store/plotSelections/plotSelections";
 export default defineComponent({
     props: {
         indicatorMetadata: {
-            type: Object as PropType<ChoroplethIndicatorMetadata>,
+            type: Object as PropType<IndicatorMetadata>,
             required: true
         },
         scaleLevels: {

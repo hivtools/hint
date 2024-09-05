@@ -19,7 +19,7 @@ import { useStore } from "vuex";
 import { RootState } from "../../../root";
 import {formatOutput, getIndicatorMetadata} from "../utils";
 import { FilterSelection, PlotName } from "../../../store/plotSelections/plotSelections";
-import { ChoroplethIndicatorMetadata, FilterOption, TableMetadata } from "../../../generated";
+import { IndicatorMetadata, FilterOption, TableMetadata } from "../../../generated";
 
 const defaultColDef = {
     // Set the default filter type
@@ -98,7 +98,7 @@ export default defineComponent({
         };
         const store = useStore<RootState>();
         const filterSelections = computed(() => store.state.plotSelections[props.plot].filters);
-        const indicatorMetadata = computed<ChoroplethIndicatorMetadata>(() => {
+        const indicatorMetadata = computed<IndicatorMetadata>(() => {
             const indicator = filterSelections.value.find(f => f.stateFilterId === "indicator")!.selection[0].id;
             return getIndicatorMetadata(store, props.plot, indicator);
         });

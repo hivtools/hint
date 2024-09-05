@@ -2,7 +2,7 @@ import {
     mockCalibrateDataResponse,
     mockCalibrateMetadataResponse,
     mockCalibratePlotResponse,
-    mockChoroplethIndicatorMetadata,
+    mockIndicatorMetadata,
     mockFilterSelection,
     mockModelCalibrateState,
     mockPlotSelectionsState,
@@ -176,7 +176,7 @@ describe("plotSelections getters", () => {
         const getter = getters.barchartData(mockPlotSelectionsState(), mockGetters, rootState, rootGetters);
 
         const plotData = mockCalibrateDataResponse();
-        const indicatorMetadata = mockChoroplethIndicatorMetadata();
+        const indicatorMetadata = mockIndicatorMetadata();
         getter("barchart", plotData, indicatorMetadata, filterSelections);
 
         expect(mockPlotDataToChartData.mock.calls.length).toBe(1)
@@ -221,7 +221,7 @@ describe("plotSelections getters", () => {
         const getter = getters.barchartData(plotSelectionsState, mockGetters, rootState, rootGetters);
 
         const plotData = mockCalibrateDataResponse();
-        const indicatorMetadata = mockChoroplethIndicatorMetadata();
+        const indicatorMetadata = mockIndicatorMetadata();
         expect(getter("barchart", plotData, indicatorMetadata, [])).toStrictEqual({
             datasets: [],
             labels: [],
@@ -245,7 +245,7 @@ describe("plotSelections getters", () => {
         const getter = getters.barchartData(plotSelectionsState, mockGetters, rootState, mockRootGetters);
 
         const plotData = mockCalibrateDataResponse();
-        const indicatorMetadata = mockChoroplethIndicatorMetadata();
+        const indicatorMetadata = mockIndicatorMetadata();
         expect(getter("barchart", plotData, indicatorMetadata, [])).toStrictEqual({
             datasets: [],
             labels: [],
@@ -282,7 +282,7 @@ describe("plotSelections getters", () => {
         const getter = getters.barchartData(mockPlotSelectionsState(), mockGetters, rootState, rootGetters);
 
         const plotData = mockCalibrateDataResponse();
-        const indicatorMetadata = mockChoroplethIndicatorMetadata();
+        const indicatorMetadata = mockIndicatorMetadata();
         getter("calibrate", plotData, indicatorMetadata, filterSelections);
 
         expect(mockPlotDataToChartData.mock.calls.length).toBe(1)

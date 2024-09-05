@@ -63,7 +63,7 @@
 import {computed, defineComponent, PropType} from "vue";
 import {Scale, ScaleSettings, ScaleType} from "../../store/plotState/plotState";
 import i18next from "i18next";
-import {ChoroplethIndicatorMetadata} from "../../generated";
+import {IndicatorMetadata} from "../../generated";
 import {useUpdateScale} from "./useUpdateScale";
 import { PlotName } from "../../store/plotSelections/plotSelections";
 
@@ -74,7 +74,7 @@ export default defineComponent({
             required: true
         },
         indicatorMetadata: {
-            type: Object as PropType<ChoroplethIndicatorMetadata>,
+            type: Object as PropType<IndicatorMetadata>,
             required: true
         },
         selectedScale: {

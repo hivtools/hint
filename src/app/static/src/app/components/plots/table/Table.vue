@@ -11,7 +11,7 @@
 import { computed, defineComponent } from 'vue';
 import { RootState } from '../../../root';
 import { useStore } from 'vuex';
-import { ChoroplethIndicatorMetadata } from '../../../generated';
+import { IndicatorMetadata } from '../../../generated';
 import TableReshapeData from './TableReshapeData.vue';
 import DownloadButton from '../../downloadIndicator/DownloadButton.vue';
 import { exportService } from '../../../dataExportService';
@@ -37,7 +37,7 @@ export default defineComponent({
         const store = useStore<RootState>();
         const plotData = computed<PlotData>(() => store.state.plotData[plotName]);
         const filterSelections = computed(() => store.state.plotSelections[plotName].filters);
-        const indicatorMetadata = computed<ChoroplethIndicatorMetadata>(() => {
+        const indicatorMetadata = computed<IndicatorMetadata>(() => {
             const indicator = filterSelections.value.find(f => f.stateFilterId === "indicator")!.selection[0].id;
             return getIndicatorMetadata(store, plotName, indicator);
         });

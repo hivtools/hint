@@ -2,11 +2,11 @@ import {defineComponent, PropType, Ref, ref} from "vue";
 import {expect, it, vi} from "vitest";
 import {shallowMount} from "@vue/test-utils";
 import {IndicatorValuesDict} from "../../../../app/types";
-import {ChoroplethIndicatorMetadata} from "../../../../app/generated";
+import {IndicatorMetadata} from "../../../../app/generated";
 import {Feature} from "geojson";
 import {LGeoJson} from "@vue-leaflet/vue-leaflet";
 import {useChoroplethTooltips} from "../../../../app/components/plots/choropleth/useChoroplethTooltips";
-import {mockChoroplethIndicatorMetadata} from "../../../mocks";
+import {mockIndicatorMetadata} from "../../../mocks";
 import {Layer} from "leaflet";
 
 describe("useChoroplethTooltips", () => {
@@ -17,7 +17,7 @@ describe("useChoroplethTooltips", () => {
                 required: true
             },
             indicatorMetadata: {
-                type: Object as PropType<Ref<ChoroplethIndicatorMetadata>>,
+                type: Object as PropType<Ref<IndicatorMetadata>>,
                 required: true
             },
             currentFeatures: {
@@ -41,7 +41,7 @@ describe("useChoroplethTooltips", () => {
         }
     });
 
-    const indicatorMetadata = ref<ChoroplethIndicatorMetadata>(mockChoroplethIndicatorMetadata({
+    const indicatorMetadata = ref<IndicatorMetadata>(mockIndicatorMetadata({
         format: "0.00%"
     }));
     const featureData = ref<IndicatorValuesDict>({

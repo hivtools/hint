@@ -1,4 +1,4 @@
-import {ChoroplethIndicatorMetadata} from "../../../generated";
+import {IndicatorMetadata} from "../../../generated";
 import {BubbleIndicatorValues, BubbleIndicatorValuesDict, NumericRange} from "../../../types";
 import {formatOutput, getColour} from "../utils";
 import {Feature} from "geojson";
@@ -20,8 +20,8 @@ export const getRadius = function (value: number, minValue: number, maxValue: nu
 };
 
 export const getFeatureData = function (data: any[],
-                                        sizeIndicator: ChoroplethIndicatorMetadata,
-                                        colourIndicator: ChoroplethIndicatorMetadata,
+                                        sizeIndicator: IndicatorMetadata,
+                                        colourIndicator: IndicatorMetadata,
                                         sizeRange: NumericRange,
                                         colourRange: NumericRange,
                                         minRadius: number,
@@ -53,8 +53,8 @@ export const getFeatureData = function (data: any[],
 
 export const tooltipContent = function(feature: Feature,
                                        featureData: BubbleIndicatorValuesDict,
-                                       colourIndicator: ChoroplethIndicatorMetadata,
-                                       sizeIndicator: ChoroplethIndicatorMetadata) {
+                                       colourIndicator: IndicatorMetadata,
+                                       sizeIndicator: IndicatorMetadata) {
     const area_id = feature.properties && feature.properties["area_id"];
     const area_name = feature.properties && feature.properties["area_name"];
 

@@ -1,6 +1,6 @@
 import {getFeatureData, getRadius, tooltipContent} from "../../../../app/components/plots/bubble/utils";
 import {Feature} from "geojson";
-import {mockChoroplethIndicatorMetadata} from "../../../mocks";
+import {mockIndicatorMetadata} from "../../../mocks";
 import {BubbleIndicatorValuesDict, NumericRange} from "../../../../app/types";
 import {getColour} from "../../../../app/components/plots/utils";
 
@@ -55,11 +55,11 @@ describe("Bubble plot utils", () => {
             area_name: "Malawi"
         }
     } as any as Feature;
-    const colourIndicator = mockChoroplethIndicatorMetadata({
+    const colourIndicator = mockIndicatorMetadata({
         format: "0.00%"
     });
 
-    const sizeIndicator = mockChoroplethIndicatorMetadata({
+    const sizeIndicator = mockIndicatorMetadata({
         indicator: "plhiv",
         indicator_value: "plhiv",
         name: "PLHIV",

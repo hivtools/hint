@@ -9,7 +9,7 @@ import {
     CalibrateDataResponse,
     CalibrateMetadataResponse,
     CalibratePlotResponse,
-    ChoroplethIndicatorMetadata,
+    IndicatorMetadata,
     ComparisonPlotResponse,
     DownloadSubmitRequest,
     Error,
@@ -178,7 +178,7 @@ export const mockPlotDataState = (props?: Partial<PlotDataState>) => {
 };
 
 
-export const mockChoroplethIndicatorMetadata = (props?: Partial<ChoroplethIndicatorMetadata>): ChoroplethIndicatorMetadata => {
+export const mockIndicatorMetadata = (props?: Partial<IndicatorMetadata>): IndicatorMetadata => {
     return {
         indicator: "prevalence",
         value_column: "mean",

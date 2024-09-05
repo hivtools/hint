@@ -1,7 +1,7 @@
 import {IndicatorValuesDict, NumericRange} from "../../../../app/types";
 import {getFeatureData} from "../../../../app/components/plots/choropleth/utils";
 import {getColour} from "../../../../app/components/plots/utils";
-import {mockChoroplethIndicatorMetadata} from "../../../mocks";
+import {mockIndicatorMetadata} from "../../../mocks";
 
 describe("choropleth utils", () => {
     it("builds feature data correctly", () => {
@@ -21,7 +21,7 @@ describe("choropleth utils", () => {
                 lower: 0.25
             }
         ]
-        const metadata = mockChoroplethIndicatorMetadata({
+        const metadata = mockIndicatorMetadata({
             format: "0.00%"
         });
         const range: NumericRange = {

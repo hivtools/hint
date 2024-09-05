@@ -19,7 +19,7 @@ import {computed, defineComponent, PropType, ref, watch} from "vue";
 import {PlotData} from "../../../store/plotData/plotData";
 import {BarChartData, buildTooltipCallback, getErrorLineAnnotations,} from "./utils";
 import {formatOutput, getIndicatorMetadata} from "../utils";
-import {ChoroplethIndicatorMetadata} from "../../../generated";
+import {IndicatorMetadata} from "../../../generated";
 import {PlotName} from "../../../store/plotSelections/plotSelections";
 
 ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, annotationPlugin);
@@ -40,10 +40,8 @@ export default defineComponent({
         const chart = ref<typeof Bar | null>(null);
         const store = useStore<RootState>();
 
-        // Bit confusing this is using ChoroplethIndicatorMetadata here
-        // TODO: make this type more generic in the hintr PR
         const filterSelections = computed(() => store.state.plotSelections[props.plot].filters);
-        const indicatorMetadata = computed<ChoroplethIndicatorMetadata>(() => {
+        const indicatorMetadata = computed<IndicatorMetadata>(() => {
             const indicator = filterSelections.value.find(f => f.stateFilterId === "indicator")!.selection[0].id;
             return getIndicatorMetadata(store, props.plot, indicator);
         });

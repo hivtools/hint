@@ -38,7 +38,7 @@ import {
 import ResetMap from "../ResetMap.vue";
 import MapLegend from "../MapLegend.vue";
 import {IndicatorValuesDict, NumericRange} from "../../../types";
-import {CalibrateDataResponse, ChoroplethIndicatorMetadata} from "../../../generated";
+import {CalibrateDataResponse, IndicatorMetadata} from "../../../generated";
 import { ScaleSettings } from "../../../store/plotState/plotState";
 import {useChoroplethTooltips} from "./useChoroplethTooltips";
 import {getFeatureData} from "./utils";
@@ -60,7 +60,7 @@ const plotData = computed(() => store.state.plotData[plot.value] as CalibrateDat
 const selectedIndicator = computed<string>(() => {
     return store.state.plotSelections[plot.value].filters.find(f => f.stateFilterId === "indicator")!.selection[0].id
 });
-const indicatorMetadata = computed<ChoroplethIndicatorMetadata>(() => {
+const indicatorMetadata = computed<IndicatorMetadata>(() => {
     return getIndicatorMetadata(store, plot.value, selectedIndicator.value)
 });
 const colourRange = ref<NumericRange | null>(null);

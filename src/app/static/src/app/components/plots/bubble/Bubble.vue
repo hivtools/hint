@@ -45,7 +45,7 @@ import {
     debounce_leading
 } from "../utils";
 import {BubbleIndicatorValuesDict, NumericRange} from "../../../types";
-import {CalibrateDataResponse, ChoroplethIndicatorMetadata} from "../../../generated";
+import {CalibrateDataResponse, IndicatorMetadata} from "../../../generated";
 import { ScaleSettings } from "../../../store/plotState/plotState";
 import SizeLegend from "./SizeLegend.vue";
 import {circleMarker, CircleMarker} from "leaflet";
@@ -66,10 +66,10 @@ const getSizeIndicator = () => {
 }
 const colourIndicator = ref<string>(getColourIndicator());
 const sizeIndicator = ref<string>(getSizeIndicator());
-const colourIndicatorMetadata = computed<ChoroplethIndicatorMetadata>(() => {
+const colourIndicatorMetadata = computed<IndicatorMetadata>(() => {
     return getIndicatorMetadata(store, plotName, colourIndicator.value)
 });
-const sizeIndicatorMetadata = computed<ChoroplethIndicatorMetadata>(() => {
+const sizeIndicatorMetadata = computed<IndicatorMetadata>(() => {
     return  getIndicatorMetadata(store, plotName, sizeIndicator.value)
 });
 
