@@ -13,7 +13,7 @@ import {
 import {Mock} from "vitest";
 import {interpolateMagma, interpolateWarm} from "d3-scale-chromatic";
 import {ScaleSettings, ScaleType} from "../../../app/store/plotState/plotState";
-import {CalibrateDataResponse, ChoroplethIndicatorMetadata} from "../../../app/generated";
+import {CalibrateDataResponse, IndicatorMetadata} from "../../../app/generated";
 import {Store} from "vuex";
 import {mockCalibrateMetadataResponse, mockModelCalibrateState, mockRootState} from "../../mocks";
 import {RootState} from "../../../app/root";
@@ -378,7 +378,7 @@ describe("plot utils", () => {
     });
 
     it("getColourScaleLevels calculates 6 levels", () => {
-        const metadata: ChoroplethIndicatorMetadata = {
+        const metadata: IndicatorMetadata = {
             max: 2,
             min: 1,
             colour: "interpolateGreys",
@@ -412,7 +412,7 @@ describe("plot utils", () => {
     });
 
     it("getColourScaleLevels calculates 6 levels from min to max with negative min", () => {
-        const metadata: ChoroplethIndicatorMetadata = {
+        const metadata: IndicatorMetadata = {
             max: 2,
             min: 1,
             colour: "interpolateGreys",
@@ -440,7 +440,7 @@ describe("plot utils", () => {
     });
 
     it("getColourScaleLevels calculates 6 levels from min to max with percentage format", () => {
-        const metadata: ChoroplethIndicatorMetadata = {
+        const metadata: IndicatorMetadata = {
             max: 2,
             min: 1,
             colour: "interpolateGreys",
@@ -468,7 +468,7 @@ describe("plot utils", () => {
     });
 
     it("getColourScaleLevels calculates 6 levels from min to max with 500 scale", () => {
-        const metadata: ChoroplethIndicatorMetadata = {
+        const metadata: IndicatorMetadata = {
             max: 2,
             min: 1,
             colour: "interpolateGreys",
@@ -496,7 +496,7 @@ describe("plot utils", () => {
     });
 
     it("getColourScaleLevels returns single level when max equals min", () => {
-        const metadata: ChoroplethIndicatorMetadata = {
+        const metadata: IndicatorMetadata = {
             max: 2,
             min: 1,
             colour: "interpolateGreys",

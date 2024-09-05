@@ -1,5 +1,5 @@
 import {ChartData, ChartDataset} from "chart.js";
-import {BarchartMetadata, ChoroplethIndicatorMetadata, FilterOption} from "../../../generated";
+import {BarchartMetadata, IndicatorMetadata, FilterOption} from "../../../generated";
 import {AnnotationOptions} from "chartjs-plugin-annotation";
 import {formatOutput} from "../utils";
 import {PlotData} from "../../../store/plotData/plotData";
@@ -40,7 +40,7 @@ export type ChartDataSetsWithErrors =  ChartDataset & {
  *    maxValuePlusError - value for the highest value in the barchart + error, used for the height of the plot
  */
 export const plotDataToChartData = function (plotData: PlotData,
-                                             indicatorMetadata: ChoroplethIndicatorMetadata,
+                                             indicatorMetadata: IndicatorMetadata,
                                              disaggregateId: string,
                                              disaggregateSelections: FilterOption[],
                                              xAxisId: string,
@@ -232,7 +232,7 @@ const getErrorLineConfig = function(
     }
 }
 
-export const buildTooltipCallback = function(indicatorMetadata: ChoroplethIndicatorMetadata, showErrorRange: boolean) {
+export const buildTooltipCallback = function(indicatorMetadata: IndicatorMetadata, showErrorRange: boolean) {
     const formatCallback = (value: number | string) => {
         return formatOutput(value,
             indicatorMetadata.format,

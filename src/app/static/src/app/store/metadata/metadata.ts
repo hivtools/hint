@@ -3,7 +3,7 @@ import {actions} from './actions';
 import {mutations} from './mutations';
 import {
     AdrMetadataResponse,
-    ChoroplethIndicatorMetadata,
+    IndicatorMetadata,
     Error,
     FilterTypes,
     PlotSettingsControl,
@@ -13,7 +13,7 @@ import {RootState} from '../../root';
 
 export type PlotMetadataFrame = {
     filterTypes: FilterTypes[],
-    indicators: ChoroplethIndicatorMetadata[],
+    indicators: IndicatorMetadata[],
     plotSettingsControl: {
         [k: string]: PlotSettingsControl
     }

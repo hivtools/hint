@@ -5,11 +5,11 @@ import {
     plotDataToChartData
 } from "../../../../app/components/plots/bar/utils";
 import {PlotData} from "../../../../app/store/plotData/plotData";
-import {ChoroplethIndicatorMetadata, FilterOption} from "../../../../app/generated";
-import {mockChoroplethIndicatorMetadata} from "../../../mocks";
+import {IndicatorMetadata, FilterOption} from "../../../../app/generated";
+import {mockIndicatorMetadata} from "../../../mocks";
 
 describe("barchart utils work as expected", () => {
-    const indicator = mockChoroplethIndicatorMetadata()
+    const indicator = mockIndicatorMetadata()
 
     const data: PlotData = [
         {area_id: "MWI_1_1", age_group: '0:4', sex: 'female', calendar_quarter: "1", indicator: "prevalence", mode: null, mean: 0.40, upper: 0.43, lower: 0.38},
@@ -84,7 +84,7 @@ describe("barchart utils work as expected", () => {
     });
 
     it("doesn't set max height if error columns not set", () => {
-        const indicator: ChoroplethIndicatorMetadata = {
+        const indicator: IndicatorMetadata = {
             indicator: "prevalence",
             value_column: "mean",
             indicator_column: "indicator",
@@ -389,7 +389,7 @@ describe("barchart utils work as expected", () => {
     });
 
     it("tooltip label callback can include uncertainty ranges", async () => {
-        const metadata = mockChoroplethIndicatorMetadata({
+        const metadata = mockIndicatorMetadata({
             format: "0.0"
         });
         const tooltipCallback = buildTooltipCallback(metadata, true);
@@ -409,7 +409,7 @@ describe("barchart utils work as expected", () => {
     });
 
     it("tooltip label callback does not render uncertainty ranges if given showErrors contains null values", async () => {
-        const metadata = mockChoroplethIndicatorMetadata({
+        const metadata = mockIndicatorMetadata({
             format: "0.0"
         });
         const tooltipCallback = buildTooltipCallback(metadata, true);
@@ -434,7 +434,7 @@ describe("barchart utils work as expected", () => {
     });
 
     it("tooltip label callback does not render uncertainty ranges if showErrorRange is false", async () => {
-        const metadata = mockChoroplethIndicatorMetadata({
+        const metadata = mockIndicatorMetadata({
             format: "0.0"
         });
         const tooltipCallback = buildTooltipCallback(metadata, false);

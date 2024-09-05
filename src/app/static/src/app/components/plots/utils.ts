@@ -1,5 +1,5 @@
 import {NumericRange} from "../../types";
-import {CalibrateDataResponse, ChoroplethIndicatorMetadata, FilterOption} from "../../generated";
+import {CalibrateDataResponse, IndicatorMetadata, FilterOption} from "../../generated";
 import * as d3ScaleChromatic from "d3-scale-chromatic";
 import {ScaleSettings, ScaleType} from "../../store/plotState/plotState";
 import {Feature} from "geojson";
@@ -10,7 +10,7 @@ import {getMetadataFromPlotName} from "../../store/plotSelections/actions";
 import {PlotName} from "../../store/plotSelections/plotSelections";
 import { StyleValue } from "vue";
 
-export const getIndicatorMetadata = (store: Store<RootState>, plotName: PlotName, selectedIndicator: string): ChoroplethIndicatorMetadata => {
+export const getIndicatorMetadata = (store: Store<RootState>, plotName: PlotName, selectedIndicator: string): IndicatorMetadata => {
     const metadata = getMetadataFromPlotName(store.state, plotName);
     return metadata.indicators.find(i => i.indicator == selectedIndicator)!
 }
@@ -20,7 +20,7 @@ export interface ScaleLevels {
     style: StyleValue
 }
 
-export const getColourScaleLevels = (indicatorMetadata: ChoroplethIndicatorMetadata, colourRange: NumericRange): ScaleLevels[] => {
+export const getColourScaleLevels = (indicatorMetadata: IndicatorMetadata, colourRange: NumericRange): ScaleLevels[] => {
     const { format, scale, colour, invert_scale: invertScale } = indicatorMetadata;
     const { min, max } = colourRange;
     const colourFunction = colourFunctionFromName(colour);
@@ -42,7 +42,7 @@ export const getColourScaleLevels = (indicatorMetadata: ChoroplethIndicatorMetad
 };
 
 export const getColour = (value: number,
-                         metadata: ChoroplethIndicatorMetadata,
+                         metadata: IndicatorMetadata,
                          colourRange: NumericRange) => {
 
     const min = colourRange.min;
@@ -158,13 +158,13 @@ export const formatOutput = function (value: number | string, format: string, sc
     } else return ans
 };
 
-const getPlotDataForIndicator = (indicatorMetadata: ChoroplethIndicatorMetadata, plotData: CalibrateDataResponse["data"]) => {
+const getPlotDataForIndicator = (indicatorMetadata: IndicatorMetadata, plotData: CalibrateDataResponse["data"]) => {
     // if plotData doesn't have indicator key then we don't filter by it
     if (!plotData?.at(0)?.hasOwnProperty("indicator")) return plotData;
     return plotData.filter((row) => row.indicator == indicatorMetadata.indicator);
 }
 
-export const getIndicatorRange = (indicatorMetadata: ChoroplethIndicatorMetadata, scaleSettings: ScaleSettings, plotData: CalibrateDataResponse["data"]): NumericRange => {
+export const getIndicatorRange = (indicatorMetadata: IndicatorMetadata, scaleSettings: ScaleSettings, plotData: CalibrateDataResponse["data"]): NumericRange => {
     const indicatorData = getPlotDataForIndicator(indicatorMetadata, plotData);
     switch (scaleSettings.type) {
         case ScaleType.DynamicFiltered:
@@ -181,7 +181,7 @@ export const getIndicatorRange = (indicatorMetadata: ChoroplethIndicatorMetadata
 }
 
 const getDynamicRange = function (data: CalibrateDataResponse["data"],
-                                  indicatorMeta: ChoroplethIndicatorMetadata): NumericRange {
+                                  indicatorMeta: IndicatorMetadata): NumericRange {
     let result = {} as NumericRange;
     for (const row of data) {
         const value = row[indicatorMeta.value_column]

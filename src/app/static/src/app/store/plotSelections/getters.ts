@@ -1,5 +1,5 @@
 import {ControlSelection, FilterSelection, PlotName, PlotSelectionsState} from "./plotSelections";
-import {ChoroplethIndicatorMetadata, FilterOption} from "../../generated";
+import {IndicatorMetadata, FilterOption} from "../../generated";
 import {BarChartData, plotDataToChartData} from "../../components/plots/bar/utils";
 import {RootState} from "../../root";
 import {PlotData} from "../plotData/plotData";
@@ -19,7 +19,7 @@ export const getters = {
         }
     },
     barchartData: (state: PlotSelectionsState, getters: any, rootState: RootState, rootGetters: any) =>
-        (plotName: PlotName, plotData: PlotData, indicatorMetadata: ChoroplethIndicatorMetadata,
+        (plotName: PlotName, plotData: PlotData, indicatorMetadata: IndicatorMetadata,
          filterSelections: FilterSelection[]): BarChartData => {
         const disaggregateBy = getters.controlSelectionFromId(plotName, "disagg_by");
         const xAxis = getters.controlSelectionFromId(plotName, "x_axis");

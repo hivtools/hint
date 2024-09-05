@@ -3,11 +3,11 @@ import {Feature} from "geojson";
 import {Layer} from "leaflet";
 import {formatOutput} from "../utils";
 import {IndicatorValuesDict} from "../../../types";
-import {ChoroplethIndicatorMetadata} from "../../../generated";
+import {IndicatorMetadata} from "../../../generated";
 import {LGeoJson} from "@vue-leaflet/vue-leaflet";
 
 export const useChoroplethTooltips = (featureData: Ref<IndicatorValuesDict>,
-                                      indicatorMetadata: Ref<ChoroplethIndicatorMetadata>,
+                                      indicatorMetadata: Ref<IndicatorMetadata>,
                                       currentFeatures: Ref<Feature[]>,
                                       featureRefs: Ref<typeof LGeoJson[]>) => {
     const createTooltips = {
@@ -41,7 +41,7 @@ export const useChoroplethTooltips = (featureData: Ref<IndicatorValuesDict>,
 };
 
 const tooltipContent = function (feature: Feature, featureIndicators: IndicatorValuesDict,
-                                 indicatorMetadata: ChoroplethIndicatorMetadata): string {
+                                 indicatorMetadata: IndicatorMetadata): string {
     let format = "";
     let scale = 1;
     let accuracy: number | null = null;

@@ -32,7 +32,7 @@
 
 <script lang="ts">
 import {computed, defineComponent, PropType, ref} from "vue";
-import {ChoroplethIndicatorMetadata} from "../../../generated";
+import {IndicatorMetadata} from "../../../generated";
 import MapAdjustScale from "../MapAdjustScale.vue";
 import {Scale, ScaleSettings} from "../../../store/plotState/plotState";
 import { NumericRange } from "../../../types";
@@ -45,7 +45,7 @@ export default defineComponent({
     components: {LControl, MapAdjustScale},
     props: {
         indicatorMetadata: {
-            type: Object as PropType<ChoroplethIndicatorMetadata>,
+            type: Object as PropType<IndicatorMetadata>,
             required: true
         },
         indicatorRange: {
