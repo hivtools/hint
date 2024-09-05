@@ -41,7 +41,7 @@ export const drawConfig = {
     ]
 };
 
-export const translate = (word: string, currentLanguage: string, args: any = null) => {
+const translate = (word: string, currentLanguage: string, args: any = null) => {
     return i18next.t(word, {...args, lng: currentLanguage})
 }
 
@@ -70,16 +70,16 @@ export const getTooltipTemplate = (plotData: (InputTimeSeriesRow | null)[], area
 
 export const PlotColours = Object.freeze({
     HIGHLIGHT: {
-        MISSING: "rgb(255,214,214)",
+        MISSING: "rgb(255, 214, 214)",
         BASE: "rgb(255, 51, 51)"
     },
     NORMAL: {
-        MISSING: "rgb(220,220,220)",
+        MISSING: "rgb(220, 220, 220)",
         BASE: "rgb(51, 51, 51)"
     }
 });
 
-export const getScatterPoints = (plotData: (InputTimeSeriesRow | null)[], areaData: InputTimeSeriesRow, index: number,
+const getScatterPoints = (plotData: (InputTimeSeriesRow | null)[], areaData: InputTimeSeriesRow, index: number,
                                  isHighlight: boolean, currentLanguage: string, isFirstPointHighlight = false) => {
     const { area_hierarchy, area_name } = areaData;
     const colours = isHighlight ? PlotColours.HIGHLIGHT : PlotColours.NORMAL;
@@ -124,13 +124,16 @@ export const getScatterPointsFromAreaIds = (areaIds: string[], dataByArea: Dict<
         const pointsInfo: PointInfo[] = [];
         for (let i = 0; i < areaData.length; i++) {
             if (i === areaData.length - 1) {
-                pointsInfo.push({isHighlight: pointsInfo.at(-1)!.isHighlight, point: areaData[i]});
+                pointsInfo.push({
+                    isHighlight: pointsInfo.at(-1)?.isHighlight ?? false,
+                    point: areaData[i]
+                });
                 continue;
             }
             const currPointValue = areaData[i].value;
             const nextPointValue = areaData[i + 1].value;
-            const isNextLineSegmentHighlighted = !!((currPointValue != null && nextPointValue != null && nextPointValue > 0)
-            && (nextPointValue > 1.25 * currPointValue || nextPointValue < 0.75 * currPointValue));
+            const isNextLineSegmentHighlighted = ((currPointValue != null && nextPointValue != null && nextPointValue > 0)
+                && (nextPointValue > 1.25 * currPointValue || nextPointValue < 0.75 * currPointValue));
             pointsInfo.push({isHighlight: isNextLineSegmentHighlighted, point: areaData[i]});
         }
         let isPreviousLineHighlight = pointsInfo[0].isHighlight;
@@ -159,15 +162,24 @@ export const getScatterPointsFromAreaIds = (areaIds: string[], dataByArea: Dict<
 
 export type Layout = Record<string, any>
 
+export const getChartDataByArea = (chartData: InputTimeSeriesData): Dict<InputTimeSeriesData> => {
+    return chartData.reduce((obj, data) => {
+        obj[data.area_id] = obj[data.area_id] || [];
+        obj[data.area_id].push(data);
+        return obj;
+    }, {} as Record<string, InputTimeSeriesData>);
+}
+
 export const getLayoutFromData = (areaIds: string[], dataByArea: Dict<InputTimeSeriesData>,
-                                  layout: Layout, chartData: InputTimeSeriesData) => {
+                                  layout: Layout, timePeriods: string[]) => {
     const baseLayout: Record<string, any> = {
         margin: {t: 32}, dragmode: false,
         grid: {
             columns: layout.subplots.columns,
             rows: layout.subplots.rows,
             pattern: 'independent',
-            xgap: 0.25, ygap: 0.4
+            xgap: 0.25,
+            ygap: 0.4
         },
         annotations: areaIds.map((id, index) => {
             return {
@@ -181,7 +193,6 @@ export const getLayoutFromData = (areaIds: string[], dataByArea: Dict<InputTimeS
     };
 
     const subPlotHeight = 1 / (layout.subplots?.rows || 1) * 0.6;
-    const timePeriods = chartData.map(dataPoint => dataPoint.time_period).sort() || [];
     const firstXAxisVal = timePeriods[0];
     const lastXAxisVal = timePeriods[timePeriods.length - 1];
 

@@ -21,9 +21,6 @@ export interface ScaleLevels {
 }
 
 export const getColourScaleLevels = (indicatorMetadata: ChoroplethIndicatorMetadata, colourRange: NumericRange): ScaleLevels[] => {
-    if (!indicatorMetadata) {
-        return [];
-    }
     const { format, scale, colour, invert_scale: invertScale } = indicatorMetadata;
     const { min, max } = colourRange;
     const colourFunction = colourFunctionFromName(colour);
@@ -73,7 +70,7 @@ export const getColour = (value: number,
 };
 
 
-const colourFunctionFromName = function (name: string) {
+export const colourFunctionFromName = function (name: string) {
     let result = (d3ScaleChromatic as any)[name];
     if (!result) {
         //This is trying to be defensive against typos in metadata...
@@ -90,7 +87,7 @@ export const getVisibleFeatures = function(features: Feature[], selectedLevels: 
     });
 };
 
-const roundToContext = function (value: number, context: number[]) {
+export const roundToContext = function (value: number, context: number[]) {
     //Rounds the value to one more decimal place than is present in the 'context'
     let maxDecPl = 0;
     for (const contextValue of context) {
@@ -168,9 +165,6 @@ const getPlotDataForIndicator = (indicatorMetadata: ChoroplethIndicatorMetadata,
 }
 
 export const getIndicatorRange = (indicatorMetadata: ChoroplethIndicatorMetadata, scaleSettings: ScaleSettings, plotData: CalibrateDataResponse["data"]): NumericRange => {
-    if (!indicatorMetadata) {
-        return {max: 1, min: 0};
-    }
     const indicatorData = getPlotDataForIndicator(indicatorMetadata, plotData);
     switch (scaleSettings.type) {
         case ScaleType.DynamicFiltered:
@@ -204,8 +198,7 @@ const getDynamicRange = function (data: CalibrateDataResponse["data"],
     });
 };
 
-
-const roundRange = function (unrounded: NumericRange) {
+export const roundRange = function (unrounded: NumericRange) {
     //round appropriate to the range magnitude
     let decPl = 0;
     let magnitude = unrounded.max == unrounded.min ? unrounded.min : (unrounded.max - unrounded.min);
@@ -218,10 +211,7 @@ const roundRange = function (unrounded: NumericRange) {
     return {min: roundToPlaces(unrounded.min, decPl), max: roundToPlaces(unrounded.max, decPl)};
 };
 
-export const scaleStepFromMetadata = function (meta: ChoroplethIndicatorMetadata) {
-    return (meta.max - meta.min) / 10;
-}
-
+/* c8 ignore start */
 // eslint-disable-next-line @typescript-eslint/ban-types
 export const debounce = (fn: Function, ms = 300) => {
     let timeoutId: ReturnType<typeof setTimeout>;
@@ -242,3 +232,4 @@ export const debounce_leading = (fn: Function, ms = 300) => {
         timeoutId = setTimeout(() => timeoutId = undefined, ms);
     };
 };
+/* c8 ignore stop */

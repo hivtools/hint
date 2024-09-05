@@ -5,13 +5,15 @@
                class="text-uppercase font-weight-bold pr-1"
                :class="{'disabled': backDisabled}"
                v-on="backDisabled ? {} : { click: back }"
-               v-translate="'back'"></a>
+               v-translate="'back'"
+               :aria-disabled="backDisabled"></a>
             /
             <a id="continue" href="#"
                class="text-uppercase font-weight-bold"
                :class="{'disabled': nextDisabled}"
                v-on="nextDisabled ? {} : { click: next }"
-               v-translate="'continue'"></a>
+               v-translate="'continue'"
+               :aria-disabled="nextDisabled"></a>
         </div>
     </div>
 </template>
