@@ -176,7 +176,7 @@ describe("ADR actions", () => {
         expect(commit.mock.calls.length).toBe(1);
         expect(commit.mock.calls[0][0])
             .toStrictEqual({
-                type: BaselineMutation.BaselineError,
+                type: `baseline/${BaselineMutation.BaselineError}`,
                 payload: mockError("error")
             });
     });
