@@ -19,9 +19,7 @@ import {
     mockRootState,
     mockStepperState,
     mockSurveyAndProgramState,
-    mockSurveyResponse
 } from "../mocks";
-import {DataType} from "../../app/store/surveyAndProgram/surveyAndProgram";
 import {RootState} from "../../app/root";
 import {initialMetadataState} from "../../app/store/metadata/metadata";
 import {initialModelOutputState} from "../../app/store/modelOutput/modelOutput";
@@ -185,44 +183,6 @@ describe("Root mutations", () => {
 
         testOnlyExpectedModulesArePopulated(["baseline", "metadata", "surveyAndProgram", "genericChart", "modelOptions", "modelRun", "modelCalibrate"], state);
         expect(state.stepper.activeStep).toBe(5);
-    });
-
-    it("sets selected data type to null if no valid type available", () => {
-
-        const state = mockRootState({
-            surveyAndProgram: mockSurveyAndProgramState({
-                selectedDataType: DataType.ANC
-            })
-        });
-
-        mutations.ResetSelectedDataType(state);
-        expect(state.surveyAndProgram.selectedDataType).toBe(null);
-    });
-
-    it("sets selected data type to available type if there is one", () => {
-
-        const state = mockRootState({
-            surveyAndProgram: mockSurveyAndProgramState({
-                survey: mockSurveyResponse(),
-                selectedDataType: DataType.ANC
-            })
-        });
-
-        mutations.ResetSelectedDataType(state);
-        expect(state.surveyAndProgram.selectedDataType).toBe(DataType.Survey);
-    });
-
-    it("leaves selected data type as is if valid", () => {
-
-        const state = mockRootState({
-            surveyAndProgram: mockSurveyAndProgramState({
-                anc: mockAncResponse(),
-                selectedDataType: DataType.ANC
-            })
-        });
-
-        mutations.ResetSelectedDataType(state);
-        expect(state.surveyAndProgram.selectedDataType).toBe(DataType.ANC);
     });
 
     it("can reset model options state", () => {

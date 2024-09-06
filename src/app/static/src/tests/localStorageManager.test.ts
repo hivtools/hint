@@ -28,7 +28,6 @@ import {
 } from "./mocks";
 import {localStorageManager, serialiseState} from "../app/localStorageManager";
 import {RootState} from "../app/root";
-import {DataType} from "../app/store/surveyAndProgram/surveyAndProgram";
 import {currentHintVersion} from "../app/hintVersion";
 import {Language} from "../app/store/translations/locales";
 import registerTranslations from "../app/store/translations/registerTranslations";
@@ -108,7 +107,6 @@ describe("LocalStorageManager", () => {
             plotSelections: mockPlotSelections(),
             plotState: mockPlotState(),
             surveyAndProgram: mockSurveyAndProgramState({
-                selectedDataType: DataType.Survey,
                 warnings: [{text: "test warning", locations: ["review_inputs"]}]
             }),
             projects: mockProjectsState(),
@@ -131,7 +129,6 @@ describe("LocalStorageManager", () => {
             stepper: mockStepperState(),
             metadata: mockMetadataState(),
             surveyAndProgram: {
-                selectedDataType: DataType.Survey,
                 warnings: [{text: "test warning", locations: ["review_inputs"]}]
             },
             hintrVersion: mockHintrVersionState()

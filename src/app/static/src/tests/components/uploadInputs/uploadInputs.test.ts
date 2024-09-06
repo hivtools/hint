@@ -20,7 +20,7 @@ import registerTranslations from "../../../app/store/translations/registerTransl
 import {expectTranslatedWithStoreType, mountWithTranslate, shallowMountWithTranslate} from "../../testHelpers";
 import {SurveyAndProgramActions} from "../../../app/store/surveyAndProgram/actions";
 import {getters} from "../../../app/store/surveyAndProgram/getters";
-import {DataType, SurveyAndProgramState} from "../../../app/store/surveyAndProgram/surveyAndProgram";
+import {SurveyAndProgramState} from "../../../app/store/surveyAndProgram/surveyAndProgram";
 import {testUploadComponent} from "./fileUploads";
 import {Mocked, MockInstance} from 'vitest';
 import {flushPromises, VueWrapper} from '@vue/test-utils';
@@ -46,7 +46,7 @@ describe("UploadInputs upload component", () => {
 
     const createSut = (baselineState?: Partial<BaselineState>,
                        metadataState?: Partial<MetadataState>,
-                       surveyAndProgramState: Partial<SurveyAndProgramState> = {selectedDataType: DataType.Survey},
+                       surveyAndProgramState: Partial<SurveyAndProgramState> = {},
                        isGuest = false) => {
 
         actions = {

@@ -160,9 +160,8 @@ describe("root actions", () => {
             "Rolled back project to last valid step. The invalid steps were: Review inputs, Model options");
         expect(mockContext.dispatch.mock.calls[1][0]).toBe("surveyAndProgram/deleteAll");
 
-        expect(mockContext.commit).toHaveBeenCalledTimes(2);
+        expect(mockContext.commit).toHaveBeenCalledTimes(1);
         expect(mockContext.commit.mock.calls[0][0]).toStrictEqual({type: "Reset", payload: 1});
-        expect(mockContext.commit.mock.calls[1][0]).toStrictEqual({type: "ResetSelectedDataType"});
     });
 
     it("rollbackInvalidState does not create new version if guest user", async () => {
@@ -182,10 +181,8 @@ describe("root actions", () => {
         expect(mockContext.dispatch).toHaveBeenCalledTimes(1);
         expect(mockContext.dispatch.mock.calls[0][0]).toBe("surveyAndProgram/deleteAll");
 
-        expect(mockContext.commit).toHaveBeenCalledTimes(2);
+        expect(mockContext.commit).toHaveBeenCalledTimes(1);
         expect(mockContext.commit.mock.calls[0][0]).toStrictEqual({type: "Reset", payload: 1});
-        expect(mockContext.commit.mock.calls[1][0]).toStrictEqual({type: "ResetSelectedDataType"});
-
     });
 
     it("rollbackInvalidState dispatches delete baseline and surveyAndProgram action if baseline step is not valid", async () => {
@@ -232,9 +229,8 @@ describe("root actions", () => {
         expect(mockContext.dispatch).toHaveBeenCalledTimes(1);
         expect(mockContext.dispatch.mock.calls[0][0]).toBe("projects/newVersion");
 
-        expect(mockContext.commit).toHaveBeenCalledTimes(2);
+        expect(mockContext.commit).toHaveBeenCalledTimes(1);
         expect(mockContext.commit.mock.calls[0][0]).toStrictEqual({type: "Reset", payload: 2});
-        expect(mockContext.commit.mock.calls[1][0]).toStrictEqual({type: "ResetSelectedDataType"});
     });
 
     it("rollbackInvalidState does nothing if no invalid steps", async () => {

@@ -4,9 +4,7 @@ const existingState = {
     stepper: {
         activeStep: 4
     },
-    surveyAndProgram: {
-        selectedDataType: null
-    },
+    surveyAndProgram: {},
     baseline: {}
 } as any;
 

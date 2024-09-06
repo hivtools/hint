@@ -8,7 +8,6 @@ import {
     DynamicFormData,
     DynamicFormMeta
 } from "@reside-ic/vue-next-dynamic-form";
-import {DataType} from "./store/surveyAndProgram/surveyAndProgram";
 import {RootState} from "./root";
 import {initialStepperState} from "./store/stepper/stepper";
 import {initialModelRunState} from "./store/modelRun/modelRun";
@@ -465,7 +464,6 @@ export const constructRehydrateProjectState = (data: ProjectRehydrateResultRespo
             hash: files.anc.hash,
             filename: files.anc.filename
         },
-        selectedDataType: DataType.Survey,
     } as any
 
     const baseline = {

@@ -164,11 +164,10 @@ describe("App", () => {
                 "baseline", BaselineMutation.PJNZUpdated),
             {payload: null});
 
-        expect(spy.mock.calls[1][0]).toBe(RootMutation.ResetSelectedDataType);
-        expect(spy.mock.calls[2][0].type).toBe("modelOptions/UnValidate");
-        expect(spy.mock.calls[3][0]).toBe(RootMutation.ResetOutputs);
+        expect(spy.mock.calls[1][0].type).toBe("modelOptions/UnValidate");
+        expect(spy.mock.calls[2][0]).toBe(RootMutation.ResetOutputs);
 
-        expect(spy).toBeCalledTimes(5);
+        expect(spy).toBeCalledTimes(4);
     });
 
 
@@ -179,11 +178,10 @@ describe("App", () => {
                 "surveyAndProgram", SurveyAndProgramMutation.SurveyUpdated),
             {payload: null});
 
-        expect(spy.mock.calls[1][0]).toBe(RootMutation.ResetSelectedDataType);
-        expect(spy.mock.calls[2][0].type).toBe("modelOptions/UnValidate");
-        expect(spy.mock.calls[3][0]).toBe(RootMutation.ResetOutputs);
+        expect(spy.mock.calls[1][0].type).toBe("modelOptions/UnValidate");
+        expect(spy.mock.calls[2][0]).toBe(RootMutation.ResetOutputs);
 
-        expect(spy).toBeCalledTimes(5);
+        expect(spy).toBeCalledTimes(4);
     });
 
     it("resets outputs if modelOptions update mutation is called and state is ready", () => {

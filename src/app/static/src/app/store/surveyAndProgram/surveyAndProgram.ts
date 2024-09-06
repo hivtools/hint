@@ -6,13 +6,12 @@ import {AncResponse, ProgrammeResponse, SurveyResponse, VmmcResponse, Error, War
 import {getters} from "./getters";
 import {RootState} from "../../root";
 
-export enum DataType { ANC, Program, Survey, Vmmc}
-
 export enum FileType {
     ANC = "anc",
     Programme = "programme",
     Survey = "survey",
-    Shape = "shape"
+    Shape = "shape",
+    Vmmc = "vmmc"
 }
 
 export interface SAPWarnings {
@@ -21,7 +20,6 @@ export interface SAPWarnings {
 }
 
 export interface SurveyAndProgramState extends ReadyState, WarningsState {
-    selectedDataType: DataType | null
     survey: SurveyResponse | null
     surveyError: Error | null
     surveyErroredFile: string | null
@@ -39,7 +37,6 @@ export interface SurveyAndProgramState extends ReadyState, WarningsState {
 
 export const initialSurveyAndProgramState = (): SurveyAndProgramState => {
     return {
-        selectedDataType: null,
         survey: null,
         surveyError: null,
         surveyErroredFile: null,
