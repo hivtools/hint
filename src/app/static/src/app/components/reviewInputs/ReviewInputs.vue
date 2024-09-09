@@ -56,7 +56,7 @@ export default defineComponent({
             activePlot.value = plot;
         }
         const isTimeSeries = computed(() => !!store.state.surveyAndProgram.anc || !!store.state.surveyAndProgram.program)
-        const loading = computed(() => store.state.genericChart.loading);
+        const loading = computed(() => store.state.reviewInput.loading);
 
         const plotDescription = computed(() => {
             if (activePlot.value === "timeSeries") {

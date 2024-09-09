@@ -202,7 +202,7 @@ describe("Survey and programme actions", () => {
         });
 
         expect(commit.mock.calls[2][0]).toStrictEqual({
-            type: "genericChart/ClearDataset",
+            type: "reviewInput/ClearDataset",
             payload: "art"
         });
 
@@ -252,7 +252,7 @@ describe("Survey and programme actions", () => {
         });
 
         expect(commit.mock.calls[2][0]).toStrictEqual({
-            type: "genericChart/ClearDataset",
+            type: "reviewInput/ClearDataset",
             payload: "art"
         });
 
@@ -306,7 +306,7 @@ describe("Survey and programme actions", () => {
         });
 
         expect(commit.mock.calls[2][0]).toStrictEqual({
-            type: "genericChart/ClearDataset",
+            type: "reviewInput/ClearDataset",
             payload: "anc"
         });
 
@@ -356,7 +356,7 @@ describe("Survey and programme actions", () => {
         });
 
         expect(commit.mock.calls[2][0]).toStrictEqual({
-            type: "genericChart/ClearDataset",
+            type: "reviewInput/ClearDataset",
             payload: "anc"
         });
 
@@ -410,7 +410,7 @@ describe("Survey and programme actions", () => {
         });
 
         expect(commit.mock.calls[2][0]).toStrictEqual({
-            type: "genericChart/ClearDataset",
+            type: "reviewInput/ClearDataset",
             payload: "vmmc"
         });
 
@@ -462,7 +462,7 @@ describe("Survey and programme actions", () => {
         });
 
         expect(commit.mock.calls[2][0]).toStrictEqual({
-            type: "genericChart/ClearDataset",
+            type: "reviewInput/ClearDataset",
             payload: "vmmc"
         });
 
@@ -651,7 +651,7 @@ describe("Survey and programme actions", () => {
         expect(commit).toBeCalledTimes(3);
         expect(commit.mock.calls[0][0]["type"]).toBe(SurveyAndProgramMutation.ProgramUpdated);
         expect(commit.mock.calls[1][0]).toEqual({
-            type: "genericChart/ClearDataset",
+            type: "reviewInput/ClearDataset",
             payload: "art"
         })
         expect(commit.mock.calls[2][0]).toEqual({
@@ -673,7 +673,7 @@ describe("Survey and programme actions", () => {
         expect(commit).toBeCalledTimes(3);
         expect(commit.mock.calls[0][0]["type"]).toBe(SurveyAndProgramMutation.ANCUpdated);
         expect(commit.mock.calls[1][0]).toEqual({
-            type: "genericChart/ClearDataset",
+            type: "reviewInput/ClearDataset",
             payload: "anc"
         });
         expect(commit.mock.calls[2][0]).toEqual({
@@ -695,7 +695,7 @@ describe("Survey and programme actions", () => {
         expect(commit).toBeCalledTimes(3);
         expect(commit.mock.calls[0][0]["type"]).toBe(SurveyAndProgramMutation.VmmcUpdated);
         expect(commit.mock.calls[1][0]).toEqual({
-            type: "genericChart/ClearDataset",
+            type: "reviewInput/ClearDataset",
             payload: "vmmc"
         });
         expect(commit.mock.calls[2][0]).toEqual({
@@ -725,13 +725,13 @@ describe("Survey and programme actions", () => {
             SurveyAndProgramMutation.SurveyUpdated,
             SurveyAndProgramMutation.WarningsFetched,
             SurveyAndProgramMutation.ProgramUpdated,
-            "genericChart/ClearDataset",
+            "reviewInput/ClearDataset",
             SurveyAndProgramMutation.WarningsFetched,
             SurveyAndProgramMutation.ANCUpdated,
-            "genericChart/ClearDataset",
+            "reviewInput/ClearDataset",
             SurveyAndProgramMutation.WarningsFetched,
             SurveyAndProgramMutation.VmmcUpdated,
-            "genericChart/ClearDataset",
+            "reviewInput/ClearDataset",
             SurveyAndProgramMutation.WarningsFetched
         ]);
     });

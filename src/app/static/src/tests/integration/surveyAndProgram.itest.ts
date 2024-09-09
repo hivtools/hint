@@ -43,7 +43,7 @@ describe("Survey and programme actions", () => {
 
         await actions.uploadProgram({commit, dispatch, rootState} as any, formData);
 
-        expect(commit.mock.calls[2][0]["type"]).toBe("genericChart/ClearDataset");
+        expect(commit.mock.calls[2][0]["type"]).toBe("reviewInput/ClearDataset");
         expect(commit.mock.calls[2][0]["payload"]).toBe("art");
 
         expect(dispatch.mock.calls[0][0]).toBe("setProgramResponse");
@@ -59,7 +59,7 @@ describe("Survey and programme actions", () => {
         const formData = getFormData("anc.csv");
 
         await actions.uploadANC({commit, rootState, dispatch} as any, formData);
-        expect(commit.mock.calls[2][0]["type"]).toBe("genericChart/ClearDataset");
+        expect(commit.mock.calls[2][0]["type"]).toBe("reviewInput/ClearDataset");
         expect(commit.mock.calls[2][0]["payload"]).toBe("anc");
 
         expect(dispatch.mock.calls[0][0]).toBe("setAncResponse");
@@ -117,7 +117,7 @@ describe("Survey and programme actions", () => {
         // delete
         await actions.deleteProgram({commit, rootState} as any);
         expect(commit.mock.calls[0][0]["type"]).toBe(SurveyAndProgramMutation.ProgramUpdated);
-        expect(commit.mock.calls[1][0]["type"]).toBe("genericChart/ClearDataset");
+        expect(commit.mock.calls[1][0]["type"]).toBe("reviewInput/ClearDataset");
 
         dispatch.mockReset();
 
@@ -140,7 +140,7 @@ describe("Survey and programme actions", () => {
         // delete
         await actions.deleteANC({commit, rootState} as any);
         expect(commit.mock.calls[0][0]["type"]).toBe(SurveyAndProgramMutation.ANCUpdated);
-        expect(commit.mock.calls[1][0]["type"]).toBe("genericChart/ClearDataset");
+        expect(commit.mock.calls[1][0]["type"]).toBe("reviewInput/ClearDataset");
 
         dispatch.mockReset();
 
@@ -163,7 +163,7 @@ describe("Survey and programme actions", () => {
         // delete
         await actions.deleteVmmc({commit, rootState} as any);
         expect(commit.mock.calls[0][0]["type"]).toBe(SurveyAndProgramMutation.VmmcUpdated);
-        expect(commit.mock.calls[1][0]["type"]).toBe("genericChart/ClearDataset");
+        expect(commit.mock.calls[1][0]["type"]).toBe("reviewInput/ClearDataset");
 
         commit.mockReset();
 

@@ -6,7 +6,7 @@ import {
     mockDownloadResultsState,
     mockError,
     mockFailure,
-    mockGenericChartState,
+    mockReviewInputState,
     mockHintrVersionState,
     mockModelCalibrateState,
     mockModelRunState,
@@ -19,8 +19,6 @@ import {Language} from "../../app/store/translations/locales";
 import {currentHintVersion} from "../../app/hintVersion";
 import {expectChangeLanguageMutations} from "../testHelpers";
 import {RootMutation} from "../../app/store/root/mutations";
-import {BaselineState} from "../../app/store/baseline/baseline";
-import {SurveyAndProgramState} from "../../app/store/surveyAndProgram/surveyAndProgram";
 
 
 describe("root actions", () => {
@@ -565,13 +563,13 @@ describe("root actions", () => {
         expect(dispatch.mock.calls[0][1]).toStrictEqual("MWI");
     });
 
-    it("changeLanguage refreshes genericChart datasets, if any", async() => {
+    it("changeLanguage refreshes reviewInput datasets, if any", async() => {
         const commit = vi.fn();
         const dispatch = vi.fn();
         const rootState = mockRootState(
             {
                 baseline: mockBaselineState({iso3: "MWI"}),
-                genericChart: mockGenericChartState({datasets: {dataset1: "TEST"}} as any)
+                reviewInput: mockReviewInputState({datasets: {dataset1: "TEST"}} as any)
         });
         const rootGetters = {
             "baseline/complete": true,
@@ -583,7 +581,7 @@ describe("root actions", () => {
 
         expect(dispatch.mock.calls.length).toBe(2);
         expect(dispatch.mock.calls[0][0]).toStrictEqual("metadata/getReviewInputMetadata");
-        expect(dispatch.mock.calls[1][0]).toStrictEqual("genericChart/refreshDatasets");
+        expect(dispatch.mock.calls[1][0]).toStrictEqual("reviewInput/refreshDatasets");
     });
 
     it("changeLanguage fetches nothing if no relevant metadata to fetch", async () => {

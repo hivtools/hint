@@ -8,7 +8,7 @@ import {
     mockControlSelection,
     mockFailure,
     mockFilterSelection,
-    mockGenericChartDataset,
+    mockReviewInputDataset,
     mockMetadataState,
     mockModelCalibrateState,
     mockReviewInputMetadata,
@@ -25,7 +25,7 @@ import {
 } from "../../app/store/plotData/filter";
 import {PlotDataMutations, PlotDataUpdate} from "../../app/store/plotData/mutations";
 import {PlotSelectionUpdate} from "../../app/store/plotSelections/mutations";
-import {GenericChartMutation} from "../../app/store/genericChart/mutations";
+import {ReviewInputMutation} from "../../app/store/reviewInput/mutations";
 import {CommitOptions} from "vuex";
 import {
     AncDataRow,
@@ -231,8 +231,8 @@ describe("filter tests", () => {
         // data from the store. So we have to make sure that we mock our commit
         const createMockCommit = (rootState: any) => vi.fn((type: string, payload?: any, options?: CommitOptions) => {
             // Simulate the Vuex mutation behavior by manually modifying rootState
-            if (type === `genericChart/${GenericChartMutation.SetDataset}` && options?.root) {
-                rootState.genericChart.datasets[payload.payload.datasetId] = payload.payload.dataset;
+            if (type === `reviewInput/${ReviewInputMutation.SetDataset}` && options?.root) {
+                rootState.reviewInput.datasets[payload.payload.datasetId] = payload.payload.dataset;
             }
         });
 
@@ -246,7 +246,7 @@ describe("filter tests", () => {
                 "value": 2
             },
         ]
-        const mockTimeSeriesData = mockGenericChartDataset({
+        const mockTimeSeriesData = mockReviewInputDataset({
             data: mockData
         });
 
@@ -271,13 +271,13 @@ describe("filter tests", () => {
             await getTimeSeriesFilteredDataset(payload, commit, rootState);
 
             expect(commit.mock.calls.length).toBe(4);
-            expect(commit.mock.calls[0][0]).toStrictEqual(`genericChart/${GenericChartMutation.SetError}`);
-            expect(commit.mock.calls[1][0]).toStrictEqual(`genericChart/${GenericChartMutation.SetDataset}`);
+            expect(commit.mock.calls[0][0]).toStrictEqual(`reviewInput/${ReviewInputMutation.SetError}`);
+            expect(commit.mock.calls[1][0]).toStrictEqual(`reviewInput/${ReviewInputMutation.SetDataset}`);
             expect(commit.mock.calls[1][1].payload).toStrictEqual({
                 datasetId: "anc",
                 dataset: mockTimeSeriesData
             });
-            expect(commit.mock.calls[2][0]).toStrictEqual(`genericChart/${GenericChartMutation.WarningsFetched}`);
+            expect(commit.mock.calls[2][0]).toStrictEqual(`reviewInput/${ReviewInputMutation.WarningsFetched}`);
             expect(commit.mock.calls[2][1].payload).toStrictEqual(mockTimeSeriesData.warnings);
             const expectedPayload = {
                 plot: "timeSeries",
@@ -311,7 +311,7 @@ describe("filter tests", () => {
                     },
                 ]
             };
-            expect(commit.mock.calls[4][0]).toStrictEqual(`genericChart/${GenericChartMutation.SetError}`);
+            expect(commit.mock.calls[4][0]).toStrictEqual(`reviewInput/${ReviewInputMutation.SetError}`);
             expect(commit.mock.calls[5][0]).toStrictEqual(`plotData/${PlotDataMutations.updatePlotData}`);
             expect(commit.mock.calls[5][1].payload).toStrictEqual(expectedPayload2);
         });
@@ -326,10 +326,10 @@ describe("filter tests", () => {
             await getTimeSeriesFilteredDataset(payload, commit, rootState);
 
             expect(commit.mock.calls.length).toBe(2);
-            expect(commit.mock.calls[0][0]).toStrictEqual(`genericChart/${GenericChartMutation.SetError}`);
+            expect(commit.mock.calls[0][0]).toStrictEqual(`reviewInput/${ReviewInputMutation.SetError}`);
             expect(commit.mock.calls[0][1]).toStrictEqual({payload: null});
             expect(commit.mock.calls[1][0]).toStrictEqual({
-                type: `${GenericChartMutation.SetError}`,
+                type: `${ReviewInputMutation.SetError}`,
                 payload: {
                     detail: "failed",
                     error: "OTHER_ERROR"
@@ -360,7 +360,7 @@ describe("filter tests", () => {
                     "value": 2
                 },
             ]
-            const mockTimeSeriesData = mockGenericChartDataset({
+            const mockTimeSeriesData = mockReviewInputDataset({
                 data: mockData
             });
 
@@ -416,13 +416,13 @@ describe("filter tests", () => {
             await getTimeSeriesFilteredDataset(payload, commit, rootState);
 
             expect(commit.mock.calls.length).toBe(4);
-            expect(commit.mock.calls[0][0]).toStrictEqual(`genericChart/${GenericChartMutation.SetError}`);
-            expect(commit.mock.calls[1][0]).toStrictEqual(`genericChart/${GenericChartMutation.SetDataset}`);
+            expect(commit.mock.calls[0][0]).toStrictEqual(`reviewInput/${ReviewInputMutation.SetError}`);
+            expect(commit.mock.calls[1][0]).toStrictEqual(`reviewInput/${ReviewInputMutation.SetDataset}`);
             expect(commit.mock.calls[1][1].payload).toStrictEqual({
                 datasetId: "anc",
                 dataset: mockTimeSeriesData
             });
-            expect(commit.mock.calls[2][0]).toStrictEqual(`genericChart/${GenericChartMutation.WarningsFetched}`);
+            expect(commit.mock.calls[2][0]).toStrictEqual(`reviewInput/${ReviewInputMutation.WarningsFetched}`);
             expect(commit.mock.calls[2][1].payload).toStrictEqual(mockTimeSeriesData.warnings);
             const expectedPayload = {
                 plot: "timeSeries",
@@ -447,9 +447,9 @@ describe("filter tests", () => {
             await getTimeSeriesFilteredDataset(payload, commit, rootState);
 
             expect(commit.mock.calls.length).toBe(2);
-            expect(commit.mock.calls[0][0]).toStrictEqual(`genericChart/${GenericChartMutation.SetError}`);
+            expect(commit.mock.calls[0][0]).toStrictEqual(`reviewInput/${ReviewInputMutation.SetError}`);
             expect(commit.mock.calls[0][1]).toStrictEqual({payload: null});
-            expect(commit.mock.calls[1][0]).toStrictEqual(`genericChart/${GenericChartMutation.SetError}`);
+            expect(commit.mock.calls[1][0]).toStrictEqual(`reviewInput/${ReviewInputMutation.SetError}`);
             expect(commit.mock.calls[1][1]).toStrictEqual({
                 payload: {
                     detail: "Failed to update time series, time series data source is missing. Please report this to a system administrator.",
@@ -469,9 +469,9 @@ describe("filter tests", () => {
             await getTimeSeriesFilteredDataset(payload, commit, rootState);
 
             expect(commit.mock.calls.length).toBe(4);
-            expect(commit.mock.calls[0][0]).toStrictEqual(`genericChart/${GenericChartMutation.SetError}`);
-            expect(commit.mock.calls[1][0]).toStrictEqual(`genericChart/${GenericChartMutation.SetDataset}`);
-            expect(commit.mock.calls[2][0]).toStrictEqual(`genericChart/${GenericChartMutation.WarningsFetched}`);
+            expect(commit.mock.calls[0][0]).toStrictEqual(`reviewInput/${ReviewInputMutation.SetError}`);
+            expect(commit.mock.calls[1][0]).toStrictEqual(`reviewInput/${ReviewInputMutation.SetDataset}`);
+            expect(commit.mock.calls[2][0]).toStrictEqual(`reviewInput/${ReviewInputMutation.WarningsFetched}`);
             expect(commit.mock.calls[3][0]).toStrictEqual(`plotData/${PlotDataMutations.updatePlotData}`);
             const expectedPayload = {
                 plot: "timeSeries",

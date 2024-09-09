@@ -1,5 +1,5 @@
 import {Payload} from "vuex";
-import {CalibrateDataResponse, Error, FilterOption, VersionInfo, Warning} from "./generated";
+import {Error, FilterOption, VersionInfo, Warning} from "./generated";
 import {Language} from "./store/translations/locales";
 
 export interface PayloadWithType<T> extends Payload {
@@ -180,86 +180,22 @@ export enum DOWNLOAD_TYPE {
     AGYW = "AGYW",
 }
 
-export interface GenericChartTableConfig {
-    columns: GenericChartTableColumnConfig[]
-}
-
-export interface GenericChartTableColumnConfig {
-    data: {
-        columnId: string,
-        labelColumn?: string
-        hierarchyColumn?: string
-        useValueFormat?: boolean
-    },
-    header: {
-        type: "columnLabel" | "selectedFilterOption",
-        column: string
-    }
-}
-
-export interface DatasetConfig {
-    id: string
-    label: string
-    url: string
-    filters?: DatasetFilterConfig[],
-    table?: GenericChartTableConfig
-}
-
-export interface DatasetFilterConfig {
-    id: string,
-    source: string,
-    allowMultiple: boolean
-}
-
-export interface DataSourceConfig {
-    id: string
-    type: "fixed" | "editable"
-    label?: string
-    datasetId: string
-    showFilters: boolean
-    showIndicators: boolean
-}
-
-export interface GenericChartMetadata {
-    datasets: DatasetConfig[]
-    dataSelectors: {
-        dataSources: DataSourceConfig[]
-    }
-    subplots?: {
-        columns: number
-        distinctColumn: string
-        heightPerRow: number
-        subplotsPerPage: number
-    },
-    valueFormatColumn?: string
-    chartConfig: {
-        id: string
-        label: string
-        description?: string
-        config: string
-    }[]
-}
-
-export interface GenericChartMetadataResponse {
-    [key: string]: GenericChartMetadata;
-}
-
-export interface GenericChartColumnValue extends FilterOption {
+export interface ReviewInputDataColumnValue extends FilterOption {
     format?: string | null,
     accuracy?: string | null
 }
 
-export interface GenericChartColumn {
+export interface ReviewInputDataColumn {
     id: string,
     column_id: string,
     label: string,
-    values: GenericChartColumnValue[]
+    values: ReviewInputDataColumnValue[]
 }
 
-export interface GenericChartDataset {
+export interface ReviewInputDataset {
     data: Dict<unknown>[],
     metadata: {
-        columns: GenericChartColumn[],
+        columns: ReviewInputDataColumn[],
         defaults: {
             selected_filter_options: Dict<FilterOption[]>
         }

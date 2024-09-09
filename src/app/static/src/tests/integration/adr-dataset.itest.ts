@@ -234,7 +234,7 @@ describe("ADR dataset-related actions", () => {
             "https://raw.githubusercontent.com/mrc-ide/hint/master/src/app/testdata/programme.csv");
 
         expect(commit.mock.calls[2][0]).toStrictEqual({
-            type: "genericChart/ClearDataset",
+            type: "reviewInput/ClearDataset",
             payload: "art"
         });
         expect(commit.mock.calls[3][0]["type"]).toBe(SurveyAndProgramMutation.ProgramUpdated);
@@ -253,7 +253,7 @@ describe("ADR dataset-related actions", () => {
             "https://raw.githubusercontent.com/mrc-ide/hint/master/src/app/testdata/anc.csv");
 
         expect(commit.mock.calls[2][0]).toStrictEqual({
-            type: "genericChart/ClearDataset",
+            type: "reviewInput/ClearDataset",
             payload: "anc"
         });
         expect(commit.mock.calls[3][0]["type"]).toBe(SurveyAndProgramMutation.ANCUpdated);
