@@ -176,7 +176,7 @@ describe("Baseline actions", () => {
         (console.log as Mock).mockClear();
     });
 
-    it("sets country and iso3 after PJNZ file upload, and fetches plotting metadata, and validates", async () => {
+    it("sets country and iso3 after PJNZ file upload and validates", async () => {
 
         mockAxios.onPost(`/baseline/pjnz/`)
             .reply(200, mockSuccess({data: {country: "Malawi", iso3: "MWI"}}));
@@ -190,7 +190,7 @@ describe("Baseline actions", () => {
         checkPJNZImportUpload(commit, dispatch)
     });
 
-    it("sets country and iso3 after PJNZ import, and fetches plotting metadata, and validates", async () => {
+    it("sets country and iso3 after PJNZ import and validates", async () => {
         const url = "/adr/pjnz/"
         mockAxios.onPost(url)
             .reply(200, mockSuccess({data: {country: "Malawi", iso3: "MWI"}}));
@@ -219,7 +219,7 @@ describe("Baseline actions", () => {
         expect(dispatch.mock.calls[1][0]).toBe("surveyAndProgram/validateSurveyAndProgramData");
     }
 
-    it("upload PJNZ does not fetch plotting metadata or validate if error occurs", async () => {
+    it("upload PJNZ does not validate if error occurs", async () => {
         mockAxios.onPost(`/baseline/pjnz/`)
             .reply(400, mockFailure("test error"));
 
@@ -491,7 +491,7 @@ describe("Baseline actions", () => {
         });
     });
 
-    it("fails silently and marks state ready and does not get plotting metadata if getting baseline data fails", async () => {
+    it("fails silently and marks state ready if getting baseline data fails", async () => {
 
         mockAxios.onGet(`/baseline/pjnz/`)
             .reply(500);

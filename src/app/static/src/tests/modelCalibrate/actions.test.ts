@@ -168,7 +168,7 @@ describe("ModelCalibrate actions", () => {
         expect(dispatch.mock.calls[0][0]).toBe("getResult");
     });
 
-    it("getResult commits metadata and warnings, sets default plotting selections, and dispatches actions to get data", async () => {
+    it("getResult commits metadata and warnings, sets default plot selections, and dispatches actions to get data", async () => {
         switches.modelCalibratePlot = true;
 
         const testResult = mockCalibrateMetadataResponse()
