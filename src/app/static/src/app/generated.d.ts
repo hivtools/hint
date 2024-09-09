@@ -22,18 +22,6 @@ export interface AncDataRow {
   anc_art_coverage: number;
   [k: string]: any;
 }
-export interface AncFilters {
-  year: {
-    label: string;
-    id: string;
-    description?: string;
-  }[];
-  indicators: {
-    label: string;
-    id: string;
-    description?: string;
-  }[];
-}
 export type AncResponseData = {
   area_id: string;
   age_group: string;
@@ -526,32 +514,6 @@ export interface CalibratePlotRow {
 }
 export interface CalibrateResultPathResponse {
   path: string;
-  [k: string]: any;
-}
-export interface CalibrateResultResponse {
-  data: {
-    area_id: string;
-    sex: string;
-    age_group: string;
-    calendar_quarter: string;
-    indicator: string;
-    mode: number | null;
-    mean: number | null;
-    lower: number | null;
-    upper: number | null;
-    [k: string]: any;
-  }[];
-  warnings: {
-    text: string;
-    locations: (
-      | "review_inputs"
-      | "model_options"
-      | "model_fit"
-      | "model_calibrate"
-      | "review_output"
-      | "download_results"
-    )[];
-  }[];
   [k: string]: any;
 }
 export interface CalibrateStatusResponse {
@@ -1641,35 +1603,6 @@ export interface PlotSettingsControl {
     hidden?: boolean;
   }[];
 }
-export interface PlottingMetadataResponse {
-  survey: Metadata;
-  anc: Metadata;
-  programme: Metadata;
-  output: Metadata;
-}
-export interface Metadata {
-  choropleth: {
-    indicators: {
-      indicator: string;
-      value_column: string;
-      error_low_column?: string;
-      error_high_column?: string;
-      indicator_column?: string;
-      indicator_value?: string;
-      indicator_sort_order?: number;
-      name: string;
-      min: number;
-      max: number;
-      colour: string;
-      invert_scale: boolean;
-      scale: number;
-      accuracy: number | null;
-      format: string;
-    }[];
-    [k: string]: any;
-  };
-  [k: string]: any;
-}
 export type PopulationResponseData = null;
 export interface PrerunRequest {
   inputs: {
@@ -1720,23 +1653,6 @@ export interface ProgrammeDataRow {
   age_group: string;
   art_current: number;
   [k: string]: any;
-}
-export interface ProgrammeFilters {
-  age: {
-    label: string;
-    id: string;
-    description?: string;
-  }[];
-  calendar_quarter: {
-    label: string;
-    id: string;
-    description?: string;
-  }[];
-  indicators: {
-    label: string;
-    id: string;
-    description?: string;
-  }[];
 }
 export type ProgrammeResponseData = {
   area_id: string;
@@ -2083,23 +1999,6 @@ export interface SurveyDataRow {
   ci_upper: number | null;
   [k: string]: any;
 }
-export interface SurveyFilters {
-  age: {
-    label: string;
-    id: string;
-    description?: string;
-  }[];
-  surveys: {
-    label: string;
-    id: string;
-    description?: string;
-  }[];
-  indicators: {
-    label: string;
-    id: string;
-    description?: string;
-  }[];
-}
 export type SurveyResponseData = {
   indicator: string;
   survey_id: string;
@@ -2216,23 +2115,7 @@ export interface ProgrammeResponse {
     art_current: number;
     [k: string]: any;
   }[];
-  filters: {
-    age: {
-      label: string;
-      id: string;
-      description?: string;
-    }[];
-    calendar_quarter: {
-      label: string;
-      id: string;
-      description?: string;
-    }[];
-    indicators: {
-      label: string;
-      id: string;
-      description?: string;
-    }[];
-  };
+  filters?: null;
   warnings: {
     text: string;
     locations: (
@@ -2265,18 +2148,7 @@ export interface AncResponse {
     anc_art_coverage: number;
     [k: string]: any;
   }[];
-  filters: {
-    year: {
-      label: string;
-      id: string;
-      description?: string;
-    }[];
-    indicators: {
-      label: string;
-      id: string;
-      description?: string;
-    }[];
-  };
+  filters?: null;
   warnings: {
     text: string;
     locations: (
@@ -2311,23 +2183,7 @@ export interface SurveyResponse {
     ci_upper: number | null;
     [k: string]: any;
   }[];
-  filters: {
-    age: {
-      label: string;
-      id: string;
-      description?: string;
-    }[];
-    surveys: {
-      label: string;
-      id: string;
-      description?: string;
-    }[];
-    indicators: {
-      label: string;
-      id: string;
-      description?: string;
-    }[];
-  };
+  filters?: null;
   warnings: {
     text: string;
     locations: (
@@ -2347,7 +2203,7 @@ export interface VmmcResponse {
   resource_url?: string | null;
   type: "vmmc";
   data: null;
-  filters: null;
+  filters?: null;
   warnings: {
     text: string;
     locations: (
