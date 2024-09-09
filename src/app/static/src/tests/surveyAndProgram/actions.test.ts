@@ -18,7 +18,7 @@ import {
 } from "../mocks";
 import {SurveyAndProgramMutation} from "../../app/store/surveyAndProgram/mutations";
 import {expectEqualsFrozen} from "../testHelpers";
-import {DataType} from "../../app/store/surveyAndProgram/surveyAndProgram";
+import {FileType} from "../../app/store/surveyAndProgram/surveyAndProgram";
 import {expectValidAdrImportPayload} from "../baseline/actions.test";
 import {Mock} from "vitest";
 
@@ -79,16 +79,13 @@ describe("Survey and programme actions", () => {
 
         expect(commit.mock.calls[1][0]).toStrictEqual({
             type: SurveyAndProgramMutation.WarningsFetched,
-            payload: {type: DataType.Survey, warnings: []}
+            payload: {type: FileType.Survey, warnings: []}
         });
 
         expect(commit.mock.calls[2][0]).toStrictEqual({
             type: "WarningsFetched",
-            payload: {type: 2, warnings: "TEST WARNINGS"}
+            payload: {type: FileType.Survey, warnings: "TEST WARNINGS"}
         });
-
-        //Should also have set selectedDataType
-        expect(commit.mock.calls[3][0]).toStrictEqual({type: "SelectedDataTypeUpdated", payload: DataType.Survey});
 
         expect(dispatch.mock.calls[0][0]).toStrictEqual("setSurveyResponse");
         expect(dispatch.mock.calls[0][1]).toStrictEqual({data: "SOME DATA", warnings: "TEST WARNINGS"})
@@ -125,7 +122,7 @@ describe("Survey and programme actions", () => {
 
         expect(commit.mock.calls[1][0]).toStrictEqual({
             type: SurveyAndProgramMutation.WarningsFetched,
-            payload: {type: DataType.Survey, warnings: []}
+            payload: {type: FileType.Survey, warnings: []}
         });
 
         expect(commit.mock.calls[2][0]).toStrictEqual({
@@ -201,7 +198,7 @@ describe("Survey and programme actions", () => {
 
         expect(commit.mock.calls[1][0]).toStrictEqual({
             type: SurveyAndProgramMutation.WarningsFetched,
-            payload: {type: DataType.Program, warnings: []}
+            payload: {type: FileType.Programme, warnings: []}
         });
 
         expect(commit.mock.calls[2][0]).toStrictEqual({
@@ -212,14 +209,7 @@ describe("Survey and programme actions", () => {
         expect(commit.mock.calls[3][0]).toStrictEqual(
             {
                 type: "WarningsFetched",
-                payload: {type: 1, warnings: "TEST WARNINGS"}
-            });
-
-        //Should also have set selectedDataType
-        expect(commit.mock.calls[4][0]).toStrictEqual(
-            {
-                type: "SelectedDataTypeUpdated",
-                payload: DataType.Program
+                payload: {type: FileType.Programme, warnings: "TEST WARNINGS"}
             });
 
         expect(dispatch.mock.calls[0][0]).toStrictEqual("setProgramResponse");
@@ -258,7 +248,7 @@ describe("Survey and programme actions", () => {
 
         expect(commit.mock.calls[1][0]).toStrictEqual({
             type: SurveyAndProgramMutation.WarningsFetched,
-            payload: {type: DataType.Program, warnings: []}
+            payload: {type: FileType.Programme, warnings: []}
         });
 
         expect(commit.mock.calls[2][0]).toStrictEqual({
@@ -312,7 +302,7 @@ describe("Survey and programme actions", () => {
 
         expect(commit.mock.calls[1][0]).toStrictEqual({
             type: SurveyAndProgramMutation.WarningsFetched,
-            payload: {type: DataType.ANC, warnings: []}
+            payload: {type: FileType.ANC, warnings: []}
         });
 
         expect(commit.mock.calls[2][0]).toStrictEqual({
@@ -323,14 +313,7 @@ describe("Survey and programme actions", () => {
         expect(commit.mock.calls[3][0]).toStrictEqual(
             {
                 type: "WarningsFetched",
-                payload: {type: 0, warnings: "TEST WARNINGS"}
-            });
-
-        //Should also have set selectedDataType
-        expect(commit.mock.calls[4][0]).toStrictEqual(
-            {
-                type: "SelectedDataTypeUpdated",
-                payload: DataType.ANC
+                payload: {type: FileType.ANC, warnings: "TEST WARNINGS"}
             });
 
         expect(dispatch.mock.calls[0][0]).toStrictEqual("setAncResponse");
@@ -369,7 +352,7 @@ describe("Survey and programme actions", () => {
 
         expect(commit.mock.calls[1][0]).toStrictEqual({
             type: SurveyAndProgramMutation.WarningsFetched,
-            payload: {type: DataType.ANC, warnings: []}
+            payload: {type: FileType.ANC, warnings: []}
         });
 
         expect(commit.mock.calls[2][0]).toStrictEqual({
@@ -423,7 +406,7 @@ describe("Survey and programme actions", () => {
 
         expect(commit.mock.calls[1][0]).toStrictEqual({
             type: SurveyAndProgramMutation.WarningsFetched,
-            payload: {type: DataType.Vmmc, warnings: []}
+            payload: {type: FileType.Vmmc, warnings: []}
         });
 
         expect(commit.mock.calls[2][0]).toStrictEqual({
@@ -439,7 +422,7 @@ describe("Survey and programme actions", () => {
         expect(commit.mock.calls[4][0]).toStrictEqual(
             {
                 type: "WarningsFetched",
-                payload: {type: 3, warnings: "TEST WARNINGS"}
+                payload: {type: FileType.Vmmc, warnings: "TEST WARNINGS"}
             });
     }
 
@@ -475,7 +458,7 @@ describe("Survey and programme actions", () => {
 
         expect(commit.mock.calls[1][0]).toStrictEqual({
             type: SurveyAndProgramMutation.WarningsFetched,
-            payload: {type: DataType.Vmmc, warnings: []}
+            payload: {type: FileType.Vmmc, warnings: []}
         });
 
         expect(commit.mock.calls[2][0]).toStrictEqual({
@@ -552,7 +535,7 @@ describe("Survey and programme actions", () => {
         expect(commitCalls).toContain(SurveyAndProgramMutation.Ready);
 
         const payloads = commit.mock.calls.map((callArgs) => callArgs[0]["payload"]);
-        expect(payloads.filter(p => Object.isFrozen(p)).length).toBe(3);
+        expect(payloads.filter(p => Object.isFrozen(p)).length).toBe(2);
         //ready payload is true, which is frozen by definition
     });
 
@@ -584,7 +567,7 @@ describe("Survey and programme actions", () => {
         expect(commitCalls).toContain(SurveyAndProgramMutation.Ready);
 
         const payloads = commit.mock.calls.map((callArgs) => callArgs[0]["payload"]);
-        expect(payloads.filter(p => Object.isFrozen(p)).length).toBe(3);
+        expect(payloads.filter(p => Object.isFrozen(p)).length).toBe(2);
         //ready payload is true, which is frozen by definition
     });
 
@@ -611,10 +594,9 @@ describe("Survey and programme actions", () => {
         expect(calls).toContain(SurveyAndProgramMutation.ANCError);
         expect(calls).toContain(SurveyAndProgramMutation.VmmcError);
         expect(calls).toContain(SurveyAndProgramMutation.Ready);
-        expect(commit.mock.calls[4][0]).toStrictEqual({type: "SelectedDataTypeUpdated", payload: null});
 
         const payloads = commit.mock.calls.map((callArgs) => callArgs[0]["payload"]);
-        expect(payloads.filter(p => Object.isFrozen(p)).length).toBe(2);
+        expect(payloads.filter(p => Object.isFrozen(p)).length).toBe(1);
         //ready payload is true, which is frozen by definition
     });
 
@@ -639,38 +621,24 @@ describe("Survey and programme actions", () => {
         expect(commit.mock.calls[0][0]["type"]).toBe(SurveyAndProgramMutation.Ready);
     });
 
-    it("deletes survey and resets selected data type", async () => {
+    it("deletes survey", async () => {
         mockAxios.onDelete("/disease/survey/")
             .reply(200, mockSuccess(true));
 
         const commit = vi.fn();
         await actions.deleteSurvey({
             commit, rootState,
-            state: mockSurveyAndProgramState({selectedDataType: DataType.Survey, program: mockProgramResponse()})
+            state: mockSurveyAndProgramState({program: mockProgramResponse()})
         } as any);
-        expect(commit).toBeCalledTimes(3);
+        expect(commit).toBeCalledTimes(2);
         expect(commit.mock.calls[0][0]["type"]).toBe(SurveyAndProgramMutation.SurveyUpdated);
         expect(commit.mock.calls[1][0]).toEqual({
-            type: SurveyAndProgramMutation.SelectedDataTypeUpdated,
-            payload: DataType.Program
-        });
-        expect(commit.mock.calls[2][0]).toEqual({
             type: SurveyAndProgramMutation.WarningsFetched,
-            payload: {type: DataType.Survey, warnings: []}
-        });
-        commit.mockReset();
-        await actions.deleteSurvey({
-            commit, rootState,
-            state: mockSurveyAndProgramState({selectedDataType: DataType.Survey, anc: mockAncResponse()})
-        } as any);
-        expect(commit).toBeCalledTimes(3);
-        expect(commit.mock.calls[1][0]).toEqual({
-            type: SurveyAndProgramMutation.SelectedDataTypeUpdated,
-            payload: DataType.ANC
+            payload: {type: FileType.Survey, warnings: []}
         });
     });
 
-    it("deletes program and resets selected data type", async () => {
+    it("deletes program", async () => {
         mockAxios.onDelete("/disease/programme/")
             .reply(200, mockSuccess(true));
 
@@ -678,33 +646,17 @@ describe("Survey and programme actions", () => {
         await actions.deleteProgram({
             commit,
             rootState,
-            state: mockSurveyAndProgramState({selectedDataType: DataType.Program, survey: mockSurveyResponse()})
+            state: mockSurveyAndProgramState({survey: mockSurveyResponse()})
         } as any);
-        expect(commit).toBeCalledTimes(4);
+        expect(commit).toBeCalledTimes(3);
         expect(commit.mock.calls[0][0]["type"]).toBe(SurveyAndProgramMutation.ProgramUpdated);
         expect(commit.mock.calls[1][0]).toEqual({
-            type: SurveyAndProgramMutation.SelectedDataTypeUpdated,
-            payload: DataType.Survey
-        });
-        expect(commit.mock.calls[2][0]).toEqual({
             type: "genericChart/ClearDataset",
             payload: "art"
         })
-        expect(commit.mock.calls[3][0]).toEqual({
+        expect(commit.mock.calls[2][0]).toEqual({
             type: SurveyAndProgramMutation.WarningsFetched,
-            payload: {type: DataType.Program, warnings: []}
-        });
-
-        commit.mockReset();
-        await actions.deleteProgram({
-            commit,
-            rootState,
-            state: mockSurveyAndProgramState({selectedDataType: DataType.Program, anc: mockAncResponse()})
-        } as any);
-        expect(commit).toBeCalledTimes(4);
-        expect(commit.mock.calls[1][0]).toEqual({
-            type: SurveyAndProgramMutation.SelectedDataTypeUpdated,
-            payload: DataType.ANC
+            payload: {type: FileType.Programme, warnings: []}
         });
     });
 
@@ -716,37 +668,21 @@ describe("Survey and programme actions", () => {
         await actions.deleteANC({
             commit,
             rootState,
-            state: mockSurveyAndProgramState({selectedDataType: DataType.ANC, program: mockProgramResponse()})
+            state: mockSurveyAndProgramState({program: mockProgramResponse()})
         } as any);
-        expect(commit).toBeCalledTimes(4);
+        expect(commit).toBeCalledTimes(3);
         expect(commit.mock.calls[0][0]["type"]).toBe(SurveyAndProgramMutation.ANCUpdated);
         expect(commit.mock.calls[1][0]).toEqual({
-            type: SurveyAndProgramMutation.SelectedDataTypeUpdated,
-            payload: DataType.Program
-        });
-        expect(commit.mock.calls[2][0]).toEqual({
             type: "genericChart/ClearDataset",
             payload: "anc"
         });
-        expect(commit.mock.calls[3][0]).toEqual({
+        expect(commit.mock.calls[2][0]).toEqual({
             type: SurveyAndProgramMutation.WarningsFetched,
-            payload: {type: DataType.ANC, warnings: []}
-        });
-
-        commit.mockReset();
-        await actions.deleteANC({
-            commit,
-            rootState,
-            state: mockSurveyAndProgramState({selectedDataType: DataType.ANC, survey: mockSurveyResponse()})
-        } as any);
-        expect(commit).toBeCalledTimes(4);
-        expect(commit.mock.calls[1][0]).toEqual({
-            type: SurveyAndProgramMutation.SelectedDataTypeUpdated,
-            payload: DataType.Survey
+            payload: {type: FileType.ANC, warnings: []}
         });
     });
 
-    it("deletes VMMC and resets selected data type", async () => {
+    it("deletes VMMC", async () => {
         mockAxios.onDelete("/disease/vmmc/")
             .reply(200, mockSuccess(true));
 
@@ -754,33 +690,17 @@ describe("Survey and programme actions", () => {
         await actions.deleteVmmc({
             commit,
             rootState,
-            state: mockSurveyAndProgramState({selectedDataType: DataType.Vmmc, program: mockProgramResponse()})
+            state: mockSurveyAndProgramState({program: mockProgramResponse()})
         } as any);
-        expect(commit).toBeCalledTimes(4);
+        expect(commit).toBeCalledTimes(3);
         expect(commit.mock.calls[0][0]["type"]).toBe(SurveyAndProgramMutation.VmmcUpdated);
         expect(commit.mock.calls[1][0]).toEqual({
-            type: SurveyAndProgramMutation.SelectedDataTypeUpdated,
-            payload: DataType.Program
-        });
-        expect(commit.mock.calls[2][0]).toEqual({
             type: "genericChart/ClearDataset",
             payload: "vmmc"
         });
-        expect(commit.mock.calls[3][0]).toEqual({
+        expect(commit.mock.calls[2][0]).toEqual({
             type: SurveyAndProgramMutation.WarningsFetched,
-            payload: {type: DataType.Vmmc, warnings: []}
-        });
-
-        commit.mockReset();
-        await actions.deleteVmmc({
-            commit,
-            rootState,
-            state: mockSurveyAndProgramState({selectedDataType: DataType.Vmmc, survey: mockSurveyResponse()})
-        } as any);
-        expect(commit).toBeCalledTimes(4);
-        expect(commit.mock.calls[1][0]).toEqual({
-            type: SurveyAndProgramMutation.SelectedDataTypeUpdated,
-            payload: DataType.Survey
+            payload: {type: FileType.Vmmc, warnings: []}
         });
     });
 
@@ -814,14 +734,6 @@ describe("Survey and programme actions", () => {
             "genericChart/ClearDataset",
             SurveyAndProgramMutation.WarningsFetched
         ]);
-    });
-
-    it("selects data type", () => {
-        const commit = vi.fn();
-        actions.selectDataType({commit} as any, DataType.ANC);
-        expect(commit).toBeCalledTimes(1);
-        expect(commit.mock.calls[0][0]["type"]).toBe(SurveyAndProgramMutation.SelectedDataTypeUpdated);
-        expect(commit.mock.calls[0][0]["payload"]).toBe(DataType.ANC);
     });
 
     it("commits survey data without area level", () => {

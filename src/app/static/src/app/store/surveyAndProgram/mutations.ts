@@ -1,11 +1,10 @@
 import {MutationTree} from 'vuex';
-import {DataType, SAPWarnings, SurveyAndProgramState} from "./surveyAndProgram";
+import {SAPWarnings, SurveyAndProgramState} from "./surveyAndProgram";
 import {PayloadWithType} from "../../types";
 import {AncResponse, ProgrammeResponse, SurveyResponse, VmmcResponse, Error, Warning} from "../../generated";
 import {ReadyState} from "../../root";
 
 export enum SurveyAndProgramMutation {
-    SelectedDataTypeUpdated = "SelectedDataTypeUpdated",
     SurveyUpdated = "SurveyUpdated",
     SurveyError = "SurveyError",
     SurveyErroredFile = "SurveyErroredFile",
@@ -30,10 +29,6 @@ export const SurveyAndProgramUpdates = [
 ];
 
 export const mutations: MutationTree<SurveyAndProgramState> = {
-    [SurveyAndProgramMutation.SelectedDataTypeUpdated](state: SurveyAndProgramState, action: PayloadWithType<DataType>) {
-        state.selectedDataType = action.payload;
-    },
-
     [SurveyAndProgramMutation.SurveyUpdated](state: SurveyAndProgramState, action: PayloadWithType<SurveyResponse>) {
         state.survey = action.payload;
         state.surveyError = null;

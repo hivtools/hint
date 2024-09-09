@@ -1,4 +1,4 @@
-import {DataType, SurveyAndProgramState} from "../../app/store/surveyAndProgram/surveyAndProgram";
+import {SurveyAndProgramState} from "../../app/store/surveyAndProgram/surveyAndProgram";
 import {getters as surveyAndProgramGetters} from "../../app/store/surveyAndProgram/getters";
 import {mutations, SurveyAndProgramMutation} from "../../app/store/surveyAndProgram/mutations";
 import {mockError, mockRootState, mockSurveyAndProgramState, mockSurveyResponse, mockWarning} from "../mocks";
@@ -132,12 +132,6 @@ describe("Survey and programme mutations", () => {
         const testState = mockSurveyAndProgramState();
         mutations.Ready(testState);
         expect(testState.ready).toBe(true);
-    });
-
-    it("sets selected DataType", () => {
-        const testState = mockSurveyAndProgramState({selectedDataType: DataType.Survey});
-        mutations[SurveyAndProgramMutation.SelectedDataTypeUpdated](testState, {payload: DataType.Program});
-        expect(testState.selectedDataType).toBe(DataType.Program);
     });
 
     it("sets and clears warnings", () => {

@@ -362,11 +362,6 @@ export interface PollingState {
     statusPollId: number
 }
 
-export interface CalibrateResultWithType {
-    data: CalibrateDataResponse["data"];
-    indicatorId: string;
-}
-
 // TODO: Remove this in favour of plotting metadata?
 export enum ModelOutputTabs {
     Map = "map",

@@ -7,7 +7,7 @@ import {initialLoadState} from "../load/state";
 import {initialMetadataState} from "../metadata/metadata";
 import {initialErrorsState} from "../errors/errors";
 import {initialBaselineState} from "../baseline/baseline";
-import {DataType, initialSurveyAndProgramState} from "../surveyAndProgram/surveyAndProgram";
+import {initialSurveyAndProgramState} from "../surveyAndProgram/surveyAndProgram";
 import {PayloadWithType, PollingState, Project} from "../../types";
 import {mutations as languageMutations} from "../language/mutations";
 import {initialProjectsState} from "../projects/projects";
@@ -23,7 +23,6 @@ import {initialPlotState} from "../plotState/plotState";
 
 export enum RootMutation {
     Reset = "Reset",
-    ResetSelectedDataType = "ResetSelectedDataType",
     ResetOptions = "ResetOptions",
     ResetOutputs = "ResetOutputs",
     SetProject = "SetProject",
@@ -111,34 +110,6 @@ export const mutations: MutationTree<RootState> = {
 
         if (router.currentRoute.value.path !== "/") {
             router.push("/");
-        }
-    },
-
-    [RootMutation.ResetSelectedDataType](state: RootState) {
-        //TODO: Should this move to SAP since we're removing output from DataType?
-        const dataAvailable = (dataType: DataType | null) => {
-            if (dataType == null) {
-                return true
-            }
-            switch (dataType) {
-                case DataType.ANC:
-                    return !!state.surveyAndProgram.anc;
-                case DataType.Program:
-                    return !!state.surveyAndProgram.program;
-                case DataType.Survey:
-                    return !!state.surveyAndProgram.survey;
-                case DataType.Vmmc:
-                    return !!state.surveyAndProgram.vmmc;
-            }
-        };
-
-        if (!dataAvailable(state.surveyAndProgram.selectedDataType)) {
-
-            const availableData: number[] = Object.keys(DataType)
-                .filter(k => !isNaN(Number(k)) && dataAvailable(Number(k)))
-                .map(k => Number(k));
-
-            state.surveyAndProgram.selectedDataType = availableData.length > 0 ? availableData[0] : null;
         }
     },
 
