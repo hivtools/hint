@@ -4,7 +4,7 @@ import {Step} from "../../app/types";
 
 test("can view time series plot", async ({ projectPage }) => {
     const page = projectPage.page;
-    await projectPage.goToStep(Step.UploadInputs);
+    await projectPage.goToStep(Step.ReviewInputs);
 
     // Review inputs page matches screenshot after data fetched
     await expect(page.locator("#review-loading")).toHaveCount(0, {timeout: 10000});
@@ -59,7 +59,7 @@ test("can view time series plot", async ({ projectPage }) => {
 
 test("can view input map plot", async ({ projectPage }) => {
     const page = projectPage.page;
-    await projectPage.goToStep(Step.UploadInputs);
+    await projectPage.goToStep(Step.ReviewInputs);
 
     // Given map plot is open
     await page.getByText("Map").click();

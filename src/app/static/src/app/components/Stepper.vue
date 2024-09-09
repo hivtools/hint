@@ -65,7 +65,7 @@
     import ModelOptions from "./modelOptions/ModelOptions.vue";
     import VersionStatus from "./projects/VersionStatus.vue";
     import {mapGettersByNames, mapStateProp, mapStateProps, mapMutationByName, mapGetterByName} from "../utils";
-    import {StepperNavigationProps, StepWarnings} from "../types";
+    import {StepperNavigationProps, StepWarnings, Step as StepEnum} from "../types";
     import {ProjectsState} from "../store/projects/projects";
     import {RootState} from "../root";
     import StepperNavigation from "./StepperNavigation.vue";
@@ -196,8 +196,9 @@
         watch: {
             complete: function (){
                 // auto-progress from modelRun to modelCalibrate if there are no warnings to display
-                if (this.activeStep === 4 && this.isComplete(4) && this.isEnabled(5) &&
-                        this.activeStepWarnings.modelRun.length === 0){
+                if (this.activeStep === StepEnum.FitModel && this.isComplete(StepEnum.FitModel) &&
+                    this.isEnabled(StepEnum.CalibrateModel) &&
+                        this.activeStepWarnings.modelRun.length === 0) {
                     this.next();
                 }
             },
