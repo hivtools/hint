@@ -4,6 +4,7 @@ import {getActiveStep} from "./utils/stepperUtils";
 import {Step} from "../../app/types";
 import {setValidModelOptions} from "./utils/modelOptionsUtils";
 import {calibrateModel, fitModel} from "./utils/utils";
+import fs from "fs";
 
 test("can progress to model options page", async ({ projectPage }) => {
     const page = projectPage.page;
@@ -103,4 +104,30 @@ test("can progress to model options page", async ({ projectPage }) => {
     // Continue button is enabled
     await expect(continueButton).not.toBeDisabled();
     await expect(backButton).not.toBeDisabled();
+
+    // When I click continue
+    await continueButton.click();
+
+    // then review outputs page is active
+    expect(await getActiveStep(projectPage.page)).toBe(Step.ReviewOutput);
+
+    // Continue button is enabled
+    await expect(continueButton).not.toBeDisabled();
+    await expect(backButton).not.toBeDisabled();
+
+    // When I click continue
+    await continueButton.click();
+
+    // Download results page is active
+    expect(await getActiveStep(projectPage.page)).toBe(Step.SaveResults);
+
+    // And I can see file downloads
+    const downloadResults = page.locator("#spectrum-download button");
+    const coarseOutput = page.locator("#coarse-output-download button");
+    const summaryReport = page.locator("#summary-download button");
+    const comparisonReport = page.locator("#comparison-download button");
+    await expect(downloadResults).toHaveClass(/btn-secondary/);
+    await expect(coarseOutput).toHaveClass(/btn-secondary/);
+    await expect(summaryReport).toHaveClass(/btn-secondary/);
+    await expect(comparisonReport).toHaveClass(/btn-secondary/);
 });
