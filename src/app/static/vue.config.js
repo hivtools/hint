@@ -39,8 +39,8 @@ module.exports = defineConfig({
         devtool: 'eval-source-map',
         plugins: [
             new webpack.DefinePlugin({
-                // Vue CLI is in maintenance mode, and probably won't this PR to fix this in their tooling
-                // https://github.com/vuejs/vue-cli/pull/7443
+                // Vue CLI is in maintenance mode, and probably won't fix this in their tooling
+                // see PR for more context https://github.com/vuejs/vue-cli/pull/7443
                 __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: 'false',
             })
         ],
