@@ -8,7 +8,6 @@ import {
     VersionInfo,
     Error,
     CalibrateStatusResponse,
-    CalibrateResultResponse,
     ComparisonPlotResponse,
     CalibrateDataResponse,
     CalibrateMetadataResponse,
@@ -27,7 +26,7 @@ export interface ModelCalibrateState extends ReadyState, WarningsState {
     generatingCalibrationPlot: boolean
     calibratePlotResult: CalibratePlotResponse | null,
     comparisonPlotResult: ComparisonPlotResponse | null,
-    result: CalibrateDataResponse | CalibrateResultResponse | null
+    result: CalibrateDataResponse | null
     fetchedIndicators: string[] | null
     version: VersionInfo
     error: Error | null

@@ -1,5 +1,5 @@
 import {Payload} from "vuex";
-import {CalibrateDataResponse, Error, FilterOption, VersionInfo, Warning} from "./generated";
+import {Error, FilterOption, VersionInfo, Warning} from "./generated";
 import {Language} from "./store/translations/locales";
 
 export interface PayloadWithType<T> extends Payload {

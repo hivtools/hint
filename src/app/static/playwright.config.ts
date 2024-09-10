@@ -21,7 +21,7 @@ const config: PlaywrightTestConfig = {
             }
         },
     ],
-    timeout: 30000,
+    timeout: 60_000,
     expect: {
         /**
          * Maximum time expect() should wait for the condition to be met.

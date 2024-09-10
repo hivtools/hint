@@ -17,12 +17,10 @@ import {
     ModelStatusResponse,
     PjnzResponse,
     PopulationResponse,
-    ProgrammeFilters,
     ProgrammeResponse,
     Response,
     ReviewInputFilterMetadataResponse,
     ShapeResponse,
-    SurveyFilters,
     SurveyResponse,
     ValidateBaselineResponse,
     VmmcResponse,
@@ -379,11 +377,7 @@ export const mockSurveyResponse = (props: Partial<SurveyResponse> = {}): SurveyR
         filename: "test.csv",
         hash: "1234.csv",
         data: [],
-        filters: {
-            "age": [],
-            "surveys": [],
-            indicators: []
-        },
+        filters: null,
         warnings: [],
         ...props
     }
@@ -413,7 +407,7 @@ export const mockProgramResponse = (props: Partial<ProgrammeResponse> = {}): Pro
         filename: "test.csv",
         data: [],
         hash: "1234.csv",
-        filters: {"age": [], "calendar_quarter": [], indicators: []},
+        filters: null,
         warnings: [],
         ...props
     }
@@ -436,7 +430,7 @@ export const mockAncResponse = (props: Partial<AncResponse> = {}): AncResponse =
         filename: "test.csv",
         hash: "1234.csv",
         data: [],
-        filters: {"year": [], indicators: []},
+        filters: null,
         warnings: [],
         ...props
     }
@@ -467,24 +461,6 @@ export const mockVmmcResponse = (props: Partial<VmmcResponse> = {}): VmmcRespons
         data: null,
         filters: null,
         warnings: [],
-        ...props
-    }
-};
-
-export const mockProgramFilters = (props: Partial<ProgrammeFilters> = {}): ProgrammeFilters => {
-    return {
-        age: [],
-        calendar_quarter: [],
-        indicators: [],
-        ...props
-    }
-};
-
-export const mockSurveyFilters = (props: Partial<SurveyFilters> = {}): SurveyFilters => {
-    return {
-        age: [],
-        surveys: [],
-        indicators: [],
         ...props
     }
 };

@@ -1,5 +1,5 @@
 import {expect, test} from "./fixtures/project-page"
-import {getActiveStep} from "./utils/stepper-utils";
+import {getActiveStep} from "./utils/stepperUtils";
 import {Step} from "../../app/types";
 
 test('can create and delete a project', async ({ projectPage }) => {

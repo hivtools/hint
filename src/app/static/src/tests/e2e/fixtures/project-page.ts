@@ -2,7 +2,9 @@ import type {Locator, Page} from '@playwright/test';
 import {test as base} from './worker-login';
 import {generateId} from "zoo-ids";
 import {Step} from "../../../app/types";
-import {uploadAllTestFiles} from "../utils/upload-utils";
+import {uploadAllTestFiles} from "../utils/uploadUtils";
+import {setValidModelOptions} from "../utils/modelOptionsUtils";
+import {calibrateModel, fitModel} from "../utils/utils";
 
 class ProjectPage {
     private readonly projectNames: string[];
@@ -55,16 +57,28 @@ class ProjectPage {
     };
 
     async goToStep(step: Step) {
+        let continueButton: Locator
         const goToInputsUpload = async () => this.createProject();
         const goToReviewInputs = async () => {
             await uploadAllTestFiles(this.page);
-            const continueButton = this.page.locator("#continue").nth(0);
+            continueButton = this.page.locator("#continue").nth(0);
             await continueButton.click();
         };
-        const goToModelOptions = async () => {};
-        const goToFitModel = async () => {};
-        const goToCalibrate = async () => {};
-        const goToReviewOutput = async () => {};
+        const goToModelOptions = async () => {
+            await continueButton.click();
+        };
+        const goToFitModel = async () => {
+            await setValidModelOptions(this.page);
+            await continueButton.click();
+        };
+        const goToCalibrate = async () => {
+            await fitModel(this.page);
+            await continueButton.click();
+        };
+        const goToReviewOutput = async () => {
+            await calibrateModel(this.page);
+            await continueButton.click();
+        };
         const goToSaveResults = async () => {};
         const steps = [
             goToInputsUpload,
@@ -75,8 +89,8 @@ class ProjectPage {
             goToReviewOutput,
             goToSaveResults
         ]
-        for (let i = 0; i <= step; i++) {
-            await steps[i]();
+        for (let i = 1; i <= step; i++) {
+            await steps[i - 1]();
         }
     }
 }

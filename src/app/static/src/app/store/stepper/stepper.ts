@@ -3,6 +3,7 @@ import {getters} from "./getters";
 import {actions} from "./actions";
 import {mutations} from "./mutations";
 import {RootState} from "../../root";
+import {Step} from "../../types";
 
 export interface StepDescription {
     number: number,
@@ -17,34 +18,34 @@ export interface StepperState {
 export const initialStepperState = (): StepperState => {
 
     return {
-        activeStep: 1,
+        activeStep: Step.UploadInputs,
         steps: [
             {
-                number: 1,
+                number: Step.UploadInputs,
                 textKey: "uploadInputs"
             },
             {
-                number: 2,
+                number: Step.ReviewInputs,
                 textKey: "reviewInputs"
             },
             {
-                number: 3,
+                number: Step.ModelOptions,
                 textKey: "modelOptions"
             },
             {
-                number: 4,
+                number: Step.FitModel,
                 textKey: "fitModel"
             },
             {
-                number: 5,
+                number: Step.CalibrateModel,
                 textKey: "calibrateModel"
             },
             {
-                number: 6,
+                number: Step.ReviewOutput,
                 textKey: "reviewOutput"
             },
             {
-                number: 7,
+                number: Step.SaveResults,
                 textKey: "downloadResults"
             }]
     }

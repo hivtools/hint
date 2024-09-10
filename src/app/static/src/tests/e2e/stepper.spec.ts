@@ -1,7 +1,9 @@
 import {test, expect} from "./fixtures/project-page";
-import {uploadAllTestFiles} from "./utils/upload-utils";
-import {getActiveStep} from "./utils/stepper-utils";
+import {uploadAllTestFiles} from "./utils/uploadUtils";
+import {getActiveStep} from "./utils/stepperUtils";
 import {Step} from "../../app/types";
+import {setValidModelOptions} from "./utils/modelOptionsUtils";
+import {calibrateModel, fitModel} from "./utils/utils";
 
 test("can progress to model options page", async ({ projectPage }) => {
     const page = projectPage.page;
@@ -53,4 +55,52 @@ test("can progress to model options page", async ({ projectPage }) => {
 
     // Model options page is active
     expect(await getActiveStep(projectPage.page)).toBe(Step.ModelOptions);
+
+    // Continue button is disabled
+    await expect(continueButton).toBeDisabled();
+    await expect(backButton).not.toBeDisabled();
+
+    // When I fill in options and click validate
+    await setValidModelOptions(page);
+
+    // then continue button is enabled
+    await expect(continueButton).not.toBeDisabled();
+    await expect(backButton).not.toBeDisabled();
+
+    // When I click continue
+    await continueButton.click();
+
+    // Model fit page is active
+    expect(await getActiveStep(projectPage.page)).toBe(Step.FitModel);
+
+    // Continue button is disabled
+    await expect(continueButton).toBeDisabled();
+    await expect(backButton).not.toBeDisabled();
+
+    // When I fit the model
+    await fitModel(page);
+
+    // Continue button is enabled
+    await expect(continueButton).not.toBeDisabled();
+    await expect(backButton).not.toBeDisabled();
+
+    // When I click continue
+    await continueButton.click();
+
+    // then model calibrate page is active
+    expect(await getActiveStep(projectPage.page)).toBe(Step.CalibrateModel);
+
+    // and continue button is disabled
+    await expect(continueButton).toBeDisabled();
+    await expect(backButton).not.toBeDisabled();
+
+    // When I calibrate model
+    await calibrateModel(page);
+
+    // Calibration plot is visible
+    await expect(page.locator('canvas')).toBeVisible();
+
+    // Continue button is enabled
+    await expect(continueButton).not.toBeDisabled();
+    await expect(backButton).not.toBeDisabled();
 });

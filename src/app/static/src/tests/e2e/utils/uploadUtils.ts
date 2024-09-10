@@ -1,5 +1,5 @@
 import {Locator, Page, expect} from "@playwright/test";
-import {translate} from "./translation-utils";
+import {translate} from "./translationUtils";
 
 const uploadFileTypes = {
     spectrum: {
