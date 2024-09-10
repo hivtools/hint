@@ -4,7 +4,7 @@ import {api} from "../../apiService";
 import {AncResponse, ProgrammeResponse, SurveyResponse} from "../../generated";
 import {SurveyAndProgramMutation} from "./mutations";
 import {buildData, freezer, getFilenameFromImportUrl, getFilenameFromUploadFormData} from "../../utils";
-import {GenericChartMutation} from "../genericChart/mutations";
+import {ReviewInputMutation} from "../reviewInput/mutations";
 import {UploadImportPayload} from "../../types";
 import { RootState } from '../../root';
 import {Feature} from "geojson";
@@ -37,8 +37,8 @@ const enum DATASET_TYPE {
     VMMC = "vmmc"
 }
 
-function commitClearGenericChartDataset(commit: Commit, dataType: string) {
-    commit({type: `genericChart/${GenericChartMutation.ClearDataset}`, payload: dataType}, {root: true});
+function commitClearReviewInputDataset(commit: Commit, dataType: string) {
+    commit({type: `reviewInput/${ReviewInputMutation.ClearDataset}`, payload: dataType}, {root: true});
 }
 
 interface UploadImportOptions {
@@ -51,7 +51,7 @@ async function uploadOrImportANC(context: ActionContext<SurveyAndProgramState, R
     const {commit, dispatch} = context;
     commit({type: SurveyAndProgramMutation.ANCUpdated, payload: null});
     commit({type: SurveyAndProgramMutation.WarningsFetched, payload: {type: FileType.ANC, warnings: []}});
-    commitClearGenericChartDataset(commit, DATASET_TYPE.ANC);
+    commitClearReviewInputDataset(commit, DATASET_TYPE.ANC);
 
     await api<SurveyAndProgramMutation, SurveyAndProgramMutation>(context)
         .withError(SurveyAndProgramMutation.ANCError)
@@ -75,7 +75,7 @@ async function uploadOrImportProgram(context: ActionContext<SurveyAndProgramStat
     const {commit, dispatch} = context;
     commit({type: SurveyAndProgramMutation.ProgramUpdated, payload: null});
     commit({type: SurveyAndProgramMutation.WarningsFetched, payload: {type: FileType.Programme, warnings: []}});
-    commitClearGenericChartDataset(commit, DATASET_TYPE.ART);
+    commitClearReviewInputDataset(commit, DATASET_TYPE.ART);
 
     await api<SurveyAndProgramMutation, SurveyAndProgramMutation>(context)
         .withError(SurveyAndProgramMutation.ProgramError)
@@ -122,7 +122,7 @@ async function uploadOrImportVmmc(context: ActionContext<SurveyAndProgramState, 
     const {commit} = context;
     commit({type: SurveyAndProgramMutation.VmmcUpdated, payload: null});
     commit({type: SurveyAndProgramMutation.WarningsFetched, payload: {type: FileType.Vmmc, warnings: []}});
-    commitClearGenericChartDataset(commit, DATASET_TYPE.VMMC);
+    commitClearReviewInputDataset(commit, DATASET_TYPE.VMMC);
 
     await api<SurveyAndProgramMutation, SurveyAndProgramMutation>(context)
         .withError(SurveyAndProgramMutation.VmmcError)
@@ -211,7 +211,7 @@ export const actions: ActionTree<SurveyAndProgramState, RootState> & SurveyAndPr
             .delete("/disease/programme/")
             .then(() => {
                 commit({type: SurveyAndProgramMutation.ProgramUpdated, payload: null});
-                commitClearGenericChartDataset(commit, DATASET_TYPE.ART)
+                commitClearReviewInputDataset(commit, DATASET_TYPE.ART)
                 commit({type: SurveyAndProgramMutation.WarningsFetched, payload: {type: FileType.Programme, warnings: []}});
             });
     },
@@ -222,7 +222,7 @@ export const actions: ActionTree<SurveyAndProgramState, RootState> & SurveyAndPr
             .delete("/disease/anc/")
             .then(() => {
                 commit({type: SurveyAndProgramMutation.ANCUpdated, payload: null});
-                commitClearGenericChartDataset(commit, DATASET_TYPE.ANC)
+                commitClearReviewInputDataset(commit, DATASET_TYPE.ANC)
                 commit({type: SurveyAndProgramMutation.WarningsFetched, payload: {type: FileType.ANC, warnings: []}});
             });
     },
@@ -233,7 +233,7 @@ export const actions: ActionTree<SurveyAndProgramState, RootState> & SurveyAndPr
             .delete("/disease/vmmc/")
             .then(() => {
                 commit({type: SurveyAndProgramMutation.VmmcUpdated, payload: null});
-                commitClearGenericChartDataset(commit, DATASET_TYPE.VMMC)
+                commitClearReviewInputDataset(commit, DATASET_TYPE.VMMC)
                 commit({type: SurveyAndProgramMutation.WarningsFetched, payload: {type: FileType.Vmmc, warnings: []}});
             });
     },

@@ -31,8 +31,6 @@ To run with hot reloading of the front end, after installing npm packages and ru
 
 For more information about developing the front-end see [src/app/static/README](https://github.com/mrc-ide/hint/blob/master/src/app/static/README.md)
 
-For more information on Generic Chart, see [/docs/GenericChart.md](https://github.com/mrc-ide/hint/blob/mrc-2537/docs/GenericChart.md)
-
 #### Run up app with Auth0 authentication
 
 By default, when running up the app locally we use our own authentication system. On production we are using Auth0 to manage users and enable SSO with the ADR. Sometimes it can be useful to run up the local app using Auth0 authentication, so we can develop or test those slightly different UIs. To run locally with Auth0

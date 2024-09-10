@@ -1,25 +1,16 @@
-import {mutations} from "../../app/store/genericChart/mutations";
-import {mockGenericChartState, mockWarning} from "../mocks";
+import {mutations} from "../../app/store/reviewInput/mutations";
+import {mockReviewInputState, mockWarning} from "../mocks";
 
-describe("genericChart mutations", () => {
-
-    it("updates generic chart metadata", () => {
-        const state = mockGenericChartState();
-        const testMetadata = {metadata: "test"};
-        mutations.GenericChartMetadataFetched(state, {payload: testMetadata});
-        expect(state.genericChartMetadata).toBe(testMetadata);
-    });
-
+describe("reviewInput mutations", () => {
     it("sets dataset",  () => {
-        const state = mockGenericChartState();
+        const state = mockReviewInputState();
         const payload = {datasetId: "dataset1", dataset: ["TEST DATASET"]};
         mutations.SetDataset(state, {payload});
         expect(state.datasets).toStrictEqual({dataset1: ["TEST DATASET"]});
-        expect(state.selectionDatasetId).toStrictEqual("dataset1");
     });
 
     it("sets loading",  () => {
-        const state = mockGenericChartState();
+        const state = mockReviewInputState();
         const payload = true;
         mutations.SetLoading(state, {payload});
         expect(state.loading).toBe(true);
@@ -36,7 +27,7 @@ describe("genericChart mutations", () => {
                 metadata: "TEST"
             }
         } as any;
-        const state = mockGenericChartState({datasets: datasets});
+        const state = mockReviewInputState({datasets: datasets});
         mutations.ClearDataset(state, {payload: "anc"});
         expect(state.datasets).toEqual({
             art: {
@@ -57,7 +48,7 @@ describe("genericChart mutations", () => {
                 metadata: "TEST"
             }
         } as any;
-        const state = mockGenericChartState({datasets: datasets});
+        const state = mockReviewInputState({datasets: datasets});
         mutations.ClearDataset(state, {payload: "art"});
         expect(state.datasets).toEqual({
             anc: {
@@ -68,14 +59,14 @@ describe("genericChart mutations", () => {
     });
 
     it("sets error", () => {
-        const state = mockGenericChartState();
+        const state = mockReviewInputState();
         const error = {"detail": "TEST ERROR", "error": "OTHER_ERROR"};
         mutations.SetError(state, {payload: error});
-        expect(state.genericChartError).toBe(error);
+        expect(state.error).toBe(error);
     });
 
     it("sets and clears warnings", () => {
-        const testState = mockGenericChartState();
+        const testState = mockReviewInputState();
         const warnings = [mockWarning()]
         mutations.WarningsFetched(testState, {payload: warnings});
         expect(testState.warnings).toEqual([mockWarning()]);

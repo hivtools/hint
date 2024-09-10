@@ -10,7 +10,7 @@ import {
     mockDownloadResultsState,
     mockError,
     mockErrorsState,
-    mockGenericChartState,
+    mockReviewInputState,
     mockHintrVersionState,
     mockLoadState,
     mockMetadataState,
@@ -79,7 +79,7 @@ describe("LocalStorageManager", () => {
             currentUser: "some user",
             updatingLanguage: false,
             adr: mockADRState(),
-            genericChart: mockGenericChartState(),
+            reviewInput: mockReviewInputState(),
             adrUpload: mockADRUploadState(),
             baseline: mockBaselineState({
                 selectedDataset: dataset,

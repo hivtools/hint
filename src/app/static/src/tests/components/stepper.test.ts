@@ -3,7 +3,7 @@ import {baselineGetters, BaselineState} from "../../app/store/baseline/baseline"
 import {
     mockADRState,
     mockBaselineState,
-    mockGenericChartState,
+    mockReviewInputState,
     mockLoadState,
     mockMetadataState,
     mockModelCalibrateState,
@@ -52,8 +52,8 @@ import StepperNavigation from "../../app/components/StepperNavigation.vue";
 import WarningAlert from "../../app/components/WarningAlert.vue";
 import LoadInvalidModal from "../../app/components/load/LoadInvalidModal.vue";
 import {ModelOptionsMutation} from "../../app/store/modelOptions/mutations";
-import {GenericChartState} from "../../app/store/genericChart/genericChart";
-import {GenericChartMutation} from "../../app/store/genericChart/mutations";
+import {ReviewInputState} from "../../app/store/reviewInput/reviewInput";
+import {ReviewInputMutation} from "../../app/store/reviewInput/mutations";
 import {nextTick} from 'vue';
 
 describe("Stepper component", () => {
@@ -74,7 +74,7 @@ describe("Stepper component", () => {
                        partialRootState: Partial<RootState> = {},
                        modelOptionsState: Partial<ModelOptionsState> = {},
                        modelCalibrateState: Partial<ModelCalibrateState> = {},
-                       genericChartState: Partial<GenericChartState> = {}) => {
+                       reviewInputState: Partial<ReviewInputState> = {}) => {
 
         const store = new Vuex.Store({
             actions: rootActions,
@@ -129,11 +129,11 @@ describe("Stepper component", () => {
                         [ModelCalibrateMutation.ClearWarnings]: clearCalibrateWarnings
                     }
                 },
-                genericChart: {
+                reviewInput: {
                     namespaced: true,
-                    state: mockGenericChartState(genericChartState),
+                    state: mockReviewInputState(reviewInputState),
                     mutations: {
-                        [GenericChartMutation.ClearWarnings]: clearReviewInputsWarnings
+                        [ReviewInputMutation.ClearWarnings]: clearReviewInputsWarnings
                     }
                 },
                 stepper: {
@@ -181,7 +181,7 @@ describe("Stepper component", () => {
                        partialRootState: Partial<RootState> = {},
                        modelOptionsState: Partial<ModelOptionsState> = {},
                        modelCalibrateState: Partial<ModelCalibrateState> = {},
-                       genericChartState: Partial<GenericChartState> = {}) => {
+                       reviewInputState: Partial<ReviewInputState> = {}) => {
         return createSut(
             {...baselineState, ready: true},
             {...surveyAndProgramState, ready: true},
@@ -189,7 +189,7 @@ describe("Stepper component", () => {
             {...modelRunState, ready: true},
             stepperState, loadState, projectsState, mockRouterPush, partialRootState, modelOptionsState,
             {...modelCalibrateState, ready: true},
-            genericChartState
+            reviewInputState
         );
     };
 
@@ -950,7 +950,7 @@ describe("Stepper component", () => {
         expect(clearCalibrateWarnings.mock.calls.length).toBe(1);
     });
 
-    it("clear-warnings emit when in reviewInputs triggers clear warnings mutation in genericChart store", async () => {
+    it("clear-warnings emit when in reviewInputs triggers clear warnings mutation in reviewInput store", async () => {
         const wrapper = createWarningAlertWrapper(2)
         await wrapper.findComponent(WarningAlert).vm.$emit("clear-warnings")
         expect(clearReviewInputsWarnings.mock.calls.length).toBe(1);

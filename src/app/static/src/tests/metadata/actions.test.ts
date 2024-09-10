@@ -18,7 +18,7 @@ import {FileType} from "../../app/store/surveyAndProgram/surveyAndProgram";
 import {MetadataMutations} from "../../app/store/metadata/mutations";
 import {PlotStateMutations} from "../../app/store/plotState/mutations";
 import {Scale} from "../../app/store/plotState/plotState";
-import { GenericChartMutation } from "../../app/store/genericChart/mutations";
+import { ReviewInputMutation } from "../../app/store/reviewInput/mutations";
 
 const rootState = mockRootState({baseline: mockBaselineState({iso3: "MWI"})});
 describe("Metadata actions", () => {
@@ -75,7 +75,7 @@ describe("Metadata actions", () => {
 
         expect(commit.mock.calls.length).toBe(5);
         expect(commit.mock.calls[0]).toStrictEqual([
-            `genericChart/${GenericChartMutation.SetLoading}`, {payload: true}, {root: true}
+            `reviewInput/${ReviewInputMutation.SetLoading}`, {payload: true}, {root: true}
         ]);
         expect(commit.mock.calls[1][0]).toStrictEqual({
             type: MetadataMutations.ReviewInputsMetadataFetched,
@@ -86,7 +86,7 @@ describe("Metadata actions", () => {
         expect(commit.mock.calls[3][0].type).toStrictEqual(`plotState/${PlotStateMutations.setOutputScale}`);
         expect(commit.mock.calls[3][0].payload.scale).toStrictEqual(Scale.Size)
         expect(commit.mock.calls[4]).toStrictEqual([
-            `genericChart/${GenericChartMutation.SetLoading}`, {payload: false}, {root: true}
+            `reviewInput/${ReviewInputMutation.SetLoading}`, {payload: false}, {root: true}
         ]);
         expect(mockCommitPlotDefaultSelections.mock.calls.length).toBe(1);
         expect(mockCommitPlotDefaultSelections.mock.calls[0][0]).toStrictEqual(mockMetadata);
@@ -125,14 +125,14 @@ describe("Metadata actions", () => {
 
         expect(commit.mock.calls.length).toBe(3);
         expect(commit.mock.calls[0]).toStrictEqual([
-            `genericChart/${GenericChartMutation.SetLoading}`, {payload: true}, {root: true}
+            `reviewInput/${ReviewInputMutation.SetLoading}`, {payload: true}, {root: true}
         ]);
         expect(commit.mock.calls[1][0]).toStrictEqual({
             type: MetadataMutations.ReviewInputsMetadataError,
             payload: mockError("Metadata Fetch Failed")
         });
         expect(commit.mock.calls[2]).toStrictEqual([
-            `genericChart/${GenericChartMutation.SetLoading}`, {payload: false}, {root: true}
+            `reviewInput/${ReviewInputMutation.SetLoading}`, {payload: false}, {root: true}
         ]);
     });
 });

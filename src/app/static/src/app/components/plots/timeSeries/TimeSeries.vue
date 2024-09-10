@@ -21,7 +21,7 @@ import { computed, defineComponent, ref, watch } from 'vue';
 import { useStore } from 'vuex';
 import { RootState } from '../../../root';
 import { InputPlotName } from '../../../store/plotSelections/plotSelections';
-import { GenericChartColumnValue } from '../../../types';
+import { ReviewInputDataColumnValue } from '../../../types';
 import { numeralJsToD3format } from "./utils";
 import Plotly from "./Plotly.vue";
 import PageControl from './PageControl.vue';
@@ -29,6 +29,13 @@ import { InputTimeSeriesData } from '../../../generated';
 import { InputTimeSeriesKey } from "../../../store/plotData/plotData";
 
 const plot = "timeSeries" as InputPlotName;
+
+const subplotsConfig = {
+   columns: 3,
+   distinctColumn: "area_id",
+   heightPerRow: 160,
+   subplotsPerPage: 12
+}
 
 export default defineComponent({
     components: {
@@ -39,18 +46,12 @@ export default defineComponent({
         const store = useStore<RootState>();
         const pageNumber = ref<number>(0);
         watch(() => store.state.plotSelections[plot], () => pageNumber.value = 0)
-        const chartMetadata = computed(() => {
-            // TODO change metadata so it has key of timeSeries
-            return store.state.genericChart.genericChartMetadata!["input-time-series"];
-        });
 
         const valueFormat = computed(() => {
-            const { valueFormatColumn } = chartMetadata.value;
-            if (!valueFormatColumn) return "";
             const plotTypeFilter = store.state.plotSelections[plot].filters.find(f => f.stateFilterId === "plotType")!;
             const selectionId = plotTypeFilter.selection[0].id;
             const filterType = store.state.metadata.reviewInputMetadata!.filterTypes.find(ft => ft.id === plotTypeFilter.filterId)!;
-            const { format } = filterType.options.find(op => op.id === selectionId) as GenericChartColumnValue;
+            const { format } = filterType.options.find(op => op.id === selectionId) as ReviewInputDataColumnValue;
             if (!format) return "";
             return numeralJsToD3format(format);
         });
@@ -58,8 +59,7 @@ export default defineComponent({
         const chartData = computed(() => store.state.plotData[plot] as InputTimeSeriesData);
 
         const distinctPlots = computed(() => {
-            if (!chartMetadata.value.subplots) return [];
-            const { distinctColumn } = chartMetadata.value.subplots;
+            const { distinctColumn } = subplotsConfig;
             return chartData.value.reduce((dp, data) => {
                 // will be string as distinct plots are defined by area_id
                 const value = data[distinctColumn as InputTimeSeriesKey] as string;
@@ -68,21 +68,18 @@ export default defineComponent({
         });
 
         const totalPages = computed(() => {
-            const { subplots } = chartMetadata.value;
-            return subplots ? Math.ceil(distinctPlots.value.length / subplots.subplotsPerPage) : 1;
+            return Math.ceil(distinctPlots.value.length / subplotsConfig.subplotsPerPage);
         });
 
         const visiblePlots = computed(() => {
-            if (!chartMetadata.value.subplots) return [];
-            const { subplotsPerPage } = chartMetadata.value.subplots;
+            const { subplotsPerPage } = subplotsConfig;
             const startIndex = pageNumber.value * subplotsPerPage;
             const endIndex = (pageNumber.value + 1) * subplotsPerPage;
             return distinctPlots.value.slice(startIndex, endIndex);
         });
 
         const chartDataForPage = computed(() => {
-            if (!chartMetadata.value.subplots) return chartData.value;
-            const { distinctColumn } = chartMetadata.value.subplots;
+            const { distinctColumn } = subplotsConfig;
             return chartData.value.reduce((vcd, data) => {
                 const value = data[distinctColumn as InputTimeSeriesKey] as string;
                 return [...vcd, ...visiblePlots.value.includes(value) ? [data] : []];
@@ -90,23 +87,20 @@ export default defineComponent({
         })
 
         const rows = computed(() => {
-            return chartMetadata.value.subplots ?
-                Math.ceil(visiblePlots.value.length / chartMetadata.value.subplots.columns) :
-                null;
+            return Math.ceil(visiblePlots.value.length / subplotsConfig.columns);
         });
 
         const spaceNeededForPlots = computed(() => {
-            return chartMetadata.value.subplots ?
-                `${Math.min((chartMetadata.value.subplots.heightPerRow * rows.value!) + 70, 640)}px` :
-                "100%";
+            return `${Math.min((subplotsConfig.heightPerRow * rows.value!) + 70, 640)}px`;
         });
 
         const layout = computed(() => {
             return {
                 yAxisFormat: valueFormat.value,
-                ...chartMetadata.value.subplots ?
-                    { subplots: {...chartMetadata.value.subplots, rows: rows.value} } :
-                    {}
+                subplots: {
+                    ...subplotsConfig,
+                    rows: rows.value
+                }
             };
         });
 

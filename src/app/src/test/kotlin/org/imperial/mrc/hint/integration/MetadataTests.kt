@@ -23,14 +23,4 @@ class MetadataTests : SecureIntegrationTests()
         val responseEntity = testRestTemplate.getForEntity<String>("/meta/hintr/version/")
         assertSuccess(responseEntity, "VersionInfo")
     }
-
-    @Test
-    fun `can get generic chart metadata`()
-    {
-        val responseEntity = testRestTemplate.getForEntity<String>("/meta/generic-chart/")
-        assertSuccess(responseEntity)
-        val data = ObjectMapper().readTree(responseEntity.body!!)["data"]
-        assertThat((data["input-time-series"]["datasets"] as ArrayNode).count()).isEqualTo(2)
-        assertThat((data["input-time-series"]["chartConfig"] as ArrayNode)[0]["config"].asText()).startsWith("(\n")
-    }
 }

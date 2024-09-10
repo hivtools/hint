@@ -127,8 +127,8 @@ export const getters: RootGetters & GetterTree<RootState, RootState> = {
 
 const allReviewInputsWarnings = (state: RootState) => {
     const sapWarnings = state.surveyAndProgram?.warnings || []
-    const genericChartWarnings = state.genericChart?.warnings || []
-    return [...sapWarnings, ...genericChartWarnings]
+    const reviewInputWarnings = state.reviewInput?.warnings || []
+    return [...sapWarnings, ...reviewInputWarnings]
 }
 
 const getVersionNotes = (versions: Version[], projectName: string) => {

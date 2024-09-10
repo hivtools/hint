@@ -36,7 +36,7 @@ import {
     initialDownloadResultsState
 } from "./store/downloadResults/downloadResults";
 import {ModelCalibrateMutation, ModelCalibrateUpdates} from "./store/modelCalibrate/mutations";
-import {GenericChartState, initialGenericChartState, genericChart} from "./store/genericChart/genericChart";
+import {initialReviewInputState, reviewInput, ReviewInputState} from "./store/reviewInput/reviewInput";
 import {Warning} from "./generated";
 import {DownloadResultsMutation} from "./store/downloadResults/mutations";
 import {
@@ -52,7 +52,7 @@ import {TranslatableState} from "./types";
 export interface RootState extends TranslatableState {
     version: string,
     adr: ADRState,
-    genericChart: GenericChartState,
+    reviewInput: ReviewInputState,
     adrUpload: ADRUploadState,
     hintrVersion: HintrVersionState,
     baseline: BaselineState,
@@ -158,7 +158,7 @@ export const emptyState = (): RootState => {
         updatingLanguage: false,
         hintrVersion: initialHintrVersionState(),
         adr: initialADRState(),
-        genericChart: initialGenericChartState(),
+        reviewInput: initialReviewInputState(),
         adrUpload: initialADRUploadState(),
         baseline: initialBaselineState(),
         metadata: initialMetadataState(),
@@ -187,7 +187,7 @@ export const storeOptions: StoreOptions<RootState> = {
     state: {...emptyState(), ...existingState},
     modules: {
         adr,
-        genericChart,
+        reviewInput,
         adrUpload,
         baseline: baseline(existingState),
         metadata: metadata(existingState),

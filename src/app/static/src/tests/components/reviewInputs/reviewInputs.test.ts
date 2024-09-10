@@ -9,7 +9,7 @@ import TimeSeries from "../../../app/components/plots/timeSeries/TimeSeries.vue"
 import {
     mockAncResponse,
     mockError,
-    mockGenericChartState,
+    mockReviewInputState,
     mockMetadataState,
     mockSurveyAndProgramState,
     mockSurveyResponse
@@ -44,9 +44,9 @@ describe("Review inputs page", () => {
                         survey: mockSurveyResponse()
                     }) : initialSurveyAndProgramState()
                 },
-                genericChart: {
+                reviewInput: {
                     namespaced: true,
-                    state: mockGenericChartState({loading: !dataFetched}),
+                    state: mockReviewInputState({loading: !dataFetched}),
                 },
                 metadata: {
                     namespaced: true,

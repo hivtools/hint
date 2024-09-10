@@ -39,7 +39,7 @@ import {
     DatasetResource,
     DownloadIndicatorDataset,
     DownloadResultsDependency,
-    GenericChartDataset,
+    ReviewInputDataset,
     Release
 } from "../app/types";
 import {initialProjectsState, ProjectsState} from "../app/store/projects/projects";
@@ -48,7 +48,7 @@ import { HintrVersionState, initialHintrVersionState } from "../app/store/hintrV
 import {ADRState, initialADRState} from "../app/store/adr/adr";
 import {ADRUploadState, initialADRUploadState} from "../app/store/adrUpload/adrUpload";
 import {DownloadResultsState, initialDownloadResultsState} from "../app/store/downloadResults/downloadResults";
-import {GenericChartState, initialGenericChartState} from "../app/store/genericChart/genericChart";
+import {ReviewInputState, initialReviewInputState} from "../app/store/reviewInput/reviewInput";
 import {DynamicControlType, DynamicFormMeta} from "@reside-ic/vue-next-dynamic-form";
 import {
     ControlSelection,
@@ -263,14 +263,14 @@ export const mockProjectsState = (props?: Partial<ProjectsState>) => {
     }
 };
 
-export const mockGenericChartState =  (props?: Partial<GenericChartState>): GenericChartState => {
+export const mockReviewInputState =  (props?: Partial<ReviewInputState>): ReviewInputState => {
     return {
-        ...initialGenericChartState(),
+        ...initialReviewInputState(),
         ...props
     }
 };
 
-export const mockGenericChartDataset = (props?: Partial<GenericChartDataset>): GenericChartDataset => {
+export const mockReviewInputDataset = (props?: Partial<ReviewInputDataset>): ReviewInputDataset => {
     return {
         data: [],
         metadata: {

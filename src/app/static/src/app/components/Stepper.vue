@@ -72,7 +72,7 @@
     import {ModelRunMutation} from "../store/modelRun/mutations";
     import {ModelOptionsMutation} from "../store/modelOptions/mutations";
     import {ModelCalibrateMutation} from "../store/modelCalibrate/mutations";
-    import {GenericChartMutation} from "../store/genericChart/mutations";
+    import {ReviewInputMutation} from "../store/reviewInput/mutations";
     import {SurveyAndProgramMutation} from "../store/surveyAndProgram/mutations";
     import { defineComponent } from "vue";
 
@@ -150,7 +150,7 @@
             },
             clearReviewInputsWarnings() {
                 this.clearSurveyAndProgramWarnings()
-                this.clearGenericChartWarnings()
+                this.clearReviewInputWarnings()
             },
             clearWarnings(){
                 const mutationMethods: { [key: number]: () => void; } = {
@@ -168,7 +168,7 @@
             clearModelRunWarnings: mapMutationByName("modelRun", ModelRunMutation.ClearWarnings),
             clearModelCalibrateWarnings: mapMutationByName("modelCalibrate", ModelCalibrateMutation.ClearWarnings),
             clearModelOptionsWarnings: mapMutationByName("modelOptions", ModelOptionsMutation.ClearWarnings),
-            clearGenericChartWarnings: mapMutationByName("genericChart", GenericChartMutation.ClearWarnings),
+            clearReviewInputWarnings: mapMutationByName("reviewInput", ReviewInputMutation.ClearWarnings),
             clearSurveyAndProgramWarnings: mapMutationByName("surveyAndProgram", SurveyAndProgramMutation.ClearWarnings)
         },
         beforeMount() {

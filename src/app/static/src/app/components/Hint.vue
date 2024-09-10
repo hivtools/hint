@@ -39,7 +39,6 @@ import { Language } from '../store/translations/locales';
         ...mapActions({loadModelCalibrate: 'modelCalibrate/getResult'}),
         ...mapActions({getADRSchemas: 'adr/getSchemas'}),
         ...mapActions({getCurrentProject: 'projects/getCurrentProject'}),
-        ...mapActions({getGenericChartMetadata: 'genericChart/getGenericChartMetadata'})
         },
         beforeMount: function () {
             this.loadBaseline();
@@ -47,7 +46,6 @@ import { Language } from '../store/translations/locales';
             this.loadModelRun();
             this.loadModelCalibrate();
             this.getADRSchemas();
-            this.getGenericChartMetadata();
             this.getCurrentProject();
         },
         watch: {

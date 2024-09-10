@@ -5,8 +5,8 @@ import { PlotSelectionUpdate, PlotSelectionsMutations } from "../plotSelections/
 import { api } from "../../apiService";
 import { AncResponse, CalibrateDataResponse, CalibratePlotData, ComparisonPlotData, FilterTypes, InputTimeSeriesData, InputTimeSeriesRow, ProgrammeResponse, SurveyResponse } from "../../generated";
 import { PlotDataMutations, PlotDataUpdate } from "./mutations";
-import { GenericChartMutation } from "../genericChart/mutations";
-import { GenericChartDataset } from "../../types";
+import { ReviewInputMutation } from "../reviewInput/mutations";
+import { ReviewInputDataset } from "../../types";
 import { getMetadataFromPlotName } from "../plotSelections/actions";
 import { InputTimeSeriesKey } from "./plotData";
 import { Dict } from "@reside-ic/vue-next-dynamic-form";
@@ -52,7 +52,7 @@ export const getOutputFilteredData = async (plot: OutputPlotName, selections: Pl
 };
 
 export const getTimeSeriesFilteredDataset = async (payload: PlotSelectionUpdate, commit: Commit, rootState: RootState) => {
-    commit(`genericChart/${GenericChartMutation.SetError}`, { payload: null }, { root: true });
+    commit(`reviewInput/${ReviewInputMutation.SetError}`, { payload: null }, { root: true });
     const dataSource = payload.selections.controls.find(c => c.id === "time_series_data_source")?.selection[0].id;
     if (!dataSource) {
         // If this error occurs it is probably because metadata from hintr is broken.
@@ -60,14 +60,14 @@ export const getTimeSeriesFilteredDataset = async (payload: PlotSelectionUpdate,
             error: "TIME_SERIES_DATASOURCE_MISSING",
             detail: "Failed to update time series, time series data source is missing. Please report this to a system administrator."
         }
-        commit(`genericChart/${GenericChartMutation.SetError}`, { payload: err }, { root: true });
+        commit(`reviewInput/${ReviewInputMutation.SetError}`, { payload: err }, { root: true });
         return
     }
     // fetch dataset
-    if (!(dataSource in rootState.genericChart.datasets)) {
-        const response = await api<GenericChartMutation, GenericChartMutation>({commit, rootState})
+    if (!(dataSource in rootState.reviewInput.datasets)) {
+        const response = await api<ReviewInputMutation, ReviewInputMutation>({commit, rootState})
                             .ignoreSuccess()
-                            .withError(GenericChartMutation.SetError)
+                            .withError(ReviewInputMutation.SetError)
                             .freezeResponse()
                             .get(`chart-data/input-time-series/${dataSource}`);
         if (response) {
@@ -75,14 +75,14 @@ export const getTimeSeriesFilteredDataset = async (payload: PlotSelectionUpdate,
                 datasetId: dataSource,
                 dataset: response.data
             };
-            commit(`genericChart/${GenericChartMutation.SetDataset}`, { payload: setDatasetPayload }, { root: true });
-            const data = response.data as GenericChartDataset;
-            commit(`genericChart/${GenericChartMutation.WarningsFetched}`, { payload: data.warnings }, { root: true });
+            commit(`reviewInput/${ReviewInputMutation.SetDataset}`, { payload: setDatasetPayload }, { root: true });
+            const data = response.data as ReviewInputDataset;
+            commit(`reviewInput/${ReviewInputMutation.WarningsFetched}`, { payload: data.warnings }, { root: true });
         }
     }
-    if (!(dataSource in rootState.genericChart.datasets)) {
+    if (!(dataSource in rootState.reviewInput.datasets)) {
         // This should not happen, and if it does then something bad happened above and there should be an
-        // error shown in the generic chart
+        // error shown in the review inputs tab
         return
     }
     // filter
@@ -97,7 +97,7 @@ export const getTimeSeriesFilteredDataset = async (payload: PlotSelectionUpdate,
                 f.selection.map(s => s.id);
         }
     });
-    const { data } = rootState.genericChart.datasets[dataSource];
+    const { data } = rootState.reviewInput.datasets[dataSource];
     const filteredData: InputTimeSeriesData = [];
     outer: for (let i = 0; i < data.length; i++) {
         const currRow = data[i] as unknown as InputTimeSeriesRow;

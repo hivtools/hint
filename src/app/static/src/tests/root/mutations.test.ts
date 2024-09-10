@@ -9,7 +9,7 @@ import {
     mockDownloadResultsState,
     mockError,
     mockErrorsState,
-    mockGenericChartState,
+    mockReviewInputState,
     mockLoadState,
     mockMetadataState,
     mockModelCalibrateState,
@@ -51,14 +51,7 @@ describe("Root mutations", () => {
                 fetchingDatasets: true,
                 key: "TEST KEY"
             }),
-            genericChart: mockGenericChartState({
-                genericChartMetadata: {
-                    "input-time-series": {
-                        datasets: ["test datasets"],
-                        dataSelectors: {},
-                        chartConfig: ["test config"]
-                    }
-                },
+            reviewInput: mockReviewInputState({
                 datasets: {
                     dataset1: {data: [{value: 1}], metadata: {}},
                     dataset2: {data: [{value: 2}], metadata: {}}
@@ -91,15 +84,7 @@ describe("Root mutations", () => {
         expect(state.surveyAndProgram).toStrictEqual(modules.includes("surveyAndProgram") ? popState.surveyAndProgram :
             mockSurveyAndProgramState({ready: true}));
 
-        expect(state.genericChart).toStrictEqual(modules.includes("genericChart") ? popState.genericChart : mockGenericChartState({
-            genericChartMetadata: {
-                "input-time-series": {
-                    datasets: ["test datasets"],
-                    dataSelectors: {},
-                    chartConfig: ["test config"]
-                } as any
-            }
-        }));
+        expect(state.reviewInput).toStrictEqual(modules.includes("reviewInput") ? popState.reviewInput : mockReviewInputState());
         expect(state.modelOptions).toStrictEqual(modules.includes("modelOptions") ? popState.modelOptions : initialModelOptionsState());
         expect(state.modelRun).toStrictEqual(modules.includes("modelRun") ? popState.modelRun : mockModelRunState({ready: true}));
 
@@ -145,7 +130,7 @@ describe("Root mutations", () => {
 
         mutations.Reset(state, {payload: 2});
 
-        testOnlyExpectedModulesArePopulated(["baseline", "metadata", "surveyAndProgram", "genericChart"], state);
+        testOnlyExpectedModulesArePopulated(["baseline", "metadata", "surveyAndProgram", "reviewInput"], state);
         expect(state.stepper.activeStep).toBe(2);
     });
 
@@ -154,7 +139,7 @@ describe("Root mutations", () => {
 
         mutations.Reset(state, {payload: 3});
 
-        testOnlyExpectedModulesArePopulated(["baseline", "metadata", "surveyAndProgram", "genericChart", "modelOptions"], state);
+        testOnlyExpectedModulesArePopulated(["baseline", "metadata", "surveyAndProgram", "reviewInput", "modelOptions"], state);
         expect(state.stepper.activeStep).toBe(3);
     });
 
@@ -163,7 +148,7 @@ describe("Root mutations", () => {
 
         mutations.Reset(state, {payload: 4});
 
-        testOnlyExpectedModulesArePopulated(["baseline", "metadata", "surveyAndProgram", "genericChart", "modelOptions", "modelRun"], state);
+        testOnlyExpectedModulesArePopulated(["baseline", "metadata", "surveyAndProgram", "reviewInput", "modelOptions", "modelRun"], state);
         expect(state.stepper.activeStep).toBe(4);
     });
 
@@ -172,7 +157,7 @@ describe("Root mutations", () => {
 
         mutations.Reset(state, {payload: 5});
 
-        testOnlyExpectedModulesArePopulated(["baseline", "metadata", "surveyAndProgram", "genericChart", "modelOptions", "modelRun", "modelCalibrate"], state);
+        testOnlyExpectedModulesArePopulated(["baseline", "metadata", "surveyAndProgram", "reviewInput", "modelOptions", "modelRun", "modelCalibrate"], state);
         expect(state.stepper.activeStep).toBe(5);
     });
 
@@ -181,7 +166,7 @@ describe("Root mutations", () => {
 
         mutations.Reset(state, {payload: 6});
 
-        testOnlyExpectedModulesArePopulated(["baseline", "metadata", "surveyAndProgram", "genericChart", "modelOptions", "modelRun", "modelCalibrate"], state);
+        testOnlyExpectedModulesArePopulated(["baseline", "metadata", "surveyAndProgram", "reviewInput", "modelOptions", "modelRun", "modelCalibrate"], state);
         expect(state.stepper.activeStep).toBe(5);
     });
 
@@ -242,15 +227,7 @@ describe("Root mutations", () => {
 
         expect(state.baseline.ready).toBe(true);
         expect(state.surveyAndProgram.ready).toBe(true);
-        expect(state.genericChart).toStrictEqual( mockGenericChartState({
-            genericChartMetadata: {
-                "input-time-series": {
-                    datasets: ["test datasets"],
-                    dataSelectors: {},
-                    chartConfig: ["test config"]
-                } as any
-            }
-        }));
+        expect(state.reviewInput).toStrictEqual(mockReviewInputState());
         expect(state.modelRun.ready).toBe(true);
         expect(state.modelCalibrate.ready).toBe(true);
 

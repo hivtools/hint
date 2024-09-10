@@ -32,8 +32,8 @@ export const ChangeLanguageAction = async (context: ActionContext<RootState, Roo
         actions.push(dispatch("modelCalibrate/getResult"));
     }
 
-    if (Object.keys(rootState.genericChart.datasets).length > 0) {
-        actions.push(dispatch("genericChart/refreshDatasets"));
+    if (Object.keys(rootState.reviewInput.datasets).length > 0) {
+        actions.push(dispatch("reviewInput/refreshDatasets"));
     }
 
     await Promise.all(actions);

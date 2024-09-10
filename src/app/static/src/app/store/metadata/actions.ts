@@ -7,7 +7,7 @@ import { commitPlotDefaultSelections, filtersAfterUseShapeRegions } from '../plo
 import { ReviewInputFilterMetadataResponse } from '../../generated';
 import { RootState } from '../../root';
 import { commitInitialScaleSelections } from '../plotState/utils';
-import { GenericChartMutation } from '../genericChart/mutations';
+import { ReviewInputMutation } from '../reviewInput/mutations';
 
 export interface MetadataActions {
     getReviewInputMetadata: (store: ActionContext<MetadataState, RootState>) => void
@@ -30,7 +30,7 @@ export const actions: ActionTree<MetadataState, RootState> & MetadataActions = {
         if (!sap.surveyError && sap.survey) {
             fileTypes.push(FileType.Survey);
         }
-        commit(`genericChart/${GenericChartMutation.SetLoading}`, {payload: true}, {root:true});
+        commit(`reviewInput/${ReviewInputMutation.SetLoading}`, {payload: true}, {root:true});
         const response = await api<MetadataMutations, MetadataMutations>(context)
             .withSuccess(MetadataMutations.ReviewInputsMetadataFetched) 
             .withError(MetadataMutations.ReviewInputsMetadataError)
@@ -41,7 +41,7 @@ export const actions: ActionTree<MetadataState, RootState> & MetadataActions = {
             await commitPlotDefaultSelections(metadata, commit, rootState);
             commitInitialScaleSelections(metadata.indicators, commit);
         }
-        commit(`genericChart/${GenericChartMutation.SetLoading}`, {payload: false}, {root: true});
+        commit(`reviewInput/${ReviewInputMutation.SetLoading}`, {payload: false}, {root: true});
     },
 
     async getAdrUploadMetadata(context, downloadId) {
