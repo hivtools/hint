@@ -1,8 +1,13 @@
 ## HINT - HIV Indicators Tool
-[![Build status](https://badge.buildkite.com/852c7813506262f88e18bcd995db00e718bf63dc493a2bd4d2.svg?branch=master)](https://buildkite.com/mrc-ide/hint)
+[![Front-end build](https://github.com/mrc-ide/hint/actions/workflows/test.yml/badge.svg)](https://github.com/mrc-ide/hint/actions/workflows/test.yml)
+[![Back-end build](https://github.com/mrc-ide/hint/actions/workflows/testBack.yml/badge.svg)](https://github.com/mrc-ide/hint/actions/workflows/testBack.yml)
 [![codecov](https://codecov.io/gh/mrc-ide/hint/branch/master/graph/badge.svg)](https://codecov.io/gh/mrc-ide/hint)
 
-[SpringBoot](https://spring.io/projects/spring-boot) Kotlin web app for interfacing with the [Naomi model](https://github.com/mrc-ide/naomi-dev) for joint small-area estimation of HIV prevalence, ART coverage, and HIV incidence via the [hintr package](https://github.com/mrc-ide/hintr)
+[SpringBoot](https://spring.io/projects/spring-boot) Kotlin web app for interfacing with the [Naomi model](https://github.com/mrc-ide/naomi) for joint small-area estimation of HIV prevalence, ART coverage, and HIV incidence via the [hintr package](https://github.com/mrc-ide/hintr).
+
+### URL
+
+[naomi.unaids.org](https://naomi.unaids.org)
 
 ### Developing
 Requirements:
@@ -10,10 +15,12 @@ Requirements:
 * npm
 * openjdk 11
   Mac users may find it easier to install adoptopenjdk-11k rather than openjdk-11:
+```
 wget -qO - https://adoptopenjdk.jfrog.io/adoptopenjdk/api/gpg/key/public | sudo apt-key add -
 add-apt-repository --yes https://adoptopenjdk.jfrog.io/adoptopenjdk/deb/
 apt-get update
 apt-get install adoptopenjdk-11-hotspot -y
+```
 * coreutils or [realpath](https://github.com/harto/realpath-osx) (Mac users only)
 
 
@@ -81,9 +88,8 @@ time. In this case, you should give your branch its own new version number, rath
 version number as changes from another branch.
 
 ### Distribution
-A docker image containing the app is created as part of the BuildKite build. To create such an image locally,
-run `./buildkite/make-build-env.sh` followed by `./buildkite/build.sh`. A CLI image is also created as part of
-the BuildKite build, using `./buildkite/build-cli.sh`.
+A docker image containing the app is created as part of the GitHub actions build. A CLI image is also created as part of
+the GitHub build.
 
 Run `docker run -p 8080:8080 --name hint mrcide/hint:branch_name` to run a built image. The app will not start until
 config is provided at `/etc/hint/config.properties`. This config is added during deployment with
