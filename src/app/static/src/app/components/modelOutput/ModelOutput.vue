@@ -8,7 +8,7 @@
                    @click="switchTab(plotName)"></a>
             </li>
         </ul>
-        <div class="row">
+        <div id="review-output" class="row">
             <div class="mt-2 col-md-3">
                 <plot-control-set :plot="selectedPlot"/>
                 <h4 v-translate="'filters'"/>
