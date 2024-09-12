@@ -51,29 +51,9 @@ export const actions: ActionTree<LoadState, RootState> & LoadActions = {
         //storage then reload the page, to follow exactly the same fetch and reload procedure as session page refresh
         //NB load state is not included in the saved state, so we will default back to NotLoading on page reload.
 
+        const compatibleState = makeStateBackwardCompatible(savedState);
 
-        const {modelCalibrate} = savedState
-
-        // Backward compatibility fix: projects which calibrated before mrc-4538 have metadata embedded in result
-        if (modelCalibrate?.result) {
-            savedState = {
-                ...savedState,
-                modelCalibrate: {
-                    ...modelCalibrate,
-                    warnings: modelCalibrate.result.warnings
-                }
-            }
-        }
-
-        // Backwards compatibility fix: projects which calibrated before bug fix in mrc-3126 have empty calibrate options
-        if (modelCalibrate?.result && Object.keys(modelCalibrate.options).length === 0) {
-            savedState = {
-                ...savedState,
-                modelCalibrate: {...modelCalibrate, options: getCalibrateOptions(modelCalibrate)}
-            }
-        }
-
-        localStorageManager.savePartialState(savedState);
+        localStorageManager.savePartialState(compatibleState);
         location.reload();
     },
 
@@ -162,6 +142,60 @@ async function getFilesAndLoad(context: ActionContext<LoadState, RootState>,
                 }
             }
         });
+}
+
+export enum Ordering {
+    LESS, GREATER, EQUAL
+}
+
+export const getVersionOrdering = (version1: string, version2: string) => {
+    const numericVersion1 = version1.split(".").map(parseInt);
+    const numericVersion2 = version2.split(".").map(parseInt);
+
+    for (let i = 0; i < 3; i++) {
+        if (numericVersion1[i] < numericVersion2[i]) {
+            return Ordering.LESS;
+        }
+        if (numericVersion1[i] > numericVersion2[i]) {
+            return Ordering.GREATER;
+        }
+    }
+    return Ordering.EQUAL;
+};
+
+const makeStateBackwardCompatible = (savedState: Partial<RootState>) => {
+    if (!savedState.version || getVersionOrdering(savedState.version, "2.0.0") === Ordering.LESS) {
+        // Backwards compatibility fix: projects which calibrated before bug fix in mrc-3126 have empty calibrate options
+        const {modelCalibrate} = savedState;
+        if (modelCalibrate?.result && Object.keys(modelCalibrate.options).length === 0) {
+            savedState = {
+                ...savedState,
+                modelCalibrate: {...modelCalibrate, options: getCalibrateOptions(modelCalibrate)}
+            }
+        }
+    }
+
+    if (!savedState.version || getVersionOrdering(savedState.version, "2.39.1") === Ordering.LESS) {        
+        // Backward compatibility fix: projects which calibrated before mrc-4538 have metadata embedded in result
+        const {modelCalibrate} = savedState;
+        if (modelCalibrate?.result) {
+            savedState = {
+                ...savedState,
+                modelCalibrate: {
+                    ...modelCalibrate,
+                    warnings: modelCalibrate.result.warnings
+                }
+            }
+        }
+    }
+
+    if (!savedState.version || getVersionOrdering(savedState.version, "3.8.0") === Ordering.LESS) {
+        // Backwards compatibility fix: we changed the plot names in the plot refactoring epic mrc-4856 so we remove
+        // modelOutput state where plot names were hardcoded in the selected tab field
+        delete savedState.modelOutput
+    }
+
+    return savedState;
 }
 
 // getCalibrateOptions extracts calibrate options from Dynamic Form, this allows

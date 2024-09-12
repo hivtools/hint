@@ -9,7 +9,7 @@ import {
     mockRootState,
     mockSuccess
 } from "../mocks";
-import {actions} from "../../app/store/load/actions";
+import {actions, getVersionOrdering, Ordering} from "../../app/store/load/actions";
 import {LoadingState} from "../../app/store/load/state";
 import {localStorageManager} from "../../app/localStorageManager";
 import {ProjectRehydrateStatusResponse} from "../../app/generated";
@@ -182,6 +182,9 @@ describe("Load actions", () => {
             })
         });
 
+        // need to make it an older version to test backwards compatibility
+        testState.version = "1.99.0";
+
         await actions.updateStoreState({rootState} as any, testState);
 
         const root = mockSaveToLocalStorage.mock.calls[0][0] as RootState
@@ -228,6 +231,8 @@ describe("Load actions", () => {
             })
         });
 
+        testState.version = "1.99.0";
+
         await actions.updateStoreState({rootState} as any, testState);
 
         const root = mockSaveToLocalStorage.mock.calls[0][0] as RootState
@@ -250,6 +255,8 @@ describe("Load actions", () => {
                 })
             })
         });
+
+        testState.version = "1.99.0";
 
         await actions.updateStoreState({rootState} as any, testState);
 
@@ -474,5 +481,19 @@ describe("Load actions", () => {
         expect(commit.mock.calls[1][0].type).toBe("RehydrateResultError")
         expect(commit.mock.calls[1][0].payload).toStrictEqual(mockError("ERROR"))
         expect(dispatch).not.toHaveBeenCalled()
+    });
+
+    it("version ordering works", () => {
+        let version1 = "2.0.0";
+        let version2 = "1.99.0";
+        expect(getVersionOrdering(version1, version2)).toBe(Ordering.GREATER);
+
+        version1 = "2.99.0";
+        version2 = "3.0.0";
+        expect(getVersionOrdering(version1, version2)).toBe(Ordering.LESS);
+
+        version1 = "4.99.0";
+        version2 = "4.99.0";
+        expect(getVersionOrdering(version1, version2)).toBe(Ordering.EQUAL);
     });
 });

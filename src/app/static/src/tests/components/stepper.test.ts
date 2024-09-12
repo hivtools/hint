@@ -36,7 +36,7 @@ import {getters} from "../../app/store/stepper/getters";
 import {StepperState} from "../../app/store/stepper/stepper";
 import {actions as rootActions} from "../../app/store/root/actions"
 import {mutations as rootMutations} from "../../app/store/root/mutations"
-import {metadataGetters, MetadataState} from "../../app/store/metadata/metadata";
+import {MetadataState} from "../../app/store/metadata/metadata";
 import {ModelStatusResponse, Warning} from "../../app/generated";
 import {modelOptionsGetters, ModelOptionsState} from "../../app/store/modelOptions/modelOptions";
 import {LoadingState, LoadState} from "../../app/store/load/state";
@@ -145,8 +145,7 @@ describe("Stepper component", () => {
                 },
                 metadata: {
                     namespaced: true,
-                    state: mockMetadataState(metadataState),
-                    getters: metadataGetters
+                    state: mockMetadataState(metadataState)
                 },
                 load: {
                     namespaced: true,

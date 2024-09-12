@@ -35,12 +35,6 @@ export const initialMetadataState = (): MetadataState => {
     }
 };
 
-export const metadataGetters = {
-    complete: (state: MetadataState) => {
-        return !!state.reviewInputMetadata
-    },
-};
-
 const namespaced = true;
 
 export const metadata = (existingState: Partial<RootState> | null): Module<MetadataState, RootState> => {
@@ -48,7 +42,6 @@ export const metadata = (existingState: Partial<RootState> | null): Module<Metad
         namespaced,
         state: {...initialMetadataState(), ...existingState && existingState.metadata},
         actions,
-        mutations,
-        getters: metadataGetters
+        mutations
     };
 };
