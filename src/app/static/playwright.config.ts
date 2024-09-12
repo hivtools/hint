@@ -17,7 +17,7 @@ const config: PlaywrightTestConfig = {
                 baseURL,
                 trace: 'on-first-retry',
                 // For debugging on CI
-                // trace: 'retain-on-failure',
+                //trace: 'retain-on-failure',
             }
         },
     ],
