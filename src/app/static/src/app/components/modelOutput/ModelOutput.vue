@@ -8,7 +8,7 @@
                    @click="switchTab(plotName)"></a>
             </li>
         </ul>
-        <div id="review-output" class="row">
+        <div id="review-output" class="row" v-if="outputMetadataFetched">
             <div class="mt-2 col-md-3">
                 <plot-control-set :plot="selectedPlot"/>
                 <h4 v-translate="'filters'"/>
@@ -46,10 +46,12 @@ export default defineComponent({
         const store = useStore<RootState>();
         const selectedPlot = computed(() => store.state.modelOutput.selectedTab);
         const switchTab = (plotName: OutputPlotName) => store.commit(`modelOutput/${ModelOutputMutation.TabSelected}`, {payload: plotName});
+        const outputMetadataFetched = computed(() => store.state.modelCalibrate.metadata)
         return {
             outputPlotNames,
             selectedPlot,
             switchTab,
+            outputMetadataFetched
         }
     },
 
