@@ -13,8 +13,8 @@
 import { ref, defineComponent, computed, onUpdated, PropType } from "vue";
 import { AgGridVue } from "ag-grid-vue3";
 import { AgGridEvent } from "ag-grid-community";
-import "ag-grid-community/styles//ag-grid.css";
-import "ag-grid-community/styles//ag-theme-alpine.css";
+import "ag-grid-community/styles/ag-grid.css";
+import "ag-grid-community/styles/ag-theme-alpine.css";
 import { useStore } from "vuex";
 import { RootState } from "../../../root";
 import {formatOutput, getIndicatorMetadata} from "../utils";
@@ -85,8 +85,8 @@ export default defineComponent({
                 columns fill the screen while also being the minWidth to fit all
                 the data inside.
             */
-            event.columnApi.autoSizeAllColumns();
-            const columns = event.columnApi.getAllGridColumns();
+            event.api.autoSizeAllColumns();
+            const columns = event.api.getAllGridColumns();
             const columnLimits = columns.map(col => {
                 return { key: col.getColId(), minWidth: col.getActualWidth() };
             });
