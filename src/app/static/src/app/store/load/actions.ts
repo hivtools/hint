@@ -51,7 +51,7 @@ export const actions: ActionTree<LoadState, RootState> & LoadActions = {
         //storage then reload the page, to follow exactly the same fetch and reload procedure as session page refresh
         //NB load state is not included in the saved state, so we will default back to NotLoading on page reload.
 
-        const compatibleState = makeStateBackwardCompatible(savedState);
+        const compatibleState = migrateState(savedState);
 
         localStorageManager.savePartialState(compatibleState);
         location.reload();
@@ -163,7 +163,7 @@ export const getVersionOrdering = (version1: string, version2: string) => {
     return Ordering.EQUAL;
 };
 
-const makeStateBackwardCompatible = (savedState: Partial<RootState>) => {
+const migrateState = (savedState: Partial<RootState>) => {
     if (!savedState.version || getVersionOrdering(savedState.version, "2.0.0") === Ordering.LESS) {
         // Backwards compatibility fix: projects which calibrated before bug fix in mrc-3126 have empty calibrate options
         const {modelCalibrate} = savedState;
