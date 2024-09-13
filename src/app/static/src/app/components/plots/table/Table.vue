@@ -13,7 +13,7 @@ import { RootState } from '../../../root';
 import { useStore } from 'vuex';
 import { IndicatorMetadata } from '../../../generated';
 import TableReshapeData from './TableReshapeData.vue';
-import DownloadButton from '../../downloadIndicator/DownloadButton.vue';
+import DownloadButton from '../timeSeries/downloadTimeSeries/DownloadButton.vue';
 import { exportService } from '../../../dataExportService';
 import { appendCurrentDateTime } from '../../../utils';
 import { formatOutput, getIndicatorMetadata } from '../utils';

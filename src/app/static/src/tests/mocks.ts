@@ -56,7 +56,6 @@ import {
     initialPlotSelectionsState,
     PlotSelectionsState
 } from "../app/store/plotSelections/plotSelections";
-import {DownloadIndicatorState, initialDownloadIndicatorState} from "../app/store/downloadIndicator/downloadIndicator";
 import { PlotDataState, initialPlotDataState } from "../app/store/plotData/plotData";
 import { PlotState, initialPlotState } from "../app/store/plotState/plotState";
 
@@ -280,13 +279,6 @@ export const mockReviewInputDataset = (props?: Partial<ReviewInputDataset>): Rev
             }
         },
         warnings: [mockWarning()],
-        ...props
-    }
-}
-
-export const mockDownloadIndicatorState = (props?: Partial<DownloadIndicatorState>): DownloadIndicatorState => {
-    return {
-        ...initialDownloadIndicatorState(),
         ...props
     }
 }

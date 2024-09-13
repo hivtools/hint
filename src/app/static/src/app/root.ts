@@ -39,11 +39,6 @@ import {ModelCalibrateMutation, ModelCalibrateUpdates} from "./store/modelCalibr
 import {initialReviewInputState, reviewInput, ReviewInputState} from "./store/reviewInput/reviewInput";
 import {Warning} from "./generated";
 import {DownloadResultsMutation} from "./store/downloadResults/mutations";
-import {
-    downloadIndicator,
-    DownloadIndicatorState,
-    initialDownloadIndicatorState
-} from "./store/downloadIndicator/downloadIndicator";
 import { initialPlotSelectionsState, PlotSelectionsState, plotSelections } from "./store/plotSelections/plotSelections";
 import { initialPlotDataState, PlotDataState, plotData } from "./store/plotData/plotData";
 import { initialPlotState, PlotState, plotState } from "./store/plotState/plotState";
@@ -74,7 +69,6 @@ export interface RootState extends TranslatableState {
     projects: ProjectsState
     currentUser: string,
     downloadResults: DownloadResultsState,
-    downloadIndicator: DownloadIndicatorState,
     invalidSteps: number[]
 }
 
@@ -176,7 +170,6 @@ export const emptyState = (): RootState => {
         projects: initialProjectsState(),
         currentUser: currentUser,
         downloadResults: initialDownloadResultsState(),
-        downloadIndicator: initialDownloadIndicatorState(),
         invalidSteps: []
     }
 };
@@ -205,7 +198,6 @@ export const storeOptions: StoreOptions<RootState> = {
         projects,
         hintrVersion: hintrVersion(existingState),
         downloadResults,
-        downloadIndicator
     },
     actions: actions,
     mutations: mutations,

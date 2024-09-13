@@ -1,5 +1,5 @@
 import {shallowMount} from "@vue/test-utils";
-import DownloadButton from "../../../app/components/downloadIndicator/DownloadButton.vue"
+import DownloadButton from "../../../../../app/components/plots/timeSeries/downloadTimeSeries/DownloadButton.vue"
 import VueFeather from "vue-feather";
 
 describe("download button", () => {
