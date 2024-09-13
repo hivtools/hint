@@ -1,7 +1,7 @@
 <template>
     <div id="review-inputs">
         <ul class="nav nav-tabs">
-            <li v-for="plotName of inputPlotNames" :key="plotName">
+            <li v-for="plotName of availablePlots" :key="plotName">
                 <a class="nav-link"
                    :class="activePlot === plotName ? 'active': ''"
                    v-translate="plotName === 'inputChoropleth' ? 'choropleth' : plotName"
@@ -21,8 +21,9 @@
                      v-if="plotDescription"
                      v-translate="plotDescription"
                      class="text-muted mt-v"/>
+                <download-time-series v-if="activePlot === 'timeSeries'"/>
             </div>
-            <time-series v-if="activePlot === 'timeSeries' && isTimeSeries" class="col-md-9"/>
+            <time-series v-if="activePlot === 'timeSeries' && hasTimeSeries" class="col-md-9"/>
             <choropleth class="col-md-9" v-if="activePlot === 'inputChoropleth'" :plot="'inputChoropleth'"/>
         </div>
     </div>
@@ -39,9 +40,11 @@ import TimeSeries from "../plots/timeSeries/TimeSeries.vue";
 import Choropleth from '../plots/choropleth/Choropleth.vue';
 import LoadingSpinner from "../LoadingSpinner.vue";
 import ErrorAlert from "../ErrorAlert.vue";
+import DownloadTimeSeries from "../plots/timeSeries/downloadTimeSeries/DownloadTimeSeries.vue";
 
 export default defineComponent({
     components: {
+        DownloadTimeSeries,
         ErrorAlert,
         PlotControlSet,
         FilterSet,
@@ -51,11 +54,18 @@ export default defineComponent({
     },
     setup() {
         const store = useStore<RootState>();
-        const activePlot = ref<InputPlotName>(inputPlotNames[0]);
+        const hasTimeSeries = computed(() => !!store.state.surveyAndProgram.anc || !!store.state.surveyAndProgram.program)
+        const availablePlots = computed(() => {
+            if (!hasTimeSeries.value) {
+                return inputPlotNames.filter(name => name != "timeSeries")
+            } else {
+                return inputPlotNames
+            }
+        })
+        const activePlot = ref<InputPlotName>(availablePlots.value[0]);
         const changePlot = (plot: InputPlotName) => {
             activePlot.value = plot;
         }
-        const isTimeSeries = computed(() => !!store.state.surveyAndProgram.anc || !!store.state.surveyAndProgram.program)
         const loading = computed(() => store.state.reviewInput.loading);
 
         const plotDescription = computed(() => {
@@ -75,10 +85,10 @@ export default defineComponent({
         });
 
         return {
-            inputPlotNames,
+            availablePlots,
             activePlot,
             changePlot,
-            isTimeSeries,
+            hasTimeSeries,
             loading,
             plotDescription,
             error

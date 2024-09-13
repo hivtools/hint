@@ -16,7 +16,6 @@ import {initialModelCalibrateState} from "../modelCalibrate/modelCalibrate";
 import {initialADRUploadState} from "../adrUpload/adrUpload";
 import {initialDownloadResultsState} from "../downloadResults/downloadResults";
 import {initialReviewInputState} from "../reviewInput/reviewInput";
-import {initialDownloadIndicatorState} from "../downloadIndicator/downloadIndicator";
 import {initialPlotSelectionsState} from "../plotSelections/plotSelections";
 import {initialPlotDataState} from "../plotData/plotData";
 import {initialPlotState} from "../plotState/plotState";
@@ -66,7 +65,6 @@ export const mutations: MutationTree<RootState> = {
             },
             currentUser: state.currentUser,
             downloadResults: initialDownloadResultsState(),
-            downloadIndicator: initialDownloadIndicatorState()
         };
         Object.assign(state, resetState);
 

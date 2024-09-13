@@ -44,6 +44,14 @@ test("can view time series plot", async ({ projectPage }) => {
     // Paging is hidden
     await expect(page.locator("#page-number")).toHaveCount(0);
 
+    // When I remove selected quarter
+    await page.getByRole('button', { name: 'Quarter 4' }).first().click();
+    await page.locator('a').filter({ hasText: 'Quarter 4' }).click();
+    await page.locator('#app').click();
+
+    // No data message is shown
+    await expect(page.locator("#review-inputs")).toHaveScreenshot("time-series-no-data.png")
+
     // When I change data source
     await page.getByRole("button", { name: "ART", exact: true }).click();
     await page.locator("a").filter({ hasText: "ANC testing" }).click();

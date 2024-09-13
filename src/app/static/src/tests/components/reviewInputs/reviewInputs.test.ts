@@ -14,11 +14,15 @@ import {
     mockSurveyAndProgramState,
     mockSurveyResponse
 } from "../../mocks";
-import {initialSurveyAndProgramState} from "../../../app/store/surveyAndProgram/surveyAndProgram";
+import {
+    initialSurveyAndProgramState,
+    SurveyAndProgramState
+} from "../../../app/store/surveyAndProgram/surveyAndProgram";
 import {nextTick} from "vue";
 import {shallowMountWithTranslate} from "../../testHelpers";
 import ErrorAlert from "../../../app/components/ErrorAlert.vue";
 import LoadingSpinner from "../../../app/components/LoadingSpinner.vue";
+import DownloadTimeSeries from "../../../app/components/plots/timeSeries/downloadTimeSeries/DownloadTimeSeries.vue";
 
 describe("Review inputs page", () => {
     const getWrapper = (store: Store<RootState>) => {
@@ -34,15 +38,12 @@ describe("Review inputs page", () => {
 
     const mockGetReviewInputMetadata = vi.fn();
 
-    const createStore = (dataFetched: boolean, error: boolean = false) => {
+    const createStore = (sapState: SurveyAndProgramState, dataFetched: boolean = true, error: boolean = false) => {
         const store = new Vuex.Store({
             state: emptyState(),
             modules: {
                 surveyAndProgram: {
-                    state: dataFetched ? mockSurveyAndProgramState({
-                        anc: mockAncResponse(),
-                        survey: mockSurveyResponse()
-                    }) : initialSurveyAndProgramState()
+                    state: sapState
                 },
                 reviewInput: {
                     namespaced: true,
@@ -64,23 +65,46 @@ describe("Review inputs page", () => {
     };
 
     test("renders as expected when no data fetched", () => {
-        const store = createStore(false);
+        const store = createStore(initialSurveyAndProgramState(), false);
         const wrapper = getWrapper(store);
 
         const plotTabs = wrapper.findAll(".nav-link");
-        expect(plotTabs.length).toBe(2);
+        expect(plotTabs.length).toBe(1);
         expect(plotTabs[0].classes()).contains("active");
-        expect(plotTabs[1].classes()).not.contains("active");
         expect(wrapper.findComponent(PlotControlSet).exists()).toBeFalsy();
         expect(wrapper.findComponent(FilterSet).exists()).toBeFalsy();
         expect(wrapper.findComponent(TimeSeries).exists()).toBeFalsy();
+        expect(wrapper.findComponent(DownloadTimeSeries).exists()).toBeFalsy();
         expect(wrapper.findComponent(Choropleth).exists()).toBeFalsy();
         expect(wrapper.findComponent(LoadingSpinner).exists()).toBeTruthy();
         expect(wrapper.findComponent(ErrorAlert).exists()).toBeFalsy();
     });
 
+    test("renders as expected when only survey data fetched", () => {
+        const sapState = mockSurveyAndProgramState({
+            survey: mockSurveyResponse()
+        });
+        const store = createStore(sapState);
+        const wrapper = getWrapper(store);
+
+        const plotTabs = wrapper.findAll(".nav-link");
+        expect(plotTabs.length).toBe(1);
+        expect(plotTabs[0].classes()).contains("active");
+        expect(wrapper.findComponent(PlotControlSet).exists()).toBeTruthy();
+        expect(wrapper.findComponent(FilterSet).exists()).toBeTruthy();
+        expect(wrapper.findComponent(TimeSeries).exists()).toBeFalsy();
+        expect(wrapper.findComponent(DownloadTimeSeries).exists()).toBeFalsy();
+        expect(wrapper.findComponent(Choropleth).exists()).toBeTruthy();
+        expect(wrapper.findComponent(LoadingSpinner).exists()).toBeFalsy();
+        expect(wrapper.findComponent(ErrorAlert).exists()).toBeFalsy();
+    });
+
     test("renders as expected when data has been fetched", async () => {
-        const store = createStore(true);
+        const sapState = mockSurveyAndProgramState({
+            anc: mockAncResponse(),
+            survey: mockSurveyResponse()
+        });
+        const store = createStore(sapState);
         const wrapper = getWrapper(store);
 
         const plotTabs = wrapper.findAll(".nav-link");
@@ -90,6 +114,7 @@ describe("Review inputs page", () => {
         expect(wrapper.findComponent(PlotControlSet).exists()).toBeTruthy();
         expect(wrapper.findComponent(FilterSet).exists()).toBeTruthy();
         expect(wrapper.findComponent(TimeSeries).exists()).toBeTruthy();
+        expect(wrapper.findComponent(DownloadTimeSeries).exists()).toBeTruthy();
         expect(wrapper.findComponent(Choropleth).exists()).toBeFalsy();
         expect(wrapper.findComponent(LoadingSpinner).exists()).toBeFalsy();
         expect(wrapper.findComponent(ErrorAlert).exists()).toBeFalsy();
@@ -108,12 +133,17 @@ describe("Review inputs page", () => {
     });
 
     test("renders as expected when error fetching review input metadata", async () => {
-        const store = createStore(true, true);
+        const sapState = mockSurveyAndProgramState({
+            anc: mockAncResponse(),
+            survey: mockSurveyResponse()
+        });
+        const store = createStore(sapState, true, true);
         const wrapper = getWrapper(store);
 
         expect(wrapper.findComponent(PlotControlSet).exists()).toBeFalsy();
         expect(wrapper.findComponent(FilterSet).exists()).toBeFalsy();
         expect(wrapper.findComponent(TimeSeries).exists()).toBeFalsy();
+        expect(wrapper.findComponent(DownloadTimeSeries).exists()).toBeFalsy();
         expect(wrapper.findComponent(Choropleth).exists()).toBeFalsy();
         expect(wrapper.findComponent(LoadingSpinner).exists()).toBeFalsy();
         const errorAlert = wrapper.findComponent(ErrorAlert);

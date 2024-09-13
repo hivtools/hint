@@ -2,10 +2,18 @@
     <div class="col-9 time-series">
         <div :key="spaceNeededForPlots" class="chart-container" ref="chartContainer" style="height: 640px;">
             <plotly class="chart"
+                    v-if="chartDataForPage.length > 0"
                     :chart-data="chartDataForPage"
                     :layout="layout"
                     :style="{ height: spaceNeededForPlots }"
                     :page-number="pageNumber"/>
+            <div v-else class="mt-5" id="empty-generic-chart-data">
+                <div class="empty-chart-message px-3 py-2">
+                    <span class="lead">
+                        <strong v-translate="'noChartData'"></strong>
+                    </span>
+                </div>
+            </div>
         </div>
         <page-control v-if="totalPages > 1"
                       class="page-controls"
@@ -40,7 +48,7 @@ const subplotsConfig = {
 export default defineComponent({
     components: {
         Plotly,
-        PageControl
+        PageControl,
     },
     setup() {
         const store = useStore<RootState>();
