@@ -60,9 +60,8 @@ test("can view time series plot", async ({ projectPage }) => {
     // Note we need to wrap this with an expect.toPass. Fetching ANC data takes a while,
     // toHaveScreenshot checks the expectation as soon as 2 sequential screenshots return the same data. So because
     // ANC data fetch takes a while, this is taking 2 screenshots before the UI updates, returning and erroring.
-    await expect(async() => {
-        await expect(page.locator("#review-inputs")).toHaveScreenshot("time-series-anc.png")
-    }).toPass();
+    await page.waitForResponse(resp => resp.url().includes('/chart-data/input-time-series/anc') && resp.status() === 200)
+    await expect(page.locator("#review-inputs")).toHaveScreenshot("time-series-anc.png")
 });
 
 test("can view input map plot", async ({ projectPage }) => {
