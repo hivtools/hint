@@ -23,7 +23,7 @@
                      class="text-muted mt-v"/>
                 <download-time-series v-if="activePlot === 'timeSeries'"/>
             </div>
-            <time-series v-if="activePlot === 'timeSeries' && hasTimeSeries" class="col-md-9"/>
+            <time-series v-if="activePlot === 'timeSeries'" class="col-md-9"/>
             <choropleth class="col-md-9" v-if="activePlot === 'inputChoropleth'" :plot="'inputChoropleth'"/>
         </div>
     </div>
@@ -54,9 +54,8 @@ export default defineComponent({
     },
     setup() {
         const store = useStore<RootState>();
-        const hasTimeSeries = computed(() => !!store.state.surveyAndProgram.anc || !!store.state.surveyAndProgram.program)
         const availablePlots = computed(() => {
-            if (!hasTimeSeries.value) {
+            if (!store.state.surveyAndProgram.anc && !store.state.surveyAndProgram.program) {
                 return inputPlotNames.filter(name => name != "timeSeries")
             } else {
                 return inputPlotNames
@@ -88,7 +87,6 @@ export default defineComponent({
             availablePlots,
             activePlot,
             changePlot,
-            hasTimeSeries,
             loading,
             plotDescription,
             error
