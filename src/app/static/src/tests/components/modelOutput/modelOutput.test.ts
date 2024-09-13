@@ -2,7 +2,7 @@ import {shallowMount} from "@vue/test-utils";
 import ModelOutput from "../../../app/components/modelOutput/ModelOutput.vue";
 import Vuex, {Store} from "vuex";
 import {emptyState, RootState} from "../../../app/root";
-import {mockModelOutputState} from "../../mocks";
+import {mockModelCalibrateState, mockModelOutputState} from "../../mocks";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import PlotControlSet from "../../../app/components/plots/PlotControlSet.vue";
 import FilterSet from "../../../app/components/plots/FilterSet.vue";
@@ -35,6 +35,12 @@ describe("Model Output page", () => {
                     mutations: {
                         [ModelOutputMutation.TabSelected]: mockTabSelected
                     }
+                },
+                modelCalibrate: {
+                    namespaced: true,
+                    state: mockModelCalibrateState({
+                        metadata: {} as any
+                    })
                 }
             }
         });

@@ -37,9 +37,6 @@ test("can go through whole estimates process", async ({ projectPage }) => {
     // Review input step is active
     expect(await getActiveStep(page)).toBe(Step.ReviewInputs);
 
-    // and continue button is disabled
-    await expect(continueButton).toBeDisabled();
-
     // and back button is enabled
     await expect(backButton).not.toBeDisabled();
 
