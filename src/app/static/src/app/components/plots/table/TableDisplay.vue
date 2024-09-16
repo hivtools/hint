@@ -27,7 +27,7 @@ const defaultColDef = {
     filter: 'agNumberColumnFilter',
     // Floating filter adds the dedicated row for filtering at the bottom
     floatingFilter: true,
-    // suppressMenu hides the filter menu which showed on the column title
+    // suppressHeaderMenuButton hides the filter menu which showed on the column title
     // this just avoids duplication of filtering UI as we have floating turned on
     // there are some cases where other thing show in the menu but not for our example
     suppressHeaderMenuButton: true,
