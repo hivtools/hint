@@ -4,7 +4,7 @@ to the database.
 
 ### Usage
 
-    image=ghcr.io/hivtools/hint-user-cli:latest
+    image=mrcide/hint-user-cli:latest
     docker run \
         -v hint_volume:/hint \
         $image <command>
