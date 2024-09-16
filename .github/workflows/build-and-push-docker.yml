@@ -10,7 +10,7 @@ name: Build and Push App
 
 env:
   TAG_DH: mrcide/hint
-  TAG_GHCR: mrc-ide/hint
+  TAG_GHCR: hivtools/hint
 
 jobs:
     test:
