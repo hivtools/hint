@@ -5,12 +5,13 @@
                  :columnDefs="columnDefs"
                  :rowData="data"
                  :grid-options="gridOptions"
-                 @grid-ready="onGridReady">
+                 @grid-ready="onGridReady"
+                 @row-data-updated="handleRowDataChange">
     </ag-grid-vue>
 </template>
 
 <script lang="ts">
-import { ref, defineComponent, computed, onUpdated, PropType } from "vue";
+import { ref, defineComponent, computed, PropType } from "vue";
 import { AgGridVue } from "ag-grid-vue3";
 import { AgGridEvent } from "ag-grid-community";
 import "ag-grid-community/styles/ag-grid.css";
@@ -144,13 +145,14 @@ export default defineComponent({
                 ...columnHeaders
             ];
         });
-        onUpdated(() => {
+        const handleRowDataChange = () => {
             if (gridApi.value) {
                 ensureColumnsWideEnough(gridApi.value as any);
             }
-        });
+        };
         return {
             onGridReady,
+            handleRowDataChange,
             columnDefs,
             defaultColDef,
             gridOptions
