@@ -29,7 +29,7 @@ const defaultColDef = {
     // suppressMenu hides the filter menu which showed on the column title
     // this just avoids duplication of filtering UI as we have floating turned on
     // there are some cases where other thing show in the menu but not for our example
-    suppressMenu: true,
+    suppressHeaderMenuButton: true,
     // Show an icon when the column is not sorted
     unSortIcon: true,
     // Make column sortable
