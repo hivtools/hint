@@ -11,8 +11,8 @@ REDIS=hintr_redis
 HINTR_VERSION=$(<$HERE/../src/config/hintr_version)
 
 GHCR=ghcr.io/hivtools
-DB_IMAGE=$GHCR/hint-db:master
-DB_MIGRATE_IMAGE=$GHCR/hint-db-migrate:master
+DB_IMAGE=$GHCR/hint-db:main
+DB_MIGRATE_IMAGE=$GHCR/hint-db-migrate:main
 HINTR_IMAGE=$GHCR/$API:$HINTR_VERSION
 
 docker network create $NETWORK

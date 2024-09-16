@@ -1,7 +1,7 @@
 ## HINT - HIV Indicators Tool
 [![Front-end build](https://github.com/hivtools/hint/actions/workflows/test.yml/badge.svg)](https://github.com/mrc-ide/hint/actions/workflows/test.yml)
 [![Back-end build](https://github.com/hivtools/hint/actions/workflows/testBack.yml/badge.svg)](https://github.com/mrc-ide/hint/actions/workflows/testBack.yml)
-[![codecov](https://codecov.io/gh/hivtools/hint/branch/master/graph/badge.svg)](https://codecov.io/gh/mrc-ide/hint)
+[![codecov](https://codecov.io/gh/hivtools/hint/branch/main/graph/badge.svg)](https://codecov.io/gh/mrc-ide/hint)
 
 [SpringBoot](https://spring.io/projects/spring-boot) Kotlin web app for interfacing with the [Naomi model](https://github.com/mrc-ide/naomi) for joint small-area estimation of HIV prevalence, ART coverage, and HIV incidence via the [hintr package](https://github.com/mrc-ide/hintr).
 
@@ -36,7 +36,7 @@ To run with hot reloading of the front end, after installing npm packages and ru
 1. Open a terminal at `src/app/static` and run `npm run serve`
 1. In another terminal, from the root run `src/gradlew -PhotReload=true -p src app:bootRun`
 
-For more information about developing the front-end see [src/app/static/README](https://github.com/hivtools/hint/blob/master/src/app/static/README.md)
+For more information about developing the front-end see [src/app/static/README](https://github.com/hivtools/hint/blob/main/src/app/static/README.md)
 
 #### Run up app with Auth0 authentication
 
