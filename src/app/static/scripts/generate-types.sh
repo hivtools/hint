@@ -13,7 +13,7 @@ else
     branch=$1
 fi
 
-wget https://github.com/mrc-ide/hintr/archive/${branch}.zip
+wget https://github.com/hivtools/hintr/archive/${branch}.zip
 unzip ${branch}
 
 rm -f ${target}

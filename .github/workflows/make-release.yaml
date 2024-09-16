@@ -1,7 +1,7 @@
 on:
   push:
     branches:
-      - master
+      - main
 
 name: make-release
 
@@ -34,4 +34,3 @@ jobs:
           release_name: Release hint ${{ env.RELEASE_VERSION }}
           draft: false
           prerelease: false
-

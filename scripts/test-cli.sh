@@ -10,4 +10,3 @@ docker run --network=$NETWORK \
 		-v $TEST_CONFIG:/etc/hint/config.properties \
 		$image \
 		"$@"
-

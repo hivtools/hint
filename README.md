@@ -1,7 +1,7 @@
 ## HINT - HIV Indicators Tool
-[![Front-end build](https://github.com/mrc-ide/hint/actions/workflows/test.yml/badge.svg)](https://github.com/mrc-ide/hint/actions/workflows/test.yml)
-[![Back-end build](https://github.com/mrc-ide/hint/actions/workflows/testBack.yml/badge.svg)](https://github.com/mrc-ide/hint/actions/workflows/testBack.yml)
-[![codecov](https://codecov.io/gh/mrc-ide/hint/branch/master/graph/badge.svg)](https://codecov.io/gh/mrc-ide/hint)
+[![Front-end build](https://github.com/hivtools/hint/actions/workflows/test.yml/badge.svg)](https://github.com/mrc-ide/hint/actions/workflows/test.yml)
+[![Back-end build](https://github.com/hivtools/hint/actions/workflows/testBack.yml/badge.svg)](https://github.com/mrc-ide/hint/actions/workflows/testBack.yml)
+[![codecov](https://codecov.io/gh/hivtools/hint/branch/main/graph/badge.svg)](https://codecov.io/gh/mrc-ide/hint)
 
 [SpringBoot](https://spring.io/projects/spring-boot) Kotlin web app for interfacing with the [Naomi model](https://github.com/mrc-ide/naomi) for joint small-area estimation of HIV prevalence, ART coverage, and HIV incidence via the [hintr package](https://github.com/mrc-ide/hintr).
 
@@ -26,8 +26,8 @@ apt-get install adoptopenjdk-11-hotspot -y
 
 1. Clone this repo
 1. Run `npm install` from `src/app/static`
-1. Run `./scripts/run-development-dependencies.sh` to start docker instances of [hint-db](https://github.com/mrc-ide/hint-db/)
-and [hintr](https://github.com/mrc-ide/hintr) and add a test user with username `test.user@example.com`
+1. Run `./scripts/run-development-dependencies.sh` to start docker instances of [hint-db](https://github.com/hivtools/hint-db/)
+and [hintr](https://github.com/hivtools/hintr) and add a test user with username `test.user@example.com`
  and password `password`.
 1. Run `npm run build` from `src/app/static` to compile front-end dependencies.
 1. Run app from your IDE or by `./src/gradlew -p src :app:bootRun` to serve the app on port 8080
@@ -36,7 +36,7 @@ To run with hot reloading of the front end, after installing npm packages and ru
 1. Open a terminal at `src/app/static` and run `npm run serve`
 1. In another terminal, from the root run `src/gradlew -PhotReload=true -p src app:bootRun`
 
-For more information about developing the front-end see [src/app/static/README](https://github.com/mrc-ide/hint/blob/master/src/app/static/README.md)
+For more information about developing the front-end see [src/app/static/README](https://github.com/hivtools/hint/blob/main/src/app/static/README.md)
 
 #### Run up app with Auth0 authentication
 
@@ -91,6 +91,6 @@ version number as changes from another branch.
 A docker image containing the app is created as part of the GitHub actions build. A CLI image is also created as part of
 the GitHub build.
 
-Run `docker run -p 8080:8080 --name hint mrcide/hint:branch_name` to run a built image. The app will not start until
+Run `docker run -p 8080:8080 --name hint ghcr.io/hivtools/hint:branch_name` to run a built image. The app will not start until
 config is provided at `/etc/hint/config.properties`. This config is added during deployment with
-[hint-deploy](https://github.com/mrc-ide/hint-deploy)
+[hint-deploy](https://github.com/hivtools/hint-deploy)
