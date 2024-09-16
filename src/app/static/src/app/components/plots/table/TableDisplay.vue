@@ -11,7 +11,7 @@
 </template>
 
 <script lang="ts">
-import { ref, defineComponent, computed, onUpdated, PropType } from "vue";
+import { ref, defineComponent, computed, PropType } from "vue";
 import { AgGridVue } from "ag-grid-vue3";
 import { AgGridEvent } from "ag-grid-community";
 import "ag-grid-community/styles/ag-grid.css";
