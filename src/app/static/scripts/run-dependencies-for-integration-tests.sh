@@ -10,7 +10,7 @@ $HERE/../../../../scripts/run-dependencies.sh
 $HERE/../../../../scripts/build-app.sh node
 
 TEST_CONFIG=$HERE/test.properties
-HINT_IMAGE=mrcide/$HINT:$GIT_BRANCH
+HINT_IMAGE=ghcr.io/hivtools/$HINT:$GIT_BRANCH
 
 docker run --rm -d \
   --network=$NETWORK \

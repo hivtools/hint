@@ -39,7 +39,7 @@ def cli_docker_version = 'UNKNOWN'
 if (hasProperty('docker_version')) {
     cli_docker_version = docker_version
 }
-def cli_docker_name = 'mrcide/hint-user-cli'
+def cli_docker_name = 'ghcr.io/hivtools/hint-user-cli'
 if (hasProperty('docker_name')) {
     cli_docker_name = docker_name
 }

@@ -4,7 +4,7 @@ to the database.
 
 ### Usage
 
-    image=mrcide/hint-user-cli:latest
+    image=ghcr.io/hivtools/hint-user-cli:latest
     docker run \
         -v hint_volume:/hint \
         $image <command>
@@ -34,4 +34,3 @@ This happens automatically during the BuildKite build.
 #### Check if user exists
  
     user-exists test.user@example.com   
-

@@ -23,4 +23,3 @@ Any updates to the form of the expected upload data will be dictated by Jeff and
 
 * age_group_id will move from a numeric ID to a human readable string ID. So the data can be understood by users.
 * subnational PJNZ files - we're expecting to open up the PJNZ upload to also accept a zip of PJNZ files. Or to take multiple uploads. This is for countries who have moved to subnational files.
-

@@ -172,7 +172,7 @@ describe("ADR dataset-related actions", () => {
         const state = await getSelectedDatasetState()
 
         await baselineActions.importPJNZ({commit, state, dispatch, rootState} as any,
-            "https://raw.githubusercontent.com/mrc-ide/hint/master/src/app/testdata/Malawi2019.PJNZ");
+            "https://raw.githubusercontent.com/hivtools/hint/master/src/app/testdata/Malawi2019.PJNZ");
 
         expect(commit.mock.calls[1][0]["type"]).toBe(BaselineMutation.PJNZUpdated);
         expect(commit.mock.calls[1][0]["payload"]["filename"])
@@ -186,7 +186,7 @@ describe("ADR dataset-related actions", () => {
         const state = await getSelectedDatasetState()
 
         await baselineActions.importShape({commit, dispatch, state, rootState} as any,
-            "https://raw.githubusercontent.com/mrc-ide/hint/master/src/app/testdata/malawi.geojson");
+            "https://raw.githubusercontent.com/hivtools/hint/master/src/app/testdata/malawi.geojson");
 
         expect(commit.mock.calls[1][0]["type"]).toBe(BaselineMutation.ShapeUpdated);
         expect(commit.mock.calls[1][0]["payload"]["filename"])
@@ -201,7 +201,7 @@ describe("ADR dataset-related actions", () => {
         const state = await getSelectedDatasetState()
 
         await baselineActions.importPopulation({commit, dispatch, state, rootState} as any,
-            "https://raw.githubusercontent.com/mrc-ide/hint/master/src/app/testdata/population.csv");
+            "https://raw.githubusercontent.com/hivtools/hint/master/src/app/testdata/population.csv");
 
         expect(commit.mock.calls[1][0]["type"]).toBe(BaselineMutation.PopulationUpdated);
         expect(commit.mock.calls[1][0]["payload"]["filename"])
@@ -216,7 +216,7 @@ describe("ADR dataset-related actions", () => {
         const state = await getSelectedDatasetState()
 
         await surveyAndProgramActions.importSurvey({commit, dispatch, state, rootState} as any,
-            "https://raw.githubusercontent.com/mrc-ide/hint/master/src/app/testdata/survey.csv");
+            "https://raw.githubusercontent.com/hivtools/hint/master/src/app/testdata/survey.csv");
 
         expect(commit.mock.calls[2][0]["type"]).toBe(SurveyAndProgramMutation.SurveyUpdated);
         expect(commit.mock.calls[2][0]["payload"]["filename"])
@@ -231,7 +231,7 @@ describe("ADR dataset-related actions", () => {
         const state = await getSelectedDatasetState()
 
         await surveyAndProgramActions.importProgram({commit, dispatch, state, rootState} as any,
-            "https://raw.githubusercontent.com/mrc-ide/hint/master/src/app/testdata/programme.csv");
+            "https://raw.githubusercontent.com/hivtools/hint/master/src/app/testdata/programme.csv");
 
         expect(commit.mock.calls[2][0]).toStrictEqual({
             type: "reviewInput/ClearDataset",
@@ -250,7 +250,7 @@ describe("ADR dataset-related actions", () => {
         const state = await getSelectedDatasetState()
 
         await surveyAndProgramActions.importANC({commit, state, rootState} as any,
-            "https://raw.githubusercontent.com/mrc-ide/hint/master/src/app/testdata/anc.csv");
+            "https://raw.githubusercontent.com/hivtools/hint/master/src/app/testdata/anc.csv");
 
         expect(commit.mock.calls[2][0]).toStrictEqual({
             type: "reviewInput/ClearDataset",

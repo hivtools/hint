@@ -90,7 +90,7 @@ class JSONValidator
         {
             "$name.schema.json"
         }
-        val url = URL("https://raw.githubusercontent.com/mrc-ide/hintr/$hintrVersion/inst/schema/$path")
+        val url = URL("https://raw.githubusercontent.com/hivtools/hintr/$hintrVersion/inst/schema/$path")
 
         val conn = url.openConnection() as HttpURLConnection
         return BufferedReader(InputStreamReader(conn.getInputStream())).use {
