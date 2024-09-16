@@ -5,16 +5,17 @@
                  :columnDefs="columnDefs"
                  :rowData="data"
                  :grid-options="gridOptions"
-                 @grid-ready="onGridReady">
+                 @grid-ready="onGridReady"
+                 @row-data-updated="handleRowDataChange">
     </ag-grid-vue>
 </template>
 
 <script lang="ts">
-import { ref, defineComponent, computed, onUpdated, PropType } from "vue";
+import { ref, defineComponent, computed, PropType } from "vue";
 import { AgGridVue } from "ag-grid-vue3";
 import { AgGridEvent } from "ag-grid-community";
-import "ag-grid-community/styles//ag-grid.css";
-import "ag-grid-community/styles//ag-theme-alpine.css";
+import "ag-grid-community/styles/ag-grid.css";
+import "ag-grid-community/styles/ag-theme-alpine.css";
 import { useStore } from "vuex";
 import { RootState } from "../../../root";
 import {formatOutput, getIndicatorMetadata} from "../utils";
@@ -26,10 +27,10 @@ const defaultColDef = {
     filter: 'agNumberColumnFilter',
     // Floating filter adds the dedicated row for filtering at the bottom
     floatingFilter: true,
-    // suppressMenu hides the filter menu which showed on the column title
+    // suppressHeaderMenuButton hides the filter menu which showed on the column title
     // this just avoids duplication of filtering UI as we have floating turned on
     // there are some cases where other thing show in the menu but not for our example
-    suppressMenu: true,
+    suppressHeaderMenuButton: true,
     // Show an icon when the column is not sorted
     unSortIcon: true,
     // Make column sortable
@@ -85,8 +86,8 @@ export default defineComponent({
                 columns fill the screen while also being the minWidth to fit all
                 the data inside.
             */
-            event.columnApi.autoSizeAllColumns();
-            const columns = event.columnApi.getAllGridColumns();
+            event.api.autoSizeAllColumns();
+            const columns = event.api.getAllGridColumns();
             const columnLimits = columns.map(col => {
                 return { key: col.getColId(), minWidth: col.getActualWidth() };
             });
@@ -144,13 +145,14 @@ export default defineComponent({
                 ...columnHeaders
             ];
         });
-        onUpdated(() => {
+        const handleRowDataChange = () => {
             if (gridApi.value) {
                 ensureColumnsWideEnough(gridApi.value as any);
             }
-        });
+        };
         return {
             onGridReady,
+            handleRowDataChange,
             columnDefs,
             defaultColDef,
             gridOptions
