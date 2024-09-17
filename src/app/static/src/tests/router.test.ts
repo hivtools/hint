@@ -5,7 +5,8 @@ import Vuex from "vuex";
 import {mockRootState} from "./mocks";
 import {store} from "../app/main";
 import Hint from "../app/components/Hint.vue";
-import { Mock } from "vitest";
+import {Mock} from "vitest";
+import {beforeEnter, router} from '../app/router';
 
 // Mock the actions before import the router as the app will call
 // these actions on import
@@ -21,9 +22,6 @@ const modelRunActions = {
 const projectActions = {
     getCurrentProject: vi.fn()
 };
-const genericChartActions = {
-    getGenericChartMetadata: vi.fn()
-};
 const actions = {
     getADRSchemas: vi.fn()
 };
@@ -32,7 +30,6 @@ storeOptions.modules!!.baseline!!.actions = baselineActions;
 storeOptions.modules!!.surveyAndProgram!!.actions = surveyAndProgramActions;
 storeOptions.modules!!.modelRun!!.actions = modelRunActions;
 storeOptions.modules!!.projects!!.actions = projectActions;
-storeOptions.modules!!.genericChart!!.actions = genericChartActions;
 storeOptions.actions = actions
 
 console.error = vi.fn();
@@ -52,8 +49,6 @@ vi.mock("../app/components/projects/Projects.vue", () => ({
         template: "<div id='projects-stub'/>"
     }
 }))
-
-import {router, beforeEnter} from '../app/router';
 
 describe("Router", () => {
 

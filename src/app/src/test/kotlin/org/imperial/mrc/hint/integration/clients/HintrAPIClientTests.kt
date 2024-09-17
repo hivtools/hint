@@ -152,15 +152,6 @@ class HintrApiClientTests
     }
 
     @Test
-    fun `can get plotting metadata`()
-    {
-        val sut = HintrFuelAPIClient(ConfiguredAppProperties(), ObjectMapper())
-        val metadataResult = sut.getPlottingMetadata("MWI");
-
-        JSONValidator().validateSuccess(metadataResult.body!!, "PlottingMetadataResponse")
-    }
-
-    @Test
     fun `can get version`()
     {
         val sut = HintrFuelAPIClient(ConfiguredAppProperties(), ObjectMapper())

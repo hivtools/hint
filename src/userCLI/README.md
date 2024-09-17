@@ -34,4 +34,3 @@ This happens automatically during the BuildKite build.
 #### Check if user exists
  
     user-exists test.user@example.com   
-

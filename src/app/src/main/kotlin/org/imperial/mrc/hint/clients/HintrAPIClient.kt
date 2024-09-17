@@ -26,12 +26,12 @@ interface HintrAPIClient
     fun submit(data: Map<String, VersionFileWithPath>, modelRunOptions: ModelOptions): ResponseEntity<String>
     fun getStatus(id: String): ResponseEntity<String>
     fun getResult(id: String): ResponseEntity<String>
-    fun getPlottingMetadata(iso3: String): ResponseEntity<String>
     fun getModelRunOptions(files: Map<String, VersionFileWithPath>): ResponseEntity<String>
     fun getModelCalibrationOptions(iso3: String): ResponseEntity<String>
     fun calibrateSubmit(runId: String, calibrationOptions: ModelOptions): ResponseEntity<String>
     fun getCalibrateStatus(id: String): ResponseEntity<String>
     fun getCalibrateResultMetadata(id: String): ResponseEntity<String>
+    fun getReviewInputMetadata(iso3: String, files: Map<String, VersionFileWithPath?>): ResponseEntity<String>
     fun getCalibrateResultData(id: String): ResponseEntity<String>
     fun getCalibratePlot(id: String): ResponseEntity<String>
     fun getComparisonPlot(id: String): ResponseEntity<String>
@@ -154,6 +154,13 @@ class HintrFuelAPIClient(
         return get("calibrate/result/metadata/${id}")
     }
 
+    override fun getReviewInputMetadata(iso3: String, files: Map<String, VersionFileWithPath?>): ResponseEntity<String>
+    {
+        val json = objectMapper.writeValueAsString(
+                mapOf("data" to files, "iso3" to iso3))
+        return postJson("review-input/metadata", json)
+    }
+
     override fun getCalibrateResultData(id: String): ResponseEntity<String>
     {
         return get("calibrate/result/path/${id}")
@@ -167,11 +174,6 @@ class HintrFuelAPIClient(
     override fun getComparisonPlot(id: String): ResponseEntity<String>
     {
         return get("comparison/plot/${id}")
-    }
-
-    override fun getPlottingMetadata(iso3: String): ResponseEntity<String>
-    {
-        return get("meta/plotting/${iso3}")
     }
 
     override fun getModelRunOptions(files: Map<String, VersionFileWithPath>): ResponseEntity<String>

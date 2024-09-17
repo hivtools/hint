@@ -21,11 +21,6 @@ import {ModelOptionsMutation, ModelOptionsUpdates} from "./store/modelOptions/mu
 import {SurveyAndProgramMutation, SurveyAndProgramUpdates} from "./store/surveyAndProgram/mutations";
 import {BaselineDatasetUpdates, BaselineMutation, BaselineUpdates} from "./store/baseline/mutations";
 import {stripNamespace} from "./utils";
-import {
-    initialPlottingSelectionsState,
-    plottingSelections,
-    PlottingSelectionsState
-} from "./store/plottingSelections/plottingSelections";
 import {errors, ErrorsState, initialErrorsState} from "./store/errors/errors";
 import {Language} from "./store/translations/locales";
 import {modelCalibrate, initialModelCalibrateState, ModelCalibrateState} from "./store/modelCalibrate/modelCalibrate";
@@ -41,20 +36,18 @@ import {
     initialDownloadResultsState
 } from "./store/downloadResults/downloadResults";
 import {ModelCalibrateMutation, ModelCalibrateUpdates} from "./store/modelCalibrate/mutations";
-import {GenericChartState, initialGenericChartState, genericChart} from "./store/genericChart/genericChart";
+import {initialReviewInputState, reviewInput, ReviewInputState} from "./store/reviewInput/reviewInput";
 import {Warning} from "./generated";
 import {DownloadResultsMutation} from "./store/downloadResults/mutations";
-import {
-    downloadIndicator,
-    DownloadIndicatorState,
-    initialDownloadIndicatorState
-} from "./store/downloadIndicator/downloadIndicator";
+import { initialPlotSelectionsState, PlotSelectionsState, plotSelections } from "./store/plotSelections/plotSelections";
+import { initialPlotDataState, PlotDataState, plotData } from "./store/plotData/plotData";
+import { initialPlotState, PlotState, plotState } from "./store/plotState/plotState";
 import {TranslatableState} from "./types";
 
 export interface RootState extends TranslatableState {
     version: string,
     adr: ADRState,
-    genericChart: GenericChartState,
+    reviewInput: ReviewInputState,
     adrUpload: ADRUploadState,
     hintrVersion: HintrVersionState,
     baseline: BaselineState,
@@ -64,14 +57,18 @@ export interface RootState extends TranslatableState {
     modelRun: ModelRunState,
     modelCalibrate: ModelCalibrateState,
     modelOutput: ModelOutputState,
-    plottingSelections: PlottingSelectionsState,
+    // Output data used for plotting
+    plotData: PlotDataState,
+    // Control and filter selections for output plots
+    plotSelections: PlotSelectionsState,
+    // Colour and size scales selected by user in output plots
+    plotState: PlotState,
     stepper: StepperState,
     load: LoadState,
     errors: ErrorsState,
     projects: ProjectsState
     currentUser: string,
     downloadResults: DownloadResultsState,
-    downloadIndicator: DownloadIndicatorState,
     invalidSteps: number[]
 }
 
@@ -85,7 +82,7 @@ export interface WarningsState {
 
 const persistState = (store: Store<RootState>): void => {
     store.subscribe((mutation: MutationPayload, state: RootState) => {
-        console.log(mutation.type);
+        //console.log(mutation.type);
         localStorageManager.saveState(state);
 
         const {dispatch} = store;
@@ -115,7 +112,6 @@ const resetState = (store: Store<RootState>): void => {
                 }
 
                 if (BaselineUpdates.includes(type[1] as BaselineMutation)) {
-                    store.commit(RootMutation.ResetSelectedDataType);
                     /** If data has been updated without changing the selected dataset,
                      *  retain model options, but reset their valid status to false in order to force revalidation
                      */
@@ -125,7 +121,6 @@ const resetState = (store: Store<RootState>): void => {
             }
 
             if (type[0] == "surveyAndProgram" && SurveyAndProgramUpdates.includes(type[1] as SurveyAndProgramMutation)) {
-                store.commit(RootMutation.ResetSelectedDataType);
                 store.commit({type: `modelOptions/${ModelOptionsMutation.UnValidate}`}, {root:true});
                 store.commit(RootMutation.ResetOutputs);
             }
@@ -157,7 +152,7 @@ export const emptyState = (): RootState => {
         updatingLanguage: false,
         hintrVersion: initialHintrVersionState(),
         adr: initialADRState(),
-        genericChart: initialGenericChartState(),
+        reviewInput: initialReviewInputState(),
         adrUpload: initialADRUploadState(),
         baseline: initialBaselineState(),
         metadata: initialMetadataState(),
@@ -168,12 +163,13 @@ export const emptyState = (): RootState => {
         modelRun: initialModelRunState(),
         stepper: initialStepperState(),
         load: initialLoadState(),
-        plottingSelections: initialPlottingSelectionsState(),
+        plotData: initialPlotDataState(),
+        plotSelections: initialPlotSelectionsState(),
+        plotState: initialPlotState(),
         errors: initialErrorsState(),
         projects: initialProjectsState(),
         currentUser: currentUser,
         downloadResults: initialDownloadResultsState(),
-        downloadIndicator: initialDownloadIndicatorState(),
         invalidSteps: []
     }
 };
@@ -184,7 +180,7 @@ export const storeOptions: StoreOptions<RootState> = {
     state: {...emptyState(), ...existingState},
     modules: {
         adr,
-        genericChart,
+        reviewInput,
         adrUpload,
         baseline: baseline(existingState),
         metadata: metadata(existingState),
@@ -193,14 +189,15 @@ export const storeOptions: StoreOptions<RootState> = {
         modelOptions: modelOptions(existingState),
         modelRun: modelRun(existingState),
         modelOutput: modelOutput(existingState),
-        plottingSelections: plottingSelections(existingState),
+        plotData,
+        plotSelections,
+        plotState,
         stepper: stepper(existingState),
         load,
         errors,
         projects,
         hintrVersion: hintrVersion(existingState),
         downloadResults,
-        downloadIndicator
     },
     actions: actions,
     mutations: mutations,

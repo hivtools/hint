@@ -22,7 +22,7 @@
                                  :required="true"
                                  :valid="pjnz.valid"
                                  :fromADR="pjnz.fromADR"
-                                 :error="pjnz.error || plottingMetadataError"
+                                 :error="pjnz.error"
                                  :upload="uploadPJNZ"
                                  :delete-file="deletePJNZ"
                                  :existingFileName="pjnz.existingFileName"
@@ -109,21 +109,17 @@
 </template>
 
 <script lang="ts">
-    import {CustomVue, mapActions, mapGetters, mapState} from "vuex";
+    import {mapActions, mapGetters} from "vuex";
     import {BaselineState} from "../../store/baseline/baseline";
-    import {MetadataState} from "../../store/metadata/metadata";
     import ErrorAlert from "../ErrorAlert.vue";
     import LoadingSpinner from "../LoadingSpinner.vue";
     import ManageFile from "../files/ManageFile.vue";
     import {SurveyAndProgramState} from "../../store/surveyAndProgram/surveyAndProgram";
     import {getFormData, mapRootStateProps, mapStateProps} from "../../utils";
-    import { Error } from "../../generated";
     import { defineComponent } from "vue";
     import VueFeather from "vue-feather";
 
     const namespace = 'baseline';
-
-    type PlottingMetadataError = Record<"plottingMetadataError", (this: CustomVue, state: MetadataState) => Error | null>
 
     export default defineComponent({
         name: "UploadInputs",
@@ -152,9 +148,6 @@
                 hasBaselineError: (state: BaselineState) => !!state.baselineError,
                 baselineError: (state: BaselineState) => state.baselineError,
                 validating: (state: BaselineState) => state.validating
-            }),
-            ...mapState<MetadataState, PlottingMetadataError>("metadata", {
-                plottingMetadataError: (state: MetadataState) => state.plottingMetadataError
             }),
             ...mapRootStateProps({
                 anc: ({surveyAndProgram}: {surveyAndProgram: SurveyAndProgramState}) => ({
@@ -199,7 +192,6 @@
                 deleteProgram: 'surveyAndProgram/deleteProgram',
                 deleteANC: 'surveyAndProgram/deleteANC',
                 deleteVmmc: 'surveyAndProgram/deleteVmmc',
-                getPlottingMetadata: 'metadata/getPlottingMetadata',
                 preparingRehydrate: 'load/preparingRehydrate',
             }),
             loadZip() {

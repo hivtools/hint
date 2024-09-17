@@ -1,28 +1,31 @@
-import {shallowMount} from '@vue/test-utils';
 import Vuex from 'vuex';
 import {baselineGetters, BaselineState} from "../../app/store/baseline/baseline";
 import {
+    mockADRState,
     mockBaselineState,
+    mockReviewInputState,
     mockLoadState,
     mockMetadataState,
+    mockModelCalibrateState,
     mockModelOptionsState,
     mockModelRunState,
-    mockPlottingMetadataResponse,
-    mockPopulationResponse, mockRootState,
-    mockShapeResponse, mockStepperState,
+    mockPopulationResponse,
+    mockProjectsState,
+    mockRootState,
+    mockShapeResponse,
+    mockStepperState,
     mockSurveyAndProgramState,
-    mockValidateBaselineResponse,
-    mockProjectsState, mockModelCalibrateState, mockADRState, mockSurveyResponse, mockGenericChartState
-
+    mockSurveyResponse,
+    mockValidateBaselineResponse
 } from "../mocks";
 import {SurveyAndProgramState} from "../../app/store/surveyAndProgram/surveyAndProgram";
 import {getters as surveyAndProgramGetters} from "../../app/store/surveyAndProgram/getters";
 import {mutations} from '../../app/store/baseline/mutations';
 import {mutations as surveyAndProgramMutations} from '../../app/store/surveyAndProgram/mutations';
-import {mutations as modelRunMutations} from '../../app/store/modelRun/mutations';
+import {ModelRunMutation, mutations as modelRunMutations} from '../../app/store/modelRun/mutations';
 import {mutations as stepperMutations} from '../../app/store/stepper/mutations';
 import {mutations as loadMutations} from '../../app/store/load/mutations';
-import {mutations as modelCalibrateMutations} from '../../app/store/modelCalibrate/mutations';
+import {ModelCalibrateMutation, mutations as modelCalibrateMutations} from '../../app/store/modelCalibrate/mutations';
 import {modelRunGetters, ModelRunState} from "../../app/store/modelRun/modelRun";
 import ADRIntegration from "../../app/components/adr/ADRIntegration.vue";
 import Stepper from "../../app/components/Stepper.vue";
@@ -33,7 +36,7 @@ import {getters} from "../../app/store/stepper/getters";
 import {StepperState} from "../../app/store/stepper/stepper";
 import {actions as rootActions} from "../../app/store/root/actions"
 import {mutations as rootMutations} from "../../app/store/root/mutations"
-import {metadataGetters, MetadataState} from "../../app/store/metadata/metadata";
+import {MetadataState} from "../../app/store/metadata/metadata";
 import {ModelStatusResponse, Warning} from "../../app/generated";
 import {modelOptionsGetters, ModelOptionsState} from "../../app/store/modelOptions/modelOptions";
 import {LoadingState, LoadState} from "../../app/store/load/state";
@@ -49,11 +52,9 @@ import StepperNavigation from "../../app/components/StepperNavigation.vue";
 import WarningAlert from "../../app/components/WarningAlert.vue";
 import LoadInvalidModal from "../../app/components/load/LoadInvalidModal.vue";
 import {ModelOptionsMutation} from "../../app/store/modelOptions/mutations";
-import {ModelCalibrateMutation} from "../../app/store/modelCalibrate/mutations";
-import {ModelRunMutation} from "../../app/store/modelRun/mutations";
-import {GenericChartState} from "../../app/store/genericChart/genericChart";
-import {GenericChartMutation} from "../../app/store/genericChart/mutations";
-import { nextTick } from 'vue';
+import {ReviewInputState} from "../../app/store/reviewInput/reviewInput";
+import {ReviewInputMutation} from "../../app/store/reviewInput/mutations";
+import {nextTick} from 'vue';
 
 describe("Stepper component", () => {
 
@@ -73,7 +74,7 @@ describe("Stepper component", () => {
                        partialRootState: Partial<RootState> = {},
                        modelOptionsState: Partial<ModelOptionsState> = {},
                        modelCalibrateState: Partial<ModelCalibrateState> = {},
-                       genericChartState: Partial<GenericChartState> = {}) => {
+                       reviewInputState: Partial<ReviewInputState> = {}) => {
 
         const store = new Vuex.Store({
             actions: rootActions,
@@ -128,11 +129,11 @@ describe("Stepper component", () => {
                         [ModelCalibrateMutation.ClearWarnings]: clearCalibrateWarnings
                     }
                 },
-                genericChart: {
+                reviewInput: {
                     namespaced: true,
-                    state: mockGenericChartState(genericChartState),
+                    state: mockReviewInputState(reviewInputState),
                     mutations: {
-                        [GenericChartMutation.ClearWarnings]: clearReviewInputsWarnings
+                        [ReviewInputMutation.ClearWarnings]: clearReviewInputsWarnings
                     }
                 },
                 stepper: {
@@ -144,8 +145,7 @@ describe("Stepper component", () => {
                 },
                 metadata: {
                     namespaced: true,
-                    state: mockMetadataState(metadataState),
-                    getters: metadataGetters
+                    state: mockMetadataState(metadataState)
                 },
                 load: {
                     namespaced: true,
@@ -180,7 +180,7 @@ describe("Stepper component", () => {
                        partialRootState: Partial<RootState> = {},
                        modelOptionsState: Partial<ModelOptionsState> = {},
                        modelCalibrateState: Partial<ModelCalibrateState> = {},
-                       genericChartState: Partial<GenericChartState> = {}) => {
+                       reviewInputState: Partial<ReviewInputState> = {}) => {
         return createSut(
             {...baselineState, ready: true},
             {...surveyAndProgramState, ready: true},
@@ -188,7 +188,7 @@ describe("Stepper component", () => {
             {...modelRunState, ready: true},
             stepperState, loadState, projectsState, mockRouterPush, partialRootState, modelOptionsState,
             {...modelCalibrateState, ready: true},
-            genericChartState
+            reviewInputState
         );
     };
 
@@ -333,7 +333,7 @@ describe("Stepper component", () => {
     it("step connector is enabled if next step is", () => {
         const wrapper = createReadySut(completedBaselineState,
             completedSurveyAndProgramState,
-            {plottingMetadata: "TEST DATA" as any});
+            {reviewInputMetadata: ["TEST METADATA"] as any});
         const connectors = wrapper.findAll(".step-connector");
 
         expect(connectors[0].classes()).toContain("enabled");
@@ -359,7 +359,7 @@ describe("Stepper component", () => {
     it("Review inputs step is enabled when baseline step is complete", () => {
         const wrapper = createReadySut(completedBaselineState,
             completedSurveyAndProgramState,
-            {plottingMetadata: "TEST DATA" as any});
+            {reviewInputMetadata: ["TEST METADATA"] as any});
         const steps = wrapper.findAllComponents(Step);
         expect(steps[0].props().enabled).toBe(true);
         expect(steps[1].props().enabled).toBe(true);
@@ -378,21 +378,9 @@ describe("Stepper component", () => {
         expect([3, 4, 5].filter(i => steps[i].props().enabled).length).toBe(0);
     });
 
-    it("Review inputs step is not enabled if metadata state is not complete", () => {
-        const wrapper = createReadySut(completedBaselineState,
-            completedSurveyAndProgramState,
-            {plottingMetadata: null});
-        const steps = wrapper.findAllComponents(Step);
-        expect(steps[0].props().enabled).toBe(true);
-        expect(steps[1].props().enabled).toBe(false);
-        expect(steps[0].props().complete).toBe(false);
-        expect([1, 2, 3, 4, 5].filter(i => steps[i].props().enabled).length).toBe(0);
-    });
-
     it("updates active step when jump event is emitted", async () => {
         const wrapper = createReadySut(completedBaselineState,
-            completedSurveyAndProgramState,
-            {plottingMetadata: "TEST DATA" as any});
+            completedSurveyAndProgramState);
         const steps = wrapper.findAllComponents(Step);
         steps[1].vm.$emit("jump", 2);
         await nextTick();
@@ -413,8 +401,7 @@ describe("Stepper component", () => {
 
     it("can continue when the active step is complete", async () => {
         const wrapper = createReadySut(completedBaselineState,
-            completedSurveyAndProgramState,
-            {plottingMetadata: "TEST DATA" as any});
+            completedSurveyAndProgramState);
         const vm = wrapper.vm as any;
         expect(vm.navigationProps.nextDisabled).toBe(false);
 
@@ -437,7 +424,7 @@ describe("Stepper component", () => {
                 population: mockPopulationResponse()
             },
             {},
-            {plottingMetadata: "TEST DATA" as any},
+            {},
             {},
             {activeStep: 2});
 
@@ -459,8 +446,7 @@ describe("Stepper component", () => {
             ready: true
         };
         const wrapper = createReadySut(baselineState,
-            completedSurveyAndProgramState,
-            {plottingMetadata: "TEST DATA" as any});
+            completedSurveyAndProgramState);
         const vm = wrapper.vm as any;
         expect(vm.navigationProps.nextDisabled).toBe(true);
 
@@ -477,7 +463,7 @@ describe("Stepper component", () => {
 
         const wrapper = createSut(completedBaselineState,
             completedSurveyAndProgramState,
-            {plottingMetadata: mockPlottingMetadataResponse()},
+            {},
             {ready: true},
             {activeStep: 2});
 
@@ -494,9 +480,7 @@ describe("Stepper component", () => {
         const wrapper = createSut(
             completedBaselineState,
             completedSurveyAndProgramState,
-            {
-                plottingMetadata: "TEST DATA" as any
-            },
+            {},
             {ready: true});
 
         let steps = wrapper.findAllComponents(Step);
@@ -511,7 +495,7 @@ describe("Stepper component", () => {
 
         const wrapper = createSut(completedBaselineState,
             completedSurveyAndProgramState,
-            {plottingMetadata: "TEST DATA" as any},
+            {},
             {ready: true});
         let steps = wrapper.findAllComponents(Step);
         expect(steps.filter(s => s.props().enabled).length).toBe(0);
@@ -525,7 +509,7 @@ describe("Stepper component", () => {
 
         const wrapper = createSut(completedBaselineState,
             {},
-            {plottingMetadata: "TEST DATA" as any},
+            {},
             {ready: true});
 
         let steps = wrapper.findAllComponents(Step);
@@ -610,7 +594,7 @@ describe("Stepper component", () => {
             {
                 survey: ["TEST SURVEY"] as any
             },
-            {plottingMetadata: ["TEST METADATA"] as any},
+            {reviewInputMetadata: ["TEST METADATA"] as any},
             {},
             {activeStep: 4},
             {},
@@ -682,7 +666,7 @@ describe("Stepper component", () => {
     it("pushes router to projects if logged in user and currentProject not set", () => {
         const mockRouterPush = vi.fn();
         //current user is set in vi.config and currentProject is not set be default in the wrapper
-        const wrapper = createSut({}, {}, {}, {}, {}, {}, {}, mockRouterPush);
+        createSut({}, {}, {}, {}, {}, {}, {}, mockRouterPush);
 
         expect(mockRouterPush.mock.calls.length).toBe(1);
         expect(mockRouterPush.mock.calls[0][0]).toBe("/projects");
@@ -690,7 +674,7 @@ describe("Stepper component", () => {
 
     it("does not push router to projects if guest user", () => {
         const mockRouterPush = vi.fn();
-        const wrapper = createSut({}, {}, {}, {}, {}, {}, {}, mockRouterPush, {currentUser: 'guest'});
+        createSut({}, {}, {}, {}, {}, {}, {}, mockRouterPush, {currentUser: 'guest'});
 
         expect(mockRouterPush.mock.calls.length).toBe(0);
     });
@@ -698,7 +682,7 @@ describe("Stepper component", () => {
     it("does not push router to projects if logged in user and currentProject set", () => {
         const mockRouterPush = vi.fn();
         const projectsState = {currentProject: {id: 1, name: "testProject", versions: []}};
-        const wrapper = createSut({}, {}, {}, {}, {}, {}, projectsState, mockRouterPush);
+        createSut({}, {}, {}, {}, {}, {}, projectsState, mockRouterPush);
 
         expect(mockRouterPush.mock.calls.length).toBe(0);
     });
@@ -706,7 +690,7 @@ describe("Stepper component", () => {
     it("does not push router to projects if project is loading", () => {
         const mockRouterPush = vi.fn();
         const projectsState = {loading: true};
-        const wrapper = createSut({}, {}, {}, {}, {}, {}, projectsState, mockRouterPush);
+        createSut({}, {}, {}, {}, {}, {}, projectsState, mockRouterPush);
 
         expect(mockRouterPush.mock.calls.length).toBe(0);
     });
@@ -762,7 +746,7 @@ describe("Stepper component", () => {
 
         const wrapper = createSut(completedBaselineState,
             completedSurveyAndProgramState,
-            {plottingMetadata: mockPlottingMetadataResponse()},
+            {},
             {ready: true, status: {success: true} as any, result: {complete: true} as any},
             {activeStep: 7},
             {},
@@ -805,7 +789,7 @@ describe("Stepper component", () => {
             {
                 survey: ["TEST SURVEY"] as any
             },
-            {plottingMetadata: ["TEST METADATA"] as any},
+            {},
             {
                 warnings: [{
                     text: "Model Run warning",
@@ -863,7 +847,7 @@ describe("Stepper component", () => {
             {
                 survey: ["TEST SURVEY"] as any
             },
-            {plottingMetadata: ["TEST METADATA"] as any},
+            {},
             {},
             {activeStep: 3},
             {},
@@ -908,7 +892,7 @@ describe("Stepper component", () => {
             {
                 survey: ["TEST SURVEY"] as any
             },
-            {plottingMetadata: ["TEST METADATA"] as any},
+            {},
             {},
             {activeStep: 2},
             {},
@@ -965,7 +949,7 @@ describe("Stepper component", () => {
         expect(clearCalibrateWarnings.mock.calls.length).toBe(1);
     });
 
-    it("clear-warnings emit when in reviewInputs triggers clear warnings mutation in genericChart store", async () => {
+    it("clear-warnings emit when in reviewInputs triggers clear warnings mutation in reviewInput store", async () => {
         const wrapper = createWarningAlertWrapper(2)
         await wrapper.findComponent(WarningAlert).vm.$emit("clear-warnings")
         expect(clearReviewInputsWarnings.mock.calls.length).toBe(1);

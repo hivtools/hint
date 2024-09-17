@@ -1,4 +1,4 @@
-import {flushPromises, shallowMount} from '@vue/test-utils';
+import {flushPromises} from '@vue/test-utils';
 import Vuex from 'vuex';
 import ManageFile from "../../../app/components/files/ManageFile.vue";
 import {SurveyAndProgramState} from "../../../app/store/surveyAndProgram/surveyAndProgram";
@@ -7,12 +7,11 @@ import {
     mockBaselineState,
     mockError,
     mockMetadataState,
-    mockPlottingSelections,
     mockSurveyAndProgramState
 } from "../../mocks";
 import UploadInputs from "../../../app/components/uploadInputs/UploadInputs.vue";
-import { shallowMountWithTranslate } from '../../testHelpers';
-import { Mocked } from 'vitest';
+import {shallowMountWithTranslate} from '../../testHelpers';
+import {Mocked} from 'vitest';
 
 export function testUploadComponent(name: string, position: number) {
 
@@ -39,8 +38,10 @@ export function testUploadComponent(name: string, position: number) {
             deleteAll: vi.fn(),
             deleteVmmc: vi.fn(),
             getSurveyAndProgramData: vi.fn(),
-            selectDataType: vi.fn(),
-            validateSurveyAndProgramData: vi.fn()
+            validateSurveyAndProgramData: vi.fn(),
+            setSurveyResponse: vi.fn(),
+            setProgramResponse: vi.fn(),
+            setAncResponse: vi.fn(),
         };
 
         switch (name) {
@@ -72,10 +73,6 @@ export function testUploadComponent(name: string, position: number) {
                 baseline: {
                     namespaced: true,
                     state: mockBaselineState()
-                },
-                plottingSelections: {
-                    namespaced: true,
-                    state: mockPlottingSelections()
                 },
                 metadata: {
                     namespaced: true,
@@ -163,7 +160,7 @@ export function testUploadComponent(name: string, position: number) {
             }
         });
 
-        wrapper.findAllComponents(ManageFile)[position].props().upload({name: "TEST"});
+        wrapper.findAllComponents(ManageFile)[position].props().upload({name: "TEST"} as any);
         await flushPromises();
         expect(expectedUploadAction.mock.calls[0][1]).toStrictEqual({name: "TEST"});
     });

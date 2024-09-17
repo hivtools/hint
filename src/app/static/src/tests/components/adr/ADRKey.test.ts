@@ -1,4 +1,4 @@
-import { nextTick } from "vue";
+import {nextTick} from "vue";
 
 import ADRKey from "../../../app/components/adr/ADRKey.vue";
 import Vuex, {ActionTree} from "vuex";
@@ -10,7 +10,7 @@ import {RootState} from "../../../app/root";
 import ErrorAlert from "../../../app/components/ErrorAlert.vue";
 import {ADRActions} from "../../../app/store/adr/actions";
 import {ADRState} from "../../../app/store/adr/adr";
-import { mountWithTranslate, shallowMountWithTranslate } from "../../testHelpers";
+import {mountWithTranslate, shallowMountWithTranslate} from "../../testHelpers";
 
 describe("ADR Key", function () {
 
@@ -169,11 +169,16 @@ describe("ADR Key", function () {
     });
 
     it("can cancel editing", async () => {
+        const div = document.createElement('div');
+        div.id = 'root';
+        document.body.appendChild(div);
+
         const store = createStore();
         const rendered = shallowMountWithTranslate(ADRKey, store, {
             global: {
                 plugins: [store]
-            }
+            },
+            attachTo: "#root"
         });
         let input = rendered.findAll(".input-group");
         expect(input.length).toBe(1);
@@ -188,7 +193,6 @@ describe("ADR Key", function () {
         const buttons = rendered.findAll(".btn")
         expect(buttons[1].text()).toBe("Cancel");
         await buttons[1].trigger("click");
-
 
         input = rendered.findAll(".input-group")
         expect(input.length).toBe(1);

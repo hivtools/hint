@@ -90,7 +90,6 @@ export const getters: RootGetters & GetterTree<RootState, RootState> = {
             modelCalibrate,
             modelOptions,
             modelOutput,
-            plottingSelections,
             projects,
             surveyAndProgram
         } = state;
@@ -104,7 +103,6 @@ export const getters: RootGetters & GetterTree<RootState, RootState> = {
             extractErrors(modelCalibrate),
             extractErrors(modelOptions),
             extractErrors(modelOutput),
-            extractErrors(plottingSelections),
             extractErrors(projects),
             extractErrors(surveyAndProgram),
             state.modelRun.errors,
@@ -129,8 +127,8 @@ export const getters: RootGetters & GetterTree<RootState, RootState> = {
 
 const allReviewInputsWarnings = (state: RootState) => {
     const sapWarnings = state.surveyAndProgram?.warnings || []
-    const genericChartWarnings = state.genericChart?.warnings || []
-    return [...sapWarnings, ...genericChartWarnings]
+    const reviewInputWarnings = state.reviewInput?.warnings || []
+    return [...sapWarnings, ...reviewInputWarnings]
 }
 
 const getVersionNotes = (versions: Version[], projectName: string) => {

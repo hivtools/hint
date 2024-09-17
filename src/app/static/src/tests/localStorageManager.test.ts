@@ -2,38 +2,36 @@ import {
     mockADRState,
     mockADRUploadState,
     mockBaselineState,
-    mockCalibrateResultResponse,
+    mockCalibrateDataResponse,
+    mockCalibratePlotResponse,
+    mockComparisonPlotResponse,
     mockDataset,
+    mockDownloadResultsState,
     mockError,
     mockErrorsState,
-    mockGenericChartState,
+    mockReviewInputState,
     mockHintrVersionState,
+    mockLoadState,
     mockMetadataState,
     mockModelCalibrateState,
     mockModelOptionsState,
     mockModelOutputState,
     mockModelRunState,
-    mockPlottingSelections,
+    mockPlotDataState,
+    mockPlotSelections,
+    mockPlotState,
     mockProjectsState,
     mockRelease,
     mockStepperState,
-    mockSurveyAndProgramState,
-    mockComparisonPlotResponse,
-    mockRootState,
-    mockLoadState,
-    mockDownloadResultsState,
-    mockDownloadIndicatorData,
-    mockDownloadIndicatorState
+    mockSurveyAndProgramState
 } from "./mocks";
 import {localStorageManager, serialiseState} from "../app/localStorageManager";
 import {RootState} from "../app/root";
-import {DataType} from "../app/store/surveyAndProgram/surveyAndProgram";
 import {currentHintVersion} from "../app/hintVersion";
 import {Language} from "../app/store/translations/locales";
 import registerTranslations from "../app/store/translations/registerTranslations";
 import Vuex from 'vuex';
 import i18next from "i18next";
-import {initialDownloadIndicatorState} from "../app/store/downloadIndicator/downloadIndicator";
 
 declare const currentUser: string; // set in jest config, or on the index page when run for real
 
@@ -80,7 +78,7 @@ describe("LocalStorageManager", () => {
             currentUser: "some user",
             updatingLanguage: false,
             adr: mockADRState(),
-            genericChart: mockGenericChartState(),
+            reviewInput: mockReviewInputState(),
             adrUpload: mockADRUploadState(),
             baseline: mockBaselineState({
                 selectedDataset: dataset,
@@ -92,21 +90,21 @@ describe("LocalStorageManager", () => {
             modelOptions: mockModelOptionsState(),
             modelOutput: mockModelOutputState(),
             modelCalibrate: mockModelCalibrateState({
-                result: mockCalibrateResultResponse(),
+                result: {data: mockCalibrateDataResponse()},
                 fetchedIndicators: [],
-                calibratePlotResult: {data: "test calibrate plot result"},
+                calibratePlotResult: mockCalibratePlotResponse(),
                 comparisonPlotResult: mockComparisonPlotResponse()
             }),
             stepper: mockStepperState(),
             load: mockLoadState(),
             downloadResults: mockDownloadResultsState(),
-            downloadIndicator: mockDownloadIndicatorState(),
             invalidSteps: [],
             language: Language.en,
-            metadata: mockMetadataState({plottingMetadataError: mockError("metadataError")}),
-            plottingSelections: mockPlottingSelections(),
+            metadata: mockMetadataState({reviewInputMetadataError: mockError("metadataError")}),
+            plotData: mockPlotDataState(),
+            plotSelections: mockPlotSelections(),
+            plotState: mockPlotState(),
             surveyAndProgram: mockSurveyAndProgramState({
-                selectedDataType: DataType.Survey,
                 warnings: [{text: "test warning", locations: ["review_inputs"]}]
             }),
             projects: mockProjectsState(),
@@ -128,9 +126,7 @@ describe("LocalStorageManager", () => {
             modelCalibrate: modelCalibrateResponse,
             stepper: mockStepperState(),
             metadata: mockMetadataState(),
-            plottingSelections: mockPlottingSelections(),
             surveyAndProgram: {
-                selectedDataType: DataType.Survey,
                 warnings: [{text: "test warning", locations: ["review_inputs"]}]
             },
             hintrVersion: mockHintrVersionState()

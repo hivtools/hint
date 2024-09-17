@@ -12,7 +12,7 @@ export async function changeLanguage<T extends TranslatableState>({commit}: Acti
 
 export const ChangeLanguageAction = async (context: ActionContext<RootState, RootState>, payload: Language) => {
 
-    const {commit, dispatch, rootState} = context;
+    const {commit, dispatch, rootState, rootGetters} = context;
 
     if (rootState.language === payload) {
         return;
@@ -24,16 +24,16 @@ export const ChangeLanguageAction = async (context: ActionContext<RootState, Roo
 
     const actions: Promise<unknown>[] = [];
 
-    if (rootState.baseline?.iso3) {
-        actions.push(dispatch("metadata/getPlottingMetadata", rootState.baseline.iso3));
+    if (rootState.baseline?.iso3 && rootGetters["baseline/complete"] && rootGetters["surveyAndProgramme/complete"]) {
+        actions.push(dispatch("metadata/getReviewInputMetadata", rootState.baseline.iso3));
     }
 
     if (rootState.modelCalibrate.status.done) {
         actions.push(dispatch("modelCalibrate/getResult"));
     }
 
-    if (Object.keys(rootState.genericChart.datasets).length > 0) {
-        actions.push(dispatch("genericChart/refreshDatasets"));
+    if (Object.keys(rootState.reviewInput.datasets).length > 0) {
+        actions.push(dispatch("reviewInput/refreshDatasets"));
     }
 
     await Promise.all(actions);

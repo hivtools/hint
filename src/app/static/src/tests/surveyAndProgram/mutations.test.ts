@@ -1,13 +1,7 @@
-import {DataType, SurveyAndProgramState} from "../../app/store/surveyAndProgram/surveyAndProgram";
+import {SurveyAndProgramState} from "../../app/store/surveyAndProgram/surveyAndProgram";
 import {getters as surveyAndProgramGetters} from "../../app/store/surveyAndProgram/getters";
 import {mutations, SurveyAndProgramMutation} from "../../app/store/surveyAndProgram/mutations";
-import {
-    mockError,
-    mockRootState,
-    mockSurveyAndProgramState,
-    mockSurveyResponse,
-    mockWarning
-} from "../mocks";
+import {mockError, mockRootState, mockSurveyAndProgramState, mockSurveyResponse, mockWarning} from "../mocks";
 
 import {Module} from "vuex";
 import {RootState} from "../../app/root";
@@ -97,6 +91,27 @@ describe("Survey and programme mutations", () => {
         expect(testState.ancErroredFile).toBe("error.txt");
     });
 
+    it("sets vmmc data and filename and clears error on VmmcUpdated", () => {
+        const testState = mockSurveyAndProgramState({vmmcError: mockError("test"), vmmcErroredFile: "error.txt"});
+        mutations[SurveyAndProgramMutation.VmmcUpdated](testState, testPayload);
+        expect(testState.vmmc!!.data).toStrictEqual(testData);
+        expect(testState.vmmc!!.filename).toBe("somefile.csv");
+        expect(testState.vmmcError).toBe(null);
+        expect(testState.vmmcErroredFile).toBe(null);
+    });
+
+    it("sets error on VmmcError", () => {
+        const testState = mockSurveyAndProgramState();
+        mutations[SurveyAndProgramMutation.VmmcError](testState, {payload: "Some error"});
+        expect(testState.vmmcError).toBe("Some error");
+    });
+
+    it("sets errored file on VmmcErroredFile", () => {
+        const testState = mockSurveyAndProgramState();
+        mutations[SurveyAndProgramMutation.VmmcErroredFile](testState, {payload: "error.txt"});
+        expect(testState.vmmcErroredFile).toBe("error.txt");
+    });
+
     it("is complete once survey file is present", () => {
         const testStore: Module<SurveyAndProgramState, RootState> = {
             state: mockSurveyAndProgramState(),
@@ -117,12 +132,6 @@ describe("Survey and programme mutations", () => {
         const testState = mockSurveyAndProgramState();
         mutations.Ready(testState);
         expect(testState.ready).toBe(true);
-    });
-
-    it("sets selected DataType", () => {
-        const testState = mockSurveyAndProgramState({selectedDataType: DataType.Survey});
-        mutations[SurveyAndProgramMutation.SelectedDataTypeUpdated](testState, {payload: DataType.Program});
-        expect(testState.selectedDataType).toBe(DataType.Program);
     });
 
     it("sets and clears warnings", () => {

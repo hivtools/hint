@@ -1,15 +1,9 @@
 import {Payload} from "vuex";
-import {CalibrateDataResponse, Error, FilterOption, VersionInfo, Warning} from "./generated";
+import {Error, FilterOption, VersionInfo, Warning} from "./generated";
 import {Language} from "./store/translations/locales";
 
 export interface PayloadWithType<T> extends Payload {
     payload: T
-}
-
-export interface PartialFileUploadProps {
-    valid: boolean,
-    error: Error | null
-    existingFileName: string
 }
 
 export interface IndicatorValues {
@@ -24,12 +18,6 @@ export interface BubbleIndicatorValues extends IndicatorValues {
     sizeValue: number
     sizeLower?: number
     sizeUpper?: number
-}
-
-export interface LevelLabel {
-    id: number
-    area_level_label: string
-    display: boolean
 }
 
 export type Dict<V> = { [k: string]: V }
@@ -183,12 +171,6 @@ export interface PollingStarted {
     pollId: number,
     downloadType: string
 }
-export interface SelectedADRUploadFiles {
-    summary: any,
-    spectrum: any,
-    coarseOutput?: any,
-    agyw?: any,
-}
 
 export enum DOWNLOAD_TYPE {
     SPECTRUM = "Spectrum",
@@ -198,86 +180,22 @@ export enum DOWNLOAD_TYPE {
     AGYW = "AGYW",
 }
 
-export interface GenericChartTableConfig {
-    columns: GenericChartTableColumnConfig[]
-}
-
-export interface GenericChartTableColumnConfig {
-    data: {
-        columnId: string,
-        labelColumn?: string
-        hierarchyColumn?: string
-        useValueFormat?: boolean
-    },
-    header: {
-        type: "columnLabel" | "selectedFilterOption",
-        column: string
-    }
-}
-
-export interface DatasetConfig {
-    id: string
-    label: string
-    url: string
-    filters?: DatasetFilterConfig[],
-    table?: GenericChartTableConfig
-}
-
-export interface DatasetFilterConfig {
-    id: string,
-    source: string,
-    allowMultiple: boolean
-}
-
-export interface DataSourceConfig {
-    id: string
-    type: "fixed" | "editable"
-    label?: string
-    datasetId: string
-    showFilters: boolean
-    showIndicators: boolean
-}
-
-export interface GenericChartMetadata {
-    datasets: DatasetConfig[]
-    dataSelectors: {
-        dataSources: DataSourceConfig[]
-    }
-    subplots?: {
-        columns: number
-        distinctColumn: string
-        heightPerRow: number
-        subplotsPerPage: number
-    },
-    valueFormatColumn?: string
-    chartConfig: {
-        id: string
-        label: string
-        description?: string
-        config: string
-    }[]
-}
-
-export interface GenericChartMetadataResponse {
-    [key: string]: GenericChartMetadata;
-}
-
-export interface GenericChartColumnValue extends FilterOption {
+export interface ReviewInputDataColumnValue extends FilterOption {
     format?: string | null,
     accuracy?: string | null
 }
 
-export interface GenericChartColumn {
+export interface ReviewInputDataColumn {
     id: string,
     column_id: string,
     label: string,
-    values: GenericChartColumnValue[]
+    values: ReviewInputDataColumnValue[]
 }
 
-export interface GenericChartDataset {
+export interface ReviewInputDataset {
     data: Dict<unknown>[],
     metadata: {
-        columns: GenericChartColumn[],
+        columns: ReviewInputDataColumn[],
         defaults: {
             selected_filter_options: Dict<FilterOption[]>
         }
@@ -342,13 +260,6 @@ export interface DownloadIndicatorPayload {
     options?: any
 }
 
-export interface Field {
-    key: string,
-    label?: string
-    sortable: boolean,
-    sortByFormatted: boolean
-}
-
 export interface GenericResponse<T> {
     data: T | null
     errors: {
@@ -374,18 +285,20 @@ export interface StepperNavigationProps {
 }
 
 export enum Step {
-    ModelOptions = 3
+    UploadInputs = 1,
+    ReviewInputs = 2,
+    ModelOptions = 3,
+    FitModel = 4,
+    CalibrateModel = 5,
+    ReviewOutput = 6,
+    SaveResults = 7
 }
 
 export interface PollingState {
     statusPollId: number
 }
 
-export interface CalibrateResultWithType {
-    data: CalibrateDataResponse["data"];
-    indicatorId: string;
-}
-
+// TODO: Remove this in favour of plotting metadata?
 export enum ModelOutputTabs {
     Map = "map",
     Bar = "bar",

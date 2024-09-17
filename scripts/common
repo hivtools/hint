@@ -7,7 +7,7 @@ else
     GIT_BRANCH=$TRAVIS_BRANCH
 fi
 
-REGISTRY=mrcide
+REGISTRY=ghcr.io/hivtools
 NAME=hint
 
 APP_DOCKER_COMMIT_TAG=$REGISTRY/$NAME:$GIT_ID

@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div id="stepper">
         <div class="row">
             <template v-for="step in steps" :key="step.number">
                 <step :active="isActive(step.number)"
@@ -65,14 +65,14 @@
     import ModelOptions from "./modelOptions/ModelOptions.vue";
     import VersionStatus from "./projects/VersionStatus.vue";
     import {mapGettersByNames, mapStateProp, mapStateProps, mapMutationByName, mapGetterByName} from "../utils";
-    import {StepperNavigationProps, StepWarnings} from "../types";
+    import {StepperNavigationProps, StepWarnings, Step as StepEnum} from "../types";
     import {ProjectsState} from "../store/projects/projects";
     import {RootState} from "../root";
     import StepperNavigation from "./StepperNavigation.vue";
     import {ModelRunMutation} from "../store/modelRun/mutations";
     import {ModelOptionsMutation} from "../store/modelOptions/mutations";
     import {ModelCalibrateMutation} from "../store/modelCalibrate/mutations";
-    import {GenericChartMutation} from "../store/genericChart/mutations";
+    import {ReviewInputMutation} from "../store/reviewInput/mutations";
     import {SurveyAndProgramMutation} from "../store/surveyAndProgram/mutations";
     import { defineComponent } from "vue";
 
@@ -150,7 +150,7 @@
             },
             clearReviewInputsWarnings() {
                 this.clearSurveyAndProgramWarnings()
-                this.clearGenericChartWarnings()
+                this.clearReviewInputWarnings()
             },
             clearWarnings(){
                 const mutationMethods: { [key: number]: () => void; } = {
@@ -168,7 +168,7 @@
             clearModelRunWarnings: mapMutationByName("modelRun", ModelRunMutation.ClearWarnings),
             clearModelCalibrateWarnings: mapMutationByName("modelCalibrate", ModelCalibrateMutation.ClearWarnings),
             clearModelOptionsWarnings: mapMutationByName("modelOptions", ModelOptionsMutation.ClearWarnings),
-            clearGenericChartWarnings: mapMutationByName("genericChart", GenericChartMutation.ClearWarnings),
+            clearReviewInputWarnings: mapMutationByName("reviewInput", ReviewInputMutation.ClearWarnings),
             clearSurveyAndProgramWarnings: mapMutationByName("surveyAndProgram", SurveyAndProgramMutation.ClearWarnings)
         },
         beforeMount() {
@@ -196,8 +196,9 @@
         watch: {
             complete: function (){
                 // auto-progress from modelRun to modelCalibrate if there are no warnings to display
-                if (this.activeStep === 4 && this.isComplete(4) && this.isEnabled(5) &&
-                        this.activeStepWarnings.modelRun.length === 0){
+                if (this.activeStep === StepEnum.FitModel && this.isComplete(StepEnum.FitModel) &&
+                    this.isEnabled(StepEnum.CalibrateModel) &&
+                        this.activeStepWarnings.modelRun.length === 0) {
                     this.next();
                 }
             },

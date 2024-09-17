@@ -1,6 +1,5 @@
-import {shallowMount} from '@vue/test-utils';
 import Warning from "../../app/components/Warning.vue";
-import Vue, { nextTick } from "vue";
+import {nextTick} from "vue";
 import Vuex from "vuex";
 import VueFeather from "vue-feather";
 import {emptyState} from "../../app/root";
@@ -156,7 +155,8 @@ describe("Warning component", () => {
         await wrapper.setProps(mockPropsModelRun)
         await nextTick()
         expect(wrapper.findAll("li").length).toBe(1);
-        expect(wrapper.find("li > div").attributes("style")).toBe("height: 48px; overflow: hidden; display: -webkit-box;");
+        expect(wrapper.find("li > div").attributes("style"))
+            .toBe("height: 48px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2;");
     });
 
 })

@@ -3,12 +3,11 @@ import {emptyState, RootState} from "../../root";
 import {initialModelOptionsState} from "../modelOptions/modelOptions";
 import {initialModelRunState} from "../modelRun/modelRun";
 import {initialModelOutputState} from "../modelOutput/modelOutput";
-import {initialPlottingSelectionsState} from "../plottingSelections/plottingSelections";
 import {initialLoadState} from "../load/state";
 import {initialMetadataState} from "../metadata/metadata";
 import {initialErrorsState} from "../errors/errors";
 import {initialBaselineState} from "../baseline/baseline";
-import {DataType, initialSurveyAndProgramState} from "../surveyAndProgram/surveyAndProgram";
+import {initialSurveyAndProgramState} from "../surveyAndProgram/surveyAndProgram";
 import {PayloadWithType, PollingState, Project} from "../../types";
 import {mutations as languageMutations} from "../language/mutations";
 import {initialProjectsState} from "../projects/projects";
@@ -16,12 +15,13 @@ import {router} from "../../router"
 import {initialModelCalibrateState} from "../modelCalibrate/modelCalibrate";
 import {initialADRUploadState} from "../adrUpload/adrUpload";
 import {initialDownloadResultsState} from "../downloadResults/downloadResults";
-import {initialGenericChartState} from "../genericChart/genericChart";
-import {initialDownloadIndicatorState} from "../downloadIndicator/downloadIndicator";
+import {initialReviewInputState} from "../reviewInput/reviewInput";
+import {initialPlotSelectionsState} from "../plotSelections/plotSelections";
+import {initialPlotDataState} from "../plotData/plotData";
+import {initialPlotState} from "../plotState/plotState";
 
 export enum RootMutation {
     Reset = "Reset",
-    ResetSelectedDataType = "ResetSelectedDataType",
     ResetOptions = "ResetOptions",
     ResetOutputs = "ResetOutputs",
     SetProject = "SetProject",
@@ -47,15 +47,14 @@ export const mutations: MutationTree<RootState> = {
             baseline: maxValidStep < 1 ? initialBaselineState() : state.baseline,
             metadata: maxValidStep < 1 ? initialMetadataState() : state.metadata,
             surveyAndProgram: maxValidStep < 2 ? initialSurveyAndProgramState() : state.surveyAndProgram,
-            genericChart: maxValidStep < 2 ? {
-                ...initialGenericChartState(),
-                genericChartMetadata: state.genericChart.genericChartMetadata
-            } : state.genericChart,
+            reviewInput: maxValidStep < 2 ? initialReviewInputState() : state.reviewInput,
             modelOptions: maxValidStep < 3 ? initialModelOptionsState() : state.modelOptions,
             modelRun: maxValidStep < 4 ? initialModelRunState() : state.modelRun,
             modelCalibrate: initialModelCalibrateState(),
             modelOutput: initialModelOutputState(),
-            plottingSelections: initialPlottingSelectionsState(),
+            plotData: initialPlotDataState(),
+            plotSelections: initialPlotSelectionsState(),
+            plotState: initialPlotState(),
             stepper: state.stepper,
             load: initialLoadState(),
             errors: initialErrorsState(),
@@ -66,7 +65,6 @@ export const mutations: MutationTree<RootState> = {
             },
             currentUser: state.currentUser,
             downloadResults: initialDownloadResultsState(),
-            downloadIndicator: initialDownloadIndicatorState()
         };
         Object.assign(state, resetState);
 
@@ -87,10 +85,7 @@ export const mutations: MutationTree<RootState> = {
             language: state.language,
             hintrVersion: state.hintrVersion,
             adr: state.adr,
-            genericChart: {
-                ...initialGenericChartState(),
-                genericChartMetadata: state.genericChart.genericChartMetadata
-            },
+            reviewInput: initialReviewInputState(),
             projects: {
                 ...initialProjectsState(),
                 currentProject: action.payload,
@@ -107,34 +102,6 @@ export const mutations: MutationTree<RootState> = {
 
         if (router.currentRoute.value.path !== "/") {
             router.push("/");
-        }
-    },
-
-    [RootMutation.ResetSelectedDataType](state: RootState) {
-        //TODO: Should this move to SAP since we're removing output from DataType?
-        const dataAvailable = (dataType: DataType | null) => {
-            if (dataType == null) {
-                return true
-            }
-            switch (dataType) {
-                case DataType.ANC:
-                    return !!state.surveyAndProgram.anc;
-                case DataType.Program:
-                    return !!state.surveyAndProgram.program;
-                case DataType.Survey:
-                    return !!state.surveyAndProgram.survey;
-                case DataType.Vmmc:
-                    return !!state.surveyAndProgram.vmmc;
-            }
-        };
-
-        if (!dataAvailable(state.surveyAndProgram.selectedDataType)) {
-
-            const availableData: number[] = Object.keys(DataType)
-                .filter(k => !isNaN(Number(k)) && dataAvailable(Number(k)))
-                .map(k => Number(k));
-
-            state.surveyAndProgram.selectedDataType = availableData.length > 0 ? availableData[0] : null;
         }
     },
 
@@ -158,13 +125,6 @@ export const mutations: MutationTree<RootState> = {
         Object.assign(state.modelCalibrate, initialModelCalibrateState());
         state.modelCalibrate.ready = true;
         Object.assign(state.modelOutput, initialModelOutputState());
-        const sapSelections = state.plottingSelections.sapChoropleth;
-        const colourScales = state.plottingSelections.colourScales;
-        Object.assign(state.plottingSelections, {
-            ...initialPlottingSelectionsState(),
-            sapChoropleth: sapSelections,
-            colourScales: colourScales
-        });
         Object.assign(state.adrUpload, initialADRUploadState());
         Object.assign(state.downloadResults, initialDownloadResultsState());
     },

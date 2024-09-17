@@ -17,8 +17,7 @@ import {actions} from "../../app/store/baseline/actions";
 import {BaselineMutation} from "../../app/store/baseline/mutations";
 import {expectEqualsFrozen, testUploadErrorCommitted} from "../testHelpers";
 import {ADRSchemas} from "../../app/types";
-import {initialChorplethSelections} from "../../app/store/plottingSelections/plottingSelections";
-import { Mock } from "vitest";
+import {Mock} from "vitest";
 
 const adrSchemas: ADRSchemas = {
     baseUrl: "adr.com",
@@ -36,7 +35,7 @@ const adrSchemas: ADRSchemas = {
 
 const rootState = mockRootState({
     adr: mockADRState({schemas: adrSchemas}),
-    metadata: mockMetadataState({plottingMetadata: null})
+    metadata: mockMetadataState()
 });
 
 
@@ -177,7 +176,7 @@ describe("Baseline actions", () => {
         (console.log as Mock).mockClear();
     });
 
-    it("sets country and iso3 after PJNZ file upload, and fetches plotting metadata, and validates", async () => {
+    it("sets country and iso3 after PJNZ file upload and validates", async () => {
 
         mockAxios.onPost(`/baseline/pjnz/`)
             .reply(200, mockSuccess({data: {country: "Malawi", iso3: "MWI"}}));
@@ -191,7 +190,7 @@ describe("Baseline actions", () => {
         checkPJNZImportUpload(commit, dispatch)
     });
 
-    it("sets country and iso3 after PJNZ import, and fetches plotting metadata, and validates", async () => {
+    it("sets country and iso3 after PJNZ import and validates", async () => {
         const url = "/adr/pjnz/"
         mockAxios.onPost(url)
             .reply(200, mockSuccess({data: {country: "Malawi", iso3: "MWI"}}));
@@ -214,17 +213,13 @@ describe("Baseline actions", () => {
             payload: {data: {country: "Malawi", iso3: "MWI"}}
         });
 
-        expect(dispatch.mock.calls.length).toBe(3);
+        expect(dispatch.mock.calls.length).toBe(2);
 
-        expect(dispatch.mock.calls[1].length).toBe(3);
         expect(dispatch.mock.calls[0][0]).toBe("validate");
-        expect(dispatch.mock.calls[1][0]).toBe("metadata/getPlottingMetadata");
-        expect(dispatch.mock.calls[1][1]).toBe("MWI");
-        expect(dispatch.mock.calls[1][2]).toStrictEqual({root: true});
-        expect(dispatch.mock.calls[2][0]).toBe("surveyAndProgram/validateSurveyAndProgramData");
+        expect(dispatch.mock.calls[1][0]).toBe("surveyAndProgram/validateSurveyAndProgramData");
     }
 
-    it("upload PJNZ does not fetch plotting metadata or validate if error occurs", async () => {
+    it("upload PJNZ does not validate if error occurs", async () => {
         mockAxios.onPost(`/baseline/pjnz/`)
             .reply(400, mockFailure("test error"));
 
@@ -237,7 +232,7 @@ describe("Baseline actions", () => {
         expect(dispatch.mock.calls[0][0]).toBe("surveyAndProgram/validateSurveyAndProgramData")
     });
 
-    it("import PJNZ does not fetch plotting metadata or validate if error occurs", async () => {
+    it("import PJNZ does not validate if error occurs", async () => {
         mockAxios.onPost(`/adr/pjnz/`)
             .reply(400, mockFailure("test error"));
 
@@ -321,7 +316,7 @@ describe("Baseline actions", () => {
         actions.uploadShape);
 
     const checkShapeImportUpload = (commit: Mock, dispatch: Mock, mockShape: any) => {
-        expect(commit.mock.calls.length).toBe(3);
+        expect(commit.mock.calls.length).toBe(2);
         expect(commit.mock.calls[0][0]).toStrictEqual({
             type: BaselineMutation.ShapeUpdated,
             payload: null
@@ -337,12 +332,6 @@ describe("Baseline actions", () => {
 
         expect(dispatch.mock.calls[1][0]).toBe("surveyAndProgram/validateSurveyAndProgramData");
         expect(dispatch.mock.calls[1][2]).toStrictEqual({root: true});
-
-        expect(commit.mock.calls[2][0]).toStrictEqual({
-            type: "plottingSelections/updateSAPChoroplethSelections",
-            payload: initialChorplethSelections()
-        });
-        expect(commit.mock.calls[2][1]).toStrictEqual({root: true});
     };
 
 
@@ -428,7 +417,7 @@ describe("Baseline actions", () => {
         mockFormData,
         actions.uploadPopulation);
 
-    it("gets baseline data, commits and get plotting metadata if not available and marks state as ready", async () => {
+    it("gets baseline data, commits and marks state as ready", async () => {
 
         const mockShape = mockShapeResponse();
         const mockPopulation = mockPopulationResponse();
@@ -457,10 +446,8 @@ describe("Baseline actions", () => {
         expect(payloads.filter(p => Object.isFrozen(p)).length).toBe(4);
         //ready payload is true, which is frozen by definition
 
-        expect(dispatch).toHaveBeenCalledTimes(2)
-        expect(dispatch.mock.calls[0][0]).toBe("metadata/getPlottingMetadata")
-        expect(dispatch.mock.calls[0][1]).toBe("Malawi")
-        expect(dispatch.mock.calls[1][0]).toBe("validate")
+        expect(dispatch).toHaveBeenCalledTimes(1)
+        expect(dispatch.mock.calls[0][0]).toBe("validate")
     });
 
     it("commits response on validate", async () => {
@@ -504,7 +491,7 @@ describe("Baseline actions", () => {
         });
     });
 
-    it("fails silently and marks state ready and does not get plotting metadata if getting baseline data fails", async () => {
+    it("fails silently and marks state ready if getting baseline data fails", async () => {
 
         mockAxios.onGet(`/baseline/pjnz/`)
             .reply(500);

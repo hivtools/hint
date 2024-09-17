@@ -1,15 +1,13 @@
-import {shallowMount} from '@vue/test-utils';
-
 import ErrorAlert from "../../../app/components/ErrorAlert.vue";
 import Tick from "../../../app/components/Tick.vue";
 import FileUpload from "../../../app/components/files/FileUpload.vue";
 import ManageFile from "../../../app/components/files/ManageFile.vue";
-import {mockRootState, mockError} from "../../mocks";
+import {mockError} from "../../mocks";
 import LoadingSpinner from "../../../app/components/LoadingSpinner.vue";
 import Vuex, {Store} from "vuex";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {expectTranslated, expectTranslatedWithStoreType, shallowMountWithTranslate} from "../../testHelpers";
-import { nextTick } from 'vue';
+import {nextTick} from 'vue';
 import {emptyState, RootState,} from "../../../app/root";
 
 describe("Manage file component", () => {
@@ -221,7 +219,7 @@ describe("Manage file component", () => {
         expect(wrapper.findAllComponents(LoadingSpinner).length).toBe(1);
         expect(wrapper.findAllComponents(Tick).length).toBe(0);
 
-        await wrapper.setProps({valid: true});
+        await wrapper.setProps({valid: true} as any);
 
         expect(wrapper.findAllComponents(LoadingSpinner).length).toBe(0);
         expect(wrapper.findAllComponents(Tick).length).toBe(1);
@@ -245,7 +243,7 @@ describe("Manage file component", () => {
         expect(wrapper.findAllComponents(LoadingSpinner).length).toBe(1);
         expect(wrapper.findAllComponents(Tick).length).toBe(0);
 
-        await wrapper.setProps({error: "Some error"});
+        await wrapper.setProps({error: "Some error"} as any);
 
         expect(wrapper.findAllComponents(LoadingSpinner).length).toBe(0);
         expect(wrapper.findAllComponents(Tick).length).toBe(0);

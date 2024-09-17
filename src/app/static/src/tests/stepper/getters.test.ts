@@ -1,12 +1,15 @@
 import {
     mockADRState,
-    mockBaselineState, mockModelCalibrateState,
+    mockBaselineState,
+    mockModelCalibrateState,
     mockModelRunState,
     mockRootState,
     mockStepperState,
     mockSurveyAndProgramState
 } from "../mocks";
 import {getters} from "../../app/store/stepper/getters";
+import {StepperState} from "../../app/store/stepper/stepper";
+import {RootState} from "../../app/root";
 
 describe("stepper getters", () => {
 
@@ -126,6 +129,26 @@ describe("stepper getters", () => {
             5: "calibrateModel",
             6: "reviewOutput",
             7: "downloadResults"
+        });
+    });
+
+    it("can detect if any step hasChanges", () => {
+        const mockModelOptionsHasChanges = "mockOptionsChanged";
+        const mockModelRunComplete = "mockModelRunComplete";
+        const rootGetters = {
+            "modelOptions/hasChanges": mockModelOptionsHasChanges,
+            "modelRun/complete": mockModelRunComplete
+        };
+
+        const result = getters.hasChanges({} as StepperState, null, {} as RootState, rootGetters);
+        expect(result).toStrictEqual({
+            1: null,
+            2: false,
+            3: mockModelOptionsHasChanges,
+            4: mockModelRunComplete,
+            5: false,
+            6: false,
+            7: false
         });
     });
 });

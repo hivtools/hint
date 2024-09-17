@@ -1,34 +1,78 @@
-import {modelCalibrateGetters} from "../../app/store/modelCalibrate/modelCalibrate";
-import {mockModelCalibrateState} from "../mocks";
+import {mockCalibrateMetadataResponse, mockModelCalibrateState, mockRootState} from "../mocks";
+import {getters} from "../../app/store/modelCalibrate/getters";
 
 describe("modelCalibrate getters", () => {
-
-    const state = mockModelCalibrateState({
-            calibratePlotResult: {
-                plottingMetadata: {
-                    barchart: {
-                        indicators: ["testIndicators"],
-                        filters: ["testFilters"],
-                        defaults: ["testDefaults"]
-                    }
-                }
-            }
+    it("can get column ID from filter ID", () => {
+        const calibrateResponse = mockCalibrateMetadataResponse({
+            filterTypes: [
+                {
+                    id: "filter1",
+                    column_id: "column1",
+                    options: []
+                },
+                {
+                    id: "filter2",
+                    column_id: "column2",
+                    options: []
+                },
+            ]
+        })
+        const calibrateState = mockModelCalibrateState({
+            metadata: calibrateResponse
         });
+        const rootState = mockRootState({
+            modelCalibrate: calibrateState
+        });
+        const getter = getters.filterIdToColumnId(calibrateState, null, rootState);
 
-    it("gets barchart indicators", async () => {
-        const result = modelCalibrateGetters.indicators(state);
-        expect(result.length).toEqual(1);
-        expect(result).toStrictEqual(["testIndicators"]);
+        expect(getter("choropleth", "filter1")).toStrictEqual("column1");
+        expect(getter("choropleth", "filter2")).toStrictEqual("column2");
     });
 
-    it("gets barchart filters", async () => {
-        const result = modelCalibrateGetters.filters(state);
-        expect(result).toStrictEqual(["testFilters"]);
-    });
+    it("can tableMetadata from custom plot effects", () => {
+        const calibrateResponse = mockCalibrateMetadataResponse({
+            plotSettingsControl: {
+                choropleth: {
+                    plotSettings: []
+                },
+                barchart: {
+                    plotSettings: []
+                },
+                table: {
+                    plotSettings: [{
+                        id: "presets",
+                        label: "Table presets",
+                        options: [
+                            {
+                                id: "opt1",
+                                label: "Option 1",
+                                effect: {
+                                    customPlotEffect: {
+                                        row: ["age"],
+                                        column: ["sex"]
+                                    }
+                                }
+                            }
+                        ]
+                    }]
+                },
+                bubble: {
+                    plotSettings: []
+                },
+            }
+        })
+        const calibrateState = mockModelCalibrateState({
+            metadata: calibrateResponse
+        });
+        const rootState = mockRootState({
+            modelCalibrate: calibrateState
+        });
+        const getter = getters.tableMetadata(calibrateState, null, rootState);
 
-    it("gets calibratePlotDefaultSelections", async () => {
-        const result = modelCalibrateGetters.calibratePlotDefaultSelections(state);
-        expect(result).toStrictEqual(["testDefaults"]);
+        expect(getter("table", "opt1")).toStrictEqual({
+            row: ["age"],
+            column: ["sex"]
+        });
+        expect(getter("table", "opt2")).toBe(undefined);
     });
-
-})
+});

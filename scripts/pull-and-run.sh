@@ -9,7 +9,7 @@ $HERE/run-dependencies.sh
 . $HERE/common # sets GIT_BRANCH
 
 TEST_CONFIG=$HERE/../src/app/static/scripts/test.properties
-HINT_IMAGE=mrcide/$HINT:$GIT_BRANCH
+HINT_IMAGE=ghcr.io/hivtools/$HINT:$GIT_BRANCH
 
 docker pull $HINT_IMAGE
 

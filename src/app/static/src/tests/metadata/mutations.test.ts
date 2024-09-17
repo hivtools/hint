@@ -2,30 +2,10 @@ import {mutations} from "../../app/store/metadata/mutations";
 import {
     mockError,
     mockMetadataState,
-    mockPlottingMetadataResponse,
+    mockReviewInputMetadata,
 } from "../mocks";
 
 describe("Metadata mutations", () => {
-
-    it("sets metadata on PlottingMetadataFetched", () => {
-
-        const testResponse = mockPlottingMetadataResponse();
-        const testState = mockMetadataState({plottingMetadataError: mockError("previous error")});
-        mutations.PlottingMetadataFetched(testState, {
-            payload: testResponse
-        });
-        expect(testState.plottingMetadata).toStrictEqual(testResponse);
-        expect(testState.plottingMetadataError).toBe(null);
-    });
-
-    it("sets error on PlottingMetadataError", () => {
-        const testState = mockMetadataState();
-        const error = mockError("Test Error");
-        mutations.PlottingMetadataError(testState, {
-            payload: error
-        });
-        expect(testState.plottingMetadataError).toBe(error);
-    });
 
     it("sets error on AdrUploadMetadataError", () => {
         const testState = mockMetadataState();
@@ -69,5 +49,30 @@ describe("Metadata mutations", () => {
             [{type: "spectrum", description: "new zip"}]
         );
         expect(testState.adrUploadMetadataError).toBe(null);
+    });
+
+    it("sets review input metadata fetched", () => {
+        const mockMetadata = mockReviewInputMetadata();
+
+        const testState = mockMetadataState({
+            reviewInputMetadata: null,
+            reviewInputMetadataError: mockError("previous error")
+        });
+
+        mutations.ReviewInputsMetadataFetched(testState, {
+            payload: mockMetadata
+        });
+
+        expect(testState.reviewInputMetadata).toStrictEqual(mockMetadata);
+        expect(testState.reviewInputMetadataError).toBe(null);
+    });
+
+    it("sets error on ReviewInputsMetadataError", () => {
+        const testState = mockMetadataState();
+        const error = mockError("Test Error");
+        mutations.ReviewInputsMetadataError(testState, {
+            payload: error
+        });
+        expect(testState.reviewInputMetadataError).toBe(error);
     });
 });

@@ -2,56 +2,62 @@ import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
 import {BaselineState, initialBaselineState} from "../app/store/baseline/baseline";
 import {initialPasswordState, PasswordState} from "../app/store/password/password";
-import {
-    initialSurveyAndProgramState,
-    SurveyAndProgramState
-} from "../app/store/surveyAndProgram/surveyAndProgram"
+import {initialSurveyAndProgramState, SurveyAndProgramState} from "../app/store/surveyAndProgram/surveyAndProgram"
 
 import {
     AncResponse,
+    CalibrateDataResponse,
+    CalibrateMetadataResponse,
+    CalibratePlotResponse,
+    IndicatorMetadata,
+    ComparisonPlotResponse,
+    DownloadSubmitRequest,
+    Error,
     ModelResultResponse,
     ModelStatusResponse,
     PjnzResponse,
-    PlottingMetadataResponse,
     PopulationResponse,
-    ProgrammeFilters,
     ProgrammeResponse,
     Response,
+    ReviewInputFilterMetadataResponse,
     ShapeResponse,
-    SurveyFilters,
     SurveyResponse,
     ValidateBaselineResponse,
-    Error,
-    CalibrateResultResponse,
-    Warning,
-    DownloadSubmitRequest,
-    ComparisonPlotResponse,
-    CalibrateMetadataResponse,
-    VmmcResponse
+    VmmcResponse,
+    Warning
 } from "../app/generated";
 import {initialModelRunState, ModelRunState} from "../app/store/modelRun/modelRun";
 import {emptyState, RootState} from "../app/root";
 import {initialStepperState, StepperState} from "../app/store/stepper/stepper";
-import {initialMetadataState, MetadataState} from "../app/store/metadata/metadata";
+import {initialMetadataState, MetadataState, PlotMetadataFrame} from "../app/store/metadata/metadata";
 import {initialLoadState, LoadState} from "../app/store/load/state";
 import {initialModelOptionsState, ModelOptionsState} from "../app/store/modelOptions/modelOptions";
 import {initialModelOutputState, ModelOutputState} from "../app/store/modelOutput/modelOutput";
-import {
-    initialPlottingSelectionsState,
-    PlottingSelectionsState
-} from "../app/store/plottingSelections/plottingSelections";
 import {ErrorsState, initialErrorsState} from "../app/store/errors/errors";
-import {ColourScalesState, initialColourScalesState} from "../app/store/plottingSelections/plottingSelections";
-import {Dataset, DatasetResource, DownloadIndicatorDataset, DownloadResultsDependency, Release} from "../app/types";
+import {
+    Dataset,
+    DatasetResource,
+    DownloadIndicatorDataset,
+    DownloadResultsDependency,
+    ReviewInputDataset,
+    Release
+} from "../app/types";
 import {initialProjectsState, ProjectsState} from "../app/store/projects/projects";
 import {initialModelCalibrateState, ModelCalibrateState} from "../app/store/modelCalibrate/modelCalibrate";
 import { HintrVersionState, initialHintrVersionState } from "../app/store/hintrVersion/hintrVersion";
 import {ADRState, initialADRState} from "../app/store/adr/adr";
 import {ADRUploadState, initialADRUploadState} from "../app/store/adrUpload/adrUpload";
 import {DownloadResultsState, initialDownloadResultsState} from "../app/store/downloadResults/downloadResults";
-import {GenericChartState, initialGenericChartState} from "../app/store/genericChart/genericChart";
+import {ReviewInputState, initialReviewInputState} from "../app/store/reviewInput/reviewInput";
 import {DynamicControlType, DynamicFormMeta} from "@reside-ic/vue-next-dynamic-form";
-import {DownloadIndicatorState, initialDownloadIndicatorState} from "../app/store/downloadIndicator/downloadIndicator";
+import {
+    ControlSelection,
+    FilterSelection,
+    initialPlotSelectionsState,
+    PlotSelectionsState
+} from "../app/store/plotSelections/plotSelections";
+import { PlotDataState, initialPlotDataState } from "../app/store/plotData/plotData";
+import { PlotState, initialPlotState } from "../app/store/plotState/plotState";
 
 export const mockAxios = new MockAdapter(axios);
 
@@ -161,19 +167,93 @@ export const mockModelOutputState = (props?: Partial<ModelOutputState>): ModelOu
     }
 }
 
-export const mockPlottingSelections = (props?: Partial<PlottingSelectionsState>) => {
+export const mockPlotDataState = (props?: Partial<PlotDataState>) => {
     return {
-        ...initialPlottingSelectionsState(),
+        ...initialPlotDataState(),
         ...props
     }
 };
 
-export const mockColourScales = (props?: Partial<ColourScalesState>) => {
+
+export const mockIndicatorMetadata = (props?: Partial<IndicatorMetadata>): IndicatorMetadata => {
     return {
-        ...initialColourScalesState(),
+        indicator: "prevalence",
+        value_column: "mean",
+        indicator_column: "indicator",
+        indicator_value: "prevalence",
+        name: "Prevalence",
+        error_low_column: "lower",
+        error_high_column: "upper",
+        min: 0,
+        max: 1,
+        colour: "interpolateReds",
+        invert_scale: false,
+        format: "0.00",
+        scale: 1,
+        accuracy: null,
+        ...props
+    };
+};
+
+export const mockPlotSelections = (props?: Partial<PlotSelectionsState>) => {
+    return {
+        ...initialPlotSelectionsState(),
         ...props
     }
 };
+
+export const mockPlotState = (props?: Partial<PlotState>) => {
+    return {
+        ...initialPlotState(),
+        ...props
+    }
+};
+
+export const mockPlotSelectionsState = (props?: Partial<PlotSelectionsState>): PlotSelectionsState => {
+    return {
+        ...initialPlotSelectionsState(),
+        ...props
+    }
+};
+
+export const mockFilterSelection = (props?: Partial<FilterSelection>): FilterSelection => {
+    return {
+        filterId: "detail",
+        stateFilterId: "detailFilter",
+        label: "Detail filter",
+        selection: [
+            {
+                label: "Option A",
+                id: "detailOptA"
+            },
+            {
+                label: "Option A",
+                id: "detailOptB"
+            }
+        ],
+        multiple: true,
+        hidden: false,
+        ...props
+    }
+}
+
+export const mockControlSelection = (props?: Partial<ControlSelection>): ControlSelection => {
+    return {
+        id: "controlId",
+        label: "Plot control",
+        selection: [
+            {
+                label: "Option A",
+                id: "detailOptA"
+            },
+            {
+                label: "Option A",
+                id: "detailOptB"
+            }
+        ],
+        ...props
+    }
+}
 
 export const mockProjectsState = (props?: Partial<ProjectsState>) => {
     return {
@@ -182,16 +262,23 @@ export const mockProjectsState = (props?: Partial<ProjectsState>) => {
     }
 };
 
-export const mockGenericChartState =  (props?: Partial<GenericChartState>): GenericChartState => {
+export const mockReviewInputState =  (props?: Partial<ReviewInputState>): ReviewInputState => {
     return {
-        ...initialGenericChartState(),
+        ...initialReviewInputState(),
         ...props
     }
 };
 
-export const mockDownloadIndicatorState = (props?: Partial<DownloadIndicatorState>): DownloadIndicatorState => {
+export const mockReviewInputDataset = (props?: Partial<ReviewInputDataset>): ReviewInputDataset => {
     return {
-        ...initialDownloadIndicatorState(),
+        data: [],
+        metadata: {
+            columns: [],
+            defaults: {
+                selected_filter_options: {}
+            }
+        },
+        warnings: [mockWarning()],
         ...props
     }
 }
@@ -282,14 +369,28 @@ export const mockSurveyResponse = (props: Partial<SurveyResponse> = {}): SurveyR
         filename: "test.csv",
         hash: "1234.csv",
         data: [],
-        filters: {
-            "age": [],
-            "surveys": [],
-            indicators: []
-        },
+        filters: null,
         warnings: [],
         ...props
     }
+};
+
+export const mockSurveyData = (props?: Partial<SurveyResponse["data"][0]>): SurveyResponse["data"][0] => {
+    return {
+        indicator: "prevalence",
+        survey_id: "survey1",
+        survey_year: 2000,
+        area_id: "MWI",
+        sex: "Both",
+        age_group: "Y15-49",
+        n_clusters: 10,
+        n_observations: 100,
+        estimate: 0.2,
+        std_error: 0.02,
+        ci_lower: 0.18,
+        ci_upper: 0.20,
+        ...props
+    };
 };
 
 export const mockProgramResponse = (props: Partial<ProgrammeResponse> = {}): ProgrammeResponse => {
@@ -298,8 +399,19 @@ export const mockProgramResponse = (props: Partial<ProgrammeResponse> = {}): Pro
         filename: "test.csv",
         data: [],
         hash: "1234.csv",
-        filters: {"age": [], "calendar_quarter": [], indicators: []},
+        filters: null,
         warnings: [],
+        ...props
+    }
+};
+
+export const mockProgramData = (props?: Partial<ProgrammeResponse["data"][0]>): ProgrammeResponse["data"][0] => {
+    return {
+        area_id: "MWI",
+        calendar_quarter: "Y2000Q3",
+        sex: "both",
+        age_group: "Y015-049",
+        art_current: 300,
         ...props
     }
 };
@@ -310,11 +422,28 @@ export const mockAncResponse = (props: Partial<AncResponse> = {}): AncResponse =
         filename: "test.csv",
         hash: "1234.csv",
         data: [],
-        filters: {"year": [], indicators: []},
+        filters: null,
         warnings: [],
         ...props
     }
 };
+
+export const mockAncData = (props?: Partial<AncResponse["data"][0]>): AncResponse["data"][0] => {
+    return {
+        area_id: "MWI",
+        age_group: "Y015-049",
+        year: 2000,
+        anc_clients: 300,
+        anc_hiv_status: 300,
+        anc_known_pos: 300,
+        anc_already_art: 300,
+        anc_tested: 300,
+        anc_tested_pos: 300,
+        anc_prevalence: 300,
+        anc_art_coverage: 300,
+        ...props
+    }
+}
 
 export const mockVmmcResponse = (props: Partial<VmmcResponse> = {}): VmmcResponse => {
     return {
@@ -324,24 +453,6 @@ export const mockVmmcResponse = (props: Partial<VmmcResponse> = {}): VmmcRespons
         data: null,
         filters: null,
         warnings: [],
-        ...props
-    }
-};
-
-export const mockProgramFilters = (props: Partial<ProgrammeFilters> = {}): ProgrammeFilters => {
-    return {
-        age: [],
-        calendar_quarter: [],
-        indicators: [],
-        ...props
-    }
-};
-
-export const mockSurveyFilters = (props: Partial<SurveyFilters> = {}): SurveyFilters => {
-    return {
-        age: [],
-        surveys: [],
-        indicators: [],
         ...props
     }
 };
@@ -384,69 +495,68 @@ export const mockModelResultResponse = (props: Partial<ModelResultResponse> = {}
     };
 };
 
-export const mockCalibrateResultResponse = (props: Partial<CalibrateResultResponse> = {}): CalibrateResultResponse => {
-    return {
-        plottingMetadata: {
-            barchart: {
-                indicators: [], filters: []
-            },
-            choropleth: {
-                indicators: [], filters: []
-            }
-        },
-        tableMetadata: {
-            presets: []
-        },
-        uploadMetadata: {
-            outputSummary: {description: "Naomi output files"},
-            outputZip: {description:"Naomi output files"}
-        },
-        data: [{
-            area_id: "MWI",
-            sex: "both",
-            age_group: "1",
-            calendar_quarter: "1",
-            indicator_id: 1,
-            indicator: 'mock',
-            lower: 0.5,
-            mean: 0.5,
-            mode: 0.5,
-            upper: 0.5
-        }],
-        warnings: [],
-        ...props
-    }
-};
+export const mockCalibrateDataResponse = (): CalibrateDataResponse["data"] => {
+    return [{
+        area_id: "MWI",
+        sex: "both",
+        age_group: "1",
+        calendar_quarter: "1",
+        indicator_id: 1,
+        indicator: 'mock',
+        lower: 0.5,
+        mean: 0.5,
+        mode: 0.5,
+        upper: 0.5
+    }]
+}
 
-export const mockCalibrateMetadataResponse = (props: Partial<CalibrateMetadataResponse> = {})
-    : CalibrateMetadataResponse => {
+export const mockCalibratePlotResponse = (props: Partial<CalibratePlotResponse> = {}): CalibratePlotResponse => {
     return {
-        plottingMetadata: {
-            barchart: {
-                indicators: [], filters: []
-            },
-            choropleth: {
-                indicators: [], filters: []
+        data: [],
+        metadata: {
+            filterTypes: [],
+            indicators: [],
+            plotSettingsControl: {
+                calibrate: {
+                    plotSettings: [
+                        {
+                            id: "1",
+                            label: "setting",
+                            options: []
+                        }
+                    ]
+                }
             }
         },
-        tableMetadata: {
-            presets: []
+        ...props
+    }
+}
+
+export const mockCalibrateMetadataResponse = (props: Partial<CalibrateMetadataResponse> = {}): CalibrateMetadataResponse => {
+    return {
+        filterTypes: [],
+        indicators: [],
+        plotSettingsControl: {
+            choropleth: {
+                plotSettings: []
+            },
+            barchart: {
+                plotSettings: []
+            },
+            table: {
+                plotSettings: []
+            },
+            bubble: {
+                plotSettings: []
+            },
         },
         warnings: [],
         ...props
     }
-};
+}
 
 export const mockComparisonPlotResponse = (props: Partial<ComparisonPlotResponse> = {}): ComparisonPlotResponse => {
     return {
-        plottingMetadata: {
-            barchart: {
-                indicators: [],
-                filters: [],
-                defaults: {} as any,
-                selections: []
-            }
-        },
         data: [{
             area_id: "MWI",
             area_name: "Test area",
@@ -461,25 +571,15 @@ export const mockComparisonPlotResponse = (props: Partial<ComparisonPlotResponse
             mode: 0.5,
             upper: 0.5
         }],
-        ...props
-    }
-};
-
-
-
-export const mockPlottingMetadataResponse = (props: Partial<PlottingMetadataResponse> = {}): PlottingMetadataResponse => {
-    return {
-        anc: {
-            choropleth: {indicators: []}
-        },
-        output: {
-            choropleth: {indicators: []}
-        },
-        programme: {
-            choropleth: {indicators: []}
-        },
-        survey: {
-            choropleth: {indicators: []}
+        metadata: {
+            filterTypes: [],
+            indicators: [],
+            plotSettingsControl: {
+                comparison: {
+                    plotSettings: []
+                }
+            },
+            warnings: []
         },
         ...props
     }
@@ -621,4 +721,96 @@ export const mockDownloadIndicatorData = (props: Partial<DownloadIndicatorDatase
         ],
         ...props
     }
+}
+
+export const mockReviewInputMetadata = (props: Partial<ReviewInputFilterMetadataResponse> = {}): ReviewInputFilterMetadataResponse => {
+    return {
+        filterTypes: [
+            {
+                id: "1",
+                column_id: "1",
+                options: [
+                    {
+                        id: "op1",
+                        label: "lab1"
+                    }
+                ]
+            }
+        ],
+        indicators: [
+            {
+                indicator: "prevalence",
+                value_column: "indicator",
+                name: "Prevalence",
+                min: 0,
+                max: 1,
+                colour: "red",
+                invert_scale: false,
+                scale: 1,
+                accuracy: null,
+                format: "0.0%"
+            }
+        ],
+        plotSettingsControl: {
+            timeSeries: {
+                plotSettings: []
+            },
+            inputChoropleth: {
+                plotSettings: []
+            }
+        },
+        ...props
+    }
+}
+
+
+export const mockPlotMetadataFrame = (props: Partial<PlotMetadataFrame> = {}): PlotMetadataFrame => {
+    return {
+        filterTypes: [
+            {
+                id: "filterType1",
+                column_id: "1",
+                options: [
+                    {
+                        id: "op1",
+                        label: "lab1"
+                    },
+                    {
+                        id: "op2",
+                        label: "lab2"
+                    }
+                ]
+            },
+            {
+                id: "filterType2",
+                column_id: "1",
+                options: [
+                    {
+                        id: "op2",
+                        label: "lab2"
+                    }
+                ]
+            }
+        ],
+        indicators: [
+            {
+                indicator: "prevalence",
+                value_column: "indicator",
+                name: "Prevalence",
+                min: 0,
+                max: 1,
+                colour: "red",
+                invert_scale: false,
+                scale: 1,
+                accuracy: null,
+                format: "0.0%"
+            }
+        ],
+        plotSettingsControl: {
+            choropleth: {
+                plotSettings: []
+            }
+        },
+        ...props
+    };
 }

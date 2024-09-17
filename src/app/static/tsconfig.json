@@ -9,7 +9,8 @@
     "target": "esnext",
     "experimentalDecorators": true,
     "esModuleInterop": true,
-    "types": ["vitest/globals"]
+    "types": ["vitest/globals"],
+    "noImplicitThis": false,
   },
   "include": [
     "./src/app/**/*.ts",

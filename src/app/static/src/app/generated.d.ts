@@ -22,18 +22,6 @@ export interface AncDataRow {
   anc_art_coverage: number;
   [k: string]: any;
 }
-export interface AncFilters {
-  year: {
-    label: string;
-    id: string;
-    description?: string;
-  }[];
-  indicators: {
-    label: string;
-    id: string;
-    description?: string;
-  }[];
-}
 export type AncResponseData = {
   area_id: string;
   age_group: string;
@@ -119,105 +107,210 @@ export interface CalibrateDataResponse {
   [k: string]: any;
 }
 export interface CalibrateMetadataResponse {
-  plottingMetadata: {
-    barchart: {
-      indicators: {
-        indicator: string;
-        value_column: string;
-        indicator_column: string;
-        indicator_value: string;
-        indicator_sort_order?: number;
-        name: string;
-        error_low_column: string;
-        error_high_column: string;
-        scale: number;
-        accuracy: number | null;
-        format: string;
-      }[];
-      filters: {
-        id: string;
-        column_id: string;
-        label: string;
-        options: {
-          label: string;
-          id: string;
-          description?: string;
-        }[];
-        use_shape_regions?: boolean | null;
-      }[];
-      defaults?: {
-        indicator_id: string;
-        x_axis_id: string;
-        disaggregate_by_id: string;
-        selected_filter_options: {
-          [k: string]: any;
-        };
-      };
-    };
+  filterTypes: {
+    id: string;
+    column_id: string;
+    options: {
+      label: string;
+      id: string;
+      description?: string;
+    }[];
+    use_shape_regions?: boolean;
+  }[];
+  indicators: {
+    indicator: string;
+    value_column: string;
+    error_low_column?: string;
+    error_high_column?: string;
+    indicator_column?: string;
+    indicator_value?: string;
+    indicator_sort_order?: number;
+    name: string;
+    min: number;
+    max: number;
+    colour: string;
+    invert_scale: boolean;
+    scale: number;
+    accuracy: number | null;
+    format: string;
+  }[];
+  plotSettingsControl: {
     choropleth: {
-      indicators: {
-        indicator: string;
-        value_column: string;
-        error_low_column?: string;
-        error_high_column?: string;
-        indicator_column?: string;
-        indicator_value?: string;
-        indicator_sort_order?: number;
-        name: string;
-        min: number;
-        max: number;
-        colour: string;
-        invert_scale: boolean;
-        scale: number;
-        accuracy: number | null;
-        format: string;
-      }[];
-      filters: {
-        id: string;
-        column_id: string;
-        label: string;
-        options: {
+      defaultEffect?: {
+        setFilters?: {
+          filterId: string;
           label: string;
-          id: string;
-          description?: string;
+          stateFilterId: string;
         }[];
-        use_shape_regions?: boolean | null;
-      }[];
-    };
-  };
-  tableMetadata: {
-    presets: {
-      filters: {
-        id: string;
-        column_id: string;
-        label: string;
-        options: {
-          label: string;
-          id: string;
-          description?: string;
-        }[];
-        use_shape_regions?: boolean | null;
-      }[];
-      defaults: {
-        id: string;
-        label: string;
-        column: {
-          id: string;
-          label: string;
-        };
-        row: {
-          id: string;
-          label: string;
-        };
-        selected_filter_options?: {
-          /**
-           * This interface was referenced by `undefined`'s JSON-Schema definition
-           * via the `patternProperty` "^.*$".
-           */
+        setMultiple?: string[];
+        setFilterValues?: {
           [k: string]: string[];
         };
+        setHidden?: string[];
+        customPlotEffect?: {
+          row: string[];
+          column: string[];
+        };
       };
-    }[];
+      plotSettings: {
+        id: string;
+        label: string;
+        options: {
+          id: string;
+          label: string;
+          effect: {
+            setFilters?: {
+              filterId: string;
+              label: string;
+              stateFilterId: string;
+            }[];
+            setMultiple?: string[];
+            setFilterValues?: {
+              [k: string]: string[];
+            };
+            setHidden?: string[];
+            customPlotEffect?: {
+              row: string[];
+              column: string[];
+            };
+          };
+        }[];
+        value?: string;
+        hidden?: boolean;
+      }[];
+    };
+    barchart: {
+      defaultEffect?: {
+        setFilters?: {
+          filterId: string;
+          label: string;
+          stateFilterId: string;
+        }[];
+        setMultiple?: string[];
+        setFilterValues?: {
+          [k: string]: string[];
+        };
+        setHidden?: string[];
+        customPlotEffect?: {
+          row: string[];
+          column: string[];
+        };
+      };
+      plotSettings: {
+        id: string;
+        label: string;
+        options: {
+          id: string;
+          label: string;
+          effect: {
+            setFilters?: {
+              filterId: string;
+              label: string;
+              stateFilterId: string;
+            }[];
+            setMultiple?: string[];
+            setFilterValues?: {
+              [k: string]: string[];
+            };
+            setHidden?: string[];
+            customPlotEffect?: {
+              row: string[];
+              column: string[];
+            };
+          };
+        }[];
+        value?: string;
+        hidden?: boolean;
+      }[];
+    };
+    table: {
+      defaultEffect?: {
+        setFilters?: {
+          filterId: string;
+          label: string;
+          stateFilterId: string;
+        }[];
+        setMultiple?: string[];
+        setFilterValues?: {
+          [k: string]: string[];
+        };
+        setHidden?: string[];
+        customPlotEffect?: {
+          row: string[];
+          column: string[];
+        };
+      };
+      plotSettings: {
+        id: string;
+        label: string;
+        options: {
+          id: string;
+          label: string;
+          effect: {
+            setFilters?: {
+              filterId: string;
+              label: string;
+              stateFilterId: string;
+            }[];
+            setMultiple?: string[];
+            setFilterValues?: {
+              [k: string]: string[];
+            };
+            setHidden?: string[];
+            customPlotEffect?: {
+              row: string[];
+              column: string[];
+            };
+          };
+        }[];
+        value?: string;
+        hidden?: boolean;
+      }[];
+    };
+    bubble: {
+      defaultEffect?: {
+        setFilters?: {
+          filterId: string;
+          label: string;
+          stateFilterId: string;
+        }[];
+        setMultiple?: string[];
+        setFilterValues?: {
+          [k: string]: string[];
+        };
+        setHidden?: string[];
+        customPlotEffect?: {
+          row: string[];
+          column: string[];
+        };
+      };
+      plotSettings: {
+        id: string;
+        label: string;
+        options: {
+          id: string;
+          label: string;
+          effect: {
+            setFilters?: {
+              filterId: string;
+              label: string;
+              stateFilterId: string;
+            }[];
+            setMultiple?: string[];
+            setFilterValues?: {
+              [k: string]: string[];
+            };
+            setHidden?: string[];
+            customPlotEffect?: {
+              row: string[];
+              column: string[];
+            };
+          };
+        }[];
+        value?: string;
+        hidden?: boolean;
+      }[];
+    };
   };
   warnings: {
     text: string;
@@ -243,6 +336,82 @@ export type CalibratePlotData = {
   mean: number | null;
   [k: string]: any;
 }[];
+export interface CalibratePlotMetadata {
+  filterTypes: {
+    id: string;
+    column_id: string;
+    options: {
+      label: string;
+      id: string;
+      description?: string;
+    }[];
+    use_shape_regions?: boolean;
+  }[];
+  indicators: {
+    indicator: string;
+    value_column: string;
+    error_low_column?: string;
+    error_high_column?: string;
+    indicator_column?: string;
+    indicator_value?: string;
+    indicator_sort_order?: number;
+    name: string;
+    min: number;
+    max: number;
+    colour: string;
+    invert_scale: boolean;
+    scale: number;
+    accuracy: number | null;
+    format: string;
+  }[];
+  plotSettingsControl: {
+    calibrate: {
+      defaultEffect?: {
+        setFilters?: {
+          filterId: string;
+          label: string;
+          stateFilterId: string;
+        }[];
+        setMultiple?: string[];
+        setFilterValues?: {
+          [k: string]: string[];
+        };
+        setHidden?: string[];
+        customPlotEffect?: {
+          row: string[];
+          column: string[];
+        };
+      };
+      plotSettings: {
+        id: string;
+        label: string;
+        options: {
+          id: string;
+          label: string;
+          effect: {
+            setFilters?: {
+              filterId: string;
+              label: string;
+              stateFilterId: string;
+            }[];
+            setMultiple?: string[];
+            setFilterValues?: {
+              [k: string]: string[];
+            };
+            setHidden?: string[];
+            customPlotEffect?: {
+              row: string[];
+              column: string[];
+            };
+          };
+        }[];
+        value?: string;
+        hidden?: boolean;
+      }[];
+    };
+  };
+  [k: string]: any;
+}
 export interface CalibratePlotResponse {
   data: {
     data_type: "spectrum" | "calibrated" | "raw" | "calibration_ratio";
@@ -255,41 +424,81 @@ export interface CalibratePlotResponse {
     mean: number | null;
     [k: string]: any;
   }[];
-  plottingMetadata: {
-    barchart: {
-      indicators: {
-        indicator: string;
-        value_column: string;
-        indicator_column: string;
-        indicator_value: string;
-        indicator_sort_order?: number;
-        name: string;
-        error_low_column: string;
-        error_high_column: string;
-        scale: number;
-        accuracy: number | null;
-        format: string;
-      }[];
-      filters: {
-        id: string;
-        column_id: string;
+  metadata: {
+    filterTypes: {
+      id: string;
+      column_id: string;
+      options: {
         label: string;
-        options: {
-          label: string;
-          id: string;
-          description?: string;
-        }[];
-        use_shape_regions?: boolean | null;
+        id: string;
+        description?: string;
       }[];
-      defaults?: {
-        indicator_id: string;
-        x_axis_id: string;
-        disaggregate_by_id: string;
-        selected_filter_options: {
-          [k: string]: any;
+      use_shape_regions?: boolean;
+    }[];
+    indicators: {
+      indicator: string;
+      value_column: string;
+      error_low_column?: string;
+      error_high_column?: string;
+      indicator_column?: string;
+      indicator_value?: string;
+      indicator_sort_order?: number;
+      name: string;
+      min: number;
+      max: number;
+      colour: string;
+      invert_scale: boolean;
+      scale: number;
+      accuracy: number | null;
+      format: string;
+    }[];
+    plotSettingsControl: {
+      calibrate: {
+        defaultEffect?: {
+          setFilters?: {
+            filterId: string;
+            label: string;
+            stateFilterId: string;
+          }[];
+          setMultiple?: string[];
+          setFilterValues?: {
+            [k: string]: string[];
+          };
+          setHidden?: string[];
+          customPlotEffect?: {
+            row: string[];
+            column: string[];
+          };
         };
+        plotSettings: {
+          id: string;
+          label: string;
+          options: {
+            id: string;
+            label: string;
+            effect: {
+              setFilters?: {
+                filterId: string;
+                label: string;
+                stateFilterId: string;
+              }[];
+              setMultiple?: string[];
+              setFilterValues?: {
+                [k: string]: string[];
+              };
+              setHidden?: string[];
+              customPlotEffect?: {
+                row: string[];
+                column: string[];
+              };
+            };
+          }[];
+          value?: string;
+          hidden?: boolean;
+        }[];
       };
     };
+    [k: string]: any;
   };
 }
 export interface CalibratePlotRow {
@@ -305,132 +514,6 @@ export interface CalibratePlotRow {
 }
 export interface CalibrateResultPathResponse {
   path: string;
-  [k: string]: any;
-}
-export interface CalibrateResultResponse {
-  data: {
-    area_id: string;
-    sex: string;
-    age_group: string;
-    calendar_quarter: string;
-    indicator: string;
-    mode: number | null;
-    mean: number | null;
-    lower: number | null;
-    upper: number | null;
-    [k: string]: any;
-  }[];
-  plottingMetadata: {
-    barchart: {
-      indicators: {
-        indicator: string;
-        value_column: string;
-        indicator_column: string;
-        indicator_value: string;
-        indicator_sort_order?: number;
-        name: string;
-        error_low_column: string;
-        error_high_column: string;
-        scale: number;
-        accuracy: number | null;
-        format: string;
-      }[];
-      filters: {
-        id: string;
-        column_id: string;
-        label: string;
-        options: {
-          label: string;
-          id: string;
-          description?: string;
-        }[];
-        use_shape_regions?: boolean | null;
-      }[];
-      defaults?: {
-        indicator_id: string;
-        x_axis_id: string;
-        disaggregate_by_id: string;
-        selected_filter_options: {
-          [k: string]: any;
-        };
-      };
-    };
-    choropleth: {
-      indicators: {
-        indicator: string;
-        value_column: string;
-        error_low_column?: string;
-        error_high_column?: string;
-        indicator_column?: string;
-        indicator_value?: string;
-        indicator_sort_order?: number;
-        name: string;
-        min: number;
-        max: number;
-        colour: string;
-        invert_scale: boolean;
-        scale: number;
-        accuracy: number | null;
-        format: string;
-      }[];
-      filters: {
-        id: string;
-        column_id: string;
-        label: string;
-        options: {
-          label: string;
-          id: string;
-          description?: string;
-        }[];
-        use_shape_regions?: boolean | null;
-      }[];
-    };
-  };
-  tableMetadata: {
-    presets: {
-      filters: {
-        id: string;
-        column_id: string;
-        label: string;
-        options: {
-          label: string;
-          id: string;
-          description?: string;
-        }[];
-        use_shape_regions?: boolean | null;
-      }[];
-      defaults: {
-        id: string;
-        label: string;
-        column: {
-          id: string;
-          label: string;
-        };
-        row: {
-          id: string;
-          label: string;
-        };
-        selected_filter_options?: {
-          /**
-           * This interface was referenced by `undefined`'s JSON-Schema definition
-           * via the `patternProperty` "^.*$".
-           */
-          [k: string]: string[];
-        };
-      };
-    }[];
-  };
-  warnings: {
-    text: string;
-    locations: (
-      | "review_inputs"
-      | "model_options"
-      | "model_fit"
-      | "model_calibrate"
-      | "review_output"
-      | "download_results"
-    )[];
-  }[];
   [k: string]: any;
 }
 export interface CalibrateStatusResponse {
@@ -463,23 +546,6 @@ export interface CalibrateSubmitRequest {
 }
 export interface CalibrateSubmitResponse {
   id: string;
-}
-export interface ChoroplethIndicatorMetadata {
-  indicator: string;
-  value_column: string;
-  error_low_column?: string;
-  error_high_column?: string;
-  indicator_column?: string;
-  indicator_value?: string;
-  indicator_sort_order?: number;
-  name: string;
-  min: number;
-  max: number;
-  colour: string;
-  invert_scale: boolean;
-  scale: number;
-  accuracy: number | null;
-  format: string;
 }
 export interface ChoroplethMetadata {
   indicators: {
@@ -583,6 +649,7 @@ export interface ComparisonBarchartMetadata {
 export type ComparisonPlotData = {
   area_id: string;
   area_name: string;
+  area_level?: number;
   sex: string;
   age_group: string;
   calendar_quarter: string;
@@ -593,10 +660,87 @@ export type ComparisonPlotData = {
   upper: number | null;
   [k: string]: any;
 }[];
+export interface ComparisonPlotMetadata {
+  filterTypes: {
+    id: string;
+    column_id: string;
+    options: {
+      label: string;
+      id: string;
+      description?: string;
+    }[];
+    use_shape_regions?: boolean;
+  }[];
+  indicators: {
+    indicator: string;
+    value_column: string;
+    error_low_column?: string;
+    error_high_column?: string;
+    indicator_column?: string;
+    indicator_value?: string;
+    indicator_sort_order?: number;
+    name: string;
+    min: number;
+    max: number;
+    colour: string;
+    invert_scale: boolean;
+    scale: number;
+    accuracy: number | null;
+    format: string;
+  }[];
+  plotSettingsControl: {
+    comparison: {
+      defaultEffect?: {
+        setFilters?: {
+          filterId: string;
+          label: string;
+          stateFilterId: string;
+        }[];
+        setMultiple?: string[];
+        setFilterValues?: {
+          [k: string]: string[];
+        };
+        setHidden?: string[];
+        customPlotEffect?: {
+          row: string[];
+          column: string[];
+        };
+      };
+      plotSettings: {
+        id: string;
+        label: string;
+        options: {
+          id: string;
+          label: string;
+          effect: {
+            setFilters?: {
+              filterId: string;
+              label: string;
+              stateFilterId: string;
+            }[];
+            setMultiple?: string[];
+            setFilterValues?: {
+              [k: string]: string[];
+            };
+            setHidden?: string[];
+            customPlotEffect?: {
+              row: string[];
+              column: string[];
+            };
+          };
+        }[];
+        value?: string;
+        hidden?: boolean;
+      }[];
+    };
+  };
+  [k: string]: any;
+}
 export interface ComparisonPlotResponse {
   data: {
     area_id: string;
     area_name: string;
+    area_level?: number;
     sex: string;
     age_group: string;
     calendar_quarter: string;
@@ -607,54 +751,87 @@ export interface ComparisonPlotResponse {
     upper: number | null;
     [k: string]: any;
   }[];
-  plottingMetadata: {
-    barchart: {
-      indicators: {
-        indicator: string;
-        value_column: string;
-        indicator_column: string;
-        indicator_value: string;
-        indicator_sort_order?: number;
-        name: string;
-        error_low_column: string;
-        error_high_column: string;
-        scale: number;
-        accuracy: number | null;
-        format: string;
-      }[];
-      filters: {
-        id: string;
-        column_id: string;
+  metadata: {
+    filterTypes: {
+      id: string;
+      column_id: string;
+      options: {
         label: string;
-        options: {
-          label: string;
+        id: string;
+        description?: string;
+      }[];
+      use_shape_regions?: boolean;
+    }[];
+    indicators: {
+      indicator: string;
+      value_column: string;
+      error_low_column?: string;
+      error_high_column?: string;
+      indicator_column?: string;
+      indicator_value?: string;
+      indicator_sort_order?: number;
+      name: string;
+      min: number;
+      max: number;
+      colour: string;
+      invert_scale: boolean;
+      scale: number;
+      accuracy: number | null;
+      format: string;
+    }[];
+    plotSettingsControl: {
+      comparison: {
+        defaultEffect?: {
+          setFilters?: {
+            filterId: string;
+            label: string;
+            stateFilterId: string;
+          }[];
+          setMultiple?: string[];
+          setFilterValues?: {
+            [k: string]: string[];
+          };
+          setHidden?: string[];
+          customPlotEffect?: {
+            row: string[];
+            column: string[];
+          };
+        };
+        plotSettings: {
           id: string;
-          description?: string;
+          label: string;
+          options: {
+            id: string;
+            label: string;
+            effect: {
+              setFilters?: {
+                filterId: string;
+                label: string;
+                stateFilterId: string;
+              }[];
+              setMultiple?: string[];
+              setFilterValues?: {
+                [k: string]: string[];
+              };
+              setHidden?: string[];
+              customPlotEffect?: {
+                row: string[];
+                column: string[];
+              };
+            };
+          }[];
+          value?: string;
+          hidden?: boolean;
         }[];
-        use_shape_regions?: boolean | null;
-      }[];
-      defaults: {
-        indicator_id: string;
-        x_axis_id: string;
-        disaggregate_by_id: string;
-        selected_filter_options: {
-          [k: string]: any;
-        };
       };
-      selections: {
-        indicator_id: string;
-        x_axis_id: string;
-        disaggregate_by_id: string;
-        selected_filter_options: {
-          [k: string]: any;
-        };
-      }[];
     };
+    [k: string]: any;
   };
 }
 export interface ComparisonPlotRow {
   area_id: string;
   area_name: string;
+  area_level?: number;
   sex: string;
   age_group: string;
   calendar_quarter: string;
@@ -664,6 +841,12 @@ export interface ComparisonPlotRow {
   lower: number | null;
   upper: number | null;
   [k: string]: any;
+}
+export type CustomPlotMetadata = TableMetadata;
+
+export interface TableMetadata {
+  row: string[];
+  column: string[];
 }
 export interface DownloadStatusResponse {
   id: string;
@@ -789,11 +972,43 @@ export interface FilterOption {
   id: string;
   description?: string;
 }
+export interface FilterRef {
+  filterId: string;
+  label: string;
+  stateFilterId: string;
+}
+export interface FilterTypes {
+  id: string;
+  column_id: string;
+  options: {
+    label: string;
+    id: string;
+    description?: string;
+  }[];
+  use_shape_regions?: boolean;
+}
 export interface HintrVersionResponse {
   [k: string]: string;
 }
 export interface HintrWorkerStatus {
   [k: string]: "BUSY" | "IDLE" | "PAUSED" | "EXITED" | "LOST";
+}
+export interface IndicatorMetadata {
+  indicator: string;
+  value_column: string;
+  error_low_column?: string;
+  error_high_column?: string;
+  indicator_column?: string;
+  indicator_value?: string;
+  indicator_sort_order?: number;
+  name: string;
+  min: number;
+  max: number;
+  colour: string;
+  invert_scale: boolean;
+  scale: number;
+  accuracy: number | null;
+  format: string;
 }
 export interface InputDatasets {
   pjnz: {
@@ -1282,34 +1497,111 @@ export interface PjnzResponseData {
   country: string;
   iso3: string;
 }
-export interface PlottingMetadataResponse {
-  survey: Metadata;
-  anc: Metadata;
-  programme: Metadata;
-  output: Metadata;
+export interface PlotSetting {
+  id: string;
+  label: string;
+  options: {
+    id: string;
+    label: string;
+    effect: {
+      setFilters?: {
+        filterId: string;
+        label: string;
+        stateFilterId: string;
+      }[];
+      setMultiple?: string[];
+      setFilterValues?: {
+        [k: string]: string[];
+      };
+      setHidden?: string[];
+      customPlotEffect?: {
+        row: string[];
+        column: string[];
+      };
+    };
+  }[];
+  value?: string;
+  hidden?: boolean;
 }
-export interface Metadata {
-  choropleth: {
-    indicators: {
-      indicator: string;
-      value_column: string;
-      error_low_column?: string;
-      error_high_column?: string;
-      indicator_column?: string;
-      indicator_value?: string;
-      indicator_sort_order?: number;
-      name: string;
-      min: number;
-      max: number;
-      colour: string;
-      invert_scale: boolean;
-      scale: number;
-      accuracy: number | null;
-      format: string;
-    }[];
-    [k: string]: any;
+export interface PlotSettingEffect {
+  setFilters?: {
+    filterId: string;
+    label: string;
+    stateFilterId: string;
+  }[];
+  setMultiple?: string[];
+  setFilterValues?: {
+    [k: string]: string[];
   };
-  [k: string]: any;
+  setHidden?: string[];
+  customPlotEffect?: {
+    row: string[];
+    column: string[];
+  };
+}
+export interface PlotSettingOption {
+  id: string;
+  label: string;
+  effect: {
+    setFilters?: {
+      filterId: string;
+      label: string;
+      stateFilterId: string;
+    }[];
+    setMultiple?: string[];
+    setFilterValues?: {
+      [k: string]: string[];
+    };
+    setHidden?: string[];
+    customPlotEffect?: {
+      row: string[];
+      column: string[];
+    };
+  };
+}
+export interface PlotSettingsControl {
+  defaultEffect?: {
+    setFilters?: {
+      filterId: string;
+      label: string;
+      stateFilterId: string;
+    }[];
+    setMultiple?: string[];
+    setFilterValues?: {
+      [k: string]: string[];
+    };
+    setHidden?: string[];
+    customPlotEffect?: {
+      row: string[];
+      column: string[];
+    };
+  };
+  plotSettings: {
+    id: string;
+    label: string;
+    options: {
+      id: string;
+      label: string;
+      effect: {
+        setFilters?: {
+          filterId: string;
+          label: string;
+          stateFilterId: string;
+        }[];
+        setMultiple?: string[];
+        setFilterValues?: {
+          [k: string]: string[];
+        };
+        setHidden?: string[];
+        customPlotEffect?: {
+          row: string[];
+          column: string[];
+        };
+      };
+    }[];
+    value?: string;
+    hidden?: boolean;
+  }[];
 }
 export type PopulationResponseData = null;
 export interface PrerunRequest {
@@ -1361,23 +1653,6 @@ export interface ProgrammeDataRow {
   age_group: string;
   art_current: number;
   [k: string]: any;
-}
-export interface ProgrammeFilters {
-  age: {
-    label: string;
-    id: string;
-    description?: string;
-  }[];
-  calendar_quarter: {
-    label: string;
-    id: string;
-    description?: string;
-  }[];
-  indicators: {
-    label: string;
-    id: string;
-    description?: string;
-  }[];
 }
 export type ProgrammeResponseData = {
   area_id: string;
@@ -1533,6 +1808,160 @@ export interface Response {
     [k: string]: any;
   };
 }
+export interface ReviewInputFilterMetadataRequest {
+  iso3: string;
+  data: {
+    shape?: {
+      path: string | null;
+      hash: string;
+      filename: string;
+      fromADR?: boolean;
+      resource_url?: string | null;
+    };
+    programme?: {
+      path: string | null;
+      hash: string;
+      filename: string;
+      fromADR?: boolean;
+      resource_url?: string | null;
+    };
+    anc?: {
+      path: string | null;
+      hash: string;
+      filename: string;
+      fromADR?: boolean;
+      resource_url?: string | null;
+    };
+    survey?: {
+      path: string | null;
+      hash: string;
+      filename: string;
+      fromADR?: boolean;
+      resource_url?: string | null;
+    };
+    [k: string]: any;
+  };
+}
+export interface ReviewInputFilterMetadataResponse {
+  filterTypes: {
+    id: string;
+    column_id: string;
+    options: {
+      label: string;
+      id: string;
+      description?: string;
+    }[];
+    use_shape_regions?: boolean;
+  }[];
+  indicators: {
+    indicator: string;
+    value_column: string;
+    error_low_column?: string;
+    error_high_column?: string;
+    indicator_column?: string;
+    indicator_value?: string;
+    indicator_sort_order?: number;
+    name: string;
+    min: number;
+    max: number;
+    colour: string;
+    invert_scale: boolean;
+    scale: number;
+    accuracy: number | null;
+    format: string;
+  }[];
+  plotSettingsControl: {
+    timeSeries: {
+      defaultEffect?: {
+        setFilters?: {
+          filterId: string;
+          label: string;
+          stateFilterId: string;
+        }[];
+        setMultiple?: string[];
+        setFilterValues?: {
+          [k: string]: string[];
+        };
+        setHidden?: string[];
+        customPlotEffect?: {
+          row: string[];
+          column: string[];
+        };
+      };
+      plotSettings: {
+        id: string;
+        label: string;
+        options: {
+          id: string;
+          label: string;
+          effect: {
+            setFilters?: {
+              filterId: string;
+              label: string;
+              stateFilterId: string;
+            }[];
+            setMultiple?: string[];
+            setFilterValues?: {
+              [k: string]: string[];
+            };
+            setHidden?: string[];
+            customPlotEffect?: {
+              row: string[];
+              column: string[];
+            };
+          };
+        }[];
+        value?: string;
+        hidden?: boolean;
+      }[];
+    };
+    inputChoropleth: {
+      defaultEffect?: {
+        setFilters?: {
+          filterId: string;
+          label: string;
+          stateFilterId: string;
+        }[];
+        setMultiple?: string[];
+        setFilterValues?: {
+          [k: string]: string[];
+        };
+        setHidden?: string[];
+        customPlotEffect?: {
+          row: string[];
+          column: string[];
+        };
+      };
+      plotSettings: {
+        id: string;
+        label: string;
+        options: {
+          id: string;
+          label: string;
+          effect: {
+            setFilters?: {
+              filterId: string;
+              label: string;
+              stateFilterId: string;
+            }[];
+            setMultiple?: string[];
+            setFilterValues?: {
+              [k: string]: string[];
+            };
+            setHidden?: string[];
+            customPlotEffect?: {
+              row: string[];
+              column: string[];
+            };
+          };
+        }[];
+        value?: string;
+        hidden?: boolean;
+      }[];
+    };
+  };
+  [k: string]: any;
+}
 export interface SessionFile {
   path: string | null;
   hash: string;
@@ -1570,23 +1999,6 @@ export interface SurveyDataRow {
   ci_upper: number | null;
   [k: string]: any;
 }
-export interface SurveyFilters {
-  age: {
-    label: string;
-    id: string;
-    description?: string;
-  }[];
-  surveys: {
-    label: string;
-    id: string;
-    description?: string;
-  }[];
-  indicators: {
-    label: string;
-    id: string;
-    description?: string;
-  }[];
-}
 export type SurveyResponseData = {
   indicator: string;
   survey_id: string;
@@ -1603,42 +2015,6 @@ export type SurveyResponseData = {
   ci_upper: number | null;
   [k: string]: any;
 }[];
-export interface TableMetadata {
-  presets: TablePreset[];
-}
-export interface TablePreset {
-  filters: {
-    id: string;
-    column_id: string;
-    label: string;
-    options: {
-      label: string;
-      id: string;
-      description?: string;
-    }[];
-    use_shape_regions?: boolean | null;
-  }[];
-  defaults: TableDefaults;
-}
-export interface TableDefaults {
-  id: string;
-  label: string;
-  column: {
-    id: string;
-    label: string;
-  };
-  row: {
-    id: string;
-    label: string;
-  };
-  selected_filter_options?: {
-    /**
-     * This interface was referenced by `undefined`'s JSON-Schema definition
-     * via the `patternProperty` "^.*$".
-     */
-    [k: string]: string[];
-  };
-}
 export type URI = string;
 export interface ValidateBaselineRequest {
   pjnz: string | null;
@@ -1739,23 +2115,7 @@ export interface ProgrammeResponse {
     art_current: number;
     [k: string]: any;
   }[];
-  filters: {
-    age: {
-      label: string;
-      id: string;
-      description?: string;
-    }[];
-    calendar_quarter: {
-      label: string;
-      id: string;
-      description?: string;
-    }[];
-    indicators: {
-      label: string;
-      id: string;
-      description?: string;
-    }[];
-  };
+  filters?: null;
   warnings: {
     text: string;
     locations: (
@@ -1788,18 +2148,7 @@ export interface AncResponse {
     anc_art_coverage: number;
     [k: string]: any;
   }[];
-  filters: {
-    year: {
-      label: string;
-      id: string;
-      description?: string;
-    }[];
-    indicators: {
-      label: string;
-      id: string;
-      description?: string;
-    }[];
-  };
+  filters?: null;
   warnings: {
     text: string;
     locations: (
@@ -1834,23 +2183,7 @@ export interface SurveyResponse {
     ci_upper: number | null;
     [k: string]: any;
   }[];
-  filters: {
-    age: {
-      label: string;
-      id: string;
-      description?: string;
-    }[];
-    surveys: {
-      label: string;
-      id: string;
-      description?: string;
-    }[];
-    indicators: {
-      label: string;
-      id: string;
-      description?: string;
-    }[];
-  };
+  filters?: null;
   warnings: {
     text: string;
     locations: (
@@ -1870,7 +2203,7 @@ export interface VmmcResponse {
   resource_url?: string | null;
   type: "vmmc";
   data: null;
-  filters: null;
+  filters?: null;
   warnings: {
     text: string;
     locations: (

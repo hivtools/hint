@@ -3,17 +3,16 @@ import {ReadyState, RootState, WarningsState} from "../../root";
 import {DynamicFormData, DynamicFormMeta} from "@reside-ic/vue-next-dynamic-form";
 import {mutations} from "./mutations";
 import {actions} from "./actions";
+import {getters} from "./getters";
 import {
     VersionInfo,
     Error,
     CalibrateStatusResponse,
-    CalibrateResultResponse,
     ComparisonPlotResponse,
     CalibrateDataResponse,
-    CalibrateMetadataResponse
+    CalibrateMetadataResponse,
+    CalibratePlotResponse
 } from "../../generated";
-import {BarchartIndicator, Filter} from "../../types";
-import {BarchartSelections} from "../plottingSelections/plottingSelections";
 
 export interface ModelCalibrateState extends ReadyState, WarningsState {
     optionsFormMeta: DynamicFormMeta
@@ -25,9 +24,9 @@ export interface ModelCalibrateState extends ReadyState, WarningsState {
     calibrating: boolean
     complete: boolean
     generatingCalibrationPlot: boolean
-    calibratePlotResult: any,
+    calibratePlotResult: CalibratePlotResponse | null,
     comparisonPlotResult: ComparisonPlotResponse | null,
-    result: CalibrateDataResponse | CalibrateResultResponse | null
+    result: CalibrateDataResponse | null
     fetchedIndicators: string[] | null
     version: VersionInfo
     error: Error | null
@@ -59,26 +58,14 @@ export const initialModelCalibrateState = (): ModelCalibrateState => {
     }
 };
 
-export const modelCalibrateGetters = {
-    indicators: (state: ModelCalibrateState): BarchartIndicator[] => {
-        return state.calibratePlotResult!.plottingMetadata.barchart.indicators;
-    },
-    filters: (state: ModelCalibrateState): Filter[] => {
-        return state.calibratePlotResult!.plottingMetadata.barchart.filters;
-    },
-    calibratePlotDefaultSelections: (state: ModelCalibrateState): BarchartSelections => {
-        return state.calibratePlotResult!.plottingMetadata.barchart.defaults;
-    }
-};
-
 const namespaced = true;
 
 export const modelCalibrate = (existingState: Partial<RootState> | null): Module<ModelCalibrateState, RootState> => {
     return {
         namespaced,
         state: {...initialModelCalibrateState(), ...existingState && existingState.modelCalibrate, ready: false},
-        getters: modelCalibrateGetters,
         mutations,
-        actions
+        actions,
+        getters
     };
 };

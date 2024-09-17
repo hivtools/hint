@@ -2,67 +2,36 @@ import {Module} from 'vuex';
 import {actions} from './actions';
 import {mutations} from './mutations';
 import {
-    PlottingMetadataResponse,
+    AdrMetadataResponse,
+    IndicatorMetadata,
     Error,
-    Metadata,
-    AdrMetadataResponse, FilterOption, ChoroplethIndicatorMetadata
+    FilterTypes,
+    PlotSettingsControl,
+    ReviewInputFilterMetadataResponse
 } from "../../generated";
-import {DataType} from "../surveyAndProgram/surveyAndProgram";
-import {RootState} from "../../root";
+import {RootState} from '../../root';
+
+export type PlotMetadataFrame = {
+    filterTypes: FilterTypes[],
+    indicators: IndicatorMetadata[],
+    plotSettingsControl: {
+        [k: string]: PlotSettingsControl
+    }
+}
 
 export interface MetadataState {
-    plottingMetadataError: Error | null
-    plottingMetadata: PlottingMetadataResponse | null
+    reviewInputMetadata: ReviewInputFilterMetadataResponse | null
+    reviewInputMetadataError: Error | null
     adrUploadMetadata: AdrMetadataResponse[]
     adrUploadMetadataError: Error | null
 }
 
 export const initialMetadataState = (): MetadataState => {
     return {
-        plottingMetadataError: null,
-        plottingMetadata: null,
+        reviewInputMetadata: null,
+        reviewInputMetadataError: null,
         adrUploadMetadataError: null,
         adrUploadMetadata: [] as AdrMetadataResponse[]
-    }
-};
-
-export const metadataGetters = {
-    complete: (state: MetadataState) => {
-        return !!state.plottingMetadata
-    },
-    sapIndicatorsMetadata: (state: MetadataState, getters: any, rootState: RootState) => {
-        const plottingMetadata = state.plottingMetadata;
-
-        if (!plottingMetadata) {
-            return [];
-        }
-
-        const sap = rootState.surveyAndProgram;
-        const selectedDataType = sap.selectedDataType;
-
-        let metadataForType: Metadata | null = null;
-        let dataIndicators: FilterOption[] = [];
-        switch (selectedDataType) {
-            case (DataType.ANC):
-                metadataForType = plottingMetadata.anc;
-                dataIndicators = sap.anc?.filters.indicators || [];
-                break;
-            case (DataType.Program):
-                metadataForType = plottingMetadata.programme;
-                dataIndicators = sap.program?.filters.indicators || [];
-                break;
-            case (DataType.Survey):
-                metadataForType = plottingMetadata.survey;
-                dataIndicators = sap.survey?.filters.indicators ||[];
-                break;
-        }
-
-        const unfiltered: ChoroplethIndicatorMetadata[] =  metadataForType ? metadataForType.choropleth.indicators : [];
-        return unfiltered.filter(
-            (metaIndicator: ChoroplethIndicatorMetadata) => dataIndicators.some(
-                (dataIndicator: FilterOption) => metaIndicator.indicator === dataIndicator.id
-            )
-        )
     }
 };
 
@@ -73,7 +42,6 @@ export const metadata = (existingState: Partial<RootState> | null): Module<Metad
         namespaced,
         state: {...initialMetadataState(), ...existingState && existingState.metadata},
         actions,
-        mutations,
-        getters: metadataGetters
+        mutations
     };
 };

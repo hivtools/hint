@@ -1,11 +1,11 @@
-import {shallowMount, mount, VueWrapper} from '@vue/test-utils';
+import {mount, shallowMount} from '@vue/test-utils';
 import Vuex, {Store} from 'vuex';
 import {
     mockADRState,
     mockADRUploadState,
     mockDownloadResultsDependency,
     mockDownloadResultsState,
-    mockModelCalibrateState
+    mockModelCalibrateState,
 } from "../../mocks";
 import DownloadResults from "../../../app/components/downloadResults/DownloadResults.vue";
 import registerTranslations from "../../../app/store/translations/registerTranslations";

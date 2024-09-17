@@ -2,7 +2,7 @@
     <div v-if="projects.length == 0" class="text-center">
         <h5 class="mt-5" v-translate="'projectPlaceholderText'"></h5>
     </div>
-    <div v-else>
+    <div id="projects-table" v-else>
         <div id="headers" class="row font-weight-bold pt-2">
             <div class="col-md-1 header-cell"></div>
             <div class="col-md-3 header-cell" v-translate="'projectName'"></div>
@@ -67,13 +67,13 @@
                     {{ format(p.versions[0].updated) }}
                 </div>
                 <div class="col-md-1 project-cell load-cell">
-                    <button v-if="showTooltip" class=" btn btn-sm btn-red-icons"
+                    <button v-if="showTooltip" class="btn btn-sm btn-red-icons btn-load"
                             v-tooltip="getTranslatedValue('load')"
                             v-translate:aria-label="'load'"
                             @click="loadVersion($event, p.id, p.versions[0].id)">
                         <vue-feather type="refresh-cw" size="20"></vue-feather>
                     </button>
-                    <button v-else class=" btn btn-sm btn-red-icons"
+                    <button v-else class=" btn btn-sm btn-red-icons btn-load"
                             v-translate:aria-label="'load'"
                             @click="loadVersion($event, p.id, p.versions[0].id)">
                         <vue-feather type="refresh-cw" size="20"></vue-feather>
@@ -160,13 +160,13 @@
                         {{ format(v.updated) }}
                     </div>
                     <div class="col-md-1 version-cell load-cell">
-                        <button v-if="showTooltip" class=" btn btn-sm btn-red-icons"
+                        <button v-if="showTooltip" class=" btn btn-sm btn-red-icons btn-load"
                                 v-tooltip="getTranslatedValue('load')"
                                 v-translate:aria-label="'load'"
                                 @click="loadVersion($event, p.id, v.id)">
                             <vue-feather type="refresh-cw" size="20"></vue-feather>
                         </button>
-                        <button v-else class=" btn btn-sm btn-red-icons"
+                        <button v-else class=" btn btn-sm btn-red-icons btn-load"
                                 v-translate:aria-label="'load'"
                                 @click="loadVersion($event, p.id, v.id)">
                             <vue-feather type="refresh-cw" size="20"></vue-feather>
@@ -234,7 +234,7 @@
                    class="form-control"
                    id="new-project-name"
                    v-translate:placeholder="'projectName'"
-                   @keyup.enter="confirmPromotion(newProjectName)"
+                   @keyup.enter="confirmPromotion()"
                    v-model="newProjectName"/>
             <div id="promoteNote" class="form-group pt-3">
                 <label class="h5" for="promoteNoteControl"><span v-translate="'copyNoteHeader'"></span></label>
@@ -244,7 +244,7 @@
                 <button type="button"
                         class="btn btn-red"
                         :disabled="disableCreate"
-                        @click="confirmPromotion(newProjectName)"
+                        @click="confirmPromotion()"
                         v-translate="'createProject'"></button>
                 <button type="button"
                         class="btn btn-white"
@@ -258,7 +258,7 @@
                    id="rename-project"
                    class="form-control"
                    v-translate:placeholder="'projectName'"
-                   @keyup.enter="confirmRename(renamedProjectName)"
+                   @keyup.enter="confirmRename()"
                    v-model="renamedProjectName">
             <div class="form-group pt-3">
                 <label class="h5" for="version-note-rename" v-translate="'renameNoteHeader'"></label>
@@ -271,7 +271,7 @@
                 <button type="button"
                         class="btn btn-red"
                         :disabled="disableRename"
-                        @click="confirmRename(renamedProjectName)"
+                        @click="confirmRename()"
                         v-translate="'renameProject'">
                 </button>
                 <button type="button"
@@ -459,7 +459,7 @@
                 this.projectToRename = null;
                 this.renamedProjectName = '';
             },
-            async confirmRename(name: string) {
+            async confirmRename() {
                 if (this.projectToRename) {
                     const projectPayload: projectPayload = {
                         projectId: this.projectToRename!,
@@ -542,7 +542,7 @@
                     this.versionToDelete = null;
                 }
             },
-            async confirmPromotion(name: string) {
+            async confirmPromotion() {
                 if (this.versionToPromote && this.newProjectName) {
                     const versionPayload: versionPayload = {
                         version: this.versionToPromote!,
