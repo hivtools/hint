@@ -192,7 +192,16 @@ const migrateState = (savedState: Partial<RootState>) => {
     if (!savedState.version || getVersionOrdering(savedState.version, "3.8.0") === Ordering.LESS) {
         // Backwards compatibility fix: we changed the plot names in the plot refactoring epic mrc-4856 so we remove
         // modelOutput state where plot names were hardcoded in the selected tab field
-        delete savedState.modelOutput
+        savedState.modelOutput = {
+            selectedTab: "choropleth",
+            loading: {
+                bar: false,
+                bubble: false,
+                comparison: false,
+                map: false,
+                table: false
+            }
+        }
     }
 
     return savedState;
