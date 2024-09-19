@@ -90,7 +90,7 @@ task compileFrontEnd() {
     }
     doLast {
         exec {
-            commandLine "npm", "run", "build", "--prefix=$projectDir/static/"
+            commandLine 'npm.cmd', "run", "build", "--prefix=$projectDir/static/"
         }
     }
 }
@@ -98,7 +98,7 @@ task compileFrontEnd() {
 task copyAssets() {
     doLast {
         exec {
-            commandLine "npm", "run", "copy", "--prefix=$projectDir/static/"
+            commandLine 'npm.cmd', "run", "copy", "--prefix=$projectDir/static/"
         }
     }
 }
