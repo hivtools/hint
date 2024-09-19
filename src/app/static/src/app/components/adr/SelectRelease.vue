@@ -106,6 +106,9 @@
                 "baseline",
                 (state: BaselineState) => state.selectedDataset?.release
             ),
+            releases() {
+                return this.adrData[this.datasetType].releases
+            },
             valid() {
                 return (this.choiceADR === "useLatest") || !!this.releaseId;
             },
