@@ -7,7 +7,7 @@
     "sass": "gulp sass && gulp inject",
     "js": "webpack",
     "build": "rm -rf public && vue-cli-service build ./src/app/index.ts",
-    "serve": "rm -rf public && VUE_CLI_SERVICE_CONFIG_PATH=$PWD/vue.config.js vue-cli-service serve ./src/app/index.ts",
+    "serve": "rm -rf public && env VUE_CLI_SERVICE_CONFIG_PATH=$PWD/vue.config.js vue-cli-service serve ./src/app/index.ts",
     "copy": "cp -r ./templates/*.ftl ./public && cp -r ./assets/* ./public",
     "test": "vitest --run --coverage",
     "browser-test": "npx playwright test",

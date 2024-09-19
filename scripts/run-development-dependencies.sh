@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 set -ex
 
+# Disable path conversion when running Git Bash in Windows
+export MSYS_NO_PATHCONV=1
+
 HERE=$(dirname "$0")
 NETWORK=hint_nw
 DB=hint_db
