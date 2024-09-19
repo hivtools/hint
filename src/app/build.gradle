@@ -1,3 +1,5 @@
+import org.gradle.internal.os.OperatingSystem
+
 buildscript {
     ext.kotlin_version = '1.6.10'
 }
@@ -21,6 +23,9 @@ tasks.jacocoTestReport {
 group = 'org.imperial.mrc'
 sourceCompatibility = JavaVersion.VERSION_11
 def tomcatVersion = '9.0.65'
+
+// Determine npm command based on operating system. Windows needs 'npm.cmd'.
+def npmCommand = OperatingSystem.current().isWindows() ? 'npm.cmd' : 'npm'
 
 dependencies {
 
@@ -90,7 +95,7 @@ task compileFrontEnd() {
     }
     doLast {
         exec {
-            commandLine 'npm.cmd', "run", "build", "--prefix=$projectDir/static/"
+            commandLine npmCommand, "run", "build", "--prefix=$projectDir/static/"
         }
     }
 }
@@ -98,7 +103,7 @@ task compileFrontEnd() {
 task copyAssets() {
     doLast {
         exec {
-            commandLine 'npm.cmd', "run", "copy", "--prefix=$projectDir/static/"
+            commandLine npmCommand, "run", "copy", "--prefix=$projectDir/static/"
         }
     }
 }
