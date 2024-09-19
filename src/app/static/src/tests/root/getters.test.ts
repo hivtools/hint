@@ -16,7 +16,9 @@ import {
     mockProjectOutputState,
     mockProjectsState,
     mockRootState,
-    mockSurveyAndProgramState
+    mockSurveyAndProgramState,
+    mockADRDataState,
+    mockADRDatasetState
 } from "../mocks";
 import {RootState} from "../../app/root";
 import {initialDownloadResults} from "../../app/store/downloadResults/downloadResults";
@@ -65,16 +67,25 @@ describe("root getters", () => {
 
     it("gets adr errors", async () => {
 
-        const adrError = mockError("something went wrong");
-        const keyError = mockError("something else went wrong");
+        const keyError = mockError("key something else went wrong");
+        const inputFetchError = mockError("input something went wrong");
+        const outputFetchError = mockError("output something went wrong");
+        const adrData = mockADRDataState({
+            input: mockADRDatasetState({
+                fetchingError: inputFetchError
+            }),
+            output: mockADRDatasetState({
+                fetchingError: outputFetchError
+            })
+        });
 
         const stateWithErrors = mockADRState({
-            adrError: adrError,
+            adrData: adrData,
             keyError: keyError
         });
 
         const result = getResult({adr: stateWithErrors});
-        expectArraysEqual(result, [adrError, keyError]);
+        expectArraysEqual(result, [inputFetchError, outputFetchError, keyError]);
     });
 
     it("gets adr upload errors", async () => {

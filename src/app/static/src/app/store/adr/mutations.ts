@@ -1,5 +1,5 @@
-import {MutationTree} from "vuex";
-import {ADRState} from "./adr";
+import {MutationTree, Payload} from "vuex";
+import {AdrDatasetType, ADRState} from "./adr";
 import {ADRSchemas, PayloadWithType} from "../../types";
 import {Error} from "../../generated";
 
@@ -16,6 +16,13 @@ export enum ADRMutation {
     SetSSOLogin = "SetSSOLogin"
 }
 
+export interface DatasetTypePayload<T> extends Payload {
+    payload: {
+        datasetType: AdrDatasetType,
+        data: T
+    }
+}
+
 export const mutations: MutationTree<ADRState> = {
     [ADRMutation.UpdateKey](state: ADRState, action: PayloadWithType<string | null>) {
         state.key = action.payload;
@@ -29,24 +36,24 @@ export const mutations: MutationTree<ADRState> = {
         state.keyError = action.payload;
     },
 
-    [ADRMutation.SetADRError](state: ADRState, action: PayloadWithType<Error | null>) {
-        state.adrError = action.payload;
+    [ADRMutation.SetADRError](state: ADRState, action: DatasetTypePayload<Error | null>) {
+        state.adrData[action.payload.datasetType].fetchingError = action.payload.data;
     },
 
-    [ADRMutation.SetDatasets](state: ADRState, action: PayloadWithType<any[]>) {
-        state.datasets = action.payload;
+    [ADRMutation.SetDatasets](state: ADRState, action: DatasetTypePayload<any[]>) {
+        state.adrData[action.payload.datasetType].datasets = action.payload.data;
     },
 
-    [ADRMutation.SetReleases](state: ADRState, action: PayloadWithType<any[]>) {
-        state.releases = action.payload;
+    [ADRMutation.SetReleases](state: ADRState, action: DatasetTypePayload<any[]>) {
+        state.adrData[action.payload.datasetType].releases = action.payload.data;
     },
 
-    [ADRMutation.ClearReleases](state: ADRState) {
-        state.releases = [];
+    [ADRMutation.ClearReleases](state: ADRState, action: DatasetTypePayload<null>) {
+        state.adrData[action.payload.datasetType].releases = [];
     },
 
-    [ADRMutation.SetFetchingDatasets](state: ADRState, action: PayloadWithType<boolean>) {
-        state.fetchingDatasets = action.payload;
+    [ADRMutation.SetFetchingDatasets](state: ADRState, action: DatasetTypePayload<boolean>) {
+        state.adrData[action.payload.datasetType].fetchingDatasets = action.payload.data;
     },
 
     [ADRMutation.SetSchemas](state: ADRState, action: PayloadWithType<ADRSchemas>) {

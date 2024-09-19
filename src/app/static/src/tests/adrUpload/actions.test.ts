@@ -1,4 +1,5 @@
 import {
+    mockADRDataState,
     mockADRState,
     mockADRUploadState,
     mockAxios,
@@ -232,7 +233,7 @@ describe("ADR upload actions", () => {
         const dispatch = vi.fn();
         const root = mockRootState({
             adr: mockADRState({
-                datasets: [],
+                adrData: mockADRDataState(),
                 schemas: {
                     baseUrl: "http://test",
                     outputZip: "inputs-unaids-naomi-output-zip",
@@ -328,7 +329,7 @@ describe("ADR upload actions", () => {
         const dispatch = vi.fn();
         const root = mockRootState({
             adr: mockADRState({
-                datasets: [],
+                adrData: mockADRDataState(),
                 schemas: {
                     baseUrl: "http://test",
                     outputZip: "inputs-unaids-naomi-output-zip",
@@ -398,7 +399,7 @@ describe("ADR upload actions", () => {
         const dispatch = vi.fn();
         const root = mockRootState({
             adr: mockADRState({
-                datasets: [],
+                adrData: mockADRDataState(),
                 schemas: {
                     baseUrl: "http://test",
                     outputZip: "inputs-unaids-naomi-output-zip",
@@ -456,7 +457,7 @@ describe("ADR upload actions", () => {
         const dispatch = vi.fn();
         const root = mockRootState({
             adr: mockADRState({
-                datasets: [],
+                adrData: mockADRDataState(),
                 schemas: {
                     baseUrl: "http://test",
                     outputZip: "inputs-unaids-naomi-output-zip",
@@ -533,7 +534,7 @@ describe("ADR upload actions", () => {
         const dispatch = vi.fn();
         const root = mockRootState({
             adr: mockADRState({
-                datasets: [],
+                adrData: mockADRDataState(),
                 schemas: {
                     baseUrl: "http://test",
                     outputZip: "inputs-unaids-naomi-output-zip",
@@ -657,7 +658,7 @@ describe("ADR upload actions", () => {
                 adr: {
                     namespaced: true,
                     state: mockADRState({
-                        datasets: [],
+                        adrData: mockADRDataState(),
                         schemas: {
                             baseUrl: "whatever",
                             outputZip: "inputs-unaids-naomi-output-zip",
@@ -690,7 +691,7 @@ describe("ADR upload actions", () => {
         const commit = vi.fn();
         const root = mockRootState({
             adr: mockADRState({
-                datasets: [],
+                adrData: mockADRDataState(),
                 schemas: {
                     baseUrl: "http://test"
                 } as any
@@ -732,7 +733,7 @@ describe("ADR upload actions", () => {
         const commit = vi.fn();
         const root = mockRootState({
             adr: mockADRState({
-                datasets: [],
+                adrData: mockADRDataState(),
                 schemas: {
                     baseUrl: "http://test"
                 } as any

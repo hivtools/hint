@@ -45,7 +45,7 @@ import {
 import {initialProjectsState, ProjectsState} from "../app/store/projects/projects";
 import {initialModelCalibrateState, ModelCalibrateState} from "../app/store/modelCalibrate/modelCalibrate";
 import { HintrVersionState, initialHintrVersionState } from "../app/store/hintrVersion/hintrVersion";
-import {ADRState, initialADRState} from "../app/store/adr/adr";
+import {ADRDatasetState, ADRState, initialADRState} from "../app/store/adr/adr";
 import {ADRUploadState, initialADRUploadState} from "../app/store/adrUpload/adrUpload";
 import {DownloadResultsState, initialDownloadResultsState} from "../app/store/downloadResults/downloadResults";
 import {ReviewInputState, initialReviewInputState} from "../app/store/reviewInput/reviewInput";
@@ -68,9 +68,27 @@ export const mockPasswordState = (props?: Partial<PasswordState>): PasswordState
     }
 };
 
-export const mockADRState =  (props?: Partial<ADRState>): ADRState => {
+export const mockADRState = (props?: Partial<ADRState>): ADRState => {
     return {
         ...initialADRState(),
+        ...props
+    }
+};
+
+export const mockADRDatasetState = (props?: Partial<ADRDatasetState>): ADRDatasetState => {
+    return {
+        datasets: ["TEST DATASETS"],
+        releases: ["TEST RELEASES"],
+        fetchingDatasets: false,
+        fetchingError: null,
+        ...props
+    }
+};
+
+export const mockADRDataState = (props?: Partial<ADRState["adrData"]>): ADRState["adrData"] => {
+    return {
+        input: mockADRDatasetState(),
+        output: mockADRDatasetState(),
         ...props
     }
 };

@@ -52,7 +52,7 @@
 <script lang="ts">
     import { mapActionByName, mapStateProp, mapMutationByName } from "../../utils";
     import HintTreeSelect from "../HintTreeSelect.vue";
-    import { ADRState } from "../../store/adr/adr";
+    import {AdrDatasetType, ADRState} from "../../store/adr/adr";
     import VueFeather from "vue-feather";
     import i18next from "i18next";
     import { Language } from "../../store/translations/locales";
@@ -82,7 +82,11 @@
             open: {
                 type: Boolean,
                 required: false
-            }
+            },
+            datasetType: {
+                type: String as PropType<AdrDatasetType>,
+                required: true
+            },
         },
         data(): Data {
             return {
@@ -91,10 +95,13 @@
             };
         },
         computed: {
-            releases: mapStateProp<ADRState, Release[]>(
+            adrData: mapStateProp<ADRState, ADRState["adrData"]>(
                 namespace,
-                (state: ADRState) => state.releases
+                (state: ADRState) => state.adrData
             ),
+            releases() {
+                return this.adrData[this.datasetType].releases
+            },
             initialRelease: mapStateProp<BaselineState, string | undefined>(
                 "baseline",
                 (state: BaselineState) => state.selectedDataset?.release
@@ -139,9 +146,9 @@
         watch: {
             datasetId(id) {
                 this.choiceADR = "useLatest";
-                this.clearReleases()
+                this.clearReleases({payload: {datasetType: this.datasetType}})
                 if (id) {
-                    this.getReleases(id);
+                    this.getReleases({id, datasetType: this.datasetType});
                 }
             },
             choiceADR(choice) {
@@ -150,7 +157,7 @@
                 }
             },
             releaseId() {
-                this.$emit("selected-dataset-release", this.releases.find((release: Release) => release.id === this.releaseId))
+                this.$emit("selected-dataset-release", this.releaseId)
             },
             valid() {
                 this.$emit("valid", this.valid);
@@ -160,7 +167,7 @@
             },
             open(){
                 if (this.open && this.datasetId){
-                    this.getReleases(this.datasetId);
+                    this.getReleases({id: this.datasetId, datasetType: this.datasetType});
                 }
             }
         },

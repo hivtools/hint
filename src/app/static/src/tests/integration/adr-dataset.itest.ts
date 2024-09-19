@@ -8,6 +8,7 @@ import {SurveyAndProgramMutation} from "../../app/store/surveyAndProgram/mutatio
 import {getFormData} from "./helpers";
 import {ADRMutation} from "../../app/store/adr/mutations";
 import {UploadFile} from "../../app/types";
+import {AdrDatasetType} from "../../app/store/adr/adr";
 
 // this suite tests all endpoints that talk to the ADR
 // we put them in a suite of their own so that we can run
@@ -41,7 +42,7 @@ describe("ADR dataset-related actions", () => {
 
     it("can fetch ADR datasets", async () => {
         const commit = vi.fn();
-        await adrActions.getDatasets({commit, rootState} as any);
+        await adrActions.getDatasets({commit, rootState} as any, AdrDatasetType.Input);
 
         expect(commit.mock.calls[0][0]["type"]).toBe(ADRMutation.SetFetchingDatasets);
         expect(commit.mock.calls[0][0]["payload"]).toBe(true);
@@ -64,7 +65,7 @@ describe("ADR dataset-related actions", () => {
             adr: { schemas }
         };
 
-        await adrActions.getDatasets({commit, rootState} as any);
+        await adrActions.getDatasets({commit, rootState} as any, AdrDatasetType.Input);
         expect(commit.mock.calls[0][0]).toStrictEqual({type: ADRMutation.SetFetchingDatasets, payload: true});
 
         expect(commit.mock.calls[1][0]["type"]).toBe(ADRMutation.SetADRError);
@@ -82,11 +83,11 @@ describe("ADR dataset-related actions", () => {
     it("can get releases", async () => {
         const commit = vi.fn();
 
-        await adrActions.getDatasets({commit, rootState} as any);
+        await adrActions.getDatasets({commit, rootState} as any, AdrDatasetType.Input);
 
         vi.resetAllMocks();
 
-        await adrActions.getReleases({commit, rootState} as any, "antarctica-country-estimates-2022-1");
+        await adrActions.getReleases({commit, rootState} as any, {id: "antarctica-country-estimates-2022-1", datasetType: AdrDatasetType.Input});
         expect(commit.mock.calls[0][0].type).toBe(ADRMutation.SetReleases)
         expect(commit.mock.calls[0][0].payload.length).toBeGreaterThan(0);
         expect(commit.mock.calls[0][0].payload[0].name).toBeTruthy();
@@ -97,7 +98,7 @@ describe("ADR dataset-related actions", () => {
         const commit = vi.fn();
 
         // 1. get datasets
-        await adrActions.getDatasets({commit, rootState} as any);
+        await adrActions.getDatasets({commit, rootState} as any, AdrDatasetType.Input);
 
         // 2. select a naomi dev dataset
         expect(commit.mock.calls[2][0].type).toStrictEqual(ADRMutation.SetDatasets);
@@ -130,7 +131,7 @@ describe("ADR dataset-related actions", () => {
         });
 
         // 1. get datasets
-        await adrActions.getDatasets({commit, rootState} as any);
+        await adrActions.getDatasets({commit, rootState} as any, AdrDatasetType.Input);
 
         // 2. select a naomi dev dataset
         expect(commit.mock.calls[2][0].type).toStrictEqual(ADRMutation.SetDatasets);
@@ -343,7 +344,7 @@ describe("ADR dataset-related actions", () => {
 
 const getSelectedDatasetState = async () => {
     const commitDataset = vi.fn();
-    await adrActions.getDatasets({commit: commitDataset, rootState} as any);
+    await adrActions.getDatasets({commit: commitDataset, rootState} as any, AdrDatasetType.Input);
     const datasets = commitDataset.mock.calls[2][0]["payload"];
     return {
         selectedDataset:

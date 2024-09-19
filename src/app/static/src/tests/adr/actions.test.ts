@@ -1,7 +1,18 @@
-import {mockADRState, mockAxios, mockBaselineState, mockError, mockFailure, mockRootState, mockSuccess} from "../mocks";
+import {
+    mockADRDatasetState,
+    mockADRDataState,
+    mockADRState,
+    mockAxios,
+    mockBaselineState,
+    mockError,
+    mockFailure,
+    mockRootState,
+    mockSuccess
+} from "../mocks";
 import {actions} from "../../app/store/adr/actions";
 import {ADRMutation} from "../../app/store/adr/mutations";
 import {BaselineMutation} from "../../app/store/baseline/mutations";
+import {AdrDatasetType} from "../../app/store/adr/adr";
 
 describe("ADR actions", () => {
     const state = mockADRState();
@@ -44,7 +55,7 @@ describe("ADR actions", () => {
         });
 
         expect(dispatch).toHaveBeenCalledTimes(1)
-        expect(dispatch).toHaveBeenCalledWith("getDatasets");
+        expect(dispatch).toHaveBeenCalledWith("getDatasets", AdrDatasetType.Input);
     });
 
     it("saves key", async () => {
@@ -87,67 +98,68 @@ describe("ADR actions", () => {
             });
     });
 
-    it("fetches datasets", async () => {
+    it.each(Object.values(AdrDatasetType))("fetches datasets", async (datasetType: AdrDatasetType) => {
         mockAxios.onGet(`/adr/datasets/`)
             .reply(200, mockSuccess([1]));
 
         const commit = vi.fn();
 
-        await actions.getDatasets({commit, state, rootState} as any);
+        await actions.getDatasets({commit, state, rootState} as any, datasetType);
 
         expect(commit.mock.calls.length).toBe(4);
         expect(commit.mock.calls[0][0])
             .toStrictEqual({
                 type: ADRMutation.SetFetchingDatasets,
-                payload: true
+                payload: {data: true, datasetType}
             });
         expect(commit.mock.calls[1][0])
             .toStrictEqual({
                 type: ADRMutation.SetADRError,
-                payload: null
+                payload: {data: null, datasetType}
             });
         expect(commit.mock.calls[2][0])
             .toStrictEqual({
                 type: ADRMutation.SetDatasets,
-                payload: [1]
+                payload: {data: [1], datasetType}
             });
         expect(commit.mock.calls[3][0])
             .toStrictEqual({
                 type: ADRMutation.SetFetchingDatasets,
-                payload: false
+                payload: {data: false, datasetType}
             });
     });
 
-    it("resets datasets and commits error fetching if error response", async () => {
-        mockAxios.onGet(`/adr/datasets/`)
-            .reply(500, mockFailure("error"));
+    it.each(Object.values(AdrDatasetType))("resets datasets and commits error fetching if error response",
+        async (datasetType: AdrDatasetType) => {
+            mockAxios.onGet(`/adr/datasets/`)
+                .reply(500, mockFailure("error"));
 
-        const commit = vi.fn();
+            const commit = vi.fn();
 
-        await actions.getDatasets({commit, state, rootState} as any);
+            await actions.getDatasets({commit, state, rootState} as any, datasetType);
 
-        expect(commit.mock.calls.length).toBe(4);
-        expect(commit.mock.calls[0][0])
-            .toStrictEqual({
-                type: ADRMutation.SetFetchingDatasets,
-                payload: true
-            });
-        expect(commit.mock.calls[1][0])
-            .toStrictEqual({
-                type: ADRMutation.SetADRError,
-                payload: null
-            });
-        expect(commit.mock.calls[2][0])
-            .toStrictEqual({
-                type: ADRMutation.SetADRError,
-                payload: mockError("error")
-            });
-        expect(commit.mock.calls[3][0])
-            .toStrictEqual({
-                type: ADRMutation.SetFetchingDatasets,
-                payload: false
-            });
-    });
+            expect(commit.mock.calls.length).toBe(4);
+            expect(commit.mock.calls[0][0])
+                .toStrictEqual({
+                    type: ADRMutation.SetFetchingDatasets,
+                    payload: {data: true, datasetType}
+                });
+            expect(commit.mock.calls[1][0])
+                .toStrictEqual({
+                    type: ADRMutation.SetADRError,
+                    payload: {data: null, datasetType}
+                });
+            expect(commit.mock.calls[2][0])
+                .toStrictEqual({
+                    type: ADRMutation.SetADRError,
+                    payload: {data: mockError("error"), datasetType}
+                });
+            expect(commit.mock.calls[3][0])
+                .toStrictEqual({
+                    type: ADRMutation.SetFetchingDatasets,
+                    payload: {data: false, datasetType}
+                });
+        });
 
     it("fetches releases", async () => {
         mockAxios.onGet(`/adr/datasets/123/releases/`)
@@ -155,13 +167,13 @@ describe("ADR actions", () => {
 
         const commit = vi.fn();
 
-        await actions.getReleases({commit, state, rootState} as any, "123");
+        await actions.getReleases({commit, state, rootState} as any, {id: "123", datasetType: AdrDatasetType.Input});
 
         expect(commit.mock.calls.length).toBe(1);
         expect(commit.mock.calls[0][0])
             .toStrictEqual({
                 type: ADRMutation.SetReleases,
-                payload: [1]
+                payload: {data: [1], datasetType: AdrDatasetType.Input}
             });
     });
 
@@ -171,7 +183,7 @@ describe("ADR actions", () => {
 
         const commit = vi.fn();
 
-        await actions.getReleases({commit, state, rootState} as any, "123");
+        await actions.getReleases({commit, state, rootState} as any, {id: "123", datasetType: AdrDatasetType.Input});
 
         expect(commit.mock.calls.length).toBe(1);
         expect(commit.mock.calls[0][0])
@@ -284,7 +296,10 @@ describe("ADR actions", () => {
 
         const commit = vi.fn();
 
-        await actions.getDataset({commit, state, rootState} as any, {id: "abc123"});
+        await actions.getDataset({commit, state, rootState} as any, {
+            id: "abc123",
+            datasetType: AdrDatasetType.Input
+        });
 
         expect(commit.mock.calls.length).toBe(2);
         expect(commit.mock.calls[0][0]).toBe("baseline/SetDataset");
@@ -294,7 +309,20 @@ describe("ADR actions", () => {
     });
 
     it("fetches dataset with release", async () => {
-        const state = mockADRState({schemas: {baseUrl: "adr.com"} as any});
+        const release = {
+            id: "V 1.0",
+            name: "releaseName",
+            notes: "releaseNotes",
+            activity_id: "activityId"
+        }
+        const state = mockADRState({
+            adrData: mockADRDataState({
+                [AdrDatasetType.Input]: mockADRDatasetState({
+                    releases: [release]
+                })
+            }),
+            schemas: {baseUrl: "adr.com"} as any
+        });
         mockAxios.onGet(`/adr/datasets/abc123?release=V+1.0`)
             .reply(200, mockSuccess({
                 id: "abc123",
@@ -303,14 +331,12 @@ describe("ADR actions", () => {
             }));
 
         const commit = vi.fn();
-        const release = {
-            id: "V 1.0",
-            name: "releaseName",
-            notes: "releaseNotes",
-            activity_id: "activityId"
-        }
 
-        await actions.getDataset({commit, state, rootState} as any, {id: "abc123", release});
+        await actions.getDataset({commit, state, rootState} as any, {
+            id: "abc123",
+            releaseId: release.id,
+            datasetType: AdrDatasetType.Input
+        });
 
         expect(commit.mock.calls.length).toBe(2);
         expect(commit.mock.calls[0][0]).toBe("baseline/SetDataset");

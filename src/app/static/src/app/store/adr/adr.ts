@@ -5,13 +5,24 @@ import {actions} from "./actions";
 import {mutations} from "./mutations";
 import {RootState} from "../../root";
 
-export interface ADRState {
+export enum AdrDatasetType {
+    Input = "input",
+    Output = "output"
+}
+
+export interface ADRDatasetState {
     datasets: any[],
     releases: any[],
     fetchingDatasets: boolean,
+    fetchingError: Error | null,
+}
+
+export interface ADRState {
+    adrData: {
+        [key in AdrDatasetType]: ADRDatasetState
+    },
     key: string | null,
     keyError: Error | null,
-    adrError: Error | null,
     schemas: ADRSchemas | null,
     userCanUpload: boolean
     ssoLogin: boolean
@@ -19,13 +30,23 @@ export interface ADRState {
 
 export const initialADRState = (): ADRState => {
     return {
-        datasets: [],
-        releases: [],
+        adrData: {
+            input: {
+                datasets: [],
+                releases: [],
+                fetchingDatasets: false,
+                fetchingError: null
+            },
+            output: {
+                datasets: [],
+                releases: [],
+                fetchingDatasets: false,
+                fetchingError: null
+            }
+        },
         key: null,
         keyError: null,
-        adrError: null,
         schemas: null,
-        fetchingDatasets: false,
         userCanUpload: false,
         ssoLogin: false
     }

@@ -77,6 +77,11 @@ export class APIService<S extends string, E extends string> implements API<S, E>
         return this;
     };
 
+    withErrorCallback = (callback: (failure: Response) => void) => {
+        this._onError = callback;
+        return this;
+    };
+
     ignoreErrors = () => {
         this._ignoreErrors = true;
         return this;

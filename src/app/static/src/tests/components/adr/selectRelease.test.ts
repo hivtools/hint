@@ -2,13 +2,14 @@ import SelectRelease from "../../../app/components/adr/SelectRelease.vue";
 import Vuex from "vuex";
 import {ADRMutation} from "../../../app/store/adr/mutations";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
-import {mockRootState} from "../../mocks";
+import {mockADRDatasetState, mockADRDataState, mockRootState} from "../../mocks";
 import {expectTranslated, mountWithTranslate, shallowMountWithTranslate} from "../../testHelpers";
 import {Language} from "../../../app/store/translations/locales";
 import {Dataset} from "../../../app/types";
 import VueFeather from "vue-feather";
 import {nextTick} from "vue";
 import HintTreeSelect from "../../../app/components/HintTreeSelect.vue";
+import {AdrDatasetType} from "../../../app/store/adr/adr";
 
 describe("select release", () => {
 
@@ -49,7 +50,11 @@ describe("select release", () => {
                 adr: {
                     namespaced: true,
                     state: {
-                        releases
+                        adrData: mockADRDataState({
+                            [AdrDatasetType.Input]: mockADRDatasetState({
+                                releases
+                            })
+                        })
                     },
                     actions: {
                         getDatasets: vi.fn(),
@@ -81,7 +86,10 @@ describe("select release", () => {
         const rendered = mountWithTranslate(SelectRelease, store, {
             global: {
                 plugins: [store]
-            }
+            },
+            propsData: {
+                datasetType: AdrDatasetType.Input
+            },
         });
         await rendered.setProps({datasetId: "datasetId"})
         expect(getReleasesMock.mock.calls.length).toBe(1);
@@ -127,7 +135,10 @@ describe("select release", () => {
         const rendered = shallowMountWithTranslate(SelectRelease, store, {
             global: {
                 plugins: [store]
-            }, 
+            },
+            propsData: {
+                datasetType: AdrDatasetType.Input
+            },
         });
         await rendered.setProps({datasetId: "datasetId"})
         expect(rendered.find("#selectRelease").exists()).toBe(false);
@@ -138,7 +149,10 @@ describe("select release", () => {
         const rendered = shallowMountWithTranslate(SelectRelease, store, {
             global: {
                 plugins: [store]
-            }, 
+            },
+            propsData: {
+                datasetType: AdrDatasetType.Input
+            },
         });
         expect(rendered.find("#selectRelease").exists()).toBe(false);
     });
@@ -148,7 +162,10 @@ describe("select release", () => {
         const rendered = shallowMountWithTranslate(SelectRelease, store, {
             global: {
                 plugins: [store]
-            }, 
+            },
+            propsData: {
+                datasetType: AdrDatasetType.Input
+            },
         });
         await rendered.setProps({datasetId: "datasetId"})
         expect(getReleasesMock.mock.calls.length).toBe(1);
@@ -165,7 +182,10 @@ describe("select release", () => {
                 global: {
                     plugins: [store],
                     directives: {"tooltip": mockTooltip}
-                }
+                },
+                propsData: {
+                    datasetType: AdrDatasetType.Input
+                },
             });
         await rendered.setProps({datasetId: "datasetId"})
 
@@ -184,7 +204,10 @@ describe("select release", () => {
                 global: {
                     plugins: [store],
                     directives: {"tooltip": mockTooltip}
-                }
+                },
+                propsData: {
+                    datasetType: AdrDatasetType.Input
+                },
             });
         await rendered.setProps({datasetId: "datasetId"})
 
@@ -203,7 +226,10 @@ describe("select release", () => {
                 global: {
                     plugins: [store],
                     directives: {"tooltip": mockTooltip}
-                }
+                },
+                propsData: {
+                    datasetType: AdrDatasetType.Input
+                },
             });
         await rendered.setProps({datasetId: "datasetId"})
 
@@ -216,7 +242,10 @@ describe("select release", () => {
         const rendered = mountWithTranslate(SelectRelease, store, {
             global: {
                 plugins: [store]
-            }, 
+            },
+            propsData: {
+                datasetType: AdrDatasetType.Input
+            },
         });
         await rendered.setProps({datasetId: "datasetId"})
         const select = rendered.findComponent(HintTreeSelect);
@@ -231,7 +260,11 @@ describe("select release", () => {
         const rendered = mountWithTranslate(SelectRelease, store, {
             global: {
                 plugins: [store]
-            }, props: {datasetId: "datasetId"}
+            },
+            props: {
+                datasetId: "datasetId",
+                datasetType: AdrDatasetType.Input
+            }
         });
         const select = rendered.findComponent(HintTreeSelect);
         expect(select.props("disabled")).toBe(true);
@@ -243,12 +276,16 @@ describe("select release", () => {
         const rendered = mountWithTranslate(SelectRelease, store, {
             global: {
                 plugins: [store]
-            }, props: {datasetId: "datasetId"}
+            },
+            props: {
+                datasetId: "datasetId",
+                datasetType: AdrDatasetType.Input
+            }
         });
         const selectWrapper = rendered.findComponent(HintTreeSelect);
         expect(!rendered.vm.useRelease).toBe(true);
         expect((rendered.vm.$data as any).releaseId).toBeUndefined();
-        store.state.adr.releases = releasesArray;
+        store.state.adr.adrData[AdrDatasetType.Input].releases = releasesArray;
         (rendered.vm as any).$options.watch.releases.call(rendered.vm);
         await nextTick();
         // need to manually trigger watcher to cause treeselect re-render
@@ -263,7 +300,12 @@ describe("select release", () => {
         const rendered = mountWithTranslate(SelectRelease, store, {
             global: {
                 plugins: [store]
-            }, props: {datasetId: "datasetId", choiceADR: "useRelease"}
+            },
+            props: {
+                datasetId: "datasetId",
+                choiceADR: "useRelease",
+                datasetType: AdrDatasetType.Input
+            }
         });
         const select = rendered.findComponent(HintTreeSelect);
         expect(select.props("disabled")).toBe(true);
@@ -276,14 +318,21 @@ describe("select release", () => {
         const rendered = shallowMountWithTranslate(SelectRelease, store, {
             global: {
                 plugins: [store]
-            }, 
+            },
+            propsData: {
+                datasetType: AdrDatasetType.Input
+            },
         });
         await rendered.setProps({datasetId: "datasetId"})
         expect(spy).toHaveBeenCalledTimes(1)
-        expect(spy.mock.calls[0][spy.mock.calls[0].length - 1]).toBe("datasetId")
+        const expectedPayload = {
+            id: "datasetId",
+            datasetType: AdrDatasetType.Input
+        }
+        expect(spy.mock.calls[0][spy.mock.calls[0].length - 1]).toStrictEqual(expectedPayload)
         await rendered.setProps({open: true})
         expect(spy).toHaveBeenCalledTimes(2)
-        expect(spy.mock.calls[1][spy.mock.calls[1].length - 1]).toBe("datasetId")
+        expect(spy.mock.calls[1][spy.mock.calls[1].length - 1]).toStrictEqual(expectedPayload)
     });
     
 
@@ -292,13 +341,16 @@ describe("select release", () => {
         const rendered = shallowMountWithTranslate(SelectRelease, store, {
             global: {
                 plugins: [store]
-            }, 
+            },
+            propsData: {
+                datasetType: AdrDatasetType.Input
+            },
         });
         await rendered.setProps({datasetId: "datasetId"})
         const selectRelease = rendered.findAll("input")[1]
         await selectRelease.trigger("click")
         await rendered.setData({releaseId: "releaseId"})
-        expect(rendered.emitted("selected-dataset-release")).toStrictEqual([[undefined], [releasesArray[0]]])
+        expect(rendered.emitted("selected-dataset-release")).toStrictEqual([[undefined], [releasesArray[0].id]])
     });
 
     it("selecting a release emits true valid", async () => {
@@ -306,7 +358,10 @@ describe("select release", () => {
         const rendered = shallowMountWithTranslate(SelectRelease, store, {
             global: {
                 plugins: [store]
-            }, 
+            },
+            propsData: {
+                datasetType: AdrDatasetType.Input
+            },
         });
         await rendered.setProps({datasetId: "datasetId"})
         const selectRelease = rendered.findAll("input")[1]
@@ -321,7 +376,10 @@ describe("select release", () => {
         const rendered = mountWithTranslate(SelectRelease, store, {
             global: {
                 plugins: [store]
-            }
+            },
+            propsData: {
+                datasetType: AdrDatasetType.Input
+            },
         });
         await rendered.setProps({datasetId: "datasetId"})
         const selectRelease = rendered.findAll("input")[1];

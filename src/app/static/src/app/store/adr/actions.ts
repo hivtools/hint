@@ -1,19 +1,20 @@
 import {ActionContext, ActionTree} from "vuex";
-import {api} from "../../apiService";
+import {api, APIService} from "../../apiService";
 import qs from "qs";
-import {ADRState} from "./adr";
+import {AdrDatasetType, ADRState} from "./adr";
 import {ADRMutation} from "./mutations";
 import {datasetFromMetadata} from "../../utils";
 import {Organization, Release} from "../../types";
 import {BaselineMutation} from "../baseline/mutations";
 import {RootState} from "../../root";
+import {Response} from "../../generated";
 
 export interface ADRActions {
     fetchKey: (store: ActionContext<ADRState, RootState>) => void;
     saveKey: (store: ActionContext<ADRState, RootState>, key: string) => void;
     deleteKey: (store: ActionContext<ADRState, RootState>) => void;
-    getDatasets: (store: ActionContext<ADRState, RootState>) => void;
-    getReleases: (store: ActionContext<ADRState, RootState>, id: string) => void;
+    getDatasets: (store: ActionContext<ADRState, RootState>, type: AdrDatasetType) => void;
+    getReleases: (store: ActionContext<ADRState, RootState>, payload: GetReleasesPayload) => void;
     getDataset: (store: ActionContext<ADRState, RootState>, payload: GetDatasetPayload) => void;
     getSchemas: (store: ActionContext<ADRState, RootState>) => void;
     getUserCanUpload: (store: ActionContext<ADRState, RootState>) => void;
@@ -22,7 +23,13 @@ export interface ADRActions {
 
 export interface GetDatasetPayload {
     id: string
-    release?: Release
+    releaseId?: string
+    datasetType: AdrDatasetType
+}
+
+export interface GetReleasesPayload {
+    id: string,
+    datasetType: AdrDatasetType
 }
 
 export const actions: ActionTree<ADRState, RootState> & ADRActions = {
@@ -40,7 +47,7 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
             .get("/sso")
             .then((response) => {
                 if (response && response.data) {
-                    context.dispatch("getDatasets")
+                    context.dispatch("getDatasets", AdrDatasetType.Input)
                 }
             })
     },
@@ -61,30 +68,44 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
             .delete("/adr/key/")
     },
 
-    async getDatasets(context) {
-        context.commit({type: ADRMutation.SetFetchingDatasets, payload: true});
-        context.commit({type: ADRMutation.SetADRError, payload: null});
+    async getDatasets(context, datasetType: AdrDatasetType) {
+        context.commit({type: ADRMutation.SetFetchingDatasets, payload: {datasetType, data: true}});
+        context.commit({type: ADRMutation.SetADRError, payload: {datasetType, data: null}});
         await api<ADRMutation, ADRMutation>(context)
-            .withError(ADRMutation.SetADRError)
-            .withSuccess(ADRMutation.SetDatasets)
+            .withErrorCallback((failure: Response) => {
+                const error = APIService.getFirstErrorFromFailure(failure);
+                context.commit({type: ADRMutation.SetADRError, payload: {datasetType, data: error}});
+            })
+            .ignoreSuccess()
             .get("/adr/datasets/")
-            .then(() => {
-                context.commit({type: ADRMutation.SetFetchingDatasets, payload: false});
+            .then(response => {
+                if (response) {
+                    context.commit({type: ADRMutation.SetDatasets, payload: {datasetType, data: response.data}});
+                }
+                context.commit({type: ADRMutation.SetFetchingDatasets, payload: {datasetType, data: false}});
             });
     },
 
-    async getReleases(context, selectedDatasetId) {
+    async getReleases(context, payload: GetReleasesPayload) {
         await api<ADRMutation, BaselineMutation>(context)
             .withError(`baseline/${BaselineMutation.BaselineError}` as BaselineMutation, true)
-            .withSuccess(ADRMutation.SetReleases)
-            .get(`/adr/datasets/${selectedDatasetId}/releases/`)
+            .ignoreSuccess()
+            .get(`/adr/datasets/${payload.id}/releases/`)
+            .then(response => {
+                if (response) {
+                    const commitPayload = {datasetType: payload.datasetType, data: response.data}
+                    context.commit({type: ADRMutation.SetReleases, payload: commitPayload})
+                }
+            })
     },
 
-    async getDataset(context, {id, release}) {
+    async getDataset(context, {id, releaseId, datasetType}) {
         const {state, commit} = context;
         let url = `/adr/datasets/${id}`
-        if (release?.id) {
-            url += '?' + new URLSearchParams({release: release.id});
+        let release: Release | null = null
+        if (releaseId) {
+            url += '?' + new URLSearchParams({release: releaseId});
+            release = state.adrData[datasetType].releases.find((rel: Release) => rel.id === releaseId);
         }
         await api<BaselineMutation, ADRMutation>(context)
             .withError(ADRMutation.SetADRError)
@@ -92,10 +113,9 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
             .get(url)
             .then(response => {
                 if (response) {
-                    const releaseId = release?.id
                     const dataset = datasetFromMetadata(response.data, state.schemas!, releaseId);
                     commit(`baseline/${BaselineMutation.SetDataset}`, dataset, {root: true});
-                    commit(`baseline/${BaselineMutation.SetRelease}`, release || null, {root: true});
+                    commit(`baseline/${BaselineMutation.SetRelease}`, release, {root: true});
                 }
             });
     },
