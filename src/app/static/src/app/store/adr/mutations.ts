@@ -13,7 +13,7 @@ export enum ADRMutation {
     SetFetchingDatasets = "SetFetchingDatasets",
     SetSchemas = "SetSchemas",
     SetUserCanUpload = "SetUserCanUpload",
-    SetSSOLogin = "SetSSOLogin"
+    SetSSOLogin = "SetSSOLogin",
 }
 
 export interface DatasetTypePayload<T> extends Payload {
@@ -62,5 +62,5 @@ export const mutations: MutationTree<ADRState> = {
 
     [ADRMutation.SetUserCanUpload](state: ADRState, action: PayloadWithType<boolean>) {
         state.userCanUpload = action.payload;
-    }
+    },
 };

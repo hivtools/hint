@@ -171,6 +171,7 @@ interface Data {
             )
         },
         methods: {
+            getDatasets: mapActionByName("adr", "getDatasets"),
             getDataset: mapActionByName("adr", "getDataset"),
             refreshDatasetMetadata: mapActionByName(
                 "baseline",
@@ -323,6 +324,7 @@ interface Data {
             }
         },
         mounted() {
+            this.getDatasets(AdrDatasetType.Input);
             this.refreshDatasetMetadata();
             this.startPolling();
         },

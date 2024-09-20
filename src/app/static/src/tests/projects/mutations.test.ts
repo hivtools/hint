@@ -1,4 +1,4 @@
-import {mockProjectsState} from "../mocks";
+import {mockDatasetResource, mockProjectsState} from "../mocks";
 import {mutations, ProjectsMutations} from "../../app/store/projects/mutations";
 import {router} from "../../app/router";
 import {Mock} from "vitest";
@@ -135,4 +135,12 @@ describe("Projects mutations", () => {
         expect(mockRouterPush.mock.calls.length).toBe(1);
         expect(mockRouterPush.mock.calls[0][0]).toBe("/projects");
     });
+
+    it("sets adrRehydrateOutputZip", () => {
+        const state = mockProjectsState();
+        const dataset = mockDatasetResource();
+        mutations[ProjectsMutations.SetAdrRehydrateOutputZip](state, {payload: dataset});
+
+        expect(state.adrRehydrateOutputZip).toBe(dataset);
+    })
 });

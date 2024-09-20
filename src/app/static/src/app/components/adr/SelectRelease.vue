@@ -28,9 +28,10 @@
         </div>
 
         <label
+            id="select-release-label"
             for="releaseSelector"
             class="font-weight-bold"
-            v-translate="'releases'"
+            v-translate="selectorLabelKey"
         ></label>
         <hint-tree-select
             id="releaseSelector"
@@ -87,11 +88,15 @@
                 type: String as PropType<AdrDatasetType>,
                 required: true
             },
+            selectorLabelKey: {
+                type: String,
+                required: true
+            }
         },
         data(): Data {
             return {
                 releaseId: undefined,
-                choiceADR: "useLatest",
+                choiceADR: "useLatest"
             };
         },
         computed: {
@@ -106,9 +111,6 @@
                 "baseline",
                 (state: BaselineState) => state.selectedDataset?.release
             ),
-            releases() {
-                return this.adrData[this.datasetType].releases
-            },
             valid() {
                 return (this.choiceADR === "useLatest") || !!this.releaseId;
             },
@@ -138,7 +140,7 @@
             clearReleases: mapMutationByName(namespace, ADRMutation.ClearReleases),
             preSelectRelease(){
                 const selectedReleaseId = this.initialRelease
-                if (selectedReleaseId && this.releases.some((release: Release) => release.id === selectedReleaseId)){
+                if (selectedReleaseId && this.releases.some((release: Release) => release.id === selectedReleaseId)) {
                     this.choiceADR = "useRelease"
                     this.releaseId = selectedReleaseId;
                 } else if (selectedReleaseId && !this.releases.some((release: Release) => release.id === selectedReleaseId)) {

@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json.schemastore.org/web-types",
+  "framework": "vue",
+  "name": "hint",
+  "version": "0.0.1",
+  "js-types-syntax": "typescript",
+  "description-markup": "markdown",
+  "framework-config": {
+    "enable-when": {
+      "file-extensions": [
+        "vue"
+      ]
+    }
+  },
+  "contributions": {
+    "html": {
+      "vue-directives": [
+        {
+          "name": "translate",
+          "description": "Translate a key into the user's selected language. Can be used with an argument to translate a specific attribute on the element.",
+          "arguments": [
+            {
+              "name": "binding.value",
+              "type": "string",
+              "required": true,
+              "description": "The translation key to be looked up."
+            },
+            {
+              "name": "binding.arg",
+              "type": "string",
+              "required": false,
+              "description": "Specifies the attribute that should be translated (e.g., aria-label)."
+            }
+          ],
+          "modifiers": [
+            {
+              "name": "lowercase",
+              "description": "Converts the translated text to lowercase."
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

@@ -2,7 +2,7 @@ import {Module} from 'vuex';
 import {RootState} from "../../root";
 import {mutations} from "./mutations";
 import {actions} from "./actions";
-import {Version, Project} from "../../types";
+import {Version, Project, DatasetResource} from "../../types";
 import {Error} from "../../generated";
 
 export interface ProjectsState {
@@ -16,6 +16,7 @@ export interface ProjectsState {
     versionTime: Date | null,
     cloneProjectError: Error | null,
     cloningProject: boolean
+    adrRehydrateOutputZip: DatasetResource | null,
 }
 
 export const initialProjectsState = (): ProjectsState => {
@@ -29,7 +30,8 @@ export const initialProjectsState = (): ProjectsState => {
         queuedVersionUploadIntervalId: -1,
         versionTime: null,
         cloneProjectError: null,
-        cloningProject: false
+        cloningProject: false,
+        adrRehydrateOutputZip: null
     }
 };
 
