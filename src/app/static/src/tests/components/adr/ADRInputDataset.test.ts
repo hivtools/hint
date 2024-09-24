@@ -1,15 +1,15 @@
-import Vuex, {ActionTree} from "vuex";
+import Vuex, {ActionTree, Store} from "vuex";
 import {nextTick} from "vue";
 import {flushPromises} from "@vue/test-utils";
-import SelectDataset from "../../../app/components/adr/SelectDataset.vue";
+import ADRInputDataset from "../../../app/components/adr/ADRInputDataset.vue";
 import SelectRelease from "../../../app/components/adr/SelectRelease.vue";
-import Modal from "../../../app/components/Modal.vue";
 import TreeSelect from "@reside-ic/vue3-treeselect"
 import {
+    mockADRDatasetState,
+    mockADRDataState,
     mockBaselineState,
     mockDataset,
     mockDatasetResource,
-    mockError,
     mockErrorsState,
     mockPJNZResponse,
     mockPopulationResponse,
@@ -27,13 +27,15 @@ import {ADRSchemas} from "../../../app/types";
 import VueFeather from "vue-feather";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {expectTranslatedWithStoreType, mountWithTranslate, shallowMountWithTranslate} from "../../testHelpers";
-import {ADRState} from "../../../app/store/adr/adr";
+import {AdrDatasetType, ADRState} from "../../../app/store/adr/adr";
 import ResetConfirmation from "../../../app/components/resetConfirmation/ResetConfirmation.vue";
 import HintTreeSelect from "../../../app/components/HintTreeSelect.vue";
 import {getters} from "../../../app/store/root/getters";
 import {Mock} from "vitest";
+import SelectDatasetModal from "../../../app/components/adr/SelectDatasetModal.vue";
+import {RootState} from "../../../app/root";
 
-describe("select dataset", () => {
+describe("ADR input dataset", () => {
 
     const schemas: ADRSchemas = {
         baseUrl: "www.adr.com/",
@@ -167,7 +169,7 @@ describe("select dataset", () => {
             vmmc: null
         }
     };
-    
+
     const fakeDatasetWithRelease = {
         id: "id1",
         title: "Some data",
@@ -232,8 +234,12 @@ describe("select dataset", () => {
                 namespaced: true,
                 state: {
                     schemas: schemas,
-                    datasets: fakeRawDatasets,
-                    releases: [],
+                    adrData: mockADRDataState({
+                        [AdrDatasetType.Input]: mockADRDatasetState({
+                            datasets: fakeRawDatasets,
+                            releases: [],
+                        })
+                    }),
                     ...adrProps
                 },
                 actions: {
@@ -312,6 +318,18 @@ describe("select dataset", () => {
         return store;
     }
 
+    const mountADRDataset = (store: Store<RootState>, globalOptions = {}) => {
+        return mountWithTranslate(ADRInputDataset, store, {
+            global: {
+                plugins: [store],
+                ...globalOptions
+            },
+            propsData: {
+                datasetType: AdrDatasetType.Input
+            },
+        });
+    };
+
     beforeEach(() => {
         vi.useFakeTimers();
     });
@@ -321,13 +339,9 @@ describe("select dataset", () => {
         vi.restoreAllMocks();
     });
 
-    it("refreshes selected dataset metdata on mount and sets interval to poll refresh", () => {
+    it("refreshes selected dataset metadata on mount and sets interval to poll refresh", () => {
         const store = getStore();
-        const rendered = shallowMountWithTranslate(SelectDataset, store, {
-            global: {
-                plugins: [store]
-            }, 
-        });
+        const rendered = mountADRDataset(store);
         expect((rendered.vm as any).pollingId).not.toBeNull();
         expect((baselineActions.refreshDatasetMetadata as Mock).mock.calls.length).toBe(1);
         vi.advanceTimersByTime(10000);
@@ -336,11 +350,7 @@ describe("select dataset", () => {
 
     it("renders select dataset button when no dataset is selected", async () => {
         let store = getStore()
-        const rendered = shallowMountWithTranslate(SelectDataset, store, {
-            global: {
-                plugins: [store]
-            }, 
-        });
+        const rendered = mountADRDataset(store);
         await expectTranslatedWithStoreType(rendered.find("button"), "Select ADR dataset",
             "Sélectionner l’ensemble de données ADR", "Selecionar conjunto de dados do ADR", store);
     });
@@ -349,17 +359,13 @@ describe("select dataset", () => {
         let store = getStore({
             selectedDataset: fakeDataset
         })
-        const rendered = shallowMountWithTranslate(SelectDataset, store, {
-            global: {
-                plugins: [store]
-            }, 
-        });
+        const rendered = mountADRDataset(store);
         await expectTranslatedWithStoreType(rendered.find("button"), "Edit", "Éditer", "Editar", store);
     });
 
     it("does not render refresh button or info icon when no resources are out of date", () => {
         const store = getStore({ selectedDataset: fakeDataset })
-        const rendered = shallowMountWithTranslate(SelectDataset, store, {
+        const rendered = shallowMountWithTranslate(ADRInputDataset, store, {
             global: {
                 plugins: [store]
             }
@@ -373,12 +379,9 @@ describe("select dataset", () => {
         fakeDataset.resources.pjnz = mockDatasetResource({outOfDate: true});
         const store = getStore({selectedDataset: fakeDataset});
         const mockTooltipDirective = vi.fn();
-        const rendered = mountWithTranslate(SelectDataset, store, {
-            global: {
-                plugins: [store],
-                directives: {"tooltip": mockTooltipDirective},
-                stubs: ["treeselect"]
-            }
+        const rendered = mountADRDataset(store, {
+            directives: {"tooltip": mockTooltipDirective},
+            stubs: ["treeselect"],
         });
         const buttons = rendered.findAll("button");
         await expectTranslatedWithStoreType(buttons[0], "Refresh", "Rafraîchir", "Atualizar", store);
@@ -401,13 +404,13 @@ describe("select dataset", () => {
         fakeDataset.resources.shape = mockDatasetResource({outOfDate: true, url: "shape.url"});
 
         const store = getStore({selectedDataset: fakeDataset});
-        const rendered = mountWithTranslate(SelectDataset, store, {
+        const rendered = mountWithTranslate(ADRInputDataset, store, {
             global: {
                 plugins: [store]
             }, sync: false
         });
         await rendered.findAll("button")[0].trigger("click");
-        expect(rendered.findComponent(Modal).props("open")).toBe(true);
+        expect((rendered.findComponent(SelectDatasetModal).props() as any).open).toBe(true);
         expect(rendered.findAllComponents(LoadingSpinner).length).toBe(1);
         expect((baselineActions.importPJNZ as Mock).mock.calls[0][1]).toBe("pjnz.url");
         expect((baselineActions.importPopulation as Mock).mock.calls[0][1]).toBe("pop.url");
@@ -418,7 +421,7 @@ describe("select dataset", () => {
         const fakeDataset = mockDataset();
         fakeDataset.resources.pjnz = mockDatasetResource({outOfDate: true, url: "pjnz.url"})
         const store = getStore({selectedDataset: fakeDataset});
-        const rendered = shallowMountWithTranslate(SelectDataset, store, {
+        const rendered = shallowMountWithTranslate(ADRInputDataset, store, {
             global: {
                 plugins: [store]
             }, sync: false
@@ -432,7 +435,7 @@ describe("select dataset", () => {
         const fakeDataset = mockDataset();
         fakeDataset.resources.pjnz = mockDatasetResource({outOfDate: true, url: "pjnz.url"})
         const store = getStore({selectedDataset: fakeDataset});
-        const rendered = shallowMountWithTranslate(SelectDataset, store, {
+        const rendered = shallowMountWithTranslate(ADRInputDataset, store, {
             global: {
                 plugins: [store]
             }, sync: false
@@ -454,54 +457,22 @@ describe("select dataset", () => {
         const fakeDataset = mockDataset();
         fakeDataset.resources.pjnz = mockDatasetResource({outOfDate: true, url: "pjnz.url"})
         const store = getStore({selectedDataset: fakeDataset});
-        const rendered = mountWithTranslate(SelectDataset, store, {
+        const rendered = mountWithTranslate(ADRInputDataset, store, {
             global: {
                 plugins: [store]
             }, sync: false
         });
         await rendered.findAll("button")[0].trigger("click");
 
-        expect(rendered.findComponent(Modal).props("open")).toBe(true);
+        expect((rendered.findComponent(SelectDatasetModal).props() as any).open).toBe(true);
         expect(rendered.find("#loading-dataset").findAllComponents(LoadingSpinner).length).toBe(1);
         expect(rendered.find("#fetch-error").exists()).toBe(false);
 
         await flushPromises();
 
-        expect(rendered.findComponent(Modal).props("open")).toBe(false);
+        expect((rendered.findComponent(SelectDatasetModal).props() as any).open).toBe(false);
         expect(rendered.find("#loading-dataset").exists()).toBe(false);
     });
-
-    it("renders message and button on error fetching datasets", async () => {
-        const store = getStore({}, {adrError: mockError("error text")});
-        const rendered = mountWithTranslate(SelectDataset, store, {
-            global: {
-                plugins: [store]
-            }, 
-        });
-        await rendered.findAll("button")[0].trigger("click");
-
-        const modal = rendered.findComponent(Modal);
-        expect(modal.props("open")).toBe(true);
-        expect(modal.find("#fetch-error div").text()).toBe("error text");
-        await expectTranslatedWithStoreType(modal.find("#fetch-error button"), "Try again", "Réessayer",
-            "Tente novamente", store);
-    });
-
-    it("Try again button invokes getDatasets action", async () => {
-        const store = getStore({}, {adrError: mockError("test error")});
-        const rendered = mountWithTranslate(SelectDataset, store, {
-            global: {
-                plugins: [store]
-            }, 
-        });
-        await rendered.findAll("button")[0].trigger("click");
-
-        expect(getDatasetsMock.mock.calls.length).toBe(0);
-        await rendered.find("#fetch-error button").trigger("click");
-
-        expect(getDatasetsMock.mock.calls.length).toBe(1);
-    });
-
 
     it("refreshes survey & program files if any baseline file is refreshed and pre-existing shape file present",
         async () => {
@@ -512,10 +483,14 @@ describe("select dataset", () => {
             fakeDataset.resources.anc = mockDatasetResource({url: "anc.url"});
             fakeDataset.resources.vmmc = mockDatasetResource({url: "vmmc.url"});
             const store = getStore({selectedDataset: fakeDataset, shape: mockShapeResponse()});
-            const rendered = shallowMountWithTranslate(SelectDataset, store, {
+            const rendered = shallowMountWithTranslate(ADRInputDataset, store, {
                 global: {
                     plugins: [store]
-                }, sync: false
+                },
+                propsData: {
+                    datasetType: AdrDatasetType.Input
+                },
+                sync: false
             });
             await rendered.findAll("button")[0].trigger("click");
             expect((surveyProgramActions.importSurvey as Mock).mock.calls[0][1]).toBe("survey.url");
@@ -534,7 +509,7 @@ describe("select dataset", () => {
             fakeDataset.resources.vmmc = mockDatasetResource({url: "vmmc.url"});
             fakeDataset.resources.shape = mockDatasetResource();
             const store = getStore({selectedDataset: fakeDataset});
-            const rendered = shallowMountWithTranslate(SelectDataset, store, {
+            const rendered = shallowMountWithTranslate(ADRInputDataset, store, {
                 global: {
                     plugins: [store]
                 }, sync: false
@@ -555,7 +530,7 @@ describe("select dataset", () => {
             fakeDataset.resources.vmmc = mockDatasetResource({url: "vmmc.url", outOfDate: true});
             fakeDataset.resources.shape = mockDatasetResource();
             const store = getStore({ selectedDataset: fakeDataset });
-            const rendered = shallowMountWithTranslate(SelectDataset, store, {
+            const rendered = shallowMountWithTranslate(ADRInputDataset, store, {
                 global: {
                     plugins: [store]
                 }, sync: false
@@ -571,10 +546,10 @@ describe("select dataset", () => {
         let store = getStore({
             selectedDataset: fakeDataset
         })
-        const rendered = shallowMountWithTranslate(SelectDataset, store, {
+        const rendered = shallowMountWithTranslate(ADRInputDataset, store, {
             global: {
                 plugins: [store]
-            }, 
+            },
         });
         await expectTranslatedWithStoreType(rendered.find(".font-weight-bold"), "Selected dataset:",
             "Ensemble de données sélectionné :", "Conjunto de dados selecionado:", store);
@@ -587,10 +562,10 @@ describe("select dataset", () => {
             selectedDataset: fakeDatasetWithRelease,
             selectedRelease: fakeRelease
         })
-        const rendered = shallowMountWithTranslate(SelectDataset, store, {
+        const rendered = shallowMountWithTranslate(ADRInputDataset, store, {
             global: {
                 plugins: [store]
-            }, 
+            },
         });
         await expectTranslatedWithStoreType(rendered.find(".font-weight-bold"), "Selected dataset:",
             "Ensemble de données sélectionné :", "Conjunto de dados selecionado:", store);
@@ -601,116 +576,37 @@ describe("select dataset", () => {
 
     it("does not render selected dataset if it doesn't exist", () => {
         const store = getStore();
-        const rendered = shallowMountWithTranslate(SelectDataset, store, {
+        const rendered = shallowMountWithTranslate(ADRInputDataset, store, {
             global: {
                 plugins: [store]
-            }, 
+            },
         });
         expect(rendered.findAll("#selectedDatasetSpan").length).toBe(0);
         expect(rendered.findAll("a").length).toBe(0);
     });
 
-    it("can open modal", async () => {
+    it("can open and close select dataset", async () => {
         const store = getStore();
-        const rendered = shallowMountWithTranslate(SelectDataset, store, {
-            global: {
-                plugins: [store]
-            }, 
+        const rendered = mountADRDataset(store, {
+            stubs: ["treeselect"],
         });
-        expect(rendered.findComponent(Modal).props("open")).toBe(false);
+        expect((rendered.findComponent(SelectDatasetModal).props() as any).open).toBe(false);
         await rendered.find("button").trigger("click");
-        expect(rendered.findComponent(Modal).props("open")).toBe(true);
-    });
-
-    it("can close modal", async () => {
-        const store = getStore();
-        const rendered = mountWithTranslate(SelectDataset, store, {
-            global: {
-                plugins: [store],
-                stubs: ["treeselect"]
-            },
-        });
-        await rendered.find("button").trigger("click");
-        expect(rendered.findComponent(Modal).props("open")).toBe(true);
-        await rendered.findComponent(Modal).findAll("button")[1].trigger("click");
-        expect(rendered.findComponent(Modal).props("open")).toBe(false);
-    });
-
-    it("renders select", async () => {
-        const store = getStore();
-        const rendered = mountWithTranslate(SelectDataset, store, {
-            global: {
-                plugins: [store]
-            }, 
-        });
-        await rendered.find("button").trigger("click");
-        const select = rendered.findComponent(HintTreeSelect);
-        expect(select.props("multiple")).toBe(false);
-
-        const expectedOptions = [
-            {
-                id: "id1",
-                label: "Some data",
-                customLabel: `Some data
-                            <div class="text-muted small" style="margin-top:-5px; line-height: 0.8rem">
-                                (some-data)<br/>
-                                <span class="font-weight-bold">org</span>
-                            </div>`
-            },
-            {
-                id: "id2",
-                label: "Some data 2",
-                customLabel: `Some data 2
-                            <div class="text-muted small" style="margin-top:-5px; line-height: 0.8rem">
-                                (some-data)<br/>
-                                <span class="font-weight-bold">org</span>
-                            </div>`
-            }
-        ]
-
-        expect(select.props("options")).toStrictEqual(expectedOptions);
-    });
-
-    it("hides fetching dataset controls, and enables TreeSelect, when not fetching", () => {
-        const store = getStore();
-        const rendered = mountWithTranslate(SelectDataset, store, {
-            global: {
-                plugins: [store]
-            }, 
-        });
-        expect(rendered.find("#fetching-datasets").classes()).toStrictEqual(["invisible"]);
-        expect((rendered.findComponent(TreeSelect).attributes("disabled"))).toBeUndefined();
-    });
-
-    it("shows fetching dataset controls, and disables TreeSelect, when fetching", async () => {
-        const store = getStore({}, {fetchingDatasets: true});
-        const rendered = mountWithTranslate(SelectDataset, store, {
-            global: {
-                plugins: [store]
-            }, 
-        });
-        expect(rendered.find("#fetching-datasets").classes()).toStrictEqual(["visible"]);
-        expect((rendered.findComponent(TreeSelect).attributes("disabled"))).toBeUndefined();
-
-        expect(rendered.find("#fetching-datasets").findComponent(LoadingSpinner).props("size")).toBe("xs");
-        await expectTranslatedWithStoreType(rendered.find("#fetching-datasets span"),
-            "Loading datasets", "Chargement de vos ensembles de données", "A carregar conjuntos de dados", store);
+        expect((rendered.findComponent(SelectDatasetModal).props() as any).open).toBe(true);
+        await rendered.findComponent(SelectDatasetModal).findAll("button")[1].trigger("click");
+        expect((rendered.findComponent(SelectDatasetModal).props() as any).open).toBe(false);
     });
 
     it("sets current dataset", async () => {
         let store = getStore({selectedDataset: fakeDataset2});
-        const rendered = mountWithTranslate(SelectDataset, store, {
-            global: {
-                plugins: [store],
-                stubs: ["treeselect"]
-            },
+        const rendered = mountADRDataset(store, {
+            stubs: ["treeselect"]
         });
-        expect((rendered.vm.$data as any).newDatasetId).toBe(null);
         // open modal
         await rendered.find("button").trigger("click");
 
         expect(rendered.findAllComponents(TreeSelect).length).toBe(1);
-        expect(rendered.findComponent(Modal).findAll("button").length).toBe(2);
+        expect(rendered.findComponent(SelectDatasetModal).findAll("button").length).toBe(2);
         expect(rendered.findAll("p").length).toBe(0);
 
         await expectTranslatedWithStoreType(rendered.find("h4"), "Browse ADR", "Parcourir ADR", "Procurar no ADR", store);
@@ -718,14 +614,14 @@ describe("select dataset", () => {
             "Conjuntos de dados", store);
 
         // dataset is preselected in dropdown and click button to import
-        expect((rendered.vm.$data as any).newDatasetId).toBe("id2");
+        expect(rendered.findComponent(TreeSelect).attributes()["model-value"]).toBe("id2");
         const selectRelease = rendered.findComponent(SelectRelease)
         await selectRelease.vm.$emit("selected-dataset-release", fakeRelease);
-        await rendered.findComponent(Modal).find("button").trigger("click");
+        await rendered.findComponent(SelectDatasetModal).find("button").trigger("click");
 
         expect(rendered.find("#loading-dataset").findComponent(LoadingSpinner).exists()).toBe(true);
         expect(rendered.findAllComponents(TreeSelect).length).toBe(0);
-        expect(rendered.findComponent(Modal).findAll("button").length).toBe(0);
+        expect(rendered.findComponent(SelectDatasetModal).findAll("button").length).toBe(0);
         expect(rendered.findAll("h4").length).toBe(0);
         await expectTranslatedWithStoreType(rendered.find("p"),
             "Importing files - this may take several minutes. Please do not close your browser.",
@@ -739,111 +635,20 @@ describe("select dataset", () => {
         await flushPromises();
 
         expect(rendered.find("#loading-dataset").exists()).toBe(false);
-        expect(rendered.findComponent(Modal).props("open")).toBe(false);
+        expect((rendered.findComponent(SelectDatasetModal).props() as any).open).toBe(false);
     });
 
-    it("current dataset is not preselected if there is no selectedDataset", async () => {
-        let store = getStore({});
-        const rendered = mountWithTranslate(SelectDataset, store, {
-            global: {
-                plugins: [store],
-                stubs: ["treeselect"]
-            },
-        });
-        
-        await rendered.find("button").trigger("click");
-        expect((rendered.vm.$data as any).newDatasetId).toBe(null);
-    });
-
-    it("current dataset is preselected if datasets change", async () => {
-        let store = getStore({selectedDataset: fakeDataset2});
-        const rendered = mountWithTranslate(SelectDataset, store, {
-            global: {
-                plugins: [store],
-                stubs: ["treeselect"]
-            },
-        });
-        store.state.adr.datasets = [fakeRawDatasets[0]]
-        await nextTick();
-        
-        await rendered.find("button").trigger("click");
-        expect((rendered.vm.$data as any).newDatasetId).toBe(null);
-        store.state.adr.datasets = fakeRawDatasets
-        await nextTick();
-        expect((rendered.vm.$data as any).newDatasetId).toBe("id2");
-    });
-
-    it("renders select release", async () => {
-        let store = getStore({},
-            {datasets: [{...fakeRawDatasets[0], ...fakeRawDatasets[1], resources: [shape]}]}
-        )
-        const rendered = mountWithTranslate(SelectDataset, store, {
-            global: {
-                plugins: [store],
-                stubs: ["treeselect"]
-            },
-        });
-        await rendered.find("button").trigger("click");
-
-        await rendered.setData({newDatasetId: "id2"});
-        const selectRelease = rendered.findComponent(SelectRelease)
-        expect(selectRelease.props("datasetId")).toBe("id2");
-        expect(selectRelease.props("open")).toBe(true);
-    });
-
-    it("select release emits valid and enables import button", async () => {
-        let store = getStore({},
-            {datasets: [{...fakeRawDatasets[0], ...fakeRawDatasets[1], resources: [shape]}]}
-        )
-        const rendered = mountWithTranslate(SelectDataset, store, {
-            global: {
-                plugins: [store],
-                stubs: ["treeselect"]
-            },
-        });
-        await rendered.find("button").trigger("click");
-
-        await rendered.setData({newDatasetId: "id2", valid: false});
-        const selectRelease = rendered.findComponent(SelectRelease)
-        const importBtn = rendered.find("#importBtn")
-        expect((importBtn.element as HTMLButtonElement).disabled).toBe(true);
-        await selectRelease.vm.$emit("valid", true);
-        expect((importBtn.element as HTMLButtonElement).disabled).toBe(false);
-    });
-
-    it("select release emits selected dataset release and updates release", async () => {
-        let store = getStore({},
-            {datasets: [{...fakeRawDatasets[0], ...fakeRawDatasets[1], resources: [shape]}]}
-        )
-        const rendered = mountWithTranslate(SelectDataset, store, {
-            global: {
-                plugins: [store],
-                stubs: ["treeselect"]
-            },
-        });
-        await rendered.find("button").trigger("click");
-
-        await rendered.setData({newDatasetId: "id2"});
-        const selectRelease = rendered.findComponent(SelectRelease)
-        await selectRelease.vm.$emit("selected-dataset-release", fakeRelease);
-        expect((rendered.vm.$data as any).newDatasetRelease).toStrictEqual(fakeRelease)
-    });
-    
     it("renders reset confirmation dialog when importing a new dataset and then saves new version and imports if click save", async () => {
         let store = getRootStore({selectedDataset: fakeDataset2}, {}, true);
-        const rendered = mountWithTranslate(SelectDataset, store, {
-            global: {
-                plugins: [store],
-                stubs: ["treeselect"]
-            },
+        const rendered = mountADRDataset(store, {
+            stubs: ["treeselect"]
         });
         const editBtn = rendered.find("button")
         await editBtn.trigger("click");
-        expect(rendered.findComponent(Modal).props("open")).toBe(true);
-        await rendered.setData({newDatasetId: "id2"});
-        const importBtn = rendered.findComponent(Modal).find("button")
+        expect((rendered.findComponent(SelectDatasetModal).props() as any).open).toBe(true);
+        const importBtn = rendered.findComponent(SelectDatasetModal).find("button")
         await importBtn.trigger("click");
-        expect(rendered.findComponent(ResetConfirmation).props("open")).toBe(true);
+        expect((rendered.findComponent(ResetConfirmation).props() as any).open).toBe(true);
         const saveBtn = rendered.findComponent(ResetConfirmation).find("button");
         await expectTranslatedWithStoreType(saveBtn, "Save version and keep editing",
             "Sauvegarder la version et continuer à modifier", "Guardar versão e continuar a editar",
@@ -855,34 +660,31 @@ describe("select dataset", () => {
         expect(rendered.find("#loading-dataset").findComponent(LoadingSpinner).exists()).toBe(true);
         await flushPromises();
         expect(rendered.find("#loading-dataset").exists()).toBe(false);
-        expect(rendered.findComponent(Modal).props("open")).toBe(false);
+        expect((rendered.findComponent(SelectDatasetModal).props() as any).open).toBe(false);
     });
 
     it("renders reset confirmation dialog when changing selected dataset and closes if click cancel", async () => {
         let store = getRootStore({selectedDataset: fakeDataset}, {}, true);
-        const rendered = mountWithTranslate(SelectDataset, store, {
-            global: {
-                plugins: [store],
-                stubs: ["treeselect"]
-            },
+        const rendered = mountADRDataset(store, {
+            stubs: ["treeselect"]
         });
         const editBtn = rendered.find("button")
         await editBtn.trigger("click");
-        expect(rendered.findComponent(Modal).props("open")).toBe(true);
+        expect((rendered.findComponent(SelectDatasetModal).props() as any).open).toBe(true);
         await rendered.setData({newDatasetId: "id2"});
-        const importBtn = rendered.findComponent(Modal).find("button")
+        const importBtn = rendered.findComponent(SelectDatasetModal).find("button")
         await importBtn.trigger("click");
-        expect(rendered.findComponent(ResetConfirmation).props("open")).toBe(true);
+        expect((rendered.findComponent(ResetConfirmation).props() as any).open).toBe(true);
         const cancelBtn = rendered.findComponent(ResetConfirmation).findAll("button")[1];
         await expectTranslatedWithStoreType(cancelBtn, "Cancel editing",
             "Annuler l'édition", "Cancelar edição", store);
         await cancelBtn.trigger("click");
         expect(rendered.findComponent(ResetConfirmation).exists()).toBe(false);
         expect(rendered.find("#loading-dataset").exists()).toBe(false);
-        expect(rendered.findComponent(Modal).props("open")).toBe(false);
+        expect((rendered.findComponent(SelectDatasetModal).props() as any).open).toBe(false);
     });
 
-    it("imports baseline files if they exist", async () => {
+    it("confirmImport imports baseline files if they exist", async () => {
         const store = getStore({}, {}, false, {
             selectedDatasetAvailableResources: () => {
                 return {
@@ -892,19 +694,14 @@ describe("select dataset", () => {
                 }
             }
         });
-        const rendered = mountWithTranslate(SelectDataset, store, {
-            global: {
-                plugins: [store],
-                stubs: ["treeselect"]
-            },
+        const rendered = mountADRDataset(store, {
+            stubs: ["treeselect"]
         });
-        await rendered.find("button").trigger("click");
+        await rendered.setData({open: true});
 
-        expect(rendered.findAllComponents(TreeSelect).length).toBe(1);
-        await rendered.setData({newDatasetId: "id1"})
-        await rendered.findComponent(Modal).find("button").trigger("click");
-
-        expect(rendered.findAllComponents(LoadingSpinner).length).toBe(1);
+        (rendered.vm as any).confirmImport("id1", null);
+        expect(rendered.vm.loading).toBeTruthy();
+        await flushPromises();
 
         expect((baselineActions.importPJNZ as Mock).mock.calls[0][1]).toBe("pjnz.pjnz");
         expect((baselineActions.importPopulation as Mock).mock.calls[0][1]).toBe("pop.csv");
@@ -913,10 +710,13 @@ describe("select dataset", () => {
         await flushPromises();
 
         expect(rendered.find("#loading-dataset").exists()).toBe(false);
-        expect(rendered.findComponent(Modal).props("open")).toBe(false);
+        expect((rendered.findComponent(SelectDatasetModal).props() as any).open).toBe(false);
+
+        expect(rendered.vm.loading).toBeFalsy();
+        expect(rendered.vm.open).toBeFalsy();
     });
 
-    it("does not import baseline file if it doesn't exist", async () => {
+    it("confirmImport does not import baseline file if it doesn't exist", async () => {
         const store = getStore({}, {}, false, {
             selectedDatasetAvailableResources: () => {
                 return {
@@ -924,19 +724,14 @@ describe("select dataset", () => {
                 }
             }
         });
-        const rendered = mountWithTranslate(SelectDataset, store, {
-            global: {
-                plugins: [store],
-                stubs: ["treeselect"]
-            },
+        const rendered = mountADRDataset(store, {
+            stubs: ["treeselect"]
         });
-        await rendered.find("button").trigger("click");
+        await rendered.setData({open: true});
 
-        expect(rendered.findAllComponents(TreeSelect).length).toBe(1);
-        await rendered.setData({newDatasetId: "id1"});
-        await rendered.findComponent(Modal).find("button").trigger("click");
-
-        expect(rendered.findAllComponents(LoadingSpinner).length).toBe(1);
+        (rendered.vm as any).confirmImport("id1", null);
+        expect(rendered.vm.loading).toBeTruthy();
+        await flushPromises();
 
         expect((baselineActions.importPJNZ as Mock).mock.calls[0][1]).toBe("pjnz.pjnz");
         expect((baselineActions.importPopulation as Mock).mock.calls.length).toBe(0);
@@ -944,11 +739,11 @@ describe("select dataset", () => {
 
         await flushPromises();
 
-        expect(rendered.find("#loading-dataset").exists()).toBe(false);
-        expect(rendered.findComponent(Modal).props("open")).toBe(false);
+        expect(rendered.vm.loading).toBeFalsy();
+        expect(rendered.vm.open).toBeFalsy();
     });
 
-    it("does not import baseline file if user does not have permission (ie, relevant dataset in datasets has no resources)", async () => {
+    it("confirmImport does not import baseline file if user does not have permission (ie, relevant dataset in datasets has no resources)", async () => {
         const store = getStore(
             {}, {}, false,
             {
@@ -957,19 +752,14 @@ describe("select dataset", () => {
                 }
             }
         );
-        const rendered = mountWithTranslate(SelectDataset, store, {
-            global: {
-                plugins: [store],
-                stubs: ["treeselect"] 
-            },
+        const rendered = mountADRDataset(store, {
+            stubs: ["treeselect"]
         });
-        await rendered.find("button").trigger("click");
+        await rendered.setData({open: true});
 
-        expect(rendered.findAllComponents(TreeSelect).length).toBe(1);
-        await rendered.setData({ newDatasetId: "id1" })
-        await rendered.findComponent(Modal).find("button").trigger("click");
-
-        expect(rendered.findAllComponents(LoadingSpinner).length).toBe(1);
+        (rendered.vm as any).confirmImport("id1", null);
+        expect(rendered.vm.loading).toBeTruthy();
+        await flushPromises();
 
         expect((baselineActions.importPJNZ as Mock).mock.calls.length).toBe(0);
         expect((baselineActions.importPopulation as Mock).mock.calls.length).toBe(0);
@@ -977,11 +767,11 @@ describe("select dataset", () => {
 
         await flushPromises();
 
-        expect(rendered.find("#loading-dataset").exists()).toBe(false);
-        expect(rendered.findComponent(Modal).props("open")).toBe(false);
+        expect(rendered.vm.loading).toBeFalsy();
+        expect(rendered.vm.open).toBeFalsy();
     });
 
-    it("imports survey and program files if they exist and shape file exists", async () => {
+    it("confirmImport imports survey and program files if they exist and shape file exists", async () => {
         const store = getStore({}, {}, false, {
             selectedDatasetAvailableResources: () => {
                 return {
@@ -994,20 +784,13 @@ describe("select dataset", () => {
             }
         });
 
-        const rendered = mountWithTranslate(SelectDataset, store, {
-            global: {
-                plugins: [store],
-                stubs: ["treeselect"]
-            },
+        const rendered = mountADRDataset(store, {
+            stubs: ["treeselect"]
         });
-        await rendered.find("button").trigger("click");
+        await rendered.setData({open: true});
 
-        expect(rendered.findAllComponents(TreeSelect).length).toBe(1);
-        await rendered.setData({newDatasetId: "id1"});
-        await rendered.findComponent(Modal).find("button").trigger("click");
-
-        expect(rendered.findAllComponents(LoadingSpinner).length).toBe(1);
-
+        (rendered.vm as any).confirmImport("id1", null);
+        expect(rendered.vm.loading).toBeTruthy();
         await flushPromises();
 
         expect((surveyProgramActions.importSurvey as Mock).mock.calls[0][1]).toBe("survey.csv");
@@ -1017,11 +800,11 @@ describe("select dataset", () => {
 
         await flushPromises();
 
-        expect(rendered.find("#loading-dataset").exists()).toBe(false);
-        expect(rendered.findComponent(Modal).props("open")).toBe(false);
+        expect(rendered.vm.loading).toBeFalsy();
+        expect(rendered.vm.open).toBeFalsy();
     });
 
-    it("does not import survey and program file if it doesn't exist", async () => {
+    it("confirmImport does not import survey and program file if it doesn't exist", async () => {
         const store = getStore({}, {}, false, {
             selectedDatasetAvailableResources: () => {
                 return {
@@ -1030,20 +813,13 @@ describe("select dataset", () => {
                 }
             }
         });
-        const rendered = mountWithTranslate(SelectDataset, store, {
-            global: {
-                plugins: [store],
-                stubs: ["treeselect"]
-            },
+        const rendered = mountADRDataset(store, {
+            stubs: ["treeselect"]
         });
-        await rendered.find("button").trigger("click");
+        await rendered.setData({open: true});
 
-        expect(rendered.findAllComponents(TreeSelect).length).toBe(1);
-        await rendered.setData({newDatasetId: "id1"});
-        await rendered.findComponent(Modal).find("button").trigger("click");
-
-        expect(rendered.findAllComponents(LoadingSpinner).length).toBe(1);
-
+        (rendered.vm as any).confirmImport("id1", null);
+        expect(rendered.vm.loading).toBeTruthy();
         await flushPromises();
 
         expect((surveyProgramActions.importSurvey as Mock).mock.calls[0][1]).toBe("survey.csv");
@@ -1053,11 +829,11 @@ describe("select dataset", () => {
 
         await flushPromises();
 
-        expect(rendered.find("#loading-dataset").exists()).toBe(false);
-        expect(rendered.findComponent(Modal).props("open")).toBe(false);
+        expect(rendered.vm.loading).toBeFalsy();
+        expect(rendered.vm.open).toBeFalsy();
     });
 
-    it("does not import any survey and program files if shape file doesn't exist", async () => {
+    it("confirmImport does not import any survey and program files if shape file doesn't exist", async () => {
         const store = getStore({}, {}, false, {
             selectedDatasetAvailableResources: () => {
                 return {
@@ -1067,19 +843,14 @@ describe("select dataset", () => {
                 }
             }
         });
-        const rendered = mountWithTranslate(SelectDataset, store, {
-            global: {
-                plugins: [store],
-                stubs: ["treeselect"]
-            },
+        const rendered = mountADRDataset(store, {
+            stubs: ["treeselect"]
         });
-        await rendered.find("button").trigger("click");
+        await rendered.setData({open: true});
 
-        expect(rendered.findAllComponents(TreeSelect).length).toBe(1);
-        await rendered.setData({newDatasetId: "id1"});
-        await rendered.findComponent(Modal).find("button").trigger("click");
-
-        expect(rendered.findAllComponents(LoadingSpinner).length).toBe(1);
+        (rendered.vm as any).confirmImport("id1", null);
+        expect(rendered.vm.loading).toBeTruthy();
+        await flushPromises();
 
         expect((surveyProgramActions.importSurvey as Mock).mock.calls.length).toBe(0);
         expect((surveyProgramActions.importProgram as Mock).mock.calls.length).toBe(0);
@@ -1088,11 +859,11 @@ describe("select dataset", () => {
 
         await flushPromises();
 
-        expect(rendered.find("#loading-dataset").exists()).toBe(false);
-        expect(rendered.findComponent(Modal).props("open")).toBe(false);
+        expect(rendered.vm.loading).toBeFalsy();
+        expect(rendered.vm.open).toBeFalsy();
     });
 
-    it("imports survey and program files if pre-existing shape file is present", async () => {
+    it("confirmImport imports survey and program files if pre-existing shape file is present", async () => {
         const store = getStore({}, {}, false, {
             selectedDatasetAvailableResources: () => {
                 return {
@@ -1104,21 +875,14 @@ describe("select dataset", () => {
                 }
             }
         });
-        const rendered = mountWithTranslate(SelectDataset, store, {
-            global: {
-                plugins: [store],
-                stubs: ["treeselect"]
-            },
+        const rendered = mountADRDataset(store, {
+            stubs: ["treeselect"]
         });
 
-        await rendered.find("button").trigger("click");
+        await rendered.setData({open: true});
 
-        expect(rendered.findAllComponents(TreeSelect).length).toBe(1);
-        await rendered.setData({newDatasetId: "id1"});
-        await rendered.findComponent(Modal).find("button").trigger("click");
-
-        expect(rendered.findAllComponents(LoadingSpinner).length).toBe(1);
-
+        (rendered.vm as any).confirmImport("id1", null);
+        expect(rendered.vm.loading).toBeTruthy();
         await flushPromises();
 
         expect((surveyProgramActions.importSurvey as Mock).mock.calls[0][1]).toBe("survey.csv");
@@ -1128,39 +892,17 @@ describe("select dataset", () => {
 
         await flushPromises();
 
-        expect(rendered.find("#loading-dataset").exists()).toBe(false);
-        expect(rendered.findComponent(Modal).props("open")).toBe(false);
+        expect(rendered.vm.loading).toBeFalsy();
+        expect(rendered.vm.open).toBeFalsy();
     });
 
     it("stops polling dataset metadata on beforeDestroy", async () => {
         const store = getStore();
-        const rendered = shallowMountWithTranslate(SelectDataset, store, {
-            global: {
-                plugins: [store]
-            }, 
-        });
+        const rendered = mountADRDataset(store);
         const pollingId = (rendered.vm as any).pollingId;
         const spy = vi.spyOn(window, "clearInterval");
         rendered.unmount();
         expect(spy.mock.calls[0][0]).toBe(pollingId);
-    });
-
-    it("renders can not save when button is disabled", async () => {
-        const store = getStore({}, {
-            datasets: [{...fakeRawDatasets[0], resources: [shape, survey]}]
-        });
-        const rendered = mountWithTranslate(SelectDataset, store, {
-            global: {
-                plugins: [store],
-                stubs: ["treeselect"]
-            },
-        });
-        await rendered.find("button").trigger("click");
-
-        expect(rendered.findAllComponents(TreeSelect).length).toBe(1);
-        await rendered.setData({newDatasetId: ""});
-
-        expect((rendered.findComponent(Modal).find("button").element as HTMLButtonElement).disabled).toBe(true);
     });
 
     it("does not start polling if release is selected", async () => {
@@ -1172,11 +914,8 @@ describe("select dataset", () => {
             }
         );
 
-        const rendered = mountWithTranslate(SelectDataset, store, {
-            global: {
-                plugins: [store],
-                stubs: ["treeselect"]
-            },
+        const rendered = mountADRDataset(store, {
+            stubs: ["treeselect"]
         });
         const clearInterval = vi.spyOn(window, "clearInterval");
         const setInterval = vi.spyOn(window, "setInterval");
@@ -1190,17 +929,16 @@ describe("select dataset", () => {
         expect(treeSelect.exists()).toBe(true);
         treeSelect.vm.$emit("select", "id1")
 
-        await rendered.findComponent(Modal).find("button").trigger("click");
+        await rendered.findComponent(SelectDatasetModal).find("button").trigger("click");
 
         expect(rendered.findAllComponents(LoadingSpinner).length).toBe(1);
 
         await flushPromises();
 
         expect(rendered.find("#loading-dataset").exists()).toBe(false);
-        expect(rendered.findComponent(Modal).props("open")).toBe(false);
+        expect((rendered.findComponent(SelectDatasetModal).props() as any).open).toBe(false);
         expect(clearInterval.mock.calls.length).toBe(0);
         expect(setInterval.mock.calls.length).toBe(0);
-
     });
 
     it("starts polling for update if selected dataset is not release", async () => {
@@ -1212,11 +950,8 @@ describe("select dataset", () => {
             }
         );
 
-        const rendered = mountWithTranslate(SelectDataset, store, {
-            global: {
-                plugins: [store],
-                stubs: ["treeselect"]
-            },
+        const rendered = mountADRDataset(store, {
+            stubs: ["treeselect"]
         });
         const clearInterval = vi.spyOn(window, "clearInterval");
         const setInterval = vi.spyOn(window, "setInterval");
@@ -1227,11 +962,11 @@ describe("select dataset", () => {
         const treeSelect = rendered.findComponent(TreeSelect)
         expect(treeSelect.exists()).toBe(true);
         await treeSelect.vm.$emit("update:modelValue", "id1")
-        const button = rendered.findComponent(Modal).find("button");
+        const button = rendered.findComponent(SelectDatasetModal).find("button");
         await button.trigger("click");
         await flushPromises();
         expect(rendered.find("#loading-dataset").exists()).toBe(false);
-        expect(rendered.findComponent(Modal).props("open")).toBe(false);
+        expect((rendered.findComponent(SelectDatasetModal).props() as any).open).toBe(false);
         expect(clearInterval.mock.calls[0][0]).toBe(pollingId);
         expect(setInterval.mock.calls[0][0]).toBe((rendered.vm as any).refreshDatasetMetadata);
         expect(setInterval.mock.calls[0][1]).toBe(10000);
@@ -1277,17 +1012,14 @@ describe("select dataset", () => {
             }, {}
         );
 
-        const rendered = mountWithTranslate(SelectDataset, store, {
-            global: {
-                plugins: [store],
-                stubs: ["treeselect"]
-            },
+        const rendered = mountADRDataset(store, {
+            stubs: ["treeselect"]
         });
         await rendered.find("button").trigger("click");
 
         expect(rendered.findAllComponents(TreeSelect).length).toBe(1);
         await rendered.setData({newDatasetId: "id1"})
-        await rendered.findComponent(Modal).find("button").trigger("click");
+        await rendered.findComponent(SelectDatasetModal).find("button").trigger("click");
 
         expect(rendered.findAllComponents(LoadingSpinner).length).toBe(1);
         expect((baselineActions.deleteAll as Mock)).not.toHaveBeenCalled()
@@ -1307,20 +1039,15 @@ describe("select dataset", () => {
             }
         );
 
-        const rendered = mountWithTranslate(SelectDataset, store, {
-            global: {
-                plugins: [store],
-                stubs: ["treeselect"]
-            },
+        const rendered = mountADRDataset(store, {
+            stubs: ["treeselect"]
         });
         await rendered.find("button").trigger("click");
 
         expect(rendered.findAllComponents(TreeSelect).length).toBe(1);
-        await rendered.setData({newDatasetId: "id1"})
-        await rendered.findComponent(Modal).find("button").trigger("click");
+        await rendered.findComponent(SelectDatasetModal).find("button").trigger("click");
 
         expect(rendered.findAllComponents(LoadingSpinner).length).toBe(1);
         expect((baselineActions.deleteAll as Mock)).toHaveBeenCalled()
     }
-
 });

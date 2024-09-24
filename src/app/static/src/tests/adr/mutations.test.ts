@@ -1,5 +1,6 @@
-import {mockADRState, mockError} from "../mocks";
+import {mockADRDatasetState, mockADRDataState, mockADRState, mockError} from "../mocks";
 import {ADRMutation, mutations} from "../../app/store/adr/mutations";
+import {AdrDatasetType} from "../../app/store/adr/adr";
 
 describe("ADR mutations", () => {
     it("can update key", () => {
@@ -26,37 +27,45 @@ describe("ADR mutations", () => {
         expect(state.keyError).toBe(null);
     });
 
-    it("can set adr error", () => {
+    it.each(Object.values(AdrDatasetType))("can set adr error", (datasetType: AdrDatasetType) => {
         const state = mockADRState();
-        mutations[ADRMutation.SetADRError](state, {payload: mockError("whatevs")});
-        expect(state.adrError!!.detail).toBe("whatevs");
+        mutations[ADRMutation.SetADRError](state, {payload: {data: mockError("whatevs"), datasetType}});
+        expect(state.adrData[datasetType].fetchingError!!.detail).toBe("whatevs");
 
-        mutations[ADRMutation.SetADRError](state, {payload: null});
-        expect(state.adrError).toBe(null);
+        mutations[ADRMutation.SetADRError](state, {payload: {data: null, datasetType}});
+        expect(state.adrData[datasetType].fetchingError).toBe(null);
     });
 
-    it("can set datasets", () => {
+    it.each(Object.values(AdrDatasetType))("can set datasets", (datasetType: AdrDatasetType) => {
         const state = mockADRState();
-        mutations[ADRMutation.SetDatasets](state, {payload: [1, 2, 3]});
-        expect(state.datasets).toEqual([1, 2, 3]);
+        mutations[ADRMutation.SetDatasets](state, {payload: {data: [1, 2, 3], datasetType}});
+        expect(state.adrData[datasetType].datasets).toEqual([1, 2, 3]);
     });
 
-    it("can set fetching datasets", () => {
-        const state = mockADRState({fetchingDatasets: false});
-        mutations[ADRMutation.SetFetchingDatasets](state, {payload: true});
-        expect(state.fetchingDatasets).toBe(true);
+    it.each(Object.values(AdrDatasetType))("can set fetching datasets", (datasetType: AdrDatasetType) => {
+        const state = mockADRState({
+            adrData: mockADRDataState({
+                [datasetType]: mockADRDatasetState({fetchingDatasets: false})
+            })
+        });
+        mutations[ADRMutation.SetFetchingDatasets](state, {payload: {data: true, datasetType}});
+        expect(state.adrData[datasetType].fetchingDatasets).toBe(true);
     });
 
-    it("can set releases", () => {
+    it.each(Object.values(AdrDatasetType))("can set releases", (datasetType: AdrDatasetType) => {
         const state = mockADRState();
-        mutations[ADRMutation.SetReleases](state, {payload: [1, 2, 3]});
-        expect(state.releases).toEqual([1, 2, 3]);
+        mutations[ADRMutation.SetReleases](state, {payload: {data: [1, 2, 3], datasetType}});
+        expect(state.adrData[datasetType].releases).toEqual([1, 2, 3]);
     });
 
-    it("can clear releases", () => {
-        const state = mockADRState({releases: [1, 2, 3]});
-        mutations[ADRMutation.ClearReleases](state);
-        expect(state.releases).toEqual([]);
+    it.each(Object.values(AdrDatasetType))("can clear releases", (datasetType: AdrDatasetType) => {
+        const state = mockADRState({
+            adrData: mockADRDataState({
+                [datasetType]: mockADRDatasetState({releases: [1, 2, 3]})
+            })
+        });
+        mutations[ADRMutation.ClearReleases](state, {payload: {datasetType}});
+        expect(state.adrData[datasetType].releases).toEqual([]);
     });
 
     it("can set schemas", () => {
