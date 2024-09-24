@@ -39,7 +39,7 @@
         <div class="text-center" v-if="loading" id="loading-dataset">
             <loading-spinner size="sm"></loading-spinner>
         </div>
-        <template v-slot:footer v-if="!loading">
+        <template v-slot:footer v-if="!loading && datasetId">
             <button id="importBtn"
                     type="button"
                     :disabled="disableImport"
@@ -66,11 +66,10 @@ import {RootState} from "../../root";
 import i18next from "i18next";
 import {computed, PropType, ref, watch, watchEffect} from "vue";
 import {AdrDatasetType} from "../../store/adr/adr";
-import {Release} from "../../types";
 
 // eslint-disable-next-line no-undef
 defineEmits<{
-    (e: "confirmImport", datasetId: string, release: Release): void
+    (e: "confirmImport", datasetId: string, release: string | null): void
     (e: "closeModal"): void
 }>();
 
