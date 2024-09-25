@@ -156,4 +156,19 @@ class DownloadControllerTests
         val result = sut.getDownloadOutputResult("id1")
         Assertions.assertThat(result).isSameAs(mockResponse)
     }
+
+    @Test
+    fun `can get download output path`()
+    {
+        val mockResponse = mock<ResponseEntity<String>>()
+        val mockApiClient = mock<HintrAPIClient>
+        {
+            on { downloadOutputPath("id1") } doReturn mockResponse
+        }
+        val mockFileManager = mock<FileManager> {}
+
+        val sut = DownloadController(mockApiClient, mockFileManager)
+        val result = sut.getDownloadOutputPath("id1")
+        Assertions.assertThat(result).isSameAs(mockResponse)
+    }
 }

@@ -45,4 +45,11 @@ class DownloadController(val apiClient: HintrAPIClient,
     {
         return apiClient.downloadOutputResult(id)
     }
+
+    @GetMapping("/path/{id}")
+    @ResponseBody
+    fun getDownloadOutputPath(@PathVariable("id") id: String): ResponseEntity<String>
+    {
+        return apiClient.downloadOutputPath(id)
+    }
 }

@@ -48,6 +48,7 @@ interface HintrAPIClient
     ): ResponseEntity<String>
     fun downloadOutputStatus(id: String): ResponseEntity<String>
     fun downloadOutputResult(id: String): ResponseEntity<StreamingResponseBody>
+    fun downloadOutputPath(id: String): ResponseEntity<String>
     fun getUploadMetadata(id: String): ResponseEntity<String>
     fun submitRehydrate(outputZip: VersionFileWithPath): ResponseEntity<String>
     fun rehydrateStatus(id: String): ResponseEntity<String>
@@ -251,6 +252,11 @@ class HintrFuelAPIClient(
         return "$baseUrl/download/result/${id}"
                 .httpDownload()
                 .getStreamingResponseEntity(::head)
+    }
+
+    override fun downloadOutputPath(id: String): ResponseEntity<String>
+    {
+        return get("download/result/path/${id}")
     }
 
     override fun getUploadMetadata(id: String): ResponseEntity<String>

@@ -64,6 +64,16 @@ class DownloadTests : SecureIntegrationTests()
     }
 
     @Test
+    fun `can get path to download file`()
+    {
+        val coarseOutput = testRestTemplate.getForEntity<String>("/download/path/$coarseOutputResponseId")
+        assertSuccess(coarseOutput, "DownloadResultResponse")
+
+        val summaryReport = testRestTemplate.getForEntity<String>("/download/path/$summaryResponseId")
+        assertSuccess(summaryReport, "DownloadResultResponse")
+    }
+
+    @Test
     fun `can submit spectrum download`()
     {
         val datasets = mapOf(
