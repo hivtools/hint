@@ -155,7 +155,9 @@ export const getErrorLineAnnotations = function(chartData: BarChartData,
         if (!dataset) {
             return
         }
-        const errorBarData = dataset.errorBars!!;
+        const errorBarData = dataset.errorBars;
+        if (!errorBarData) return;
+
         const label = dataset.label || "";
         Object.keys(errorBarData).forEach((xLabel) => {
             const labelIndex = labels?.indexOf(xLabel)
