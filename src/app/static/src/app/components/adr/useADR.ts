@@ -16,13 +16,13 @@ export const useADR = () => {
 
     onBeforeMount(() => {
         if (!isGuest.value && !ssoLogin.value) {
-            store.dispatch("adr/fetchKey").then();
+            void store.dispatch("adr/fetchKey");
         }
     });
 
     onMounted(() => {
         if (!isGuest.value) {
-            store.dispatch("adr/ssoLoginMethod").then();
+            void store.dispatch("adr/ssoLoginMethod");
         }
     });
 

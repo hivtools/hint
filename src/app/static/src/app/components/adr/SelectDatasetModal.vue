@@ -1,45 +1,49 @@
 <template>
     <modal id="dataset" :open="open">
-        <h4 v-if="!loading" v-translate="'browseADR'"></h4>
-        <p v-if="loading" v-translate="'importingFiles'"></p>
-        <div v-if="!loading">
-            <label class="font-weight-bold" v-translate="'datasets'"></label>
-            <hint-tree-select id="datasetSelector"
-                              :multiple="false"
-                              :searchable="true"
-                              :options="datasetOptions"
-                              :placeholder="select"
-                              :disabled="fetchingDatasets"
-                              v-model="datasetId">
-                <template v-slot:option-label="{node}">
-                    <label v-html="node.raw.customLabel">
-                    </label>
-                </template>
-            </hint-tree-select>
-            <select-release :dataset-id="datasetId ? datasetId : null"
-                            :open="open"
-                            :dataset-type="datasetType"
-                            @selected-dataset-release="(newReleaseId) => datasetReleaseId = newReleaseId"
-                            @valid="(newValue) => valid = newValue">
-            </select-release>
-            <div :class="fetchingDatasets ? 'visible' : 'invisible'"
-                 style="margin-top: 15px"
-                 id="fetching-datasets">
-                <loading-spinner size="xs"></loading-spinner>
-                <span v-translate="'loadingDatasets'"></span>
+        <template v-if="loading">
+            <p v-translate="'importingFiles'"></p>
+            <div class="text-center" id="loading-dataset">
+                <loading-spinner size="sm"></loading-spinner>
             </div>
-            <div v-if="fetchingError" id="fetch-error">
-                <div v-if="fetchingError.detail">{{fetchingError.detail}}</div>
-                <button @click="fetchDatasets"
-                        class="btn btn-red float-right"
-                        v-translate="'tryAgain'">
-                </button>
+        </template>
+        <template v-else>
+            <h4 v-translate="'browseADR'"></h4>
+            <div>
+                <label class="font-weight-bold" v-translate="'datasets'"></label>
+                <hint-tree-select id="datasetSelector"
+                                  :multiple="false"
+                                  :searchable="true"
+                                  :options="datasetOptions"
+                                  :placeholder="select"
+                                  :disabled="fetchingDatasets"
+                                  v-model="datasetId">
+                    <template v-slot:option-label="{node}">
+                        <label v-html="node.raw.customLabel">
+                        </label>
+                    </template>
+                </hint-tree-select>
+                <select-release :dataset-id="datasetId"
+                                :open="open"
+                                :dataset-type="datasetType"
+                                @selected-dataset-release="(newReleaseId) => datasetReleaseId = newReleaseId"
+                                @valid="(newValue) => valid = newValue">
+                </select-release>
+                <div :class="fetchingDatasets ? 'visible' : 'invisible'"
+                     style="margin-top: 15px"
+                     id="fetching-datasets">
+                    <loading-spinner size="xs"></loading-spinner>
+                    <span v-translate="'loadingDatasets'"></span>
+                </div>
+                <div v-if="fetchingError" id="fetch-error">
+                    <div v-if="fetchingError.detail">{{ fetchingError.detail }}</div>
+                    <button @click="fetchDatasets"
+                            class="btn btn-red float-right"
+                            v-translate="'tryAgain'">
+                    </button>
+                </div>
             </div>
-        </div>
-        <div class="text-center" v-if="loading" id="loading-dataset">
-            <loading-spinner size="sm"></loading-spinner>
-        </div>
-        <template v-slot:footer v-if="!loading && datasetId">
+        </template>
+        <template v-slot:footer v-if="!loading">
             <button id="importBtn"
                     type="button"
                     :disabled="disableImport"
@@ -67,13 +71,11 @@ import i18next from "i18next";
 import {computed, PropType, ref, watch, watchEffect} from "vue";
 import {AdrDatasetType} from "../../store/adr/adr";
 
-// eslint-disable-next-line no-undef
 defineEmits<{
     (e: "confirmImport", datasetId: string, release: string | null): void
     (e: "closeModal"): void
 }>();
 
-// eslint-disable-next-line no-undef
 const props = defineProps({
     open: {
         type: Boolean,
