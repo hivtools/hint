@@ -1,4 +1,4 @@
-import {ChartData, ChartDataset} from "chart.js";
+import {ChartData, ChartDataset, ChartType, DefaultDataPoint} from "chart.js";
 import {BarchartMetadata, IndicatorMetadata, FilterOption} from "../../../generated";
 import {AnnotationOptions} from "chartjs-plugin-annotation";
 import {formatOutput} from "../utils";
@@ -6,7 +6,7 @@ import {PlotData} from "../../../store/plotData/plotData";
 import {Dict} from "../../../types";
 
 export type BarchartIndicatorMetadata = BarchartMetadata["indicators"][0];
-export interface BarChartData extends ChartData {
+export interface BarChartData<Data = DefaultDataPoint<"bar">> extends ChartData<"bar", Data, unknown> {
     maxValuePlusError: number;
 }
 

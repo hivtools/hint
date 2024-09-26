@@ -28,6 +28,7 @@
     import { Language } from "../store/translations/locales";
     import { Warning } from "../generated";
     import { PropType, defineComponent, nextTick } from "vue";
+import { StyleValue } from "vue";
 
     export default defineComponent({
         name: "Warning",
@@ -79,7 +80,7 @@
             // If the height of the warnings rendered are more than this number, each warning 
             // will be truncated to one line and the show more button will appear. If there is 
             // only one warning message, it will be truncated after the max number of lines
-            lineStyling(){
+            lineStyling(): StyleValue {
                 if (this.warningsLengthy && !this.showFullBox) {
                     if (this.warnings.length === 1) {
                         return {

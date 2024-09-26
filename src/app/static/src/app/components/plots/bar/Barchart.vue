@@ -11,7 +11,7 @@
 
 <script lang="ts">
 import {Bar} from 'vue-chartjs';
-import {BarElement, CategoryScale, Chart as ChartJS, Legend, LinearScale, Title, Tooltip} from 'chart.js';
+import {BarElement, CategoryScale, Chart as ChartJS, ChartType, Legend, LinearScale, Title, Tooltip} from 'chart.js';
 import annotationPlugin from "chartjs-plugin-annotation";
 import {useStore} from "vuex";
 import {RootState} from "../../../root";
@@ -50,7 +50,7 @@ export default defineComponent({
         });
 
         const chartDataGetter = store.getters["plotSelections/barchartData"];
-        const chartData = ref<BarChartData>({datasets:[], labels: [], maxValuePlusError: 0});
+        const chartData = ref<BarChartData<number[]>>({datasets:[], labels: [], maxValuePlusError: 0});
         const chartOptions = ref({});
         const displayErrorBars = ref<boolean>(false);
 

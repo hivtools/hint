@@ -1,5 +1,6 @@
 <template>
-    <table-display :plot="plot"
+    <table-display v-if="tableMetadata"
+                   :plot="plot"
                    :data="reshapedData"
                    :table-metadata="tableMetadata"
                    :header-name="tableLabelHeader"/>
