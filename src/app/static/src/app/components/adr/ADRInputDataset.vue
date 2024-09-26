@@ -69,7 +69,7 @@ interface Data {
         newDatasetReleaseId: string | null;
         pollingId: number | null;
         modelOptions: number;
-        AdrDatasetType: any;
+        AdrDatasetType: typeof AdrDatasetType;
     }
 
     const names: { [k in keyof DatasetResourceSet]: string } = {
