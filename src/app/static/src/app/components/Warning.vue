@@ -27,8 +27,7 @@
     import { RootState } from "../root";
     import { Language } from "../store/translations/locales";
     import { Warning } from "../generated";
-    import { PropType, defineComponent, nextTick } from "vue";
-import { StyleValue } from "vue";
+    import { PropType, defineComponent, nextTick, StyleValue } from "vue";
 
     export default defineComponent({
         name: "Warning",
