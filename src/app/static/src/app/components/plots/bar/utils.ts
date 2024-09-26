@@ -180,29 +180,30 @@ export const getErrorLineAnnotations = function(chartData: BarChartData,
             */
             const errorBarWidth = (numOfBars / (numOfBars + 10)) * halfBarWidth * 0.3;
 
-            if (errorBarData[xLabel].minus && errorBarData[xLabel].plus) {
+            const { minus, plus } = errorBarData[xLabel];
+            if (minus && plus) {
                 errorLines.push(getErrorLineConfig(
                     label,
                     barMidPoint,
                     barMidPoint,
-                    errorBarData[xLabel].minus,
-                    errorBarData[xLabel].plus,
+                    minus,
+                    plus,
                     displayErrorBars
                 ));
                 errorLines.push(getErrorLineConfig(
                     label,
                     barMidPoint - errorBarWidth,
                     barMidPoint + errorBarWidth,
-                    errorBarData[xLabel].plus,
-                    errorBarData[xLabel].plus,
+                    plus,
+                    plus,
                     displayErrorBars
                 ));
                 errorLines.push(getErrorLineConfig(
                     label,
                     barMidPoint - errorBarWidth,
                     barMidPoint + errorBarWidth,
-                    errorBarData[xLabel].minus,
-                    errorBarData[xLabel].minus,
+                    minus,
+                    minus,
                     displayErrorBars
                 ));
             }
