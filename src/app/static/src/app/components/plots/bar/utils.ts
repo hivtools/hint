@@ -1,4 +1,4 @@
-import {ChartData, ChartDataset, ChartType, DefaultDataPoint} from "chart.js";
+import {ChartData, ChartDataset, DefaultDataPoint} from "chart.js";
 import {BarchartMetadata, IndicatorMetadata, FilterOption} from "../../../generated";
 import {AnnotationOptions} from "chartjs-plugin-annotation";
 import {formatOutput} from "../utils";

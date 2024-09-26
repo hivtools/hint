@@ -11,7 +11,7 @@
 
 <script lang="ts">
 import {Bar} from 'vue-chartjs';
-import {BarElement, CategoryScale, Chart as ChartJS, ChartType, Legend, LinearScale, Title, Tooltip} from 'chart.js';
+import {BarElement, CategoryScale, Chart as ChartJS, Legend, LinearScale, Title, Tooltip} from 'chart.js';
 import annotationPlugin from "chartjs-plugin-annotation";
 import {useStore} from "vuex";
 import {RootState} from "../../../root";
