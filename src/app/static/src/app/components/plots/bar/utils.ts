@@ -5,10 +5,9 @@ import {formatOutput} from "../utils";
 import {PlotData} from "../../../store/plotData/plotData";
 import {Dict} from "../../../types";
 
-export type BarchartIndicatorMetadata = BarchartMetadata["indicators"][0];
-export interface BarChartData<Data = DefaultDataPoint<"bar">> extends ChartData<"bar", Data, unknown> {
-    maxValuePlusError: number;
-}
+type BarChartDataset<Data> = ChartDataset<"bar", Data>
+
+type BarChartDefaultData = DefaultDataPoint<"bar">
 
 export interface ErrorBars {
     [xLabel: string]: {
@@ -17,9 +16,11 @@ export interface ErrorBars {
     }
 }
 
-export type ChartDataSetsWithErrors =  ChartDataset & {
-    errorBars?: ErrorBars
-}
+type ChartDataSetsWithErrors<Data = BarChartDefaultData> = BarChartDataset<Data> & { errorBars?: ErrorBars }
+
+type ChartDataWithErrors<Data = BarChartDefaultData> = Omit<ChartData<"bar", Data, string>, "datasets"> & { datasets: ChartDataSetsWithErrors<Data>[] }
+
+export interface BarChartData<Data = BarChartDefaultData> extends ChartDataWithErrors<Data> { maxValuePlusError: number }
 
 /**
  * Convert from PlotData into data required for Chart.js barchart
@@ -69,7 +70,7 @@ export const plotDataToChartData = function (plotData: PlotData,
     const orderedXAxisLabels = visibleXAxis.map(opt => opt.label);
 
     let maxValuePlusError = 0;
-    const datasets: any[] = [];
+    const datasets: ChartDataSetsWithErrors[] = [];
 
     let colorIdx = 0;
     for (const row of plotData as any) {
@@ -109,14 +110,14 @@ export const plotDataToChartData = function (plotData: PlotData,
         }
         dataset.data[labelIdx] = value;
 
-        dataset.errorBars[xAxisLabel] = {};
+        dataset.errorBars![xAxisLabel] = { minus: undefined, plus: undefined };
         if (indicatorMetadata.error_high_column && indicatorMetadata.error_low_column) {
             if (row[indicatorMetadata.error_high_column] > maxValuePlusError) {
                 maxValuePlusError = row[indicatorMetadata.error_high_column]
             }
 
-            dataset.errorBars[xAxisLabel].plus = row[indicatorMetadata.error_high_column];
-            dataset.errorBars[xAxisLabel].minus = row[indicatorMetadata.error_low_column];
+            dataset.errorBars![xAxisLabel].plus = row[indicatorMetadata.error_high_column];
+            dataset.errorBars![xAxisLabel].minus = row[indicatorMetadata.error_low_column];
         }
     }
 
@@ -133,7 +134,7 @@ export const getErrorLineAnnotations = function(chartData: BarChartData,
     // amount of padding chart js uses by default for each bar
     const barPercentage = 0.8;
 
-    const datasets = chartData.datasets as any[];
+    const { datasets, labels } = chartData;
     const errorLines: AnnotationOptions[] = [];
 
     // the errorBars need to coordinate with what bar charts are visible
@@ -144,7 +145,7 @@ export const getErrorLineAnnotations = function(chartData: BarChartData,
     );
 
     const numOfDatasets = showLabelErrorBars.filter(x => x).length;
-    const numOfLabels = chartData.labels ? chartData.labels.length : 0;
+    const numOfLabels = labels?.length ?? 0;
     const numOfBars = numOfDatasets * numOfLabels;
 
     const halfBarWidth = barPercentage / (numOfDatasets * 2);
@@ -154,10 +155,10 @@ export const getErrorLineAnnotations = function(chartData: BarChartData,
         if (!dataset) {
             return
         }
-        const errorBarData = dataset.errorBars;
-        const label = dataset.label;
+        const errorBarData = dataset.errorBars!!;
+        const label = dataset.label || "";
         Object.keys(errorBarData).forEach((xLabel) => {
-            const labelIndex = chartData.labels?.indexOf(xLabel)
+            const labelIndex = labels?.indexOf(xLabel)
             if (labelIndex === undefined) {
                 return;
             }
