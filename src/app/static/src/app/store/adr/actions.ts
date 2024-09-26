@@ -108,7 +108,10 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
             release = state.adrData[datasetType].releases.find((rel: Release) => rel.id === releaseId);
         }
         await api<BaselineMutation, ADRMutation>(context)
-            .withError(ADRMutation.SetADRError)
+            .withErrorCallback((failure: Response) => {
+                const error = APIService.getFirstErrorFromFailure(failure);
+                context.commit({type: ADRMutation.SetADRError, payload: {datasetType, data: error}});
+            })
             .ignoreSuccess()
             .get(url)
             .then(response => {
@@ -133,12 +136,20 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
 
         if (selectedDataset) {
             if (!selectedDataset.organization) {
-                await dispatch("getDataset", {id: selectedDataset.id, release: selectedDataset.release});
+                await dispatch("getDataset", {
+                    id: selectedDataset.id,
+                    release: selectedDataset.release,
+                    datasetType: AdrDatasetType.Input
+                });
             }
             const selectedDatasetOrgId = rootState.baseline.selectedDataset!.organization.id
 
             await api(context)
-                .withError(ADRMutation.SetADRError)
+                .withErrorCallback((failure: Response) => {
+                    const error = APIService.getFirstErrorFromFailure(failure);
+                    const payload = {datasetType: AdrDatasetType.Input, data: error}
+                    context.commit({type: ADRMutation.SetADRError, payload: payload});
+                })
                 .ignoreSuccess()
                 .get("/adr/orgs?permission=update_dataset")
                 .then(async (response) => {

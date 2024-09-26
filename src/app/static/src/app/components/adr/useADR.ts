@@ -14,15 +14,15 @@ export const useADR = () => {
         return store.state.adr.key
     });
 
-    onBeforeMount(() => {
+    onBeforeMount(async () => {
         if (!isGuest.value && !ssoLogin.value) {
-            store.dispatch("adr/fetchKey").then();
+            await store.dispatch("adr/fetchKey");
         }
     });
 
-    onMounted(() => {
+    onMounted(async () => {
         if (!isGuest.value) {
-            store.dispatch("adr/ssoLoginMethod").then();
+            await store.dispatch("adr/ssoLoginMethod");
         }
     });
 

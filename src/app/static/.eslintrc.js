@@ -15,6 +15,7 @@ module.exports = {
     ],
     env: {
         node: true,
+        "vue/setup-compiler-macros": true
     },
     overrides: [
         {

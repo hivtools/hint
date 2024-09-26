@@ -631,6 +631,7 @@ describe("ADR input dataset", () => {
 
         expect(getDatasetMock.mock.calls[0][1].id).toBe("id2");
         expect(getDatasetMock.mock.calls[0][1].release).toStrictEqual(fakeRelease);
+        expect(getDatasetMock.mock.calls[0][1].datasetType).toStrictEqual(AdrDatasetType.Input);
 
         await flushPromises();
 

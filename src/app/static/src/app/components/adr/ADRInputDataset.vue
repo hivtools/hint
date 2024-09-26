@@ -69,6 +69,7 @@ interface Data {
         newDatasetReleaseId: string | null;
         pollingId: number | null;
         modelOptions: number;
+        AdrDatasetType: typeof AdrDatasetType;
     }
 
     const names: { [k in keyof DatasetResourceSet]: string } = {
@@ -91,7 +92,8 @@ interface Data {
                 newDatasetId: null,
                 pollingId: null,
                 newDatasetReleaseId: null,
-                modelOptions: Step.ModelOptions
+                modelOptions: Step.ModelOptions,
+                AdrDatasetType: AdrDatasetType,
             };
         },
         components: {
@@ -100,9 +102,6 @@ interface Data {
             SelectDatasetModal,
         },
         computed: {
-            AdrDatasetType() {
-                return AdrDatasetType
-            },
             hasShapeFile: mapStateProp<BaselineState, boolean>(
                 "baseline",
                 (state: BaselineState) => !!state.shape
@@ -198,7 +197,11 @@ interface Data {
                     await this.deleteBaselineFiles()
                 }
 
-                await this.getDataset({id: this.newDatasetId!, release: this.newDatasetReleaseId});
+                await this.getDataset({
+                    id: this.newDatasetId!,
+                    release: this.newDatasetReleaseId,
+                    datasetType: AdrDatasetType.Input
+                });
                 const {
                     pjnz,
                     pop,
