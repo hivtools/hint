@@ -261,7 +261,10 @@ describe("ADR actions", () => {
         await actions.getUserCanUpload({commit, state, rootState: root} as any);
         expect(commit.mock.calls.length).toBe(1);
         expect(commit.mock.calls[0][0].type).toBe("ADRError");
-        expect(commit.mock.calls[0][0].payload).toStrictEqual(mockError("test-error"));
+        expect(commit.mock.calls[0][0].payload).toStrictEqual({
+            datasetType: AdrDatasetType.Input,
+            data: mockError("test-error")
+        });
     });
 
     it("getUserCanUpload dispatches getDataset to set organisation if necessary", async () => {

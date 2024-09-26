@@ -145,7 +145,11 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
             const selectedDatasetOrgId = rootState.baseline.selectedDataset!.organization.id
 
             await api(context)
-                .withError(ADRMutation.SetADRError)
+                .withErrorCallback((failure: Response) => {
+                    const error = APIService.getFirstErrorFromFailure(failure);
+                    const payload = {datasetType: AdrDatasetType.Input, data: error}
+                    context.commit({type: ADRMutation.SetADRError, payload: payload});
+                })
                 .ignoreSuccess()
                 .get("/adr/orgs?permission=update_dataset")
                 .then(async (response) => {
