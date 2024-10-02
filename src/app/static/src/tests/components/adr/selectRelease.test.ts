@@ -88,7 +88,8 @@ describe("select release", () => {
                 plugins: [store]
             },
             propsData: {
-                datasetType: AdrDatasetType.Input
+                datasetType: AdrDatasetType.Input,
+                selectorLabelKey: "releases"
             },
         });
         await rendered.setProps({datasetId: "datasetId"})
