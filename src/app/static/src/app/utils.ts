@@ -404,7 +404,7 @@ const extractErrorsRecursively = (state: any, errors: Error[]) => {
     }
 };
 
-export const resourceTypes = {
+export const inputResourceTypes = {
     pjnz: "inputs-unaids-spectrum-file",
     pop: "inputs-unaids-population",
     shape: "inputs-unaids-geographic",
@@ -412,6 +412,11 @@ export const resourceTypes = {
     program: "inputs-unaids-art",
     anc: "inputs-unaids-anc",
     vmmc: "inputs-unaids-vmmc-coverage-outputs"
+}
+
+export const resourceTypes = {
+    ...inputResourceTypes,
+    outputZip: "inputs-unaids-naomi-output-zip"
 }
 
 export const getFormData = (file: File) => {

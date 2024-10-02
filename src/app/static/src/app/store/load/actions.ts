@@ -6,7 +6,7 @@ import {
     constructRehydrateProjectState,
     flatMapControlSections,
 } from "../../utils";
-import {Dict, LocalSessionFile, VersionDetails} from "../../types";
+import {DatasetResource, Dict, LocalSessionFile, VersionDetails} from "../../types";
 import {localStorageManager} from "../../localStorageManager";
 import {router} from "../../router";
 import {initialStepperState} from "../stepper/stepper";
@@ -23,6 +23,7 @@ export type LoadActionTypes = keyof Omit<LoadMutations, LoadErrorActionTypes>
 
 export interface LoadActions {
     preparingRehydrate: (store: ActionContext<LoadState, RootState>, file: FormData) => void
+    preparingRehydrateFromAdr: (store: ActionContext<LoadState, RootState>, file: DatasetResource) => void
     loadFromVersion: (store: ActionContext<LoadState, RootState>, versionDetails: VersionDetails) => void
     updateStoreState: (store: ActionContext<LoadState, RootState>, savedState: Partial<RootState>) => void
     clearLoadState: (store: ActionContext<LoadState, RootState>) => void
@@ -68,6 +69,19 @@ export const actions: ActionTree<LoadState, RootState> & LoadActions = {
             .withSuccess("PreparingRehydrate")
             .withError("RehydrateResultError")
             .postAndReturn("rehydrate/submit", formData);
+
+        if (response) {
+            await dispatch("pollRehydrate");
+        }
+    },
+
+    async preparingRehydrateFromAdr(context, datasetResource) {
+        const {dispatch, commit} = context
+        commit({type: "StartPreparingRehydrate", payload: null});
+        const response = await api<LoadActionTypes, LoadErrorActionTypes>(context)
+            .withSuccess("PreparingRehydrate")
+            .withError("RehydrateResultError")
+            .postAndReturn("rehydrate/submit/adr", datasetResource);
 
         if (response) {
             await dispatch("pollRehydrate");

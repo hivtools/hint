@@ -179,7 +179,7 @@ describe("newProjectCreate", () => {
         expect(wrapper.findComponent(UploadProgress).find(".progress").exists()).toBe(true)
 
         await expectTranslated(wrapper.find("#upload-header"),
-            "Uploading project from model outputs",
+            "Loading project from output zip",
             "Téléchargement du projet à partir des sorties du modèle",
             "Fazendo upload do projeto das saídas do modelo",
             store)

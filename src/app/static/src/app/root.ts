@@ -29,7 +29,6 @@ import {currentHintVersion} from "./hintVersion";
 import {ModelRunMutation, ModelRunUpdates} from "./store/modelRun/mutations";
 import {adr, ADRState, initialADRState} from "./store/adr/adr";
 import {adrUpload, ADRUploadState, initialADRUploadState} from "./store/adrUpload/adrUpload";
-
 import {
     downloadResults,
     DownloadResultsState,
@@ -82,7 +81,7 @@ export interface WarningsState {
 
 const persistState = (store: Store<RootState>): void => {
     store.subscribe((mutation: MutationPayload, state: RootState) => {
-        //console.log(mutation.type);
+        // console.log(mutation.type);
         localStorageManager.saveState(state);
 
         const {dispatch} = store;

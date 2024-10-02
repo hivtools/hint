@@ -9,7 +9,7 @@
         <template v-else>
             <h4 v-translate="'browseADR'"></h4>
             <div>
-                <label class="font-weight-bold" v-translate="'datasets'"></label>
+                <label id="select-dataset-label" class="font-weight-bold" v-translate="datasetLabelKey"></label>
                 <hint-tree-select id="datasetSelector"
                                   :multiple="false"
                                   :searchable="true"
@@ -25,6 +25,7 @@
                 <select-release :dataset-id="datasetId"
                                 :open="open"
                                 :dataset-type="datasetType"
+                                :selector-label-key="releaseLabelKey"
                                 @selected-dataset-release="(newReleaseId) => datasetReleaseId = newReleaseId"
                                 @valid="(newValue) => valid = newValue">
                 </select-release>
@@ -51,7 +52,8 @@
                     v-translate="'import'"
                     @click="$emit('confirmImport', datasetId!!, datasetReleaseId)">
             </button>
-            <button type="button"
+            <button id="importCancelBtn"
+                    type="button"
                     class="btn btn-white"
                     v-translate="'cancel'"
                     @click="$emit('closeModal')">
@@ -89,7 +91,7 @@ const props = defineProps({
         type: String as PropType<AdrDatasetType>,
         required: true
     },
-})
+});
 
 const store = useStore<RootState>();
 
@@ -97,7 +99,20 @@ const datasetId = ref<string | null>(null);
 const datasetReleaseId = ref<string | null>(null);
 const valid = ref<boolean>(true);
 
-const selectedDatasetId = computed(() => store.state.baseline.selectedDataset?.id);
+let datasetLabelKey = "datasets";
+let releaseLabelKey = "releases";
+if (props.datasetType === AdrDatasetType.Output) {
+    datasetLabelKey = "datasetsWithOutputZip";
+    releaseLabelKey = "releasesWithOutputZip";
+}
+
+const selectedDatasetId = computed(() => {
+    if (props.datasetType === AdrDatasetType.Input) {
+        return store.state.baseline.selectedDataset?.id
+    } else {
+        return null
+    }
+});
 const select = computed(() => i18next.t("select", store.state.language));
 const fetchingDatasets = computed(() => store.state.adr.adrData[props.datasetType].fetchingDatasets);
 const fetchingError = computed(() => store.state.adr.adrData[props.datasetType].fetchingError);

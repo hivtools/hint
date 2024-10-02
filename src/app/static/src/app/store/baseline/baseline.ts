@@ -10,7 +10,7 @@ import {
 } from "../../generated";
 import { Dataset, Release, Dict, DatasetResourceSet, DatasetResource } from "../../types";
 import {ReadyState, RootState} from "../../root";
-import {resourceTypes} from "../../utils";
+import {inputResourceTypes} from "../../utils";
 import {AdrDatasetType} from "../adr/adr";
 
 export interface BaselineState extends ReadyState {
@@ -79,7 +79,7 @@ export const baselineGetters = {
                 return res
             }
 
-            Object.entries(resourceTypes).forEach(([key, value]) => {
+            Object.entries(inputResourceTypes).forEach(([key, value]) => {
                 resources[key as keyof typeof resources] =
                     checkResourceAvailable(value) ? selectedDataset.resources[key as keyof typeof resources] : null
             })

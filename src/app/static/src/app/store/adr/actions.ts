@@ -1,9 +1,9 @@
 import {ActionContext, ActionTree} from "vuex";
 import {api, APIService} from "../../apiService";
 import qs from "qs";
-import {AdrDatasetType, ADRState} from "./adr";
+import {AdrDatasetType, ADRState, getAdrDatasetUrl, getAdrReleaseUrl} from "./adr";
 import {ADRMutation} from "./mutations";
-import {datasetFromMetadata} from "../../utils";
+import {datasetFromMetadata, findResource, resourceTypes} from "../../utils";
 import {Organization, Release} from "../../types";
 import {BaselineMutation} from "../baseline/mutations";
 import {RootState} from "../../root";
@@ -45,11 +45,6 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
             .ignoreErrors()
             .withSuccess(ADRMutation.SetSSOLogin)
             .get("/sso")
-            .then((response) => {
-                if (response && response.data) {
-                    context.dispatch("getDatasets", AdrDatasetType.Input)
-                }
-            })
     },
 
     async saveKey(context, key) {
@@ -71,13 +66,14 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
     async getDatasets(context, datasetType: AdrDatasetType) {
         context.commit({type: ADRMutation.SetFetchingDatasets, payload: {datasetType, data: true}});
         context.commit({type: ADRMutation.SetADRError, payload: {datasetType, data: null}});
+        const url = getAdrDatasetUrl(datasetType);
         await api<ADRMutation, ADRMutation>(context)
             .withErrorCallback((failure: Response) => {
                 const error = APIService.getFirstErrorFromFailure(failure);
                 context.commit({type: ADRMutation.SetADRError, payload: {datasetType, data: error}});
             })
             .ignoreSuccess()
-            .get("/adr/datasets/")
+            .get(url)
             .then(response => {
                 if (response) {
                     context.commit({type: ADRMutation.SetDatasets, payload: {datasetType, data: response.data}});
@@ -87,10 +83,11 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
     },
 
     async getReleases(context, payload: GetReleasesPayload) {
+        const url = getAdrReleaseUrl(payload.datasetType, payload.id);
         await api<ADRMutation, BaselineMutation>(context)
             .withError(`baseline/${BaselineMutation.BaselineError}` as BaselineMutation, true)
             .ignoreSuccess()
-            .get(`/adr/datasets/${payload.id}/releases/`)
+            .get(url)
             .then(response => {
                 if (response) {
                     const commitPayload = {datasetType: payload.datasetType, data: response.data}
@@ -116,9 +113,16 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
             .get(url)
             .then(response => {
                 if (response) {
-                    const dataset = datasetFromMetadata(response.data, state.schemas!, releaseId);
-                    commit(`baseline/${BaselineMutation.SetDataset}`, dataset, {root: true});
-                    commit(`baseline/${BaselineMutation.SetRelease}`, release, {root: true});
+                    if (datasetType === AdrDatasetType.Input) {
+                        const dataset = datasetFromMetadata(response.data, state.schemas!, releaseId);
+                        commit(`baseline/${BaselineMutation.SetDataset}`, dataset, {root: true});
+                        commit(`baseline/${BaselineMutation.SetRelease}`, release, {root: true});
+                    } else if (datasetType === AdrDatasetType.Output) {
+                        const outputZipResource = findResource(response.data, resourceTypes.outputZip);
+                        commit(`projects/SetAdrRehydrateOutputZip`,
+                            {payload: outputZipResource},
+                            {root: true})
+                    }
                 }
             });
     },

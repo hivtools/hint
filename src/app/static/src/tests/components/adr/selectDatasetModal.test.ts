@@ -1,5 +1,5 @@
 import SelectRelease from "../../../app/components/adr/SelectRelease.vue";
-import {expectTranslatedWithStoreType, mountWithTranslate} from "../../testHelpers";
+import {expectHasTranslationKey, expectTranslatedWithStoreType, mountWithTranslate} from "../../testHelpers";
 import SelectDatasetModal from "../../../app/components/adr/SelectDatasetModal.vue";
 import {AdrDatasetType, ADRState} from "../../../app/store/adr/adr";
 import {nextTick} from "vue";
@@ -21,8 +21,24 @@ import registerTranslations from "../../../app/store/translations/registerTransl
 import {RootState} from "../../../app/root";
 import Modal from "../../../app/components/Modal.vue";
 import {ADRMutation} from "../../../app/store/adr/mutations";
+import {mount} from "@vue/test-utils";
 
 describe("select dataset modal", () => {
+
+    const mockTranslate = vi.fn();
+    const mockLocationReload = vi.fn();
+
+    const win = window as any;
+    const realLocation = win.location;
+
+    beforeAll(() => {
+        delete win.location;
+        win.location = {reload: mockLocationReload};
+    });
+
+    afterAll(() => {
+        win.location = realLocation;
+    });
 
     const fakeDataset = {
         id: "id1",
@@ -86,7 +102,7 @@ describe("select dataset modal", () => {
         const allAdrData = mockADRDataState({
             [AdrDatasetType.Input]: mockADRDatasetState({
                 datasets: fakeDatasets,
-                releases: [],
+                releases: [fakeRelease],
             }),
             ...adrData
         })
@@ -122,13 +138,16 @@ describe("select dataset modal", () => {
         return store;
     }
 
-    const mountSelectDataset = (store: Store<RootState>) => {
-        return mountWithTranslate(SelectDatasetModal, store, {
+    const mountSelectDataset = (store: Store<RootState>, datasetType = AdrDatasetType.Input) => {
+        return mount(SelectDatasetModal, {
             global: {
-                plugins: [store]
+                plugins: [store],
+                directives: {
+                    translate: mockTranslate
+                },
             },
             propsData: {
-                datasetType: AdrDatasetType.Input,
+                datasetType: datasetType,
                 open: true
             },
         });
@@ -195,6 +214,17 @@ describe("select dataset modal", () => {
         expect((wrapper.findComponent(HintTreeSelect).props() as any)["modelValue"]).toBe(null);
     });
 
+    it("current dataset not shown if this is an import output zip modal", async () => {
+        const store = getStore({selectedDataset: fakeDataset}, {
+            [AdrDatasetType.Output]: mockADRDatasetState({
+                datasets: [fakeDataset, fakeDataset2],
+            })
+        });
+        const wrapper = mountSelectDataset(store, AdrDatasetType.Output);
+
+        expect((wrapper.findComponent(HintTreeSelect).props() as any)["modelValue"]).toBe(null);
+    });
+
     it("current dataset is preselected if datasets change", async () => {
         const store = getStore({selectedDataset: fakeDataset2}, {
             [AdrDatasetType.Input]: mockADRDatasetState({
@@ -235,8 +265,7 @@ describe("select dataset modal", () => {
 
         expect(wrapper.vm.open).toBe(true);
         expect(wrapper.find("#fetch-error div").text()).toBe("error text");
-        await expectTranslatedWithStoreType(wrapper.find("#fetch-error button"), "Try again", "Réessayer",
-            "Tente novamente", store);
+        await expectHasTranslationKey(wrapper.find("#fetch-error button"), mockTranslate, "tryAgain");
 
         // Trying again disaptches action
         await wrapper.find("#fetch-error button").trigger("click");
@@ -264,8 +293,7 @@ describe("select dataset modal", () => {
         expect((wrapper.findComponent(TreeSelect).attributes("disabled"))).toBeUndefined();
 
         expect((wrapper.find("#fetching-datasets").findComponent(LoadingSpinner).props() as any).size).toBe("xs");
-        await expectTranslatedWithStoreType(wrapper.find("#fetching-datasets span"),
-            "Loading datasets", "Chargement de vos ensembles de données", "A carregar conjuntos de dados", store);
+        await expectHasTranslationKey(wrapper.find("#fetching-datasets span"), mockTranslate, "loadingDatasets");
     });
 
     it("disables import button if no dataset selected", async () => {
@@ -315,5 +343,25 @@ describe("select dataset modal", () => {
         expect(wrapper.emitted()).toHaveProperty("confirmImport");
         expect(wrapper.emitted().confirmImport).toHaveLength(1);
         expect(wrapper.emitted().confirmImport[0]).toStrictEqual([fakeDataset2.id, fakeRelease]);
+    });
+
+    it("sets labels based on dataset type", async () => {
+        const store = getStore({selectedDataset: fakeDataset2});
+        const wrapper = mountSelectDataset(store);
+
+        await expectHasTranslationKey(wrapper.find("#select-dataset-label"), mockTranslate, "datasets");
+        await expectHasTranslationKey(wrapper.find("#select-release-label"), mockTranslate, "releases");
+
+        const storeOutput = getStore({selectedDataset: fakeDataset}, {
+            [AdrDatasetType.Output]: mockADRDatasetState({
+                datasets: [fakeDataset, fakeDataset2],
+                releases: [fakeRelease]
+            })
+        });
+        const wrapperOutput = mountSelectDataset(storeOutput, AdrDatasetType.Output);
+
+        const selectedRelease = wrapperOutput.findComponent(SelectRelease);
+        await expectHasTranslationKey(wrapperOutput.find("#select-dataset-label"), mockTranslate, "datasetsWithOutputZip");
+        expect(selectedRelease.props().selectorLabelKey).toBe("releasesWithOutputZip");
     });
 })

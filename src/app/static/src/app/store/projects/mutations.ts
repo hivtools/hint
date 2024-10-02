@@ -1,6 +1,6 @@
 import {MutationTree} from "vuex";
 import {ProjectsState} from "./projects";
-import {PayloadWithType, Version, Project, CurrentProject} from "../../types";
+import {CurrentProject, DatasetResource, PayloadWithType, Project, Version} from "../../types";
 import {Error} from "../../generated";
 import {router} from "../../router";
 
@@ -16,7 +16,8 @@ export enum ProjectsMutations {
     ClearCurrentVersion = "ClearCurrentVersion",
     CloneProjectError = "CloneProjectError",
     CloningProject = "CloningProject",
-    SetCurrentProject = "SetCurrentProject"
+    SetCurrentProject = "SetCurrentProject",
+    SetAdrRehydrateOutputZip = "SetAdrRehydrateOutputZip",
 }
 
 export const mutations: MutationTree<ProjectsState> = {
@@ -75,5 +76,8 @@ export const mutations: MutationTree<ProjectsState> = {
         if ((state.currentProject == null) && (router.currentRoute.value.path == "/")) {
             router.push('/projects');
         }
+    },
+    [ProjectsMutations.SetAdrRehydrateOutputZip](state: ProjectsState, action: PayloadWithType<DatasetResource>) {
+        state.adrRehydrateOutputZip = action.payload;
     }
 };
