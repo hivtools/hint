@@ -1,5 +1,6 @@
 <template>
     <div class="col-9 time-series">
+        <p>{{ localChartData }}</p>
         <div :key="spaceNeededForPlots" class="chart-container" ref="chartContainer" style="height: 640px;">
             <plotly class="chart"
                     v-if="chartDataForPage.length > 0"
@@ -35,6 +36,7 @@ import Plotly from "./Plotly.vue";
 import PageControl from './PageControl.vue';
 import { InputTimeSeriesData } from '../../../generated';
 import { InputTimeSeriesKey } from "../../../store/plotData/plotData";
+import { getTimeSeriesData } from './data';
 
 const plot = "timeSeries" as InputPlotName;
 
@@ -65,6 +67,15 @@ export default defineComponent({
         });
 
         const chartData = computed(() => store.state.plotData[plot] as InputTimeSeriesData);
+
+        const localChartData = computed(() => {
+            const randString = `${Math.random()}`;
+            // console.log(randString);
+            console.time(randString);
+            getTimeSeriesData(store);
+            console.timeEnd(randString);
+            return randString;
+        });
 
         const distinctPlots = computed(() => {
             const { distinctColumn } = subplotsConfig;
@@ -117,7 +128,8 @@ export default defineComponent({
             layout,
             spaceNeededForPlots,
             pageNumber,
-            totalPages
+            totalPages,
+            localChartData
         }
     }
 })
