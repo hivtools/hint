@@ -51,7 +51,7 @@ export default defineComponent({
         const isRatioIndicator = computed<boolean>(()=>indicatorMetadata.value.indicator.includes('_ratio'));
 
         const chartDataGetter = store.getters["plotSelections/barchartData"];
-        const chartData = ref<BarChartData>({datasets:[], labels: [], maxValuePlusError: 0});
+        const chartData = ref<BarChartData<(number | null)[]>>({datasets:[], labels: [], maxValuePlusError: 0});
         const chartOptions = ref({});
         const displayErrorBars = ref<boolean>(false);
 

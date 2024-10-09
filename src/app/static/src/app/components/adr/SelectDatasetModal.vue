@@ -49,7 +49,7 @@
                     :disabled="disableImport"
                     class="btn btn-red"
                     v-translate="'import'"
-                    @click="$emit('confirmImport', datasetId, datasetReleaseId)">
+                    @click="$emit('confirmImport', datasetId!!, datasetReleaseId)">
             </button>
             <button type="button"
                     class="btn btn-white"

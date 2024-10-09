@@ -28,7 +28,7 @@ const unfilteredData = computed(() => {
 
 const chartData = computed(() => store.state.plotData.timeSeries);
 
-const hasData = computed(() => !!unfilteredData.value & !!chartData.value);
+const hasData = computed(() => !!unfilteredData.value && !!chartData.value);
 
 const download = debounce_leading(() => {
     const prefix = store.state.baseline.iso3 || store.state.baseline.country
