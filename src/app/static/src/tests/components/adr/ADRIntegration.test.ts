@@ -7,7 +7,7 @@ import registerTranslations from "../../../app/store/translations/registerTransl
 import {shallowMount} from "@vue/test-utils";
 import ADRKey from "../../../app/components/adr/ADRKey.vue";
 import ADRIntegration from "../../../app/components/adr/ADRIntegration.vue";
-import SelectDataset from "../../../app/components/adr/SelectDataset.vue";
+import SelectDataset from "../../../app/components/adr/ADRInputDataset.vue";
 import {ADRMutation, mutations} from "../../../app/store/adr/mutations";
 import {getters} from "../../../app/store/root/getters";
 import {ADRState} from "../../../app/store/adr/adr";

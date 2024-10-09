@@ -11,6 +11,7 @@ import {
 import { Dataset, Release, Dict, DatasetResourceSet, DatasetResource } from "../../types";
 import {ReadyState, RootState} from "../../root";
 import {resourceTypes} from "../../utils";
+import {AdrDatasetType} from "../adr/adr";
 
 export interface BaselineState extends ReadyState {
     selectedDataset: Dataset | null
@@ -69,7 +70,7 @@ export const baselineGetters = {
         const { selectedDataset } = state
 
         if (selectedDataset?.id && selectedDataset.resources) {
-            const selectedDatasetFromDatasets = rootState.adr.datasets
+            const selectedDatasetFromDatasets = rootState.adr.adrData[AdrDatasetType.Input].datasets
                 .find(dataset => dataset.id === selectedDataset.id) || null
 
             const checkResourceAvailable = (resourceType: string) => {

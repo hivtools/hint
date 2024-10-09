@@ -3,22 +3,22 @@ import {initialModelRunState} from "../../app/store/modelRun/modelRun";
 import {initialModelOptionsState} from "../../app/store/modelOptions/modelOptions";
 
 import {
+    mockADRDataState,
     mockADRState,
-    mockAncResponse,
     mockBaselineState,
     mockDownloadResultsState,
     mockError,
     mockErrorsState,
-    mockReviewInputState,
     mockLoadState,
     mockMetadataState,
     mockModelCalibrateState,
     mockModelOptionsState,
     mockModelOutputState,
     mockModelRunState,
+    mockReviewInputState,
     mockRootState,
     mockStepperState,
-    mockSurveyAndProgramState,
+    mockSurveyAndProgramState
 } from "../mocks";
 import {RootState} from "../../app/root";
 import {initialMetadataState} from "../../app/store/metadata/metadata";
@@ -46,9 +46,8 @@ describe("Root mutations", () => {
     const populatedState = function () {
         return mockRootState({
             adr: mockADRState({
-                datasets: ["TEST DATASETS"],
+                adrData: mockADRDataState(),
                 schemas: ["TEST SCHEMAS"] as any,
-                fetchingDatasets: true,
                 key: "TEST KEY"
             }),
             reviewInput: mockReviewInputState({
@@ -96,9 +95,8 @@ describe("Root mutations", () => {
 
         //ADR State is always copied
         expect(state.adr).toStrictEqual(mockADRState({
-            datasets: ["TEST DATASETS"],
+            adrData: mockADRDataState(),
             schemas: ["TEST SCHEMAS"] as any,
-            fetchingDatasets: true,
             key: "TEST KEY"
         }));
 

@@ -94,11 +94,19 @@ fun Response.asResponseEntity(logger: Log = LogFactory.getLog(HintExceptionHandl
     {
         if (this.body().asString(null).contains("504 Gateway Time-out"))
         {
-            //Special case of ADR Gateway Timeouts returning HTML responses which cannot be parsed as JSON
+            // Special case of ADR Gateway Timeouts returning HTML responses which cannot be parsed as JSON
             val message = "ADR request timed out"
             logger.error(message)
             ErrorDetail(HttpStatus.GATEWAY_TIMEOUT, message)
                     .toResponseEntity<String>()
+        }
+        else if (this.body().asString(null).contains("502 Bad Gateway"))
+        {
+            // Special case of ADR being flaky and returning HTML responses which cannot be parsed as JSON
+            val message = "Failed to get response from ADR, try again later."
+            logger.error(message)
+            ErrorDetail(HttpStatus.BAD_GATEWAY, message)
+                .toResponseEntity<String>()
         }
         else
         {
@@ -175,4 +183,3 @@ fun getUri(url: String): URI
         .build()
         .toUri()
 }
-

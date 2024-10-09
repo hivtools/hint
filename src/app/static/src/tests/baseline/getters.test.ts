@@ -1,5 +1,7 @@
 import {baselineGetters} from "../../app/store/baseline/baseline";
 import {
+    mockADRDatasetState,
+    mockADRDataState,
     mockADRState,
     mockBaselineState,
     mockDatasetResource,
@@ -9,6 +11,7 @@ import {
 } from "../mocks";
 import {ShapeResponse} from "../../app/generated";
 import {Dict} from "../../app/types";
+import {AdrDatasetType} from "../../app/store/adr/adr";
 
 it("is complete iff all files are present", () => {
     let state = mockBaselineState({
@@ -103,7 +106,11 @@ it("selectedDatasetAvailableResources only returns resources that the user has p
     });
     let rootState = mockRootState({
         adr: mockADRState({
-            datasets
+            adrData: mockADRDataState({
+                [AdrDatasetType.Input]: mockADRDatasetState({
+                    datasets
+                })
+            })
         })
     })
 
@@ -115,18 +122,22 @@ it("selectedDatasetAvailableResources only returns resources that the user has p
     });
     rootState = mockRootState({
         adr: mockADRState({
-            datasets: [
-                {
-                    id: "id1",
-                    title: "Some data",
-                    organization: {title: "org", id: "org-id"},
-                    name: "some-data",
-                    type: "naomi-data",
-                    resources: [
-                        {resource_type: "inputs-unaids-spectrum-file"}
+            adrData: mockADRDataState({
+                [AdrDatasetType.Input]: mockADRDatasetState({
+                    datasets: [
+                        {
+                            id: "id1",
+                            title: "Some data",
+                            organization: {title: "org", id: "org-id"},
+                            name: "some-data",
+                            type: "naomi-data",
+                            resources: [
+                                {resource_type: "inputs-unaids-spectrum-file"}
+                            ]
+                        }
                     ]
-                }
-            ]
+                })
+            })
         })
     })
     expect(baselineGetters.selectedDatasetAvailableResources(state, getters, rootState)).toStrictEqual({

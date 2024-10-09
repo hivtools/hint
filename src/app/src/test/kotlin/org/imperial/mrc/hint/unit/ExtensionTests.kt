@@ -99,7 +99,7 @@ class ExtensionTests {
     @Test
     fun `expected error is returned on HTML Gateway Time-out response`()
     {
-        val mockBody = getMockBody("""<html
+        val mockBody = getMockBody("""<html>
                 <head><title>504 Gateway Time-out</title></head>
                 <body>
                 <center><h1>504 Gateway Time-out</h1></center>
@@ -109,13 +109,36 @@ class ExtensionTests {
 
         val mockLog = mock<Log>()
 
-        val res = Response(URL("http://whatever"), 200, body = mockBody)
+        val res = Response(URL("http://whatever"), 504, body = mockBody)
         assertEquals(res.asResponseEntity(mockLog).statusCode, HttpStatus.GATEWAY_TIMEOUT)
         val body = ObjectMapper().readTree(res.asResponseEntity().body)
         val errorDetail = body["errors"].first()["detail"].textValue()
         assertEquals(errorDetail, "ADR request timed out")
 
         verify(mockLog).error("ADR request timed out")
+    }
+
+    @Test
+    fun `expected error is returned on 502 Bad Gateway response`()
+    {
+        val mockBody = getMockBody("""<html>
+                <head><title>502 Bad Gateway</title></head>
+                <body>
+                <center><h1>502 Bad Gateway</h1></center>
+                <hr><center>nginx/1.19.3</center>
+                </body>
+                </html>
+                """)
+
+        val mockLog = mock<Log>()
+
+        val res = Response(URL("http://whatever"), 502, body = mockBody)
+        assertEquals(res.asResponseEntity(mockLog).statusCode, HttpStatus.BAD_GATEWAY)
+        val body = ObjectMapper().readTree(res.asResponseEntity().body)
+        val errorDetail = body["errors"].first()["detail"].textValue()
+        assertEquals(errorDetail, "Failed to get response from ADR, try again later.")
+
+        verify(mockLog).error("Failed to get response from ADR, try again later.")
     }
 
     @Test

@@ -189,6 +189,16 @@ class ADRTests : SecureIntegrationTests()
     }
 
     @Test
+    fun `can submit rehydrate from ADR output zip`()
+    {
+        val resourceId = extractResourceId(IsAuthorized.TRUE, "inputs-unaids-naomi-output-zip")
+        val file = extractUrl(IsAuthorized.TRUE, "inputs-unaids-naomi-output-zip")
+        val postEntity = getPostEntityWithUrl(AdrResource(file, getDatasetId(IsAuthorized.TRUE), resourceId))
+        val result = testRestTemplate.postForEntity<String>("/rehydrate/submit/adr", postEntity)
+        assertSuccess(result, "ProjectRehydrateSubmitResponse")
+    }
+
+    @Test
     fun `can get ADR schema types`()
     {
         var result = testRestTemplate.getForEntity<String>("/adr/schemas")

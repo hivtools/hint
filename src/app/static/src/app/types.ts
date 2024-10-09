@@ -203,7 +203,7 @@ export interface ReviewInputDataset {
     warnings: Warning[]
 }
 
-export interface StepWarnings {
+export interface StepWarnings extends Dict<Warning[]> {
     modelOptions: Warning[],
     modelRun: Warning[],
     modelCalibrate: Warning[],

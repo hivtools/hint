@@ -1,7 +1,9 @@
 package org.imperial.mrc.hint.controllers
 
 import org.imperial.mrc.hint.FileManager
+import org.imperial.mrc.hint.FileType
 import org.imperial.mrc.hint.clients.HintrAPIClient
+import org.imperial.mrc.hint.models.AdrResource
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
@@ -15,6 +17,13 @@ class RehydrateController(val apiClient: HintrAPIClient,
     fun submitRehydrate(@RequestParam("file") file: MultipartFile): ResponseEntity<String>
     {
         val outputZip = fileManager.saveOutputZip(file)
+        return apiClient.submitRehydrate(outputZip)
+    }
+
+    @PostMapping("/submit/adr")
+    fun submitAdrRehydrate(@RequestBody data: AdrResource): ResponseEntity<String>
+    {
+        val outputZip = fileManager.saveFile(data, FileType.OutputZip)
         return apiClient.submitRehydrate(outputZip)
     }
 
