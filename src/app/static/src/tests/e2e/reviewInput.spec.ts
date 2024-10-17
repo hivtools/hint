@@ -76,6 +76,25 @@ test("can view input map plot", async ({ projectPage }) => {
     await expect(page.locator(".leaflet-container")).toBeVisible();
     await expect(page.locator("#review-inputs")).toHaveScreenshot("input-map-landing.png");
 
+    // Show base map checkbox is shown and checked by default
+    await expect(page.getByRole('checkbox')).toBeVisible()
+    await expect(page.getByRole('checkbox')).toBeChecked()
+    await expect(page.locator(".leaflet-tile-container")).toHaveCount(1);
+
+    // When I uncheck show base map checkbox
+    await page.getByRole('checkbox').uncheck();
+
+    // Updated map is shown without base map
+    await expect(page.getByRole('checkbox')).not.toBeChecked()
+    await expect(page.locator(".leaflet-tile-container")).toHaveCount(0);
+
+    // When I recheck show base map checkbox
+    await page.getByRole('checkbox').check();
+    
+    // Updated map is shown with base map
+    await expect(page.getByRole('checkbox')).toBeChecked()
+    await expect(page.locator(".leaflet-tile-container")).toHaveCount(1);
+
     // When I change indicator
     await page.getByRole("button", { name: "HIV prevalence" }).click();
     await page.locator("a").filter({ hasText: "Viral load suppression" }).click();
