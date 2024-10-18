@@ -8,6 +8,13 @@
                         :options="createTooltips"
                         :options-style="() => getStyle(feature)">
             </l-geo-json>
+            <l-control position="topleft">
+                <div class="checkbox-wrapper">
+                    <input type='checkbox' @change="toggleTileLayer" :checked="tileLayerVisible" />
+                    <label v-translate="'showBaseMap'"></label>
+                </div>
+             </l-control>
+            <l-tile-layer :url="tileLayerUrl" v-if="tileLayerVisible"/>
             <map-empty-feature v-if="emptyFeature"></map-empty-feature>
             <template v-else>
                 <reset-map @reset-view="updateBounds"></reset-map>
@@ -25,7 +32,7 @@
 import {PropType, computed, onMounted, ref, toRefs, watch} from "vue";
 import {useStore} from "vuex";
 import {RootState} from "../../../root";
-import { LMap, LGeoJson } from "@vue-leaflet/vue-leaflet";
+import { LMap, LGeoJson, LTileLayer, LControl } from "@vue-leaflet/vue-leaflet";
 import { Feature } from "geojson";
 import {
     getVisibleFeatures,
@@ -53,6 +60,8 @@ const props = defineProps({
 });
 const { plot } = toRefs(props);
 
+const tileLayerUrl = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
+
 const store = useStore<RootState>();
 const plotData = computed(() => store.state.plotData[plot.value] as CalibrateDataResponse["data"]);
 
@@ -65,6 +74,7 @@ const indicatorMetadata = computed<IndicatorMetadata>(() => {
 const colourRange = ref<NumericRange | null>(null);
 const scaleLevels = ref<ScaleLevels[]>([]);
 const selectedScale = ref<ScaleSettings | null>(null);
+const tileLayerVisible = ref(true);
 
 const features = store.state.baseline.shape ?
     store.state.baseline.shape.data.features as Feature[] : [] as Feature[];
@@ -102,6 +112,10 @@ const updateFeatures = () => {
         .find(f => f.stateFilterId === "detail")!.selection;
     currentFeatures.value = getVisibleFeatures(features, selectedLevel);
 };
+
+const toggleTileLayer = () => {
+    tileLayerVisible.value = !tileLayerVisible.value
+}
 
 const selectedAreaIds = computed(() => {
     return store.state.plotSelections[plot.value].filters
@@ -164,3 +178,15 @@ onMounted(() => {
     updateMapColours();
 });
 </script>
+
+<style scoped>
+.checkbox-wrapper {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+
+label {
+    margin-bottom: 0px
+}
+</style>
