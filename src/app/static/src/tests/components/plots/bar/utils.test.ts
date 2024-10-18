@@ -38,6 +38,9 @@ describe("barchart utils work as expected", () => {
         "group1": {plus: 1.1, minus: 0.9},
         "group2": {plus: 2.1, minus: 1.9}
     };
+
+    const maxBarThickness = 175;
+
     const chartData = {
         labels: ["group1"],
         datasets: [
@@ -45,7 +48,8 @@ describe("barchart utils work as expected", () => {
                 label: "dataset1",
                 backgroundColor: "#111111",
                 data: [1, 2],
-                errorBars
+                errorBars,
+                maxBarThickness
             },
         ],
         maxValuePlusError: 0.2
@@ -67,7 +71,8 @@ describe("barchart utils work as expected", () => {
                     errorBars: {
                         "0-4": {plus: 0.43, minus: 0.38},
                         "5-9": {plus: 0.24, minus: 0.16}
-                    }
+                    },
+                    maxBarThickness
                 },
                 {
                     label: "male",
@@ -76,7 +81,8 @@ describe("barchart utils work as expected", () => {
                     errorBars: {
                         "0-4": {plus: 0.40, minus: 0.34},
                         "5-9": {plus: 0.28, minus: 0.21}
-                    }
+                    },
+                    maxBarThickness
                 }
             ],
             maxValuePlusError: 0.43
@@ -147,7 +153,8 @@ describe("barchart utils work as expected", () => {
                     data: [0, 0.20],
                     errorBars: {
                         "5-9": {plus: 0.24, minus: 0.16},
-                    }
+                    },
+                    maxBarThickness
                 }
             ],
             maxValuePlusError: 0.24
@@ -257,7 +264,8 @@ describe("barchart utils work as expected", () => {
                     errorBars: {
                         "Northern": {plus: 0.43, minus: 0.38},
                         "Central": {plus: 0.43, minus: 0.38},
-                    }
+                    },
+                    maxBarThickness
                 },
                 {
                     label: "male",
@@ -266,7 +274,8 @@ describe("barchart utils work as expected", () => {
                     errorBars: {
                         "Northern": {plus: 0.24, minus: 0.16},
                         "Central": {plus: 0.24, minus: 0.16}
-                    }
+                    },
+                    maxBarThickness
                 }
             ],
             maxValuePlusError: 0.43

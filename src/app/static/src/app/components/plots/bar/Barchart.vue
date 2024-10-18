@@ -48,6 +48,7 @@ export default defineComponent({
         const plotData = computed<PlotData>(() => {
             return store.state.plotData[props.plot]
         });
+        const isRatioIndicator = computed<boolean>(()=>indicatorMetadata.value.indicator.includes('_ratio'));
 
         const chartDataGetter = store.getters["plotSelections/barchartData"];
         const chartData = ref<BarChartData<(number | null)[]>>({datasets:[], labels: [], maxValuePlusError: 0});
@@ -110,10 +111,12 @@ export default defineComponent({
                         callbacks: {
                             label: buildTooltipCallback(indicatorMetadata.value, props.showErrorBars)
                         }
-                    }
+                    },
+                    annotation: {},
                 },
                 scales: {
                     y: {
+                        max: undefined as number | undefined,
                         ticks: {
                             callback: ((value: number | string) => {
                                 return formatOutput(value,
@@ -123,9 +126,27 @@ export default defineComponent({
                             })
                         }
                     }
-                },
+                }, 
                 responsive: true,
                 maintainAspectRatio: false
+            }
+
+            if (isRatioIndicator.value) {
+                // For ratio indicators, plot a dotted line at 1 and set y-max to 2
+                baseChartOptions.plugins.annotation = {
+                    annotations: {
+                            dottedLine: {
+                                type: 'line',
+                                yMin: 1,
+                                yMax: 1,
+                                borderWidth: 2,
+                                borderDash: [5],
+                                drawTime: 'beforeDatasetsDraw'
+                                
+                            }
+                        }
+                }
+                baseChartOptions.scales.y.max = 2
             }
 
             if (props.showErrorBars) {
