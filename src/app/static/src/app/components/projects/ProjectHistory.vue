@@ -564,7 +564,6 @@
                 namespace,
                 "promoteVersion"
             ),
-            createProject: mapActionByName(namespace, "createProject"),
             versionCountLabel(project: Project) {
                 const lng = this.currentLanguage;
                 return project.versions.length == 1
