@@ -119,7 +119,8 @@ test("can view output plots", async ({ projectPage }) => {
     await page.getByRole('button', { name: 'Zoom in' }).click();
     await page.getByRole('button', { name: 'Zoom in' }).click();
 
-    // bubble plot is updated
+    // bubble plot is updated, wait first for animation to complete
+    await page.waitForTimeout(500);
     await expect(page.locator("#review-output")).toHaveScreenshot("bubble-zoom.png");
 
     // When I reset the plot

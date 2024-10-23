@@ -18,9 +18,16 @@ jobs:
       contents: write
 
     steps:
+      - id: 'get-branch'
+        run: echo "branch=$(gh pr view $PR_NO --repo $REPO --json headRefName --jq '.headRefName')" >> $GITHUB_OUTPUT
+        env:
+          REPO: ${{ github.repository }}
+          PR_NO: ${{ github.event.issue.number }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.head_ref }}
+          ref: ${{ steps.get-branch.outputs.branch }}
 
       - name: Make shared env
         uses: ./.github/actions/make-shared-env
@@ -51,3 +58,4 @@ jobs:
       - uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: Update Snapshots
+          file_pattern: '*.png'
