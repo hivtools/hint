@@ -1,0 +1,51 @@
+on:
+  # Run any time any issue/PR has a new comment
+  issue_comment:
+    types: [created]
+
+name: Update Snapshots
+
+jobs:
+  slash_command:
+    runs-on: ubuntu-latest
+    # This job will only run if the comment was on a pull requests and matches the slash command
+    if: ${{ github.event.issue.pull_request && github.event.comment.body == '/update-snapshots'}}
+    timeout-minutes: 60
+
+    permissions:
+      # Give the default GITHUB_TOKEN write permission to commit and push the
+      # added or changed files to the repository.
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+
+      - name: Make shared env
+        uses: ./.github/actions/make-shared-env
+        with:
+          dh-username: ${{ secrets.DOCKERHUB_USERNAME }}
+          dh-password: ${{ secrets.DOCKERHUB_TOKEN }}
+          ghcr-username: ${{ github.actor }}
+          ghcr-password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Run deps
+        run: scripts/run-dependencies.sh
+
+      - name: Start Kotlin server
+        run: scripts/run-kotlin-server.sh
+
+      - name: Install playwright et al
+        run: |
+          cd src/app/static
+          npm install @playwright/test@1.35.1
+          npx playwright install chromium
+          npx playwright install-deps chromium
+
+      - name: Update snapshots
+        run: npx playwright test --update-snapshots --reporter=list
+
+      - uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: Update Snapshots
