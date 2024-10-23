@@ -91,7 +91,8 @@ export const plotDataToChartData = function (plotData: PlotData,
                 label: datasetLabel,
                 backgroundColor: colors[colorIdx],
                 data: [],
-                errorBars: {}
+                errorBars: {},
+                maxBarThickness: 175
             };
             datasets.push(dataset);
             colorIdx++;
