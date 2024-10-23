@@ -262,7 +262,7 @@ describe("New project menu component", () => {
         expect((adrRehydrate as any).props("openModal")).toBe(true);
 
         // When trigger submit create
-        await (adrRehydrate.vm as any).submitCreate();
+        await adrRehydrate.vm.$emit("submit-create");
         await nextTick();
 
         // then project name modal is visible

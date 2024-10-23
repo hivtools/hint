@@ -27,8 +27,6 @@ describe("ADRRehydrate", () => {
 
     const mockGetDatasets = vi.fn();
     const mockGetDataset = vi.fn();
-    const mockSubmitCreate = vi.fn();
-    const mockCancelCreate = vi.fn();
 
     const createStore = (outputDataset: ADRDatasetState = mockOutputDataset) => {
         const store = new Vuex.Store({
@@ -64,9 +62,7 @@ describe("ADRRehydrate", () => {
                 plugins: [store]
             },
             props: {
-                openModal: true,
-                submitCreate: mockSubmitCreate,
-                cancelCreate: mockCancelCreate
+                openModal: true
             },
         });
     };
@@ -97,7 +93,7 @@ describe("ADRRehydrate", () => {
             release: null,
             datasetType: AdrDatasetType.Output
         });
-        expect(mockSubmitCreate).toHaveBeenCalledTimes(1);
+        expect(wrapper.emitted()["submit-create"].length).toBe(1);
     });
 
     it("importOutputZip doesn't submitCreate if error from fetching", async () => {
@@ -117,7 +113,7 @@ describe("ADRRehydrate", () => {
             release: null,
             datasetType: AdrDatasetType.Output
         });
-        expect(mockSubmitCreate).toHaveBeenCalledTimes(0);
+        expect(wrapper.emitted()).not.toHaveProperty("submit-create");
     });
 
     it("calls cancelCreate when close-modal event is handled", async () => {
@@ -126,6 +122,6 @@ describe("ADRRehydrate", () => {
         const selectDataset = wrapper.findComponent(SelectDatasetModal);
         await selectDataset.vm.$emit("close-modal");
 
-        expect(mockCancelCreate).toHaveBeenCalledTimes(1);
+        expect(wrapper.emitted()["cancel-create"].length).toBe(1);
     });
 });
