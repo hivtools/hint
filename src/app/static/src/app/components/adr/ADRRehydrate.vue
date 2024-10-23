@@ -4,31 +4,28 @@
         :loading="loading"
         :dataset-type="AdrDatasetType.Output"
         @confirm-import="importOutputZip"
-        @close-modal="cancelCreate">
+        @close-modal="$emit('cancel-create')">
     </select-dataset>
 </template>
 
 <script setup lang="ts">
 import SelectDataset from "./SelectDatasetModal.vue";
-import {onMounted, PropType, ref} from "vue";
+import {onMounted, ref} from "vue";
 import {AdrDatasetType} from "../../store/adr/adr";
 import {useStore} from "vuex";
 import {RootState} from "../../root";
 
-const props = defineProps({
+defineProps({
     openModal: {
         type: Boolean,
         required: true
-    },
-    submitCreate: {
-        type: Function as PropType<() => void>,
-        required: true
-    },
-    cancelCreate: {
-        type: Function as PropType<() => void>,
-        required: true
     }
 });
+
+const emit = defineEmits<{
+    (e: "submitCreate"): void
+    (e: "cancelCreate"): void
+}>();
 
 const loading = ref<boolean>(false);
 const store = useStore<RootState>();
@@ -41,7 +38,7 @@ const importOutputZip = async (datasetId: string, releaseId: string | null) => {
     const fetchingError = store.state.adr.adrData[AdrDatasetType.Output].fetchingError;
     const outputZip = store.state.projects.adrRehydrateOutputZip;
     if (!fetchingError && outputZip) {
-        props.submitCreate();
+        emit('submit-create');
     }
 };
 

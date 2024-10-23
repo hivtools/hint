@@ -38,8 +38,8 @@
                             :cancel-create="cancelCreateProject"/>
         <adr-rehydrate v-if="ssoLogin"
                        :open-modal="showImportFromAdrModal"
-                       :submit-create="handleAdrRehydrate"
-                       :cancel-create="() => showImportFromAdrModal = false"/>
+                       @submit-create="handleAdrRehydrate"
+                       @cancel-create="showImportFromAdrModal = false"/>
     </div>
 </template>
 <script lang="ts">
