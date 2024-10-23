@@ -44,7 +44,9 @@ jobs:
           npx playwright install-deps chromium
 
       - name: Update snapshots
-        run: npx playwright test --update-snapshots --reporter=list
+        run: |
+          cd src/app/static
+          npx playwright test --update-snapshots --reporter=list
 
       - uses: stefanzweifel/git-auto-commit-action@v4
         with:
