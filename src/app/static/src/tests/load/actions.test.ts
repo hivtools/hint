@@ -1,6 +1,7 @@
 import {
     mockAxios,
     mockCalibrateDataResponse,
+    mockDatasetResource,
     mockError,
     mockFailure,
     mockLoadState,
@@ -279,6 +280,26 @@ describe("Load actions", () => {
         await flushPromises();
         expect(mockAxios.history.post.length).toBe(1)
         expect(mockAxios.history.post[0]["url"]).toBe("rehydrate/submit")
+        expect(commit.mock.calls.length).toBe(2)
+        expect(commit.mock.calls[0][0].type).toBe("StartPreparingRehydrate")
+        expect(commit.mock.calls[1][0].type).toBe("PreparingRehydrate")
+        expect(commit.mock.calls[1][0].payload).toBeTruthy()
+        expect(dispatch.mock.calls.length).toBe(1)
+        expect(dispatch.mock.calls[0][0]).toEqual("pollRehydrate");
+    });
+
+    it("can prepare rehydrate from ADR and dispatches poll action", async () => {
+        mockAxios.onPost("rehydrate/submit/adr")
+            .reply(200, mockSuccess(true));
+
+        const resource = mockDatasetResource();
+
+        const dispatch = vi.fn();
+        const commit = vi.fn();
+        actions.preparingRehydrateFromAdr({dispatch, commit, rootState} as any, resource);
+        await flushPromises();
+        expect(mockAxios.history.post.length).toBe(1)
+        expect(mockAxios.history.post[0]["url"]).toBe("rehydrate/submit/adr")
         expect(commit.mock.calls.length).toBe(2)
         expect(commit.mock.calls[0][0].type).toBe("StartPreparingRehydrate")
         expect(commit.mock.calls[1][0].type).toBe("PreparingRehydrate")

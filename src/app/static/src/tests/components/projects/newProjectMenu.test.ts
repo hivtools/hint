@@ -1,10 +1,20 @@
 import {expectHasTranslationKey} from "../../testHelpers";
 import Vuex from "vuex";
-import {mockFile, mockLoadState, mockProjectsState, mockRootState} from "../../mocks";
+import {
+    mockADRState,
+    mockBaselineState,
+    mockDatasetResource,
+    mockFile,
+    mockLoadState,
+    mockProjectsState,
+    mockRootState
+} from "../../mocks";
 import {DOMWrapper, mount, VueWrapper} from "@vue/test-utils";
 import NewProjectMenu from "../../../app/components/projects/NewProjectMenu.vue";
 import UploadNewProject from "../../../app/components/load/NewProjectCreate.vue";
 import {Translations} from "../../../app/store/translations/locales";
+import ADRRehydrate from "../../../app/components/adr/ADRRehydrate.vue";
+import {nextTick} from "vue";
 
 describe("New project menu component", () => {
 
@@ -19,7 +29,8 @@ describe("New project menu component", () => {
     const mockTranslate = vi.fn();
     const mockCreateProject = vi.fn();
     const mockPreparingRehydrate = vi.fn();
-    const mockNewProjectName = vi.fn()
+    const mockPreparingRehydrateFromAdr = vi.fn();
+    const mockNewProjectName = vi.fn();
     const testProjects = [{id: 2, name: "proj1", versions: []}];
     const mockState = mockLoadState({newProjectName: "mock name"})
 
@@ -27,13 +38,16 @@ describe("New project menu component", () => {
         vi.resetAllMocks()
     })
 
-    const createStore = () => {
+    const createStore = (ssoLogin = true) => {
         return new Vuex.Store({
             state: mockRootState(),
             modules: {
                 projects: {
                     namespaced: true,
-                    state: mockProjectsState({previousProjects: testProjects}),
+                    state: mockProjectsState({
+                        previousProjects: testProjects,
+                        adrRehydrateOutputZip: mockDatasetResource(),
+                    }),
                     actions: {
                         createProject: mockCreateProject
                     }
@@ -42,18 +56,33 @@ describe("New project menu component", () => {
                     namespaced: true,
                     state: mockState,
                     actions: {
-                        preparingRehydrate: mockPreparingRehydrate
+                        preparingRehydrate: mockPreparingRehydrate,
+                        preparingRehydrateFromAdr: mockPreparingRehydrateFromAdr,
                     },
                     mutations: {
                         SetNewProjectName: mockNewProjectName
                     }
                 },
+                adr: {
+                    namespaced: true,
+                    state: mockADRState({
+                        ssoLogin
+                    }),
+                    actions: {
+                        fetchKey: vi.fn(),
+                        ssoLoginMethod: vi.fn(),
+                        getDatasets: vi.fn(),
+                    }
+                },
+                baseline: {
+                    namespaced: true,
+                    state: mockBaselineState()
+                }
             }
         });
     };
 
-    const getWrapper = () => {
-        const store = createStore();
+    const getWrapper = (store = createStore()) => {
         return mount(NewProjectMenu, {
             global: {
                 plugins: [store],
@@ -75,6 +104,7 @@ describe("New project menu component", () => {
         expectTranslated(wrapper.find("#new-project-dropdown span"), "newProjectDropdown");
         expectTranslated(wrapper.find("#create-project-button span"), "createProject");
         expectTranslated(wrapper.find("#load-zip-button span"), "loadZip");
+        expectTranslated(wrapper.find("#adr-import-button span"), "adrImportOutput");
 
         // Upload zip input hidden by default
         const upload = wrapper.find("#upload-zip")
@@ -86,21 +116,25 @@ describe("New project menu component", () => {
         })
 
         // Set new project name components are hidden by default
-        const projectNameInput = wrapper.findAllComponents(UploadNewProject)
-        expect(projectNameInput.length).toBe(1)
+        const projectNameInput = wrapper.findAllComponents(UploadNewProject);
+        expect(projectNameInput.length).toBe(1);
         expect(projectNameInput[0].attributes("open")).toBeFalsy();
-    })
+
+        // ADR rehydrate hidden by default
+        const adrRehydrate = wrapper.findComponent(ADRRehydrate);
+        expect(adrRehydrate.attributes("open")).toBeFalsy();
+    });
+
+    it("ADR import option not shown when not logged in via sso", async () => {
+        const store = createStore(false);
+        const wrapper = getWrapper(store);
+
+        expect(wrapper.find("#adr-import-button span").exists()).toBeFalsy();
+        expect(wrapper.findComponent(ADRRehydrate).exists()).toBeFalsy();
+    });
 
     it("triggers createProject action selecting a new project", async () => {
-        const store = createStore();
-        const wrapper = mount(NewProjectMenu, {
-            global: {
-                plugins: [store],
-                directives: {
-                    translate: mockTranslate
-                },
-            },
-        })
+        const wrapper = getWrapper();
 
         // When I click new project
         const createProjectButton = wrapper.find("#create-project-button")
@@ -129,15 +163,7 @@ describe("New project menu component", () => {
     })
 
     it("clicking cancel from create project modal closes it", async () => {
-        const store = createStore();
-        const wrapper = mount(NewProjectMenu, {
-            global: {
-                plugins: [store],
-                directives: {
-                    translate: mockTranslate
-                },
-            },
-        })
+        const wrapper = getWrapper();
 
         // When I click new project
         const createProjectButton = wrapper.find("#create-project-button")
@@ -157,15 +183,7 @@ describe("New project menu component", () => {
     })
 
     it("triggers preparingRehydrate action when file is uploaded", async () => {
-        const store = createStore();
-        const wrapper = mount(NewProjectMenu, {
-            global: {
-                plugins: [store],
-                directives: {
-                    translate: mockTranslate
-                },
-            },
-        })
+        const wrapper = getWrapper();
 
         // When I pick a zip file
         const testFile = mockFile("test.zip", "test file contents", "application/zip");
@@ -198,15 +216,7 @@ describe("New project menu component", () => {
     });
 
     it("clicking cancel from Zip project name modal hides modal", async () => {
-        const store = createStore();
-        const wrapper = mount(NewProjectMenu, {
-            global: {
-                plugins: [store],
-                directives: {
-                    translate: mockTranslate
-                },
-            },
-        })
+        const wrapper = getWrapper();
 
         // When I pick a zip file
         const testFile = mockFile("test.zip", "test file contents", "application/zip");
@@ -239,6 +249,58 @@ describe("New project menu component", () => {
         // and upload zip is cleared
         expect((wrapper.vm as any).$refs.loadZip.value).toBe("")
     });
+
+    it("opens ADR rehydrate modal when button clicked", async () => {
+        const wrapper = getWrapper();
+
+        // When I click adr import button
+        const createProjectButton = wrapper.find("#adr-import-button");
+        await createProjectButton.trigger("click");
+
+        // Then ADR rehydrate modal is visible
+        const adrRehydrate = wrapper.findComponent(ADRRehydrate);
+        expect((adrRehydrate as any).props("openModal")).toBe(true);
+
+        // When trigger submit create
+        await adrRehydrate.vm.$emit("submit-create");
+        await nextTick();
+
+        // then project name modal is visible
+        expect((adrRehydrate as any).props("openModal")).toBe(false);
+        const adrImport = wrapper.find("#new-project-create");
+        const projectModal = adrImport.findComponent("#load") as VueWrapper;
+        expect((projectModal as any).props("open")).toBe(true);
+
+        // When I enter a name and click to confirm load
+        await projectModal.find("#project-name-input").setValue("new uploaded project");
+        await projectModal.find("#confirm-load-project").trigger("click");
+
+        // Then ADR rehydrate action is triggered
+        expect(mockNewProjectName).toHaveBeenCalledTimes(1);
+        expect(mockNewProjectName.mock.calls[0][1]).toBe("new uploaded project");
+        expect(mockPreparingRehydrateFromAdr).toHaveBeenCalledTimes(1);
+        expect(mockPreparingRehydrateFromAdr.mock.calls[0][1]).toStrictEqual(mockDatasetResource());
+        expect((projectModal as any).props("open")).toBe(false);
+    });
+
+    it("cancelling adr rehydrate closes modal", async () => {
+        const wrapper = getWrapper();
+
+        // When I click adr import button
+        const createProjectButton = wrapper.find("#adr-import-button");
+        await createProjectButton.trigger("click");
+
+        // Then ADR rehydrate modal is visible
+        const adrRehydrate = wrapper.findComponent(ADRRehydrate);
+        expect((adrRehydrate as any).props("openModal")).toBeTruthy();
+
+        // When I click cancel
+        const cancelAdrRehydrate = adrRehydrate.find("#importCancelBtn");
+        await cancelAdrRehydrate.trigger("click");
+
+        // ADR rehydrate modal is hidden
+        expect((adrRehydrate as any).props("openModal")).toBeFalsy();
+    })
 })
 
 const triggerSelectZip = async (wrapper: VueWrapper, testFile: File, id: string) => {
