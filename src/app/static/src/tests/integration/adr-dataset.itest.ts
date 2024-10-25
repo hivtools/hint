@@ -45,16 +45,16 @@ describe("ADR dataset-related actions", () => {
         await adrActions.getDatasets({commit, rootState} as any, AdrDatasetType.Input);
 
         expect(commit.mock.calls[0][0]["type"]).toBe(ADRMutation.SetFetchingDatasets);
-        expect(commit.mock.calls[0][0]["payload"]).toBe(true);
+        expect(commit.mock.calls[0][0]["payload"]).toStrictEqual({data: true, datasetType: "input"});
 
         expect(commit.mock.calls[1][0]["type"]).toBe(ADRMutation.SetADRError);
-        expect(commit.mock.calls[1][0]["payload"]).toBe(null);
+        expect(commit.mock.calls[1][0]["payload"]).toStrictEqual({data: null, datasetType: "input"});
 
         expect(commit.mock.calls[2][0]["type"]).toBe(ADRMutation.SetDatasets);
-        expect(Array.isArray(commit.mock.calls[2][0]["payload"])).toBe(true);
+        expect(Array.isArray(commit.mock.calls[2][0]["payload"]["data"])).toBe(true);
 
         expect(commit.mock.calls[3][0]["type"]).toBe(ADRMutation.SetFetchingDatasets);
-        expect(commit.mock.calls[3][0]["payload"]).toBe(false);
+        expect(commit.mock.calls[3][0]["payload"]).toStrictEqual({data: false, datasetType: "input"});
     });
 
     it("can get dataset", async () => {
@@ -66,15 +66,25 @@ describe("ADR dataset-related actions", () => {
         };
 
         await adrActions.getDatasets({commit, rootState} as any, AdrDatasetType.Input);
-        expect(commit.mock.calls[0][0]).toStrictEqual({type: ADRMutation.SetFetchingDatasets, payload: true});
+        expect(commit.mock.calls[0][0]).toStrictEqual({
+            type: ADRMutation.SetFetchingDatasets, payload: {
+                data: true,
+                datasetType: "input"
+            }
+        });
 
         expect(commit.mock.calls[1][0]["type"]).toBe(ADRMutation.SetADRError);
-        expect(commit.mock.calls[1][0]["payload"]).toBe(null);
+        expect(commit.mock.calls[1][0]["payload"]).toStrictEqual({data: null, datasetType: "input"});
 
         expect(commit.mock.calls[2][0].type).toStrictEqual(ADRMutation.SetDatasets);
-        const datasetId = commit.mock.calls[2][0]["payload"][0].id;
+        const datasetId = commit.mock.calls[2][0]["payload"]["data"][0].id;
         const state = {selectedDataset: {id: datasetId}};
-        expect(commit.mock.calls[3][0]).toStrictEqual({type: ADRMutation.SetFetchingDatasets, payload: false});
+        expect(commit.mock.calls[3][0]).toStrictEqual({
+            type: ADRMutation.SetFetchingDatasets, payload: {
+                data: false,
+                datasetType: "input"
+            }
+        });
 
         await baselineActions.refreshDatasetMetadata({commit, state, dispatch, rootState: rootStateWithSchemas} as any);
         expect(commit.mock.calls[4][0]).toBe(BaselineMutation.UpdateDatasetResources);
@@ -102,7 +112,7 @@ describe("ADR dataset-related actions", () => {
 
         // 2. select a naomi dev dataset
         expect(commit.mock.calls[2][0].type).toStrictEqual(ADRMutation.SetDatasets);
-        const datasets = commit.mock.calls[2][0]["payload"];
+        const datasets = commit.mock.calls[2][0]["payload"]["data"];
         const dataset = datasets.find((dataset: any) => dataset.organization.name === "naomi-development-team");
         expect(dataset).not.toBeUndefined();
 
@@ -135,7 +145,7 @@ describe("ADR dataset-related actions", () => {
 
         // 2. select a naomi dev dataset
         expect(commit.mock.calls[2][0].type).toStrictEqual(ADRMutation.SetDatasets);
-        const datasets = commit.mock.calls[2][0]["payload"];
+        const datasets = commit.mock.calls[2][0]["payload"]["data"];
         const dataset = datasets.find((dataset: any) => dataset.organization.name === "naomi-development-team");
         expect(dataset).not.toBeNull()
 
@@ -219,10 +229,10 @@ describe("ADR dataset-related actions", () => {
         await surveyAndProgramActions.importSurvey({commit, dispatch, state, rootState} as any,
             "https://raw.githubusercontent.com/hivtools/hint/main/src/app/testdata/survey.csv");
 
-        expect(commit.mock.calls[2][0]["type"]).toBe(SurveyAndProgramMutation.SurveyUpdated);
-        expect(commit.mock.calls[2][0]["payload"]["filename"])
+        expect(dispatch.mock.calls[0][0]).toBe("setSurveyResponse");
+        expect(dispatch.mock.calls[0][1]["filename"])
             .toBe("survey.csv")
-        expect(commit.mock.calls[3][0]["type"]).toBe(SurveyAndProgramMutation.WarningsFetched);
+        expect(commit.mock.calls[2][0]["type"]).toBe(SurveyAndProgramMutation.WarningsFetched);
     }, 10000);
 
     it("can import programme", async () => {
@@ -238,29 +248,30 @@ describe("ADR dataset-related actions", () => {
             type: "reviewInput/ClearDataset",
             payload: "art"
         });
-        expect(commit.mock.calls[3][0]["type"]).toBe(SurveyAndProgramMutation.ProgramUpdated);
-        expect(commit.mock.calls[3][0]["payload"]["filename"])
+        expect(dispatch.mock.calls[0][0]).toBe("setProgramResponse");
+        expect(dispatch.mock.calls[0][1]["filename"])
             .toBe("programme.csv")
-        expect(commit.mock.calls[4][0]["type"]).toBe(SurveyAndProgramMutation.WarningsFetched);
+        expect(commit.mock.calls[3][0]["type"]).toBe(SurveyAndProgramMutation.WarningsFetched);
     }, 10000);
 
     it("can import anc", async () => {
 
         const commit = vi.fn();
+        const dispatch = vi.fn();
 
         const state = await getSelectedDatasetState()
 
-        await surveyAndProgramActions.importANC({commit, state, rootState} as any,
+        await surveyAndProgramActions.importANC({commit, dispatch, state, rootState} as any,
             "https://raw.githubusercontent.com/hivtools/hint/main/src/app/testdata/anc.csv");
 
         expect(commit.mock.calls[2][0]).toStrictEqual({
             type: "reviewInput/ClearDataset",
             payload: "anc"
         });
-        expect(commit.mock.calls[3][0]["type"]).toBe(SurveyAndProgramMutation.ANCUpdated);
-        expect(commit.mock.calls[3][0]["payload"]["filename"])
+        expect(dispatch.mock.calls[0][0]).toBe("setAncResponse");
+        expect(dispatch.mock.calls[0][1]["filename"])
             .toBe("anc.csv");
-        expect(commit.mock.calls[4][0]["type"]).toBe(SurveyAndProgramMutation.WarningsFetched);
+        expect(commit.mock.calls[3][0]["type"]).toBe(SurveyAndProgramMutation.WarningsFetched);
     }, 10000);
 
     it("hits upload files to adr endpoint and gets appropriate error", async () => {
