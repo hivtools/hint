@@ -78,27 +78,40 @@ class ADRController(private val encryption: Encryption,
     }
 
     @GetMapping("/datasets")
-    fun getDatasets(@RequestParam showInaccessible: Boolean = false): ResponseEntity<String>
+    fun getDatasets(
+        @RequestParam type: String,
+        @RequestParam showInaccessible: Boolean = false
+    ): ResponseEntity<String>
     {
-        return SuccessResponse(listDatasets(showInaccessible).filter { it["resources"].count() > 0 }).asResponseEntity()
-    }
+        val schemas = when (type) {
+            "input" -> listOf(appProperties.adrDatasetsThisYearSchema)
+            "output" -> listOf(appProperties.adrDatasetsThisYearSchema, appProperties.adrDatasetsLastYearSchema)
+            else -> {
+                val message = "Invalid type: '$type'. Valid types are 'input' and 'output'."
+                logger.error(message)
+                throw IllegalArgumentException(message)
+            }
+        }
 
-    @GetMapping("/datasetsWithResource")
-    fun getDatasetsWithResource(@RequestParam resourceType: String,
-                                @RequestParam showInaccessible: Boolean = false): ResponseEntity<String>
-    {
-        val data = listDatasets(showInaccessible)
-        val filteredData = data.filter { dataset ->
-            datasetHasResourceOfType(dataset["resources"], resourceType)
+        val data = listDatasets(showInaccessible, schemas)
+
+        val filteredData = when (type) {
+            "input" -> data.filter { it["resources"].count() > 0 }
+            "output" -> data.filter { dataset ->
+                datasetHasResourceOfType(dataset["resources"], appProperties.adrOutputZipSchema)
+            }
+            else -> data
         }
 
         return SuccessResponse(filteredData).asResponseEntity()
     }
 
-    private fun listDatasets(showInaccessible: Boolean): JsonNode {
+    private fun listDatasets(showInaccessible: Boolean, packageTypes: List<String>): JsonNode {
         val adr = adrService.build()
 
-        var url = "package_search?q=type:${appProperties.adrDatasetSchema}&rows=$MAX_DATASETS&include_private=true"
+        val packageTypeQuery = packageTypes.joinToString(" OR ")
+        var url = "package_search?q=type:(${packageTypeQuery})&rows=$MAX_DATASETS&include_private=true"
+        print(url)
         url = if (showInaccessible)
         {
             // this flag is used for testing but will never
@@ -141,23 +154,21 @@ class ADRController(private val encryption: Encryption,
     }
 
     @GetMapping("/datasets/{id}/releases")
-    fun getReleases(@PathVariable id: String): ResponseEntity<String>
+    fun getReleases(@PathVariable id: String,
+                    @RequestParam type: String? = null): ResponseEntity<String>
     {
         val adr = adrService.build()
-        return adr.get("/dataset_version_list?dataset_id=${id}")
-    }
-
-    @GetMapping("/datasets/{id}/releasesWithResource")
-    fun getReleasesWithResource(@PathVariable id: String, @RequestParam resourceType: String): ResponseEntity<String>
-    {
-        val releases = objectMapper.readTree(getReleases(id).body!!)["data"]
-        val filteredReleases = releases?.filter { release ->
-            val dataset = getDataset(id, release["id"].asText())
-            val resources = objectMapper.readTree(dataset.body!!)["data"]["resources"]
-            datasetHasResourceOfType(resources, resourceType)
+        var releasesResponse = adr.get("/dataset_version_list?dataset_id=${id}")
+        if (type == "output") {
+            val releases = objectMapper.readTree(releasesResponse.body!!)["data"]
+            val filteredReleases = releases?.filter { release ->
+                val dataset = getDataset(id, release["id"].asText())
+                val resources = objectMapper.readTree(dataset.body!!)["data"]["resources"]
+                datasetHasResourceOfType(resources, appProperties.adrOutputZipSchema)
+            }
+            releasesResponse = SuccessResponse(filteredReleases).asResponseEntity()
         }
-
-        return SuccessResponse(filteredReleases).asResponseEntity()
+        return releasesResponse
     }
 
     @GetMapping("/schemas")
@@ -223,7 +234,7 @@ class ADRController(private val encryption: Encryption,
 
     private fun datasetHasResourceOfType(resources: JsonNode, resourceType: String): Boolean {
         return resources.any { resource ->
-            resource["resource_type"]?.asText() == appProperties.fileTypeMappings[resourceType]
+            resource["resource_type"]?.asText() == resourceType
         }
     }
 }

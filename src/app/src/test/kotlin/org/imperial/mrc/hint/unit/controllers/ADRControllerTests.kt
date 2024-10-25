@@ -6,7 +6,9 @@ import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.imperial.mrc.hint.AppProperties
+import org.imperial.mrc.hint.ConfiguredAppProperties
 import org.imperial.mrc.hint.FileManager
 import org.imperial.mrc.hint.FileType
 import org.imperial.mrc.hint.clients.ADRClient
@@ -59,7 +61,8 @@ class ADRControllerTests : HintrControllerTests()
 
     private val mockProperties = mock<AppProperties> {
         on { adrUrl } doReturn "adr-url"
-        on { adrDatasetSchema } doReturn "adr-schema"
+        on { adrDatasetsThisYearSchema } doReturn "adr-schema-current"
+        on { adrDatasetsLastYearSchema } doReturn "adr-schema-previous"
         on { adrANCSchema } doReturn "adr-anc"
         on { adrARTSchema } doReturn "adr-art"
         on { adrPJNZSchema } doReturn "adr-pjnz"
@@ -128,7 +131,7 @@ class ADRControllerTests : HintrControllerTests()
     @Test
     fun `gets datasets without inaccessible resources by default`()
     {
-        val expectedUrl = "package_search?q=type:adr-schema&rows=1000&include_private=true&hide_inaccessible_resources=true"
+        val expectedUrl = "package_search?q=type:(adr-schema-current)&rows=1000&include_private=true&hide_inaccessible_resources=true"
         val mockClient = mock<ADRClient> {
             on { get(expectedUrl) } doReturn makeFakeSuccessResponse()
         }
@@ -146,7 +149,7 @@ class ADRControllerTests : HintrControllerTests()
                 mockSession,
                 mock(),
                 mock())
-        val result = sut.getDatasets()
+        val result = sut.getDatasets("input")
         val data = objectMapper.readTree(result.body!!)["data"]
         assertThat(data.isArray).isTrue
         assertThat(data[0]["resources"].count()).isEqualTo(2)
@@ -155,7 +158,7 @@ class ADRControllerTests : HintrControllerTests()
     @Test
     fun `gets datasets including inaccessible resources if flag is passed`()
     {
-        val expectedUrl = "package_search?q=type:adr-schema&rows=1000&include_private=true"
+        val expectedUrl = "package_search?q=type:(adr-schema-current)&rows=1000&include_private=true"
         val mockClient = mock<ADRClient> {
             on { get(expectedUrl) } doReturn makeFakeSuccessResponse()
         }
@@ -173,7 +176,7 @@ class ADRControllerTests : HintrControllerTests()
                 mockSession,
                 mock(),
                 mock())
-        val result = sut.getDatasets(true)
+        val result = sut.getDatasets("input", true)
         val data = objectMapper.readTree(result.body!!)["data"]
         assertThat(data.isArray).isTrue
         assertThat(data.count()).isEqualTo(2)
@@ -183,7 +186,7 @@ class ADRControllerTests : HintrControllerTests()
     @Test
     fun `filters datasets to only those with resources`()
     {
-        val expectedUrl = "package_search?q=type:adr-schema&rows=1000&include_private=true&hide_inaccessible_resources=true"
+        val expectedUrl = "package_search?q=type:(adr-schema-current)&rows=1000&include_private=true&hide_inaccessible_resources=true"
         val mockClient = mock<ADRClient> {
             on { get(expectedUrl) } doReturn makeFakeSuccessResponse()
         }
@@ -201,7 +204,7 @@ class ADRControllerTests : HintrControllerTests()
                 mockSession,
                 mock(),
                 mock())
-        val result = sut.getDatasets()
+        val result = sut.getDatasets("input")
         val data = objectMapper.readTree(result.body!!)["data"]
         assertThat(data.isArray).isTrue
         assertThat(data.count()).isEqualTo(2)
@@ -209,9 +212,9 @@ class ADRControllerTests : HintrControllerTests()
     }
 
     @Test
-    fun `can get datasets with a specific resource type`()
+    fun `can get datasets with output zip`()
     {
-        val expectedUrl = "package_search?q=type:adr-schema&rows=1000&include_private=true&hide_inaccessible_resources=true"
+        val expectedUrl = "package_search?q=type:(adr-schema-current OR adr-schema-previous)&rows=1000&include_private=true&hide_inaccessible_resources=true"
         val mockClient = mock<ADRClient> {
             on { get(expectedUrl) } doReturn makeFakeSuccessResponse()
         }
@@ -229,7 +232,7 @@ class ADRControllerTests : HintrControllerTests()
             mockSession,
             mock(),
             mock())
-        val result = sut.getDatasetsWithResource("outputZip")
+        val result = sut.getDatasets("output")
         val data = objectMapper.readTree(result.body!!)["data"]
         assertThat(data.isArray).isTrue
         assertThat(data.count()).isEqualTo(1)
@@ -240,7 +243,7 @@ class ADRControllerTests : HintrControllerTests()
     fun `throws generic error message if unexpected error`()
     {
         val badResponse = ResponseEntity<String>(HttpStatus.BAD_REQUEST)
-        val expectedUrl = "package_search?q=type:adr-schema&rows=1000&include_private=true&hide_inaccessible_resources=true"
+        val expectedUrl = "package_search?q=type:(adr-schema-current)&rows=1000&include_private=true&hide_inaccessible_resources=true"
         val mockClient = mock<ADRClient> {
             on { get(expectedUrl) } doReturn badResponse
         }
@@ -258,10 +261,35 @@ class ADRControllerTests : HintrControllerTests()
                 mockSession,
                 mock(),
                 mock())
-        TranslationAssert.assertThatThrownBy { sut.getDatasets() }
+        TranslationAssert.assertThatThrownBy { sut.getDatasets("input") }
             .isInstanceOf(AdrException::class.java)
             .matches { (it as AdrException).httpStatus == HttpStatus.BAD_REQUEST }
             .hasTranslatedMessage("There was an error fetching datasets from ADR.")
+    }
+
+    @Test
+    fun `error thrown if trying to fetch datasets of unhandled type`()
+    {
+        val mockClient = mock<ADRClient>()
+        val mockBuilder = mock<ADRService> {
+            on { build() } doReturn mockClient
+        }
+        val sut = ADRController(
+            mock(),
+            mock(),
+            mockBuilder,
+            objectMapper,
+            mockProperties,
+            mock(),
+            mock(),
+            mockSession,
+            mock(),
+            mock())
+
+        assertThatThrownBy {
+            sut.getDatasets("unk")
+        }.isInstanceOf(IllegalArgumentException::class.java)
+            .hasMessageContaining("Invalid type: 'unk'. Valid types are 'input' and 'output'.")
     }
 
     @Test
@@ -270,7 +298,7 @@ class ADRControllerTests : HintrControllerTests()
         val badResponse = ResponseEntity<String>(
             "User 'auth0|6502e7f40954910c0ee93263' has not yet logged into ADR",
             HttpStatus.BAD_REQUEST)
-        val expectedUrl = "package_search?q=type:adr-schema&rows=1000&include_private=true&hide_inaccessible_resources=true"
+        val expectedUrl = "package_search?q=type:(adr-schema-current)&rows=1000&include_private=true&hide_inaccessible_resources=true"
         val mockClient = mock<ADRClient> {
             on { get(expectedUrl) } doReturn badResponse
         }
@@ -288,7 +316,7 @@ class ADRControllerTests : HintrControllerTests()
             mockSession,
             mock(),
             mock())
-        TranslationAssert.assertThatThrownBy { sut.getDatasets() }
+        TranslationAssert.assertThatThrownBy { sut.getDatasets("input") }
             .isInstanceOf(AdrException::class.java)
             .matches { (it as AdrException).httpStatus == HttpStatus.BAD_REQUEST }
             .hasTranslatedMessage("Cannot fetch datasets from the ADR as you do not yet have an " +
@@ -392,7 +420,7 @@ class ADRControllerTests : HintrControllerTests()
             mockSession,
             mock(),
             mock())
-        val result = sut.getReleasesWithResource("1234", "outputZip")
+        val result = sut.getReleases("1234", "output")
         val data = objectMapper.readTree(result.body!!)["data"]
         assertThat(data.isArray).isTrue
         assertThat(data.count()).isEqualTo(1)
