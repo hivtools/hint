@@ -99,9 +99,10 @@ describe("ADR dataset-related actions", () => {
 
         await adrActions.getReleases({commit, rootState} as any, {id: "antarctica-country-estimates-2022-1", datasetType: AdrDatasetType.Input});
         expect(commit.mock.calls[0][0].type).toBe(ADRMutation.SetReleases)
-        expect(commit.mock.calls[0][0].payload.length).toBeGreaterThan(0);
-        expect(commit.mock.calls[0][0].payload[0].name).toBeTruthy();
-        expect(commit.mock.calls[0][0].payload[0].id).toBeTruthy();
+        expect(commit.mock.calls[0][0].payload.datasetType).toBe(AdrDatasetType.Input);
+        expect(commit.mock.calls[0][0].payload.data.length).toBeGreaterThan(0);
+        expect(commit.mock.calls[0][0].payload.data[0].name).toBeTruthy();
+        expect(commit.mock.calls[0][0].payload.data[0].id).toBeTruthy();
     });
 
     it("can get userCanUpload when selected dataset organisation is set", async () => {
