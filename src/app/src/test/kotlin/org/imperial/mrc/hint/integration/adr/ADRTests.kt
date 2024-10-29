@@ -20,7 +20,7 @@ import org.springframework.util.LinkedMultiValueMap
 class ADRTests : SecureIntegrationTests()
 {
     val ADR_KEY = "4c69b103-4532-4b30-8a37-27a15e56c0bb"
-    val ADR_TEST_DATASET_NAME = "antarctica-country-estimates-2024-1-2"
+    val ADR_TEST_DATASET_NAME = "antarctica-country-estimates-2025"
 
     @ParameterizedTest
     @EnumSource(IsAuthorized::class)
@@ -187,14 +187,17 @@ class ADRTests : SecureIntegrationTests()
         }
     }
 
-    @Test
-    fun `can submit rehydrate from ADR output zip`()
+    @ParameterizedTest
+    @EnumSource(IsAuthorized::class)
+    fun `can submit rehydrate from ADR output zip`(isAuthorized: IsAuthorized)
     {
-        val resourceId = extractResourceId(IsAuthorized.TRUE, "inputs-unaids-naomi-output-zip")
-        val file = extractUrl(IsAuthorized.TRUE, "inputs-unaids-naomi-output-zip")
-        val postEntity = getPostEntityWithUrl(AdrResource(file, getDatasetId(IsAuthorized.TRUE), resourceId))
-        val result = testRestTemplate.postForEntity<String>("/rehydrate/submit/adr", postEntity)
-        assertSuccess(result, "ProjectRehydrateSubmitResponse")
+        if (isAuthorized == IsAuthorized.TRUE) {
+            val resourceId = extractResourceId(isAuthorized, "inputs-unaids-naomi-output-zip")
+            val file = extractUrl(isAuthorized, "inputs-unaids-naomi-output-zip")
+            val postEntity = getPostEntityWithUrl(AdrResource(file, getDatasetId(isAuthorized), resourceId))
+            val result = testRestTemplate.postForEntity<String>("/rehydrate/submit/adr", postEntity)
+            assertSuccess(result, "ProjectRehydrateSubmitResponse")
+        }
     }
 
     @Test
@@ -366,7 +369,7 @@ class ADRTests : SecureIntegrationTests()
         return if (isAuthorized == IsAuthorized.TRUE)
         {
             testRestTemplate.postForEntity<String>("/adr/key", getPostEntityWithKey())
-            val resultWithResources = testRestTemplate.getForEntity<String>("/adr/datasets?showInaccessible=false")
+            val resultWithResources = testRestTemplate.getForEntity<String>("/adr/datasets?type=input&showInaccessible=false")
             val data = ObjectMapper().readTree(resultWithResources.body!!)["data"]
             val dataset = data.find { it["name"].textValue() == ADR_TEST_DATASET_NAME }
             val resource = dataset!!["resources"].find { it["resource_type"].textValue() == type }
@@ -406,7 +409,7 @@ class ADRTests : SecureIntegrationTests()
     private fun getDatasets(isAuthorized: IsAuthorized, type: String): ResponseEntity<String>
     {
         testRestTemplate.postForEntity<String>("/adr/key", getPostEntityWithKey())
-        val datasets = testRestTemplate.getForEntity<String>("/adr/datasets?type=${type}")
+        val datasets = testRestTemplate.getForEntity<String>("/adr/datasets?type=${type}&")
 
         assertSecureWithSuccess(isAuthorized, datasets, null)
 

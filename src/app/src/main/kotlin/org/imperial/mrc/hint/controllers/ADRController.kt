@@ -111,7 +111,6 @@ class ADRController(private val encryption: Encryption,
 
         val packageTypeQuery = packageTypes.joinToString(" OR ")
         var url = "package_search?q=type:(${packageTypeQuery})&rows=$MAX_DATASETS&include_private=true"
-        print(url)
         url = if (showInaccessible)
         {
             // this flag is used for testing but will never
