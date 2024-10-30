@@ -10,14 +10,12 @@ export enum AdrDatasetType {
     Output = "output"
 }
 
-export const outputZipResourceId = "outputZip"
-
 export const getAdrDatasetUrl = (datasetType: AdrDatasetType): string => {
     switch (datasetType) {
         case AdrDatasetType.Input:
-            return "/adr/datasets/";
+            return `/adr/datasets?type=${AdrDatasetType.Input}`;
         case AdrDatasetType.Output:
-            return `/adr/datasetsWithResource?resourceType=${outputZipResourceId}`;
+            return `/adr/datasets?type=${AdrDatasetType.Output}`;
         default:
             throw new Error(`Unexpected value for AdrDatasetType: ${datasetType}`);
     }
@@ -28,7 +26,7 @@ export const getAdrReleaseUrl = (datasetType: AdrDatasetType, datasetId: string)
         case AdrDatasetType.Input:
             return `/adr/datasets/${datasetId}/releases/`;
         case AdrDatasetType.Output:
-            return `/adr/datasets/${datasetId}/releasesWithResource?resourceType=${outputZipResourceId}`;
+            return `/adr/datasets/${datasetId}/releases?type=${AdrDatasetType.Output}`;
         default:
             throw new Error(`Unexpected value for AdrDatasetType: ${datasetType}`);
     }

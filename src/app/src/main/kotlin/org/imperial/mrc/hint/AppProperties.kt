@@ -21,7 +21,8 @@ interface AppProperties
     val adrOutputZipSchema: String
     val adrOutputSummarySchema: String
     val adrOutputComparisonSchema: String
-    val adrDatasetSchema: String
+    val adrDatasetsThisYearSchema: String
+    val adrDatasetsLastYearSchema: String
     val adrUrl: String
     val apiUrl: String
     val applicationTitle: String
@@ -68,7 +69,8 @@ class ConfiguredAppProperties(
     final override val adrOutputZipSchema = propString("adr_output_zip_schema")
     final override val adrOutputSummarySchema = propString("adr_output_summary_schema")
     final override val adrOutputComparisonSchema = propString("adr_output_comparison_schema")
-    final override val adrDatasetSchema = propString("adr_schema")
+    final override val adrDatasetsThisYearSchema = propString("adr_schema_this_year")
+    final override val adrDatasetsLastYearSchema = propString("adr_schema_last_year")
     final override val adrUrl = propString("adr_url")
     final override val apiUrl = propString("hintr_url")
     final override val applicationTitle = propString("application_title")

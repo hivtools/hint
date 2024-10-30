@@ -52,7 +52,8 @@ class ADRPushControllerTests
 
     private val mockProperties = mock<AppProperties> {
         on { adrUrl } doReturn "adr-url"
-        on { adrDatasetSchema } doReturn "adr-schema"
+        on { adrDatasetsThisYearSchema } doReturn "adr-schema-current"
+        on { adrDatasetsLastYearSchema } doReturn "adr-schema-previous"
         on { adrANCSchema } doReturn "adr-anc"
         on { adrARTSchema } doReturn "adr-art"
         on { adrPJNZSchema } doReturn "adr-pjnz"
