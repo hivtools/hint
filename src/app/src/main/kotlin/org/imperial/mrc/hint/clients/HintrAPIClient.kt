@@ -40,6 +40,7 @@ interface HintrAPIClient
     fun validateModelOptions(data: Map<String, VersionFileWithPath>, modelRunOptions: ModelOptions):
             ResponseEntity<String>
     fun getInputTimeSeriesChartData(type: String, files: Map<String, VersionFileWithPath>): ResponseEntity<String>
+    fun getInputComparisonChartData(files: Map<String, VersionFileWithPath>): ResponseEntity<String>
     fun get(url: String): ResponseEntity<String>
     fun downloadOutputSubmit(
         type: String,
@@ -265,5 +266,13 @@ class HintrFuelAPIClient(
                 mapOf("data" to files))
 
         return postJson("chart-data/input-time-series/$type", json)
+    }
+
+    override fun getInputComparisonChartData(files: Map<String, VersionFileWithPath>)
+            : ResponseEntity<String>
+    {
+        val json = objectMapper.writeValueAsString(files)
+
+        return postJson("chart-data/input-comparison", json)
     }
 }

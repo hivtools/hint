@@ -183,4 +183,13 @@ class HintrApiClientTests
         val sut = HintrFuelAPIClient(ConfiguredAppProperties(), ObjectMapper())
         Assertions.assertThat(sut.httpRequestHeaders()).isEmpty()
     }
+
+    @Test
+    fun `can get input comparison chart data`()
+    {
+        val sut = HintrFuelAPIClient(ConfiguredAppProperties(), ObjectMapper())
+        val result = sut.getInputComparisonChartData(emptyMap())
+        assertThat(result.statusCodeValue).isEqualTo(400)
+        JSONValidator().validateError(result.body!!, "INVALID_INPUT")
+    }
 }

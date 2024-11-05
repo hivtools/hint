@@ -8,7 +8,7 @@ import org.springframework.boot.test.web.client.getForEntity
 import org.springframework.boot.test.web.client.postForEntity
 import org.springframework.http.HttpStatus
 
-class ChartDataTests :  SecureIntegrationTests()
+class ChartDataTests : SecureIntegrationTests()
 {
     @BeforeEach
     fun setup()
@@ -17,7 +17,8 @@ class ChartDataTests :  SecureIntegrationTests()
         testRestTemplate.getForEntity<String>("/")
         val shapePostEntity = getTestEntity("malawi.geojson")
         testRestTemplate.postForEntity<String>("/baseline/shape/", shapePostEntity)
-
+        val pjnzPostEntity = getTestEntity("Malawi2019.PJNZ")
+        testRestTemplate.postForEntity<String>("/baseline/pjnz/", pjnzPostEntity)
     }
 
     @Test
@@ -51,5 +52,42 @@ class ChartDataTests :  SecureIntegrationTests()
     {
         val responseEntity = testRestTemplate.getForEntity<String>("/chart-data/input-time-series/not-a-real-type")
         assertError(responseEntity, HttpStatus.BAD_REQUEST, "OTHER_ERROR", "Unknown input time series type.")
+    }
+
+    @Test
+    fun `can get input comparison chart data`()
+    {
+        val programmePostEntity = getTestEntity("programme.csv")
+        testRestTemplate.postForEntity<String>("/disease/programme/", programmePostEntity)
+
+        val responseEntity = testRestTemplate.getForEntity<String>("/chart-data/input-comparison")
+        assertSuccess(responseEntity, "InputComparisonResponse")
+    }
+
+    @Test
+    fun `can get input comparison chart data with only anc`()
+    {
+        val ancPostEntity = getTestEntity("anc.csv")
+        testRestTemplate.postForEntity<String>("/disease/anc/", ancPostEntity)
+
+        val responseEntity = testRestTemplate.getForEntity<String>("/chart-data/input-comparison")
+        assertSuccess(responseEntity, "InputComparisonResponse")
+    }
+
+    @Test
+    fun `can get input comparison chart data with only programme`()
+    {
+        val programmePostEntity = getTestEntity("programme.csv")
+        testRestTemplate.postForEntity<String>("/disease/programme/", programmePostEntity)
+
+        val responseEntity = testRestTemplate.getForEntity<String>("/chart-data/input-comparison")
+        assertSuccess(responseEntity, "InputComparisonResponse")
+    }
+
+    @Test
+    fun `can get error for input comparison chart with neither anc nor programme`()
+    {
+        val responseEntity = testRestTemplate.getForEntity<String>("/chart-data/input-comparison")
+        assertError(responseEntity, HttpStatus.BAD_REQUEST, "INVALID_INPUT")
     }
 }
