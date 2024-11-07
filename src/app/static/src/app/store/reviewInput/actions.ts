@@ -4,10 +4,13 @@ import {ReviewInputState} from "./reviewInput";
 import {ReviewInputMutation} from "./mutations";
 import {ReviewInputDataset} from "../../types";
 import {RootState} from "../../root";
+import {commitPlotDefaultSelections} from "../plotSelections/utils";
+import {InputComparisonResponse} from "../../generated";
 
 export interface ReviewInputActions {
     getDataset: (store: ActionContext<ReviewInputState, RootState>, payload: getDatasetPayload) => void
     refreshDatasets: (store: ActionContext<ReviewInputState, RootState>) => void
+    getInputComparisonDataset: (store: ActionContext<ReviewInputState, RootState>) => void
 }
 
 export interface getDatasetPayload {
@@ -48,5 +51,25 @@ export const actions: ActionTree<ReviewInputState, RootState> & ReviewInputActio
         getDatasetActions.push(dispatch("getDataset", {datasetId: "anc", url: "/chart-data/input-time-series/anc"}));
 
         await Promise.all(getDatasetActions);
-    }
+    },
+
+    async getInputComparisonDataset(context) {
+        console.log("fetching")
+        const {commit, rootState} = context;
+        commit({type: ReviewInputMutation.SetInputComparisonLoading, payload: true})
+        commit({type: ReviewInputMutation.SetInputComparisonError, payload: null});
+        await api<ReviewInputMutation, ReviewInputMutation>(context)
+            .withSuccess(ReviewInputMutation.SetInputComparisonData)
+            .withError(ReviewInputMutation.SetInputComparisonError)
+            .freezeResponse()
+            .get<InputComparisonResponse>("/chart-data/input-comparison")
+            .then(async (response) => {
+                    if (response) {
+                        const metadata = response.data.metadata;
+                        await commitPlotDefaultSelections(metadata, commit, rootState);
+                    }
+                    commit({type: ReviewInputMutation.SetInputComparisonLoading, payload: false});
+                }
+            )
+    },
 };

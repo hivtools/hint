@@ -1,11 +1,11 @@
 import {
     buildTooltipCallback,
     ErrorBars,
-    getErrorLineAnnotations,
+    getErrorLineAnnotations, inputComparisonPlotDataToChartData,
     plotDataToChartData
 } from "../../../../app/components/plots/bar/utils";
 import {PlotData} from "../../../../app/store/plotData/plotData";
-import {IndicatorMetadata, FilterOption} from "../../../../app/generated";
+import {IndicatorMetadata, FilterOption, InputComparisonData} from "../../../../app/generated";
 import {mockIndicatorMetadata} from "../../../mocks";
 
 describe("barchart utils work as expected", () => {
@@ -17,6 +17,12 @@ describe("barchart utils work as expected", () => {
         {area_id: "MWI_1_1", age_group: '0:4', sex: 'male', calendar_quarter: "1", indicator: "prevalence",  mode: null, mean: 0.35, upper: 0.40, lower: 0.34},
         {area_id: "MWI_1_1", age_group: '5:9', sex: 'male', calendar_quarter: "1", indicator: "prevalence",  mode: null, mean: 0.25, upper: 0.28, lower: 0.21},
     ];
+
+    const inputComparisonData: InputComparisonData = [
+        {indicator: "prevalence", area_name: "Malawi", year: 2020, group: "Adult Males", value_spectrum: 2, value_naomi: 3},
+        {indicator: "prevalence", area_name: "Malawi", year: 2021, group: "Adult Males", value_spectrum: null, value_naomi: 2},
+        {indicator: "prevalence", area_name: "Malawi", year: 2022, group: "Adult Males", value_spectrum: 5, value_naomi: 2}
+    ]
 
     const xAxis = "age_group";
     const xAxisSelections: FilterOption[] = [
@@ -49,7 +55,8 @@ describe("barchart utils work as expected", () => {
                 backgroundColor: "#111111",
                 data: [1, 2],
                 errorBars,
-                maxBarThickness
+                maxBarThickness,
+                tooltipExtraText: []
             },
         ],
         maxValuePlusError: 0.2
@@ -279,6 +286,47 @@ describe("barchart utils work as expected", () => {
                 }
             ],
             maxValuePlusError: 0.43
+        });
+    });
+
+    it("can get barchart data for input comparison", () => {
+        const xAxis = "year";
+        const xAxisSelections: FilterOption[] = [
+            {id: "2022", label: "2022"},
+            {id: "2020", label: "2020"},
+            {id: "2021", label: "2021"},
+        ];
+        const xAxisOptions: FilterOption[] = [
+            {id: "2020", label: "2020"},
+            {id: "2021", label: "2021"},
+            {id: "2022", label: "2022"},
+            {id: "2023", label: "2023"},
+        ];
+
+        const result = inputComparisonPlotDataToChartData(
+            inputComparisonData, xAxis, xAxisSelections, xAxisOptions);
+
+        expect(result).toStrictEqual({
+            labels: ["2020", "2021", "2022"],
+            datasets: [
+                {
+                    label: "Naomi",
+                    backgroundColor: "#e41a1c",
+                    data: [3, 2, 2],
+                    errorBars: {},
+                    tooltipExtraText: ["Difference from Spectrum 1", "", "Difference from Spectrum -3"],
+                    maxBarThickness
+                },
+                {
+                    label: "Spectrum",
+                    backgroundColor: "#377eb8",
+                    data: [2, null, 5],
+                    errorBars: {},
+                    tooltipExtraText: ["Difference from Naomi -1", "", "Difference from Naomi 3"],
+                    maxBarThickness
+                }
+            ],
+            maxValuePlusError: 0
         });
     });
 

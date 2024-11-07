@@ -1,5 +1,5 @@
 import {ChartData, ChartDataset, DefaultDataPoint} from "chart.js";
-import {IndicatorMetadata, FilterOption} from "../../../generated";
+import {IndicatorMetadata, FilterOption, InputComparisonData} from "../../../generated";
 import {AnnotationOptions} from "chartjs-plugin-annotation";
 import {formatOutput} from "../utils";
 import {PlotData} from "../../../store/plotData/plotData";
@@ -16,7 +16,10 @@ export interface ErrorBars {
     }
 }
 
-type ChartDataSetsWithErrors<Data = BarChartDefaultData> = BarChartDataset<Data> & { errorBars?: ErrorBars }
+type ChartDataSetsWithErrors<Data = BarChartDefaultData> = BarChartDataset<Data> & {
+    errorBars?: ErrorBars,
+    tooltipExtraText: string[]
+}
 
 type ChartDataWithErrors<Data = BarChartDefaultData> = Omit<ChartData<"bar", Data, string>, "datasets"> & { datasets: ChartDataSetsWithErrors<Data>[] }
 
@@ -87,13 +90,7 @@ export const plotDataToChartData = function (plotData: PlotData,
 
         let dataset = datasets.filter(d => (d as any).label == datasetLabel)[0] || null;
         if (!dataset) {
-            dataset = {
-                label: datasetLabel,
-                backgroundColor: colors[colorIdx],
-                data: [],
-                errorBars: {},
-                maxBarThickness: 175
-            };
+            dataset = initialBarChartDataset(datasetLabel, colors[colorIdx])
             datasets.push(dataset);
             colorIdx++;
         }
@@ -124,6 +121,57 @@ export const plotDataToChartData = function (plotData: PlotData,
 
     return {
         maxValuePlusError,
+        labels: orderedXAxisLabels,
+        datasets
+    }
+};
+
+const pushDatasetValue = (idx: number, dataset: any, value: number | null, tooltip: string) => {
+    while (dataset.data.length <= idx) {
+        dataset.data.push(0);
+        dataset.tooltipExtraText.push("");
+    }
+    dataset.data[idx] = value;
+    dataset.tooltipExtraText[idx] = tooltip;
+}
+
+export const inputComparisonPlotDataToChartData = function (plotData: InputComparisonData,
+                                                            xAxisId: string,
+                                                            xAxisSelections: FilterOption[],
+                                                            xAxisOptions: FilterOption[]): BarChartData {
+
+    const xAxisOrdering = xAxisOptions.map(opt => opt.id)
+    xAxisSelections.sort((a, b) => xAxisOrdering.indexOf(a.id) - xAxisOrdering.indexOf(b.id));
+    const orderedXAxisLabels = xAxisSelections.map(opt => opt.label);
+
+    const datasets: ChartDataSetsWithErrors[] = [
+        initialBarChartDataset("Naomi", colors[0]),
+        initialBarChartDataset("Spectrum", colors[1]),
+    ];
+
+    for (const row of plotData) {
+
+        const xAxisValue = row[xAxisId];
+        const xAxisLabel = xAxisSelections.find(opt => opt.id == xAxisValue)?.label || "";
+        if (!xAxisLabel) {
+            // If the label isn't in the list of labels which should be visible
+            // then ignore it
+            continue;
+        }
+
+        const spectrumValue = row["value_spectrum"]
+        const naomiValue = row["value_naomi"]
+        const difference = spectrumValue && naomiValue ? spectrumValue - naomiValue : null
+        const naomiValueTooltip = difference ? `Difference from Spectrum ${-difference}` : "";
+        const spectrumValueTooltip = difference ? `Difference from Naomi ${difference}` : "";
+
+        const labelIdx = orderedXAxisLabels.indexOf(xAxisLabel);
+        pushDatasetValue(labelIdx, datasets[0], naomiValue, naomiValueTooltip);
+        pushDatasetValue(labelIdx, datasets[1], spectrumValue, spectrumValueTooltip);
+    }
+
+    return {
+        maxValuePlusError: 0,
         labels: orderedXAxisLabels,
         datasets
     }
@@ -282,6 +330,17 @@ export const buildTooltipCallback = function(indicatorMetadata: IndicatorMetadat
         return label;
     }
 }
+
+const initialBarChartDataset = (datasetLabel: string, backgroundColor: string): ChartDataSetsWithErrors => {
+    return {
+        label: datasetLabel,
+        backgroundColor,
+        data: [],
+        maxBarThickness: 175,
+        errorBars: {},
+        tooltipExtraText: []
+    }
+};
 
 const colors = [
     //d3 chromatic schemeSet1

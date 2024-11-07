@@ -25,12 +25,15 @@
             </div>
             <time-series v-if="activePlot === 'timeSeries'" class="col-md-9"/>
             <choropleth class="col-md-9" v-if="activePlot === 'inputChoropleth'" :plot="'inputChoropleth'"/>
+            <barchart class="col-md-9" v-if="activePlot === 'inputComparisonBarchart'"
+                      :plot="'inputComparisonBarchart'"
+                      :show-error-bars="false"/>
         </div>
     </div>
 </template>
 
 <script lang="ts">
-import {computed, defineComponent, onBeforeMount, ref} from 'vue';
+import {computed, defineComponent, onBeforeMount, ref, watch} from 'vue';
 import {useStore} from 'vuex';
 import {RootState} from '../../root';
 import PlotControlSet from '../plots/PlotControlSet.vue';
@@ -41,9 +44,11 @@ import Choropleth from '../plots/choropleth/Choropleth.vue';
 import LoadingSpinner from "../LoadingSpinner.vue";
 import ErrorAlert from "../ErrorAlert.vue";
 import DownloadTimeSeries from "../plots/timeSeries/downloadTimeSeries/DownloadTimeSeries.vue";
+import Barchart from "../plots/bar/Barchart.vue";
 
 export default defineComponent({
     components: {
+        Barchart,
         DownloadTimeSeries,
         ErrorAlert,
         PlotControlSet,
@@ -56,7 +61,7 @@ export default defineComponent({
         const store = useStore<RootState>();
         const availablePlots = computed(() => {
             if (!store.state.surveyAndProgram.anc && !store.state.surveyAndProgram.program) {
-                return inputPlotNames.filter(name => name != "timeSeries")
+                return inputPlotNames.filter(name => name != "timeSeries" && name != "inputComparisonBarchart")
             } else {
                 return inputPlotNames
             }
@@ -81,6 +86,7 @@ export default defineComponent({
 
         onBeforeMount(async () => {
             await store.dispatch("metadata/getReviewInputMetadata", {}, { root: true });
+            await store.dispatch("reviewInput/getInputComparisonDataset", {}, { root: true });
         });
 
         return {

@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div style="min-height: 500px;">
         <Bar ref="chart" :data="chartData" :options="chartOptions"/>
         <div v-if="chartData.datasets.length == 0" id="noDataMessage" class="px-3 py-2 noDataMessage">
             <span class="lead">
@@ -109,7 +109,11 @@ export default defineComponent({
                 plugins: {
                     tooltip: {
                         callbacks: {
-                            label: buildTooltipCallback(indicatorMetadata.value, props.showErrorBars)
+                            label: buildTooltipCallback(indicatorMetadata.value, props.showErrorBars),
+                            afterBody: function(context: any) {
+                                const {dataset} = context[0];
+                                return dataset.tooltipExtraText[context[0].dataIndex];
+                            }
                         }
                     },
                     annotation: {},

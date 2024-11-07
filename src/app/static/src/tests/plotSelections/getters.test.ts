@@ -6,11 +6,14 @@ import {
     mockFilterSelection,
     mockModelCalibrateState,
     mockPlotSelectionsState,
-    mockRootState
+    mockRootState,
+    mockReviewInputState,
+    mockInputComparisonMetadata
 } from "../mocks";
 import {getters} from "../../app/store/plotSelections/getters";
 import {PlotName} from "../../app/store/plotSelections/plotSelections";
 import * as barUtils from "../../app/components/plots/bar/utils";
+import {InputComparisonData} from "../../app/generated";
 
 describe("plotSelections getters", () => {
     const filterSelections = [mockFilterSelection()]
@@ -36,6 +39,27 @@ describe("plotSelections getters", () => {
                 id: "x_axisControlSelection",
                 column_id: "xAxisFilterCol",
                 options: xAxisOptions
+            }
+        ]
+    });
+
+    const yearOptions = [
+        {
+            label: "2000",
+            id: "2000"
+        },
+        {
+            label: "2001",
+            id: "2001"
+        },
+    ]
+
+    const inputComparisonMetadata = mockInputComparisonMetadata({
+        filterTypes: [
+            {
+                id: "year",
+                column_id: "yearCol",
+                options: yearOptions
             }
         ]
     })
@@ -75,6 +99,16 @@ describe("plotSelections getters", () => {
             labels: ["A", "B"],
             datasets: []
         }});
+
+    const mockInputComparisonPlotDataToChartData = vi
+        .spyOn(barUtils, "inputComparisonPlotDataToChartData")
+        .mockImplementation((...args) => {
+            return {
+                maxValuePlusError: 1,
+                labels: ["A", "B"],
+                datasets: []
+            }
+        })
 
     beforeEach(() => {
         vi.resetAllMocks()
@@ -288,5 +322,44 @@ describe("plotSelections getters", () => {
         expect(mockPlotDataToChartData.mock.calls.length).toBe(1)
         expect(mockPlotDataToChartData.mock.calls[0][7]).toStrictEqual(null)
         expect(mockPlotDataToChartData.mock.calls[0][8]).toStrictEqual({})
+    });
+
+    it("barchartData calls input comparison data prep function", () => {
+        const rootState = mockRootState({
+            reviewInput: mockReviewInputState({
+                inputComparison: {
+                    loading: false,
+                    error: null,
+                    data: {
+                        data: [],
+                        metadata: inputComparisonMetadata,
+                        warnings: []
+                    }
+                }
+            })
+        });
+
+        const getter = getters.barchartData(mockPlotSelectionsState(), mockGetters, rootState, rootGetters);
+
+        const plotData: InputComparisonData = [
+            {indicator: "prevalence", area_name: "Malawi", year: 2020, group: "Adult Males", value_spectrum: 2, value_naomi: 3}
+        ]
+        const indicatorMetadata = mockIndicatorMetadata();
+        getter("inputComparisonBarchart", plotData, indicatorMetadata, filterSelections);
+
+        expect(mockInputComparisonPlotDataToChartData.mock.calls.length).toBe(1);
+        expect(mockInputComparisonPlotDataToChartData.mock.calls[0][0]).toStrictEqual(plotData);
+        expect(mockInputComparisonPlotDataToChartData.mock.calls[0][1]).toStrictEqual("year");
+        expect(mockInputComparisonPlotDataToChartData.mock.calls[0][2]).toStrictEqual([
+            {
+                "id": "yearFilterSelectionA",
+                "label": "Option A",
+            },
+            {
+                "id": "yearFilterSelectionB",
+                "label": "Option B",
+            },
+        ]);
+        expect(mockInputComparisonPlotDataToChartData.mock.calls[0][3]).toStrictEqual(yearOptions);
     });
 });
