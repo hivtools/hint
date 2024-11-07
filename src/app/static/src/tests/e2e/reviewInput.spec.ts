@@ -150,3 +150,31 @@ test("can view input map plot", async ({ projectPage }) => {
     // Then plot colours have been updated
     await expect(page.locator("#review-inputs")).toHaveScreenshot("input-map-custom-scale.png");
 });
+
+test("can view input comparison barchart", async ({ projectPage }) => {
+    const page = projectPage.page;
+    await projectPage.goToStep(Step.ReviewInputs);
+
+    // Given map plot is open
+    await page.getByText("Comparison barchart").click();
+
+    // Comparison barchart is rendered
+    await expect(page.locator("#review-loading")).toHaveCount(0, {timeout: 10000});
+    await expect(page.locator("canvas")).toBeVisible();
+    await expect(page.locator("#review-inputs")).toHaveScreenshot("input-comparison-landing.png");
+
+    // When I change plot type
+    await page.getByRole('button', { name: 'Both ART' }).click();
+    await page.locator('a').filter({ hasText: 'ANC known positive' }).click();
+
+    // and hover over bar
+    await page.locator('canvas').click({
+        position: {
+            x: 754,
+            y: 286
+        }
+    });
+
+    // Tooltip is shown
+    await expect(page.locator("#review-inputs")).toHaveScreenshot("input-comparison-tooltip.png");
+});

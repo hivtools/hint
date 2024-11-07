@@ -12,6 +12,7 @@
             <loading-spinner size="lg"/>
         </div>
         <error-alert v-else-if="!!error" :error="error!"></error-alert>
+        <error-alert v-else-if="!!inputComparisonError" :error="inputComparisonError!"></error-alert>
         <div class="row" v-else>
             <div class="mt-2 col-md-3">
                 <plot-control-set :plot="activePlot"/>
@@ -33,7 +34,7 @@
 </template>
 
 <script lang="ts">
-import {computed, defineComponent, onBeforeMount, ref, watch} from 'vue';
+import {computed, defineComponent, onBeforeMount, ref} from 'vue';
 import {useStore} from 'vuex';
 import {RootState} from '../../root';
 import PlotControlSet from '../plots/PlotControlSet.vue';
@@ -67,10 +68,14 @@ export default defineComponent({
             }
         })
         const activePlot = ref<InputPlotName>(availablePlots.value[0]);
-        const changePlot = (plot: InputPlotName) => {
+        const changePlot = async (plot: InputPlotName) => {
             activePlot.value = plot;
+            if (activePlot.value === "inputComparisonBarchart" && !store.state.reviewInput.inputComparison.data) {
+                await store.dispatch("reviewInput/getInputComparisonDataset", {}, {root: true});
+            }
         }
-        const loading = computed(() => store.state.reviewInput.loading);
+        const loading = computed(() => store.state.reviewInput.loading ||
+            store.state.reviewInput.inputComparison.loading);
 
         const plotDescription = computed(() => {
             if (activePlot.value === "timeSeries") {
@@ -84,9 +89,12 @@ export default defineComponent({
             return store.state.metadata.reviewInputMetadataError
         });
 
+        const inputComparisonError = computed(() => {
+            return store.state.reviewInput.inputComparison.error
+        });
+
         onBeforeMount(async () => {
             await store.dispatch("metadata/getReviewInputMetadata", {}, { root: true });
-            await store.dispatch("reviewInput/getInputComparisonDataset", {}, { root: true });
         });
 
         return {
@@ -95,7 +103,8 @@ export default defineComponent({
             changePlot,
             loading,
             plotDescription,
-            error
+            error,
+            inputComparisonError
         }
     }
 })

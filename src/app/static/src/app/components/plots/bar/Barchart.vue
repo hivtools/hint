@@ -199,8 +199,12 @@ export default defineComponent({
             }
         };
 
-        watch(filterSelections, updateChart, { immediate: true });
-        watch(displayErrorBars, updateChartOptions, { immediate: true });
+        // Data will already have been fetched for output plots, but if this is the
+        // input barchart we need to be careful and make sure we don't try and update chart or options too soon.
+        const dataAlreadyFetched = props.plot !== "inputComparisonBarchart" || !!store.state.reviewInput.inputComparison.data
+
+        watch(filterSelections, updateChart, { immediate: dataAlreadyFetched });
+        watch(displayErrorBars, updateChartOptions, { immediate: dataAlreadyFetched });
 
         return {
             chart,
