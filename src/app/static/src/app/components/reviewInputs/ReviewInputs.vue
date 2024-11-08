@@ -28,7 +28,8 @@
             <choropleth class="col-md-9" v-if="activePlot === 'inputChoropleth'" :plot="'inputChoropleth'"/>
             <barchart class="col-md-9" v-if="activePlot === 'inputComparisonBarchart'"
                       :plot="'inputComparisonBarchart'"
-                      :show-error-bars="false"/>
+                      :show-error-bars="false"
+                      style="min-height: 500px;"/>
         </div>
     </div>
 </template>
