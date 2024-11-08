@@ -1,7 +1,8 @@
 import {
     buildTooltipCallback,
     ErrorBars,
-    getErrorLineAnnotations, inputComparisonPlotDataToChartData,
+    getErrorLineAnnotations,
+    inputComparisonPlotDataToChartData,
     plotDataToChartData
 } from "../../../../app/components/plots/bar/utils";
 import {PlotData} from "../../../../app/store/plotData/plotData";

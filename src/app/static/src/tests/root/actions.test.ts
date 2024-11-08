@@ -13,7 +13,7 @@ import {
     mockProjectsState,
     mockRootState,
     mockStepperState,
-    mockSuccess, mockInputComparisonMetadata
+    mockSuccess,
 } from "../mocks";
 import {Language} from "../../app/store/translations/locales";
 import {currentHintVersion} from "../../app/hintVersion";

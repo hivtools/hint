@@ -11,7 +11,8 @@ import {
     getComparisonFilteredDataset,
     getOutputFilteredData,
     getTimeSeriesFilteredDataset,
-    getInputChoroplethFilteredData, getInputComparisonFilteredData
+    getInputChoroplethFilteredData,
+    getInputComparisonFilteredData
 } from "../../app/store/plotData/filter";
 import {mockBaselineState, mockPlotMetadataFrame, mockRootState, mockShapeResponse} from "../mocks";
 import {ShapeResponse} from "../../app/generated";

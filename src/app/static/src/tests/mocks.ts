@@ -25,7 +25,7 @@ import {
     ValidateBaselineResponse,
     VmmcResponse,
     Warning,
-    InputComparisonData, InputComparisonMetadata
+    InputComparisonMetadata
 } from "../app/generated";
 import {initialModelRunState, ModelRunState} from "../app/store/modelRun/modelRun";
 import {emptyState, RootState} from "../app/root";
