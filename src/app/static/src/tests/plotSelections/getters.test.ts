@@ -14,6 +14,7 @@ import {getters} from "../../app/store/plotSelections/getters";
 import {PlotName} from "../../app/store/plotSelections/plotSelections";
 import * as barUtils from "../../app/components/plots/bar/utils";
 import {InputComparisonData} from "../../app/generated";
+import {Language} from "../../app/store/translations/locales";
 
 describe("plotSelections getters", () => {
     const filterSelections = [mockFilterSelection()]
@@ -211,7 +212,7 @@ describe("plotSelections getters", () => {
 
         const plotData = mockCalibrateDataResponse();
         const indicatorMetadata = mockIndicatorMetadata();
-        getter("barchart", plotData, indicatorMetadata, filterSelections);
+        getter("barchart", plotData, indicatorMetadata, filterSelections, Language.en);
 
         expect(mockPlotDataToChartData.mock.calls.length).toBe(1)
         expect(mockPlotDataToChartData.mock.calls[0][0]).toStrictEqual(plotData)
@@ -256,7 +257,7 @@ describe("plotSelections getters", () => {
 
         const plotData = mockCalibrateDataResponse();
         const indicatorMetadata = mockIndicatorMetadata();
-        expect(getter("barchart", plotData, indicatorMetadata, [])).toStrictEqual({
+        expect(getter("barchart", plotData, indicatorMetadata, [], Language.en)).toStrictEqual({
             datasets: [],
             labels: [],
             maxValuePlusError: 0
@@ -280,7 +281,7 @@ describe("plotSelections getters", () => {
 
         const plotData = mockCalibrateDataResponse();
         const indicatorMetadata = mockIndicatorMetadata();
-        expect(getter("barchart", plotData, indicatorMetadata, [])).toStrictEqual({
+        expect(getter("barchart", plotData, indicatorMetadata, [], Language.en)).toStrictEqual({
             datasets: [],
             labels: [],
             maxValuePlusError: 0
@@ -317,7 +318,7 @@ describe("plotSelections getters", () => {
 
         const plotData = mockCalibrateDataResponse();
         const indicatorMetadata = mockIndicatorMetadata();
-        getter("calibrate", plotData, indicatorMetadata, filterSelections);
+        getter("calibrate", plotData, indicatorMetadata, filterSelections, Language.en);
 
         expect(mockPlotDataToChartData.mock.calls.length).toBe(1)
         expect(mockPlotDataToChartData.mock.calls[0][7]).toStrictEqual(null)
@@ -345,12 +346,13 @@ describe("plotSelections getters", () => {
             {indicator: "prevalence", area_name: "Malawi", year: 2020, group: "Adult Males", value_spectrum: 2, value_naomi: 3}
         ]
         const indicatorMetadata = mockIndicatorMetadata();
-        getter("inputComparisonBarchart", plotData, indicatorMetadata, filterSelections);
+        getter("inputComparisonBarchart", plotData, indicatorMetadata, filterSelections, Language.en);
 
         expect(mockInputComparisonPlotDataToChartData.mock.calls.length).toBe(1);
         expect(mockInputComparisonPlotDataToChartData.mock.calls[0][0]).toStrictEqual(plotData);
-        expect(mockInputComparisonPlotDataToChartData.mock.calls[0][1]).toStrictEqual("year");
-        expect(mockInputComparisonPlotDataToChartData.mock.calls[0][2]).toStrictEqual([
+        expect(mockInputComparisonPlotDataToChartData.mock.calls[0][1]).toStrictEqual(indicatorMetadata);
+        expect(mockInputComparisonPlotDataToChartData.mock.calls[0][2]).toStrictEqual("year");
+        expect(mockInputComparisonPlotDataToChartData.mock.calls[0][3]).toStrictEqual([
             {
                 "id": "yearFilterSelectionA",
                 "label": "Option A",
@@ -360,6 +362,7 @@ describe("plotSelections getters", () => {
                 "label": "Option B",
             },
         ]);
-        expect(mockInputComparisonPlotDataToChartData.mock.calls[0][3]).toStrictEqual(yearOptions);
+        expect(mockInputComparisonPlotDataToChartData.mock.calls[0][4]).toStrictEqual(yearOptions);
+        expect(mockInputComparisonPlotDataToChartData.mock.calls[0][5]).toStrictEqual(Language.en);
     });
 });

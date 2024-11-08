@@ -54,10 +54,11 @@ export default defineComponent({
         const chartData = ref<BarChartData<(number | null)[]>>({datasets:[], labels: [], maxValuePlusError: 0});
         const chartOptions = ref({});
         const displayErrorBars = ref<boolean>(false);
+        const currentLanguage = computed(() => store.state.language);
 
         const updateChart = () => {
             chartData.value = chartDataGetter(props.plot, plotData.value, indicatorMetadata.value,
-                    filterSelections.value)
+                    filterSelections.value, currentLanguage.value)
             if (props.showErrorBars) {
                 /*
                     We hide the error bars when data changes otherwise the animation can get quite wild
@@ -104,12 +105,18 @@ export default defineComponent({
             updateChartOptions();
         };
 
+        // We explicitly don't want to round the values in the input tooltips, we should
+        // show real values here. This is because users want to use these to compare with their
+        // input data
+        const roundTooltipValues = computed(() => props.plot !== "inputComparisonBarchart")
+
         const updateChartOptions = () => {
             const baseChartOptions = {
                 plugins: {
                     tooltip: {
                         callbacks: {
-                            label: buildTooltipCallback(indicatorMetadata.value, props.showErrorBars),
+                            label: buildTooltipCallback(indicatorMetadata.value, props.showErrorBars,
+                                roundTooltipValues.value),
                             afterBody: function(context: any) {
                                 const {dataset} = context[0];
                                 return dataset.tooltipExtraText[context[0].dataIndex];

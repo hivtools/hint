@@ -4,6 +4,7 @@ import {AnnotationOptions} from "chartjs-plugin-annotation";
 import {formatOutput} from "../utils";
 import {PlotData} from "../../../store/plotData/plotData";
 import {Dict} from "../../../types";
+import i18next from "i18next";
 
 type BarChartDataset<Data> = ChartDataset<"bar", Data>
 
@@ -136,9 +137,11 @@ const pushDatasetValue = (idx: number, dataset: any, value: number | null, toolt
 }
 
 export const inputComparisonPlotDataToChartData = function (plotData: InputComparisonData,
+                                                            indicatorMetadata: IndicatorMetadata,
                                                             xAxisId: string,
                                                             xAxisSelections: FilterOption[],
-                                                            xAxisOptions: FilterOption[]): BarChartData {
+                                                            xAxisOptions: FilterOption[],
+                                                            currentLanguage: string): BarChartData {
 
     const xAxisOrdering = xAxisOptions.map(opt => opt.id)
     xAxisSelections.sort((a, b) => xAxisOrdering.indexOf(a.id) - xAxisOrdering.indexOf(b.id));
@@ -148,6 +151,11 @@ export const inputComparisonPlotDataToChartData = function (plotData: InputCompa
         initialBarChartDataset("Naomi", colors[0]),
         initialBarChartDataset("Spectrum", colors[1]),
     ];
+
+    // We explicitly don't want to round the values in the input tooltips, we should
+    // show real values here. This is because users want to use these to compare with their
+    // input data
+    const formatCallback = getNumberFormatCallback(indicatorMetadata, false)
 
     for (const row of plotData) {
 
@@ -162,8 +170,14 @@ export const inputComparisonPlotDataToChartData = function (plotData: InputCompa
         const spectrumValue = row["value_spectrum"]
         const naomiValue = row["value_naomi"]
         const difference = spectrumValue && naomiValue ? spectrumValue - naomiValue : null
-        const naomiValueTooltip = difference ? `Difference from Spectrum ${-difference}` : "";
-        const spectrumValueTooltip = difference ? `Difference from Naomi ${difference}` : "";
+        const naomiValueTooltip = difference !== null ? i18next.t("inputComparisonTooltipDifferenceNaomi", {
+            difference: formatCallback(-difference),
+            lng: currentLanguage
+        }) : "";
+        const spectrumValueTooltip = difference !== null ? i18next.t("inputComparisonTooltipDifferenceSpectrum", {
+            difference: formatCallback(difference),
+            lng: currentLanguage
+        }) : "";
 
         const labelIdx = orderedXAxisLabels.indexOf(xAxisLabel);
         pushDatasetValue(labelIdx, datasets[0], naomiValue, naomiValueTooltip);
@@ -285,13 +299,19 @@ const getErrorLineConfig = function(
     }
 }
 
-export const buildTooltipCallback = function(indicatorMetadata: IndicatorMetadata, showErrorRange: boolean) {
-    const formatCallback = (value: number | string) => {
+const getNumberFormatCallback = function(indicatorMetadata: IndicatorMetadata, roundValue: boolean) {
+    return (value: number | string) => {
         return formatOutput(value,
             indicatorMetadata.format,
             indicatorMetadata.scale,
-            indicatorMetadata.accuracy)
+            indicatorMetadata.accuracy,
+            roundValue)
     }
+}
+
+export const buildTooltipCallback = function(indicatorMetadata: IndicatorMetadata, showErrorRange: boolean,
+                                             roundValues: boolean) {
+    const formatCallback = getNumberFormatCallback(indicatorMetadata, roundValues)
 
     // See https://www.chartjs.org/docs/latest/configuration/tooltip.html#tooltip-item-context for items
     // available on context

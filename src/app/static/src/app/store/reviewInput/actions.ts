@@ -54,7 +54,6 @@ export const actions: ActionTree<ReviewInputState, RootState> & ReviewInputActio
     },
 
     async getInputComparisonDataset(context) {
-        console.log("fetching")
         const {commit, rootState} = context;
         commit({type: ReviewInputMutation.SetInputComparisonLoading, payload: true})
         commit({type: ReviewInputMutation.SetInputComparisonError, payload: null});

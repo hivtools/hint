@@ -7,6 +7,7 @@ import {
 import {PlotData} from "../../../../app/store/plotData/plotData";
 import {IndicatorMetadata, FilterOption, InputComparisonData} from "../../../../app/generated";
 import {mockIndicatorMetadata} from "../../../mocks";
+import {Language} from "../../../../app/store/translations/locales";
 
 describe("barchart utils work as expected", () => {
     const indicator = mockIndicatorMetadata()
@@ -19,9 +20,10 @@ describe("barchart utils work as expected", () => {
     ];
 
     const inputComparisonData: InputComparisonData = [
-        {indicator: "prevalence", area_name: "Malawi", year: 2020, group: "Adult Males", value_spectrum: 2, value_naomi: 3},
-        {indicator: "prevalence", area_name: "Malawi", year: 2021, group: "Adult Males", value_spectrum: null, value_naomi: 2},
-        {indicator: "prevalence", area_name: "Malawi", year: 2022, group: "Adult Males", value_spectrum: 5, value_naomi: 2}
+        {indicator: "prevalence", area_name: "Malawi", year: 2020, group: "Adult Males", value_spectrum: 2001, value_naomi: 3000},
+        {indicator: "prevalence", area_name: "Malawi", year: 2021, group: "Adult Males", value_spectrum: null, value_naomi: 2000},
+        {indicator: "prevalence", area_name: "Malawi", year: 2022, group: "Adult Males", value_spectrum: 5001, value_naomi: 2000},
+        {indicator: "prevalence", area_name: "Malawi", year: 2023, group: "Adult Males", value_spectrum: 6000, value_naomi: 6000},
     ]
 
     const xAxis = "age_group";
@@ -79,6 +81,7 @@ describe("barchart utils work as expected", () => {
                         "0-4": {plus: 0.43, minus: 0.38},
                         "5-9": {plus: 0.24, minus: 0.16}
                     },
+                    tooltipExtraText: [],
                     maxBarThickness
                 },
                 {
@@ -89,6 +92,7 @@ describe("barchart utils work as expected", () => {
                         "0-4": {plus: 0.40, minus: 0.34},
                         "5-9": {plus: 0.28, minus: 0.21}
                     },
+                    tooltipExtraText: [],
                     maxBarThickness
                 }
             ],
@@ -161,6 +165,7 @@ describe("barchart utils work as expected", () => {
                     errorBars: {
                         "5-9": {plus: 0.24, minus: 0.16},
                     },
+                    tooltipExtraText: [],
                     maxBarThickness
                 }
             ],
@@ -272,6 +277,7 @@ describe("barchart utils work as expected", () => {
                         "Northern": {plus: 0.43, minus: 0.38},
                         "Central": {plus: 0.43, minus: 0.38},
                     },
+                    tooltipExtraText: [],
                     maxBarThickness
                 },
                 {
@@ -282,6 +288,7 @@ describe("barchart utils work as expected", () => {
                         "Northern": {plus: 0.24, minus: 0.16},
                         "Central": {plus: 0.24, minus: 0.16}
                     },
+                    tooltipExtraText: [],
                     maxBarThickness
                 }
             ],
@@ -295,39 +302,65 @@ describe("barchart utils work as expected", () => {
             {id: "2022", label: "2022"},
             {id: "2020", label: "2020"},
             {id: "2021", label: "2021"},
+            {id: "2023", label: "2023"},
         ];
         const xAxisOptions: FilterOption[] = [
             {id: "2020", label: "2020"},
             {id: "2021", label: "2021"},
             {id: "2022", label: "2022"},
             {id: "2023", label: "2023"},
+            {id: "2024", label: "2024"},
         ];
+        const indicator: IndicatorMetadata = {
+            indicator: "prevalence",
+            value_column: "mean",
+            indicator_column: "indicator",
+            indicator_value: "prevalence",
+            name: "Prevalence",
+            min: 0,
+            max: 1,
+            colour: "interpolateReds",
+            invert_scale: false,
+            format: "0,0",
+            scale: 1,
+            accuracy: null
+        };
 
         const result = inputComparisonPlotDataToChartData(
-            inputComparisonData, xAxis, xAxisSelections, xAxisOptions);
+            inputComparisonData, indicator, xAxis, xAxisSelections, xAxisOptions, Language.en);
 
         expect(result).toStrictEqual({
-            labels: ["2020", "2021", "2022"],
+            labels: ["2020", "2021", "2022", "2023"],
             datasets: [
                 {
                     label: "Naomi",
                     backgroundColor: "#e41a1c",
-                    data: [3, 2, 2],
+                    data: [3000, 2000, 2000, 6000],
                     errorBars: {},
-                    tooltipExtraText: ["Difference from Spectrum 1", "", "Difference from Spectrum -3"],
+                    tooltipExtraText: ["Difference from Spectrum: 999", "", "Difference from Spectrum: -3,001",
+                        "Difference from Spectrum: 0"],
                     maxBarThickness
                 },
                 {
                     label: "Spectrum",
                     backgroundColor: "#377eb8",
-                    data: [2, null, 5],
+                    data: [2001, null, 5001, 6000],
                     errorBars: {},
-                    tooltipExtraText: ["Difference from Naomi -1", "", "Difference from Naomi 3"],
+                    tooltipExtraText: ["Difference from Naomi: -999", "", "Difference from Naomi: 3,001",
+                        "Difference from Naomi: 0"],
                     maxBarThickness
-                }
+                },
             ],
             maxValuePlusError: 0
         });
+
+        // Tooltip text is translated
+        const resultFr = inputComparisonPlotDataToChartData(
+            inputComparisonData, indicator, xAxis, xAxisSelections, xAxisOptions, Language.fr);
+
+        expect(resultFr.datasets[0].tooltipExtraText)
+            .toStrictEqual(["Différence avec le Spectrum: 999", "", "Différence avec le Spectrum: -3,001",
+                "Différence avec le Spectrum: 0"],)
     });
 
     it("computes correct error line annotations", async () => {
@@ -449,7 +482,7 @@ describe("barchart utils work as expected", () => {
         const metadata = mockIndicatorMetadata({
             format: "0.0"
         });
-        const tooltipCallback = buildTooltipCallback(metadata, true);
+        const tooltipCallback = buildTooltipCallback(metadata, true, true);
 
         let renderedLabel = tooltipCallback({
             datasetIndex: 0,
@@ -465,11 +498,36 @@ describe("barchart utils work as expected", () => {
         expect(renderedLabel).toBe("dataset1: 2.0 (1.9 - 2.1)");
     });
 
+    it("tooltip label callback can skip rounding", async () => {
+        const metadata = mockIndicatorMetadata({
+            accuracy: 100,
+            format: "0,0"
+        });
+        const tooltipCallback = buildTooltipCallback(metadata, true, false);
+        const errorBars: ErrorBars = {
+            "group1": {plus: 100053, minus: 9999},
+            "group2": {plus: 210002, minus: 19231}
+        };
+
+        let renderedLabel = tooltipCallback({
+            datasetIndex: 0,
+            raw: 200001,
+            label: "group2",
+            dataset: {
+                label: "dataset1",
+                backgroundColor: "#111111",
+                data: [100001, 200001],
+                errorBars: errorBars
+            }
+        });
+        expect(renderedLabel).toBe("dataset1: 200,001 (19,231 - 210,002)");
+    });
+
     it("tooltip label callback does not render uncertainty ranges if given showErrors contains null values", async () => {
         const metadata = mockIndicatorMetadata({
             format: "0.0"
         });
-        const tooltipCallback = buildTooltipCallback(metadata, true);
+        const tooltipCallback = buildTooltipCallback(metadata, true, true);
 
         const nullErrorBars = {
             "group1": { plus: null, minus: null },
@@ -494,7 +552,7 @@ describe("barchart utils work as expected", () => {
         const metadata = mockIndicatorMetadata({
             format: "0.0"
         });
-        const tooltipCallback = buildTooltipCallback(metadata, false);
+        const tooltipCallback = buildTooltipCallback(metadata, false, true);
 
         let renderedLabel = tooltipCallback({
             datasetIndex: 0,

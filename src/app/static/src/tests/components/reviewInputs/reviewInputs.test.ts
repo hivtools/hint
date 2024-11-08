@@ -23,6 +23,7 @@ import {shallowMountWithTranslate} from "../../testHelpers";
 import ErrorAlert from "../../../app/components/ErrorAlert.vue";
 import LoadingSpinner from "../../../app/components/LoadingSpinner.vue";
 import DownloadTimeSeries from "../../../app/components/plots/timeSeries/downloadTimeSeries/DownloadTimeSeries.vue";
+import Barchart from "../../../app/components/plots/bar/Barchart.vue";
 
 describe("Review inputs page", () => {
     const getWrapper = (store: Store<RootState>) => {
@@ -37,6 +38,7 @@ describe("Review inputs page", () => {
     };
 
     const mockGetReviewInputMetadata = vi.fn();
+    const mockGetInputComparisonDataset = vi.fn();
 
     const createStore = (sapState: SurveyAndProgramState, dataFetched: boolean = true, error: boolean = false) => {
         const store = new Vuex.Store({
@@ -47,6 +49,9 @@ describe("Review inputs page", () => {
                 },
                 reviewInput: {
                     namespaced: true,
+                    actions: {
+                        getInputComparisonDataset: mockGetInputComparisonDataset
+                    },
                     state: mockReviewInputState({loading: !dataFetched}),
                 },
                 metadata: {
@@ -108,25 +113,42 @@ describe("Review inputs page", () => {
         const wrapper = getWrapper(store);
 
         const plotTabs = wrapper.findAll(".nav-link");
-        expect(plotTabs.length).toBe(2);
+        expect(plotTabs.length).toBe(3);
         expect(plotTabs[0].classes()).contains("active");
         expect(plotTabs[1].classes()).not.contains("active");
+        expect(plotTabs[2].classes()).not.contains("active");
         expect(wrapper.findComponent(PlotControlSet).exists()).toBeTruthy();
         expect(wrapper.findComponent(FilterSet).exists()).toBeTruthy();
         expect(wrapper.findComponent(TimeSeries).exists()).toBeTruthy();
         expect(wrapper.findComponent(DownloadTimeSeries).exists()).toBeTruthy();
         expect(wrapper.findComponent(Choropleth).exists()).toBeFalsy();
+        expect(wrapper.findComponent(Barchart).exists()).toBeFalsy();
         expect(wrapper.findComponent(LoadingSpinner).exists()).toBeFalsy();
         expect(wrapper.findComponent(ErrorAlert).exists()).toBeFalsy();
         expect(wrapper.find("#plot-description").text()).toContain("Values are shown in red when");
 
         plotTabs[1].trigger("click");
         await nextTick();
-        const plotTabsPostClick = wrapper.findAll(".nav-link");
+        let plotTabsPostClick = wrapper.findAll(".nav-link");
         expect(plotTabsPostClick[0].classes()).not.contains("active");
         expect(plotTabsPostClick[1].classes()).contains("active");
+        expect(plotTabsPostClick[2].classes()).not.contains("active");
         expect(wrapper.findComponent(TimeSeries).exists()).toBeFalsy();
         expect(wrapper.findComponent(Choropleth).exists()).toBeTruthy();
+        expect(wrapper.findComponent(Barchart).exists()).toBeFalsy();
+        expect(wrapper.findComponent(LoadingSpinner).exists()).toBeFalsy();
+        expect(wrapper.findComponent(ErrorAlert).exists()).toBeFalsy();
+        expect(wrapper.find("#plot-description").exists()).toBeFalsy();
+
+        plotTabs[2].trigger("click");
+        await nextTick();
+        plotTabsPostClick = wrapper.findAll(".nav-link");
+        expect(plotTabsPostClick[0].classes()).not.contains("active");
+        expect(plotTabsPostClick[1].classes()).not.contains("active");
+        expect(plotTabsPostClick[2].classes()).contains("active");
+        expect(wrapper.findComponent(TimeSeries).exists()).toBeFalsy();
+        expect(wrapper.findComponent(Choropleth).exists()).toBeFalsy();
+        expect(wrapper.findComponent(Barchart).exists()).toBeTruthy();
         expect(wrapper.findComponent(LoadingSpinner).exists()).toBeFalsy();
         expect(wrapper.findComponent(ErrorAlert).exists()).toBeFalsy();
         expect(wrapper.find("#plot-description").exists()).toBeFalsy();

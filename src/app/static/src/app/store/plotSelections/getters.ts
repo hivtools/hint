@@ -22,14 +22,15 @@ export const getters = {
 
     barchartData: (state: PlotSelectionsState, getters: any, rootState: RootState, rootGetters: any) =>
         (plotName: PlotName, plotData: PlotData, indicatorMetadata: IndicatorMetadata,
-         filterSelections: FilterSelection[]): BarChartData => {
+         filterSelections: FilterSelection[], currentLanguage: string): BarChartData => {
 
         const metadata = getMetadataFromPlotName(rootState, plotName);
         if (plotName == "inputComparisonBarchart") {
             const xAxisId = "year";
             const xAxisSelections = getters.filterSelectionFromId(plotName, xAxisId);
             const xAxisOptions = metadata.filterTypes.find(f => f.id === xAxisId)!.options;
-            return inputComparisonPlotDataToChartData(plotData as InputComparisonData, xAxisId, xAxisSelections, xAxisOptions)
+            return inputComparisonPlotDataToChartData(plotData as InputComparisonData, indicatorMetadata,
+                xAxisId, xAxisSelections, xAxisOptions, currentLanguage)
         }
         const disaggregateBy = getters.controlSelectionFromId(plotName, "disagg_by");
         const xAxis = getters.controlSelectionFromId(plotName, "x_axis");
