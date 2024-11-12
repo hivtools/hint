@@ -178,3 +178,23 @@ test("can view input comparison barchart", async ({ projectPage }) => {
     // Tooltip is shown
     await expect(page.locator("#review-inputs")).toHaveScreenshot("input-comparison-tooltip.png");
 });
+
+test("can view input comparison table", async ({ projectPage }) => {
+    const page = projectPage.page;
+    await projectPage.goToStep(Step.ReviewInputs);
+
+    // Given map plot is open
+    await page.getByText("Comparison table").click();
+
+    // Comparison table is rendered
+    await expect(page.locator("#review-loading")).toHaveCount(0, {timeout: 10000});
+    await expect(page.locator(".ag-root")).toBeVisible();
+    await expect(page.locator("#review-inputs")).toHaveScreenshot("input-comparison-table-landing.png");
+
+    // When I change indicator
+    await page.getByRole('button', { name: 'Number on ART' }).click();
+    await page.locator('a').filter({ hasText: 'ANC clients' }).click();
+
+    // Table has been updated
+    await expect(page.locator("#review-inputs")).toHaveScreenshot("input-comparison-table-anc.png");
+});
