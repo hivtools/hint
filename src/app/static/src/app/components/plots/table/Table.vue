@@ -1,14 +1,15 @@
 <template>
     <div>
         <table-reshape-data :data="plotData" :plot="plotName"/>
-        <download-button :name="'downloadFilteredData'"
+        <download-button v-if="downloadEnabled"
+                         :name="'downloadFilteredData'"
                          :disabled="false"
                          @click="handleDownload"/>
     </div>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent } from 'vue';
+import { computed, defineComponent, PropType } from 'vue';
 import { RootState } from '../../../root';
 import { useStore } from 'vuex';
 import { IndicatorMetadata } from '../../../generated';
@@ -32,14 +33,23 @@ export default defineComponent({
         TableReshapeData,
         DownloadButton
     },
-    setup() {
-        const plotName = "table" as PlotName;
+    props: {
+        plotName: {
+            type: String as PropType<PlotName>,
+            required: true
+        },
+        downloadEnabled : {
+            type: Boolean,
+            required: true
+        }
+    },
+    setup(props) {
         const store = useStore<RootState>();
-        const plotData = computed<PlotData>(() => store.state.plotData[plotName]);
-        const filterSelections = computed(() => store.state.plotSelections[plotName].filters);
+        const plotData = computed<PlotData>(() => store.state.plotData[props.plotName]);
+        const filterSelections = computed(() => store.state.plotSelections[props.plotName].filters);
         const indicatorMetadata = computed<IndicatorMetadata>(() => {
             const indicator = filterSelections.value.find(f => f.stateFilterId === "indicator")!.selection[0].id;
-            return getIndicatorMetadata(store, plotName, indicator);
+            return getIndicatorMetadata(store, props.plotName, indicator);
         });
         const getDownloadData = () => {
             return plotData.value.map(d => {
@@ -70,7 +80,6 @@ export default defineComponent({
         };
         return {
             plotData,
-            plotName,
             handleDownload
         };
     }

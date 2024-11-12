@@ -7,7 +7,7 @@ import {
 } from "../../../../app/components/plots/bar/utils";
 import {PlotData} from "../../../../app/store/plotData/plotData";
 import {IndicatorMetadata, FilterOption, InputComparisonData} from "../../../../app/generated";
-import {mockIndicatorMetadata} from "../../../mocks";
+import {mockIndicatorMetadata, mockInputComparisonData} from "../../../mocks";
 import {Language} from "../../../../app/store/translations/locales";
 
 describe("barchart utils work as expected", () => {
@@ -20,12 +20,7 @@ describe("barchart utils work as expected", () => {
         {area_id: "MWI_1_1", age_group: '5:9', sex: 'male', calendar_quarter: "1", indicator: "prevalence",  mode: null, mean: 0.25, upper: 0.28, lower: 0.21},
     ];
 
-    const inputComparisonData: InputComparisonData = [
-        {indicator: "prevalence", area_name: "Malawi", year: 2020, group: "Adult Males", value_spectrum: 2001, value_naomi: 3000},
-        {indicator: "prevalence", area_name: "Malawi", year: 2021, group: "Adult Males", value_spectrum: null, value_naomi: 2000},
-        {indicator: "prevalence", area_name: "Malawi", year: 2022, group: "Adult Males", value_spectrum: 5001, value_naomi: 2000},
-        {indicator: "prevalence", area_name: "Malawi", year: 2023, group: "Adult Males", value_spectrum: 6000, value_naomi: 6000},
-    ]
+    const inputComparisonData = mockInputComparisonData();
 
     const xAxis = "age_group";
     const xAxisSelections: FilterOption[] = [
