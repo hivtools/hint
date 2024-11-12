@@ -483,7 +483,7 @@ describe("barchart utils work as expected", () => {
         const metadata = mockIndicatorMetadata({
             format: "0.0"
         });
-        const tooltipCallback = buildTooltipCallback(metadata, true, true);
+        const tooltipCallback = buildTooltipCallback(metadata, true);
 
         let renderedLabel = tooltipCallback({
             datasetIndex: 0,
@@ -499,36 +499,11 @@ describe("barchart utils work as expected", () => {
         expect(renderedLabel).toBe("dataset1: 2.0 (1.9 - 2.1)");
     });
 
-    it("tooltip label callback can skip rounding", async () => {
-        const metadata = mockIndicatorMetadata({
-            accuracy: 100,
-            format: "0,0"
-        });
-        const tooltipCallback = buildTooltipCallback(metadata, true, false);
-        const errorBars: ErrorBars = {
-            "group1": {plus: 100053, minus: 9999},
-            "group2": {plus: 210002, minus: 19231}
-        };
-
-        let renderedLabel = tooltipCallback({
-            datasetIndex: 0,
-            raw: 200001,
-            label: "group2",
-            dataset: {
-                label: "dataset1",
-                backgroundColor: "#111111",
-                data: [100001, 200001],
-                errorBars: errorBars
-            }
-        });
-        expect(renderedLabel).toBe("dataset1: 200,001 (19,231 - 210,002)");
-    });
-
     it("tooltip label callback does not render uncertainty ranges if given showErrors contains null values", async () => {
         const metadata = mockIndicatorMetadata({
             format: "0.0"
         });
-        const tooltipCallback = buildTooltipCallback(metadata, true, true);
+        const tooltipCallback = buildTooltipCallback(metadata, true);
 
         const nullErrorBars = {
             "group1": { plus: null, minus: null },
@@ -553,7 +528,7 @@ describe("barchart utils work as expected", () => {
         const metadata = mockIndicatorMetadata({
             format: "0.0"
         });
-        const tooltipCallback = buildTooltipCallback(metadata, false, true);
+        const tooltipCallback = buildTooltipCallback(metadata, false);
 
         let renderedLabel = tooltipCallback({
             datasetIndex: 0,

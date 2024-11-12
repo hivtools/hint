@@ -152,10 +152,7 @@ export const inputComparisonPlotDataToChartData = function (plotData: InputCompa
         initialBarChartDataset("Spectrum", colors[1]),
     ];
 
-    // We explicitly don't want to round the values in the input tooltips, we should
-    // show real values here. This is because users want to use these to compare with their
-    // input data
-    const formatCallback = getNumberFormatCallback(indicatorMetadata, false)
+    const formatCallback = getNumberFormatCallback(indicatorMetadata)
 
     for (const row of plotData) {
 
@@ -299,19 +296,17 @@ const getErrorLineConfig = function(
     }
 }
 
-const getNumberFormatCallback = function(indicatorMetadata: IndicatorMetadata, roundValue: boolean) {
+const getNumberFormatCallback = function(indicatorMetadata: IndicatorMetadata) {
     return (value: number | string) => {
         return formatOutput(value,
             indicatorMetadata.format,
             indicatorMetadata.scale,
-            indicatorMetadata.accuracy,
-            roundValue)
+            indicatorMetadata.accuracy)
     }
 }
 
-export const buildTooltipCallback = function(indicatorMetadata: IndicatorMetadata, showErrorRange: boolean,
-                                             roundValues: boolean) {
-    const formatCallback = getNumberFormatCallback(indicatorMetadata, roundValues)
+export const buildTooltipCallback = function(indicatorMetadata: IndicatorMetadata, showErrorRange: boolean) {
+    const formatCallback = getNumberFormatCallback(indicatorMetadata)
 
     // See https://www.chartjs.org/docs/latest/configuration/tooltip.html#tooltip-item-context for items
     // available on context

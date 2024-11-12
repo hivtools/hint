@@ -105,18 +105,12 @@ export default defineComponent({
             updateChartOptions();
         };
 
-        // We explicitly don't want to round the values in the input tooltips, we should
-        // show real values here. This is because users want to use these to compare with their
-        // input data
-        const roundTooltipValues = computed(() => props.plot !== "inputComparisonBarchart")
-
         const updateChartOptions = () => {
             const baseChartOptions = {
                 plugins: {
                     tooltip: {
                         callbacks: {
-                            label: buildTooltipCallback(indicatorMetadata.value, props.showErrorBars,
-                                roundTooltipValues.value),
+                            label: buildTooltipCallback(indicatorMetadata.value, props.showErrorBars),
                             afterBody: function(context: any) {
                                 const {dataset} = context[0];
                                 return dataset.tooltipExtraText[context[0].dataIndex];
