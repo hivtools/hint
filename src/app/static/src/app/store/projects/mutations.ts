@@ -18,6 +18,7 @@ export enum ProjectsMutations {
     CloningProject = "CloningProject",
     SetCurrentProject = "SetCurrentProject",
     SetAdrRehydrateOutputZip = "SetAdrRehydrateOutputZip",
+    SetLoadingProject = "SetLoadingProject",
 }
 
 export const mutations: MutationTree<ProjectsState> = {
@@ -79,5 +80,9 @@ export const mutations: MutationTree<ProjectsState> = {
     },
     [ProjectsMutations.SetAdrRehydrateOutputZip](state: ProjectsState, action: PayloadWithType<DatasetResource>) {
         state.adrRehydrateOutputZip = action.payload;
-    }
+    },
+    [ProjectsMutations.SetLoadingProject](state: ProjectsState, action: PayloadWithType<boolean>) {
+        console.log("==== = setting project loading")
+        state.loadingProject = action.payload;
+    },
 };

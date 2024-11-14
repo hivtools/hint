@@ -17,6 +17,7 @@ export interface ProjectsState {
     cloneProjectError: Error | null,
     cloningProject: boolean
     adrRehydrateOutputZip: DatasetResource | null,
+    loadingProject: boolean
 }
 
 export const initialProjectsState = (): ProjectsState => {
@@ -31,7 +32,8 @@ export const initialProjectsState = (): ProjectsState => {
         versionTime: null,
         cloneProjectError: null,
         cloningProject: false,
-        adrRehydrateOutputZip: null
+        adrRehydrateOutputZip: null,
+        loadingProject: false
     }
 };
 
