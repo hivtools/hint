@@ -12,6 +12,7 @@
             <loading-spinner size="lg"/>
         </div>
         <error-alert v-else-if="!!error" :error="error!"></error-alert>
+        <error-alert v-else-if="!!inputComparisonError" :error="inputComparisonError!"></error-alert>
         <div class="row" v-else>
             <div class="mt-2 col-md-3">
                 <plot-control-set :plot="activePlot"/>
@@ -25,6 +26,10 @@
             </div>
             <time-series v-if="activePlot === 'timeSeries'" class="col-md-9"/>
             <choropleth class="col-md-9" v-if="activePlot === 'inputChoropleth'" :plot="'inputChoropleth'"/>
+            <barchart class="col-md-9" v-if="activePlot === 'inputComparisonBarchart'"
+                      :plot="'inputComparisonBarchart'"
+                      :show-error-bars="false"
+                      style="min-height: 500px;"/>
         </div>
     </div>
 </template>
@@ -41,9 +46,11 @@ import Choropleth from '../plots/choropleth/Choropleth.vue';
 import LoadingSpinner from "../LoadingSpinner.vue";
 import ErrorAlert from "../ErrorAlert.vue";
 import DownloadTimeSeries from "../plots/timeSeries/downloadTimeSeries/DownloadTimeSeries.vue";
+import Barchart from "../plots/bar/Barchart.vue";
 
 export default defineComponent({
     components: {
+        Barchart,
         DownloadTimeSeries,
         ErrorAlert,
         PlotControlSet,
@@ -56,16 +63,20 @@ export default defineComponent({
         const store = useStore<RootState>();
         const availablePlots = computed(() => {
             if (!store.state.surveyAndProgram.anc && !store.state.surveyAndProgram.program) {
-                return inputPlotNames.filter(name => name != "timeSeries")
+                return inputPlotNames.filter(name => name != "timeSeries" && name != "inputComparisonBarchart")
             } else {
                 return inputPlotNames
             }
         })
         const activePlot = ref<InputPlotName>(availablePlots.value[0]);
-        const changePlot = (plot: InputPlotName) => {
+        const changePlot = async (plot: InputPlotName) => {
             activePlot.value = plot;
+            if (activePlot.value === "inputComparisonBarchart" && !store.state.reviewInput.inputComparison.data) {
+                await store.dispatch("reviewInput/getInputComparisonDataset", {}, {root: true});
+            }
         }
-        const loading = computed(() => store.state.reviewInput.loading);
+        const loading = computed(() => store.state.reviewInput.loading ||
+            store.state.reviewInput.inputComparison.loading);
 
         const plotDescription = computed(() => {
             if (activePlot.value === "timeSeries") {
@@ -79,6 +90,10 @@ export default defineComponent({
             return store.state.metadata.reviewInputMetadataError
         });
 
+        const inputComparisonError = computed(() => {
+            return store.state.reviewInput.inputComparison.error
+        });
+
         onBeforeMount(async () => {
             await store.dispatch("metadata/getReviewInputMetadata", {}, { root: true });
         });
@@ -89,7 +104,8 @@ export default defineComponent({
             changePlot,
             loading,
             plotDescription,
-            error
+            error,
+            inputComparisonError
         }
     }
 })

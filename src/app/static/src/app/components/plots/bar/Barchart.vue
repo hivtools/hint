@@ -54,10 +54,11 @@ export default defineComponent({
         const chartData = ref<BarChartData<(number | null)[]>>({datasets:[], labels: [], maxValuePlusError: 0});
         const chartOptions = ref({});
         const displayErrorBars = ref<boolean>(false);
+        const currentLanguage = computed(() => store.state.language);
 
         const updateChart = () => {
             chartData.value = chartDataGetter(props.plot, plotData.value, indicatorMetadata.value,
-                    filterSelections.value)
+                    filterSelections.value, currentLanguage.value)
             if (props.showErrorBars) {
                 /*
                     We hide the error bars when data changes otherwise the animation can get quite wild
@@ -109,7 +110,11 @@ export default defineComponent({
                 plugins: {
                     tooltip: {
                         callbacks: {
-                            label: buildTooltipCallback(indicatorMetadata.value, props.showErrorBars)
+                            label: buildTooltipCallback(indicatorMetadata.value, props.showErrorBars),
+                            afterBody: function(context: any) {
+                                const {dataset} = context[0];
+                                return dataset.tooltipExtraText[context[0].dataIndex];
+                            }
                         }
                     },
                     annotation: {},
@@ -195,8 +200,12 @@ export default defineComponent({
             }
         };
 
-        watch(filterSelections, updateChart, { immediate: true });
-        watch(displayErrorBars, updateChartOptions, { immediate: true });
+        // Data will already have been fetched for output plots, but if this is the
+        // input barchart we need to be careful and make sure we don't try and update chart or options too soon.
+        const dataAlreadyFetched = props.plot !== "inputComparisonBarchart" || !!store.state.reviewInput.inputComparison.data
+
+        watch(filterSelections, updateChart, { immediate: dataAlreadyFetched });
+        watch(displayErrorBars, updateChartOptions, { immediate: dataAlreadyFetched });
 
         return {
             chart,

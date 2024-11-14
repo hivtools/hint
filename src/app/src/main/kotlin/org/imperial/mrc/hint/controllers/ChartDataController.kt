@@ -27,4 +27,11 @@ class ChartDataController(val fileManager: FileManager, val apiClient: HintrAPIC
         val files = fileManager.getFiles(FileType.Shape, inputFileType)
         return apiClient.getInputTimeSeriesChartData(inputFileType.toString(), files)
     }
+
+    @GetMapping("/input-comparison")
+    fun inputComparison(): ResponseEntity<String>
+    {
+        val files = fileManager.getFiles(FileType.Shape, FileType.PJNZ, FileType.ANC, FileType.Programme)
+        return apiClient.getInputComparisonChartData(files)
+    }
 }

@@ -108,9 +108,9 @@ const namespaced = true;
 export const baseline = (existingState: Partial<RootState> | null): Module<BaselineState, RootState> => {
     return {
         namespaced,
-            state: {...initialBaselineState(), ...existingState && existingState.baseline},
-            getters,
-            actions,
-            mutations
+        state: {...initialBaselineState(), ...existingState && existingState.baseline},
+        getters,
+        actions,
+        mutations
     };
 };

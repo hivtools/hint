@@ -13,7 +13,7 @@ import {
     mockProjectsState,
     mockRootState,
     mockStepperState,
-    mockSuccess
+    mockSuccess,
 } from "../mocks";
 import {Language} from "../../app/store/translations/locales";
 import {currentHintVersion} from "../../app/hintVersion";
@@ -473,20 +473,25 @@ describe("root actions", () => {
                     status: {
                         done: true
                     } as any
+                }),
+                reviewInput: mockReviewInputState({
+                    inputComparison: {
+                        loading: false,
+                        error: null,
+                        data: {} as any
+                    }
                 })
             });
         const rootGetters = {
             "baseline/complete": true,
-            "surveyAndProgramme/complete": true
+            "surveyAndProgram/complete": true
         };
         await actions.changeLanguage({commit, dispatch, rootState, rootGetters} as any, Language.fr);
 
         expectChangeLanguageMutations(commit);
 
         expect(dispatch.mock.calls.length).toBe(2);
-        expect(dispatch.mock.calls[0][0]).toStrictEqual("metadata/getReviewInputMetadata");
-        expect(dispatch.mock.calls[0][1]).toStrictEqual("MWI");
-
+        expect(dispatch.mock.calls[0][0]).toStrictEqual("reviewInput/getInputComparisonDataset");
         expect(dispatch.mock.calls[1][0]).toStrictEqual("modelCalibrate/getResult");
     });
 
@@ -503,7 +508,7 @@ describe("root actions", () => {
             });
         const rootGetters = {
             "baseline/complete": true,
-            "surveyAndProgramme/complete": true
+            "surveyAndProgram/complete": true
         };
         await actions.changeLanguage({commit, dispatch, rootState, rootGetters} as any, Language.fr);
 
@@ -513,13 +518,13 @@ describe("root actions", () => {
         expect(dispatch.mock.calls[0][0]).toStrictEqual("modelCalibrate/getResult");
     });
 
-    it("changeLanguage does not fetch review input metadata if baseline or survey not complete", async () => {
+    it("changeLanguage does not fetch input comparison data if baseline or survey not complete", async () => {
         const commit = vi.fn();
         const dispatch = vi.fn();
         const rootState = mockRootState();
         const rootGetters = {
             "baseline/complete": false,
-            "surveyAndProgramme/complete": true
+            "surveyAndProgram/complete": true
         };
         await actions.changeLanguage({commit, dispatch, rootState, rootGetters} as any, Language.fr);
 
@@ -529,12 +534,51 @@ describe("root actions", () => {
 
         const rootGetters2 = {
             "baseline/complete": true,
-            "surveyAndProgramme/complete": false
+            "surveyAndProgram/complete": false
         };
         await actions.changeLanguage({commit, dispatch, rootState, rootGetters2} as any, Language.fr);
 
         expectChangeLanguageMutations(commit);
 
+        expect(dispatch.mock.calls.length).toBe(0);
+    });
+
+    it("changeLanguage does not fetch input comparison data if baseline or survey not complete", async () => {
+        const commit = vi.fn();
+        const dispatch = vi.fn();
+        const rootState = mockRootState();
+        const rootGetters = {
+            "baseline/complete": false,
+            "surveyAndProgram/complete": true
+        };
+        await actions.changeLanguage({commit, dispatch, rootState, rootGetters} as any, Language.fr);
+
+        expectChangeLanguageMutations(commit);
+
+        expect(dispatch.mock.calls.length).toBe(0);
+
+        const rootGetters2 = {
+            "baseline/complete": true,
+            "surveyAndProgram/complete": false
+        };
+        await actions.changeLanguage({commit, dispatch, rootState, rootGetters2} as any, Language.fr);
+
+        expectChangeLanguageMutations(commit);
+
+        expect(dispatch.mock.calls.length).toBe(0);
+    });
+
+    it("changeLanguage does not fetch input comparison data if data has not previously been fetched", async () => {
+        const commit = vi.fn();
+        const dispatch = vi.fn();
+        const rootState = mockRootState();
+        const rootGetters = {
+            "baseline/complete": true,
+            "surveyAndProgram/complete": true
+        };
+        await actions.changeLanguage({commit, dispatch, rootState, rootGetters} as any, Language.fr);
+
+        expectChangeLanguageMutations(commit);
         expect(dispatch.mock.calls.length).toBe(0);
     });
 
@@ -548,19 +592,25 @@ describe("root actions", () => {
                     status: {
                         done: false
                     } as any
+                }),
+                reviewInput: mockReviewInputState({
+                    inputComparison: {
+                        loading: false,
+                        error: null,
+                        data: {} as any
+                    }
                 })
             });
         const rootGetters = {
             "baseline/complete": true,
-            "surveyAndProgramme/complete": true
+            "surveyAndProgram/complete": true
         };
         await actions.changeLanguage({commit, dispatch, rootState, rootGetters} as any, Language.fr);
 
         expectChangeLanguageMutations(commit);
 
         expect(dispatch.mock.calls.length).toBe(1);
-        expect(dispatch.mock.calls[0][0]).toStrictEqual("metadata/getReviewInputMetadata");
-        expect(dispatch.mock.calls[0][1]).toStrictEqual("MWI");
+        expect(dispatch.mock.calls[0][0]).toStrictEqual("reviewInput/getInputComparisonDataset");
     });
 
     it("changeLanguage refreshes reviewInput datasets, if any", async() => {
@@ -573,15 +623,14 @@ describe("root actions", () => {
         });
         const rootGetters = {
             "baseline/complete": true,
-            "surveyAndProgramme/complete": true
+            "surveyAndProgram/complete": true
         };
         await actions.changeLanguage({commit, dispatch, rootState, rootGetters} as any, Language.fr);
 
         expectChangeLanguageMutations(commit);
 
-        expect(dispatch.mock.calls.length).toBe(2);
-        expect(dispatch.mock.calls[0][0]).toStrictEqual("metadata/getReviewInputMetadata");
-        expect(dispatch.mock.calls[1][0]).toStrictEqual("reviewInput/refreshDatasets");
+        expect(dispatch.mock.calls.length).toBe(1);
+        expect(dispatch.mock.calls[0][0]).toStrictEqual("reviewInput/refreshDatasets");
     });
 
     it("changeLanguage fetches nothing if no relevant metadata to fetch", async () => {

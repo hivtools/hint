@@ -24,8 +24,9 @@ export const ChangeLanguageAction = async (context: ActionContext<RootState, Roo
 
     const actions: Promise<unknown>[] = [];
 
-    if (rootState.baseline?.iso3 && rootGetters["baseline/complete"] && rootGetters["surveyAndProgramme/complete"]) {
-        actions.push(dispatch("metadata/getReviewInputMetadata", rootState.baseline.iso3));
+    // Re-fetch input comparison data to get translated metadata if the data has previously been fetched
+    if (rootState.reviewInput.inputComparison.data !== null && rootGetters["baseline/complete"] && rootGetters["surveyAndProgram/complete"]) {
+        actions.push(dispatch("reviewInput/getInputComparisonDataset"));
     }
 
     if (rootState.modelCalibrate.status.done) {

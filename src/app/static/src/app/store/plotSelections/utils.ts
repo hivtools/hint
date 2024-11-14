@@ -13,6 +13,7 @@ import {
     getCalibrateFilteredDataset,
     getComparisonFilteredDataset,
     getInputChoroplethFilteredData,
+    getInputComparisonFilteredData,
     getOutputFilteredData,
     getTimeSeriesFilteredDataset
 } from "../plotData/filter";
@@ -125,6 +126,10 @@ export const getPlotData = async (payload: PlotSelectionUpdate, commit: Commit, 
         await getComparisonFilteredDataset(payload, commit, rootState);
     } else if (plotDataType === PlotDataType.InputChoropleth) {
         await getInputChoroplethFilteredData(payload, commit, rootState);
+    } else if (plotDataType == PlotDataType.InputComparison) {
+        await getInputComparisonFilteredData(payload, commit, rootState);
+    } else {
+        throw new Error("Unreachable, if seeing this you're missing clause for filtering a type of plot data.")
     }
 }
 

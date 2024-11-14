@@ -24,7 +24,8 @@ import {
     SurveyResponse,
     ValidateBaselineResponse,
     VmmcResponse,
-    Warning
+    Warning,
+    InputComparisonMetadata
 } from "../app/generated";
 import {initialModelRunState, ModelRunState} from "../app/store/modelRun/modelRun";
 import {emptyState, RootState} from "../app/root";
@@ -565,6 +566,20 @@ export const mockCalibrateMetadataResponse = (props: Partial<CalibrateMetadataRe
                 plotSettings: []
             },
             bubble: {
+                plotSettings: []
+            },
+        },
+        warnings: [],
+        ...props
+    }
+}
+
+export const mockInputComparisonMetadata = (props: Partial<InputComparisonMetadata> = {}): InputComparisonMetadata => {
+    return {
+        filterTypes: [],
+        indicators: [],
+        plotSettingsControl: {
+            inputComparisonBarchart: {
                 plotSettings: []
             },
         },

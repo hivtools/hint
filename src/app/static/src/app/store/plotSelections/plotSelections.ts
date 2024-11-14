@@ -5,6 +5,7 @@ import {
     Error,
     FilterOption,
     FilterRef,
+    InputComparisonResponse,
     ReviewInputFilterMetadataResponse
 } from "../../generated";
 import { mutations } from "./mutations";
@@ -13,17 +14,18 @@ import { getters } from "./getters";
 
 export type OutputPlotName = keyof CalibrateMetadataResponse["plotSettingsControl"] |
     keyof ComparisonPlotResponse["metadata"]["plotSettingsControl"]
-export type InputPlotName = keyof ReviewInputFilterMetadataResponse["plotSettingsControl"]
+export type InputPlotName = keyof ReviewInputFilterMetadataResponse["plotSettingsControl"] |
+    keyof InputComparisonResponse["metadata"]["plotSettingsControl"]
 export type CalibratePlotName = keyof CalibratePlotResponse["metadata"]["plotSettingsControl"]
 
 export const outputPlotNames: OutputPlotName[] = ["choropleth", "barchart", "table", "comparison", "bubble"];
-export const inputPlotNames: InputPlotName[] = ["timeSeries", "inputChoropleth"];
+export const inputPlotNames: InputPlotName[] = ["timeSeries", "inputChoropleth", "inputComparisonBarchart"];
 export const calibratePlotName: CalibratePlotName = "calibrate";
 
 export type PlotName = OutputPlotName | InputPlotName | CalibratePlotName
 export const plotNames = [...outputPlotNames, ...inputPlotNames, calibratePlotName];
 
-export enum PlotDataType { Output, TimeSeries, InputChoropleth, Calibrate, Comparison}
+export enum PlotDataType { Output, TimeSeries, InputChoropleth, Calibrate, Comparison, InputComparison}
 
 export const plotNameToDataType: Record<PlotName, PlotDataType> = {
     barchart: PlotDataType.Output,
@@ -33,7 +35,8 @@ export const plotNameToDataType: Record<PlotName, PlotDataType> = {
     timeSeries: PlotDataType.TimeSeries,
     inputChoropleth: PlotDataType.InputChoropleth,
     calibrate: PlotDataType.Calibrate,
-    comparison: PlotDataType.Comparison
+    comparison: PlotDataType.Comparison,
+    inputComparisonBarchart: PlotDataType.InputComparison
 }
 
 export type FilterSelection = {
