@@ -10,12 +10,16 @@ import {
 import {formatOutput} from "../utils";
 import i18next from "i18next";
 import {Language} from "../../../store/translations/locales";
-import {CellClassParams, ValueFormatterParams, ValueGetterParams} from "ag-grid-community";
+import {ValueFormatterParams, ValueGetterParams} from "ag-grid-community";
+import DifferenceColumnRenderer from "./DifferenceColumnRenderer.vue";
 
 export interface TableHeaderDef {
     columnLabel: string
     columnField: string
 }
+
+export const DIFFERENCE_POSITIVE_COLOR = "rgb(55, 126, 184)";
+export const DIFFERENCE_NEGATIVE_COLOR = "rgb(228, 26, 28)";
 
 export const getTableValues = (plot: PlotName, disaggregateColumn: string, row: PlotData[0]) => {
     if (plot === "table") {
@@ -73,13 +77,12 @@ export const getColumnDefs = (plot: PlotName, indicatorMetadata: IndicatorMetada
                     valueFormatter: (params: ValueFormatterParams) => {
                         // Format actual values (including 0) but return null if data is missing
                         if (params.value != null) {
-
                             return formatOutput(params.value, indicatorMetadata.format, indicatorMetadata.scale, indicatorMetadata.accuracy)
                         } else {
                             return null
                         }
                     },
-                    cellClassRules: getCellClass(key)
+                    cellRenderer: key === "difference" ? DifferenceColumnRenderer : null
                 }
             })
             return {
@@ -113,13 +116,3 @@ const getFormat = (disaggregation: string, filterSelections: FilterSelection[], 
         return `${mean} (${lower} - ${upper})`;
     };
 };
-
-const getCellClass = (key: string) => {
-    if (key !== "difference") {
-        return null
-    }
-    return {
-        "grid-difference-positive": (params: CellClassParams) => params.value > 0,
-        "grid-difference-negative": (params: CellClassParams) => params.value < 0
-    }
-}

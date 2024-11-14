@@ -148,25 +148,3 @@ export default defineComponent({
     }
 });
 </script>
-
-<style>
-.grid-difference-positive:after {
-    content: "\25b2";
-    color: #00a99a;
-    margin-left: 0.2em;
-    display: inline;
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-}
-
-.grid-difference-negative:after {
-    content: "\25bc";
-    color: #f47e55;
-    margin-left: 0.2em;
-    display: inline;
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-}
-</style>

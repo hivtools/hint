@@ -12,6 +12,7 @@ import {
 } from "../../../../app/components/plots/table/utils";
 import {FilterSelection} from "../../../../app/store/plotSelections/plotSelections";
 import {Language} from "../../../../app/store/translations/locales";
+import DifferenceColumnRenderer from "../../../../app/components/plots/table/DifferenceColumnRenderer.vue";
 
 describe("getTableValues util works as expected", () => {
 
@@ -205,13 +206,12 @@ describe("getColumnDefs util works as expected", () => {
         expect(differenceColDef.valueGetter({data: values[1]})).toBeNull();
         expect(spectrumColDef.valueFormatter({value: null})).toBeNull();
 
-        // Difference column has correct styling
+        // Difference column has correct renderer
         // Hard to test actual class given to different values here, leave this for playwright tests
-        expect(Object.keys(differenceColDef.cellClassRules)).
-            toStrictEqual(["grid-difference-positive", "grid-difference-negative"]);
+        expect(differenceColDef.cellRenderer).toBe(DifferenceColumnRenderer);
 
         // Non-difference columns have null styling
-        expect(naomiColDef.cellClassRules).toBeNull();
+        expect(naomiColDef.cellRenderer).toBeNull();
     });
 
     it("returns only base columns if no columns selected", () => {
