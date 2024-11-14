@@ -6,7 +6,7 @@ import {
     mockFailure,
     mockLoadState,
     mockModelCalibrateState,
-    mockOptionsFormMeta, mockProjectsState,
+    mockOptionsFormMeta,
     mockRootState,
     mockSuccess
 } from "../mocks";
