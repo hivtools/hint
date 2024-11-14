@@ -63,7 +63,11 @@ class CalibrateDataService(
         filterQuery: FilterQuery): List<CalibrateResultRow>
     {
         val path = this.getCalibrateDataPath(id)
-        return calibrateDataRepository.getFilteredCalibrateData(path, filterQuery)
+
+        val data = logDuration({
+            calibrateDataRepository.getFilteredCalibrateData(path, filterQuery)
+        }, logger, "Fetched filtered calibrate data", mutableMapOf<String, String>())
+        return data
     }
 
     private fun getCalibrateDataPath(id: String): Path {
