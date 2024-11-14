@@ -17,6 +17,7 @@ export interface ProjectsState {
     cloneProjectError: Error | null,
     cloningProject: boolean
     adrRehydrateOutputZip: DatasetResource | null,
+    // If a project load is underway, blocks further mutations from updating local storage
     loadingProject: boolean
 }
 

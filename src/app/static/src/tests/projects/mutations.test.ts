@@ -142,5 +142,15 @@ describe("Projects mutations", () => {
         mutations[ProjectsMutations.SetAdrRehydrateOutputZip](state, {payload: dataset});
 
         expect(state.adrRehydrateOutputZip).toBe(dataset);
-    })
+    });
+
+    it("sets setLoadingProject", () => {
+        const state = mockProjectsState();
+
+        mutations[ProjectsMutations.SetLoadingProject](state, {payload: true});
+        expect(state.loadingProject).toBe(true);
+
+        mutations[ProjectsMutations.SetLoadingProject](state, {payload: false});
+        expect(state.loadingProject).toBe(false);
+    });
 });

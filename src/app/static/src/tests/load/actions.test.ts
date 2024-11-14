@@ -6,7 +6,7 @@ import {
     mockFailure,
     mockLoadState,
     mockModelCalibrateState,
-    mockOptionsFormMeta,
+    mockOptionsFormMeta, mockProjectsState,
     mockRootState,
     mockSuccess
 } from "../mocks";
@@ -136,11 +136,22 @@ describe("Load actions", () => {
         delete (window as any).location
         window.location = {reload: mockLocationReload} as any;
 
+        const commit = vi.fn();
         const testState = mockRootState();
-        await actions.updateStoreState({rootState} as any, testState);
+        await actions.updateStoreState({rootState, commit} as any, testState);
 
         expect(mockSaveToLocalStorage.mock.calls[0][0]).toStrictEqual(testState);
         expect(mockLocationReload.mock.calls.length).toBe(1);
+        expect(commit).toHaveBeenCalledTimes(1);
+        expect(commit).toHaveBeenLastCalledWith(
+            {
+                "payload": true,
+                "type": "projects/SetLoadingProject",
+            },
+            {
+                "root": true,
+            }
+        );
     });
 
     it("extracts calibrate options from dynamicFormMeta and saves and loads file state", async () => {
@@ -186,11 +197,22 @@ describe("Load actions", () => {
         // need to make it an older version to test backwards compatibility
         testState.version = "1.99.0";
 
-        await actions.updateStoreState({rootState} as any, testState);
+        const commit = vi.fn();
+        await actions.updateStoreState({rootState, commit} as any, testState);
 
         const root = mockSaveToLocalStorage.mock.calls[0][0] as RootState
         expect(root.modelCalibrate.options).toStrictEqual({"TestValue": 5, "TestValue2": 6});
         expect(mockLocationReload.mock.calls.length).toBe(1);
+        expect(commit).toHaveBeenCalledTimes(1);
+        expect(commit).toHaveBeenLastCalledWith(
+            {
+                "payload": true,
+                "type": "projects/SetLoadingProject",
+            },
+            {
+                "root": true,
+            }
+        );
     });
 
     it("does not extracts calibrate options from dynamicFormMeta if model has not been calibrated", async () => {
@@ -234,11 +256,22 @@ describe("Load actions", () => {
 
         testState.version = "1.99.0";
 
-        await actions.updateStoreState({rootState} as any, testState);
+        const commit = vi.fn();
+        await actions.updateStoreState({rootState, commit} as any, testState);
 
         const root = mockSaveToLocalStorage.mock.calls[0][0] as RootState
         expect(root.modelCalibrate.options).toStrictEqual({});
         expect(mockLocationReload.mock.calls.length).toBe(1);
+        expect(commit).toHaveBeenCalledTimes(1);
+        expect(commit).toHaveBeenLastCalledWith(
+            {
+                "payload": true,
+                "type": "projects/SetLoadingProject",
+            },
+            {
+                "root": true,
+            }
+        );
     });
 
     it("calibrate options returns empty object if no options to extract from dynamic form meta", async () => {
@@ -259,11 +292,22 @@ describe("Load actions", () => {
 
         testState.version = "1.99.0";
 
-        await actions.updateStoreState({rootState} as any, testState);
+        const commit = vi.fn();
+        await actions.updateStoreState({rootState, commit} as any, testState);
 
         const root = mockSaveToLocalStorage.mock.calls[0][0] as RootState
         expect(root.modelCalibrate.options).toStrictEqual({});
         expect(mockLocationReload.mock.calls.length).toBe(1);
+        expect(commit).toHaveBeenCalledTimes(1);
+        expect(commit).toHaveBeenLastCalledWith(
+            {
+                "payload": true,
+                "type": "projects/SetLoadingProject",
+            },
+            {
+                "root": true,
+            }
+        );
     });
 
     it("can prepare rehydrate and dispatches poll action", async () => {

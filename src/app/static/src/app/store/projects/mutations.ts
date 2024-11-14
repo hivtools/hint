@@ -82,7 +82,6 @@ export const mutations: MutationTree<ProjectsState> = {
         state.adrRehydrateOutputZip = action.payload;
     },
     [ProjectsMutations.SetLoadingProject](state: ProjectsState, action: PayloadWithType<boolean>) {
-        console.log("==== = setting project loading")
         state.loadingProject = action.payload;
     },
 };
