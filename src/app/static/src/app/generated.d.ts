@@ -1106,6 +1106,50 @@ export interface InputComparisonMetadata {
         hidden?: boolean;
       }[];
     };
+    inputComparisonTable: {
+      defaultEffect?: {
+        setFilters?: {
+          filterId: string;
+          label: string;
+          stateFilterId: string;
+        }[];
+        setMultiple?: string[];
+        setFilterValues?: {
+          [k: string]: string[];
+        };
+        setHidden?: string[];
+        customPlotEffect?: {
+          row: string[];
+          column: string[];
+        };
+      };
+      plotSettings: {
+        id: string;
+        label: string;
+        options: {
+          id: string;
+          label: string;
+          effect: {
+            setFilters?: {
+              filterId: string;
+              label: string;
+              stateFilterId: string;
+            }[];
+            setMultiple?: string[];
+            setFilterValues?: {
+              [k: string]: string[];
+            };
+            setHidden?: string[];
+            customPlotEffect?: {
+              row: string[];
+              column: string[];
+            };
+          };
+        }[];
+        value?: string;
+        hidden?: boolean;
+      }[];
+    };
   };
   [k: string]: any;
 }
@@ -1153,6 +1197,50 @@ export interface InputComparisonResponse {
     }[];
     plotSettingsControl: {
       inputComparisonBarchart: {
+        defaultEffect?: {
+          setFilters?: {
+            filterId: string;
+            label: string;
+            stateFilterId: string;
+          }[];
+          setMultiple?: string[];
+          setFilterValues?: {
+            [k: string]: string[];
+          };
+          setHidden?: string[];
+          customPlotEffect?: {
+            row: string[];
+            column: string[];
+          };
+        };
+        plotSettings: {
+          id: string;
+          label: string;
+          options: {
+            id: string;
+            label: string;
+            effect: {
+              setFilters?: {
+                filterId: string;
+                label: string;
+                stateFilterId: string;
+              }[];
+              setMultiple?: string[];
+              setFilterValues?: {
+                [k: string]: string[];
+              };
+              setHidden?: string[];
+              customPlotEffect?: {
+                row: string[];
+                column: string[];
+              };
+            };
+          }[];
+          value?: string;
+          hidden?: boolean;
+        }[];
+      };
+      inputComparisonTable: {
         defaultEffect?: {
           setFilters?: {
             filterId: string;

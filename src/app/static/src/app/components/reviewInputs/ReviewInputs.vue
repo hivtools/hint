@@ -30,6 +30,9 @@
                       :plot="'inputComparisonBarchart'"
                       :show-error-bars="false"
                       style="min-height: 500px;"/>
+            <Table class="col-md-9" v-if="activePlot === 'inputComparisonTable'"
+                    :plotName="'inputComparisonTable'"
+                    :download-enabled="false"/>
         </div>
     </div>
 </template>
@@ -40,13 +43,14 @@ import {useStore} from 'vuex';
 import {RootState} from '../../root';
 import PlotControlSet from '../plots/PlotControlSet.vue';
 import FilterSet from '../plots/FilterSet.vue';
-import {InputPlotName, inputPlotNames} from '../../store/plotSelections/plotSelections';
+import {InputPlotName, inputPlotNames, PlotName} from '../../store/plotSelections/plotSelections';
 import TimeSeries from "../plots/timeSeries/TimeSeries.vue";
 import Choropleth from '../plots/choropleth/Choropleth.vue';
 import LoadingSpinner from "../LoadingSpinner.vue";
 import ErrorAlert from "../ErrorAlert.vue";
 import DownloadTimeSeries from "../plots/timeSeries/downloadTimeSeries/DownloadTimeSeries.vue";
 import Barchart from "../plots/bar/Barchart.vue";
+import Table from "../plots/table/Table.vue";
 
 export default defineComponent({
     components: {
@@ -55,23 +59,26 @@ export default defineComponent({
         ErrorAlert,
         PlotControlSet,
         FilterSet,
+        Table,
         TimeSeries,
         Choropleth,
         LoadingSpinner
     },
     setup() {
         const store = useStore<RootState>();
+        const inputComparisonPlots: PlotName[] = ["inputComparisonBarchart", "inputComparisonTable"];
         const availablePlots = computed(() => {
             if (!store.state.surveyAndProgram.anc && !store.state.surveyAndProgram.program) {
-                return inputPlotNames.filter(name => name != "timeSeries" && name != "inputComparisonBarchart")
+                return inputPlotNames.filter(name => name != "timeSeries" && !inputComparisonPlots.includes(name))
             } else {
                 return inputPlotNames
             }
         })
         const activePlot = ref<InputPlotName>(availablePlots.value[0]);
+
         const changePlot = async (plot: InputPlotName) => {
             activePlot.value = plot;
-            if (activePlot.value === "inputComparisonBarchart" && !store.state.reviewInput.inputComparison.data) {
+            if (inputComparisonPlots.includes(activePlot.value) && !store.state.reviewInput.inputComparison.data) {
                 await store.dispatch("reviewInput/getInputComparisonDataset", {}, {root: true});
             }
         }

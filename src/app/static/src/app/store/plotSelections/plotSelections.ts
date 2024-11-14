@@ -19,7 +19,7 @@ export type InputPlotName = keyof ReviewInputFilterMetadataResponse["plotSetting
 export type CalibratePlotName = keyof CalibratePlotResponse["metadata"]["plotSettingsControl"]
 
 export const outputPlotNames: OutputPlotName[] = ["choropleth", "barchart", "table", "comparison", "bubble"];
-export const inputPlotNames: InputPlotName[] = ["timeSeries", "inputChoropleth", "inputComparisonBarchart"];
+export const inputPlotNames: InputPlotName[] = ["timeSeries", "inputChoropleth", "inputComparisonTable", "inputComparisonBarchart"];
 export const calibratePlotName: CalibratePlotName = "calibrate";
 
 export type PlotName = OutputPlotName | InputPlotName | CalibratePlotName
@@ -36,7 +36,8 @@ export const plotNameToDataType: Record<PlotName, PlotDataType> = {
     inputChoropleth: PlotDataType.InputChoropleth,
     calibrate: PlotDataType.Calibrate,
     comparison: PlotDataType.Comparison,
-    inputComparisonBarchart: PlotDataType.InputComparison
+    inputComparisonBarchart: PlotDataType.InputComparison,
+    inputComparisonTable: PlotDataType.InputComparison,
 }
 
 export type FilterSelection = {

@@ -24,6 +24,7 @@ import ErrorAlert from "../../../app/components/ErrorAlert.vue";
 import LoadingSpinner from "../../../app/components/LoadingSpinner.vue";
 import DownloadTimeSeries from "../../../app/components/plots/timeSeries/downloadTimeSeries/DownloadTimeSeries.vue";
 import Barchart from "../../../app/components/plots/bar/Barchart.vue";
+import Table from "../../../app/components/plots/table/Table.vue";
 
 describe("Review inputs page", () => {
     const getWrapper = (store: Store<RootState>) => {
@@ -113,15 +114,17 @@ describe("Review inputs page", () => {
         const wrapper = getWrapper(store);
 
         const plotTabs = wrapper.findAll(".nav-link");
-        expect(plotTabs.length).toBe(3);
+        expect(plotTabs.length).toBe(4);
         expect(plotTabs[0].classes()).contains("active");
         expect(plotTabs[1].classes()).not.contains("active");
         expect(plotTabs[2].classes()).not.contains("active");
+        expect(plotTabs[3].classes()).not.contains("active");
         expect(wrapper.findComponent(PlotControlSet).exists()).toBeTruthy();
         expect(wrapper.findComponent(FilterSet).exists()).toBeTruthy();
         expect(wrapper.findComponent(TimeSeries).exists()).toBeTruthy();
         expect(wrapper.findComponent(DownloadTimeSeries).exists()).toBeTruthy();
         expect(wrapper.findComponent(Choropleth).exists()).toBeFalsy();
+        expect(wrapper.findComponent(Table).exists()).toBeFalsy();
         expect(wrapper.findComponent(Barchart).exists()).toBeFalsy();
         expect(wrapper.findComponent(LoadingSpinner).exists()).toBeFalsy();
         expect(wrapper.findComponent(ErrorAlert).exists()).toBeFalsy();
@@ -133,8 +136,10 @@ describe("Review inputs page", () => {
         expect(plotTabsPostClick[0].classes()).not.contains("active");
         expect(plotTabsPostClick[1].classes()).contains("active");
         expect(plotTabsPostClick[2].classes()).not.contains("active");
+        expect(plotTabs[3].classes()).not.contains("active");
         expect(wrapper.findComponent(TimeSeries).exists()).toBeFalsy();
         expect(wrapper.findComponent(Choropleth).exists()).toBeTruthy();
+        expect(wrapper.findComponent(Table).exists()).toBeFalsy();
         expect(wrapper.findComponent(Barchart).exists()).toBeFalsy();
         expect(wrapper.findComponent(LoadingSpinner).exists()).toBeFalsy();
         expect(wrapper.findComponent(ErrorAlert).exists()).toBeFalsy();
@@ -146,8 +151,25 @@ describe("Review inputs page", () => {
         expect(plotTabsPostClick[0].classes()).not.contains("active");
         expect(plotTabsPostClick[1].classes()).not.contains("active");
         expect(plotTabsPostClick[2].classes()).contains("active");
+        expect(plotTabs[3].classes()).not.contains("active");
         expect(wrapper.findComponent(TimeSeries).exists()).toBeFalsy();
         expect(wrapper.findComponent(Choropleth).exists()).toBeFalsy();
+        expect(wrapper.findComponent(Table).exists()).toBeTruthy();
+        expect(wrapper.findComponent(Barchart).exists()).toBeFalsy();
+        expect(wrapper.findComponent(LoadingSpinner).exists()).toBeFalsy();
+        expect(wrapper.findComponent(ErrorAlert).exists()).toBeFalsy();
+        expect(wrapper.find("#plot-description").exists()).toBeFalsy();
+
+        plotTabs[3].trigger("click");
+        await nextTick();
+        plotTabsPostClick = wrapper.findAll(".nav-link");
+        expect(plotTabsPostClick[0].classes()).not.contains("active");
+        expect(plotTabsPostClick[1].classes()).not.contains("active");
+        expect(plotTabsPostClick[2].classes()).not.contains("active");
+        expect(plotTabs[3].classes()).contains("active");
+        expect(wrapper.findComponent(TimeSeries).exists()).toBeFalsy();
+        expect(wrapper.findComponent(Choropleth).exists()).toBeFalsy();
+        expect(wrapper.findComponent(Table).exists()).toBeFalsy();
         expect(wrapper.findComponent(Barchart).exists()).toBeTruthy();
         expect(wrapper.findComponent(LoadingSpinner).exists()).toBeFalsy();
         expect(wrapper.findComponent(ErrorAlert).exists()).toBeFalsy();

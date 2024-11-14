@@ -25,7 +25,8 @@ import {
     ValidateBaselineResponse,
     VmmcResponse,
     Warning,
-    InputComparisonMetadata
+    InputComparisonMetadata,
+    InputComparisonData
 } from "../app/generated";
 import {initialModelRunState, ModelRunState} from "../app/store/modelRun/modelRun";
 import {emptyState, RootState} from "../app/root";
@@ -246,7 +247,7 @@ export const mockFilterSelection = (props?: Partial<FilterSelection>): FilterSel
                 id: "detailOptA"
             },
             {
-                label: "Option A",
+                label: "Option B",
                 id: "detailOptB"
             }
         ],
@@ -287,6 +288,24 @@ export const mockReviewInputState =  (props?: Partial<ReviewInputState>): Review
         ...props
     }
 };
+
+export const mockInputComparisonState = (props?: Partial<ReviewInputState["inputComparison"]>): ReviewInputState["inputComparison"] => {
+    return {
+        loading: false,
+        error: null,
+        data: null,
+        ...props
+    }
+}
+
+export const mockInputComparisonData = (props?: Partial<InputComparisonData>): InputComparisonData => {
+    return [
+        {indicator: "prevalence", area_name: "Malawi", year: 2020, group: "Adult Males", value_spectrum: 2001, value_naomi: 3000},
+        {indicator: "prevalence", area_name: "Malawi", year: 2021, group: "Adult Males", value_spectrum: null, value_naomi: 2000},
+        {indicator: "prevalence", area_name: "Malawi", year: 2022, group: "Adult Females", value_spectrum: 5001, value_naomi: 2000},
+        {indicator: "prevalence", area_name: "Malawi", year: 2023, group: "Adult Females", value_spectrum: 6000, value_naomi: 6000},
+    ]
+}
 
 export const mockReviewInputDataset = (props?: Partial<ReviewInputDataset>): ReviewInputDataset => {
     return {
@@ -580,6 +599,9 @@ export const mockInputComparisonMetadata = (props: Partial<InputComparisonMetada
         indicators: [],
         plotSettingsControl: {
             inputComparisonBarchart: {
+                plotSettings: []
+            },
+            inputComparisonTable: {
                 plotSettings: []
             },
         },

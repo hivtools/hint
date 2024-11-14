@@ -14,12 +14,21 @@ export const getters = {
             const metadata = getMetadataFromPlotName(rootState, plotName);
             return metadata.filterTypes.find(f => f.id === filterId)!.column_id;
     },
-    tableMetadata: (state: ModelCalibrateState, getters: any, rootState: RootState) =>
-        (plotName: PlotName, selectedPresetId: FilterOption["id"]): TableMetadata | undefined => {
-            const tableMetadata: PlotMetadataFrame = getMetadataFromPlotName(rootState, plotName);
-            const currentPreset = tableMetadata.plotSettingsControl[plotName].plotSettings
-                .find(s => s.id === "presets")?.options
-                .find(o => o.id === selectedPresetId);
-            return currentPreset?.effect.customPlotEffect;
+    tableMetadata: (state: ModelCalibrateState, getters: any, rootState: RootState, rootGetters: any) =>
+        (plotName: PlotName): TableMetadata | undefined => {
+            const metadata: PlotMetadataFrame = getMetadataFromPlotName(rootState, plotName);
+            const selectedPreset: FilterOption = rootGetters["plotSelections/controlSelectionFromId"](plotName, "presets");
+            let tableMetadata
+            if (selectedPreset) {
+                const currentPreset = metadata.plotSettingsControl[plotName].plotSettings
+                    .find(s => s.id === "presets")?.options
+                    .find(o => o.id === selectedPreset.id);
+                tableMetadata = currentPreset?.effect.customPlotEffect
+            }
+            // Fallback to default if preset doesn't exist or has no value
+            if (!tableMetadata) {
+                tableMetadata = metadata.plotSettingsControl[plotName].defaultEffect?.customPlotEffect
+            }
+            return tableMetadata
         }
 };
