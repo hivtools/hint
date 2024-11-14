@@ -20,7 +20,7 @@
     import DownloadStatus from "./DownloadStatus.vue";
     import ErrorAlert from "../ErrorAlert.vue";
     import VueFeather from "vue-feather";
-    import { defineComponent } from "vue";
+    import { computed, defineComponent } from "vue";
 
 
     export default defineComponent({
@@ -44,10 +44,16 @@
                 type: Boolean
             }
         },
-        methods: {
-            download() {
-                this.$emit("trigger-download")
-            }
+        setup(props) {
+            const download = () => {
+                const fileUrl = computed(()=>`/download/result/${props.file.downloadId}`);
+                const link = document.createElement("a");
+                link.href = fileUrl.value;
+                link.download = props.file.name || "downloaded_file";
+                link.click();
+                link.remove();
+            };
+            return { download }
         }
     })
 </script>
