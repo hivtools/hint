@@ -206,7 +206,11 @@ describe("Survey and programme actions", () => {
             payload: "art"
         });
 
-        expect(commit.mock.calls[3][0]).toStrictEqual(
+        expect(commit.mock.calls[3][0]).toStrictEqual({
+            type: "reviewInput/ClearInputComparison"
+        });
+
+        expect(commit.mock.calls[4][0]).toStrictEqual(
             {
                 type: "WarningsFetched",
                 payload: {type: FileType.Programme, warnings: "TEST WARNINGS"}
@@ -239,7 +243,7 @@ describe("Survey and programme actions", () => {
     });
 
     const checkFailedProgramImportUpload = (commit: Mock) => {
-        expect(commit.mock.calls.length).toEqual(5);
+        expect(commit.mock.calls.length).toEqual(6);
 
         expect(commit.mock.calls[0][0]).toStrictEqual({
             type: SurveyAndProgramMutation.ProgramUpdated,
@@ -257,11 +261,15 @@ describe("Survey and programme actions", () => {
         });
 
         expect(commit.mock.calls[3][0]).toStrictEqual({
+            type: "reviewInput/ClearInputComparison"
+        });
+
+        expect(commit.mock.calls[4][0]).toStrictEqual({
             type: SurveyAndProgramMutation.ProgramError,
             payload: mockError("error message")
         });
 
-        expect(commit.mock.calls[4][0]).toStrictEqual({
+        expect(commit.mock.calls[5][0]).toStrictEqual({
             type: SurveyAndProgramMutation.ProgramErroredFile,
             payload: "file.txt"
         });
@@ -310,7 +318,11 @@ describe("Survey and programme actions", () => {
             payload: "anc"
         });
 
-        expect(commit.mock.calls[3][0]).toStrictEqual(
+        expect(commit.mock.calls[3][0]).toStrictEqual({
+            type: "reviewInput/ClearInputComparison"
+        });
+
+        expect(commit.mock.calls[4][0]).toStrictEqual(
             {
                 type: "WarningsFetched",
                 payload: {type: FileType.ANC, warnings: "TEST WARNINGS"}
@@ -343,7 +355,7 @@ describe("Survey and programme actions", () => {
     });
 
     const checkFailedANCImportUpload = (commit: Mock) => {
-        expect(commit.mock.calls.length).toEqual(5);
+        expect(commit.mock.calls.length).toEqual(6);
 
         expect(commit.mock.calls[0][0]).toStrictEqual({
             type: SurveyAndProgramMutation.ANCUpdated,
@@ -361,11 +373,15 @@ describe("Survey and programme actions", () => {
         });
 
         expect(commit.mock.calls[3][0]).toStrictEqual({
+            type: "reviewInput/ClearInputComparison"
+        });
+
+        expect(commit.mock.calls[4][0]).toStrictEqual({
             type: SurveyAndProgramMutation.ANCError,
             payload: mockError("error message")
         });
 
-        expect(commit.mock.calls[4][0]).toStrictEqual({
+        expect(commit.mock.calls[5][0]).toStrictEqual({
             type: SurveyAndProgramMutation.ANCErroredFile,
             payload: "file.txt"
         });
@@ -648,13 +664,16 @@ describe("Survey and programme actions", () => {
             rootState,
             state: mockSurveyAndProgramState({survey: mockSurveyResponse()})
         } as any);
-        expect(commit).toBeCalledTimes(3);
+        expect(commit).toBeCalledTimes(4);
         expect(commit.mock.calls[0][0]["type"]).toBe(SurveyAndProgramMutation.ProgramUpdated);
         expect(commit.mock.calls[1][0]).toEqual({
             type: "reviewInput/ClearDataset",
             payload: "art"
         })
-        expect(commit.mock.calls[2][0]).toEqual({
+        expect(commit.mock.calls[2][0]).toStrictEqual({
+            type: "reviewInput/ClearInputComparison"
+        });
+        expect(commit.mock.calls[3][0]).toEqual({
             type: SurveyAndProgramMutation.WarningsFetched,
             payload: {type: FileType.Programme, warnings: []}
         });
@@ -670,13 +689,16 @@ describe("Survey and programme actions", () => {
             rootState,
             state: mockSurveyAndProgramState({program: mockProgramResponse()})
         } as any);
-        expect(commit).toBeCalledTimes(3);
+        expect(commit).toBeCalledTimes(4);
         expect(commit.mock.calls[0][0]["type"]).toBe(SurveyAndProgramMutation.ANCUpdated);
         expect(commit.mock.calls[1][0]).toEqual({
             type: "reviewInput/ClearDataset",
             payload: "anc"
         });
-        expect(commit.mock.calls[2][0]).toEqual({
+        expect(commit.mock.calls[2][0]).toStrictEqual({
+            type: "reviewInput/ClearInputComparison"
+        });
+        expect(commit.mock.calls[3][0]).toEqual({
             type: SurveyAndProgramMutation.WarningsFetched,
             payload: {type: FileType.ANC, warnings: []}
         });
@@ -720,15 +742,17 @@ describe("Survey and programme actions", () => {
         const commit = vi.fn();
         await actions.deleteAll({commit, rootState, state: mockSurveyAndProgramState()} as any);
         expect(mockAxios.history["delete"].length).toBe(4);
-        expect(commit).toBeCalledTimes(11);
+        expect(commit).toBeCalledTimes(13);
         expect(commit.mock.calls.map(c => c[0]["type"])).toEqual([
             SurveyAndProgramMutation.SurveyUpdated,
             SurveyAndProgramMutation.WarningsFetched,
             SurveyAndProgramMutation.ProgramUpdated,
             "reviewInput/ClearDataset",
+            "reviewInput/ClearInputComparison",
             SurveyAndProgramMutation.WarningsFetched,
             SurveyAndProgramMutation.ANCUpdated,
             "reviewInput/ClearDataset",
+            "reviewInput/ClearInputComparison",
             SurveyAndProgramMutation.WarningsFetched,
             SurveyAndProgramMutation.VmmcUpdated,
             "reviewInput/ClearDataset",

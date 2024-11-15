@@ -252,7 +252,10 @@ describe("ADR dataset-related actions", () => {
         expect(dispatch.mock.calls[0][0]).toBe("setProgramResponse");
         expect(dispatch.mock.calls[0][1]["filename"])
             .toBe("programme.csv")
-        expect(commit.mock.calls[3][0]["type"]).toBe(SurveyAndProgramMutation.WarningsFetched);
+        expect(commit.mock.calls[3][0]).toStrictEqual({
+            type: "reviewInput/ClearInputComparison"
+        });
+        expect(commit.mock.calls[4][0]["type"]).toBe(SurveyAndProgramMutation.WarningsFetched);
     }, 10000);
 
     it("can import anc", async () => {
@@ -272,7 +275,10 @@ describe("ADR dataset-related actions", () => {
         expect(dispatch.mock.calls[0][0]).toBe("setAncResponse");
         expect(dispatch.mock.calls[0][1]["filename"])
             .toBe("anc.csv");
-        expect(commit.mock.calls[3][0]["type"]).toBe(SurveyAndProgramMutation.WarningsFetched);
+        expect(commit.mock.calls[3][0]).toStrictEqual({
+            type: "reviewInput/ClearInputComparison"
+        });
+        expect(commit.mock.calls[4][0]["type"]).toBe(SurveyAndProgramMutation.WarningsFetched);
     }, 10000);
 
     it("hits upload files to adr endpoint and gets appropriate error", async () => {

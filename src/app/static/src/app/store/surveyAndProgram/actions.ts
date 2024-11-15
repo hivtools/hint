@@ -39,6 +39,9 @@ const enum DATASET_TYPE {
 
 function commitClearReviewInputDataset(commit: Commit, dataType: string) {
     commit({type: `reviewInput/${ReviewInputMutation.ClearDataset}`, payload: dataType}, {root: true});
+    if (dataType === DATASET_TYPE.ANC || dataType === DATASET_TYPE.ART) {
+        commit({type: `reviewInput/${ReviewInputMutation.ClearInputComparison}`}, {root: true});
+    }
 }
 
 interface UploadImportOptions {
