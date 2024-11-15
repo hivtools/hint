@@ -1,10 +1,8 @@
 <template>
     <span class="d-inline-flex">
-        <!--Setting a transform to push icon up 1 pixel to align slightly
-        better with the bottom of the text. It is still not perfect.-->
         <span v-if="cellData.icon"
               class="cell-icon mr-1"
-              :style="{ color: cellData.iconColor, transform: 'translateY(-1px)' }">
+              :style="{ color: cellData.iconColor }">
             {{ cellData.icon }}
         </span>
         {{ cellData.cellText }}
