@@ -81,13 +81,21 @@ export interface WarningsState {
 
 const persistState = (store: Store<RootState>): void => {
     store.subscribe((mutation: MutationPayload, state: RootState) => {
-        // console.log(mutation.type);
-        localStorageManager.saveState(state);
+        //console.log(mutation.type);
+        // We need to be careful with this, if someone has triggered something which
+        // starts a slow action, then they go back to projects page and load a new project
+        // we can get into a state where the project state has been replaced in local storage
+        // with the new project, then the action completes and commits some mutations nuking
+        // loaded project state. If a project load has been initiated, block any further
+        // mutations from happening. This will be reset when the browser refreshes.
+        if (!state.projects.loadingProject) {
+            localStorageManager.saveState(state);
 
-        const {dispatch} = store;
-        const type = stripNamespace(mutation.type);
-        if (type[0] !== "projects" && type[0] !== "errors") {
-            dispatch("projects/queueVersionStateUpload", null, {root: true});
+            const {dispatch} = store;
+            const type = stripNamespace(mutation.type);
+            if (type[0] !== "projects" && type[0] !== "errors") {
+                dispatch("projects/queueVersionStateUpload", null, {root: true});
+            }
         }
     })
 };
