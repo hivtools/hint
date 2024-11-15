@@ -6,6 +6,7 @@ import {Error, InputComparisonResponse, Warning} from "../../generated";
 export enum ReviewInputMutation {
     SetDataset = "SetDataset",
     ClearDataset = "ClearDataset",
+    ClearInputComparison = "ClearInputComparison",
     SetError = "SetError",
     ClearWarnings = "ClearWarnings",
     WarningsFetched = "WarningsFetched",
@@ -26,6 +27,13 @@ export const mutations: MutationTree<ReviewInputState> = {
     },
     [ReviewInputMutation.ClearDataset](state: ReviewInputState, action: PayloadWithType<string>) {
         delete state.datasets[action.payload]
+    },
+    [ReviewInputMutation.ClearInputComparison](state: ReviewInputState) {
+        state.inputComparison = {
+            loading: false,
+            error: null,
+            data: null
+        };
     },
     [ReviewInputMutation.SetError](state: ReviewInputState, action: PayloadWithType<Error | null>) {
         state.error = action.payload;

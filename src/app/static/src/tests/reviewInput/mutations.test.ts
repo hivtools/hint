@@ -1,5 +1,11 @@
 import {mutations} from "../../app/store/reviewInput/mutations";
-import {mockIndicatorMetadata, mockReviewInputState, mockWarning} from "../mocks";
+import {
+    mockIndicatorMetadata,
+    mockInputComparisonData,
+    mockInputComparisonMetadata,
+    mockReviewInputState,
+    mockWarning
+} from "../mocks";
 
 describe("reviewInput mutations", () => {
     it("sets dataset",  () => {
@@ -57,6 +63,26 @@ describe("reviewInput mutations", () => {
             }
         });
     });
+
+    it("can clear input comparison data", () => {
+        const state = mockReviewInputState({
+            inputComparison: {
+                loading: false,
+                data: {
+                    data: mockInputComparisonData(),
+                    metadata: mockInputComparisonMetadata(),
+                    warnings: []
+                },
+                error: null
+            }
+        });
+        mutations.ClearInputComparison(state);
+        expect(state.inputComparison).toEqual({
+            loading: false,
+            data: null,
+            error: null
+        });
+    })
 
     it("sets error", () => {
         const state = mockReviewInputState();
