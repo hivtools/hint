@@ -85,7 +85,11 @@ describe("App", () => {
             }
         });
         await nextTick();
+
         expect(baselineActions.getBaselineData).toHaveBeenCalled();
+        store.state.baseline.ready = true;
+        await nextTick();
+
         expect(surveyAndProgramActions.getSurveyAndProgramData).toHaveBeenCalled();
         expect(modelRunActions.getResult).toHaveBeenCalled();
         expect(modelCalibrateActions.getResult).toHaveBeenCalled();
