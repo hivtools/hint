@@ -1,7 +1,11 @@
 <template>
     <user-header :title="title" :user="user"></user-header>
-    <div class="container mb-5">
+    <div class="container mb-5" v-if="baselineReady">
         <router-view></router-view>
+    </div>
+    <div v-else class="text-center">
+        <loading-spinner size="lg"></loading-spinner>
+        <h2 id="loading-message" v-translate="'loadingData'"></h2>
     </div>
     <errors title="title"></errors>
 </template>
@@ -13,6 +17,12 @@ import Errors from "./Errors.vue";
 import {mapActions, mapState} from "vuex";
 import { RootState } from '../root';
 import { Language } from '../store/translations/locales';
+import LoadingSpinner from './LoadingSpinner.vue';
+
+type Computed = {
+    language: (state: RootState) => string,
+    baselineReady: (state: RootState) => boolean
+}
 
     export default defineComponent({
         props: {
@@ -27,10 +37,12 @@ import { Language } from '../store/translations/locales';
         },
         components: {
             UserHeader,
-            Errors
+            Errors,
+            LoadingSpinner
         },
-        computed: mapState<RootState>({
-            language: (state: RootState) => state.language
+        computed: mapState<RootState, Computed>({
+            language: (state: RootState) => state.language,
+            baselineReady: (state: RootState) => state.baseline.ready
         }),
         methods: {
         ...mapActions({loadBaseline: 'baseline/getBaselineData'}),
@@ -42,15 +54,18 @@ import { Language } from '../store/translations/locales';
         },
         beforeMount: function () {
             this.loadBaseline();
-            this.loadSurveyAndProgram();
-            this.loadModelRun();
-            this.loadModelCalibrate();
-            this.getADRSchemas();
-            this.getCurrentProject();
         },
         watch: {
             language(newVal: Language) {
                 document.documentElement.lang = newVal
+            },
+            baselineReady(newVal: boolean) {
+                if (!newVal) return;
+                this.loadSurveyAndProgram();
+                this.loadModelRun();
+                this.loadModelCalibrate();
+                this.getADRSchemas();
+                this.getCurrentProject();
             }
         }
     })
