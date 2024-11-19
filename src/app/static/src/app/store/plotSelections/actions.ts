@@ -1,5 +1,5 @@
 import {ActionContext, ActionTree} from "vuex"
-import {PlotDataType, PlotName, plotNameToDataType, PlotSelectionsState} from "./plotSelections"
+import {ControlSelection, PlotDataType, PlotName, plotNameToDataType, PlotSelectionsState} from "./plotSelections"
 import {RootState} from "../../root"
 import {Dict, PayloadWithType} from "../../types"
 import {FilterOption, PlotSettingEffect, PlotSettingOption,} from "../../generated"
@@ -12,8 +12,10 @@ type IdOptions = {
     options: FilterOption[]
 }
 
+type SingleFilterSelection = { filter: IdOptions }
+type MultiFilterSelection = { filters: IdOptions[] }
 type PlotSettingSelection = { plotSetting: IdOptions }
-export type Selection = { filter: IdOptions } | PlotSettingSelection
+export type Selection = SingleFilterSelection | MultiFilterSelection | PlotSettingSelection
 
 export type PlotSelectionActionUpdate = {
     plot: PlotName,
@@ -42,6 +44,18 @@ export const getMetadataFromPlotName = (rootState: RootState, plotName: PlotName
     }
 }
 
+export const getDefaultFilterSelections = (rootState: RootState, plotName: PlotName, controls: ControlSelection[]) => {
+    const metadata = getMetadataFromPlotName(rootState, plotName);
+    const plotMetadata = metadata.plotSettingsControl[plotName];
+    const plotSettingOptions: PlotSettingOption[] = controls.map(c => {
+        const plotSetting = plotMetadata.plotSettings.find(ps => ps.id === c.id);
+        return plotSetting!.options.find(op => op.id === c.selection[0].id)!;
+    });
+    const effects: PlotSettingEffect[] = plotMetadata.defaultEffect ? [plotMetadata.defaultEffect] : [];
+    plotSettingOptions.forEach(pso => effects.push(pso.effect));
+    return filtersInfoFromEffects(effects, rootState, metadata);
+};
+
 export const actions: ActionTree<PlotSelectionsState, RootState> & PlotSelectionsActions = {
     async updateSelections(context, payload) {
         const {plot, selection} = payload.payload;
@@ -51,18 +65,16 @@ export const actions: ActionTree<PlotSelectionsState, RootState> & PlotSelection
         if ("filter" in selection) {
             const fIndex = updatedSelections.filters.findIndex(f => f.stateFilterId === selection.filter.id);
             updatedSelections.filters[fIndex].selection = selection.filter.options;
+        } else if ("filters" in selection) {
+            selection.filters.forEach(singleFilter => {
+                const fIndex = updatedSelections.filters.findIndex(f => f.stateFilterId === singleFilter.id);
+                updatedSelections.filters[fIndex].selection = singleFilter.options;
+            });
         } else {
-            const plotMetadata = metadata.plotSettingsControl[plot];
             const pIndex = updatedSelections.controls.findIndex(p => p.id === selection.plotSetting.id);
             updatedSelections.controls[pIndex].selection = selection.plotSetting.options;
             handlePlotControlOverrides(updatedSelections, plot, selection, metadata);
-            const plotSettingOptions: PlotSettingOption[] = updatedSelections.controls.map(c => {
-                const plotSetting = plotMetadata.plotSettings.find(ps => ps.id === c.id);
-                return plotSetting!.options.find(op => op.id === c.selection[0].id)!;
-            });
-            const effects: PlotSettingEffect[] = plotMetadata.defaultEffect ? [plotMetadata.defaultEffect] : [];
-            plotSettingOptions.forEach(pso => effects.push(pso.effect));
-            updatedSelections.filters = filtersInfoFromEffects(effects, rootState, metadata);
+            updatedSelections.filters = getDefaultFilterSelections(rootState, plot, updatedSelections.controls);
         }
 
         const updatePayload = {plot, selections: updatedSelections} as PlotSelectionUpdate;
