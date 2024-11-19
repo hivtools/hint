@@ -11,9 +11,7 @@
         <div id="review-output" class="row" v-if="outputMetadataFetched">
             <div class="mt-2 col-md-3">
                 <plot-control-set :plot="selectedPlot"/>
-                <filter-with-reset @reset="resetFilters" :icon-type="'refresh-cw'">
-                    <h4 v-translate="'filters'"/>
-                </filter-with-reset>
+                <filter-with-reset :plot="selectedPlot"></filter-with-reset>
                 <filter-set :plot="selectedPlot"/>
             </div>
             <choropleth class="col-md-9" v-if="selectedPlot === 'choropleth'" :plot="'choropleth'"/>
@@ -43,7 +41,6 @@ import Choropleth from "../plots/choropleth/Choropleth.vue";
 import Bubble from "../plots/bubble/Bubble.vue";
 import Barchart from "../plots/bar/Barchart.vue";
 import Table from "../plots/table/Table.vue";
-import { getDefaultFilterSelections, PlotSelectionActionUpdate } from "../../store/plotSelections/actions";
 import FilterWithReset from "../plots/FilterWithReset.vue";
 
 export default defineComponent({
@@ -52,31 +49,12 @@ export default defineComponent({
         const selectedPlot = computed(() => store.state.modelOutput.selectedTab);
         const switchTab = (plotName: OutputPlotName) => store.commit(`modelOutput/${ModelOutputMutation.TabSelected}`, {payload: plotName});
         const outputMetadataFetched = computed(() => store.state.modelCalibrate.metadata)
-        const rootState = computed(() => store.state);
-        const controls = computed(() => store.state.plotSelections[selectedPlot.value].controls);
-        const resetFilters = () => {
-            const defaultFilterSelections = getDefaultFilterSelections(rootState.value, selectedPlot.value, controls.value);
-            store.dispatch("plotSelections/updateSelections", {
-                payload: {
-                    plot: selectedPlot.value,
-                    selection: {
-                        filters: defaultFilterSelections.map(f => {
-                            return {
-                                id: f.stateFilterId,
-                                options: f.selection
-                            };
-                        })
-                    }
-                } as PlotSelectionActionUpdate
-            }, { root: true });
-        };
 
         return {
             outputPlotNames,
             selectedPlot,
             switchTab,
-            outputMetadataFetched,
-            resetFilters
+            outputMetadataFetched
         }
     },
 

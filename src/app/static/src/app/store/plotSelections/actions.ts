@@ -12,10 +12,9 @@ type IdOptions = {
     options: FilterOption[]
 }
 
-type SingleFilterSelection = { filter: IdOptions }
-type MultiFilterSelection = { filters: IdOptions[] }
+type FiltersSelection = { filters: IdOptions[] }
 type PlotSettingSelection = { plotSetting: IdOptions }
-export type Selection = SingleFilterSelection | MultiFilterSelection | PlotSettingSelection
+export type Selection = FiltersSelection | PlotSettingSelection
 
 export type PlotSelectionActionUpdate = {
     plot: PlotName,
@@ -62,10 +61,7 @@ export const actions: ActionTree<PlotSelectionsState, RootState> & PlotSelection
         const {state, commit, rootState} = context;
         const metadata = getMetadataFromPlotName(rootState, plot);
         const updatedSelections: PlotSelectionsState[PlotName] = structuredClone(state[plot]);
-        if ("filter" in selection) {
-            const fIndex = updatedSelections.filters.findIndex(f => f.stateFilterId === selection.filter.id);
-            updatedSelections.filters[fIndex].selection = selection.filter.options;
-        } else if ("filters" in selection) {
+        if ("filters" in selection) {
             selection.filters.forEach(singleFilter => {
                 const fIndex = updatedSelections.filters.findIndex(f => f.stateFilterId === singleFilter.id);
                 updatedSelections.filters[fIndex].selection = singleFilter.options;

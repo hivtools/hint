@@ -69,10 +69,10 @@ describe("Projects actions", () => {
             payload: {
                 plot: "choropleth",
                 selection: {
-                    filter: {
+                    filters: [{
                         id: "sex",
                         options: selectedOptions
-                    }
+                    }]
                 } as Selection
             }
         } as PayloadWithType<PlotSelectionActionUpdate>
