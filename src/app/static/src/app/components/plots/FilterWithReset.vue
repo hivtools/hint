@@ -8,6 +8,7 @@
                         type="refresh-cw"
                         class="filter-reset-icon"
                         size="20"
+                        v-tooltip="tooltipContent"
                         @click="resetFilters"></vue-feather>
         </span>
         <slot name="filter"></slot>
@@ -21,6 +22,7 @@ import { RootState } from "../../root";
 import { computed, PropType, ref } from "vue";
 import { PlotName } from "../../store/plotSelections/plotSelections";
 import { getDefaultFilterSelections, PlotSelectionActionUpdate } from "../../store/plotSelections/actions";
+import i18next from "i18next";
 
 const props = defineProps({
     plot: { type: String as PropType<PlotName>, required: true },
@@ -49,4 +51,22 @@ const resetFilters = () => {
 };
 
 const showReset = ref(false);
+const currentLanguage = computed(() => store.state.language);
+const tooltipContent = computed(() => {
+    return i18next.t(
+        props.stateFilterId ? "resetSingleFilter" : "resetAllFilters",
+        { lng: currentLanguage.value }
+    )
+})
 </script>
+
+<style scoped>
+.filter-reset-icon {
+  margin-top: 4px;
+  cursor: pointer;
+}
+
+.filter-reset-icon:hover {
+    color: red;
+}
+</style>
