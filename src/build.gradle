@@ -70,7 +70,7 @@ subprojects {
     }
 
     tasks.test {
-        maxHeapSize = "2048m" // maximum heap size
+        maxHeapSize = "2048m"
         useJUnitPlatform()
         testLogging {
             exceptionFormat = 'full'
