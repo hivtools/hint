@@ -36,7 +36,7 @@ describe("ADR dataset-related actions", () => {
         await baselineActions.uploadShape({commit, dispatch, rootState} as any, formData);
 
         const state = {country: "Malawi"} as any;
-        const pjnzFormData = getFormData("Malawi2019.PJNZ");
+        const pjnzFormData = getFormData("Malawi2024.PJNZ");
         await baselineActions.uploadPJNZ({commit, state, dispatch, rootState} as any, pjnzFormData);
     });
 
@@ -184,11 +184,11 @@ describe("ADR dataset-related actions", () => {
         const state = await getSelectedDatasetState()
 
         await baselineActions.importPJNZ({commit, state, dispatch, rootState} as any,
-            "https://raw.githubusercontent.com/hivtools/hint/main/src/app/testdata/Malawi2019.PJNZ");
+            "https://raw.githubusercontent.com/hivtools/hint/main/src/app/testdata/Malawi2024.PJNZ");
 
         expect(commit.mock.calls[1][0]["type"]).toBe(BaselineMutation.PJNZUpdated);
         expect(commit.mock.calls[1][0]["payload"]["filename"])
-            .toBe("Malawi2019.PJNZ");
+            .toBe("Malawi2024.PJNZ");
     }, 10000);
 
     it("can import shape file", async () => {
