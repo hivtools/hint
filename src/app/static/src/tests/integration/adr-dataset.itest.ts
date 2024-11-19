@@ -36,7 +36,7 @@ describe("ADR dataset-related actions", () => {
         await baselineActions.uploadShape({commit, dispatch, rootState} as any, formData);
 
         const state = {country: "Malawi"} as any;
-        const pjnzFormData = getFormData("Malawi2024.PJNZ");
+        const pjnzFormData = getFormData("Malawi2019.PJNZ");
         await baselineActions.uploadPJNZ({commit, state, dispatch, rootState} as any, pjnzFormData);
     });
 
