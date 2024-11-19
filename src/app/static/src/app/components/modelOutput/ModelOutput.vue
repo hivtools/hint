@@ -44,12 +44,12 @@ import Table from "../plots/table/Table.vue";
 import FilterWithReset from "../plots/FilterWithReset.vue";
 
 export default defineComponent({
+
     setup() {
         const store = useStore<RootState>();
         const selectedPlot = computed(() => store.state.modelOutput.selectedTab);
         const switchTab = (plotName: OutputPlotName) => store.commit(`modelOutput/${ModelOutputMutation.TabSelected}`, {payload: plotName});
         const outputMetadataFetched = computed(() => store.state.modelCalibrate.metadata)
-
         return {
             outputPlotNames,
             selectedPlot,

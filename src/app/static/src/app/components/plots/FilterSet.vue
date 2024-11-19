@@ -6,11 +6,11 @@
                     <label class="font-weight-bold">{{f.label}}</label>
                 </template>
                 <template v-slot:filter>
+                    <!-- For some reason using filter is saying no component registered
+                    with this name, no idea why so using capital Filter -->
                     <Filter :state-filter-id="f.stateFilterId" :plot="plot"/>
                 </template>
             </filter-with-reset>
-            <!-- For some reason using filter is saying no component registered
-            with this name, no idea why so using capital Filter -->
         </div>
     </div>
 </template>
