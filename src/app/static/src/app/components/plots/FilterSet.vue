@@ -3,14 +3,11 @@
         <div v-if="!f.hidden"
              @mouseover="showReset[f.stateFilterId] = true"
              @mouseleave="showReset[f.stateFilterId] = false">
-            <span class="d-flex justify-content-between">
+            <filter-with-reset @reset="() => resetFilter(f.stateFilterId)"
+                               :show-reset="showReset[f.stateFilterId]"
+                               :icon-type="'corner-down-left'">
                 <label class="font-weight-bold">{{f.label}}</label>
-                <vue-feather v-show="showReset[f.stateFilterId]"
-                             type="corner-down-left"
-                             class="filter-reset-icon"
-                             size="20"
-                             @click="() => resetFilter(f.stateFilterId)"></vue-feather>
-            </span>
+            </filter-with-reset>
             <!-- For some reason using filter is saying no component registered
             with this name, no idea why so using capital Filter -->
             <Filter :state-filter-id="f.stateFilterId" :plot="plot"/>
@@ -25,12 +22,12 @@ import {RootState} from "../../root";
 import Filter from "./Filter.vue";
 import {PlotName} from "../../store/plotSelections/plotSelections";
 import { getDefaultFilterSelections, PlotSelectionActionUpdate } from '../../store/plotSelections/actions';
-import VueFeather from "vue-feather";
+import FilterWithReset from './FilterWithReset.vue';
 
 export default defineComponent({
     components: {
         Filter,
-        VueFeather
+        FilterWithReset
     },
     props: {
         plot:{

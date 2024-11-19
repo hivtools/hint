@@ -4,13 +4,9 @@
     <p class="text-muted" v-translate="'calibrateResultsDesc'"></p>
     <div id="calibration-plot" class="row">
         <div class="mt-2 col-md-3">
-            <span class="d-flex justify-content-between">
+            <filter-with-reset @reset="resetFilters" :icon-type="'refresh-cw'">
                 <h4 v-translate="'filters'"/>
-                <vue-feather type="refresh-cw"
-                             class="filter-reset-icon"
-                             size="20"
-                             @click="resetFilters"></vue-feather>
-            </span>
+            </filter-with-reset>
             <filter-set :plot="calibratePlotName"/>
         </div>
         <barchart class="col-md-9"
@@ -27,7 +23,7 @@ import { getDefaultFilterSelections, PlotSelectionActionUpdate } from "../../sto
 import { useStore } from "vuex";
 import { RootState } from "../../root";
 import { computed } from "vue";
-import VueFeather from "vue-feather";
+import FilterWithReset from "../plots/FilterWithReset.vue";
 
 const store = useStore<RootState>();
 

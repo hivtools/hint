@@ -16,13 +16,9 @@
         <div class="row" v-else>
             <div class="mt-2 col-md-3">
                 <plot-control-set :plot="activePlot"/>
-                <span class="d-flex justify-content-between">
+                <filter-with-reset @reset="resetFilters" :icon-type="'refresh-cw'">
                     <h4 v-translate="'filters'"/>
-                    <vue-feather type="refresh-cw"
-                                 class="filter-reset-icon"
-                                 size="20"
-                                 @click="resetFilters"></vue-feather>
-                </span>
+                </filter-with-reset>
                 <filter-set :plot="activePlot"/>
                 <div id="plot-description"
                      v-if="plotDescription"
@@ -58,7 +54,7 @@ import DownloadTimeSeries from "../plots/timeSeries/downloadTimeSeries/DownloadT
 import Barchart from "../plots/bar/Barchart.vue";
 import Table from "../plots/table/Table.vue";
 import { getDefaultFilterSelections, PlotSelectionActionUpdate } from '../../store/plotSelections/actions';
-import VueFeather from "vue-feather";
+import FilterWithReset from '../plots/FilterWithReset.vue';
 
 export default defineComponent({
     components: {
@@ -71,7 +67,7 @@ export default defineComponent({
         TimeSeries,
         Choropleth,
         LoadingSpinner,
-        VueFeather
+        FilterWithReset
     },
     setup() {
         const store = useStore<RootState>();
