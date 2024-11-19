@@ -12,8 +12,8 @@ export const getFeatureData = function (data: any[],
         result[row.area_id] = {
             value: value,
             color: getColour(value, indicatorMeta, colourRange),
-            lower_value: row['lower'],
-            upper_value: row['upper']
+            lower_value: indicatorMeta.error_low_column && row[indicatorMeta.error_low_column],
+            upper_value: indicatorMeta.error_high_column && row[indicatorMeta.error_high_column]
         }
     }
 
