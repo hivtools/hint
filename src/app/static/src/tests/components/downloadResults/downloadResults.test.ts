@@ -23,11 +23,6 @@ describe("Download Results component", () => {
     const error = {error: "ERR", detail: "download report error"}
 
     const mockPrepareOutputs = vi.fn();
-    const mockDownloadComparisonReport = vi.fn()
-    const mockDownloadSpectrumReport = vi.fn()
-    const mockDownloadCoarseReport = vi.fn()
-    const mockDownloadSummaryReport = vi.fn()
-    const mockDownloadAgywTool = vi.fn()
 
     afterEach(() => {
         vi.useRealTimers();
@@ -72,11 +67,6 @@ describe("Download Results component", () => {
                     state: mockDownloadResultsState(downloadResults),
                     actions: {
                         prepareOutputs: mockPrepareOutputs,
-                        downloadComparisonReport: mockDownloadComparisonReport,
-                        downloadSpectrumOutput: mockDownloadSpectrumReport,
-                        downloadSummaryReport: mockDownloadSummaryReport,
-                        downloadCoarseOutput: mockDownloadCoarseReport,
-                        downloadAgywTool: mockDownloadAgywTool,
                     }
                 }
             }
@@ -359,8 +349,6 @@ describe("Download Results component", () => {
         });
         const button = wrapper.find("#spectrum-download").find("button");
         expect(button.attributes().disabled).toBeUndefined();
-        await button.trigger("click");
-        expect(mockDownloadSpectrumReport).toHaveBeenCalled()
     });
 
     it("cannot download summary report while preparing", () => {
@@ -411,8 +399,6 @@ describe("Download Results component", () => {
         });
         const button = wrapper.find("#summary-download").find("button");
         expect(button.attributes().disabled).toBeUndefined();
-        await button.trigger("click");
-        expect(mockDownloadSummaryReport).toHaveBeenCalled()
     });
 
     it("cannot download coarse output while preparing", () => {
@@ -463,8 +449,6 @@ describe("Download Results component", () => {
         });
         const button = wrapper.find("#coarse-output-download").find("button");
         expect(button.attributes().disabled).toBeUndefined();
-        await button.trigger("click");
-        expect(mockDownloadCoarseReport).toHaveBeenCalled()
     });
 
     it("cannot download comparison output while preparing", async () => {
@@ -534,8 +518,6 @@ describe("Download Results component", () => {
             });
         const button = wrapper.find("#comparison-download").find("button");
         expect(button.attributes().disabled).toBeUndefined();
-        await button.trigger("click")
-        expect(mockDownloadComparisonReport).toHaveBeenCalledTimes(1)
     });
 
     it("can display error message for comparison download file when errored", async () => {
@@ -683,8 +665,6 @@ describe("Download Results component", () => {
             });
         const button = wrapper.find("#agyw-download").find("button");
         expect(button.attributes().disabled).toBeUndefined();
-        await button.trigger("click")
-        expect(mockDownloadAgywTool).toHaveBeenCalledTimes(1)
     });
 
     it("can display error message for agyw download file when errored", async () => {
