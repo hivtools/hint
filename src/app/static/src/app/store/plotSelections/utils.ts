@@ -15,6 +15,7 @@ import {
     getInputChoroplethFilteredData,
     getInputComparisonFilteredData,
     getOutputFilteredData,
+    getPopulationFilteredData,
     getTimeSeriesFilteredDataset
 } from "../plotData/filter";
 
@@ -29,6 +30,16 @@ export const filtersAfterUseShapeRegions = (filterTypes: FilterTypes[], rootStat
         const {use_shape_regions: _, ...areaFilterConfig} = area;
         filters[index] = {...areaFilterConfig, options: regions};
     }
+    const areaLevel = filters.find(f => f.id == "area_level");
+    if (areaLevel && areaLevel.use_shape_area_level) {
+        let level_labels: FilterOption[] = [];
+        if (rootState.baseline.shape!.filters!.level_labels) {
+            level_labels = rootState.baseline.shape!.filters!.level_labels?.map(level=>({id: String(level.id), label: level.area_level_label }))
+        }
+        const index = filters.findIndex(f => f.id === "area_level");
+        const {use_shape_area_level: _, ...areaFilterConfig} = areaLevel;
+        filters[index] = {...areaFilterConfig, options: level_labels};
+    }    
     return filters;
 }
 
@@ -128,6 +139,8 @@ export const getPlotData = async (payload: PlotSelectionUpdate, commit: Commit, 
         await getInputChoroplethFilteredData(payload, commit, rootState);
     } else if (plotDataType == PlotDataType.InputComparison) {
         await getInputComparisonFilteredData(payload, commit, rootState);
+    } else if (plotDataType == PlotDataType.Population) {
+        await getPopulationFilteredData(payload, commit, rootState);
     } else {
         throw new Error("Unreachable, if seeing this you're missing clause for filtering a type of plot data.")
     }

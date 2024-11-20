@@ -4,12 +4,13 @@ import {
     ComparisonPlotData,
     InputComparisonData,
     InputTimeSeriesData,
-    InputTimeSeriesRow
+    InputTimeSeriesRow,
+    PopulationResponseData
 } from "../../generated"
 import { PlotName, plotNames } from "../plotSelections/plotSelections"
 import { mutations } from "./mutations"
 
-export type PlotData = CalibrateDataResponse["data"] | InputTimeSeriesData | CalibratePlotData | ComparisonPlotData | InputComparisonData;
+export type PlotData = CalibrateDataResponse["data"] | InputTimeSeriesData | CalibratePlotData | ComparisonPlotData | InputComparisonData | PopulationResponseData;
 export type InputTimeSeriesKey = keyof InputTimeSeriesRow;
 export type PlotDataState = {
     [P in PlotName]: PlotData

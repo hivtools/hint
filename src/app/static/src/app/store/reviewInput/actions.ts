@@ -4,13 +4,15 @@ import {ReviewInputState} from "./reviewInput";
 import {ReviewInputMutation} from "./mutations";
 import {ReviewInputDataset} from "../../types";
 import {RootState} from "../../root";
-import {commitPlotDefaultSelections} from "../plotSelections/utils";
+import {commitPlotDefaultSelections, filtersAfterUseShapeRegions} from "../plotSelections/utils";
 import {InputComparisonResponse} from "../../generated";
+import { BaselineMutation } from '../baseline/mutations';
 
 export interface ReviewInputActions {
     getDataset: (store: ActionContext<ReviewInputState, RootState>, payload: getDatasetPayload) => void
     refreshDatasets: (store: ActionContext<ReviewInputState, RootState>) => void
     getInputComparisonDataset: (store: ActionContext<ReviewInputState, RootState>) => void
+    getPopulationDataset: (store: ActionContext<ReviewInputState, RootState>) => void
 }
 
 export interface getDatasetPayload {
@@ -71,4 +73,16 @@ export const actions: ActionTree<ReviewInputState, RootState> & ReviewInputActio
                 }
             )
     },
+
+    async getPopulationDataset(context) {
+        const {commit, rootState} = context;
+        const populationMetadata = rootState.baseline.population!.metadata
+        const populationMetadataClone = {...populationMetadata}
+        const populationData = rootState.baseline.population
+        const populationDataClone = { ...populationData}
+        populationMetadataClone.filterTypes = filtersAfterUseShapeRegions(populationMetadataClone.filterTypes, rootState);
+        populationDataClone.metadata = populationMetadataClone
+        commit(`baseline/${BaselineMutation.PopulationUpdated}`, {payload: populationDataClone}, {root:true});
+        await commitPlotDefaultSelections(populationMetadataClone, commit, rootState);
+    }
 };

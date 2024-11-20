@@ -6,6 +6,7 @@ import {
     FilterOption,
     FilterRef,
     InputComparisonResponse,
+    PopulationResponseMetadata,
     ReviewInputFilterMetadataResponse
 } from "../../generated";
 import { mutations } from "./mutations";
@@ -15,17 +16,17 @@ import { getters } from "./getters";
 export type OutputPlotName = keyof CalibrateMetadataResponse["plotSettingsControl"] |
     keyof ComparisonPlotResponse["metadata"]["plotSettingsControl"]
 export type InputPlotName = keyof ReviewInputFilterMetadataResponse["plotSettingsControl"] |
-    keyof InputComparisonResponse["metadata"]["plotSettingsControl"]
+    keyof InputComparisonResponse["metadata"]["plotSettingsControl"] | keyof PopulationResponseMetadata['plotSettingsControl']
 export type CalibratePlotName = keyof CalibratePlotResponse["metadata"]["plotSettingsControl"]
 
 export const outputPlotNames: OutputPlotName[] = ["choropleth", "barchart", "table", "comparison", "bubble", "cascade"];
-export const inputPlotNames: InputPlotName[] = ["timeSeries", "inputChoropleth", "inputComparisonTable", "inputComparisonBarchart"];
+export const inputPlotNames: InputPlotName[] = ["timeSeries", "inputChoropleth", "inputComparisonTable", "inputComparisonBarchart", 'population'];
 export const calibratePlotName: CalibratePlotName = "calibrate";
 
 export type PlotName = OutputPlotName | InputPlotName | CalibratePlotName
 export const plotNames = [...outputPlotNames, ...inputPlotNames, calibratePlotName];
 
-export enum PlotDataType { Output, TimeSeries, InputChoropleth, Calibrate, Comparison, InputComparison}
+export enum PlotDataType { Output, TimeSeries, InputChoropleth, Calibrate, Comparison, InputComparison, Population}
 
 export const plotNameToDataType: Record<PlotName, PlotDataType> = {
     barchart: PlotDataType.Output,
@@ -39,6 +40,7 @@ export const plotNameToDataType: Record<PlotName, PlotDataType> = {
     comparison: PlotDataType.Comparison,
     inputComparisonBarchart: PlotDataType.InputComparison,
     inputComparisonTable: PlotDataType.InputComparison,
+    population: PlotDataType.Population
 }
 
 export type FilterSelection = {

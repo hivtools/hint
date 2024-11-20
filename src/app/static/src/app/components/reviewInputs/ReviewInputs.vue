@@ -33,6 +33,7 @@
             <Table class="col-md-9" v-if="activePlot === 'inputComparisonTable'"
                     :plotName="'inputComparisonTable'"
                     :download-enabled="false"/>
+            <div v-if="activePlot === 'population'">Population pyramid</div>
         </div>
     </div>
 </template>
@@ -105,6 +106,7 @@ export default defineComponent({
 
         onBeforeMount(async () => {
             await store.dispatch("metadata/getReviewInputMetadata", {}, { root: true });
+            await store.dispatch('reviewInput/getPopulationDataset', {}, { root: true })
         });
 
         return {
