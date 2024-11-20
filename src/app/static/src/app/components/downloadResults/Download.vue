@@ -13,6 +13,7 @@
                              :preparing="file.preparing"/>
         </div>
         <error-alert id="error" v-if="file.error" :error="file.error"></error-alert>
+        <error-alert id="metadata-error" v-if="file.metadataError" :error="file.metadataError"></error-alert>
     </div>
 </template>
 
@@ -20,7 +21,7 @@
     import DownloadStatus from "./DownloadStatus.vue";
     import ErrorAlert from "../ErrorAlert.vue";
     import VueFeather from "vue-feather";
-    import { computed, defineComponent } from "vue";
+    import { defineComponent } from "vue";
 
 
     export default defineComponent({
@@ -46,9 +47,9 @@
         },
         setup(props) {
             const download = () => {
-                const fileUrl = computed(()=>`/download/result/${props.file.downloadId}`);
+                const fileUrl = `/download/result/${props.file.downloadId}`
                 const link = document.createElement("a");
-                link.href = fileUrl.value;
+                link.href = fileUrl;
                 link.download = props.file.name || "downloaded_file";
                 link.click();
                 link.remove();

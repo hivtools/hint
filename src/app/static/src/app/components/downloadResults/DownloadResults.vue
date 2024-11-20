@@ -4,8 +4,7 @@
             <div class="col-sm">
                 <div id="spectrum-download">
                     <download :translate-key="translation.spectrum"
-                              @trigger-download="downloadSpectrumOutput"
-                              :disabled="!spectrum.downloadId || spectrum.preparing"
+                              :disabled="!spectrum.downloadId || spectrum.preparing || !!spectrum.metadataError"
                               :file="spectrum"/>
                     <div class="pb-2">
                     <error-alert v-if="spectrum.downloadError" :error="spectrum.downloadError"></error-alert>
@@ -13,8 +12,7 @@
                 </div>
                 <div id="coarse-output-download">
                     <download :translate-key="translation.coarse"
-                              @trigger-download="downloadCoarseOutput"
-                              :disabled="!coarseOutput.downloadId || coarseOutput.preparing"
+                              :disabled="!coarseOutput.downloadId || coarseOutput.preparing || !!coarseOutput.metadataError"
                               :file="coarseOutput"/>
                     <div class="pb-2">
                         <error-alert v-if="coarseOutput.downloadError" :error="coarseOutput.downloadError"></error-alert>
@@ -22,8 +20,7 @@
                 </div>
                 <div id="summary-download">
                     <download :translate-key="translation.summary"
-                              @trigger-download="downloadSummaryReport"
-                              :disabled="!summary.downloadId || summary.preparing"
+                              :disabled="!summary.downloadId || summary.preparing || !!summary.metadataError"
                               :file="summary"/>
                     <div class="pb-2">
                     <error-alert v-if="summary.downloadError" :error="summary.downloadError"></error-alert>
@@ -31,15 +28,13 @@
                 </div>
                 <div id="comparison-download" v-if="comparisonSwitch">
                     <download :translate-key="translation.comparison"
-                              @trigger-download="downloadComparisonReport"
-                              :disabled="!comparison.downloadId || comparison.preparing"
+                              :disabled="!comparison.downloadId || comparison.preparing || !!comparison.metadataError"
                               :file="comparison"/>
                     <error-alert v-if="comparison.downloadError" :error="comparison.downloadError"></error-alert>
                 </div>
                 <div id="agyw-download" v-if="agywSwitch">
                     <download :translate-key="translation.agyw"
-                              @trigger-download="downloadAgywTool"
-                              :disabled="!agyw.downloadId || agyw.preparing"
+                              :disabled="!agyw.downloadId || agyw.preparing || !!agyw.metadataError"
                               :file="agyw"/>
                     <error-alert v-if="agyw.downloadError" :error="agyw.downloadError"></error-alert>
                 </div>
@@ -167,11 +162,6 @@
             getUserCanUpload: mapActionByName("adr", "getUserCanUpload"),
             getUploadFiles: mapActionByName("adrUpload", "getUploadFiles"),
             prepareOutputs: mapActionByName("downloadResults", "prepareOutputs"),
-            downloadComparisonReport: mapActionByName("downloadResults", "downloadComparisonReport"),
-            downloadSpectrumOutput: mapActionByName("downloadResults", "downloadSpectrumOutput"),
-            downloadSummaryReport: mapActionByName("downloadResults", "downloadSummaryReport"),
-            downloadCoarseOutput: mapActionByName("downloadResults", "downloadCoarseOutput"),
-            downloadAgywTool: mapActionByName("downloadResults", "downloadAgywTool"),
         },
         mounted() {
             this.getUserCanUpload();
