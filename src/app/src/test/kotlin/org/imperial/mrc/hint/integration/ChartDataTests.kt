@@ -17,7 +17,7 @@ class ChartDataTests : SecureIntegrationTests()
         testRestTemplate.getForEntity<String>("/")
         val shapePostEntity = getTestEntity("malawi.geojson")
         testRestTemplate.postForEntity<String>("/baseline/shape/", shapePostEntity)
-        val pjnzPostEntity = getTestEntity("Malawi2019.PJNZ")
+        val pjnzPostEntity = getTestEntity("Malawi2024.PJNZ")
         testRestTemplate.postForEntity<String>("/baseline/pjnz/", pjnzPostEntity)
     }
 
