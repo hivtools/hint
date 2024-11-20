@@ -21,7 +21,6 @@ const payloadHandler = (type: DownloadType) => {
 export const actions: ActionTree<DownloadResultsState, RootState> & DownloadResultsActions = {
     async prepareAllOutputs({ dispatch }) {
         Object.values(DownloadType).forEach(type => {
-            if (type === DownloadType.AGYW && !switches.agywDownload) return;
             dispatch("prepareOutput", type);
         });
     },
@@ -70,7 +69,7 @@ const getDownloadStatus = async (store: ActionContext<DownloadResultsState, Root
         .withSuccess(DownloadResultsMutation.StatusUpdated, false, payloadHandler(type))
         .withError(DownloadResultsMutation.Error, false, payloadHandler(type))
         .get<ModelStatusResponse>(`download/status/${downloadId}`);
-    if (response?.data?.done && type !== DownloadType.AGYW) {
+    if (response?.data?.done) {
         await getADRUploadMetadata(response, dispatch).then(() => {
             // commit is neccessary for dispatching action
             // to retrieve metadata for output
