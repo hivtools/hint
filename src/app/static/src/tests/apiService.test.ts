@@ -166,7 +166,53 @@ describe("ApiService", () => {
 
         expect(committedType).toBe("TEST_TYPE");
         expect(committedPayload).toBe(true);
-        expect(committedOptions).toBeUndefined();
+        expect(committedOptions).toStrictEqual({ root: false });
+    });
+
+    it("can use payload handlers for success", async () => {
+        const successObj = { test: "hello" };
+        mockAxios.onGet(`/success/`)
+            .reply(200, mockSuccess(successObj));
+
+        let committedType: any = false;
+        let committedPayload: any = false;
+        let committedOptions: any = null;
+        const commit = ({type, payload}: any, options?: any) => {
+            committedType = type;
+            committedPayload = payload;
+            committedOptions = options;
+        };
+
+        await api({commit, rootState} as any)
+            .withSuccess("TEST_TYPE", false, (data: typeof successObj) => data.test + " world")
+            .get("/success/");
+
+        expect(committedType).toBe("TEST_TYPE");
+        expect(committedPayload).toBe("hello world");
+        expect(committedOptions).toStrictEqual({ root: false });
+    });
+
+    it("can use payload handlers for failure", async () => {
+        const errMsg = "hello";
+        mockAxios.onGet(`/failure/`)
+            .reply(500, mockFailure(errMsg));
+        
+        let committedType: any = false;
+        let committedPayload: any = false;
+        let committedOptions: any = null;
+        const commit = ({type, payload}: any, options?: any) => {
+            committedType = type;
+            committedPayload = payload;
+            committedOptions = options;
+        };
+
+        await api({commit, rootState} as any)
+            .withError("TEST_TYPE", false, (data) => data.detail + " world")
+            .get("/failure/");
+
+        expect(committedType).toBe("TEST_TYPE");
+        expect(committedPayload).toBe("hello world");
+        expect(committedOptions).toStrictEqual({ root: false });
     });
 
     it("commits the success response with the specified type with root options", async () => {

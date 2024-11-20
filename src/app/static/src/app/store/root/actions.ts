@@ -11,6 +11,7 @@ import {VersionInfo} from "../../generated";
 import {currentHintVersion} from "../../hintVersion";
 import {ChangeLanguageAction} from "../language/actions";
 import {ErrorReportDefaultValue} from "../errors/errors";
+import { downloadSwitches, DownloadType } from "../downloadResults/downloadConfig";
 
 export interface RootActions extends LanguageActions<RootState> {
     validate: (store: ActionContext<RootState, RootState>) => void;
@@ -98,15 +99,12 @@ export const actions: ActionTree<RootState, RootState> & RootActions = {
 };
 
 const getDownloadIds = (rootState: RootState) => {
-    const spectrumId = rootState.downloadResults.spectrum.downloadId || ErrorReportDefaultValue.download;
-    const summaryId = rootState.downloadResults.summary.downloadId || ErrorReportDefaultValue.download;
-    const coarseOutputId = rootState.downloadResults.coarseOutput.downloadId || ErrorReportDefaultValue.download
-    const comparisonId = rootState.downloadResults.comparison.downloadId || ErrorReportDefaultValue.download
-
-    return {
-        spectrum: spectrumId,
-        summary: summaryId,
-        coarse_output: coarseOutputId,
-        comparison: comparisonId
-    }
-}
+    return Object.fromEntries(Object.values(DownloadType)
+        .map(type => {
+            if (!downloadSwitches[type]) return null;
+            const id = rootState.downloadResults[type].downloadId || ErrorReportDefaultValue.download;
+            return [type, id];
+        })
+        .filter(x => x !== null) as [DownloadType, string][]
+    );
+};

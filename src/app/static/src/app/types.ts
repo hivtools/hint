@@ -167,19 +167,6 @@ export interface DownloadResultsDependency {
     metadataError: Error | null
 }
 
-export interface PollingStarted {
-    pollId: number,
-    downloadType: string
-}
-
-export enum DOWNLOAD_TYPE {
-    SPECTRUM = "Spectrum",
-    COARSE = "CoarseOutput",
-    SUMMARY = "Summary",
-    COMPARISON = "Comparison",
-    AGYW = "AGYW",
-}
-
 export interface ReviewInputDataColumnValue extends FilterOption {
     format?: string | null,
     accuracy?: string | null

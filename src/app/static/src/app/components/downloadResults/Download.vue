@@ -1,10 +1,10 @@
 <template>
     <div id="download">
-        <h4 v-translate="translateKey.header"></h4>
+        <h4 v-translate="translateKey"></h4>
         <button class="btn btn-lg my-3" :class="disabled ? 'btn-secondary' : 'btn-red'"
                 :disabled="disabled"
                 @click="download">
-            <span v-translate="translateKey.button"></span>
+            <span v-translate="'download'"></span>
             <vue-feather type="download" size="20" class="icon ml-2" style="margin-top: -4px;"></vue-feather>
         </button>
         <div>
@@ -37,7 +37,7 @@
             },
             translateKey: {
                 required: true,
-                type: Object
+                type: String
             },
             disabled: {
                 required: true,

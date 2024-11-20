@@ -25,6 +25,7 @@ import {initialDownloadResults} from "../../app/store/downloadResults/downloadRe
 import {Warning} from "../../app/generated";
 import {extractErrors} from "../../app/utils";
 import {expectArraysEqual} from "../testHelpers";
+import { DownloadType } from "../../app/store/downloadResults/downloadConfig";
 
 describe("root getters", () => {
 
@@ -122,7 +123,7 @@ describe("root getters", () => {
 
         const err = mockError("err")
         const stateWithErrors = mockDownloadResultsState({
-            coarseOutput: {...initialDownloadResults, error: mockError("err")}
+            [DownloadType.COARSE]: {...initialDownloadResults, error: mockError("err")}
         });
 
         const result = getResult({downloadResults: stateWithErrors});

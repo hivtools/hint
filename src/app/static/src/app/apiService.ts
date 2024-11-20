@@ -70,9 +70,10 @@ export class APIService<S extends string, E extends string> implements API<S, E>
         return this;
     };
 
-    withError = (type: E, root = false) => {
+    withError = (type: E, root = false, payloadFunc?: (e: Error) => any) => {
         this._onError = (failure: Response) => {
-            this._commit({type: type, payload: APIService.getFirstErrorFromFailure(failure)}, {root});
+            const error = APIService.getFirstErrorFromFailure(failure);
+            this._commit({ type, payload: payloadFunc ? payloadFunc(error) : error }, { root });
         };
         return this;
     };
@@ -92,15 +93,9 @@ export class APIService<S extends string, E extends string> implements API<S, E>
         return this;
     };
 
-    withSuccess = (type: S, root = false) => {
+    withSuccess = (type: S, root = false, payloadFunc?: (data: any) => any) => {
         this._onSuccess = (data: any) => {
-            const toCommit = {type: type, payload: data};
-            if (root) {
-                this._commit(toCommit, {root: true});
-            } else {
-                this._commit(toCommit);
-            }
-
+            this._commit({ type, payload: payloadFunc ? payloadFunc(data) : data }, { root });
         };
         return this;
     };

@@ -19,6 +19,7 @@ import {Language} from "../../app/store/translations/locales";
 import {currentHintVersion} from "../../app/hintVersion";
 import {expectChangeLanguageMutations} from "../testHelpers";
 import {RootMutation} from "../../app/store/root/mutations";
+import { DownloadType } from "../../app/store/downloadResults/downloadConfig";
 
 
 describe("root actions", () => {
@@ -262,13 +263,13 @@ describe("root actions", () => {
                 calibrateId: "2022"
             }),
             downloadResults: mockDownloadResultsState({
-                summary: {
+                [DownloadType.SUMMARY]: {
                     downloadId: "summary123"
                 },
-                spectrum: {
+                [DownloadType.SPECTRUM]: {
                     downloadId: "spectrum123"
                 },
-                comparison: {
+                [DownloadType.COMPARISON]: {
                     downloadId: "comparison123"
                 }
             } as any),
@@ -316,10 +317,10 @@ describe("root actions", () => {
             modelRunId: "1234",
             calibrateId: "2022",
             downloadIds: {
-                spectrum: "spectrum123",
-                summary: "summary123",
-                coarse_output: "none",
-                comparison: "comparison123"
+                [DownloadType.SPECTRUM]: "spectrum123",
+                [DownloadType.SUMMARY]: "summary123",
+                [DownloadType.COARSE]: "none",
+                [DownloadType.COMPARISON]: "comparison123"
             },
             description: "desc",
             section: "reviewInputs",
@@ -406,7 +407,7 @@ describe("root actions", () => {
             timeStamp: new Date(),
             modelRunId: "no associated modelRunId",
             calibrateId: "no associated calibrateId",
-            downloadIds: {spectrum: "none", summary: "none", coarse_output: "none", comparison: "none"},
+            downloadIds: {[DownloadType.SPECTRUM]: "none", [DownloadType.SUMMARY]: "none", [DownloadType.COARSE]: "none", [DownloadType.COMPARISON]: "none"},
             description: "desc",
             section: "reviewInputs",
             stepsToReproduce: "repro",

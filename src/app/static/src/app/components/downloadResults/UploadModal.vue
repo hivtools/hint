@@ -89,6 +89,7 @@
     import {RootState} from "../../root";
     import {DownloadResultsState} from "../../store/downloadResults/downloadResults";
     import {defineComponent} from "vue";
+import { DownloadType } from "../../store/downloadResults/downloadConfig";
 
     interface Data {
         uploadFilesToAdr: string[]
@@ -158,18 +159,16 @@
         },
         computed: {
             ...mapStateProps("downloadResults", {
-                summary: ((state: DownloadResultsState) => state.summary),
-                spectrum: ((state: DownloadResultsState) => state.spectrum),
-                comparison: ((state: DownloadResultsState) => state.comparison)
+                summary: (state: DownloadResultsState) => state[DownloadType.SUMMARY],
+                spectrum: (state: DownloadResultsState) => state[DownloadType.SPECTRUM],
+                comparison: (state: DownloadResultsState) => state[DownloadType.COMPARISON]
             }),
             outputFileError(): string | null {
                 if ((this.summary.error || this.summary.metadataError) &&
                     (this.spectrum.error || this.spectrum.metadataError)) {
                     return "downloadSpectrumAndSummaryError"
-
                 } else if (this.summary.error || this.summary.metadataError) {
                     return this.translatedOutputFileError("downloadSummary")
-
                 } else if (this.spectrum.error || this.spectrum.metadataError) {
                     return this.translatedOutputFileError("downloadSpectrum")
                 } else if (this.comparison.error || this.comparison.metadataError) {

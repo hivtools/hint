@@ -10,17 +10,14 @@ describe(`download`, () => {
         preparing: true
     })
 
-    const downloadTranslate = {
-        header: "downloadSummaryReport",
-        button: "download"
-    }
-
     const mockDirective = vi.fn()
+
+    const mockTranslateKey = "downloadSummaryReport";
 
     const defaultProps = {
         file: downloadSummary,
         modalOpen: false,
-        translateKey: downloadTranslate,
+        translateKey: mockTranslateKey,
         disabled: false
     }
 
@@ -47,7 +44,7 @@ describe(`download`, () => {
         })
         expect(wrapper.props()).toEqual({
             file: downloadSummary,
-            translateKey: downloadTranslate,
+            translateKey: mockTranslateKey,
             disabled: false
         })
     })

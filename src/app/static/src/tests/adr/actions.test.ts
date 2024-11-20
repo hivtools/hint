@@ -50,10 +50,10 @@ describe("ADR actions", () => {
         await actions.ssoLoginMethod({commit, dispatch, state, rootState} as any);
 
         expect(commit).toHaveBeenCalledTimes(1)
-        expect(commit).toHaveBeenCalledWith({
-            type: ADRMutation.SetSSOLogin,
-            payload: true
-        });
+        expect(commit).toHaveBeenCalledWith(
+            { type: ADRMutation.SetSSOLogin, payload: true },
+            { root: false }
+        );
     });
 
     it("saves key", async () => {

@@ -1,4 +1,4 @@
-import {mount, shallowMount} from '@vue/test-utils';
+import {mount, shallowMount, VueWrapper} from '@vue/test-utils';
 import Vuex, {Store} from 'vuex';
 import {
     mockADRState,
@@ -17,73 +17,71 @@ import Download from "../../../app/components/downloadResults/Download.vue";
 import {ADRState} from "../../../app/store/adr/adr";
 import {ADRUploadState} from "../../../app/store/adrUpload/adrUpload";
 import ErrorAlert from "../../../app/components/ErrorAlert.vue";
+import { DownloadType } from '../../../app/store/downloadResults/downloadConfig';
+
+const mockPrepareAllOutputs = vi.fn();
+const mockDownloadOutput = vi.fn();
+
+const switches: Record<DownloadType, boolean> = {
+    Summary: true,
+    Comparison: true,
+    Spectrum: true,
+    CoarseOutput: true,
+    AGYW: true
+};
+
+const createStore = (adr: Partial<ADRState> = {userCanUpload: true},
+    getUserCanUpload = vi.fn(),
+    adrUploadState: Partial<ADRUploadState> = {},
+    downloadResults?: Partial<DownloadResultsState>,
+    clearStatus = vi.fn()) => {
+    const store = new Vuex.Store({
+        state: emptyState(),
+        modules: {
+            modelCalibrate: {
+                namespaced: true,
+                state: mockModelCalibrateState({calibrateId: "testId"}),
+            },
+            adr: {
+                namespaced: true,
+                state: mockADRState(adr),
+                actions: {
+                    getUserCanUpload
+                }
+            },
+            adrUpload: {
+                namespaced: true,
+                state: mockADRUploadState({
+                    ...adrUploadState,
+                    currentFileUploading: 1,
+                    totalFilesUploading: 2
+                }),
+                actions: {
+                    getUploadFiles: vi.fn()
+                },
+                mutations: {
+                    ClearStatus: clearStatus
+                }
+            },
+            downloadResults: {
+                namespaced: true,
+                state: mockDownloadResultsState(downloadResults),
+                actions: {
+                    prepareAllOutputs: mockPrepareAllOutputs,
+                    downloadOutput: mockDownloadOutput
+                }
+            }
+        }
+    });
+    registerTranslations(store);
+    return store;
+};
 
 describe("Download Results component", () => {
-
-    const error = {error: "ERR", detail: "download report error"}
-
-    const mockPrepareOutputs = vi.fn();
-    const mockDownloadComparisonReport = vi.fn()
-    const mockDownloadSpectrumReport = vi.fn()
-    const mockDownloadCoarseReport = vi.fn()
-    const mockDownloadSummaryReport = vi.fn()
-    const mockDownloadAgywTool = vi.fn()
-
     afterEach(() => {
         vi.useRealTimers();
         vi.resetAllMocks();
     })
-
-    const createStore = (adr: Partial<ADRState> = {userCanUpload: true},
-                         getUserCanUpload = vi.fn(),
-                         adrUploadState: Partial<ADRUploadState> = {},
-                         downloadResults?: Partial<DownloadResultsState>,
-                         clearStatus = vi.fn()) => {
-        const store = new Vuex.Store({
-            state: emptyState(),
-            modules: {
-                modelCalibrate: {
-                    namespaced: true,
-                    state: mockModelCalibrateState({calibrateId: "testId"}),
-                },
-                adr: {
-                    namespaced: true,
-                    state: mockADRState(adr),
-                    actions: {
-                        getUserCanUpload
-                    }
-                },
-                adrUpload: {
-                    namespaced: true,
-                    state: mockADRUploadState({
-                        ...adrUploadState,
-                        currentFileUploading: 1,
-                        totalFilesUploading: 2
-                    }),
-                    actions: {
-                        getUploadFiles: vi.fn()
-                    },
-                    mutations: {
-                        ClearStatus: clearStatus
-                    }
-                },
-                downloadResults: {
-                    namespaced: true,
-                    state: mockDownloadResultsState(downloadResults),
-                    actions: {
-                        prepareOutputs: mockPrepareOutputs,
-                        downloadComparisonReport: mockDownloadComparisonReport,
-                        downloadSpectrumOutput: mockDownloadSpectrumReport,
-                        downloadSummaryReport: mockDownloadSummaryReport,
-                        downloadCoarseOutput: mockDownloadCoarseReport,
-                        downloadAgywTool: mockDownloadAgywTool,
-                    }
-                }
-            }
-        });
-        registerTranslations(store);
-        return store;
-    };
 
     it("renders as expected", () => {
         const store = createStore();
@@ -172,12 +170,12 @@ describe("Download Results component", () => {
                 },
                 data() {
                     return {
-                        comparisonSwitch: true
+                        switches
                     }
                 }
             });
         const headers = wrapper.findAll("h4");
-        expect(headers.length).toBe(4)
+        expect(headers.length).toBe(Object.values(DownloadType).length);
     });
 
     it("does not render status messages or error alerts without appropriate states", () => {
@@ -288,13 +286,13 @@ describe("Download Results component", () => {
             },
             data() {
                 return {
-                    comparisonSwitch: true
+                    switches
                 }
             }
         });
 
         const downloadButtons = wrapper.findAllComponents(Download);
-        expect(downloadButtons.length).toBe(4)
+        expect(downloadButtons.length).toBe(Object.values(DownloadType).length)
         expect(downloadButtons[0].props("disabled")).toBe(true)
         expect(downloadButtons[1].props("disabled")).toBe(true)
         expect(downloadButtons[2].props("disabled")).toBe(true)
@@ -308,262 +306,7 @@ describe("Download Results component", () => {
                 plugins: [store]
             }
         });
-        expect(mockPrepareOutputs.mock.calls.length).toBe(1);
-    });
-
-    it("cannot download spectrum output while preparing", async () => {
-        const store = createStore({}, vi.fn(), {}, {
-            spectrum: mockDownloadResultsDependency({
-                preparing: true,
-                downloadId: "1"
-            })
-        });
-        const wrapper = mountWithTranslate(DownloadResults, store, {
-            global: {
-                plugins: [store],
-                stubs: ["upload-modal"]
-            }
-        });
-
-        const button = wrapper.find("#spectrum-download").find("button")
-        expect(button.attributes().disabled).toBe("");
-    });
-
-    it("cannot download spectrum output if downloadId does not exist", async () => {
-        const store = createStore();
-        const wrapper = mountWithTranslate(DownloadResults, store, {
-            global: {
-                plugins: [store],
-                stubs: ["upload-modal"]
-            }
-        });
-
-        const button = wrapper.find("#spectrum-download").find("button")
-        expect(button.attributes().disabled).toBe("");
-    });
-
-    it("can download spectrum file once prepared", async () => {
-        const store = createStore({}, vi.fn(), {}, {
-            spectrum: mockDownloadResultsDependency({
-                preparing: false,
-                complete: true,
-                error: null,
-                downloadId: "123"
-            })
-        });
-        const wrapper = mountWithTranslate(DownloadResults, store, {
-            global: {
-                plugins: [store],
-                stubs: ["upload-modal"]
-            }
-        });
-        const button = wrapper.find("#spectrum-download").find("button");
-        expect(button.attributes().disabled).toBeUndefined();
-        await button.trigger("click");
-        expect(mockDownloadSpectrumReport).toHaveBeenCalled()
-    });
-
-    it("cannot download summary report while preparing", () => {
-        const store = createStore({}, vi.fn(), {}, {
-            summary: mockDownloadResultsDependency({
-                preparing: true,
-                downloadId: "1"
-            })
-        });
-        const wrapper = mountWithTranslate(DownloadResults, store, {
-            global: {
-                plugins: [store],
-                stubs: ["upload-modal"]
-            }
-        });
-
-        const button = wrapper.find("#summary-download").find("button")
-        expect(button.attributes().disabled).toBe("");
-    });
-
-    it("cannot download summary report if downloadId does not exist", async () => {
-        const store = createStore();
-        const wrapper = mountWithTranslate(DownloadResults, store, {
-            global: {
-                plugins: [store],
-                stubs: ["upload-modal"]
-            }
-        });
-
-        const button = wrapper.find("#summary-download").find("button")
-        expect(button.attributes().disabled).toBe("");
-    });
-
-    it("can download summary report once prepared", async () => {
-        const store = createStore({}, vi.fn(), {}, {
-            summary: mockDownloadResultsDependency({
-                preparing: false,
-                complete: true,
-                error: null,
-                downloadId: "123"
-            })
-        });
-        const wrapper = mountWithTranslate(DownloadResults, store, {
-            global: {
-                plugins: [store],
-                stubs: ["upload-modal"]
-            }
-        });
-        const button = wrapper.find("#summary-download").find("button");
-        expect(button.attributes().disabled).toBeUndefined();
-        await button.trigger("click");
-        expect(mockDownloadSummaryReport).toHaveBeenCalled()
-    });
-
-    it("cannot download coarse output while preparing", () => {
-        const store = createStore({}, vi.fn(), {}, {
-            coarseOutput: mockDownloadResultsDependency({
-                preparing: true,
-                downloadId: "1"
-            })
-        });
-        const wrapper = mountWithTranslate(DownloadResults, store, {
-            global: {
-                plugins: [store],
-                stubs: ["upload-modal"]
-            }
-        });
-
-        const button = wrapper.find("#coarse-output-download").find("button")
-        expect(button.attributes().disabled).toBe("");
-    });
-
-    it("cannot download coarse output if downloadId does not exist", async () => {
-        const store = createStore();
-        const wrapper = mountWithTranslate(DownloadResults, store, {
-            global: {
-                plugins: [store],
-                stubs: ["upload-modal"]
-            }
-        });
-
-        const button = wrapper.find("#coarse-output-download").find("button")
-        expect(button.attributes().disabled).toBe("");
-    });
-
-    it("can download coarseOutput file once prepared", async () => {
-        const store = createStore({}, vi.fn(), {}, {
-            coarseOutput: mockDownloadResultsDependency({
-                preparing: false,
-                complete: true,
-                error: null,
-                downloadId: "123"
-            })
-        });
-        const wrapper = mountWithTranslate(DownloadResults, store, {
-            global: {
-                plugins: [store],
-                stubs: ["upload-modal"]
-            }
-        });
-        const button = wrapper.find("#coarse-output-download").find("button");
-        expect(button.attributes().disabled).toBeUndefined();
-        await button.trigger("click");
-        expect(mockDownloadCoarseReport).toHaveBeenCalled()
-    });
-
-    it("cannot download comparison output while preparing", async () => {
-        const store = createStore({}, vi.fn(), {}, {
-            comparison: mockDownloadResultsDependency({
-                preparing: true,
-                downloadId: "1"
-            })
-        });
-
-        const wrapper = mount(DownloadResults,
-            {
-                global: {
-                    plugins: [store],
-                    stubs: ["upload-modal"],
-                },
-                data() {
-                    return {
-                        comparisonSwitch: true
-                    }
-                }
-            });
-
-        const button = wrapper.find("#comparison-download").find("button")
-        expect(button.attributes().disabled).toBe("");
-    });
-
-    it("cannot download comparison output if downloadId does not exist", async () => {
-        const store = createStore();
-        const wrapper = mount(DownloadResults,
-            {
-                global: {
-                    plugins: [store],
-                    stubs: ["upload-modal"],
-                },
-                data() {
-                    return {
-                        comparisonSwitch: true
-                    }
-                }
-            });
-
-        const button = wrapper.find("#comparison-download").find("button")
-        expect(button.attributes().disabled).toBe("");
-    });
-
-    it("can download comparison file once prepared", async () => {
-        const store = createStore({}, vi.fn(), {}, {
-            comparison: mockDownloadResultsDependency({
-                preparing: false,
-                complete: true,
-                error: null,
-                downloadId: "123"
-            })
-        });
-        const wrapper = mount(DownloadResults,
-            {
-                global: {
-                    plugins: [store],
-                    stubs: ["upload-modal"],
-                },
-                data() {
-                    return {
-                        comparisonSwitch: true
-                    }
-                }
-            });
-        const button = wrapper.find("#comparison-download").find("button");
-        expect(button.attributes().disabled).toBeUndefined();
-        await button.trigger("click")
-        expect(mockDownloadComparisonReport).toHaveBeenCalledTimes(1)
-    });
-
-    it("can display error message for comparison download file when errored", async () => {
-        const error = {error: "ERR", detail: "comparison error"}
-        const store = createStore({}, vi.fn(), {}, {
-            comparison: mockDownloadResultsDependency({
-                preparing: false,
-                complete: true,
-                error,
-                downloadId: "123"
-            })
-        });
-        const wrapper = mount(DownloadResults,
-            {
-                global: {
-                    plugins: [store],
-                    stubs: ["upload-modal"],
-                },
-                data() {
-                    return {
-                        comparisonSwitch: true
-                    }
-                }
-            });
-        const comparisonWrapper = wrapper.find("#comparison-download");
-        const button = comparisonWrapper.find("button");
-        expect(button.attributes().disabled).toBeUndefined();
-        expect(comparisonWrapper.findComponent(ErrorAlert).props("error")).toEqual(error)
+        expect(mockPrepareAllOutputs.mock.calls.length).toBe(1);
     });
 
     it("calls clear status mutation before mount", () => {
@@ -576,158 +319,73 @@ describe("Download Results component", () => {
         });
         expect(spy).toHaveBeenCalledTimes(1)
     });
-
-    it("can display error message for summary download file when errored", async () => {
-        const store = createStore({}, vi.fn(), {}, {
-            summary: mockDownloadResultsDependency({
-                preparing: false,
-                complete: true,
-                error,
-                downloadId: "123"
-            })
-        });
-
-        rendersReportDownloadErrors(store, "#summary-download")
-    });
-
-    it("can display error message for spectrum download file when errored", async () => {
-        const store = createStore({}, vi.fn(), {}, {
-            spectrum: mockDownloadResultsDependency({
-                preparing: false,
-                complete: true,
-                error,
-                downloadId: "123"
-            })
-        });
-
-        rendersReportDownloadErrors(store, "#spectrum-download")
-    });
-
-    it("can display error message for summary download file when errored", async () => {
-        const store = createStore({}, vi.fn(), {}, {
-            coarseOutput: mockDownloadResultsDependency({
-                preparing: false,
-                complete: true,
-                error,
-                downloadId: "123"
-            })
-        });
-
-        rendersReportDownloadErrors(store, "#coarse-output-download")
-    });
-
-    it("cannot download AGYW output while preparing", async () => {
-        const store = createStore({}, vi.fn(), {}, {
-            agyw: mockDownloadResultsDependency({
-                preparing: true,
-                downloadId: "1"
-            })
-        });
-
-        const wrapper = mount(DownloadResults,
-            {
-                global: {
-                    plugins: [store],
-                    stubs: ["upload-modal"],
-                },
-                data() {
-                    return {
-                        agywSwitch: true
-                    }
-                }
-            });
-
-        const button = wrapper.find("#agyw-download").find("button")
-        expect(button.attributes().disabled).toBe("");
-    });
-
-    it("cannot download AGYW output if downloadId does not exist", async () => {
-        const store = createStore();
-        const wrapper = mount(DownloadResults,
-            {
-                global: {
-                    plugins: [store],
-                    stubs: ["upload-modal"],
-                },
-                data() {
-                    return {
-                        agywSwitch: true
-                    }
-                }
-            });
-
-        const button = wrapper.find("#agyw-download").find("button")
-        expect(button.attributes().disabled).toBe("");
-    });
-
-    it("can download AGYW file once prepared", async () => {
-        const store = createStore({}, vi.fn(), {}, {
-            agyw: mockDownloadResultsDependency({
-                preparing: false,
-                complete: true,
-                error: null,
-                downloadId: "123"
-            })
-        });
-        const wrapper = mount(DownloadResults,
-            {
-                global: {
-                    plugins: [store],
-                    stubs: ["upload-modal"],
-                },
-                data() {
-                    return {
-                        agywSwitch: true
-                    }
-                }
-            });
-        const button = wrapper.find("#agyw-download").find("button");
-        expect(button.attributes().disabled).toBeUndefined();
-        await button.trigger("click")
-        expect(mockDownloadAgywTool).toHaveBeenCalledTimes(1)
-    });
-
-    it("can display error message for agyw download file when errored", async () => {
-        const error = {error: "ERR", detail: "agyw error"}
-        const store = createStore({}, vi.fn(), {}, {
-            agyw: mockDownloadResultsDependency({
-                preparing: false,
-                complete: true,
-                error,
-                downloadId: "123"
-            })
-        });
-        const wrapper = mount(DownloadResults,
-            {
-                global: {
-                    plugins: [store],
-                    stubs: ["upload-modal"],
-                },
-                data() {
-                    return {
-                        agywSwitch: true
-                    }
-                }
-            });
-        const agywWrapper = wrapper.find("#agyw-download");
-        const button = agywWrapper.find("button");
-        expect(button.attributes().disabled).toBeUndefined();
-        expect(agywWrapper.findComponent(ErrorAlert).props("error")).toEqual(error)
-    });
 });
 
-const rendersReportDownloadErrors = (store: Store<RootState>, downloadType: string) => {
-    const error = {error: "ERR", detail: "download report error"}
-    const wrapper = mount(DownloadResults,
-        {
+describe("Single DownloadType button", () => {
+    afterEach(() => {
+        vi.useRealTimers();
+        vi.resetAllMocks();
+    })
+
+    Object.values(DownloadType).forEach(type => testDownloadButton(type));
+});
+
+const testDownloadButton = (type: DownloadType) => {
+    const mountWithSwitchesOn = (downloadResultsDep = {}) => {
+        const store = createStore({}, vi.fn(), {}, {
+            [type]: mockDownloadResultsDependency(downloadResultsDep)
+        });
+
+        return mountWithTranslate(DownloadResults, store, {
             global: {
                 plugins: [store],
                 stubs: ["upload-modal"]
-            }
+            },
+            data: () => ({ switches })
         });
-    const downloadComponent = wrapper.find(downloadType);
-    const button = downloadComponent.find("button");
-    expect(button.attributes().disabled).toBeUndefined();
-    expect(downloadComponent.findComponent(ErrorAlert).exists()).toBeTruthy()
-    expect(downloadComponent.findComponent(ErrorAlert).props("error")).toEqual(error)
-}
+    };
+
+    const getButton = (wrapper: VueWrapper) => wrapper.find(`#${type}-download`).find("button");
+
+    it("cannot download output while preparing", () => {
+        const wrapper = mountWithSwitchesOn({
+            preparing: true,
+            downloadId: "1"
+        });
+        const button = getButton(wrapper);
+        expect(button.attributes().disabled).toBe("");
+    });
+
+    it("cannot download output if downloadId does not exist", async () => {
+        const wrapper = mountWithSwitchesOn();
+        const button = getButton(wrapper);
+        expect(button.attributes().disabled).toBe("");
+    });
+
+    it("can download file once prepared", async () => {
+        const wrapper = mountWithSwitchesOn({
+            preparing: false,
+            complete: true,
+            error: null,
+            downloadId: "123"
+        });
+        const button = getButton(wrapper);
+        expect(button.attributes().disabled).toBeUndefined();
+        await button.trigger("click");
+        expect(mockDownloadOutput).toHaveBeenCalled();
+        expect(mockDownloadOutput.mock.calls[0][1]).toBe(type);
+    });
+
+    it("can display error message for download file when errored", async () => {
+        const error = { error: "oops...", detail: "i did it again" };
+        const wrapper = mountWithSwitchesOn({
+            preparing: false,
+            complete: true,
+            error,
+            downloadId: "123"
+        });
+        const button = getButton(wrapper);
+        expect(button.attributes().disabled).toBeUndefined();
+        expect(wrapper.findComponent(ErrorAlert).props("error")).toEqual(error);
+    });
+};
