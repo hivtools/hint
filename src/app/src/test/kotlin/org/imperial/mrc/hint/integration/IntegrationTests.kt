@@ -84,7 +84,7 @@ abstract class SecureIntegrationTests : CleanDatabaseTests()
                 getTestEntity("malawi.geojson"))
 
         testRestTemplate.postForEntity<String>("/baseline/pjnz/",
-                getTestEntity("Malawi2019.PJNZ"))
+                getTestEntity("Malawi2024.PJNZ"))
 
         testRestTemplate.postForEntity<String>("/baseline/population/",
                 getTestEntity("population.csv"))
@@ -299,16 +299,18 @@ abstract class SecureIntegrationTests : CleanDatabaseTests()
 
     fun getMockModelOptions(): Map<String, Any>
     {
-        return mapOf("anc_art_coverage_year1" to "2018",
-                "anc_prevalence_year1" to "2018",
-                "anc_prevalence_year2" to "2018",
+        return mapOf("anc_art_coverage_year1" to "2023",
+                "anc_prevalence_year1" to "2023",
+                "anc_prevalence_year2" to "2023",
                 "area_level" to "4", "area_scope" to "MWI",
                 "artattend" to "false",
                 "artattend_log_gamma_offset" to -4,
                 "artattend_t2" to "true",
-                "calendar_quarter_t1" to "CY2018Q3",
-                "calendar_quarter_t2" to "CY2019Q4",
-                "calendar_quarter_t3" to "CY2020Q3",
+                "calendar_quarter_t1" to "CY2020Q3",
+                "calendar_quarter_t2" to "CY2023Q4",
+                "calendar_quarter_t3" to "CY2024Q3",
+                "calendar_quarter_t4" to "CY2025Q3",
+                "calendar_quarter_t5" to "CY2026Q3",
                 "deff_artcov" to 1,
                 "deff_prev" to 1,
                 "deff_recent" to 1,
@@ -318,11 +320,11 @@ abstract class SecureIntegrationTests : CleanDatabaseTests()
                 "no_of_samples" to 1000,
                 "permissive" to "false",
                 "rng_seed" to 28,
-                "survey_art_coverage" to { "MWI2016PHIA" },
-                "survey_prevalence" to { "MWI2016PHIA" },
-                "survey_recently_infected" to { "MWI2016PHIA" },
+                "survey_art_coverage" to { "DEMO2020PHIA" },
+                "survey_prevalence" to { "DEMO2020PHIA" },
+                "survey_recently_infected" to { "DEMO2020PHIA" },
                 "output_aware_plhiv" to "true",
-                "anc_clients_year2" to 2018,
+                "anc_clients_year2" to 2023,
                 "anc_clients_year2_num_months" to "9")
     }
 }

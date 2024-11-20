@@ -4,7 +4,7 @@ import {translate} from "./translationUtils";
 const uploadFileTypes = {
     spectrum: {
         translationKey: "PJNZ",
-        testFile: "../testdata/Malawi2019.PJNZ"
+        testFile: "../testdata/Malawi2024.PJNZ"
     },
     shape: {
         translationKey: "shape",
