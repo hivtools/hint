@@ -13,7 +13,7 @@ import {actions} from "../../app/store/downloadResults/actions";
 import {DownloadStatusResponse} from "../../app/generated";
 import {switches} from "../../app/featureSwitches";
 import {flushPromises} from "@vue/test-utils";
-import { DownloadType, downloadTypePrepareUrls } from "../../app/store/downloadResults/downloadConfig";
+import { DownloadType, downloadPostConfig } from "../../app/store/downloadResults/downloadConfig";
 import { DownloadResultsState } from "../../app/store/downloadResults/downloadResults";
 import { DownloadResultsMutation } from "../../app/store/downloadResults/mutations";
 
@@ -76,7 +76,7 @@ const testDownloadAction = (type: DownloadType) => {
         const { commit, dispatch, rootState, state, rootGetters } = getStore({});
 
         const partialDownloadResultsState = mockDownloadResultsDependency({downloadId: "1"});
-        const downloadUrl = `download/submit/${downloadTypePrepareUrls[type].url}/${mockCalibrateId}`;
+        const downloadUrl = `download/submit/${downloadPostConfig[type].url}/${mockCalibrateId}`;
         mockAxios.onPost(downloadUrl).reply(200, mockSuccess(partialDownloadResultsState));
         
         await actions.prepareOutput({ commit, state, dispatch, rootState, rootGetters} as any, type);
@@ -135,7 +135,7 @@ const testDownloadAction = (type: DownloadType) => {
         const { commit, dispatch, state, rootState, rootGetters } = getStore({});
 
         const failureMessage = "TEST FAILED";
-        mockAxios.onPost(`download/submit/${downloadTypePrepareUrls[type].url}/${mockCalibrateId}`)
+        mockAxios.onPost(`download/submit/${downloadPostConfig[type].url}/${mockCalibrateId}`)
             .reply(500, mockFailure(failureMessage));
 
         await actions.prepareOutput({ commit, state, dispatch, rootState, rootGetters } as any, type);

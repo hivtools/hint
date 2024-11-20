@@ -5,7 +5,7 @@ import {api, ResponseWithType} from "../../apiService";
 import {DownloadResultsMutation} from "./mutations";
 import {Error, ModelStatusResponse} from "../../generated";
 import {switches} from "../../featureSwitches"
-import { DownloadType, downloadTypePrepareUrls } from "./downloadConfig";
+import { DownloadType, downloadPostConfig } from "./downloadConfig";
 
 export interface DownloadResultsActions {
     prepareAllOutputs: (store: ActionContext<DownloadResultsState, RootState>) => Promise<void>
@@ -29,7 +29,7 @@ export const actions: ActionTree<DownloadResultsState, RootState> & DownloadResu
         const { state, dispatch, rootState, commit } = store;
         if (state[type].downloadId || state[type].fetchingDownloadId) return;
         commit({ type: DownloadResultsMutation.SetFetchingDownloadId, payload: type });
-        const postConfig = downloadTypePrepareUrls[type];
+        const postConfig = downloadPostConfig[type];
         const fullUrl = `download/submit/${postConfig.url}/${rootState.modelCalibrate.calibrateId}`;
 
         const response = await api(store)

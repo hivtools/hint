@@ -20,7 +20,7 @@ export const downloadSwitches = {
 
 // we do posts to /download/submit/<url>/<calibrate-id> with the body function called
 type PostObject = { url: string, body: (store: ActionContext<DownloadResultsState, RootState>) => object };
-export const downloadTypePrepareUrls: Record<DownloadType, PostObject> = {
+export const downloadPostConfig: Record<DownloadType, PostObject> = {
     [DownloadType.SPECTRUM]: { url: "spectrum", body: (store) => store.rootGetters.projectState },
     [DownloadType.COARSE]: { url: "coarse-output", body: () => ({}) },
     [DownloadType.SUMMARY]: { url: "summary", body: () => ({}) },
