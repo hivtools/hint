@@ -8,13 +8,11 @@
                         :options="createTooltips"
                         :options-style="() => getStyle(feature)">
             </l-geo-json>
-            <l-control position="topleft">
-                <div class="checkbox-wrapper">
-                    <input type='checkbox' @change="toggleTileLayer" :checked="tileLayerVisible" />
-                    <label v-translate="'showBaseMap'"></label>
-                </div>
-             </l-control>
-            <l-tile-layer :url="tileLayerUrl" v-if="tileLayerVisible"/>
+            <base-map-checkbox
+                @toggle-base-map="toggleBaseMap"
+                :checked="baseMapVisible"
+            />
+            <l-tile-layer :url="tileLayerUrl" v-if="baseMapVisible"/>
             <map-empty-feature v-if="emptyFeature"></map-empty-feature>
             <template v-else>
                 <reset-map @reset-view="updateBounds"></reset-map>
@@ -32,7 +30,7 @@
 import {PropType, computed, onMounted, ref, toRefs, watch} from "vue";
 import {useStore} from "vuex";
 import {RootState} from "../../../root";
-import { LMap, LGeoJson, LTileLayer, LControl } from "@vue-leaflet/vue-leaflet";
+import { LMap, LGeoJson, LTileLayer } from "@vue-leaflet/vue-leaflet";
 import { Feature } from "geojson";
 import {
     getVisibleFeatures,
@@ -51,6 +49,7 @@ import {useChoroplethTooltips} from "./useChoroplethTooltips";
 import {getFeatureData} from "./utils";
 import MapEmptyFeature from "../MapEmptyFeature.vue";
 import { PlotName } from "../../../store/plotSelections/plotSelections";
+import BaseMapCheckbox from "../BaseMapCheckbox.vue";
 
 const props = defineProps({
     plot: {
@@ -74,7 +73,7 @@ const indicatorMetadata = computed<IndicatorMetadata>(() => {
 const colourRange = ref<NumericRange | null>(null);
 const scaleLevels = ref<ScaleLevels[]>([]);
 const selectedScale = ref<ScaleSettings | null>(null);
-const tileLayerVisible = ref(true);
+const baseMapVisible = ref(true);
 
 const features = store.state.baseline.shape ?
     store.state.baseline.shape.data.features as Feature[] : [] as Feature[];
@@ -113,8 +112,8 @@ const updateFeatures = () => {
     currentFeatures.value = getVisibleFeatures(features, selectedLevel);
 };
 
-const toggleTileLayer = () => {
-    tileLayerVisible.value = !tileLayerVisible.value
+const toggleBaseMap = () => {
+    baseMapVisible.value = !baseMapVisible.value
 }
 
 const selectedAreaIds = computed(() => {
@@ -178,15 +177,3 @@ onMounted(() => {
     updateMapColours();
 });
 </script>
-
-<style scoped>
-.checkbox-wrapper {
-    display: flex;
-    gap: 6px;
-    align-items: center;
-}
-
-label {
-    margin-bottom: 0px
-}
-</style>
