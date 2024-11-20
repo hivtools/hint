@@ -12,6 +12,7 @@
             <loading-spinner size="lg"/>
         </div>
         <error-alert v-else-if="!!error" :error="error!"></error-alert>
+        <error-alert v-else-if="!!inputComparisonError" :error="inputComparisonError!"></error-alert>
         <div class="row" v-else>
             <div class="mt-2 col-md-3">
                 <plot-control-set :plot="activePlot"/>
@@ -25,6 +26,13 @@
             </div>
             <time-series v-if="activePlot === 'timeSeries'" class="col-md-9"/>
             <choropleth class="col-md-9" v-if="activePlot === 'inputChoropleth'" :plot="'inputChoropleth'"/>
+            <barchart class="col-md-9" v-if="activePlot === 'inputComparisonBarchart'"
+                      :plot="'inputComparisonBarchart'"
+                      :show-error-bars="false"
+                      style="min-height: 500px;"/>
+            <Table class="col-md-9" v-if="activePlot === 'inputComparisonTable'"
+                    :plotName="'inputComparisonTable'"
+                    :download-enabled="false"/>
         </div>
     </div>
 </template>
@@ -35,37 +43,47 @@ import {useStore} from 'vuex';
 import {RootState} from '../../root';
 import PlotControlSet from '../plots/PlotControlSet.vue';
 import FilterSet from '../plots/FilterSet.vue';
-import {InputPlotName, inputPlotNames} from '../../store/plotSelections/plotSelections';
+import {InputPlotName, inputPlotNames, PlotName} from '../../store/plotSelections/plotSelections';
 import TimeSeries from "../plots/timeSeries/TimeSeries.vue";
 import Choropleth from '../plots/choropleth/Choropleth.vue';
 import LoadingSpinner from "../LoadingSpinner.vue";
 import ErrorAlert from "../ErrorAlert.vue";
 import DownloadTimeSeries from "../plots/timeSeries/downloadTimeSeries/DownloadTimeSeries.vue";
+import Barchart from "../plots/bar/Barchart.vue";
+import Table from "../plots/table/Table.vue";
 
 export default defineComponent({
     components: {
+        Barchart,
         DownloadTimeSeries,
         ErrorAlert,
         PlotControlSet,
         FilterSet,
+        Table,
         TimeSeries,
         Choropleth,
         LoadingSpinner
     },
     setup() {
         const store = useStore<RootState>();
+        const inputComparisonPlots: PlotName[] = ["inputComparisonBarchart", "inputComparisonTable"];
         const availablePlots = computed(() => {
             if (!store.state.surveyAndProgram.anc && !store.state.surveyAndProgram.program) {
-                return inputPlotNames.filter(name => name != "timeSeries")
+                return inputPlotNames.filter(name => name != "timeSeries" && !inputComparisonPlots.includes(name))
             } else {
                 return inputPlotNames
             }
         })
         const activePlot = ref<InputPlotName>(availablePlots.value[0]);
-        const changePlot = (plot: InputPlotName) => {
+
+        const changePlot = async (plot: InputPlotName) => {
             activePlot.value = plot;
+            if (inputComparisonPlots.includes(activePlot.value) && !store.state.reviewInput.inputComparison.data) {
+                await store.dispatch("reviewInput/getInputComparisonDataset", {}, {root: true});
+            }
         }
-        const loading = computed(() => store.state.reviewInput.loading);
+        const loading = computed(() => store.state.reviewInput.loading ||
+            store.state.reviewInput.inputComparison.loading);
 
         const plotDescription = computed(() => {
             if (activePlot.value === "timeSeries") {
@@ -79,6 +97,10 @@ export default defineComponent({
             return store.state.metadata.reviewInputMetadataError
         });
 
+        const inputComparisonError = computed(() => {
+            return store.state.reviewInput.inputComparison.error
+        });
+
         onBeforeMount(async () => {
             await store.dispatch("metadata/getReviewInputMetadata", {}, { root: true });
         });
@@ -89,7 +111,8 @@ export default defineComponent({
             changePlot,
             loading,
             plotDescription,
-            error
+            error,
+            inputComparisonError
         }
     }
 })

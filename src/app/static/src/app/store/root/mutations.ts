@@ -118,6 +118,10 @@ export const mutations: MutationTree<RootState> = {
     },
 
     [RootMutation.ResetOutputs](state: RootState) {
+        stopPolling(state.downloadResults.spectrum);
+        stopPolling(state.downloadResults.coarseOutput);
+        stopPolling(state.downloadResults.summary);
+        stopPolling(state.downloadResults.comparison);
         stopPolling(state.modelRun);
         stopPolling(state.modelCalibrate);
         Object.assign(state.modelRun, initialModelRunState());

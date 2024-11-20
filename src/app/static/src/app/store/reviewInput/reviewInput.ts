@@ -3,12 +3,17 @@ import {actions} from "./actions";
 import {mutations} from "./mutations";
 import {RootState, WarningsState} from "../../root";
 import {ReviewInputDataset} from "../../types";
-import {Error} from "../../generated";
+import {Error, InputComparisonResponse} from "../../generated";
 
 export interface ReviewInputState extends WarningsState {
     datasets: Record<string, ReviewInputDataset>
     error: Error | null,
-    loading: boolean
+    loading: boolean,
+    inputComparison: {
+        loading: boolean,
+        error: Error | null,
+        data: InputComparisonResponse | null
+    }
 }
 
 export const initialReviewInputState = (): ReviewInputState => {
@@ -16,7 +21,12 @@ export const initialReviewInputState = (): ReviewInputState => {
         datasets: {},
         error: null,
         warnings: [],
-        loading: false
+        loading: false,
+        inputComparison: {
+            loading: false,
+            error: null,
+            data: null
+        }
     }
 };
 

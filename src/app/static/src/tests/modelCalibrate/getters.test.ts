@@ -1,5 +1,13 @@
-import {mockCalibrateMetadataResponse, mockModelCalibrateState, mockRootState} from "../mocks";
+import {
+    mockCalibrateMetadataResponse,
+    mockInputComparisonMetadata,
+    mockInputComparisonState,
+    mockModelCalibrateState,
+    mockReviewInputState,
+    mockRootState
+} from "../mocks";
 import {getters} from "../../app/store/modelCalibrate/getters";
+import {InputComparisonResponse} from "../../app/generated";
 
 describe("modelCalibrate getters", () => {
     it("can get column ID from filter ID", () => {
@@ -67,12 +75,146 @@ describe("modelCalibrate getters", () => {
         const rootState = mockRootState({
             modelCalibrate: calibrateState
         });
-        const getter = getters.tableMetadata(calibrateState, null, rootState);
+        const mockControlSelectionFromId = vi.fn().mockImplementation(() => {
+            return {
+                label: "Option 1",
+                id: "opt1"
+            }
+        })
+        const rootGetters = {
+            "plotSelections/controlSelectionFromId": mockControlSelectionFromId
+        }
+        const getter = getters.tableMetadata({} as any, null, rootState, rootGetters);
 
-        expect(getter("table", "opt1")).toStrictEqual({
+        expect(getter("table")).toStrictEqual({
             row: ["age"],
             column: ["sex"]
         });
-        expect(getter("table", "opt2")).toBe(undefined);
+    });
+
+    it("can get tableMetadata from default effect if no effect on plot control", () => {
+        const inputComparisonResponse: InputComparisonResponse = {
+            data: [],
+            warnings: [],
+            metadata: mockInputComparisonMetadata({
+                plotSettingsControl: {
+                    inputComparisonBarchart: {
+                        plotSettings: []
+                    },
+                    inputComparisonTable: {
+                        defaultEffect: {
+                            customPlotEffect: {
+                                row: ["age"],
+                                column: ["sex"]
+                            }
+                        },
+                        plotSettings: []
+                    }
+                }
+            })
+        }
+        const reviewInput = mockReviewInputState({
+            inputComparison: mockInputComparisonState({
+                data: inputComparisonResponse
+            })
+        });
+        const rootState = mockRootState({
+            reviewInput
+        });
+        // No control selection so this will be undefined
+        const mockControlSelectionFromId = vi.fn().mockImplementation(() => {
+            return undefined
+        });
+        const rootGetters = {
+            "plotSelections/controlSelectionFromId": mockControlSelectionFromId
+        };
+        const getter = getters.tableMetadata({} as any, null, rootState, rootGetters);
+
+        expect(getter("inputComparisonTable")).toStrictEqual({
+            row: ["age"],
+            column: ["sex"]
+        });
+    });
+
+    it("tableMetadata returns undefined if no custom table metadata", () => {
+        const inputComparisonResponse: InputComparisonResponse = {
+            data: [],
+            warnings: [],
+            metadata: mockInputComparisonMetadata({
+                plotSettingsControl: {
+                    inputComparisonBarchart: {
+                        plotSettings: []
+                    },
+                    inputComparisonTable: {
+                        plotSettings: []
+                    }
+                }
+            })
+        }
+        const reviewInput = mockReviewInputState({
+            inputComparison: mockInputComparisonState({
+                data: inputComparisonResponse
+            })
+        });
+        const rootState = mockRootState({
+            reviewInput
+        });
+        // No control selection so this will be undefined
+        const mockControlSelectionFromId = vi.fn().mockImplementation(() => {
+            return undefined
+        });
+        const rootGetters = {
+            "plotSelections/controlSelectionFromId": mockControlSelectionFromId
+        };
+        const getter = getters.tableMetadata({} as any, null, rootState, rootGetters);
+
+        expect(getter("inputComparisonTable")).toBe(undefined);
+    });
+
+    it("tableMetadata returns undefined if preset configured but no custom effect", () => {
+        const calibrateResponse = mockCalibrateMetadataResponse({
+            plotSettingsControl: {
+                choropleth: {
+                    plotSettings: []
+                },
+                barchart: {
+                    plotSettings: []
+                },
+                table: {
+                    plotSettings: [{
+                        id: "presets",
+                        label: "Table presets",
+                        options: [
+                            {
+                                id: "opt1",
+                                label: "Option 1",
+                                effect: {}
+                            }
+                        ]
+                    }]
+                },
+                bubble: {
+                    plotSettings: []
+                },
+            }
+        })
+        const calibrateState = mockModelCalibrateState({
+            metadata: calibrateResponse
+        });
+        const rootState = mockRootState({
+            modelCalibrate: calibrateState
+        });
+        const mockControlSelectionFromId = vi.fn().mockImplementation(() => {
+            return {
+                label: "Option 1",
+                id: "opt1"
+            }
+        })
+        const rootGetters = {
+            "plotSelections/controlSelectionFromId": mockControlSelectionFromId
+        }
+        const getter = getters.tableMetadata({} as any, null, rootState, rootGetters);
+
+        expect(getter("table")).toBe(undefined);
     });
 });

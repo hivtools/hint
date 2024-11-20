@@ -148,7 +148,7 @@ class BaselineTests : VersionFileTests()
         authorize()
         testRestTemplate.getForEntity<String>("/")
 
-        val postEntity = getTestEntity("Malawi2019.PJNZ")
+        val postEntity = getTestEntity("Malawi2024.PJNZ")
         testRestTemplate.postForEntity<String>("/baseline/pjnz/", postEntity)
 
         val postShapeEntity = getTestEntity("malawi.geojson")

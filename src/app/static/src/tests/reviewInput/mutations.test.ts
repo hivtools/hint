@@ -1,5 +1,11 @@
 import {mutations} from "../../app/store/reviewInput/mutations";
-import {mockReviewInputState, mockWarning} from "../mocks";
+import {
+    mockIndicatorMetadata,
+    mockInputComparisonData,
+    mockInputComparisonMetadata,
+    mockReviewInputState,
+    mockWarning
+} from "../mocks";
 
 describe("reviewInput mutations", () => {
     it("sets dataset",  () => {
@@ -58,6 +64,26 @@ describe("reviewInput mutations", () => {
         });
     });
 
+    it("can clear input comparison data", () => {
+        const state = mockReviewInputState({
+            inputComparison: {
+                loading: false,
+                data: {
+                    data: mockInputComparisonData(),
+                    metadata: mockInputComparisonMetadata(),
+                    warnings: []
+                },
+                error: null
+            }
+        });
+        mutations.ClearInputComparison(state);
+        expect(state.inputComparison).toEqual({
+            loading: false,
+            data: null,
+            error: null
+        });
+    })
+
     it("sets error", () => {
         const state = mockReviewInputState();
         const error = {"detail": "TEST ERROR", "error": "OTHER_ERROR"};
@@ -72,5 +98,34 @@ describe("reviewInput mutations", () => {
         expect(testState.warnings).toEqual([mockWarning()]);
         mutations.ClearWarnings(testState);
         expect(testState.warnings).toEqual([]);
+    });
+
+    it("sets input comparison loading state", () => {
+        const testState = mockReviewInputState();
+        mutations.SetInputComparisonLoading(testState, {payload: true});
+        expect(testState.inputComparison.loading).toBeTruthy();
+        mutations.SetInputComparisonLoading(testState, {payload: false});
+        expect(testState.inputComparison.loading).toBeFalsy();
+    });
+
+    it("sets input comparison error", () => {
+        const state = mockReviewInputState();
+        const error = {"detail": "TEST ERROR", "error": "OTHER_ERROR"};
+        mutations.SetInputComparisonError(state, {payload: error});
+        expect(state.inputComparison.error).toBe(error);
+    });
+
+    it("sets input comparison data", () => {
+        const inputComparisonResponse = {
+            data: [
+                {x: 1, y: 2},
+                {x: 3, y: 4}
+            ],
+            metadata: mockIndicatorMetadata(),
+            warnings: []
+        } as any;
+        const state = mockReviewInputState();
+        mutations.SetInputComparisonData(state, {payload: inputComparisonResponse});
+        expect(state.inputComparison.data).toBe(inputComparisonResponse);
     });
 });

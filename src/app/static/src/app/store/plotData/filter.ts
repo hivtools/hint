@@ -3,7 +3,18 @@ import { RootState } from "../../root";
 import { FilterSelection, OutputPlotName } from "../plotSelections/plotSelections";
 import { PlotSelectionUpdate, PlotSelectionsMutations } from "../plotSelections/mutations";
 import { api } from "../../apiService";
-import { AncResponse, CalibrateDataResponse, CalibratePlotData, ComparisonPlotData, FilterTypes, InputTimeSeriesData, InputTimeSeriesRow, ProgrammeResponse, SurveyResponse } from "../../generated";
+import {
+    AncResponse,
+    CalibrateDataResponse,
+    CalibratePlotData,
+    ComparisonPlotData,
+    FilterTypes,
+    InputComparisonData,
+    InputTimeSeriesData,
+    InputTimeSeriesRow,
+    ProgrammeResponse,
+    SurveyResponse
+} from "../../generated";
 import { PlotDataMutations, PlotDataUpdate } from "./mutations";
 import { ReviewInputMutation } from "../reviewInput/mutations";
 import { ReviewInputDataset } from "../../types";
@@ -203,6 +214,39 @@ export const getInputChoroplethFilteredData = async (payload: PlotSelectionUpdat
     const { data } = response as SurveyResponse | AncResponse | ProgrammeResponse;
     const { filterTypes } = getMetadataFromPlotName(rootState, payload.plot);
     const filteredData = filterData(filters, data, filterTypes);
+    const plotDataPayload: PlotDataUpdate = {
+        plot: payload.plot,
+        data: filteredData
+    };
+    commit(`plotData/${PlotDataMutations.updatePlotData}`, { payload: plotDataPayload }, { root: true });
+};
+
+export const getInputComparisonFilteredData = async (payload: PlotSelectionUpdate, commit: Commit, rootState: RootState) => {
+    const comparisonPlotResponse = rootState.reviewInput.inputComparison.data;
+    if (!comparisonPlotResponse) {
+        return;
+    }
+    const data: InputComparisonData = comparisonPlotResponse.data;
+
+    // Filter the data on the current selections
+    const metadata = getMetadataFromPlotName(rootState, payload.plot);
+    const { filters } = payload.selections;
+    const filterObject: Dict<(string| number)[]> = {};
+    filters.forEach(f => {
+        const filterType = metadata.filterTypes.find(ft => ft.id === f.filterId)!;
+        filterObject[filterType.column_id] = f.selection.map(s => s.id);
+    });
+    const filteredData: InputComparisonData = [];
+    outer: for (let i = 0; i < data.length; i++) {
+        const currRow = data[i];
+        for (const column_id in filterObject) {
+            // Filter values are always strings, so we cast the data to a string so the comparison works
+            if (!filterObject[column_id].includes(currRow[column_id].toString())) {
+                continue outer;
+            }
+        }
+        filteredData.push(currRow);
+    }
     const plotDataPayload: PlotDataUpdate = {
         plot: payload.plot,
         data: filteredData

@@ -184,11 +184,11 @@ describe("ADR dataset-related actions", () => {
         const state = await getSelectedDatasetState()
 
         await baselineActions.importPJNZ({commit, state, dispatch, rootState} as any,
-            "https://raw.githubusercontent.com/hivtools/hint/main/src/app/testdata/Malawi2019.PJNZ");
+            "https://raw.githubusercontent.com/hivtools/hint/main/src/app/testdata/Malawi2024.PJNZ");
 
         expect(commit.mock.calls[1][0]["type"]).toBe(BaselineMutation.PJNZUpdated);
         expect(commit.mock.calls[1][0]["payload"]["filename"])
-            .toBe("Malawi2019.PJNZ");
+            .toBe("Malawi2024.PJNZ");
     }, 10000);
 
     it("can import shape file", async () => {
@@ -252,7 +252,10 @@ describe("ADR dataset-related actions", () => {
         expect(dispatch.mock.calls[0][0]).toBe("setProgramResponse");
         expect(dispatch.mock.calls[0][1]["filename"])
             .toBe("programme.csv")
-        expect(commit.mock.calls[3][0]["type"]).toBe(SurveyAndProgramMutation.WarningsFetched);
+        expect(commit.mock.calls[3][0]).toStrictEqual({
+            type: "reviewInput/ClearInputComparison"
+        });
+        expect(commit.mock.calls[4][0]["type"]).toBe(SurveyAndProgramMutation.WarningsFetched);
     }, 10000);
 
     it("can import anc", async () => {
@@ -272,7 +275,10 @@ describe("ADR dataset-related actions", () => {
         expect(dispatch.mock.calls[0][0]).toBe("setAncResponse");
         expect(dispatch.mock.calls[0][1]["filename"])
             .toBe("anc.csv");
-        expect(commit.mock.calls[3][0]["type"]).toBe(SurveyAndProgramMutation.WarningsFetched);
+        expect(commit.mock.calls[3][0]).toStrictEqual({
+            type: "reviewInput/ClearInputComparison"
+        });
+        expect(commit.mock.calls[4][0]["type"]).toBe(SurveyAndProgramMutation.WarningsFetched);
     }, 10000);
 
     it("hits upload files to adr endpoint and gets appropriate error", async () => {

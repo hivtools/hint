@@ -1,6 +1,6 @@
 import {ControlSelection, FilterSelection, PlotName, PlotSelectionsState} from "./plotSelections";
-import {IndicatorMetadata, FilterOption} from "../../generated";
-import {BarChartData, plotDataToChartData} from "../../components/plots/bar/utils";
+import {IndicatorMetadata, FilterOption, InputComparisonData} from "../../generated";
+import {BarChartData, inputComparisonPlotDataToChartData, plotDataToChartData} from "../../components/plots/bar/utils";
 import {RootState} from "../../root";
 import {PlotData} from "../plotData/plotData";
 import {Dict} from "../../types";
@@ -10,6 +10,7 @@ export const getters = {
     controlSelectionFromId: (state: PlotSelectionsState) => (plotName: PlotName, controlId: string): FilterOption | undefined => {
         return state[plotName].controls.find((f: ControlSelection) => f.id === controlId)?.selection[0]
     },
+
     filterSelectionFromId: (state: PlotSelectionsState) => (plotName: PlotName, filterId: string): FilterOption[] => {
         const filterSelection = state[plotName].filters.find((f: FilterSelection) => f.stateFilterId === filterId);
         if (filterSelection === undefined) {
@@ -18,9 +19,19 @@ export const getters = {
             return filterSelection.selection
         }
     },
+
     barchartData: (state: PlotSelectionsState, getters: any, rootState: RootState, rootGetters: any) =>
         (plotName: PlotName, plotData: PlotData, indicatorMetadata: IndicatorMetadata,
-         filterSelections: FilterSelection[]): BarChartData => {
+         filterSelections: FilterSelection[], currentLanguage: string): BarChartData => {
+
+        const metadata = getMetadataFromPlotName(rootState, plotName);
+        if (plotName == "inputComparisonBarchart") {
+            const xAxisId = "year";
+            const xAxisSelections = getters.filterSelectionFromId(plotName, xAxisId);
+            const xAxisOptions = metadata.filterTypes.find(f => f.id === xAxisId)!.options;
+            return inputComparisonPlotDataToChartData(plotData as InputComparisonData, indicatorMetadata,
+                xAxisId, xAxisSelections, xAxisOptions, currentLanguage)
+        }
         const disaggregateBy = getters.controlSelectionFromId(plotName, "disagg_by");
         const xAxis = getters.controlSelectionFromId(plotName, "x_axis");
         const emptyData = {datasets:[], labels: [], maxValuePlusError: 0} as BarChartData;
@@ -31,7 +42,6 @@ export const getters = {
         const xAxisId = rootGetters["modelCalibrate/filterIdToColumnId"](plotName, xAxis.id);
         const disaggregateSelections = getters.filterSelectionFromId(plotName, disaggregateBy.id);
         const xAxisSelections = getters.filterSelectionFromId(plotName, xAxis.id);
-        const metadata = getMetadataFromPlotName(rootState, plotName);
         const xAxisOptions = metadata.filterTypes.find(f => f.id === xAxis!.id)!.options;
         // For calibrate barchart we never have detail level on the x-axis as it is fixed. So we
         // can just keep these as empty.
@@ -49,5 +59,5 @@ export const getters = {
         } else {
             return emptyData
         }
-    }
+    },
 };

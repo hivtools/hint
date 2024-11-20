@@ -39,6 +39,9 @@ const enum DATASET_TYPE {
 
 function commitClearReviewInputDataset(commit: Commit, dataType: string) {
     commit({type: `reviewInput/${ReviewInputMutation.ClearDataset}`, payload: dataType}, {root: true});
+    if (dataType === DATASET_TYPE.ANC || dataType === DATASET_TYPE.ART) {
+        commit({type: `reviewInput/${ReviewInputMutation.ClearInputComparison}`}, {root: true});
+    }
 }
 
 interface UploadImportOptions {
@@ -332,7 +335,7 @@ export const actions: ActionTree<SurveyAndProgramState, RootState> & SurveyAndPr
     async setSurveyResponse(context: ActionContext<SurveyAndProgramState, RootState>, response: SurveyResponse) {
         const {commit, rootState} = context;
         const shapeData = rootState.baseline.shape;
-        if (shapeData) {
+        if (shapeData?.data) {
             response.data = getDataWithAreaLevel(response.data, shapeData.data.features as Feature[])
         }
         commit({type: SurveyAndProgramMutation.SurveyUpdated, payload: freezer.deepFreeze(response)})
@@ -341,7 +344,7 @@ export const actions: ActionTree<SurveyAndProgramState, RootState> & SurveyAndPr
     async setProgramResponse(context: ActionContext<SurveyAndProgramState, RootState>, response: ProgrammeResponse) {
         const {commit, rootState} = context;
         const shapeData = rootState.baseline.shape;
-        if (shapeData) {
+        if (shapeData?.data) {
             response.data = getDataWithAreaLevel(response.data, shapeData.data.features as Feature[])
         }
         commit({type: SurveyAndProgramMutation.ProgramUpdated, payload: freezer.deepFreeze(response)})
@@ -350,7 +353,7 @@ export const actions: ActionTree<SurveyAndProgramState, RootState> & SurveyAndPr
     async setAncResponse(context: ActionContext<SurveyAndProgramState, RootState>, response: AncResponse) {
         const {commit, rootState} = context;
         const shapeData = rootState.baseline.shape;
-        if (shapeData) {
+        if (shapeData?.data) {
             response.data = getDataWithAreaLevel(response.data, shapeData.data.features as Feature[])
         }
         commit({type: SurveyAndProgramMutation.ANCUpdated, payload: freezer.deepFreeze(response)})

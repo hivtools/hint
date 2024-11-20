@@ -43,6 +43,13 @@ vi.mock("../app/components/Stepper.vue", () => ({
     }
 }))
 
+vi.mock("../app/components/Stepper.vue", () => ({
+    default: {
+        name: "Stepper",
+        template: "<div id='stepper-stub'/>"
+    }
+}))
+
 vi.mock("../app/components/projects/Projects.vue", () => ({
     default: {
         name: "Projects",
@@ -58,7 +65,7 @@ describe("Router", () => {
 
     it("has expected properties", async () => {
         const store = new Vuex.Store({
-            state: mockRootState()
+            state: mockRootState({ baseline: { ready: true } as any })
         })
         const mockTranslate = vi.fn()
         const wrapper = mount(Hint, {

@@ -15,7 +15,7 @@ describe("Survey and programme actions", () => {
         await baselineActions.uploadShape({commit, dispatch, rootState} as any, formData);
 
         const state = {country: "Malawi"} as any;
-        const pjnzFormData = getFormData("Malawi2019.PJNZ");
+        const pjnzFormData = getFormData("Malawi2024.PJNZ");
         await baselineActions.uploadPJNZ({commit, state, dispatch, rootState} as any, pjnzFormData);
     });
 
@@ -49,7 +49,11 @@ describe("Survey and programme actions", () => {
         expect(dispatch.mock.calls[0][0]).toBe("setProgramResponse");
         expect(dispatch.mock.calls[0][1]["filename"]).toBe("programme.csv");
 
-        expect(commit.mock.calls[3][0]["type"]).toBe(SurveyAndProgramMutation.WarningsFetched);
+        expect(commit.mock.calls[3][0]).toStrictEqual({
+            type: "reviewInput/ClearInputComparison"
+        });
+
+        expect(commit.mock.calls[4][0]["type"]).toBe(SurveyAndProgramMutation.WarningsFetched);
     });
 
     it("can upload anc", async () => {
@@ -65,7 +69,11 @@ describe("Survey and programme actions", () => {
         expect(dispatch.mock.calls[0][0]).toBe("setAncResponse");
         expect(dispatch.mock.calls[0][1]["filename"]).toBe("anc.csv");
 
-        expect(commit.mock.calls[3][0]["type"]).toBe(SurveyAndProgramMutation.WarningsFetched);
+        expect(commit.mock.calls[3][0]).toStrictEqual({
+            type: "reviewInput/ClearInputComparison"
+        });
+
+        expect(commit.mock.calls[4][0]["type"]).toBe(SurveyAndProgramMutation.WarningsFetched);
     });
 
     it("can upload VMMC", async () => {

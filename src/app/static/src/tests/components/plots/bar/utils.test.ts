@@ -2,11 +2,13 @@ import {
     buildTooltipCallback,
     ErrorBars,
     getErrorLineAnnotations,
+    inputComparisonPlotDataToChartData,
     plotDataToChartData
 } from "../../../../app/components/plots/bar/utils";
 import {PlotData} from "../../../../app/store/plotData/plotData";
-import {IndicatorMetadata, FilterOption} from "../../../../app/generated";
-import {mockIndicatorMetadata} from "../../../mocks";
+import {IndicatorMetadata, FilterOption, InputComparisonData} from "../../../../app/generated";
+import {mockIndicatorMetadata, mockInputComparisonData} from "../../../mocks";
+import {Language} from "../../../../app/store/translations/locales";
 
 describe("barchart utils work as expected", () => {
     const indicator = mockIndicatorMetadata()
@@ -17,6 +19,8 @@ describe("barchart utils work as expected", () => {
         {area_id: "MWI_1_1", age_group: '0:4', sex: 'male', calendar_quarter: "1", indicator: "prevalence",  mode: null, mean: 0.35, upper: 0.40, lower: 0.34},
         {area_id: "MWI_1_1", age_group: '5:9', sex: 'male', calendar_quarter: "1", indicator: "prevalence",  mode: null, mean: 0.25, upper: 0.28, lower: 0.21},
     ];
+
+    const inputComparisonData = mockInputComparisonData();
 
     const xAxis = "age_group";
     const xAxisSelections: FilterOption[] = [
@@ -49,7 +53,8 @@ describe("barchart utils work as expected", () => {
                 backgroundColor: "#111111",
                 data: [1, 2],
                 errorBars,
-                maxBarThickness
+                maxBarThickness,
+                tooltipExtraText: []
             },
         ],
         maxValuePlusError: 0.2
@@ -72,6 +77,7 @@ describe("barchart utils work as expected", () => {
                         "0-4": {plus: 0.43, minus: 0.38},
                         "5-9": {plus: 0.24, minus: 0.16}
                     },
+                    tooltipExtraText: [],
                     maxBarThickness
                 },
                 {
@@ -82,6 +88,7 @@ describe("barchart utils work as expected", () => {
                         "0-4": {plus: 0.40, minus: 0.34},
                         "5-9": {plus: 0.28, minus: 0.21}
                     },
+                    tooltipExtraText: [],
                     maxBarThickness
                 }
             ],
@@ -154,6 +161,7 @@ describe("barchart utils work as expected", () => {
                     errorBars: {
                         "5-9": {plus: 0.24, minus: 0.16},
                     },
+                    tooltipExtraText: [],
                     maxBarThickness
                 }
             ],
@@ -265,6 +273,7 @@ describe("barchart utils work as expected", () => {
                         "Northern": {plus: 0.43, minus: 0.38},
                         "Central": {plus: 0.43, minus: 0.38},
                     },
+                    tooltipExtraText: [],
                     maxBarThickness
                 },
                 {
@@ -275,11 +284,79 @@ describe("barchart utils work as expected", () => {
                         "Northern": {plus: 0.24, minus: 0.16},
                         "Central": {plus: 0.24, minus: 0.16}
                     },
+                    tooltipExtraText: [],
                     maxBarThickness
                 }
             ],
             maxValuePlusError: 0.43
         });
+    });
+
+    it("can get barchart data for input comparison", () => {
+        const xAxis = "year";
+        const xAxisSelections: FilterOption[] = [
+            {id: "2022", label: "2022"},
+            {id: "2020", label: "2020"},
+            {id: "2021", label: "2021"},
+            {id: "2023", label: "2023"},
+        ];
+        const xAxisOptions: FilterOption[] = [
+            {id: "2020", label: "2020"},
+            {id: "2021", label: "2021"},
+            {id: "2022", label: "2022"},
+            {id: "2023", label: "2023"},
+            {id: "2024", label: "2024"},
+        ];
+        const indicator: IndicatorMetadata = {
+            indicator: "prevalence",
+            value_column: "mean",
+            indicator_column: "indicator",
+            indicator_value: "prevalence",
+            name: "Prevalence",
+            min: 0,
+            max: 1,
+            colour: "interpolateReds",
+            invert_scale: false,
+            format: "0,0",
+            scale: 1,
+            accuracy: null
+        };
+
+        const result = inputComparisonPlotDataToChartData(
+            inputComparisonData, indicator, xAxis, xAxisSelections, xAxisOptions, Language.en);
+
+        expect(result).toStrictEqual({
+            labels: ["2020", "2021", "2022", "2023"],
+            datasets: [
+                {
+                    label: "Naomi",
+                    backgroundColor: "#e41a1c",
+                    data: [3000, 2000, 2000, 6000],
+                    errorBars: {},
+                    tooltipExtraText: ["Difference from Spectrum: 999", "", "Difference from Spectrum: -3,001",
+                        "Difference from Spectrum: 0"],
+                    maxBarThickness
+                },
+                {
+                    label: "Spectrum",
+                    backgroundColor: "#377eb8",
+                    data: [2001, null, 5001, 6000],
+                    errorBars: {},
+                    tooltipExtraText: ["Difference from Naomi: -999", "", "Difference from Naomi: 3,001",
+                        "Difference from Naomi: 0"],
+                    maxBarThickness
+                },
+            ],
+            maxValuePlusError: 0
+        });
+
+        // Tooltip text is translated
+        const resultFr = inputComparisonPlotDataToChartData(
+            inputComparisonData, indicator, xAxis, xAxisSelections, xAxisOptions, Language.fr);
+
+        expect(resultFr.datasets[0].tooltipExtraText)
+            .toStrictEqual(["Différence avec le Spectrum: 999", "", "Différence avec le Spectrum: -3,001",
+                "Différence avec le Spectrum: 0"],)
     });
 
     it("computes correct error line annotations", async () => {

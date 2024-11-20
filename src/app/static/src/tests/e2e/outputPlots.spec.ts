@@ -14,6 +14,8 @@ test("can view output plots", async ({ projectPage }) => {
 
     // When I switch to barchart tab
     await page.getByText('Bar').click();
+    // This can take a little while to redraw the error bars, so give it a second
+    await page.waitForTimeout(500);
 
     // barchart is rendered as expected
     await expect(page.locator("#review-output")).toHaveScreenshot("barchart-landing.png");
@@ -21,6 +23,8 @@ test("can view output plots", async ({ projectPage }) => {
     // When I update barchart x-axis plot control
     await page.getByRole('button', { name: 'Age' }).click();
     await page.locator('a').filter({ hasText: 'Area' }).first().click();
+    // This can take a little while to redraw the error bars, so give it a second
+    await page.waitForTimeout(500);
 
     // barchart is rendered as expected
     await expect(page.locator("#review-output")).toHaveScreenshot("barchart-x-axis.png");
@@ -35,7 +39,7 @@ test("can view output plots", async ({ projectPage }) => {
     // When I update a filter
     await page.getByRole('button', { name: '55-59', exact: true }).click();
     // This can take a little while to redraw the error bars, so give it a second
-    await page.waitForTimeout(1000);
+    await page.waitForTimeout(500);
 
     // barchart is rendered as expected
     await expect(page.locator("#review-output")).toHaveScreenshot("barchart-update-filter.png");

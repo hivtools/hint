@@ -848,6 +848,19 @@ export interface TableMetadata {
   row: string[];
   column: string[];
 }
+export interface DownloadResultResponse {
+  path: string;
+  metadata: {
+    id: string;
+    description?: string;
+    areas: string;
+    type: string;
+    file_extension: string;
+    file_label: string;
+    [k: string]: any;
+  };
+  [k: string]: any;
+}
 export interface DownloadStatusResponse {
   id: string;
   done: boolean | null;
@@ -1009,6 +1022,292 @@ export interface IndicatorMetadata {
   scale: number;
   accuracy: number | null;
   format: string;
+}
+export type InputComparisonData = {
+  indicator: string;
+  area_name: string;
+  year: number;
+  group: string;
+  value_spectrum: number | null;
+  value_naomi: number | null;
+  difference?: number | null;
+  [k: string]: any;
+}[];
+export interface InputComparisonMetadata {
+  filterTypes: {
+    id: string;
+    column_id: string;
+    options: {
+      label: string;
+      id: string;
+      description?: string;
+    }[];
+    use_shape_regions?: boolean;
+  }[];
+  indicators: {
+    indicator: string;
+    value_column: string;
+    error_low_column?: string;
+    error_high_column?: string;
+    indicator_column?: string;
+    indicator_value?: string;
+    indicator_sort_order?: number;
+    name: string;
+    min: number;
+    max: number;
+    colour: string;
+    invert_scale: boolean;
+    scale: number;
+    accuracy: number | null;
+    format: string;
+  }[];
+  plotSettingsControl: {
+    inputComparisonBarchart: {
+      defaultEffect?: {
+        setFilters?: {
+          filterId: string;
+          label: string;
+          stateFilterId: string;
+        }[];
+        setMultiple?: string[];
+        setFilterValues?: {
+          [k: string]: string[];
+        };
+        setHidden?: string[];
+        customPlotEffect?: {
+          row: string[];
+          column: string[];
+        };
+      };
+      plotSettings: {
+        id: string;
+        label: string;
+        options: {
+          id: string;
+          label: string;
+          effect: {
+            setFilters?: {
+              filterId: string;
+              label: string;
+              stateFilterId: string;
+            }[];
+            setMultiple?: string[];
+            setFilterValues?: {
+              [k: string]: string[];
+            };
+            setHidden?: string[];
+            customPlotEffect?: {
+              row: string[];
+              column: string[];
+            };
+          };
+        }[];
+        value?: string;
+        hidden?: boolean;
+      }[];
+    };
+    inputComparisonTable: {
+      defaultEffect?: {
+        setFilters?: {
+          filterId: string;
+          label: string;
+          stateFilterId: string;
+        }[];
+        setMultiple?: string[];
+        setFilterValues?: {
+          [k: string]: string[];
+        };
+        setHidden?: string[];
+        customPlotEffect?: {
+          row: string[];
+          column: string[];
+        };
+      };
+      plotSettings: {
+        id: string;
+        label: string;
+        options: {
+          id: string;
+          label: string;
+          effect: {
+            setFilters?: {
+              filterId: string;
+              label: string;
+              stateFilterId: string;
+            }[];
+            setMultiple?: string[];
+            setFilterValues?: {
+              [k: string]: string[];
+            };
+            setHidden?: string[];
+            customPlotEffect?: {
+              row: string[];
+              column: string[];
+            };
+          };
+        }[];
+        value?: string;
+        hidden?: boolean;
+      }[];
+    };
+  };
+  [k: string]: any;
+}
+export type InputComparisonRequest = {
+  [k: string]: any;
+};
+export interface InputComparisonResponse {
+  data: {
+    indicator: string;
+    area_name: string;
+    year: number;
+    group: string;
+    value_spectrum: number | null;
+    value_naomi: number | null;
+    difference?: number | null;
+    [k: string]: any;
+  }[];
+  metadata: {
+    filterTypes: {
+      id: string;
+      column_id: string;
+      options: {
+        label: string;
+        id: string;
+        description?: string;
+      }[];
+      use_shape_regions?: boolean;
+    }[];
+    indicators: {
+      indicator: string;
+      value_column: string;
+      error_low_column?: string;
+      error_high_column?: string;
+      indicator_column?: string;
+      indicator_value?: string;
+      indicator_sort_order?: number;
+      name: string;
+      min: number;
+      max: number;
+      colour: string;
+      invert_scale: boolean;
+      scale: number;
+      accuracy: number | null;
+      format: string;
+    }[];
+    plotSettingsControl: {
+      inputComparisonBarchart: {
+        defaultEffect?: {
+          setFilters?: {
+            filterId: string;
+            label: string;
+            stateFilterId: string;
+          }[];
+          setMultiple?: string[];
+          setFilterValues?: {
+            [k: string]: string[];
+          };
+          setHidden?: string[];
+          customPlotEffect?: {
+            row: string[];
+            column: string[];
+          };
+        };
+        plotSettings: {
+          id: string;
+          label: string;
+          options: {
+            id: string;
+            label: string;
+            effect: {
+              setFilters?: {
+                filterId: string;
+                label: string;
+                stateFilterId: string;
+              }[];
+              setMultiple?: string[];
+              setFilterValues?: {
+                [k: string]: string[];
+              };
+              setHidden?: string[];
+              customPlotEffect?: {
+                row: string[];
+                column: string[];
+              };
+            };
+          }[];
+          value?: string;
+          hidden?: boolean;
+        }[];
+      };
+      inputComparisonTable: {
+        defaultEffect?: {
+          setFilters?: {
+            filterId: string;
+            label: string;
+            stateFilterId: string;
+          }[];
+          setMultiple?: string[];
+          setFilterValues?: {
+            [k: string]: string[];
+          };
+          setHidden?: string[];
+          customPlotEffect?: {
+            row: string[];
+            column: string[];
+          };
+        };
+        plotSettings: {
+          id: string;
+          label: string;
+          options: {
+            id: string;
+            label: string;
+            effect: {
+              setFilters?: {
+                filterId: string;
+                label: string;
+                stateFilterId: string;
+              }[];
+              setMultiple?: string[];
+              setFilterValues?: {
+                [k: string]: string[];
+              };
+              setHidden?: string[];
+              customPlotEffect?: {
+                row: string[];
+                column: string[];
+              };
+            };
+          }[];
+          value?: string;
+          hidden?: boolean;
+        }[];
+      };
+    };
+    [k: string]: any;
+  };
+  warnings: {
+    text: string;
+    locations: (
+      | "review_inputs"
+      | "model_options"
+      | "model_fit"
+      | "model_calibrate"
+      | "review_output"
+      | "download_results"
+    )[];
+  }[];
+}
+export interface InputComparisonRow {
+  indicator: string;
+  area_name: string;
+  year: number;
+  group: string;
+  value_spectrum: number | null;
+  value_naomi: number | null;
+  difference?: number | null;
+  [k: string]: any;
 }
 export interface InputDatasets {
   pjnz: {

@@ -1,15 +1,19 @@
 import {MutationTree} from 'vuex';
 import {ReviewInputState} from "./reviewInput";
 import {ReviewInputDataset, PayloadWithType} from "../../types";
-import {Error, Warning} from "../../generated";
+import {Error, InputComparisonResponse, Warning} from "../../generated";
 
 export enum ReviewInputMutation {
     SetDataset = "SetDataset",
     ClearDataset = "ClearDataset",
+    ClearInputComparison = "ClearInputComparison",
     SetError = "SetError",
     ClearWarnings = "ClearWarnings",
     WarningsFetched = "WarningsFetched",
-    SetLoading = "SetLoading"
+    SetLoading = "SetLoading",
+    SetInputComparisonLoading = "SetInputComparisonLoading",
+    SetInputComparisonError = "SetInputComparisonError",
+    SetInputComparisonData = "SetInputComparisonData",
 }
 
 export interface SetDatasetPayload {
@@ -24,6 +28,13 @@ export const mutations: MutationTree<ReviewInputState> = {
     [ReviewInputMutation.ClearDataset](state: ReviewInputState, action: PayloadWithType<string>) {
         delete state.datasets[action.payload]
     },
+    [ReviewInputMutation.ClearInputComparison](state: ReviewInputState) {
+        state.inputComparison = {
+            loading: false,
+            error: null,
+            data: null
+        };
+    },
     [ReviewInputMutation.SetError](state: ReviewInputState, action: PayloadWithType<Error | null>) {
         state.error = action.payload;
     },
@@ -35,5 +46,14 @@ export const mutations: MutationTree<ReviewInputState> = {
     },
     [ReviewInputMutation.SetLoading](state: ReviewInputState, action: PayloadWithType<boolean>) {
         state.loading = action.payload;
-    }
+    },
+    [ReviewInputMutation.SetInputComparisonLoading](state: ReviewInputState, action: PayloadWithType<boolean>) {
+        state.inputComparison.loading = action.payload;
+    },
+    [ReviewInputMutation.SetInputComparisonError](state: ReviewInputState, action: PayloadWithType<Error | null>) {
+        state.inputComparison.error = action.payload;
+    },
+    [ReviewInputMutation.SetInputComparisonData](state: ReviewInputState, action: PayloadWithType<InputComparisonResponse>) {
+        state.inputComparison.data = action.payload;
+    },
 };

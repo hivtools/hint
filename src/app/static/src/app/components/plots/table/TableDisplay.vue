@@ -1,5 +1,5 @@
 <template>
-    <ag-grid-vue style="height: 700px"
+    <ag-grid-vue :style="styleString"
                  class="ag-theme-alpine"
                  :defaultColDef="defaultColDef"
                  :columnDefs="columnDefs"
@@ -11,22 +11,23 @@
 </template>
 
 <script lang="ts">
-import { ref, defineComponent, computed, PropType } from "vue";
+import {ref, defineComponent, computed, PropType} from "vue";
 import { AgGridVue } from "ag-grid-vue3";
 import { AgGridEvent } from "ag-grid-community";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
 import { useStore } from "vuex";
 import { RootState } from "../../../root";
-import {formatOutput, getIndicatorMetadata} from "../utils";
-import { FilterSelection, PlotName } from "../../../store/plotSelections/plotSelections";
-import { IndicatorMetadata, FilterOption, TableMetadata } from "../../../generated";
+import { getIndicatorMetadata } from "../utils";
+import { PlotName } from "../../../store/plotSelections/plotSelections";
+import { IndicatorMetadata, TableMetadata } from "../../../generated";
+import {getColumnDefs, TableHeaderDef} from "./utils";
 
 const defaultColDef = {
     // Set the default filter type
     filter: 'agNumberColumnFilter',
     // Floating filter adds the dedicated row for filtering at the bottom
-    floatingFilter: true,
+    floatingFilter: false,
     // suppressHeaderMenuButton hides the filter menu which showed on the column title
     // this just avoids duplication of filtering UI as we have floating turned on
     // there are some cases where other thing show in the menu but not for our example
@@ -38,11 +39,14 @@ const defaultColDef = {
     // Stop the columns from being draggable to rearrange order or remove them
     suppressMovable: true,
 };
+const ROW_HEIGHT = 35;
+const MAX_TABLE_HEIGHT = 700;
 const gridOptions = {
     // our auto resize will apply to columns not shown on the screen
-    // e.g. if they are off to the side, we wont get auto resize
+    // e.g. if they are off to the side, we won't get auto resize
     // because ag grid does this automatically
     suppressColumnVirtualisation: true,
+    rowHeight: ROW_HEIGHT
 }
 
 
@@ -60,8 +64,8 @@ export default defineComponent({
             type: Object as PropType<TableMetadata>,
             required: true
         },
-        headerName: {
-            type: String,
+        headerDefs: {
+            type: Object as PropType<TableHeaderDef[]>,
             required: true
         }
     },
@@ -96,6 +100,7 @@ export default defineComponent({
         const onGridReady = (event: AgGridEvent) => {
             gridApi.value = event;
             ensureColumnsWideEnough(event);
+            handleTableResize(event);
         };
         const store = useStore<RootState>();
         const filterSelections = computed(() => store.state.plotSelections[props.plot].filters);
@@ -103,51 +108,33 @@ export default defineComponent({
             const indicator = filterSelections.value.find(f => f.stateFilterId === "indicator")!.selection[0].id;
             return getIndicatorMetadata(store, props.plot, indicator);
         });
-        const formatValue = (value: number) => {
-            const cfg = indicatorMetadata.value;
-            return formatOutput(value, cfg.format, cfg.scale, cfg.accuracy);
-        };
-        // TODO: Make these work with any column type, for now fine to stick with sex as that
-        // is the only example we have in the data
-        const getValue = (sex: string) => {
-            return (params: any) => params.data["mean_" + sex];
-        };
-        const getFormat = (sex: string) => {
-            return (params: any) => {
-                const sexSelections = filterSelections.value
-                        .find(f => f.stateFilterId === "sex")?.selection
-                        .map((op: FilterOption)  => op.id);
-                if (!sexSelections || !sexSelections.includes(sex)) return "";
-                const mean = formatValue(params.value);
-                const lower = formatValue(params.data["lower_" + sex]);
-                const upper = formatValue(params.data["upper_" + sex]);
-                return `${mean} (${lower} - ${upper})`;
-            };
-        };
         const columnDefs = computed(() => {
-            const columnId = props.tableMetadata.column[0];
-            const columnSelection = filterSelections.value.find((f: FilterSelection) => f.filterId == columnId);
-            const columnHeaders = (!columnSelection) ? [] : columnSelection?.selection.map((selection: FilterOption) => {
-                return {
-                    headerName: selection.label,
-                    valueGetter: getValue(selection.id),
-                    valueFormatter: getFormat(selection.id)
-                }
-            });
-            return [
-                {
-                    headerName: props.headerName,
-                    field: "label",
-                    // Override default filter type
-                    filter: 'agTextColumnFilter',
-                    pinned: "left"
-                },
-                ...columnHeaders
-            ];
+            return getColumnDefs(props.plot, indicatorMetadata.value, props.tableMetadata,
+                filterSelections.value, props.headerDefs, store.state.language)
         });
+
+        // We have to handle table sizing a little carefully.
+        // ag-grid automatically set the height of the grid using `domLayout: autoHeight`
+        // but you cannot set a max height, and it renders all data. So we need to manually
+        // handle the max height by setting this dynamically when data changes.
+        const styleString = ref<string>(`height: ${MAX_TABLE_HEIGHT}px`)
+
+        const handleTableResize = (event: AgGridEvent) => {
+            const filteredVisibleRowCount = event.api.getDisplayedRowCount();
+
+            if (filteredVisibleRowCount * ROW_HEIGHT < MAX_TABLE_HEIGHT) {
+                event.api.setGridOption("domLayout", "autoHeight")
+                styleString.value = "";
+            } else {
+                event.api.setGridOption("domLayout", "normal");
+                styleString.value = `height: ${MAX_TABLE_HEIGHT}px`;
+            }
+        };
+
         const handleRowDataChange = () => {
             if (gridApi.value) {
                 ensureColumnsWideEnough(gridApi.value as any);
+                handleTableResize(gridApi.value as any);
             }
         };
         return {
@@ -155,7 +142,8 @@ export default defineComponent({
             handleRowDataChange,
             columnDefs,
             defaultColDef,
-            gridOptions
+            gridOptions,
+            styleString
         }
     }
 });

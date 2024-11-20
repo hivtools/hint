@@ -37,6 +37,8 @@ export const getMetadataFromPlotName = (rootState: RootState, plotName: PlotName
             return rootState.modelCalibrate.calibratePlotResult!.metadata;
         case PlotDataType.Comparison:
             return rootState.modelCalibrate.comparisonPlotResult!.metadata;
+        case PlotDataType.InputComparison:
+            return rootState.reviewInput.inputComparison.data!.metadata;
     }
 }
 

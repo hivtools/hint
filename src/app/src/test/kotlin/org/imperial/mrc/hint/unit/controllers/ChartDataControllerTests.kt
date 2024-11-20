@@ -58,4 +58,19 @@ class ChartDataControllerTests {
                 .matches { (it as HintException).httpStatus == HttpStatus.BAD_REQUEST }
                 .hasTranslatedMessage("Unknown input time series type.")
     }
+
+    @Test
+    fun `can get input comparison data`()
+    {
+        val mockFileManager = mock<FileManager> {
+            on { getFiles(FileType.Shape, FileType.PJNZ, FileType.ANC, FileType.Programme) } doReturn mockFiles
+        }
+        val mockClient = mock<HintrAPIClient> {
+            on { getInputComparisonChartData(mockFiles) } doReturn mockResponse
+        }
+
+        val sut = ChartDataController(mockFileManager, mockClient)
+        val response = sut.inputComparison()
+        assertThat(response).isSameAs(mockResponse)
+    }
 }

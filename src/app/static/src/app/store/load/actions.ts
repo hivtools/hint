@@ -17,6 +17,7 @@ import {
 import {DynamicFormData} from "@reside-ic/vue-next-dynamic-form";
 import {ModelCalibrateState} from "../modelCalibrate/modelCalibrate";
 import {LoadMutations} from "./mutations";
+import {ProjectsMutations} from "../projects/mutations";
 
 export type LoadErrorActionTypes = "LoadFailed" | "RehydrateResultError"
 export type LoadActionTypes = keyof Omit<LoadMutations, LoadErrorActionTypes>
@@ -54,6 +55,11 @@ export const actions: ActionTree<LoadState, RootState> & LoadActions = {
 
         const compatibleState = migrateState(savedState);
 
+        const {commit} = context;
+        // Note that we can end up with a race condition here, if we save the partial state and then an action
+        // completed in between the new project state being saved and the reload completing it can break the
+        // state. So we commit a mutation to SetLoadingProject which will block any further mutations being committed
+        commit({type: `projects/${ProjectsMutations.SetLoadingProject}`, payload: true}, {root:true});
         localStorageManager.savePartialState(compatibleState);
         location.reload();
     },

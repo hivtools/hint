@@ -19,6 +19,13 @@ describe("Root", () => {
         expect(mockSaveState).toHaveBeenCalledTimes(0);
         const store = new Vuex.Store(module.storeOptions);
         store.commit({type: "baseline/Ready", payload: null});
+        expect(mockSaveState).toHaveBeenCalledTimes(1);
         expect(mockSaveState.mock.calls[0][0]).toStrictEqual(module.storeOptions.state);
+
+        // persist state doesn't run if project loading is in progress
+        store.commit({type: "projects/SetLoadingProject", payload: true});
+        expect(mockSaveState).toHaveBeenCalledTimes(1);
+        store.commit({type: "baseline/Ready", payload: null});
+        expect(mockSaveState).toHaveBeenCalledTimes(1);
     });
 });
