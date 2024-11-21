@@ -7,7 +7,11 @@
                         :geojson="feature"
                         :options-style="() => style">
             </l-geo-json>
-
+            <base-map-checkbox
+                @toggle-base-map="toggleBaseMap"
+                :checked="baseMapVisible"
+            />
+            <l-tile-layer :url="tileLayerUrl" v-if="baseMapVisible"/>
             <map-empty-feature v-if="emptyFeature"></map-empty-feature>
             <template v-else>
                 <reset-map @reset-view="updateBounds"></reset-map>
@@ -30,7 +34,7 @@ import {computed, onMounted, ref, watch} from "vue";
 import {useStore} from "vuex";
 import {RootState} from "../../../root";
 import {PlotData} from "../../../store/plotData/plotData";
-import { LMap, LGeoJson } from "@vue-leaflet/vue-leaflet";
+import { LMap, LGeoJson, LTileLayer } from "@vue-leaflet/vue-leaflet";
 import { Feature } from "geojson";
 import {
     getIndicatorMetadata,
@@ -51,10 +55,13 @@ import SizeLegend from "./SizeLegend.vue";
 import {circleMarker, CircleMarker} from "leaflet";
 import MapEmptyFeature from "../MapEmptyFeature.vue";
 import {getFeatureData, tooltipContent} from "./utils";
+import BaseMapCheckbox from "../BaseMapCheckbox.vue";
 
 const store = useStore<RootState>();
 const plotName = "bubble";
 type OutputData = CalibrateDataResponse["data"]
+
+const tileLayerUrl = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
 
 const plotData = computed<PlotData>(() => store.state.plotData[plotName]);
 const getColourIndicator = () => {
@@ -90,6 +97,7 @@ const features = store.state.baseline.shape ?
         store.state.baseline.shape.data.features as Feature[] : [] as Feature[];
 const currentFeatures = ref<Feature[]>([]);
 const featureData = ref<BubbleIndicatorValuesDict>({});
+const baseMapVisible = ref(true);
 
 const map = ref<typeof LMap | null>(null);
 const featureRefs = ref<typeof LGeoJson[]>([]);
@@ -135,6 +143,10 @@ const updateFeatureData = () => {
             10,
             70
     );
+};
+
+const toggleBaseMap = () => {
+    baseMapVisible.value = !baseMapVisible.value
 };
 
 const emptyFeature = computed(() => {

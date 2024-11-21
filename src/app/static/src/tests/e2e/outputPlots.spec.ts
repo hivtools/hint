@@ -95,6 +95,25 @@ test("can view output plots", async ({ projectPage }) => {
     // Then bubble plot is shown
     await expect(page.locator("#review-output")).toHaveScreenshot("bubble-landing.png");
 
+     // Show base map checkbox is shown and checked by default
+     await expect(page.getByRole('checkbox')).toBeVisible()
+     await expect(page.getByRole('checkbox')).toBeChecked()
+     await expect(page.locator(".leaflet-tile-container")).toHaveCount(1);
+ 
+     // When I uncheck show base map checkbox
+     await page.getByRole('checkbox').uncheck();
+ 
+     // Updated map is shown without base map
+     await expect(page.getByRole('checkbox')).not.toBeChecked()
+     await expect(page.locator(".leaflet-tile-container")).toHaveCount(0);
+ 
+     // When I recheck show base map checkbox
+     await page.getByRole('checkbox').check();
+     
+     // Updated map is shown with base map
+     await expect(page.getByRole('checkbox')).toBeChecked()
+     await expect(page.locator(".leaflet-tile-container")).toHaveCount(1);
+
     // When I update the bubble size
     await page.getByRole('link', { name: 'Adjust scale' }).first().click();
     await page.getByText('Custom').click();

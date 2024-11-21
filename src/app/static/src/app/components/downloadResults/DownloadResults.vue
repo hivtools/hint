@@ -6,7 +6,7 @@
                     <div :id="`${type}-download`" v-if="switches[type]">
                         <download :translate-key="`${type}Download`"
                                   @trigger-download="() => downloadOutput(type)"
-                                  :disabled="!state[type].downloadId || state[type].preparing"
+                                  :disabled="!state[type].downloadId || state[type].preparing || !!state[type].metadataError"
                                   :file="state[type]"/>
                         <div class="pb-2">
                             <error-alert v-if="state[type].downloadError" :error="state[type].downloadError"></error-alert>
@@ -123,8 +123,7 @@
             clearStatus: mapMutationByName("adrUpload", "ClearStatus"),
             getUserCanUpload: mapActionByName("adr", "getUserCanUpload"),
             getUploadFiles: mapActionByName("adrUpload", "getUploadFiles"),
-            prepareAllOutputs: mapActionByName("downloadResults", "prepareAllOutputs"),
-            downloadOutput: mapActionByName("downloadResults", "downloadOutput"),
+            prepareAllOutputs: mapActionByName("downloadResults", "prepareAllOutputs")
         },
         mounted() {
             this.getUserCanUpload();
