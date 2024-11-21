@@ -5,7 +5,6 @@
                 <template v-for="type in Object.values(DownloadType)" :key="type">
                     <div :id="`${type}-download`" v-if="switches[type]">
                         <download :translate-key="`${type}Download`"
-                                  @trigger-download="() => downloadOutput(type)"
                                   :disabled="!state[type].downloadId || state[type].preparing || !!state[type].metadataError"
                                   :file="state[type]"/>
                         <div class="pb-2">
