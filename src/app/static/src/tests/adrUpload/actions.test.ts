@@ -23,6 +23,7 @@ import Vuex from "vuex";
 import {RootState} from "../../app/root";
 import {mutations as baselineMutations} from "../../app/store/baseline/mutations";
 import {Mock} from "vitest";
+import { DownloadType } from "../../app/store/downloadResults/downloadConfig";
 
 describe("ADR upload actions", () => {
     const state = mockADRUploadState();
@@ -168,7 +169,7 @@ describe("ADR upload actions", () => {
 
         expect(commit.mock.calls[1][0].type).toBe("SetUploadFiles");
 
-        let expectedUploadFiles: Record<string, UploadFile> = {
+        const expectedUploadFiles: Record<string, UploadFile> = {
             outputZip: {
                 index: 0,
                 displayName: "uploadFileOutputZip",
@@ -243,9 +244,9 @@ describe("ADR upload actions", () => {
             }),
 
             downloadResults: mockDownloadResultsState({
-                summary: {downloadId: 1},
-                spectrum: {downloadId: 2},
-                comparison: {downloadId: 3}
+                [DownloadType.SUMMARY]: { downloadId: 1 },
+                [DownloadType.SPECTRUM]: { downloadId: 2 },
+                [DownloadType.COMPARISON]: { downloadId: 3 }
             } as any),
 
             metadata: mockMetadataState({
@@ -467,8 +468,8 @@ describe("ADR upload actions", () => {
             }),
 
             downloadResults: mockDownloadResultsState({
-                summary: {downloadId: 1},
-                spectrum: {downloadId: 2}
+                [DownloadType.SUMMARY]: {downloadId: 1},
+                [DownloadType.SPECTRUM]: {downloadId: 2}
             } as any),
 
             metadata: mockMetadataState({
@@ -544,9 +545,9 @@ describe("ADR upload actions", () => {
             }),
 
             downloadResults: mockDownloadResultsState({
-                summary: {downloadId: 1},
-                spectrum: {downloadId: 2},
-                comparison: {downloadId: 3}
+                [DownloadType.SUMMARY]: {downloadId: 1},
+                [DownloadType.SPECTRUM]: {downloadId: 2},
+                [DownloadType.COMPARISON]: {downloadId: 3}
             } as any),
 
             metadata: mockMetadataState({
@@ -639,9 +640,9 @@ describe("ADR upload actions", () => {
                 downloadResults: {
                     namespaced: true,
                     state: mockDownloadResultsState({
-                        summary: {downloadId: 1},
-                        spectrum: {downloadId: 2},
-                        comparison: {downloadId: 3}
+                        [DownloadType.SUMMARY]: {downloadId: 1},
+                        [DownloadType.SPECTRUM]: {downloadId: 2},
+                        [DownloadType.COMPARISON]: {downloadId: 3}
                     } as any) as any
                 },
                 metadata: {

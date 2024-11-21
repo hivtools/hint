@@ -19,6 +19,7 @@ import {initialReviewInputState} from "../reviewInput/reviewInput";
 import {initialPlotSelectionsState} from "../plotSelections/plotSelections";
 import {initialPlotDataState} from "../plotData/plotData";
 import {initialPlotState} from "../plotState/plotState";
+import { DownloadType } from "../downloadResults/downloadConfig";
 
 export enum RootMutation {
     Reset = "Reset",
@@ -110,18 +111,12 @@ export const mutations: MutationTree<RootState> = {
     },
 
     [RootMutation.ResetDownload](state: RootState) {
-        stopPolling(state.downloadResults.spectrum);
-        stopPolling(state.downloadResults.coarseOutput);
-        stopPolling(state.downloadResults.summary);
-        stopPolling(state.downloadResults.comparison);
+        stopPollingAllDownloadTypes(state);
         Object.assign(state.downloadResults, initialDownloadResultsState());
     },
 
     [RootMutation.ResetOutputs](state: RootState) {
-        stopPolling(state.downloadResults.spectrum);
-        stopPolling(state.downloadResults.coarseOutput);
-        stopPolling(state.downloadResults.summary);
-        stopPolling(state.downloadResults.comparison);
+        stopPollingAllDownloadTypes(state);
         stopPolling(state.modelRun);
         stopPolling(state.modelCalibrate);
         Object.assign(state.modelRun, initialModelRunState());
@@ -139,6 +134,12 @@ export const mutations: MutationTree<RootState> = {
 
     ...languageMutations
 
+};
+
+const stopPollingAllDownloadTypes = (state: RootState) => {
+    Object.values(DownloadType).forEach(type => {
+        stopPolling(state.downloadResults[type])
+    });
 };
 
 const stopPolling = <T extends PollingState>(state: T) => {

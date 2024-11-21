@@ -31,6 +31,7 @@ import {router} from "../../app/router";
 import {initialModelCalibrateState} from "../../app/store/modelCalibrate/modelCalibrate";
 import {initialDownloadResultsState} from "../../app/store/downloadResults/downloadResults";
 import {outputPlotNames} from "../../app/store/plotSelections/plotSelections";
+import { DownloadType } from "../../app/store/downloadResults/downloadConfig";
 
 describe("Root mutations", () => {
 
@@ -67,9 +68,9 @@ describe("Root mutations", () => {
             load: mockLoadState({loadError: mockError("Test Load Error")}),
             errors: mockErrorsState({errors: [mockError("Test Error")]}),
             downloadResults: mockDownloadResultsState({
-                summary: {downloading: false, complete: true} as any,
-                spectrum: {downloading: false, complete: true} as any,
-                coarseOutput: {downloading: false, complete: true} as any
+                [DownloadType.SUMMARY]: {downloading: false, complete: true} as any,
+                [DownloadType.SPECTRUM]: {downloading: false, complete: true} as any,
+                [DownloadType.COARSE]: {downloading: false, complete: true} as any,
             })
         });
     };
@@ -238,9 +239,9 @@ describe("Root mutations", () => {
 
         mutations.ResetDownload(state);
 
-        expect(state.downloadResults.summary.complete).toBe(false)
-        expect(state.downloadResults.coarseOutput.complete).toBe(false)
-        expect(state.downloadResults.spectrum.complete).toBe(false)
+        expect(state.downloadResults[DownloadType.SUMMARY].complete).toBe(false)
+        expect(state.downloadResults[DownloadType.COARSE].complete).toBe(false)
+        expect(state.downloadResults[DownloadType.SPECTRUM].complete).toBe(false)
     });
 
     it("can set updatingLanguage", () => {
@@ -276,18 +277,18 @@ describe("Root mutations", () => {
 
     it("resetOutput stops any download polling", () => {
         const state = populatedState();
-        state.downloadResults.spectrum.statusPollId = 96;
-        state.downloadResults.coarseOutput.statusPollId = 97;
-        state.downloadResults.summary.statusPollId = 98;
-        state.downloadResults.comparison.statusPollId = 99;
+        state.downloadResults[DownloadType.SPECTRUM].statusPollId = 96;
+        state.downloadResults[DownloadType.COARSE].statusPollId = 97;
+        state.downloadResults[DownloadType.SUMMARY].statusPollId = 98;
+        state.downloadResults[DownloadType.COMPARISON].statusPollId = 99;
         const spy = vi.spyOn(window, "clearInterval");
 
         mutations.ResetDownload(state);
 
-        expect(state.downloadResults.spectrum.statusPollId).toBe(-1);
-        expect(state.downloadResults.summary.statusPollId).toBe(-1);
-        expect(state.downloadResults.coarseOutput.statusPollId).toBe(-1);
-        expect(state.downloadResults.comparison.statusPollId).toBe(-1);
+        expect(state.downloadResults[DownloadType.SPECTRUM].statusPollId).toBe(-1);
+        expect(state.downloadResults[DownloadType.SUMMARY].statusPollId).toBe(-1);
+        expect(state.downloadResults[DownloadType.COARSE].statusPollId).toBe(-1);
+        expect(state.downloadResults[DownloadType.COMPARISON].statusPollId).toBe(-1);
         expect(spy).toHaveBeenCalledTimes(4);
         expect(spy).toHaveBeenNthCalledWith(1, 96);
         expect(spy).toHaveBeenNthCalledWith(2, 97);

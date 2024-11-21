@@ -20,6 +20,7 @@ import {Dict} from "../../../app/types";
 import {Language} from "../../../app/store/translations/locales";
 import {DownloadResultsState} from "../../../app/store/downloadResults/downloadResults";
 import {MetadataState} from "../../../app/store/metadata/metadata";
+import { DownloadType } from '../../../app/store/downloadResults/downloadConfig';
 
 describe(`uploadModal `, () => {
 
@@ -96,9 +97,9 @@ describe(`uploadModal `, () => {
     }
 
     const mockDownloadResults = {
-        summary: mockDownloadResultsDependency({complete: false, preparing: false}),
-        spectrum: mockDownloadResultsDependency({complete: false, preparing: false}),
-        comparison: mockDownloadResultsDependency({complete: false, preparing: false})
+        [DownloadType.SUMMARY]: mockDownloadResultsDependency({complete: false, preparing: false}),
+        [DownloadType.SPECTRUM]: mockDownloadResultsDependency({complete: false, preparing: false}),
+        [DownloadType.COMPARISON]: mockDownloadResultsDependency({complete: false, preparing: false})
     } as any
 
     const mockUploadFilesToADR = vi.fn();
@@ -326,13 +327,13 @@ describe(`uploadModal `, () => {
 
         const buttons = modal.find(".modal-footer").findAll("button");
         await buttons[1].trigger("click")
-        expect(wrapper.emitted("close")!?.length).toBe(1)
+        expect(wrapper.emitted("close")?.length).toBe(1)
     })
 
     it(`can send upload files to ADR when download status is complete`, async () => {
         const downloadResults = {
-            summary: mockDownloadResultsDependency({complete: true, preparing: false}),
-            spectrum: mockDownloadResultsDependency({complete: true, preparing: false})
+            [DownloadType.SUMMARY]: mockDownloadResultsDependency({complete: true, preparing: false}),
+            [DownloadType.SPECTRUM]: mockDownloadResultsDependency({complete: true, preparing: false})
         }
         const store = createStore(fakeMetadata, downloadResults)
         const wrapper = mountWithTranslate(UploadModal, store, {
@@ -353,10 +354,10 @@ describe(`uploadModal `, () => {
 
     it(`can set createRelease and upload files in uploadFilesToAdrAction`, async () => {
         const downloadResults = {
-            summary: mockDownloadResultsDependency({complete: true, preparing: false}),
-            spectrum: mockDownloadResultsDependency({complete: true, preparing: false}),
-            comparison: mockDownloadResultsDependency({complete: true, preparing: false}),
-            coarseOutput: mockDownloadResultsDependency()
+            [DownloadType.SUMMARY]: mockDownloadResultsDependency({complete: true, preparing: false}),
+            [DownloadType.SPECTRUM]: mockDownloadResultsDependency({complete: true, preparing: false}),
+            [DownloadType.COMPARISON]: mockDownloadResultsDependency({complete: true, preparing: false}),
+            [DownloadType.COARSE]: mockDownloadResultsDependency()
         }
         const store = createStore(metadataWithInput, downloadResults)
         const wrapper = mountWithTranslate(UploadModal, store, {
@@ -386,9 +387,9 @@ describe(`uploadModal `, () => {
 
     it(`can set upload files in uploadFilesToAdrAction and not set createRelease`, async () => {
         const downloadResults = {
-            summary: mockDownloadResultsDependency({complete: true, preparing: false}),
-            spectrum: mockDownloadResultsDependency({complete: true, preparing: false}),
-            coarseOutput: mockDownloadResultsDependency()
+            [DownloadType.SUMMARY]: mockDownloadResultsDependency({complete: true, preparing: false}),
+            [DownloadType.SPECTRUM]: mockDownloadResultsDependency({complete: true, preparing: false}),
+            [DownloadType.COARSE]: mockDownloadResultsDependency()
         }
         const store = createStore(metadataWithInput, downloadResults)
         const wrapper = mountWithTranslate(UploadModal, store, {
@@ -420,10 +421,10 @@ describe(`uploadModal `, () => {
 
     it(`can remove some upload files from uploadFilesToAdrAction`, async () => {
         const downloadResults = {
-            summary: mockDownloadResultsDependency({complete: true, preparing: false}),
-            spectrum: mockDownloadResultsDependency({complete: true, preparing: false}),
-            comparison: mockDownloadResultsDependency({complete: true, preparing: false}),
-            coarseOutput: mockDownloadResultsDependency()
+            [DownloadType.SUMMARY]: mockDownloadResultsDependency({complete: true, preparing: false}),
+            [DownloadType.SPECTRUM]: mockDownloadResultsDependency({complete: true, preparing: false}),
+            [DownloadType.COMPARISON]: mockDownloadResultsDependency({complete: true, preparing: false}),
+            [DownloadType.COARSE]: mockDownloadResultsDependency()
         }
         const store = createStore(metadataWithInput, downloadResults)
         const wrapper = mountWithTranslate(UploadModal, store, {
@@ -455,9 +456,9 @@ describe(`uploadModal `, () => {
 
     it(`ok button is enabled when inputs are set and triggers close modal`, async () => {
         const downloadResults = {
-            summary: mockDownloadResultsDependency({complete: true}),
-            spectrum: mockDownloadResultsDependency({complete: true}),
-            comparison: mockDownloadResultsDependency({complete: true})
+            [DownloadType.SUMMARY]: mockDownloadResultsDependency({complete: true}),
+            [DownloadType.SPECTRUM]: mockDownloadResultsDependency({complete: true}),
+            [DownloadType.COMPARISON]: mockDownloadResultsDependency({complete: true})
         }
         const store = createStore(fakeMetadata, downloadResults);
         const wrapper = mountWithTranslate(UploadModal, store, {
@@ -477,7 +478,7 @@ describe(`uploadModal `, () => {
         expect((okBtn.element as HTMLButtonElement).disabled).toBe(false);
         expect(okBtn.text()).toBe("OK")
         await okBtn.trigger("click")
-        expect(wrapper.emitted("close")!?.length).toBe(1)
+        expect(wrapper.emitted("close")?.length).toBe(1)
     });
 
     it("does not render file section header when no input files", () => {
@@ -556,9 +557,9 @@ describe(`uploadModal `, () => {
 
     it(`does not render output files and headers when not available for upload`, async () => {
         const downloadResults = {
-            summary: mockDownloadResultsDependency({complete: true, preparing: false, error: mockError()}),
-            spectrum: mockDownloadResultsDependency({complete: true, preparing: false, error: mockError()}),
-            comparison: mockDownloadResultsDependency({complete: true, preparing: false, error: mockError()})
+            [DownloadType.SUMMARY]: mockDownloadResultsDependency({complete: true, preparing: false, error: mockError()}),
+            [DownloadType.SPECTRUM]: mockDownloadResultsDependency({complete: true, preparing: false, error: mockError()}),
+            [DownloadType.COMPARISON]: mockDownloadResultsDependency({complete: true, preparing: false, error: mockError()})
         }
         const store = createStore(metadataWithInput, downloadResults)
         const wrapper = mountWithTranslate(UploadModal, store, {
@@ -581,20 +582,20 @@ describe(`uploadModal `, () => {
 
     it(`does not render output files and headers when metadata request failed`, async () => {
         const downloadResults = {
-            summary: mockDownloadResultsDependency(
+            [DownloadType.SUMMARY]: mockDownloadResultsDependency(
                 {
                     complete: true,
                     preparing: false,
                     metadataError: mockError("META FAILED")
                 }),
 
-            spectrum: mockDownloadResultsDependency(
+            [DownloadType.SPECTRUM]: mockDownloadResultsDependency(
                 {
                     complete: true,
                     preparing: false,
                     metadataError: mockError("META FAILED")
                 }),
-            comparison: mockDownloadResultsDependency(
+            [DownloadType.COMPARISON]: mockDownloadResultsDependency(
                 {
                     complete: true,
                     preparing: false,
@@ -632,19 +633,19 @@ describe(`uploadModal `, () => {
 
     it(`does not render summary report when summary metadata request failed`, async () => {
         const downloadResults = {
-            summary: mockDownloadResultsDependency(
+            [DownloadType.SUMMARY]: mockDownloadResultsDependency(
                 {
                     complete: true,
                     preparing: false,
                     metadataError: mockError("META FAILED")
                 }),
 
-            spectrum: mockDownloadResultsDependency(
+            [DownloadType.SPECTRUM]: mockDownloadResultsDependency(
                 {
                     complete: true,
                     preparing: false,
                 }),
-            comparison: mockDownloadResultsDependency(
+            [DownloadType.COMPARISON]: mockDownloadResultsDependency(
                 {
                     complete: true,
                     preparing: false
@@ -687,19 +688,19 @@ describe(`uploadModal `, () => {
 
     it(`does not render spectrum report when spectrum metadata request failed`, async () => {
         const downloadResults = {
-            summary: mockDownloadResultsDependency(
+            [DownloadType.SUMMARY]: mockDownloadResultsDependency(
                 {
                     complete: true,
                     preparing: false
                 }),
 
-            spectrum: mockDownloadResultsDependency(
+            [DownloadType.SPECTRUM]: mockDownloadResultsDependency(
                 {
                     complete: true,
                     preparing: false,
                     metadataError: mockError("META FAILED")
                 }),
-            comparison: mockDownloadResultsDependency(
+            [DownloadType.COMPARISON]: mockDownloadResultsDependency(
                 {
                     complete: true,
                     preparing: false
@@ -741,18 +742,18 @@ describe(`uploadModal `, () => {
 
     it(`does not render comparison report when comparison metadata request failed`, async () => {
         const downloadResults = {
-            summary: mockDownloadResultsDependency(
+            [DownloadType.SUMMARY]: mockDownloadResultsDependency(
                 {
                     complete: true,
                     preparing: false
                 }),
 
-            spectrum: mockDownloadResultsDependency(
+            [DownloadType.SPECTRUM]: mockDownloadResultsDependency(
                 {
                     complete: true,
                     preparing: false,
                 }),
-            comparison: mockDownloadResultsDependency(
+            [DownloadType.COMPARISON]: mockDownloadResultsDependency(
                 {
                     complete: true,
                     preparing: false,

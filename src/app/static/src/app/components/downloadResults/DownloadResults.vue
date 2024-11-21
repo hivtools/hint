@@ -2,42 +2,16 @@
     <div class="container">
         <div class="row">
             <div class="col-sm">
-                <div id="spectrum-download">
-                    <download :translate-key="translation.spectrum"
-                              :disabled="!spectrum.downloadId || spectrum.preparing || !!spectrum.metadataError"
-                              :file="spectrum"/>
-                    <div class="pb-2">
-                    <error-alert v-if="spectrum.downloadError" :error="spectrum.downloadError"></error-alert>
+                <template v-for="type in Object.values(DownloadType)" :key="type">
+                    <div :id="`${type}-download`" v-if="switches[type]">
+                        <download :translate-key="`${type}Download`"
+                                  :disabled="!state[type].downloadId || state[type].preparing || !!state[type].metadataError"
+                                  :file="state[type]"/>
+                        <div class="pb-2">
+                            <error-alert v-if="state[type].downloadError" :error="state[type].downloadError"></error-alert>
+                        </div>
                     </div>
-                </div>
-                <div id="coarse-output-download">
-                    <download :translate-key="translation.coarse"
-                              :disabled="!coarseOutput.downloadId || coarseOutput.preparing || !!coarseOutput.metadataError"
-                              :file="coarseOutput"/>
-                    <div class="pb-2">
-                        <error-alert v-if="coarseOutput.downloadError" :error="coarseOutput.downloadError"></error-alert>
-                    </div>
-                </div>
-                <div id="summary-download">
-                    <download :translate-key="translation.summary"
-                              :disabled="!summary.downloadId || summary.preparing || !!summary.metadataError"
-                              :file="summary"/>
-                    <div class="pb-2">
-                    <error-alert v-if="summary.downloadError" :error="summary.downloadError"></error-alert>
-                    </div>
-                </div>
-                <div id="comparison-download" v-if="comparisonSwitch">
-                    <download :translate-key="translation.comparison"
-                              :disabled="!comparison.downloadId || comparison.preparing || !!comparison.metadataError"
-                              :file="comparison"/>
-                    <error-alert v-if="comparison.downloadError" :error="comparison.downloadError"></error-alert>
-                </div>
-                <div id="agyw-download" v-if="agywSwitch">
-                    <download :translate-key="translation.agyw"
-                              :disabled="!agyw.downloadId || agyw.preparing || !!agyw.metadataError"
-                              :file="agyw"/>
-                    <error-alert v-if="agyw.downloadError" :error="agyw.downloadError"></error-alert>
-                </div>
+                </template>
             </div>
             <div id="upload" v-if="hasUploadPermission" class="col-sm">
                 <h4 v-translate="'uploadFileToAdr'"></h4>
@@ -91,15 +65,16 @@
     import ErrorAlert from "../ErrorAlert.vue";
     import i18next from "i18next";
     import {ADRUploadState} from "../../store/adrUpload/adrUpload";
-    import {DownloadResultsState} from "../../store/downloadResults/downloadResults";
     import Download from "./Download.vue";
-    import {switches} from "../../featureSwitches";
     import { defineComponent } from "vue";
+    import { downloadSwitches, DownloadType } from "../../store/downloadResults/downloadConfig";
 
     interface Data {
         uploadModalOpen: boolean,
-        comparisonSwitch: boolean,
-        agywSwitch: boolean,
+        DownloadType: typeof DownloadType,
+        switches: {
+            [K in DownloadType]: boolean
+        }
     }
 
     export default defineComponent({
@@ -107,18 +82,14 @@
         data(): Data {
             return {
                 uploadModalOpen: false,
-                comparisonSwitch: switches.comparisonOutput,
-                agywSwitch: switches.agywDownload,
+                switches: downloadSwitches,
+                DownloadType
             }
         },
         computed: {
             hasUploadPermission: mapStateProp<ADRState, boolean>("adr", (state: ADRState) => state.userCanUpload),
             ...mapStateProps("downloadResults", {
-                spectrum: ((state: DownloadResultsState) => state.spectrum),
-                summary: ((state: DownloadResultsState) => state.summary),
-                coarseOutput: ((state: DownloadResultsState) => state.coarseOutput),
-                comparison: ((state: DownloadResultsState) => state.comparison),
-                agyw: ((state: DownloadResultsState) => state.agyw),
+                state: (state) => state
             }),
             ...mapStateProps("adrUpload", {
                 uploading: ((state: ADRUploadState) => state.uploading),
@@ -140,18 +111,8 @@
                 null,
                 (state: RootState) => state.language
             ),
-            translation(): Record<string, any> {
-                return {
-                    spectrum: {header: 'exportOutputs', button: 'download'},
-                    coarse: {header: 'downloadCoarseOutput', button: 'download'},
-                    summary: {header: 'downloadSummaryReport', button: 'download'},
-                    comparison: {header: 'downloadComparisonReport', button: 'download'},
-                    agyw: {header: 'downloadAgywTool', button: 'download'},
-                }
-            },
             isPreparing(): boolean {
-                return this.summary.preparing || this.spectrum.preparing || this.coarseOutput.preparing ||
-                    this.comparison.preparing || this.agyw.preparing
+                return Object.values(DownloadType).some(type => this.state[type].preparing);
             }
         },
         methods: {
@@ -161,12 +122,12 @@
             clearStatus: mapMutationByName("adrUpload", "ClearStatus"),
             getUserCanUpload: mapActionByName("adr", "getUserCanUpload"),
             getUploadFiles: mapActionByName("adrUpload", "getUploadFiles"),
-            prepareOutputs: mapActionByName("downloadResults", "prepareOutputs"),
+            prepareAllOutputs: mapActionByName("downloadResults", "prepareAllOutputs")
         },
         mounted() {
             this.getUserCanUpload();
             this.getUploadFiles();
-            this.prepareOutputs();
+            this.prepareAllOutputs();
         },
         beforeMount() {
             this.clearStatus();

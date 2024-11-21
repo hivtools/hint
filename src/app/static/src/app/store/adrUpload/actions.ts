@@ -7,6 +7,7 @@ import {ADRUploadMutation} from "./mutations";
 import {constructUploadFile, constructUploadFileWithResourceName} from "../../utils";
 import {Dict, UploadFile} from "../../types";
 import {ValidateInputResponse} from "../../generated";
+import { DownloadType } from "../downloadResults/downloadConfig";
 
 export interface ADRUploadActions {
     getUploadFiles: (store: ActionContext<ADRUploadState, RootState>) => void;
@@ -111,7 +112,7 @@ export const actions: ActionTree<ADRUploadState, RootState> & ADRUploadActions =
                 requestParams["resourceId"] = resourceId
             }
             if (resourceType === rootState.adr.schemas?.outputSummary) {
-                downloadId = rootState.downloadResults.summary.downloadId
+                downloadId = rootState.downloadResults[DownloadType.SUMMARY].downloadId
 
                 requestParams["description"] =
                     uploadMetadata?.find(meta => meta.type === "summary")?.description
@@ -119,7 +120,7 @@ export const actions: ActionTree<ADRUploadState, RootState> & ADRUploadActions =
             }
 
             if (resourceType === rootState.adr.schemas?.outputZip) {
-                downloadId = rootState.downloadResults.spectrum.downloadId
+                downloadId = rootState.downloadResults[DownloadType.SPECTRUM].downloadId
 
                 requestParams["description"] =
                     uploadMetadata?.find(meta => meta.type === "spectrum")?.description
@@ -127,7 +128,7 @@ export const actions: ActionTree<ADRUploadState, RootState> & ADRUploadActions =
             }
 
             if (resourceType === rootState.adr.schemas?.outputComparison) {
-                downloadId = rootState.downloadResults.comparison.downloadId
+                downloadId = rootState.downloadResults[DownloadType.COMPARISON].downloadId
 
                 requestParams["description"] =
                     uploadMetadata?.find(meta => meta.type === "comparison")?.description

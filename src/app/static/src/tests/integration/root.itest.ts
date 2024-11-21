@@ -3,6 +3,7 @@ import {actions as projectActions} from "../../app/store/projects/actions";
 import {ErrorReportManualDetails} from "../../app/types";
 import {emptyState} from "../../app/root";
 import {login, rootState} from "./integrationTest";
+import { DownloadType } from "../../app/store/downloadResults/downloadConfig";
 
 describe(`root actions`, () => {
     beforeAll(async () => {
@@ -26,16 +27,16 @@ describe(`root actions`, () => {
                 calibrateId: "2022"
             },
             downloadResults: {
-                spectrum: {
+                [DownloadType.SPECTRUM]: {
                     downloadId: "spectrum123"
                 },
-                summary: {
+                [DownloadType.SUMMARY]: {
                     downloadId: "summary123"
                 },
-                coarseOutput: {
+                [DownloadType.COARSE]: {
                     downloadId: "coarse123"
                 },
-                comparison: {
+                [DownloadType.COMPARISON]: {
                     downloadId: "comparison123"
                 }
             },

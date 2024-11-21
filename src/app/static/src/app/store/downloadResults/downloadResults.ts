@@ -3,13 +3,10 @@ import {Module} from "vuex";
 import {actions} from "./actions";
 import {mutations} from "./mutations";
 import {DownloadResultsDependency} from "../../types";
+import { DownloadType } from "./downloadConfig";
 
-export interface DownloadResultsState {
-    spectrum: DownloadResultsDependency
-    coarseOutput: DownloadResultsDependency
-    summary: DownloadResultsDependency
-    comparison: DownloadResultsDependency
-    agyw: DownloadResultsDependency
+export type DownloadResultsState = {
+    [K in DownloadType]: DownloadResultsDependency
 }
 
 export const initialDownloadResults = {
@@ -24,13 +21,9 @@ export const initialDownloadResults = {
 }
 
 export const initialDownloadResultsState = (): DownloadResultsState => {
-    return {
-        spectrum: {...initialDownloadResults},
-        coarseOutput: {...initialDownloadResults},
-        summary: {...initialDownloadResults},
-        comparison: {...initialDownloadResults},
-        agyw: {...initialDownloadResults},
-    }
+    return Object.fromEntries(
+        Object.values(DownloadType).map(downloadBtn => [downloadBtn, {...initialDownloadResults}])
+    ) as DownloadResultsState;
 }
 
 export const downloadResults: Module<DownloadResultsState, RootState> = {
