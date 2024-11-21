@@ -255,18 +255,19 @@ export const getInputComparisonFilteredData = async (payload: PlotSelectionUpdat
 };
 
 export const getPopulationFilteredData = async (payload: PlotSelectionUpdate, commit: Commit, rootState: RootState) => {
-    const populationResponse =  rootState.baseline.population!.data
+    const data =  rootState.baseline.population!.data
 
-    const plotDataPayload: PlotDataUpdate = {
-        plot: payload.plot,
-        data: populationResponse
-    };
-    commit(`plotData/${PlotDataMutations.updatePlotData}`, { payload: plotDataPayload }, { root: true });
+      // Filter the data on the current selections
+      const { filters } = payload.selections;
+      const { filterTypes } = getMetadataFromPlotName(rootState, payload.plot);
+      const filteredData = filterData(filters, data, filterTypes);
 
-    // areaIdToLevelMap
-
-    // Use getter from baseline state (or add a new one)
-
+      const plotDataPayload: PlotDataUpdate = {
+          plot: payload.plot,
+          data: filteredData
+      };
+      
+      commit(`plotData/${PlotDataMutations.updatePlotData}`, { payload: plotDataPayload }, { root: true });
 }
 
 const filterData = (filters: FilterSelection[], data: any[], filterTypes: FilterTypes[]) => {

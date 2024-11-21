@@ -33,7 +33,7 @@
             <Table class="col-md-9" v-if="activePlot === 'inputComparisonTable'"
                     :plotName="'inputComparisonTable'"
                     :download-enabled="false"/>
-            <div v-if="activePlot === 'population'">Population pyramid</div>
+            <population-grid class="col-md-9" v-if="activePlot === 'population'"/>
         </div>
     </div>
 </template>
@@ -52,6 +52,7 @@ import ErrorAlert from "../ErrorAlert.vue";
 import DownloadTimeSeries from "../plots/timeSeries/downloadTimeSeries/DownloadTimeSeries.vue";
 import Barchart from "../plots/bar/Barchart.vue";
 import Table from "../plots/table/Table.vue";
+import PopulationGrid from '../plots/population/PopulationGrid.vue';
 import FilterWithReset from '../plots/FilterWithReset.vue';
 
 export default defineComponent({
@@ -65,7 +66,8 @@ export default defineComponent({
         TimeSeries,
         Choropleth,
         LoadingSpinner,
-        FilterWithReset
+        FilterWithReset,
+        PopulationGrid
     },
     setup() {
         const store = useStore<RootState>();
