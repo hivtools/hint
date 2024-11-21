@@ -1,4 +1,4 @@
-import { DownloadType } from "../downloadResults/downloadConfig";
+import { DownloadType, getDownloadTranslationKey } from "../downloadResults/downloadConfig";
 
 export type Translations = {
     add: string,
@@ -344,7 +344,7 @@ export type Translations = {
     xAxis: string,
     year: string
 } & {
-    [K in `${DownloadType}Download`]: string
+    [K in ReturnType<typeof getDownloadTranslationKey>]: string
 }
 
 const en: Translations = {

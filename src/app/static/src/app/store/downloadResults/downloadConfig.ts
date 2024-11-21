@@ -18,11 +18,29 @@ export const downloadSwitches = {
     [DownloadType.COMPARISON]: switches.comparisonOutput,
 };
 
-// we do posts to /download/submit/<url>/<calibrate-id> with the body function called
-type PostObject = { url: string, body: (store: ActionContext<DownloadResultsState, RootState>) => object };
+// function to get translation key from the type
+export const getDownloadTranslationKey = (type: DownloadType) => `${type}Download` as const;
+
+// post to this url with this body to download files
+type PostObject = {
+    url: (store: ActionContext<DownloadResultsState, RootState>) => string,
+    body: (store: ActionContext<DownloadResultsState, RootState>) => object | string | number | boolean | null
+};
 export const downloadPostConfig: Record<DownloadType, PostObject> = {
-    [DownloadType.SPECTRUM]: { url: "spectrum", body: (store) => store.rootGetters.projectState },
-    [DownloadType.COARSE]: { url: "coarse-output", body: () => ({}) },
-    [DownloadType.SUMMARY]: { url: "summary", body: () => ({}) },
-    [DownloadType.COMPARISON]: { url: "comparison", body: () => ({}) },
+    [DownloadType.SPECTRUM]: {
+        url: (store) => `download/submit/spectrum/${store.rootState.modelCalibrate.calibrateId}`,
+        body: (store) => store.rootGetters.projectState
+    },
+    [DownloadType.COARSE]: {
+        url: (store) => `download/submit/coarse-output/${store.rootState.modelCalibrate.calibrateId}`,
+        body: () => ({})
+    },
+    [DownloadType.SUMMARY]: {
+        url: (store) => `download/submit/summary/${store.rootState.modelCalibrate.calibrateId}`,
+        body: () => ({})
+    },
+    [DownloadType.COMPARISON]: {
+        url: (store) => `download/submit/comparison/${store.rootState.modelCalibrate.calibrateId}`,
+        body: () => ({})
+    },
 } as const;

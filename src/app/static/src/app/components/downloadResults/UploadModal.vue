@@ -89,7 +89,7 @@
     import {RootState} from "../../root";
     import {DownloadResultsState} from "../../store/downloadResults/downloadResults";
     import {defineComponent} from "vue";
-import { DownloadType } from "../../store/downloadResults/downloadConfig";
+    import { DownloadType } from "../../store/downloadResults/downloadConfig";
 
     interface Data {
         uploadFilesToAdr: string[]
