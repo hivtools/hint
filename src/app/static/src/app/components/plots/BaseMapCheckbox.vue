@@ -1,8 +1,8 @@
 <template>
     <l-control position="topleft">
         <div class="checkbox-wrapper">
-            <input type='checkbox' @change="toggleBaseMap" :checked="checked" />
-            <label v-translate="'showBaseMap'"></label>
+            <input id="base-map-checkbox" name="base-map-checkbox" type='checkbox' @change="toggleBaseMap" :checked="checked" />
+            <label for="base-map-checkbox" v-translate="'showBaseMap'"></label>
         </div>
     </l-control>
 </template>
