@@ -144,65 +144,6 @@ const testDownloadAction = (type: DownloadType) => {
             .toStrictEqual({ type, payload: mockError(failureMessage) });
     });
 
-    it("renders output download error", async () => {
-        const { commit, state, rootState } = getStore({
-            [type]: mockDownloadResultsDependency({downloadId: mockDownloadId})
-        });
-
-        const downloadUrl = `download/result/${mockDownloadId}`;
-        const errMsg = "error";
-        mockAxios.onGet(downloadUrl).reply(400, mockFailure(errMsg));
-
-        await actions.downloadOutput({ commit, state, rootState } as any, type);
-
-        expect(mockAxios.history.get.length).toBe(1);
-        expect(mockAxios.history.get[0].url).toBe(downloadUrl);
-
-        expect(commit.mock.calls.length).toBe(2);
-        expect(commit.mock.calls[0][0]["type"]).toBe(DownloadResultsMutation.DownloadError);
-        expect(commit.mock.calls[0][0]["payload"]).toStrictEqual({ type, payload: null });
-        expect(commit.mock.calls[1][0]["type"]).toBe(DownloadResultsMutation.DownloadError);
-        expect(commit.mock.calls[1][0]["payload"]).toStrictEqual({ type, payload: mockError(errMsg) });
-    });
-
-    it("downloads output", async () => {
-        window.URL.createObjectURL = vi.fn().mockReturnValueOnce("test");
-        window.URL.revokeObjectURL = vi.fn();
-        document.body.appendChild = vi.fn()
-
-        const mockClick = vi.fn()
-        const mockHref = vi.fn()
-        const mockAttr = vi.fn()
-
-        document.createElement = vi.fn().mockImplementation(() => ({
-            setAttribute: mockAttr,
-            href: mockHref,
-            click: mockClick  
-        }));
-
-        const downloadUrl = `download/result/${mockDownloadId}`;
-        const data = new Blob(["test"], {type: "text/html"});
-        mockAxios.onGet(downloadUrl)
-            .reply(
-                200,
-                mockSuccess(data),
-                {"content-disposition": "attachment; filename=test.html"}
-            );
-
-        const { commit, state, rootState } = getStore({
-            [type]: mockDownloadResultsDependency({downloadId: mockDownloadId})
-        });
-
-        await actions.downloadOutput({ commit, state, rootState } as any, type);
-
-        expect(mockAxios.history.get.length).toBe(1);
-        expect(mockAxios.history.get[0].url).toBe(downloadUrl);
-
-        expect(commit.mock.calls.length).toBe(1);
-        expect(commit.mock.calls[0][0]["type"]).toBe(DownloadResultsMutation.DownloadError);
-        expect(commit.mock.calls[0][0]["payload"]).toStrictEqual({ type, payload: null });
-    });
-
     it("gets adr upload metadata if status is done", async () => {
         const { commit, dispatch, state, rootState } = getStore({
             [type]: mockDownloadResultsDependency({downloadId: mockDownloadId})

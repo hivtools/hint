@@ -9,7 +9,6 @@ import { DownloadType, downloadPostConfig } from "./downloadConfig";
 export interface DownloadResultsActions {
     prepareAllOutputs: (store: ActionContext<DownloadResultsState, RootState>) => Promise<void>
     prepareOutput: (store: ActionContext<DownloadResultsState, RootState>, type: DownloadType) => Promise<void>
-    downloadOutput: (store: ActionContext<DownloadResultsState, RootState>, type: DownloadType) => Promise<void>
     poll: (store: ActionContext<DownloadResultsState, RootState>, type: DownloadType, interval?: number | null) => Promise<void>
 }
 
@@ -36,16 +35,6 @@ export const actions: ActionTree<DownloadResultsState, RootState> & DownloadResu
         if (response) {
             await dispatch("poll", type);
         }
-    },
-
-    async downloadOutput(store, type) {
-        const { state, commit } = store
-        const payload = { type, payload: null };
-        commit({type: DownloadResultsMutation.DownloadError, payload })
-        await api(store)
-            .ignoreSuccess()
-            .withError(DownloadResultsMutation.DownloadError, false, payloadHandler(type))
-            .download(`download/result/${state[type].downloadId}`)
     },
 
     async poll(store, type, interval = null) {

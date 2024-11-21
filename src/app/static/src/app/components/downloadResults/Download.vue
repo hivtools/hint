@@ -13,6 +13,7 @@
                              :preparing="file.preparing"/>
         </div>
         <error-alert id="error" v-if="file.error" :error="file.error"></error-alert>
+        <error-alert id="metadata-error" v-if="file.metadataError" :error="file.metadataError"></error-alert>
     </div>
 </template>
 
@@ -44,10 +45,16 @@
                 type: Boolean
             }
         },
-        methods: {
-            download() {
-                this.$emit("trigger-download")
-            }
+        setup(props) {
+            const download = () => {
+                const fileUrl = `/download/result/${props.file.downloadId}`
+                const link = document.createElement("a");
+                link.href = fileUrl;
+                link.download = props.file.name || "downloaded_file";
+                link.click();
+                link.remove();
+            };
+            return { download }
         }
     })
 </script>

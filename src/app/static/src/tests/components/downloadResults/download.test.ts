@@ -74,11 +74,13 @@ describe(`download`, () => {
     it(`can emit download`, async () => {
         const wrapper = getWrapper()
         const downloadSummary = mockDownloadResultsDependency();
-
+        const downloadMock = vi.fn();
+        wrapper.vm.download = downloadMock;
+        
         const button = wrapper.find("button")
         await wrapper.setProps({file: downloadSummary})
         await button.trigger("click")
-        expect(wrapper.emitted().click.length).toBe(1)
+        expect(downloadMock).toHaveBeenCalledTimes(1);
     })
 
     it("shows download status iff preparing file", async () => {

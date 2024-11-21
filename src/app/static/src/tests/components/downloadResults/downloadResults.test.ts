@@ -20,7 +20,6 @@ import ErrorAlert from "../../../app/components/ErrorAlert.vue";
 import { DownloadType } from '../../../app/store/downloadResults/downloadConfig';
 
 const mockPrepareAllOutputs = vi.fn();
-const mockDownloadOutput = vi.fn();
 
 const switches: Record<DownloadType, boolean> = {
     Summary: true,
@@ -30,10 +29,10 @@ const switches: Record<DownloadType, boolean> = {
 };
 
 const createStore = (adr: Partial<ADRState> = {userCanUpload: true},
-    getUserCanUpload = vi.fn(),
-    adrUploadState: Partial<ADRUploadState> = {},
-    downloadResults?: Partial<DownloadResultsState>,
-    clearStatus = vi.fn()) => {
+                     getUserCanUpload = vi.fn(),
+                     adrUploadState: Partial<ADRUploadState> = {},
+                     downloadResults?: Partial<DownloadResultsState>,
+                     clearStatus = vi.fn()) => {
     const store = new Vuex.Store({
         state: emptyState(),
         modules: {
@@ -66,8 +65,7 @@ const createStore = (adr: Partial<ADRState> = {userCanUpload: true},
                 namespaced: true,
                 state: mockDownloadResultsState(downloadResults),
                 actions: {
-                    prepareAllOutputs: mockPrepareAllOutputs,
-                    downloadOutput: mockDownloadOutput
+                    prepareAllOutputs: mockPrepareAllOutputs
                 }
             }
         }
@@ -75,6 +73,11 @@ const createStore = (adr: Partial<ADRState> = {userCanUpload: true},
     registerTranslations(store);
     return store;
 };
+
+// Mock the download element creation
+const mockClick = vi.fn();
+const mockRemove = vi.fn();
+const mockLink = {click: mockClick, remove: mockRemove};
 
 describe("Download Results component", () => {
     afterEach(() => {
@@ -182,7 +185,7 @@ describe("Download Results component", () => {
         const wrapper = shallowMountWithTranslate(DownloadResults, store, {
             global: {
                 plugins: [store]
-            }, 
+            },
         });
 
         expect(wrapper.find("#uploading").exists()).toBe(false);
@@ -195,7 +198,7 @@ describe("Download Results component", () => {
         const wrapper = shallowMountWithTranslate(DownloadResults, store, {
             global: {
                 plugins: [store]
-            }, 
+            },
         });
 
         const statusMessage = wrapper.find("#uploading");
@@ -213,7 +216,7 @@ describe("Download Results component", () => {
         const wrapper = shallowMountWithTranslate(DownloadResults, store, {
             global: {
                 plugins: [store]
-            }, 
+            },
         });
 
         const statusMessage = wrapper.find("#uploadComplete");
@@ -235,7 +238,7 @@ describe("Download Results component", () => {
         const wrapper = shallowMountWithTranslate(DownloadResults, store, {
             global: {
                 plugins: [store]
-            }, 
+            },
         });
 
         const statusMessage = wrapper.find("#releaseCreated");
@@ -253,7 +256,7 @@ describe("Download Results component", () => {
         const wrapper = shallowMountWithTranslate(DownloadResults, store, {
             global: {
                 plugins: [store]
-            }, 
+            },
         });
 
         const errorAlert = wrapper.findComponent(ErrorAlert);
@@ -323,7 +326,7 @@ describe("Download Results component", () => {
 describe("Single DownloadType button", () => {
     afterEach(() => {
         vi.useRealTimers();
-        vi.resetAllMocks();
+        vi.restoreAllMocks();
     })
 
     Object.values(DownloadType).forEach(type => testDownloadButton(type));
@@ -368,11 +371,16 @@ const testDownloadButton = (type: DownloadType) => {
             error: null,
             downloadId: "123"
         });
+
+        vi.spyOn(document, "createElement").mockReturnValue(mockLink as any);
+
         const button = getButton(wrapper);
-        expect(button.attributes().disabled).toBeUndefined();
-        await button.trigger("click");
-        expect(mockDownloadOutput).toHaveBeenCalled();
-        expect(mockDownloadOutput.mock.calls[0][1]).toBe(type);
+        await button.trigger("click")
+        expect(document.createElement).toHaveBeenCalledTimes(1);
+        expect(document.createElement).toHaveBeenCalledWith("a");
+        expect(mockClick).toHaveBeenCalledTimes(1);
+        expect((mockLink as any).href).toBe("/download/result/123");
+        expect((mockLink as any).download).toBe("downloaded_file");
     });
 
     it("can display error message for download file when errored", async () => {
