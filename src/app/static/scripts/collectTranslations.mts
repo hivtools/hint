@@ -14,7 +14,7 @@ async function convertTranslationsToCsv() {
     keys.forEach(key => {
         csvLines.push([
             '"' + key + '"',
-            '"' + locales.en[key]?.replaceAll('"', '""').replace() + '"',
+            '"' + locales.en[key]?.replaceAll('"', '""') + '"',
             '"' + locales.fr[key]?.replaceAll('"', '""') + '"',
             '"' + locales.pt[key]?.replaceAll('"', '""') + '"'
         ].join(','));
