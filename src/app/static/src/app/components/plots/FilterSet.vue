@@ -3,7 +3,7 @@
         <div v-if="!f.hidden">
             <filter-with-reset :plot="plot" :state-filter-id="f.stateFilterId">
                 <template v-slot:label>
-                    <label class="font-weight-bold">{{f.label}}</label>
+                    <span class="font-weight-bold">{{f.label}}</span>
                 </template>
                 <template v-slot:filter>
                     <!-- For some reason using filter is saying no component registered

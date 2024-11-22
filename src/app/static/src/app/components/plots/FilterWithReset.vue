@@ -1,16 +1,20 @@
 <template>
     <div @mouseover="showReset = true" @mouseleave="showReset = false">
-        <span class="d-flex justify-content-between">
-            <slot name="label">
-                <h4 v-translate="'filters'"/>
-            </slot>
-            <vue-feather v-show="showReset"
-                        type="refresh-cw"
-                        class="filter-reset-icon"
-                        size="20"
-                        v-tooltip="tooltipContent"
-                        @click="resetFilters"></vue-feather>
-        </span>
+        <div class="d-flex align-items-center mb-2">
+            <div class="flex-grow-1">
+                <slot name="label">
+                    <h4 class="mb-0 mt-0" v-translate="'filters'"/>
+                </slot>
+            </div>
+            <!-- boostrap d-flex sets display: flex !important, so we can't use v-show here
+             instead we have to manually control visibility by switching the class :( -->
+            <div :class="showReset ? 'filter-reset d-flex align-items-center' : 'filter-reset d-none'"
+                 @click="resetFilters">
+                <span class="text-muted small mr-1">{{tooltipContent}}</span>
+                <vue-feather type="refresh-cw"
+                             size="20"/>
+            </div>
+        </div>
         <slot name="filter"></slot>
     </div>
 </template>
@@ -61,12 +65,20 @@ const tooltipContent = computed(() => {
 </script>
 
 <style scoped>
-.filter-reset-icon {
-  margin-top: 4px;
-  cursor: pointer;
+.filter-reset {
+    cursor: pointer;
 }
 
-.filter-reset-icon:hover {
+/*
+    Set highlight colour when text or parent is hovered
+    !important to override bootstrap text-muted
+ */
+.filter-reset span:hover,
+.filter-reset:hover span {
+    color: red !important;
+}
+
+.filter-reset:hover {
     color: red;
 }
 </style>
