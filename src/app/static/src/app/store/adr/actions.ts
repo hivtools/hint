@@ -1,5 +1,5 @@
 import {ActionContext, ActionTree} from "vuex";
-import {api, APIService} from "../../apiService";
+import {api} from "../../apiService";
 import qs from "qs";
 import {AdrDatasetType, ADRState, getAdrDatasetUrl, getAdrReleaseUrl} from "./adr";
 import {ADRMutation, DatasetTypePayload} from "./mutations";
@@ -7,7 +7,7 @@ import {datasetFromMetadata, findResource, resourceTypes} from "../../utils";
 import {Organization, Release} from "../../types";
 import {BaselineMutation} from "../baseline/mutations";
 import {RootState} from "../../root";
-import {Error, Response} from "../../generated";
+import {Error} from "../../generated";
 
 export interface ADRActions {
     fetchKey: (store: ActionContext<ADRState, RootState>) => void;
@@ -123,7 +123,7 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
     },
 
     async getUserCanUpload(context) {
-        const {rootState, dispatch, commit} = context;
+        const {rootState, dispatch} = context;
         const selectedDataset = rootState.baseline.selectedDataset;
 
         if (selectedDataset) {

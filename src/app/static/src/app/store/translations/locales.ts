@@ -1,4 +1,4 @@
-import { DownloadType, getDownloadTranslationKey } from "../downloadResults/downloadConfig";
+import {getDownloadTranslationKey} from "../downloadResults/downloadConfig";
 
 export type Translations = {
     add: string,
