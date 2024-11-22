@@ -11,7 +11,7 @@
         <div id="review-output" class="row" v-if="outputMetadataFetched">
             <div class="mt-2 col-md-3">
                 <plot-control-set :plot="selectedPlot"/>
-                <h4 v-translate="'filters'"/>
+                <filter-with-reset :plot="selectedPlot"></filter-with-reset>
                 <filter-set :plot="selectedPlot"/>
             </div>
             <choropleth class="col-md-9" v-if="selectedPlot === 'choropleth'" :plot="'choropleth'"/>
@@ -41,6 +41,7 @@ import Choropleth from "../plots/choropleth/Choropleth.vue";
 import Bubble from "../plots/bubble/Bubble.vue";
 import Barchart from "../plots/bar/Barchart.vue";
 import Table from "../plots/table/Table.vue";
+import FilterWithReset from "../plots/FilterWithReset.vue";
 
 export default defineComponent({
 
@@ -63,7 +64,8 @@ export default defineComponent({
         Bubble,
         Table,
         FilterSet,
-        PlotControlSet
+        PlotControlSet,
+        FilterWithReset
     }
 })
 </script>

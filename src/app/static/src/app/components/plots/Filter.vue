@@ -56,10 +56,10 @@ export default defineComponent({
                 payload: {
                     plot: props.plot,
                     selection: {
-                        filter: {
+                        filters: [{
                             id: props.stateFilterId,
                             options: Array.isArray(newSelection) ? newSelection : [newSelection]
-                        }
+                        }]
                     }
                 } as PlotSelectionActionUpdate
             }, { root: true });

@@ -1,10 +1,16 @@
 <template>
     <div class="form-group" v-for="f of filters" :key="f.stateFilterId">
         <div v-if="!f.hidden">
-            <label class="font-weight-bold">{{f.label}}</label>
-            <!-- For some reason using filter is saying no component registered
-            with this name, no idea why so using capital Filter -->
-            <Filter :state-filter-id="f.stateFilterId" :plot="plot"/>
+            <filter-with-reset :plot="plot" :state-filter-id="f.stateFilterId">
+                <template v-slot:label>
+                    <span class="font-weight-bold">{{f.label}}</span>
+                </template>
+                <template v-slot:filter>
+                    <!-- For some reason using filter is saying no component registered
+                    with this name, no idea why so using capital Filter -->
+                    <Filter :state-filter-id="f.stateFilterId" :plot="plot"/>
+                </template>
+            </filter-with-reset>
         </div>
     </div>
 </template>
@@ -15,10 +21,12 @@ import {useStore} from "vuex";
 import {RootState} from "../../root";
 import Filter from "./Filter.vue";
 import {PlotName} from "../../store/plotSelections/plotSelections";
+import FilterWithReset from './FilterWithReset.vue';
 
 export default defineComponent({
     components: {
-        Filter
+        Filter,
+        FilterWithReset
     },
     props: {
         plot:{

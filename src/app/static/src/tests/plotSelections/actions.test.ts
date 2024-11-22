@@ -22,8 +22,6 @@ import {RootState} from "../../app/root";
 import {PlotMetadataFrame} from "../../app/store/metadata/metadata";
 
 describe("Projects actions", () => {
-    let getPlotDataMock: MockInstance;
-
     beforeEach(() => {
         mockAxios.reset();
         // stop apiService logging to console
@@ -35,7 +33,7 @@ describe("Projects actions", () => {
         (console.log as Mock).mockClear();
     });
 
-    getPlotDataMock = vi.spyOn(
+    const getPlotDataMock = vi.spyOn(
         plotSelectionsUtils,
         "getPlotData"
     ).mockImplementation(vi.fn());
@@ -71,10 +69,10 @@ describe("Projects actions", () => {
             payload: {
                 plot: "choropleth",
                 selection: {
-                    filter: {
+                    filters: [{
                         id: "sex",
                         options: selectedOptions
-                    }
+                    }]
                 } as Selection
             }
         } as PayloadWithType<PlotSelectionActionUpdate>
@@ -86,6 +84,83 @@ describe("Projects actions", () => {
 
         const expectedPayload = choroplethSelections
         expectedPayload.filters[0].selection = selectedOptions
+        expect(getPlotDataMock.mock.calls[0][0].selections).toStrictEqual(expectedPayload)
+
+        expect(commit.mock.calls.length).toBe(1);
+        expect(commit.mock.calls[0][0].type).toBe(PlotSelectionsMutations.updatePlotSelection);
+        expect(commit.mock.calls[0][0].payload.plot).toBe("choropleth");
+        expect(commit.mock.calls[0][0].payload.selections).toStrictEqual(expectedPayload);
+    });
+
+    it("updateSelections gets plot data and commits new selections with multi filter update", async () => {
+        // State setup
+        const rootState = mockRootState();
+
+        const choroplethSelections = {
+            controls: [],
+            filters: [
+                mockFilterSelection({
+                    filterId: "sexFilterId",
+                    stateFilterId: "sex"
+                }),
+                mockFilterSelection({
+                    filterId: "ageFilterId",
+                    stateFilterId: "age"
+                })
+            ]
+        }
+        const state = mockPlotSelections({
+            choropleth: choroplethSelections
+        });
+
+        // Test payload
+        const selectedSexOptions = [
+            {
+                id: "male",
+                label: "Male"
+            },
+            {
+                id: "female",
+                label: "Female"
+            }
+        ];
+
+        const selectedAgeOptions = [
+            {
+                id: "child",
+                label: "Child"
+            },
+            {
+                id: "adult",
+                label: "Adult"
+            }
+        ];
+        const payload = {
+            payload: {
+                plot: "choropleth",
+                selection: {
+                    filters: [
+                        {
+                            id: "sex",
+                            options: selectedSexOptions
+                        },
+                        {
+                            id: "age",
+                            options: selectedAgeOptions
+                        }
+                    ]
+                } as Selection
+            }
+        } as PayloadWithType<PlotSelectionActionUpdate>
+
+        await actions.updateSelections({commit, state, rootState} as any, payload);
+
+        expect(getPlotDataMock.mock.calls.length).toBe(1);
+        expect(getPlotDataMock.mock.calls[0][0].plot).toBe("choropleth");
+
+        const expectedPayload = choroplethSelections
+        expectedPayload.filters[0].selection = selectedSexOptions;
+        expectedPayload.filters[1].selection = selectedAgeOptions;
         expect(getPlotDataMock.mock.calls[0][0].selections).toStrictEqual(expectedPayload)
 
         expect(commit.mock.calls.length).toBe(1);

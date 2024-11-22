@@ -16,7 +16,7 @@
         <div class="row" v-else>
             <div class="mt-2 col-md-3">
                 <plot-control-set :plot="activePlot"/>
-                <h4 v-translate="'filters'"/>
+                <filter-with-reset :plot="activePlot"></filter-with-reset>
                 <filter-set :plot="activePlot"/>
                 <div id="plot-description"
                      v-if="plotDescription"
@@ -51,6 +51,7 @@ import ErrorAlert from "../ErrorAlert.vue";
 import DownloadTimeSeries from "../plots/timeSeries/downloadTimeSeries/DownloadTimeSeries.vue";
 import Barchart from "../plots/bar/Barchart.vue";
 import Table from "../plots/table/Table.vue";
+import FilterWithReset from '../plots/FilterWithReset.vue';
 
 export default defineComponent({
     components: {
@@ -62,7 +63,8 @@ export default defineComponent({
         Table,
         TimeSeries,
         Choropleth,
-        LoadingSpinner
+        LoadingSpinner,
+        FilterWithReset
     },
     setup() {
         const store = useStore<RootState>();
