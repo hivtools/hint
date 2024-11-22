@@ -1,13 +1,13 @@
 import {ActionContext, ActionTree} from "vuex";
-import {api, APIService} from "../../apiService";
+import {api} from "../../apiService";
 import qs from "qs";
 import {AdrDatasetType, ADRState, getAdrDatasetUrl, getAdrReleaseUrl} from "./adr";
-import {ADRMutation} from "./mutations";
+import {ADRMutation, DatasetTypePayload} from "./mutations";
 import {datasetFromMetadata, findResource, resourceTypes} from "../../utils";
 import {Organization, Release} from "../../types";
 import {BaselineMutation} from "../baseline/mutations";
 import {RootState} from "../../root";
-import {Response} from "../../generated";
+import {Error} from "../../generated";
 
 export interface ADRActions {
     fetchKey: (store: ActionContext<ADRState, RootState>) => void;
@@ -31,6 +31,10 @@ export interface GetReleasesPayload {
     id: string,
     datasetType: AdrDatasetType
 }
+
+const payloadHandler = (datasetType: AdrDatasetType) => {
+    return (data: any) => ({ datasetType, data });
+};
 
 export const actions: ActionTree<ADRState, RootState> & ADRActions = {
     async fetchKey(context) {
@@ -64,36 +68,23 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
     },
 
     async getDatasets(context, datasetType: AdrDatasetType) {
-        context.commit({type: ADRMutation.SetFetchingDatasets, payload: {datasetType, data: true}});
-        context.commit({type: ADRMutation.SetADRError, payload: {datasetType, data: null}});
+        const { commit } = context;
+        commit({type: ADRMutation.SetFetchingDatasets, payload: {datasetType, data: true}});
+        commit({type: ADRMutation.SetADRError, payload: {datasetType, data: null}});
         const url = getAdrDatasetUrl(datasetType);
         await api<ADRMutation, ADRMutation>(context)
-            .withErrorCallback((failure: Response) => {
-                const error = APIService.getFirstErrorFromFailure(failure);
-                context.commit({type: ADRMutation.SetADRError, payload: {datasetType, data: error}});
-            })
-            .ignoreSuccess()
+            .withError(ADRMutation.SetADRError, false, payloadHandler(datasetType))
+            .withSuccess(ADRMutation.SetDatasets, false, payloadHandler(datasetType))
             .get(url)
-            .then(response => {
-                if (response) {
-                    context.commit({type: ADRMutation.SetDatasets, payload: {datasetType, data: response.data}});
-                }
-                context.commit({type: ADRMutation.SetFetchingDatasets, payload: {datasetType, data: false}});
-            });
+        commit({type: ADRMutation.SetFetchingDatasets, payload: {datasetType, data: false}});
     },
 
     async getReleases(context, payload: GetReleasesPayload) {
         const url = getAdrReleaseUrl(payload.datasetType, payload.id);
-        await api<ADRMutation, BaselineMutation>(context)
-            .withError(`baseline/${BaselineMutation.BaselineError}` as BaselineMutation, true)
-            .ignoreSuccess()
+        await api<ADRMutation, string>(context)
+            .withError(`baseline/${BaselineMutation.BaselineError}`, true)
+            .withSuccess(ADRMutation.SetReleases, false, payloadHandler(payload.datasetType))
             .get(url)
-            .then(response => {
-                if (response) {
-                    const commitPayload = {datasetType: payload.datasetType, data: response.data}
-                    context.commit({type: ADRMutation.SetReleases, payload: commitPayload})
-                }
-            })
     },
 
     async getDataset(context, {id, releaseId, datasetType}) {
@@ -105,10 +96,7 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
             release = state.adrData[datasetType].releases.find((rel: Release) => rel.id === releaseId);
         }
         await api<BaselineMutation, ADRMutation>(context)
-            .withErrorCallback((failure: Response) => {
-                const error = APIService.getFirstErrorFromFailure(failure);
-                context.commit({type: ADRMutation.SetADRError, payload: {datasetType, data: error}});
-            })
+            .withError(ADRMutation.SetADRError, false, payloadHandler(datasetType))
             .ignoreSuccess()
             .get(url)
             .then(response => {
@@ -135,7 +123,7 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
     },
 
     async getUserCanUpload(context) {
-        const {rootState, dispatch, commit} = context;
+        const {rootState, dispatch} = context;
         const selectedDataset = rootState.baseline.selectedDataset;
 
         if (selectedDataset) {
@@ -148,21 +136,15 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
             }
             const selectedDatasetOrgId = rootState.baseline.selectedDataset!.organization.id
 
+            const errorCallback = (e: Error): DatasetTypePayload<Error | null>["payload"] => ({
+                datasetType: AdrDatasetType.Input, data: e
+            });
+            const successCallback = (data: Organization[]) => data.some(org => org.id === selectedDatasetOrgId);
+
             await api(context)
-                .withErrorCallback((failure: Response) => {
-                    const error = APIService.getFirstErrorFromFailure(failure);
-                    const payload = {datasetType: AdrDatasetType.Input, data: error}
-                    context.commit({type: ADRMutation.SetADRError, payload: payload});
-                })
-                .ignoreSuccess()
+                .withError(ADRMutation.SetADRError, false, errorCallback)
+                .withSuccess(ADRMutation.SetUserCanUpload, false, successCallback)
                 .get("/adr/orgs?permission=update_dataset")
-                .then(async (response) => {
-                    if (response) {
-                        const updateableOrgs = response.data as Organization[];
-                        const canUpload = updateableOrgs.some(org => org.id === selectedDatasetOrgId);
-                        commit({type: ADRMutation.SetUserCanUpload, payload: canUpload});
-                    }
-                })
         }
     }
 };

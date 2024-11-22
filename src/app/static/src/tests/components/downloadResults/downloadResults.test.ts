@@ -25,8 +25,7 @@ const switches: Record<DownloadType, boolean> = {
     Summary: true,
     Comparison: true,
     Spectrum: true,
-    CoarseOutput: true,
-    AGYW: true
+    CoarseOutput: true
 };
 
 const createStore = (adr: Partial<ADRState> = {userCanUpload: true},

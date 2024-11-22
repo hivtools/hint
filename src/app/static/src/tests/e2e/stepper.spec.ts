@@ -4,6 +4,7 @@ import {getActiveStep} from "./utils/stepperUtils";
 import {Step} from "../../app/types";
 import {setValidModelOptions} from "./utils/modelOptionsUtils";
 import {calibrateModel, fitModel} from "./utils/utils";
+import { DownloadType } from "../../app/store/downloadResults/downloadConfig";
 
 test("can go through whole estimates process", async ({ projectPage }) => {
     const { page } = projectPage;
@@ -118,12 +119,7 @@ test("can go through whole estimates process", async ({ projectPage }) => {
     expect(await getActiveStep(page)).toBe(Step.SaveResults);
 
     // And I can see file downloads
-    const downloadResults = page.locator("#spectrum-download button");
-    const coarseOutput = page.locator("#coarse-output-download button");
-    const summaryReport = page.locator("#summary-download button");
-    const comparisonReport = page.locator("#comparison-download button");
-    await expect(downloadResults).toHaveClass(/btn-secondary/);
-    await expect(coarseOutput).toHaveClass(/btn-secondary/);
-    await expect(summaryReport).toHaveClass(/btn-secondary/);
-    await expect(comparisonReport).toHaveClass(/btn-secondary/);
+    Object.values(DownloadType).forEach(async type => {
+        await expect(page.locator(`#${type}-download button`)).toHaveClass(/btn-secondary/);
+    });
 });

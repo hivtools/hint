@@ -424,12 +424,15 @@ describe("ADR actions", () => {
         });
 
         expect(commit.mock.calls.length).toBe(1);
-        expect(commit).toHaveBeenLastCalledWith({
-            type: ADRMutation.SetADRError,
-            payload: {
-                datasetType: AdrDatasetType.Input,
-                data: mockError("error")
-            }
-        });
+        expect(commit).toHaveBeenLastCalledWith(
+            {
+                type: ADRMutation.SetADRError,
+                payload: {
+                    datasetType: AdrDatasetType.Input,
+                    data: mockError("error")
+                },
+            },
+            { root: false }
+        );
     });
 });

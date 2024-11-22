@@ -4,7 +4,7 @@
             <div class="col-sm">
                 <template v-for="type in Object.values(DownloadType)" :key="type">
                     <div :id="`${type}-download`" v-if="switches[type]">
-                        <download :translate-key="`${type}Download`"
+                        <download :translate-key="getDownloadTranslationKey(type)"
                                   :disabled="!state[type].downloadId || state[type].preparing || !!state[type].metadataError"
                                   :file="state[type]"/>
                         <div class="pb-2">
@@ -67,14 +67,15 @@
     import {ADRUploadState} from "../../store/adrUpload/adrUpload";
     import Download from "./Download.vue";
     import { defineComponent } from "vue";
-    import { downloadSwitches, DownloadType } from "../../store/downloadResults/downloadConfig";
+    import { downloadSwitches, DownloadType, getDownloadTranslationKey } from "../../store/downloadResults/downloadConfig";
 
     interface Data {
         uploadModalOpen: boolean,
         DownloadType: typeof DownloadType,
         switches: {
             [K in DownloadType]: boolean
-        }
+        },
+        getDownloadTranslationKey: typeof getDownloadTranslationKey
     }
 
     export default defineComponent({
@@ -83,7 +84,8 @@
             return {
                 uploadModalOpen: false,
                 switches: downloadSwitches,
-                DownloadType
+                DownloadType,
+                getDownloadTranslationKey
             }
         },
         computed: {

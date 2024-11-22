@@ -3,9 +3,8 @@ import {RootState} from "../../root";
 import {DownloadResultsState} from "./downloadResults";
 import {api, ResponseWithType} from "../../apiService";
 import {DownloadResultsMutation} from "./mutations";
-import {Error, ModelStatusResponse} from "../../generated";
-import {switches} from "../../featureSwitches"
-import { DownloadType, downloadTypePrepareUrls } from "./downloadConfig";
+import {ModelStatusResponse} from "../../generated";
+import { DownloadType, downloadPostConfig } from "./downloadConfig";
 
 export interface DownloadResultsActions {
     prepareAllOutputs: (store: ActionContext<DownloadResultsState, RootState>) => Promise<void>
@@ -20,22 +19,19 @@ const payloadHandler = (type: DownloadType) => {
 export const actions: ActionTree<DownloadResultsState, RootState> & DownloadResultsActions = {
     async prepareAllOutputs({ dispatch }) {
         Object.values(DownloadType).forEach(type => {
-            if (type === DownloadType.AGYW && !switches.agywDownload) return;
             dispatch("prepareOutput", type);
         });
     },
 
     async prepareOutput(store, type) {
-        const { state, dispatch, rootState, commit } = store;
+        const { state, dispatch, commit } = store;
         if (state[type].downloadId || state[type].fetchingDownloadId) return;
         commit({ type: DownloadResultsMutation.SetFetchingDownloadId, payload: type });
-        const postConfig = downloadTypePrepareUrls[type];
-        const fullUrl = `download/submit/${postConfig.url}/${rootState.modelCalibrate.calibrateId}`;
-
+        const postConfig = downloadPostConfig[type];
         const response = await api(store)
             .withSuccess(DownloadResultsMutation.Preparing, false, payloadHandler(type))
             .withError(DownloadResultsMutation.Error, false, payloadHandler(type))
-            .postAndReturn(fullUrl, postConfig.body(store));
+            .postAndReturn(postConfig.url(store), postConfig.body(store));
         if (response) {
             await dispatch("poll", type);
         }
@@ -59,7 +55,7 @@ const getDownloadStatus = async (store: ActionContext<DownloadResultsState, Root
         .withSuccess(DownloadResultsMutation.StatusUpdated, false, payloadHandler(type))
         .withError(DownloadResultsMutation.Error, false, payloadHandler(type))
         .get<ModelStatusResponse>(`download/status/${downloadId}`);
-    if (response?.data?.done && type !== DownloadType.AGYW) {
+    if (response?.data?.done) {
         await getADRUploadMetadata(response, dispatch).then(() => {
             // commit is neccessary for dispatching action
             // to retrieve metadata for output

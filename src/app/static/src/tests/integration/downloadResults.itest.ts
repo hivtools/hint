@@ -69,10 +69,8 @@ const testDownloadIntegration = (type: DownloadType) => {
         expect(commit.mock.calls.length).toBe(2);
         expect(commit.mock.calls[0][0]["type"]).toBe(DownloadResultsMutation.SetFetchingDownloadId);
         expect(commit.mock.calls[0][0]["payload"]).toBe(type);
-        if (type !== DownloadType.AGYW) {
-            expect(commit.mock.calls[1][0]["type"]).toBe(DownloadResultsMutation.Error);
-            expect(commit.mock.calls[1][0]["payload"].payload.detail).toBe("Failed to fetch result");
-        }
+        expect(commit.mock.calls[1][0]["type"]).toBe(DownloadResultsMutation.Error);
+        expect(commit.mock.calls[1][0]["payload"].payload.detail).toBe("Failed to fetch result");
     });
 
     it(`can poll for status update`, async () => {

@@ -465,25 +465,6 @@ describe("ApiService", () => {
         })
     });
 
-    it("executes callback when using withErrorCallback", async () => {
-
-        mockAxios.onGet(`/baseline/`)
-            .reply(500, mockFailure("some error message"));
-
-        const errorCallback = vi.fn();
-
-        await api({rootState} as any)
-            .withErrorCallback(errorCallback)
-            .get("/baseline/");
-
-        expect(errorCallback.mock.calls).toHaveLength(1);
-        expect(errorCallback.mock.calls[0][0]).toStrictEqual({
-            data: {},
-            errors: [mockError("some error message")],
-            status: "failure",
-        });
-    });
-
     async function expectCouldNotParseAPIResponseError() {
         const commit = vi.fn();
         await api({commit, rootState} as any)

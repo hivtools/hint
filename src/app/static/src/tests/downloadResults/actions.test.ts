@@ -11,9 +11,8 @@ import {
 } from "../mocks";
 import {actions} from "../../app/store/downloadResults/actions";
 import {DownloadStatusResponse} from "../../app/generated";
-import {switches} from "../../app/featureSwitches";
 import {flushPromises} from "@vue/test-utils";
-import { DownloadType, downloadTypePrepareUrls } from "../../app/store/downloadResults/downloadConfig";
+import { DownloadType, downloadPostConfig } from "../../app/store/downloadResults/downloadConfig";
 import { DownloadResultsState } from "../../app/store/downloadResults/downloadResults";
 import { DownloadResultsMutation } from "../../app/store/downloadResults/mutations";
 
@@ -34,44 +33,6 @@ const   CompleteStatusResponse: DownloadStatusResponse = {
     success: true,
     queue: 0
 }
-
-describe(`All DownloadType actions`, () => {
-    beforeEach(() => {
-        // stop apiService logging to console
-        console.log = vi.fn();
-        mockAxios.reset();
-    });
-
-    beforeAll(() => {
-        vi.useFakeTimers();
-    });
-
-    afterAll(() => {
-        vi.useRealTimers();
-    });
-
-    it("can prepare all outputs and optionally AGYW", async () => {
-        const commit = vi.fn();
-        const dispatch = vi.fn();
-
-        switches.agywDownload = false;
-        actions.prepareAllOutputs({ commit, dispatch } as any);
-
-        expect(dispatch.mock.calls.length).toBe(4);
-        Object.values(DownloadType).forEach((type, index) => {
-            if (type === DownloadType.AGYW) return;
-            expect(dispatch.mock.calls[index]).toStrictEqual(["prepareOutput", type]);
-        });
-
-        switches.agywDownload = true;
-        actions.prepareAllOutputs({ commit, dispatch } as any);
-
-        expect(dispatch.mock.calls.length).toBe(9);
-        Object.values(DownloadType).forEach((type, index) => {
-            expect(dispatch.mock.calls[index + 4]).toStrictEqual(["prepareOutput", type]);
-        });
-    });
-});
 
 describe("Single DownloadType action", async () => {
     beforeEach(() => {
@@ -114,10 +75,10 @@ const testDownloadAction = (type: DownloadType) => {
         const { commit, dispatch, rootState, state, rootGetters } = getStore({});
 
         const partialDownloadResultsState = mockDownloadResultsDependency({downloadId: "1"});
-        const downloadUrl = `download/submit/${downloadTypePrepareUrls[type].url}/${mockCalibrateId}`;
+        const downloadUrl = downloadPostConfig[type].url({ rootState } as any);
         mockAxios.onPost(downloadUrl).reply(200, mockSuccess(partialDownloadResultsState));
         
-        await actions.prepareOutput({ commit, state, dispatch, rootState, rootGetters} as any, type);
+        await actions.prepareOutput({ commit, state, dispatch, rootState, rootGetters } as any, type);
 
         expect(commit.mock.calls.length).toBe(2);
         expect(commit.mock.calls[0][0]["type"]).toBe(DownloadResultsMutation.SetFetchingDownloadId);
@@ -173,7 +134,7 @@ const testDownloadAction = (type: DownloadType) => {
         const { commit, dispatch, state, rootState, rootGetters } = getStore({});
 
         const failureMessage = "TEST FAILED";
-        mockAxios.onPost(`download/submit/${downloadTypePrepareUrls[type].url}/${mockCalibrateId}`)
+        mockAxios.onPost(downloadPostConfig[type].url({ rootState } as any))
             .reply(500, mockFailure(failureMessage));
 
         await actions.prepareOutput({ commit, state, dispatch, rootState, rootGetters } as any, type);
@@ -196,12 +157,10 @@ const testDownloadAction = (type: DownloadType) => {
         await flushPromises();
         expect(commit.mock.calls[1][0]["type"]).toBe(DownloadResultsMutation.StatusUpdated);
         expect(commit.mock.calls[1][0]["payload"]).toStrictEqual({ type, payload: CompleteStatusResponse });
+        expect(dispatch.mock.calls[0][0]).toBe("metadata/getAdrUploadMetadata")
 
-        if (type !== DownloadType.AGYW) {
-            expect(dispatch.mock.calls[0][0]).toBe("metadata/getAdrUploadMetadata")
-            expect(dispatch.mock.calls[0][1]).toBe(CompleteStatusResponse.id)
-            expect(dispatch.mock.calls[0][2]).toEqual({root: true})
-        }
+        expect(dispatch.mock.calls[0][1]).toBe(CompleteStatusResponse.id)
+        expect(dispatch.mock.calls[0][2]).toEqual({root: true})
     });
 
     it("does not get adr upload metadata error if metadata request is successful",  async () => {
@@ -220,13 +179,11 @@ const testDownloadAction = (type: DownloadType) => {
         expect(commit.mock.calls[1][0]["type"]).toBe(DownloadResultsMutation.StatusUpdated);
         expect(commit.mock.calls[1][0]["payload"]).toStrictEqual({ type, payload: CompleteStatusResponse });
         
-        if (type !== DownloadType.AGYW) {
-            expect(commit.mock.calls[2][0]["type"]).toBe(DownloadResultsMutation.MetadataError);
-            expect(commit.mock.calls[2][0]["payload"]).toStrictEqual({ type, payload: null });
-            expect(dispatch.mock.calls[0][0]).toBe("metadata/getAdrUploadMetadata")
-            expect(dispatch.mock.calls[0][1]).toBe(CompleteStatusResponse.id)
-            expect(dispatch.mock.calls[0][2]).toEqual({root: true})
-        }
+        expect(commit.mock.calls[2][0]["type"]).toBe(DownloadResultsMutation.MetadataError);
+        expect(commit.mock.calls[2][0]["payload"]).toStrictEqual({ type, payload: null });
+        expect(dispatch.mock.calls[0][0]).toBe("metadata/getAdrUploadMetadata")
+        expect(dispatch.mock.calls[0][1]).toBe(CompleteStatusResponse.id)
+        expect(dispatch.mock.calls[0][2]).toEqual({root: true})
     });
 
     it("can get adr upload metadata error for summary if metadata request is unsuccessful", async () => {
@@ -245,13 +202,11 @@ const testDownloadAction = (type: DownloadType) => {
         expect(commit.mock.calls[1][0]["type"]).toBe(DownloadResultsMutation.StatusUpdated);
         expect(commit.mock.calls[1][0]["payload"]).toStrictEqual({ type, payload: CompleteStatusResponse });
         
-        if (type !== DownloadType.AGYW) {
-            expect(commit.mock.calls[2][0]["type"]).toBe(DownloadResultsMutation.MetadataError);
-            expect(commit.mock.calls[2][0]["payload"]).toStrictEqual({ type, payload: mockMetadataError });
-            expect(dispatch.mock.calls[0][0]).toBe("metadata/getAdrUploadMetadata")
-            expect(dispatch.mock.calls[0][1]).toBe(CompleteStatusResponse.id)
-            expect(dispatch.mock.calls[0][2]).toEqual({root: true})
-        }
+        expect(commit.mock.calls[2][0]["type"]).toBe(DownloadResultsMutation.MetadataError);
+        expect(commit.mock.calls[2][0]["payload"]).toStrictEqual({ type, payload: mockMetadataError });
+        expect(dispatch.mock.calls[0][0]).toBe("metadata/getAdrUploadMetadata")
+        expect(dispatch.mock.calls[0][1]).toBe(CompleteStatusResponse.id)
+        expect(dispatch.mock.calls[0][2]).toEqual({root: true})
     });
 
     it("does not continue to poll status when unsuccessful", async () => {
