@@ -3,4 +3,4 @@ set -e
 
 HERE=$(realpath "$(dirname $0)")
 
-npx tsx "$HERE/collectTranslations.mts"
+npx tsx "$HERE/collectTranslations.ts"
