@@ -104,7 +104,7 @@
                 </a>
             </div>
         </div>
-        <div id="spacer" class="flex-grow-1"></div>
+        <div id="spacer" class="flex-grow-1 pb-4"></div>
         <div class="links m-auto d-flex flex-row flex-wrap justify-content-between align-items-center">
             <a href="https://reside-ic.github.io/projects/naomi/" target="_blank">About</a>
             <a href="https://naomi.unaids.org/news" target="_blank">News</a>
