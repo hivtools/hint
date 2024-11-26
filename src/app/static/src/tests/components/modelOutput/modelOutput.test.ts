@@ -53,12 +53,13 @@ describe("Model Output page", () => {
         const wrapper = getWrapper(store);
 
         const plotTabs = wrapper.findAll(".nav-link");
-        expect(plotTabs.length).toBe(5);
+        expect(plotTabs.length).toBe(6);
         expect(plotTabs[0].classes()).contains("active");
         expect(plotTabs[1].classes()).not.contains("active");
         expect(plotTabs[2].classes()).not.contains("active");
         expect(plotTabs[3].classes()).not.contains("active");
         expect(plotTabs[4].classes()).not.contains("active");
+        expect(plotTabs[5].classes()).not.contains("active");
         expect(wrapper.findComponent(PlotControlSet).exists()).toBeTruthy();
         expect(wrapper.findComponent(FilterSet).exists()).toBeTruthy();
         expect(wrapper.findComponent(Choropleth).exists()).toBeTruthy();
