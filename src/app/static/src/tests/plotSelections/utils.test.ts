@@ -61,6 +61,12 @@ describe("Plot selections utils", () => {
             return
         });
 
+    const mockGetPopulationFilteredData = vi
+        .spyOn(filter, "getPopulationFilteredData")
+        .mockImplementation(async (...args) => {
+            return
+        });
+    
     const rootState = mockRootState();
 
     const rootGetters = {};
@@ -362,6 +368,7 @@ describe("Plot selections utils", () => {
         expect(mockGetComparisonFilteredDataset.mock.calls.length).toBe(0);
         expect(mockGetInputChoroplethFilteredData.mock.calls.length).toBe(0);
         expect(mockGetInputComparisonFilteredData.mock.calls.length).toBe(0);
+        expect(mockGetPopulationFilteredData.mock.calls.length).toBe(0);
 
         await getPlotData({plot: "timeSeries", selections: {controls: [], filters: []}}, commit, rootState, rootGetters);
 
@@ -371,6 +378,7 @@ describe("Plot selections utils", () => {
         expect(mockGetComparisonFilteredDataset.mock.calls.length).toBe(0);
         expect(mockGetInputChoroplethFilteredData.mock.calls.length).toBe(0);
         expect(mockGetInputComparisonFilteredData.mock.calls.length).toBe(0);
+        expect(mockGetPopulationFilteredData.mock.calls.length).toBe(0);
 
         await getPlotData({plot: "calibrate", selections: {controls: [], filters: []}}, commit, rootState, rootGetters);
 
@@ -379,6 +387,7 @@ describe("Plot selections utils", () => {
         expect(mockGetCalibrateFilteredDataset.mock.calls.length).toBe(1);
         expect(mockGetComparisonFilteredDataset.mock.calls.length).toBe(0);
         expect(mockGetInputComparisonFilteredData.mock.calls.length).toBe(0);
+        expect(mockGetPopulationFilteredData.mock.calls.length).toBe(0);
 
         await getPlotData({plot: "comparison", selections: {controls: [], filters: []}}, commit, rootState, rootGetters);
 
@@ -388,6 +397,7 @@ describe("Plot selections utils", () => {
         expect(mockGetComparisonFilteredDataset.mock.calls.length).toBe(1);
         expect(mockGetInputChoroplethFilteredData.mock.calls.length).toBe(0);
         expect(mockGetInputComparisonFilteredData.mock.calls.length).toBe(0);
+        expect(mockGetPopulationFilteredData.mock.calls.length).toBe(0);
 
         await getPlotData({plot: "inputChoropleth", selections: {controls: [], filters: []}}, commit, rootState, rootGetters);
 
@@ -397,6 +407,7 @@ describe("Plot selections utils", () => {
         expect(mockGetComparisonFilteredDataset.mock.calls.length).toBe(1);
         expect(mockGetInputChoroplethFilteredData.mock.calls.length).toBe(1);
         expect(mockGetInputComparisonFilteredData.mock.calls.length).toBe(0);
+        expect(mockGetPopulationFilteredData.mock.calls.length).toBe(0);
 
         await getPlotData({
             plot: "inputComparisonBarchart",
@@ -409,6 +420,20 @@ describe("Plot selections utils", () => {
         expect(mockGetComparisonFilteredDataset.mock.calls.length).toBe(1);
         expect(mockGetInputChoroplethFilteredData.mock.calls.length).toBe(1);
         expect(mockGetInputComparisonFilteredData.mock.calls.length).toBe(1);
+        expect(mockGetPopulationFilteredData.mock.calls.length).toBe(0);
+
+        await getPlotData({
+            plot: "population",
+            selections: {controls: [], filters: []}
+        }, commit, rootState, rootGetters);
+
+        expect(mockGetOutputFilteredData.mock.calls.length).toBe(1);
+        expect(mockGetTimeSeriesFilteredDataset.mock.calls.length).toBe(1);
+        expect(mockGetCalibrateFilteredDataset.mock.calls.length).toBe(1);
+        expect(mockGetComparisonFilteredDataset.mock.calls.length).toBe(1);
+        expect(mockGetInputChoroplethFilteredData.mock.calls.length).toBe(1);
+        expect(mockGetInputComparisonFilteredData.mock.calls.length).toBe(1);
+        expect(mockGetPopulationFilteredData.mock.calls.length).toBe(1);
 
         await expect(getPlotData({
             plot: ("unknown" as PlotName),

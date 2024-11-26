@@ -254,20 +254,82 @@ export const getInputComparisonFilteredData = async (payload: PlotSelectionUpdat
     commit(`plotData/${PlotDataMutations.updatePlotData}`, { payload: plotDataPayload }, { root: true });
 };
 
-export const getPopulationFilteredData = async (payload: PlotSelectionUpdate, commit: Commit, rootState: RootState) => {
+export const getPopulationFilteredData = async (payload: PlotSelectionUpdate, commit: Commit, rootState: RootState, rootGetters: any) => {
     const data =  rootState.baseline.population!.data
 
-      // Filter the data on the current selections
-      const { filters } = payload.selections;
-      const { filterTypes } = getMetadataFromPlotName(rootState, payload.plot);
-      const filteredData = filterData(filters, data, filterTypes);
+    if (!data) {
+        return;
+    }
 
-      const plotDataPayload: PlotDataUpdate = {
-          plot: payload.plot,
-          data: filteredData
-      };
+    // Filter the data on the current selections
+    const { filters } = payload.selections;
+    const { filterTypes } = getMetadataFromPlotName(rootState, payload.plot);
+    const filteredData = filterData(filters, data, filterTypes);
+
+    const selectedAreaLevel = Number(filters.find(f=>f.stateFilterId === 'area_level')?.selection[0].id) || 0;
+
+    const areaIdToLevelMap: Dict<number> = rootGetters["baseline/areaIdToLevelMap"];
+
+    const highestAreaLevel = Math.max(...new Set(Object.values(areaIdToLevelMap)));
+
+    const allFeatureProperties = rootState.baseline.shape!.data.features.map(f=>f.properties);
+
+    // Map of all feature area ids and their parent area id
+    const parentMap: Dict<string> = allFeatureProperties.reduce((acc,cur)=>{
+        acc[cur.area_id] = cur.parent_area_id
+        return acc
+    },{});
+
+    // Returns an array of areaIds that make up the full parent chain for a given area id
+    const getParentAreaIdChain = (areaId: string): string[] => {
+        const parentAreaIds: string[] = [];
+        let currentAreaId = parentMap[areaId];
       
-      commit(`plotData/${PlotDataMutations.updatePlotData}`, { payload: plotDataPayload }, { root: true });
+        while (currentAreaId !== null) {
+            parentAreaIds.push(currentAreaId);
+            currentAreaId = parentMap[currentAreaId];
+        }
+      
+        return parentAreaIds.reverse(); // Return in order from root to current
+    };
+
+    // Map of each indicator area id to their full parent chain
+    const fullParentMap = allFeatureProperties.filter(f=>f.area_level === highestAreaLevel).reduce((acc,cur)=>{
+        acc[cur.area_id] = getParentAreaIdChain(cur.area_id)
+        return acc
+    },{})
+
+    const aggregatePopulationIndicators = () => {
+        return filteredData.reduce((acc, ind)=>{
+            const {area_id, calendar_quarter, age_group, sex, population} = ind;
+            const matchingParentId = fullParentMap[area_id][selectedAreaLevel];
+            const existingIndicator = acc.find((indicator: any)=>indicator.area_id === matchingParentId && indicator.calendar_quarter === calendar_quarter && indicator.age_group === age_group && indicator.sex === sex)
+            if (existingIndicator) {
+                existingIndicator.population += population;
+            } else {
+                const name = allFeatureProperties.find(f=>f.area_id === matchingParentId)?.area_name;
+
+                acc.push({
+                    age_group,
+                    area_name: name,
+                    area_id: matchingParentId,
+                    calendar_quarter,
+                    population,
+                    sex
+                });
+            }
+            return acc
+        },[]);
+    }
+
+    const newData = selectedAreaLevel === highestAreaLevel ? filteredData : aggregatePopulationIndicators()
+
+    const plotDataPayload: PlotDataUpdate = {
+        plot: payload.plot,
+        data: newData
+    };
+      
+    commit(`plotData/${PlotDataMutations.updatePlotData}`, { payload: plotDataPayload }, { root: true });
 }
 
 const filterData = (filters: FilterSelection[], data: any[], filterTypes: FilterTypes[]) => {
