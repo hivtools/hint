@@ -111,9 +111,13 @@ export const filtersInfoFromEffects = (
             }
             selection = filterOptions;
         } else {
-            selection = isMultiple ?
-                getFullNestedFilters(filter.options) :
-                [filter.options[0]];
+            if (isMultiple) {
+                selection = getFullNestedFilters(filter.options);
+            } else if (filter.id === 'area_level') {
+                selection = [filter.options[filter.options.length-1]];
+            } else {
+                selection = [filter.options[0]];
+            }
         }
         return {
             ...f,
