@@ -30,7 +30,7 @@
 </head>
 <body class="login-page m-0 p-0 h-100">
     <div id="container" class="d-flex flex-column vh-100">
-        <a href="https://www.unaids.org"><img src="public/images/unaids_logo.png" class="large-logo mt-4 mb-4 mx-auto d-flex"/></a>
+        <a href="https://www.unaids.org" target="_blank"><img src="public/images/unaids_logo.png" class="large-logo mt-4 mb-4 mx-auto d-flex"/></a>
         <h1 class="m-0 text-center"><strong>${appTitle}</strong></h1>
         <div id="app" class="card login-form mx-auto mt-3">
             <div class="card-body mx-2">
@@ -79,27 +79,27 @@
         <div id="partners" class="text-center text-muted mt-5">Our partners</div>
         <div class="my-auto mx-5 d-flex flex-row flex-wrap justify-content-center align-items-center">
             <div class="small-logo m-4 d-flex">
-                <a class="d-flex justify-content-center" href="https://www.fjelltopp.org">
+                <a class="d-flex justify-content-center" href="https://www.fjelltopp.org" target="_blank">
                     <img src="public/images/fjelltopp_logo.png" class="mw-100 mh-100">
                 </a>
             </div>
             <div class="small-logo m-4 d-flex">
-                <a class="d-flex justify-content-center" href="https://www.imperial.ac.uk">
+                <a class="d-flex justify-content-center" href="https://www.imperial.ac.uk" target="_blank">
                     <img src="public/images/imperial_logo.png" class="mw-100 mh-100">
                 </a>
             </div>
             <div class="small-logo m-4 d-flex">
-                <a class="d-flex justify-content-center" href="https://github.com/reside-ic">
+                <a class="d-flex justify-content-center" href="https://github.com/reside-ic" target="_blank">
                     <img src="public/images/reside_logo.png" class="mw-100 mh-100">
                 </a>
             </div>
             <div class="small-logo m-4 d-flex">
-                <a class="d-flex justify-content-center" href="https://www.avenirhealth.org">
+                <a class="d-flex justify-content-center" href="https://www.avenirhealth.org" target="_blank">
                     <img src="public/images/avenir_logo.png" class="mw-100 mh-100">
                 </a>
             </div>
             <div class="small-logo m-4 d-flex">
-                <a class="d-flex justify-content-center" href="https://www.washington.edu">
+                <a class="d-flex justify-content-center" href="https://www.washington.edu" target="_blank">
                     <img src="public/images/uw_logo.png" class="mw-100 mh-100">
                 </a>
             </div>
