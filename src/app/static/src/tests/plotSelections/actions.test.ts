@@ -246,6 +246,9 @@ describe("Projects actions", () => {
                 bubble: {
                     plotSettings: []
                 },
+                cascade: {
+                    plotSettings: []
+                },
             }
         });
         const rootState = mockRootState({

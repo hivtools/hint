@@ -17,7 +17,7 @@ export interface ErrorBars {
     }
 }
 
-type ChartDataSetsWithErrors<Data = BarChartDefaultData> = BarChartDataset<Data> & {
+export type ChartDataSetsWithErrors<Data = BarChartDefaultData> = BarChartDataset<Data> & {
     errorBars?: ErrorBars,
     tooltipExtraText: string[]
 }
@@ -35,14 +35,14 @@ export interface BarChartData<Data = BarChartDefaultData> extends ChartDataWithE
  * @param areaLevel The current area level
  * @param disaggregateSelections The selected options for the disaggregate control
  * @param xAxisSelections The selected options for the x-axis control
- * @param xAxisOptions The avaialble options for the x-axis control. We need this as we want
+ * @param xAxisOptions The available options for the x-axis control. We need this as we want
  *   to show the x-axis in the same order as the options are in the dropdown
  * @param areaIdToLevelMap Mapping of area IDs to area levels
  * @return Data required for chartJS. This includes:
  *   labels - array of labels for the x-axis
  *   datasets - array of datasets, each of them represents a bar in the barchart, with a label, a colour,
  *     the data values themselves and error bars
- *    maxValuePlusError - value for the highest value in the barchart + error, used for the height of the plot
+ *   maxValuePlusError - value for the highest value in the barchart + error, used for the height of the plot
  */
 export const plotDataToChartData = function (plotData: PlotData,
                                              indicatorMetadata: IndicatorMetadata,
@@ -356,6 +356,20 @@ const initialBarChartDataset = (datasetLabel: string, backgroundColor: string): 
         tooltipExtraText: []
     }
 };
+
+export const sortDatasets = (datasets: ChartDataSetsWithErrors[], disaggregateSelections: FilterOption[], order: string[]) => {
+    const labelIdxMap = new Map<string, number>();
+    order.forEach((id: string, index) => {
+        const filterOpt = disaggregateSelections.find((opt: FilterOption) => opt.id === id)
+        if (filterOpt?.label) labelIdxMap.set(filterOpt.label, index)
+    });
+
+    const getLabelIndex = (label?: string): number => labelIdxMap.get(label ?? "") ?? Infinity;
+
+    datasets.sort((a: ChartDataSetsWithErrors, b: ChartDataSetsWithErrors) => {
+        return getLabelIndex(a.label) - getLabelIndex(b.label);
+    });
+}
 
 const colors = [
     //d3 chromatic schemeSet1

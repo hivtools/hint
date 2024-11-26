@@ -1,6 +1,12 @@
 import {ControlSelection, FilterSelection, PlotName, PlotSelectionsState} from "./plotSelections";
 import {IndicatorMetadata, FilterOption, InputComparisonData} from "../../generated";
-import {BarChartData, inputComparisonPlotDataToChartData, plotDataToChartData} from "../../components/plots/bar/utils";
+import {
+    BarChartData,
+    ChartDataSetsWithErrors,
+    inputComparisonPlotDataToChartData,
+    plotDataToChartData,
+    sortDatasets
+} from "../../components/plots/bar/utils";
 import {RootState} from "../../root";
 import {PlotData} from "../plotData/plotData";
 import {Dict} from "../../types";
@@ -25,7 +31,7 @@ export const getters = {
          filterSelections: FilterSelection[], currentLanguage: string): BarChartData => {
 
         const metadata = getMetadataFromPlotName(rootState, plotName);
-        if (plotName == "inputComparisonBarchart") {
+        if (plotName === "inputComparisonBarchart") {
             const xAxisId = "year";
             const xAxisSelections = getters.filterSelectionFromId(plotName, xAxisId);
             const xAxisOptions = metadata.filterTypes.find(f => f.id === xAxisId)!.options;
@@ -47,15 +53,30 @@ export const getters = {
         // can just keep these as empty.
         let areaIdToLevelMap = {} as Dict<number>;
         let areaLevel = null;
-        if (plotName === "barchart" || plotName === "comparison") {
+        if (plotName === "barchart" || plotName === "comparison" || plotName === "cascade") {
             areaIdToLevelMap = rootGetters["baseline/areaIdToLevelMap"];
             areaLevel = filterSelections.find(f => f.filterId == "detail")?.selection[0]?.id;
         }
         if (disaggregateId && xAxisId && xAxisOptions) {
-            return plotDataToChartData(plotData, indicatorMetadata,
+            const data = plotDataToChartData(plotData, indicatorMetadata,
                 disaggregateId, disaggregateSelections,
                 xAxisId, xAxisSelections, xAxisOptions,
                 areaLevel, areaIdToLevelMap);
+            if (plotName === "cascade") {
+                // This is a bit ugly that it is here...
+                // In general this code is becoming a bit hard to follow, perhaps worth refactoring at some point?
+                // We want to sort the datasets here based on the order in the disaggregate selections
+                // The data is fetched in the order of the filter, and then shown in this order. This is fine for
+                // most plots but we want to override the order here and hard code it so that the indicators are shown
+                // in the order specified in the "cascade" instead of in the default indicator order
+                const indicatorOrder = rootGetters["modelCalibrate/cascadePlotIndicators"];
+                sortDatasets(data.datasets, disaggregateSelections, indicatorOrder)
+                data.datasets.forEach((dataset: ChartDataSetsWithErrors) => {
+                    dataset.barPercentage = 1.0; // Ensure no gap between disaggregated bars
+                    dataset.maxBarThickness = 250; // High value to stop gap being introduced due to bar width limit
+                });
+            }
+            return data
         } else {
             return emptyData
         }

@@ -587,6 +587,9 @@ export const mockCalibrateMetadataResponse = (props: Partial<CalibrateMetadataRe
             bubble: {
                 plotSettings: []
             },
+            cascade: {
+                plotSettings: []
+            }
         },
         warnings: [],
         ...props

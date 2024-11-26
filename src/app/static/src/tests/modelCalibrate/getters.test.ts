@@ -67,6 +67,9 @@ describe("modelCalibrate getters", () => {
                 bubble: {
                     plotSettings: []
                 },
+                cascade: {
+                    plotSettings: []
+                },
             }
         })
         const calibrateState = mockModelCalibrateState({
@@ -196,6 +199,9 @@ describe("modelCalibrate getters", () => {
                 bubble: {
                     plotSettings: []
                 },
+                cascade: {
+                    plotSettings: []
+                },
             }
         })
         const calibrateState = mockModelCalibrateState({
@@ -216,5 +222,38 @@ describe("modelCalibrate getters", () => {
         const getter = getters.tableMetadata({} as any, null, rootState, rootGetters);
 
         expect(getter("table")).toBe(undefined);
+    });
+
+    it("can get indicator for cascade plot in hard coded order", () => {
+        const calibrateResponse = mockCalibrateMetadataResponse({
+            plotSettingsControl: {
+                choropleth: {
+                    plotSettings: []
+                },
+                barchart: {
+                    plotSettings: []
+                },
+                table: {
+                    plotSettings: []
+                },
+                bubble: {
+                    plotSettings: []
+                },
+                cascade: {
+                    defaultEffect: {
+                        setFilterValues: {
+                            indicator: ["a", "b"]
+                        }
+                    },
+                    plotSettings: []
+                },
+            }
+        });
+        const state = mockModelCalibrateState({
+            metadata: calibrateResponse
+        });
+        const indicator = getters.cascadePlotIndicators(state);
+
+        expect(indicator).toStrictEqual(["a", "b"]);
     });
 });

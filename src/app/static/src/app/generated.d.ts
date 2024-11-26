@@ -311,6 +311,50 @@ export interface CalibrateMetadataResponse {
         hidden?: boolean;
       }[];
     };
+    cascade: {
+      defaultEffect?: {
+        setFilters?: {
+          filterId: string;
+          label: string;
+          stateFilterId: string;
+        }[];
+        setMultiple?: string[];
+        setFilterValues?: {
+          [k: string]: string[];
+        };
+        setHidden?: string[];
+        customPlotEffect?: {
+          row: string[];
+          column: string[];
+        };
+      };
+      plotSettings: {
+        id: string;
+        label: string;
+        options: {
+          id: string;
+          label: string;
+          effect: {
+            setFilters?: {
+              filterId: string;
+              label: string;
+              stateFilterId: string;
+            }[];
+            setMultiple?: string[];
+            setFilterValues?: {
+              [k: string]: string[];
+            };
+            setHidden?: string[];
+            customPlotEffect?: {
+              row: string[];
+              column: string[];
+            };
+          };
+        }[];
+        value?: string;
+        hidden?: boolean;
+      }[];
+    };
   };
   warnings: {
     text: string;
