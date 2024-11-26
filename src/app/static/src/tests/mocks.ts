@@ -26,7 +26,8 @@ import {
     VmmcResponse,
     Warning,
     InputComparisonMetadata,
-    InputComparisonData
+    InputComparisonData,
+    PopulationResponseData
 } from "../app/generated";
 import {initialModelRunState, ModelRunState} from "../app/store/modelRun/modelRun";
 import {emptyState, RootState} from "../app/root";
@@ -541,6 +542,17 @@ export const mockModelResultResponse = (props: Partial<ModelResultResponse> = {}
         ...props
     };
 };
+
+export const mockPopulationDataResponse = (): PopulationResponseData => {
+    return [{
+        area_id:"MWI_4_10_demo",
+        area_name:"Ntchisi",
+        calendar_quarter:"CY2008Q2",
+        sex:"female",
+        age_group:"Y000_004",
+        population:21299
+    }]
+}
 
 export const mockCalibrateDataResponse = (): CalibrateDataResponse["data"] => {
     return [{
