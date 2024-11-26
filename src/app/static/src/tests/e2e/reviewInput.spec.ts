@@ -198,3 +198,23 @@ test("can view input comparison table", async ({ projectPage }) => {
     // Table has been updated
     await expect(page.locator("#review-inputs")).toHaveScreenshot("input-comparison-table-anc.png");
 });
+
+test("can view population pyramid chart", async ({ projectPage }) => {
+    const page = projectPage.page;
+    await projectPage.goToStep(Step.ReviewInputs);
+
+    // Given map plot is open
+    await page.getByText("Population").click();
+
+    // Comparison table is rendered
+    await expect(page.locator("#review-loading")).toHaveCount(0, {timeout: 10_000});
+    await expect(page.locator('.chart-grid')).toBeVisible();
+    await expect(page.locator("#review-inputs")).toHaveScreenshot("population-landing.png");
+
+    // // When I change indicator
+    await page.getByRole('button', { name: 'Population' }).click();
+    await page.locator('a').filter({ hasText: 'Population ratio' }).click();
+
+    // // Table has been updated
+    await expect(page.locator("#review-inputs")).toHaveScreenshot("population-proportion.png");
+});
