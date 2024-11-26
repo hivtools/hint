@@ -60,7 +60,7 @@ export const getDefaultFilterSelections = (rootState: RootState, plotName: PlotN
 export const actions: ActionTree<PlotSelectionsState, RootState> & PlotSelectionsActions = {
     async updateSelections(context, payload) {
         const {plot, selection} = payload.payload;
-        const {state, commit, rootState} = context;
+        const {state, commit, rootState, rootGetters} = context;
         const metadata = getMetadataFromPlotName(rootState, plot);
         const updatedSelections: PlotSelectionsState[PlotName] = structuredClone(state[plot]);
         if ("filters" in selection) {
@@ -76,7 +76,7 @@ export const actions: ActionTree<PlotSelectionsState, RootState> & PlotSelection
         }
 
         const updatePayload = {plot, selections: updatedSelections} as PlotSelectionUpdate;
-        await getPlotData(updatePayload, commit, rootState);
+        await getPlotData(updatePayload, commit, rootState, rootGetters);
 
         commit({
             type: PlotSelectionsMutations.updatePlotSelection,

@@ -56,7 +56,7 @@ export const actions: ActionTree<ReviewInputState, RootState> & ReviewInputActio
     },
 
     async getInputComparisonDataset(context) {
-        const {commit, rootState} = context;
+        const {commit, rootState, rootGetters} = context;
         commit({type: ReviewInputMutation.SetInputComparisonLoading, payload: true})
         commit({type: ReviewInputMutation.SetInputComparisonError, payload: null});
         await api<ReviewInputMutation, ReviewInputMutation>(context)
@@ -67,7 +67,7 @@ export const actions: ActionTree<ReviewInputState, RootState> & ReviewInputActio
             .then(async (response) => {
                     if (response) {
                         const metadata = response.data.metadata;
-                        await commitPlotDefaultSelections(metadata, commit, rootState);
+                        await commitPlotDefaultSelections(metadata, commit, rootState, rootGetters);
                     }
                     commit({type: ReviewInputMutation.SetInputComparisonLoading, payload: false});
                 }
@@ -75,7 +75,7 @@ export const actions: ActionTree<ReviewInputState, RootState> & ReviewInputActio
     },
 
     async getPopulationDataset(context) {
-        const {commit, rootState} = context;
+        const {commit, rootState, rootGetters} = context;
         const populationMetadata = rootState.baseline.population!.metadata
         const populationMetadataClone = {...populationMetadata}
         const populationData = rootState.baseline.population
@@ -83,6 +83,6 @@ export const actions: ActionTree<ReviewInputState, RootState> & ReviewInputActio
         populationMetadataClone.filterTypes = filtersAfterUseShapeRegions(populationMetadataClone.filterTypes, rootState);
         populationDataClone.metadata = populationMetadataClone
         commit(`baseline/${BaselineMutation.PopulationUpdated}`, {payload: populationDataClone}, {root:true});
-        await commitPlotDefaultSelections(populationMetadataClone, commit, rootState);
+        await commitPlotDefaultSelections(populationMetadataClone, commit, rootState, rootGetters);
     }
 };

@@ -63,6 +63,8 @@ describe("Plot selections utils", () => {
 
     const rootState = mockRootState();
 
+    const rootGetters = {};
+
     it("filtersAfterUseShapeRegions works as expected", () => {
         const filters = [
             {id: "area", options: null, use_shape_regions: true},
@@ -86,7 +88,7 @@ describe("Plot selections utils", () => {
 
     it("commitPlotDefaultSelections fetches plot data and commits plot selections when no controls or filters", async () => {
         const metadata = mockPlotMetadataFrame();
-        await commitPlotDefaultSelections(metadata, commit, rootState);
+        await commitPlotDefaultSelections(metadata, commit, rootState, rootGetters);
 
         expect(mockGetOutputFilteredData.mock.calls.length).toBe(1);
 
@@ -152,7 +154,7 @@ describe("Plot selections utils", () => {
                 }
             },
         });
-        await commitPlotDefaultSelections(metadata, commit, rootState)
+        await commitPlotDefaultSelections(metadata, commit, rootState, rootGetters)
 
         expect(commit.mock.calls.length).toBe(2)
         expect(commit.mock.calls[0][0]).toBe(`plotSelections/${PlotSelectionsMutations.updatePlotSelection}`)
@@ -255,7 +257,7 @@ describe("Plot selections utils", () => {
                 }
             }
         });
-        await commitPlotDefaultSelections(metadata, commit, rootState);
+        await commitPlotDefaultSelections(metadata, commit, rootState, rootGetters);
 
         expect(mockGetOutputFilteredData.mock.calls.length).toBe(1);
 
@@ -335,7 +337,7 @@ describe("Plot selections utils", () => {
             }
         });
         const rootState = mockRootState();
-        await commitPlotDefaultSelections(metadata, commit, rootState);
+        await commitPlotDefaultSelections(metadata, commit, rootState, rootGetters);
 
         expect(mockGetOutputFilteredData.mock.calls.length).toBe(1);
 
@@ -352,7 +354,7 @@ describe("Plot selections utils", () => {
     });
 
     it("gets appropriate plot data depending on plot name", async () => {
-        await getPlotData({plot: "choropleth", selections: {controls: [], filters: []}}, commit, rootState);
+        await getPlotData({plot: "choropleth", selections: {controls: [], filters: []}}, commit, rootState, rootGetters);
 
         expect(mockGetOutputFilteredData.mock.calls.length).toBe(1);
         expect(mockGetTimeSeriesFilteredDataset.mock.calls.length).toBe(0);
@@ -361,7 +363,7 @@ describe("Plot selections utils", () => {
         expect(mockGetInputChoroplethFilteredData.mock.calls.length).toBe(0);
         expect(mockGetInputComparisonFilteredData.mock.calls.length).toBe(0);
 
-        await getPlotData({plot: "timeSeries", selections: {controls: [], filters: []}}, commit, rootState);
+        await getPlotData({plot: "timeSeries", selections: {controls: [], filters: []}}, commit, rootState, rootGetters);
 
         expect(mockGetOutputFilteredData.mock.calls.length).toBe(1);
         expect(mockGetTimeSeriesFilteredDataset.mock.calls.length).toBe(1);
@@ -370,7 +372,7 @@ describe("Plot selections utils", () => {
         expect(mockGetInputChoroplethFilteredData.mock.calls.length).toBe(0);
         expect(mockGetInputComparisonFilteredData.mock.calls.length).toBe(0);
 
-        await getPlotData({plot: "calibrate", selections: {controls: [], filters: []}}, commit, rootState);
+        await getPlotData({plot: "calibrate", selections: {controls: [], filters: []}}, commit, rootState, rootGetters);
 
         expect(mockGetOutputFilteredData.mock.calls.length).toBe(1);
         expect(mockGetTimeSeriesFilteredDataset.mock.calls.length).toBe(1);
@@ -378,7 +380,7 @@ describe("Plot selections utils", () => {
         expect(mockGetComparisonFilteredDataset.mock.calls.length).toBe(0);
         expect(mockGetInputComparisonFilteredData.mock.calls.length).toBe(0);
 
-        await getPlotData({plot: "comparison", selections: {controls: [], filters: []}}, commit, rootState);
+        await getPlotData({plot: "comparison", selections: {controls: [], filters: []}}, commit, rootState, rootGetters);
 
         expect(mockGetOutputFilteredData.mock.calls.length).toBe(1);
         expect(mockGetTimeSeriesFilteredDataset.mock.calls.length).toBe(1);
@@ -387,7 +389,7 @@ describe("Plot selections utils", () => {
         expect(mockGetInputChoroplethFilteredData.mock.calls.length).toBe(0);
         expect(mockGetInputComparisonFilteredData.mock.calls.length).toBe(0);
 
-        await getPlotData({plot: "inputChoropleth", selections: {controls: [], filters: []}}, commit, rootState);
+        await getPlotData({plot: "inputChoropleth", selections: {controls: [], filters: []}}, commit, rootState, rootGetters);
 
         expect(mockGetOutputFilteredData.mock.calls.length).toBe(1);
         expect(mockGetTimeSeriesFilteredDataset.mock.calls.length).toBe(1);
@@ -399,7 +401,7 @@ describe("Plot selections utils", () => {
         await getPlotData({
             plot: "inputComparisonBarchart",
             selections: {controls: [], filters: []}
-        }, commit, rootState);
+        }, commit, rootState, rootGetters);
 
         expect(mockGetOutputFilteredData.mock.calls.length).toBe(1);
         expect(mockGetTimeSeriesFilteredDataset.mock.calls.length).toBe(1);
@@ -411,7 +413,7 @@ describe("Plot selections utils", () => {
         await expect(getPlotData({
             plot: ("unknown" as PlotName),
             selections: {controls: [], filters: []}
-        }, commit, rootState)).rejects.toThrowError(
+        }, commit, rootState, rootGetters)).rejects.toThrowError(
             new Error("Unreachable, if seeing this you're missing clause for filtering a type of plot data."))
     });
 

@@ -124,7 +124,7 @@ export const filtersInfoFromEffects = (
     }) as PlotSelectionUpdate["selections"]["filters"];
 }
 
-export const getPlotData = async (payload: PlotSelectionUpdate, commit: Commit, rootState: RootState) => {
+export const getPlotData = async (payload: PlotSelectionUpdate, commit: Commit, rootState: RootState, rootGetters: any) => {
     const name = payload.plot;
     const plotDataType = plotNameToDataType[name];
     if (plotDataType === PlotDataType.Output) {
@@ -140,7 +140,7 @@ export const getPlotData = async (payload: PlotSelectionUpdate, commit: Commit, 
     } else if (plotDataType == PlotDataType.InputComparison) {
         await getInputComparisonFilteredData(payload, commit, rootState);
     } else if (plotDataType == PlotDataType.Population) {
-        await getPopulationFilteredData(payload, commit, rootState);
+        await getPopulationFilteredData(payload, commit, rootState, rootGetters);
     } else {
         throw new Error("Unreachable, if seeing this you're missing clause for filtering a type of plot data.")
     }
@@ -149,7 +149,8 @@ export const getPlotData = async (payload: PlotSelectionUpdate, commit: Commit, 
 export const commitPlotDefaultSelections = async (
     metadata: PlotMetadataFrame,
     commit: Commit,
-    rootState: RootState
+    rootState: RootState,
+    rootGetters: any
 ) => {
     const plotControl = metadata.plotSettingsControl;
     for (const plotName in plotControl) {
@@ -177,7 +178,7 @@ export const commitPlotDefaultSelections = async (
         payload.selections.controls = selectedSettingOptions
         payload.selections.filters = filtersInfoFromEffects(effects, rootState, metadata);
 
-        await getPlotData(payload, commit, rootState);
+        await getPlotData(payload, commit, rootState, rootGetters);
 
         commit(
             `plotSelections/${PlotSelectionsMutations.updatePlotSelection}`,

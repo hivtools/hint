@@ -17,7 +17,7 @@ export interface MetadataActions {
 export const actions: ActionTree<MetadataState, RootState> & MetadataActions = {
 
     async getReviewInputMetadata(context) {
-        const { commit, rootState } = context;
+        const { commit, rootState, rootGetters } = context;
         const iso3 = rootState.baseline.iso3;
         const sap = rootState.surveyAndProgram;
         const fileTypes = [FileType.Shape]
@@ -38,7 +38,7 @@ export const actions: ActionTree<MetadataState, RootState> & MetadataActions = {
         if (response) {
             const metadata = response.data;
             metadata.filterTypes = filtersAfterUseShapeRegions(metadata.filterTypes, rootState);
-            await commitPlotDefaultSelections(metadata, commit, rootState);
+            await commitPlotDefaultSelections(metadata, commit, rootState, rootGetters);
             commitInitialScaleSelections(metadata.indicators, commit);
         }
         commit(`reviewInput/${ReviewInputMutation.SetLoading}`, {payload: false}, {root: true});
