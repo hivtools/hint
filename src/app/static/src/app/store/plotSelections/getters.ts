@@ -2,7 +2,6 @@ import {ControlSelection, FilterSelection, PlotName, PlotSelectionsState} from "
 import {IndicatorMetadata, FilterOption, InputComparisonData} from "../../generated";
 import {
     BarChartData,
-    ChartDataSetsWithErrors,
     inputComparisonPlotDataToChartData,
     plotDataToChartData,
     sortDatasets
@@ -11,6 +10,7 @@ import {RootState} from "../../root";
 import {PlotData} from "../plotData/plotData";
 import {Dict} from "../../types";
 import {getMetadataFromPlotName} from "./actions";
+import { getSinglePopulationChartDataset } from "../../components/plots/population/utils";
 
 export const getters = {
     controlSelectionFromId: (state: PlotSelectionsState) => (plotName: PlotName, controlId: string): FilterOption | undefined => {
@@ -77,4 +77,41 @@ export const getters = {
             return emptyData
         }
     },
+
+    populationChartData: (state: PlotSelectionsState, getters: any) =>
+        (plotName: PlotName, plotData: PopulationResponseData, ageGroups: FilterOption[]) => {
+
+        const plotType = getters.controlSelectionFromId(plotName, "plot");
+
+        if (!plotType) {
+          return [];
+        }
+
+        const isProportion = plotType.id === "population_ratio";
+
+        const groupedData: Record<string, PopulationResponseData> = {};
+
+        // Country data for stepped outline
+        const countryData = getSinglePopulationChartDataset({indicators: plotData, ageGroups, isOutline: true, isProportion});
+
+        // Group data by area_id
+        plotData.forEach((ind) => {
+          if (!groupedData[ind.area_id]) {
+            groupedData[ind.area_id] = [];
+          }
+          groupedData[ind.area_id].push(ind);
+        });
+
+        const result = Object.values(groupedData).map((indicators) => {
+          return {
+            title: indicators[0].area_name,
+            datasets: [
+              ...getSinglePopulationChartDataset({ indicators, ageGroups, isOutline: false, isProportion}),
+              ...(isProportion ? countryData : []),
+            ],
+          };
+        });
+
+        return result;
+    }
 };

@@ -1,6 +1,8 @@
 // Custom ChartJS plugin for drawing stepped national population outline on input population pyramid plots.
 // Visible when "Population proportion" is selected as the plot type for population pyramids.
 
+import { FilterOption, PopulationResponseData } from "../../../generated";
+
 export const OutlinePlugin = {
     id: "outlinePlugin",
     afterDatasetsDraw(chart: any) {
@@ -48,4 +50,55 @@ export const OutlinePlugin = {
   
       ctx.restore();
     },
+  };
+
+export const getSinglePopulationChartDataset = ({
+    indicators,
+    ageGroups,
+    isOutline,
+    isProportion,
+  }: {
+    ageGroups: FilterOption[];
+    indicators: PopulationResponseData;
+    isOutline: boolean;
+    isProportion: boolean;
+  }) => {
+    let femalePopulations: number[] = new Array(ageGroups.length).fill(0);
+    let malePopulations: number[] = new Array(ageGroups.length).fill(0);
+  
+    indicators.forEach((item) => {
+      const ageIndex = ageGroups.findIndex(
+        (group) => group.id === item.age_group
+      );
+      if (ageIndex !== -1) {
+        if (item.sex === "female") {
+          femalePopulations[ageIndex] += item.population;
+        } else if (item.sex === "male") {
+          malePopulations[ageIndex] += item.population;
+        }
+      }
+    });
+
+    let totalFemale: number, totalMale:number;
+
+    if (isProportion) {
+        totalFemale = femalePopulations.reduce((acc,cur)=> acc+cur, 0);
+        totalMale = malePopulations.reduce((acc,cur)=> acc+cur, 0);
+
+        femalePopulations = femalePopulations.map(p=>p/totalFemale);
+        malePopulations = malePopulations.map(p=>(p/=totalMale));
+    }
+  
+    return [
+      {
+        label: "Female",
+        data: femalePopulations,
+        backgroundColor: isOutline ? "transparent" : "#5c96c5",
+      },
+      {
+        label: "Male",
+        data: malePopulations.map((pop) => -pop), // Negate male values for the left side of the pyramid
+        backgroundColor: isOutline ? "transparent" : "#48b342",
+      },
+    ];
   };

@@ -8,7 +8,8 @@ import {
     mockPlotSelectionsState,
     mockRootState,
     mockReviewInputState,
-    mockInputComparisonMetadata
+    mockInputComparisonMetadata,
+    mockPopulationDataResponse
 } from "../mocks";
 import {getters} from "../../app/store/plotSelections/getters";
 import {PlotName} from "../../app/store/plotSelections/plotSelections";
@@ -395,4 +396,42 @@ describe("plotSelections getters", () => {
         expect(data.datasets[0].label).toBe("Option B");
         expect(data.datasets[1].label).toBe("Option A");
     });
+
+    it ('population data returns two datasets when population plot type is selected', () => {
+        const plotData = mockPopulationDataResponse();
+
+        const getter = getters.populationChartData(mockPlotSelectionsState(), mockGetters);
+
+        const ageGroups = [
+            {id:"Y010_014",label:"10-14"},
+            {id:"Y005_009",label:"5-9"},
+            {id:"Y000_004",label:"0-4"}
+        ];
+
+        const data = getter('population', plotData, ageGroups)[0];
+
+        expect(data.datasets.length).toBe(2);
+    })
+
+    it ('population data returns four datasets when population ratio plot type is selected', () => {
+        const plotData = mockPopulationDataResponse();
+
+        const mockGetters = {
+            controlSelectionFromId: (plotName: PlotName, controlId: string) => {
+                return {id: 'population_ratio'}
+            }
+        };
+
+        const getter = getters.populationChartData(mockPlotSelectionsState(), mockGetters);
+
+        const ageGroups = [
+            {id:"Y010_014",label:"10-14"},
+            {id:"Y005_009",label:"5-9"},
+            {id:"Y000_004",label:"0-4"}
+        ];
+
+        const data = getter('population', plotData, ageGroups)[0];
+
+        expect(data.datasets.length).toBe(4);
+    })
 });
