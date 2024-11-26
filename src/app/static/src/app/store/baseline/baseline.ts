@@ -7,6 +7,7 @@ import {
     PopulationResponse,
     ShapeResponse,
     Error,
+    FilterOption,
 } from "../../generated";
 import { Dataset, Release, Dict, DatasetResourceSet, DatasetResource } from "../../types";
 import {ReadyState, RootState} from "../../root";
@@ -98,6 +99,13 @@ export const baselineGetters = {
                 }
                 return map;
             }, {});
+    },
+    ageGroupOptions: (state:BaselineState): FilterOption[] => {
+        const options = state.population?.metadata.filterTypes.find(f=>f.id==='age')?.options;
+        if (!options) {
+            return []
+        }
+        return [...options].reverse();
     },
 };
 

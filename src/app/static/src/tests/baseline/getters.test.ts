@@ -180,7 +180,7 @@ it("areaIdToLevelMap returns map of area ID to level", () => {
         }
     } as ShapeResponse
 
-    let state = mockBaselineState({
+    const state = mockBaselineState({
         shape
     });
 
@@ -225,3 +225,36 @@ it("areaIdToLevelMap returns empty if no shape data or properties", () => {
 
     expect(baselineGetters.areaIdToLevelMap(state)).toStrictEqual({});
 });
+
+it('ageGroupOptions returns an array of possible age group'), ()=> {
+    const metadata = {
+            filterTypes: [
+                {
+                    id: 'age', 
+                    column_id: 'age_group', 
+                    options: [
+                        {id:"Y000_004",label:"0-4"},
+                        {id:"Y005_009",label:"5-9"},
+                        {id:"Y010_014",label:"10-14"}
+                    ]}
+            ],
+            indicators: [],
+            plotSettingsControl: {
+                population: {
+                    plotSettings: []
+                },
+            }
+    }
+
+    const population = mockPopulationResponse({metadata});
+
+    const state = mockBaselineState({population});
+
+    const expected = [
+        {id:"Y010_014",label:"10-14"},
+        {id:"Y005_009",label:"5-9"},
+        {id:"Y000_004",label:"0-4"}
+    ];
+
+    expect(baselineGetters.ageGroupOptions(state)).toStrictEqual(expected);
+}
