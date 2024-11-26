@@ -497,10 +497,19 @@ export const mockVmmcResponse = (props: Partial<VmmcResponse> = {}): VmmcRespons
 
 export const mockPopulationResponse = (props: Partial<PopulationResponse> = {}): PopulationResponse => {
     return {
-        data: null,
+        data: [],
         type: "population",
         hash: "1234.csv",
         filename: "test.csv",
+        metadata: {
+            filterTypes: [],
+            indicators: [],
+            plotSettingsControl: {
+                population: {
+                    plotSettings: []
+                },
+            }
+        },
         ...props
     }
 };
