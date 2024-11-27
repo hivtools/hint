@@ -262,12 +262,13 @@ export const getPopulationFilteredData = async (payload: PlotSelectionUpdate, co
     }
 
     // Filter the data on the current selections
+    // filteredData still contains data for all uploaded area levels, which is then handled in the aggregation logic below
     const { filters } = payload.selections;
     const { filterTypes } = getMetadataFromPlotName(rootState, payload.plot);
     const filteredData = filterData(filters, data, filterTypes);
 
     const selectedAreaLevel = Number(filters.find(f=>f.stateFilterId === 'area_level')?.selection[0].id) || 0;
-
+    
     const areaIdToLevelMap: Dict<number> = rootGetters["baseline/areaIdToLevelMap"];
 
     const highestAreaLevel = Math.max(...new Set(Object.values(areaIdToLevelMap)));
@@ -294,15 +295,27 @@ export const getPopulationFilteredData = async (payload: PlotSelectionUpdate, co
     };
 
     // Map of each indicator area id to their full parent chain
-    const fullParentMap = allFeatureProperties.filter(f=>f.area_level === highestAreaLevel).reduce((acc,cur)=>{
+    const fullParentMap = allFeatureProperties.reduce((acc,cur)=>{
         acc[cur.area_id] = getParentAreaIdChain(cur.area_id)
         return acc
     },{})
 
+    // Population data may be uploaded at multiple area levels. Check to see if there are existing indicators at 
+    // the selected area level, and if so use them to initialize the aggregation.
+    const existingIndicators = filteredData.filter(ind=>areaIdToLevelMap[ind.area_id] === selectedAreaLevel)
+
     const aggregatePopulationIndicators = () => {
-        return filteredData.reduce((acc, ind)=>{
+        // Exclude any indicators at lower area levels from aggregation, i.e. exlude country level indicators when aggregating at region level)
+        const indicatorsToAggregate = filteredData.filter(ind=>areaIdToLevelMap[ind.area_id] > selectedAreaLevel)
+        return indicatorsToAggregate.reduce((acc, ind)=>{
             const {area_id, calendar_quarter, age_group, sex, population} = ind;
             const matchingParentId = fullParentMap[area_id][selectedAreaLevel];
+
+            // Check to see if the corresponding parent was already uploaded in population data. 
+            // If it was, it is used directly and we don't need to do any aggregation for it.
+            const shouldAggregate = !existingIndicators.some(ind=>ind.area_id === matchingParentId)
+            if (!shouldAggregate) return acc
+
             const existingIndicator = acc.find((indicator: any)=>indicator.area_id === matchingParentId && indicator.calendar_quarter === calendar_quarter && indicator.age_group === age_group && indicator.sex === sex)
             if (existingIndicator) {
                 existingIndicator.population += population;
@@ -319,10 +332,10 @@ export const getPopulationFilteredData = async (payload: PlotSelectionUpdate, co
                 });
             }
             return acc
-        },[]);
+        }, existingIndicators);
     }
 
-    const newData = selectedAreaLevel === highestAreaLevel ? filteredData : aggregatePopulationIndicators()
+    const newData = selectedAreaLevel === highestAreaLevel ? existingIndicators : aggregatePopulationIndicators()
 
     const plotDataPayload: PlotDataUpdate = {
         plot: payload.plot,
