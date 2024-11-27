@@ -332,7 +332,7 @@ export const getPopulationFilteredData = async (payload: PlotSelectionUpdate, co
                 });
             }
             return acc
-        }, existingIndicators);
+        }, [...existingIndicators]);
     }
 
     const newData = selectedAreaLevel === highestAreaLevel ? existingIndicators : aggregatePopulationIndicators()
