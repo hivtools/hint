@@ -114,6 +114,8 @@ export const filtersInfoFromEffects = (
             if (isMultiple) {
                 selection = getFullNestedFilters(filter.options);
             } else if (filter.id === 'area_level') {
+                // For population pyramids, we want to set area level filter to the highest area level
+                // by default (i.e. show district data by default instead of country data)
                 selection = [filter.options[filter.options.length-1]];
             } else {
                 selection = [filter.options[0]];

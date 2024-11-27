@@ -20,7 +20,7 @@ import {
 import { useStore } from "vuex";
 import { RootState } from "../../../root";
 import { FilterOption, IndicatorMetadata } from "../../../generated";
-import { getIndicatorMetadata } from "../utils";
+import { formatOutput, getIndicatorMetadata } from "../utils";
 import { buildTooltipCallback } from "../bar/utils";
 import { OutlinePlugin } from "./utils";
 
@@ -100,6 +100,7 @@ const chartOptions = computed<ChartOptions<"bar">>(() => {
   return {
     maintainAspectRatio: true,
     responsive: true,
+    aspectRatio: 1.5,
     indexAxis: "y", // Flip chart 90 degrees
     plugins: {
       legend: {
@@ -131,12 +132,7 @@ const chartOptions = computed<ChartOptions<"bar">>(() => {
         },
         ticks: {
           callback: (value: number | string) => {
-            value = Math.abs(+value) // Show positive labels for males on x-axis
-            if (isProportion.value) {
-              return (value * 100).toFixed(0) + "%";
-            } else {
-              return value.toLocaleString(); 
-            }
+            return formatOutput(value, plotTypeMetadata.value.format, plotTypeMetadata.value.scale, plotTypeMetadata.value.accuracy)
           },
           maxTicksLimit: 3,
           font: {

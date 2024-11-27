@@ -36,7 +36,7 @@ import PageControl from "../timeSeries/PageControl.vue";
 
 const subplotsConfig = {
   columns: 3,
-  rows: 4,
+  rows: 3,
 };
 
 const plotName = "population"
@@ -86,7 +86,7 @@ const visiblePlots = computed(() => {
 .chart-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  grid-template-rows: repeat(4, 1fr);
+  grid-template-rows: repeat(3, 1fr);
   gap: 16px;
   width: 100%;
   height: 100%;
