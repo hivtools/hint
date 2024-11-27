@@ -93,6 +93,8 @@ export default defineComponent({
         const plotDescription = computed(() => {
             if (activePlot.value === "timeSeries") {
                 return "inputTimeSeriesDescription"
+            } else if (activePlot.value === 'population' && isPopulationProportion.value) {
+                return 'populationPlotNote'
             } else {
                 return null
             }
@@ -104,6 +106,13 @@ export default defineComponent({
 
         const inputComparisonError = computed(() => {
             return store.state.reviewInput.inputComparison.error
+        });
+
+        const plotControlGetter = store.getters["plotSelections/controlSelectionFromId"];
+
+        const isPopulationProportion = computed(() => {
+            const plotTypeSelection = plotControlGetter("population", "plot")?.id
+            return plotTypeSelection === "population_ratio"
         });
 
         onBeforeMount(async () => {
