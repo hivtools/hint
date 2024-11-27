@@ -257,7 +257,17 @@ export const getInputComparisonFilteredData = async (payload: PlotSelectionUpdat
 export const getPopulationFilteredData = async (payload: PlotSelectionUpdate, commit: Commit, rootState: RootState, rootGetters: any) => {
     const data =  rootState.baseline.population!.data
 
+    const commitEmptyData = () => {
+        const plotDataPayload: PlotDataUpdate = {
+        plot: payload.plot,
+        data: []
+    };
+      
+    commit(`plotData/${PlotDataMutations.updatePlotData}`, { payload: plotDataPayload }, { root: true });
+    }
+
     if (!data) {
+        commitEmptyData();
         return;
     }
 
@@ -274,6 +284,7 @@ export const getPopulationFilteredData = async (payload: PlotSelectionUpdate, co
     const highestUploadedAreaLevel = Math.max(...new Set(filteredData.map(ind=>areaIdToLevelMap[ind.area_id])));
 
     if (selectedAreaLevel > highestUploadedAreaLevel) {
+        commitEmptyData();
         return;
     }
 
