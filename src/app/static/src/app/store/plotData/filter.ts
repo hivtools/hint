@@ -305,8 +305,9 @@ export const getPopulationFilteredData = async (payload: PlotSelectionUpdate, co
     const existingIndicators = filteredData.filter(ind=>areaIdToLevelMap[ind.area_id] === selectedAreaLevel)
 
     const aggregatePopulationIndicators = () => {
-        // Exclude any indicators at lower area levels from aggregation, i.e. exlude country level indicators when aggregating at region level)
-        const indicatorsToAggregate = filteredData.filter(ind=>areaIdToLevelMap[ind.area_id] > selectedAreaLevel)
+        // Indicators at the most disaggregated area level will be used to create aggregated indicators if they do not already exist.
+        // This assumes complete data at the most disaggregated area level.
+        const indicatorsToAggregate = filteredData.filter(ind=>areaIdToLevelMap[ind.area_id] === highestAreaLevel)
         return indicatorsToAggregate.reduce((acc, ind)=>{
             const {area_id, calendar_quarter, age_group, sex, population} = ind;
             const matchingParentId = fullParentMap[area_id][selectedAreaLevel];
