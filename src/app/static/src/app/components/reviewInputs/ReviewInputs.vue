@@ -111,7 +111,7 @@ export default defineComponent({
         const plotControlGetter = store.getters["plotSelections/controlSelectionFromId"];
 
         const isPopulationProportion = computed(() => {
-            const plotTypeSelection = plotControlGetter("population", "plot")?.id
+            const plotTypeSelection = plotControlGetter?.("population", "plot")?.id
             return plotTypeSelection === "population_ratio"
         });
 
