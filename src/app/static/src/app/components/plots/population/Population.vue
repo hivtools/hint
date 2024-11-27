@@ -86,11 +86,15 @@ const chartOptions = computed<ChartOptions<"bar">>(() => {
   const minValue = Math.min(...chartData.value.datasets[1].data) || 0;
 
   const boundaryValue = Math.max(Math.abs(minValue), Math.abs(maxValue));
-  const roundingIncrement = isProportion.value
-    ? 0.1
-    : boundaryValue < 10_000
-    ? 1_000
-    : 10_000;
+
+  let roundingIncrement = 10_000
+
+  if (isProportion.value) {
+    roundingIncrement = 0.1
+  } else if (boundaryValue < 10_000) {
+    roundingIncrement = 1_000
+  }
+  
   const roundedBoundaryValue =
     Math.ceil(boundaryValue / roundingIncrement) * roundingIncrement;
 
@@ -117,7 +121,7 @@ const chartOptions = computed<ChartOptions<"bar">>(() => {
       },
       tooltip: {
         callbacks: {
-          label: buildTooltipCallback(plotTypeMetadata.value, false),
+          label: buildTooltipCallback(plotTypeMetadata.value, false, true),
         },
       },
     },
@@ -132,7 +136,7 @@ const chartOptions = computed<ChartOptions<"bar">>(() => {
         },
         ticks: {
           callback: (value: number | string) => {
-            return formatOutput(value, plotTypeMetadata.value.format, plotTypeMetadata.value.scale, plotTypeMetadata.value.accuracy)
+            return formatOutput(value, plotTypeMetadata.value.format, plotTypeMetadata.value.scale, plotTypeMetadata.value.accuracy, true, true)
           },
           maxTicksLimit: 3,
           font: {

@@ -123,12 +123,16 @@ export const formatLegend = function (text: string | number, format: string, sca
     return text
 }
 
-export const formatOutput = function (value: number | string, format: string, scale: number | null, accuracy: number | null, roundValue = true) {
+export const formatOutput = function (value: number | string, format: string, scale: number | null, accuracy: number | null, roundValue = true, absoluteValue = false) {
     let ans: number
 
     if (typeof (value) === 'string') {
         ans = parseFloat(value)
     } else ans = value
+
+    if (absoluteValue) {
+        ans = Math.abs(ans)
+    }
 
     if (!format.includes('%') && scale) {
         ans = ans * scale

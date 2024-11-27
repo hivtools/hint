@@ -152,7 +152,7 @@ export const inputComparisonPlotDataToChartData = function (plotData: InputCompa
         initialBarChartDataset("Spectrum", colors[1]),
     ];
 
-    const formatCallback = getNumberFormatCallback(indicatorMetadata)
+    const formatCallback = getNumberFormatCallback(indicatorMetadata, false)
 
     for (const row of plotData) {
 
@@ -296,17 +296,19 @@ const getErrorLineConfig = function(
     }
 }
 
-const getNumberFormatCallback = function(indicatorMetadata: IndicatorMetadata) {
+const getNumberFormatCallback = function(indicatorMetadata: IndicatorMetadata, absoluteValue: boolean) {
     return (value: number | string) => {
         return formatOutput(value,
             indicatorMetadata.format,
             indicatorMetadata.scale,
-            indicatorMetadata.accuracy)
+            indicatorMetadata.accuracy,
+            true,
+            absoluteValue)
     }
 }
 
-export const buildTooltipCallback = function(indicatorMetadata: IndicatorMetadata, showErrorRange: boolean) {
-    const formatCallback = getNumberFormatCallback(indicatorMetadata)
+export const buildTooltipCallback = function(indicatorMetadata: IndicatorMetadata, showErrorRange: boolean, absoluteValue = false) {
+    const formatCallback = getNumberFormatCallback(indicatorMetadata, absoluteValue)
 
     // See https://www.chartjs.org/docs/latest/configuration/tooltip.html#tooltip-item-context for items
     // available on context
