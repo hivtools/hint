@@ -71,10 +71,6 @@ export const getters = {
                 // in the order specified in the "cascade" instead of in the default indicator order
                 const indicatorOrder = rootGetters["modelCalibrate/cascadePlotIndicators"];
                 sortDatasets(data.datasets, disaggregateSelections, indicatorOrder)
-                data.datasets.forEach((dataset: ChartDataSetsWithErrors) => {
-                    dataset.barPercentage = 1.0; // Ensure no gap between disaggregated bars
-                    dataset.maxBarThickness = 250; // High value to stop gap being introduced due to bar width limit
-                });
             }
             return data
         } else {

@@ -390,11 +390,6 @@ describe("plotSelections getters", () => {
             filterSelections, Language.en);
 
         expect(mockPlotDataToChartData.mock.calls.length).toBe(1)
-        // Cascade bars take up full width
-        data.datasets.forEach(dataset => {
-            expect(dataset.maxBarThickness).toBe(250);
-            expect(dataset.barPercentage).toBe(1.0);
-        });
 
         // Datasets are in correct order
         expect(data.datasets[0].label).toBe("Option B");
