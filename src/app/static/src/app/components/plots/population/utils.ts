@@ -24,8 +24,8 @@ export const OutlinePlugin = {
           const { x, y, height, width } = bar;
   
           // Calculate the coordinates for the outer corners of the bar
-          const topY = y - height / 2 - 0.5;
-          const bottomY = y + height / 2 + 0.5;
+          const topY = y - height / 2 - 1;
+          const bottomY = y + height / 2 + 1;
   
           // Connect top line horizontally to y-axis instead of connecting back to the starting point
           if (index === 0) {
