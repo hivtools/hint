@@ -271,7 +271,11 @@ export const getPopulationFilteredData = async (payload: PlotSelectionUpdate, co
     
     const areaIdToLevelMap: Dict<number> = rootGetters["baseline/areaIdToLevelMap"];
 
-    const highestAreaLevel = Math.max(...new Set(Object.values(areaIdToLevelMap)));
+    const highestUploadedAreaLevel = Math.max(...new Set(filteredData.map(ind=>areaIdToLevelMap[ind.area_id])));
+
+    if (selectedAreaLevel > highestUploadedAreaLevel) {
+        return;
+    }
 
     const allFeatureProperties = rootState.baseline.shape!.data.features.map(f=>f.properties);
 
@@ -307,7 +311,7 @@ export const getPopulationFilteredData = async (payload: PlotSelectionUpdate, co
     const aggregatePopulationIndicators = () => {
         // Indicators at the most disaggregated area level will be used to create aggregated indicators if they do not already exist.
         // This assumes complete data at the most disaggregated area level.
-        const indicatorsToAggregate = filteredData.filter(ind=>areaIdToLevelMap[ind.area_id] === highestAreaLevel)
+        const indicatorsToAggregate = filteredData.filter(ind=>areaIdToLevelMap[ind.area_id] === highestUploadedAreaLevel)
         return indicatorsToAggregate.reduce((acc, ind)=>{
             const {area_id, calendar_quarter, age_group, sex, population} = ind;
             const matchingParentId = fullParentMap[area_id][selectedAreaLevel];
@@ -336,7 +340,7 @@ export const getPopulationFilteredData = async (payload: PlotSelectionUpdate, co
         }, [...existingIndicators]);
     }
 
-    const newData = selectedAreaLevel === highestAreaLevel ? existingIndicators : aggregatePopulationIndicators()
+    const newData = selectedAreaLevel === highestUploadedAreaLevel ? existingIndicators : aggregatePopulationIndicators()
 
     const plotDataPayload: PlotDataUpdate = {
         plot: payload.plot,
