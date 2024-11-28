@@ -11,7 +11,7 @@ import {
     FilterTypes,
     InputComparisonData,
     InputTimeSeriesData,
-    InputTimeSeriesRow,
+    InputTimeSeriesRow, PopulationResponseData,
     ProgrammeResponse,
     SurveyResponse
 } from "../../generated";
@@ -22,6 +22,7 @@ import { getMetadataFromPlotName } from "../plotSelections/actions";
 import { InputTimeSeriesKey } from "./plotData";
 import { Dict } from "@reside-ic/vue-next-dynamic-form";
 import { SurveyAndProgramState } from "../surveyAndProgram/surveyAndProgram";
+import {aggregatePopulation} from "./aggregate";
 
 type FilteredDataContext = {
     commit: Commit,
@@ -255,19 +256,15 @@ export const getInputComparisonFilteredData = async (payload: PlotSelectionUpdat
 };
 
 export const getPopulationFilteredData = async (payload: PlotSelectionUpdate, commit: Commit, rootState: RootState, rootGetters: any) => {
-    const data =  rootState.baseline.population!.data
-
-    const commitEmptyData = () => {
-        const plotDataPayload: PlotDataUpdate = {
-        plot: payload.plot,
-        data: []
-    };
-      
-    commit(`plotData/${PlotDataMutations.updatePlotData}`, { payload: plotDataPayload }, { root: true });
-    }
+    const data =  rootState.baseline.population?.data
 
     if (!data) {
-        commitEmptyData();
+        const plotDataPayload: PlotDataUpdate = {
+            plot: payload.plot,
+            data: []
+        };
+
+        commit(`plotData/${PlotDataMutations.updatePlotData}`, { payload: plotDataPayload }, { root: true });
         return;
     }
 
@@ -275,87 +272,18 @@ export const getPopulationFilteredData = async (payload: PlotSelectionUpdate, co
     // filteredData still contains data for all uploaded area levels, which is then handled in the aggregation logic below
     const { filters } = payload.selections;
     const { filterTypes } = getMetadataFromPlotName(rootState, payload.plot);
-    const filteredData = filterData(filters, data, filterTypes);
+    const filteredData: PopulationResponseData = filterData(filters, data, filterTypes);
 
     const selectedAreaLevel = Number(filters.find(f=>f.stateFilterId === 'area_level')?.selection[0].id) || 0;
-    
     const areaIdToLevelMap: Dict<number> = rootGetters["baseline/areaIdToLevelMap"];
-
-    const highestUploadedAreaLevel = Math.max(...new Set(filteredData.map(ind=>areaIdToLevelMap[ind.area_id])));
-
-    if (selectedAreaLevel > highestUploadedAreaLevel) {
-        commitEmptyData();
-        return;
-    }
-
-    const allFeatureProperties = rootState.baseline.shape!.data.features.map(f=>f.properties);
-
-    // Map of all feature area ids and their parent area id
-    const parentMap: Dict<string> = allFeatureProperties.reduce((acc,cur)=>{
-        acc[cur.area_id] = cur.parent_area_id
-        return acc
-    },{});
-
-    // Returns an array of areaIds that make up the full parent chain for a given area id
-    const getParentAreaIdChain = (areaId: string): string[] => {
-        const parentAreaIds: string[] = [];
-        let currentAreaId = parentMap[areaId];
-      
-        while (currentAreaId !== null) {
-            parentAreaIds.push(currentAreaId);
-            currentAreaId = parentMap[currentAreaId];
-        }
-      
-        return parentAreaIds.reverse(); // Return in order from root to current
-    };
-
-    // Map of each indicator area id to their full parent chain
-    const fullParentMap = allFeatureProperties.reduce((acc,cur)=>{
-        acc[cur.area_id] = getParentAreaIdChain(cur.area_id)
-        return acc
-    },{})
-
-    // Population data may be uploaded at multiple area levels. Check to see if there are existing indicators at 
-    // the selected area level, and if so use them to initialize the aggregation.
-    const existingIndicators = filteredData.filter(ind=>areaIdToLevelMap[ind.area_id] === selectedAreaLevel)
-
-    const aggregatePopulationIndicators = () => {
-        // Indicators at the most disaggregated area level will be used to create aggregated indicators if they do not already exist.
-        // This assumes complete data at the most disaggregated area level.
-        const indicatorsToAggregate = filteredData.filter(ind=>areaIdToLevelMap[ind.area_id] === highestUploadedAreaLevel)
-        return indicatorsToAggregate.reduce((acc, ind)=>{
-            const {area_id, calendar_quarter, age_group, sex, population} = ind;
-            const matchingParentId = fullParentMap[area_id][selectedAreaLevel];
-
-            // Check to see if the corresponding parent was already uploaded in population data. 
-            // If it was, it is used directly and we don't need to do any aggregation for it.
-            const shouldAggregate = !existingIndicators.some(ind=>ind.area_id === matchingParentId)
-            if (!shouldAggregate) return acc
-
-            const existingIndicator = acc.find((indicator: any)=>indicator.area_id === matchingParentId && indicator.calendar_quarter === calendar_quarter && indicator.age_group === age_group && indicator.sex === sex)
-            if (existingIndicator) {
-                existingIndicator.population += population;
-            } else {
-                const name = allFeatureProperties.find(f=>f.area_id === matchingParentId)?.area_name;
-
-                acc.push({
-                    age_group,
-                    area_name: name,
-                    area_id: matchingParentId,
-                    calendar_quarter,
-                    population,
-                    sex
-                });
-            }
-            return acc
-        }, [...existingIndicators]);
-    }
-
-    const newData = selectedAreaLevel === highestUploadedAreaLevel ? existingIndicators : aggregatePopulationIndicators()
+    const areaIdToParentPath: Dict<string[]> = rootGetters["baseline/areaIdToParentPath"];
+    const areaIdToAreaName: Dict<string> = rootGetters["baseline/areaIdToAreaName"];
+    const aggregatedData = aggregatePopulation(filteredData, selectedAreaLevel,
+        areaIdToLevelMap, areaIdToParentPath, areaIdToAreaName)
 
     const plotDataPayload: PlotDataUpdate = {
         plot: payload.plot,
-        data: newData
+        data: aggregatedData
     };
       
     commit(`plotData/${PlotDataMutations.updatePlotData}`, { payload: plotDataPayload }, { root: true });

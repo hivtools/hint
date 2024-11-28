@@ -100,6 +100,53 @@ export const baselineGetters = {
                 return map;
             }, {});
     },
+    // Build a map of all area IDs to their full area ID path
+    areaIdToParentPath: (state: BaselineState): Dict<string[]> => {
+        const properties = state.shape?.data.features
+            .map(f => f.properties)
+            .filter(f => f !== undefined);
+        if (!properties) {
+            return {}
+        }
+
+        // Map of all feature area ids and their parent area id
+        const parentMap: Dict<string> = properties.reduce((acc,cur)=>{
+            acc[cur.area_id] = cur.parent_area_id
+            return acc
+        },{});
+
+        // Returns an array of areaIds that make up the full parent chain for a given area id
+        const getParentAreaIdChain = (areaId: string): string[] => {
+            const parentAreaIds: string[] = [];
+            let currentAreaId = parentMap[areaId];
+
+            while (currentAreaId !== null) {
+                parentAreaIds.push(currentAreaId);
+                currentAreaId = parentMap[currentAreaId];
+            }
+
+            return parentAreaIds.reverse(); // Return in order from root to current
+        };
+
+        // Map of each indicator area id to their full parent chain
+        return properties.reduce((acc,cur)=>{
+            acc[cur.area_id] = getParentAreaIdChain(cur.area_id)
+            return acc
+        },{})
+    },
+    areaIdToAreaName: (state: BaselineState): Dict<string> => {
+        const properties = state.shape?.data.features
+            .map(f => f.properties)
+            .filter(f => f !== undefined);
+        console.log("properties", properties)
+        if (!properties) {
+            return {}
+        }
+        return properties.reduce((acc,cur)=>{
+            acc[cur.area_id] = cur.area_name
+            return acc;
+        }, {})
+    },
     ageGroupOptions: (state:BaselineState): FilterOption[] => {
         const options = state.population?.metadata.filterTypes.find(f=>f.id==='age')?.options;
         if (!options) {
