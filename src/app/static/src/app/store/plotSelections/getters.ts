@@ -1,5 +1,5 @@
 import {ControlSelection, FilterSelection, PlotName, PlotSelectionsState} from "./plotSelections";
-import {IndicatorMetadata, FilterOption, InputComparisonData} from "../../generated";
+import {IndicatorMetadata, FilterOption, InputComparisonData, PopulationResponseData} from "../../generated";
 import {
     BarChartData,
     inputComparisonPlotDataToChartData,
@@ -87,7 +87,7 @@ export const getters = {
           return [];
         }
 
-        const isProportion = plotType.id === "population_ratio";
+        const isProportion = plotType.id === "population_proportion";
 
         const groupedData: Record<string, PopulationResponseData> = {};
 
@@ -95,7 +95,7 @@ export const getters = {
         const countryData = getSinglePopulationChartDataset({indicators: plotData, ageGroups, isOutline: true, isProportion});
 
         // Group data by area_id
-        plotData.forEach((ind) => {
+        plotData.forEach((ind: PopulationResponseData[0]) => {
           if (!groupedData[ind.area_id]) {
             groupedData[ind.area_id] = [];
           }

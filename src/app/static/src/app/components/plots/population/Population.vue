@@ -65,7 +65,7 @@ const plotTypeSelection = computed(
 );
 
 const isProportion = computed(
-  () => plotTypeSelection.value === "population_ratio"
+  () => plotTypeSelection.value === "population_proportion"
 );
 
 const plotTypeMetadata = computed<IndicatorMetadata>(() =>

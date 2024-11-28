@@ -418,7 +418,7 @@ describe("plotSelections getters", () => {
 
         const mockGetters = {
             controlSelectionFromId: (plotName: PlotName, controlId: string) => {
-                return {id: 'population_ratio'}
+                return {id: 'population_proportion'}
             }
         };
 

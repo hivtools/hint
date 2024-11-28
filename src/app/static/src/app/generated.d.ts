@@ -1007,6 +1007,7 @@ export interface DownloadSubmitRequest {
 export interface DownloadSubmitResponse {
   id: string;
 }
+export type ErrorCode = string;
 export interface Error {
   error: string;
   detail: string | null;
@@ -1014,7 +1015,6 @@ export interface Error {
   job_id?: string;
   [k: string]: any;
 }
-export type ErrorCode = string;
 export interface File {
   path: string | null;
   filename: string;
@@ -1960,6 +1960,7 @@ export interface PlotSettingsControl {
 }
 export interface PopulationDataRow {
   area_id: string;
+  area_name: string;
   calendar_quarter: string;
   sex: string;
   age_group: string;
@@ -1968,6 +1969,7 @@ export interface PopulationDataRow {
 }
 export type PopulationResponseData = {
   area_id: string;
+  area_name: string;
   calendar_quarter: string;
   sex: string;
   age_group: string;
@@ -2548,6 +2550,7 @@ export interface PopulationResponse {
   type: "population";
   data: {
     area_id: string;
+    area_name: string;
     calendar_quarter: string;
     sex: string;
     age_group: string;

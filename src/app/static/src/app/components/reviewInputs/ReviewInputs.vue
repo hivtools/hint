@@ -112,7 +112,7 @@ export default defineComponent({
 
         const isPopulationProportion = computed(() => {
             const plotTypeSelection = plotControlGetter?.("population", "plot")?.id
-            return plotTypeSelection === "population_ratio"
+            return plotTypeSelection === "population_proportion"
         });
 
         onBeforeMount(async () => {
