@@ -69,7 +69,9 @@ describe("plotSelections getters", () => {
         "modelCalibrate/filterIdToColumnId": (plotName: PlotName, id: string) => {
             return id + "ColumnId"
         },
-        "baseline/areaIdToLevelMap": {"MWI_1_1": 1}
+        "baseline/areaIdToLevelMap": {"MWI_1_1": 1},
+        "modelCalibrate/cascadePlotIndicators": ["disagg_byControlSelectionFilterSelectionB",
+            "disagg_byControlSelectionFilterSelectionA"]
     };
 
     const mockGetters = {
@@ -95,11 +97,18 @@ describe("plotSelections getters", () => {
 
     const mockPlotDataToChartData = vi
         .spyOn(barUtils, "plotDataToChartData")
-        .mockImplementation((...args) => {return {
+        .mockImplementation(vi.fn().mockReturnValue({
             maxValuePlusError: 1,
             labels: ["A", "B"],
-            datasets: []
-        }});
+            datasets: [
+                {
+                    label: "Option A",
+                },
+                {
+                    label: "Option B",
+                }
+            ] as any
+        }));
 
     const mockInputComparisonPlotDataToChartData = vi
         .spyOn(barUtils, "inputComparisonPlotDataToChartData")
@@ -112,7 +121,7 @@ describe("plotSelections getters", () => {
         })
 
     beforeEach(() => {
-        vi.resetAllMocks()
+        vi.clearAllMocks()
     });
 
     it("can get control selection from ID", () => {
@@ -364,5 +373,26 @@ describe("plotSelections getters", () => {
         ]);
         expect(mockInputComparisonPlotDataToChartData.mock.calls[0][4]).toStrictEqual(yearOptions);
         expect(mockInputComparisonPlotDataToChartData.mock.calls[0][5]).toStrictEqual(Language.en);
+    });
+
+    it("barchartData adds specific overrides for cascade barchart", () => {
+        const rootState = mockRootState({
+            modelCalibrate: mockModelCalibrateState({
+                metadata: calibrateMetadata
+            })
+        });
+
+        const getter = getters.barchartData(mockPlotSelectionsState(), mockGetters, rootState, rootGetters);
+
+        const plotData = mockCalibrateDataResponse();
+        const indicatorMetadata = mockIndicatorMetadata();
+        const data = getter("cascade", plotData, indicatorMetadata,
+            filterSelections, Language.en);
+
+        expect(mockPlotDataToChartData.mock.calls.length).toBe(1)
+
+        // Datasets are in correct order
+        expect(data.datasets[0].label).toBe("Option B");
+        expect(data.datasets[1].label).toBe("Option A");
     });
 });

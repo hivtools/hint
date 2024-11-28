@@ -25,6 +25,9 @@
             <Table class="col-md-9" v-if="selectedPlot === 'table'"
                     :plotName="'table'"
                     :download-enabled="true"/>
+            <barchart class="col-md-9" v-if="selectedPlot === 'cascade'"
+                      :plot="selectedPlot"
+                      :show-error-bars="true"/>
         </div>
     </div>
 </template>

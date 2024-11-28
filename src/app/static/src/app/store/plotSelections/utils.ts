@@ -162,9 +162,7 @@ export const commitPlotDefaultSelections = async (
             });
         });
         payload.selections.controls = selectedSettingOptions
-
-        const filtersInfo = filtersInfoFromEffects(effects, rootState, metadata);
-        payload.selections.filters = filtersInfo;
+        payload.selections.filters = filtersInfoFromEffects(effects, rootState, metadata);
 
         await getPlotData(payload, commit, rootState);
 

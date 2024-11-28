@@ -147,7 +147,6 @@ export default defineComponent({
                                 borderWidth: 2,
                                 borderDash: [5],
                                 drawTime: 'beforeDatasetsDraw'
-                                
                             }
                         }
                 }

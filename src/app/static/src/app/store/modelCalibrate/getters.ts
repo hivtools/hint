@@ -30,5 +30,11 @@ export const getters = {
                 tableMetadata = metadata.plotSettingsControl[plotName].defaultEffect?.customPlotEffect
             }
             return tableMetadata
-        }
+        },
+    cascadePlotIndicators: (state: ModelCalibrateState) => {
+        // In the cascade plot, we want to show the bars in the specified order, as we want the bars to
+        // actually "cascade". This is in contrast to normal plots in which we show the selected in order
+        // that is in the drop down.
+        return state.metadata?.plotSettingsControl.cascade.defaultEffect?.setFilterValues?.indicator
+    }
 };

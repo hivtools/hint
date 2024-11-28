@@ -151,4 +151,10 @@ test("can view output plots", async ({ projectPage }) => {
 
     // bubble plot is updated
     await expect(page.locator("#review-output")).toHaveScreenshot("bubble-reset.png");
+
+    // When I switch to cascade tab
+    await page.getByText('Cascade').click();
+
+    // Cascade plot is shown
+    await expect(page.locator("#review-output")).toHaveScreenshot("cascade-landing.png");
 })

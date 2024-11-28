@@ -191,7 +191,7 @@ describe("ModelCalibrate actions", () => {
 
         await actions.getResult({commit, state, rootState, dispatch} as any);
 
-        expect(commit.mock.calls.length).toBe(9);
+        expect(commit.mock.calls.length).toBe(10);
         expect(commit.mock.calls[0][0]).toStrictEqual({
             type: "MetadataFetched",
             payload: testResult
@@ -230,16 +230,24 @@ describe("ModelCalibrate actions", () => {
                 filters: []
             }
         });
+        expect(commit.mock.calls[5][0]).toBe("plotSelections/updatePlotSelection");
+        expect(commit.mock.calls[5][1]["payload"]).toStrictEqual({
+            plot: "cascade",
+            selections: {
+                controls: [],
+                filters: []
+            }
+        });
 
         // Commits initial scale selections
-        expect(commit.mock.calls[5][0]).toStrictEqual({
+        expect(commit.mock.calls[6][0]).toStrictEqual({
             type: "plotState/setOutputScale",
             payload: {
                 scale: Scale.Colour,
                 selections: {}
             }
         });
-        expect(commit.mock.calls[6][0]).toStrictEqual({
+        expect(commit.mock.calls[7][0]).toStrictEqual({
             type: "plotState/setOutputScale",
             payload: {
                 scale: Scale.Size,
@@ -247,11 +255,11 @@ describe("ModelCalibrate actions", () => {
             }
         });
 
-        expect(commit.mock.calls[7][0]).toBe("Calibrated");
-        expect(commit.mock.calls[8][0]).toBe("Ready");
+        expect(commit.mock.calls[8][0]).toBe("Calibrated");
+        expect(commit.mock.calls[9][0]).toBe("Ready");
 
         // Dispatches to get plot data
-        expect(getOutputFilteredDataSpy.mock.calls.length).toBe(4) // The number of plots we have
+        expect(getOutputFilteredDataSpy.mock.calls.length).toBe(5) // The number of plots we have
         expect(dispatch.mock.calls[0][0]).toBe("getCalibratePlot");
         expect(dispatch.mock.calls[1][0]).toBe("getComparisonPlot");
     });
