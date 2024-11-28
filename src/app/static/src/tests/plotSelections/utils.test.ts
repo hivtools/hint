@@ -92,6 +92,27 @@ describe("Plot selections utils", () => {
             ]);
     });
 
+    it("filtersAfterUseShapeRegions can set area level", () => {
+        const filters = [
+            {id: "area_level", options: null, use_shape_area_level: true},
+            {id: "other", options: []}
+        ];
+        const rootState = {
+            baseline: {
+                shape: {
+                    filters: {
+                        level_labels: [{id: "1", area_level_label: "1"}]
+                    }
+                }
+            }
+        };
+        expect(filtersAfterUseShapeRegions(filters as any, rootState as any))
+            .toStrictEqual([
+                {id: "area_level", options: [{id: "1", label: "1"}]},
+                {id: "other", options: []}
+            ]);
+    });
+
     it("commitPlotDefaultSelections fetches plot data and commits plot selections when no controls or filters", async () => {
         const metadata = mockPlotMetadataFrame();
         await commitPlotDefaultSelections(metadata, commit, rootState, rootGetters);
@@ -584,6 +605,52 @@ describe("Plot selections utils", () => {
                 ],
                 multiple: false,
                 hidden: true
+            }
+        ]);
+    });
+
+    it("filtersInfoFromEffects sets default area_level to highest", async () => {
+        const metadata = mockPlotMetadataFrame({
+            filterTypes: [
+                {
+                    id: "area_level",
+                    column_id: "1",
+                    options: [
+                        {
+                            id: "op1",
+                            label: "lab1"
+                        },
+                        {
+                            id: "op2",
+                            label: "lab2"
+                        }
+                    ]
+                }
+            ],
+        });
+        const effects = [{
+            setFilters: [
+                {
+                    filterId: "area_level",
+                    label: "Area level",
+                    stateFilterId: "stateFilterId1"
+                }
+            ]
+        }];
+
+        const update = filtersInfoFromEffects(effects, rootState, metadata);
+
+        expect(update).toStrictEqual([
+            {
+                filterId: "area_level",
+                label: "Area level",
+                stateFilterId: "stateFilterId1",
+                selection: [{
+                    id: "op2",
+                    label: "lab2"
+                }],
+                multiple: false,
+                hidden: false
             }
         ]);
     });

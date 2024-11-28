@@ -43,6 +43,8 @@ describe("Review inputs page", () => {
     const mockGetInputComparisonDataset = vi.fn();
     const mockGetPopulationDataset = vi.fn()
 
+    const mockDispatch = vi.fn();
+
     const createStore = (sapState: SurveyAndProgramState, dataFetched = true, error = false) => {
         const store = new Vuex.Store({
             state: emptyState(),
@@ -55,7 +57,6 @@ describe("Review inputs page", () => {
                     actions: {
                         getInputComparisonDataset: mockGetInputComparisonDataset,
                         getPopulationDataset: mockGetPopulationDataset
-                        
                     },
                     state: mockReviewInputState({loading: !dataFetched}),
                 },
@@ -71,10 +72,11 @@ describe("Review inputs page", () => {
             }
         });
         registerTranslations(store);
+        store.dispatch = mockDispatch;
         return store;
     };
 
-    test("renders as expected when no data fetched", () => {
+    test("renders as expected when no data fetched", async () => {
         const store = createStore(initialSurveyAndProgramState(), false);
         const wrapper = getWrapper(store);
 
@@ -89,6 +91,12 @@ describe("Review inputs page", () => {
         expect(wrapper.findComponent(PopulationGrid).exists()).toBeFalsy();
         expect(wrapper.findComponent(LoadingSpinner).exists()).toBeTruthy();
         expect(wrapper.findComponent(ErrorAlert).exists()).toBeFalsy();
+
+        // Fetches population metadata and review input metadata on mount
+        await nextTick();
+        expect(mockDispatch).toHaveBeenCalledTimes(2);
+        expect(mockDispatch).toHaveBeenNthCalledWith(1, "metadata/getReviewInputMetadata", {}, {root: true})
+        expect(mockDispatch).toHaveBeenNthCalledWith(2, "reviewInput/getPopulationDataset", {}, {root: true})
     });
 
     test("renders as expected when only survey data fetched", () => {

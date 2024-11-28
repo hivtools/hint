@@ -1,4 +1,11 @@
-import {ControlSelection, FilterSelection, PlotName, PlotSelectionsState} from "./plotSelections";
+import {
+    ControlSelection,
+    FilterSelection,
+    PlotName,
+    PlotSelectionsState,
+    PopulationChartData,
+    PopulationChartDataset
+} from "./plotSelections";
 import {IndicatorMetadata, FilterOption, InputComparisonData, PopulationResponseData} from "../../generated";
 import {
     BarChartData,
@@ -10,7 +17,6 @@ import {RootState} from "../../root";
 import {PlotData} from "../plotData/plotData";
 import {Dict} from "../../types";
 import {getMetadataFromPlotName} from "./actions";
-import { getSinglePopulationChartDataset } from "../../components/plots/population/utils";
 
 export const getters = {
     controlSelectionFromId: (state: PlotSelectionsState) => (plotName: PlotName, controlId: string): FilterOption | undefined => {
@@ -78,8 +84,10 @@ export const getters = {
         }
     },
 
+    // Called with already filtered and aggregated PopulationResponseData, this getter transforms the table of
+    // data into the format needed for chart js.
     populationChartData: (state: PlotSelectionsState, getters: any) =>
-        (plotName: PlotName, plotData: PopulationResponseData, ageGroups: FilterOption[]) => {
+        (plotName: PlotName, plotData: PopulationResponseData, ageGroups: FilterOption[]): PopulationChartData => {
 
         const plotType = getters.controlSelectionFromId(plotName, "plot");
 
@@ -92,7 +100,10 @@ export const getters = {
         const groupedData: Record<string, PopulationResponseData> = {};
 
         // Country data for stepped outline
-        const countryData = getSinglePopulationChartDataset({indicators: plotData, ageGroups, isOutline: true, isProportion});
+        let countryData: PopulationChartDataset[] = []
+        if (isProportion) {
+            countryData = getSinglePopulationChartDataset({indicators: plotData, ageGroups, isOutline: true, isProportion})
+        }
 
         // Group data by area_id
         plotData.forEach((ind: PopulationResponseData[0]) => {
@@ -102,16 +113,75 @@ export const getters = {
           groupedData[ind.area_id].push(ind);
         });
 
-        const result = Object.values(groupedData).map((indicators) => {
+        return Object.values(groupedData).map((indicators) => {
           return {
             title: indicators[0].area_name,
             datasets: [
               ...getSinglePopulationChartDataset({ indicators, ageGroups, isOutline: false, isProportion}),
-              ...(isProportion ? countryData : []),
+              ...(countryData),
             ],
           };
         });
-
-        return result;
     }
 };
+
+const getSinglePopulationChartDataset = ({
+                                             indicators,
+                                             ageGroups,
+                                             isOutline,
+                                             isProportion,
+                                         }: {
+    ageGroups: FilterOption[];
+    indicators: PopulationResponseData;
+    isOutline: boolean;
+    isProportion: boolean;
+}): PopulationChartDataset[] => {
+    let femalePopulations: number[] = new Array(ageGroups.length).fill(0);
+    let malePopulations: number[] = new Array(ageGroups.length).fill(0);
+
+    indicators.forEach((item) => {
+        const ageIndex = ageGroups.findIndex(
+            (group) => group.id === item.age_group
+        );
+        if (ageIndex !== -1) {
+            if (item.sex === "female") {
+                femalePopulations[ageIndex] += item.population;
+            } else if (item.sex === "male") {
+                malePopulations[ageIndex] += item.population;
+            }
+        }
+    });
+
+    let totalFemale: number, totalMale:number;
+
+    if (isProportion) {
+        totalFemale = femalePopulations.reduce((acc,cur)=> acc+cur, 0);
+        totalMale = malePopulations.reduce((acc,cur)=> acc+cur, 0);
+
+        femalePopulations = femalePopulations.map(p=>p/totalFemale);
+        malePopulations = malePopulations.map(p=>p/totalMale);
+    }
+
+    return [
+        {
+            label: "Female",
+            data: femalePopulations,
+            backgroundColor: isOutline ? PopulationColors.OUTLINE : PopulationColors.FEMALE,
+            isOutline,
+            isMale: false
+        },
+        {
+            label: "Male",
+            data: malePopulations.map((pop) => -pop), // Negate male values for the left side of the pyramid
+            backgroundColor: isOutline ? PopulationColors.OUTLINE : PopulationColors.MALE,
+            isOutline,
+            isMale: true
+        },
+    ];
+};
+
+export const PopulationColors = Object.freeze({
+    OUTLINE: "transparent",
+    MALE: "#48b342",
+    FEMALE: "#5c96c5"
+});

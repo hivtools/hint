@@ -538,4 +538,24 @@ describe("barchart utils work as expected", () => {
         });
         expect(renderedLabel).toBe("dataset1: 2.0");
     });
+
+    it("tooltip label callback can display absolute value", async () => {
+        const metadata = mockIndicatorMetadata({
+            format: "0.0"
+        });
+        const tooltipCallback = buildTooltipCallback(metadata, false, true);
+
+        let renderedLabel = tooltipCallback({
+            datasetIndex: 0,
+            raw: -2,
+            label: "group2",
+            dataset: {
+                label: "dataset1",
+                backgroundColor: "#111111",
+                data: [1, 2],
+                errorBars: errorBars
+            }
+        });
+        expect(renderedLabel).toBe("dataset1: 2.0");
+    });
 })

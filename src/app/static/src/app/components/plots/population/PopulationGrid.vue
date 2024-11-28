@@ -33,6 +33,7 @@ import Population from "./Population.vue";
 import { useStore } from "vuex";
 import { RootState } from "../../../root";
 import PageControl from "../timeSeries/PageControl.vue";
+import {PopulationChartData} from "../../../store/plotSelections/plotSelections";
 
 const subplotsConfig = {
   columns: 3,
@@ -60,7 +61,7 @@ const ageGroups = computed(
 
 const chartDataGetter = store.getters["plotSelections/populationChartData"];
 
-const chartData = computed(() => chartDataGetter(plotName, data.value, ageGroups.value));
+const chartData = computed<PopulationChartData>(() => chartDataGetter(plotName, data.value, ageGroups.value));
 
 const totalPages = computed(() => {
   return Math.ceil(

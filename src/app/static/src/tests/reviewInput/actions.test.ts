@@ -1,4 +1,4 @@
-import {mockAxios, mockFailure, mockRootState, mockSuccess} from "../mocks";
+import {mockAxios, mockBaselineState, mockFailure, mockPopulationResponse, mockRootState, mockSuccess} from "../mocks";
 import {actions} from "../../app/store/reviewInput/actions";
 import {ReviewInputMutation} from "../../app/store/reviewInput/mutations";
 import {freezer} from "../../app/utils";
@@ -88,5 +88,34 @@ describe("reviewInput actions", () => {
         expect(commit.mock.calls[3][0]["payload"]).toBeFalsy();
         expect(mockCommitPlotDefaultSelections).toHaveBeenCalledTimes(1);
         expect(mockCommitPlotDefaultSelections).toHaveBeenLastCalledWith("TEST META", commit, rootState, rootGetters);
+    });
+
+    it("can build population default selections from metadata", async () => {
+        const popResponse = mockPopulationResponse({
+            metadata: {
+                filterTypes: [],
+                indicators: [],
+                plotSettingsControl: {
+                    population: {
+                        plotSettings: []
+                    },
+                }
+            }
+        });
+        const rootState = mockRootState({
+            baseline: mockBaselineState({
+                population: popResponse
+            })
+        });
+        const commit = vi.fn();
+        const mockCommitPlotDefaultSelections = vi
+            .spyOn(utils, "commitPlotDefaultSelections")
+            .mockImplementation(async (_metadata, _commit, _rootState, _rootGetters) => {});
+        await actions.getPopulationDataset({commit, rootState, rootGetters} as any);
+
+        expect(commit).toHaveBeenCalledTimes(1);
+        expect(commit).toHaveBeenLastCalledWith("baseline/PopulationUpdated", {payload: popResponse}, {root: true});
+        expect(mockCommitPlotDefaultSelections).toHaveBeenCalledTimes(1);
+        expect(mockCommitPlotDefaultSelections).toHaveBeenLastCalledWith(popResponse.metadata, commit, rootState, rootGetters);
     });
 });

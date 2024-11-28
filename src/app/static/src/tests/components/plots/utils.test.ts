@@ -363,6 +363,8 @@ describe("plot utils", () => {
         expect(formatOutput(5001.98, '', 1, 1000)).toStrictEqual(5000);
         expect(formatOutput(501.98, '', 1, 100, false)).toStrictEqual(501.98);
         expect(formatOutput(501.98, '', 1, 100, true)).toStrictEqual(500);
+        expect(formatOutput(-11111, '0,0', 1, 1, false, false)).toStrictEqual('-11,111');
+        expect(formatOutput(-11111, '0,0', 1, 1, false, true)).toStrictEqual('11,111');
     });
 
     it("it can formatLegend correctly", () => {

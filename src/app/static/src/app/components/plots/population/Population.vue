@@ -72,10 +72,12 @@ const plotTypeMetadata = computed<IndicatorMetadata>(() =>
   getIndicatorMetadata(store, plotName, plotTypeSelection.value)
 );
 
-const chartData = computed(() => ({
-  labels: ageGroups.value.map((group) => group.label),
-  datasets: props.datasets,
-}));
+const chartData = computed(() => {
+    console.log("build chart data computed")
+    return {
+        labels: ageGroups.value.map((group) => group.label),
+        datasets: props.datasets,
+    }});
 
 const chartOptions = computed<ChartOptions<"bar">>(() => {
   // Some logic for nicely setting the min and max values on the x-axis.

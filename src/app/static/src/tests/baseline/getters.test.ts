@@ -226,7 +226,7 @@ it("areaIdToLevelMap returns empty if no shape data or properties", () => {
     expect(baselineGetters.areaIdToLevelMap(state)).toStrictEqual({});
 });
 
-it('ageGroupOptions returns an array of possible age group'), ()=> {
+it('ageGroupOptions returns an array of possible age group', ()=> {
     const metadata = {
             filterTypes: [
                 {
@@ -257,4 +257,28 @@ it('ageGroupOptions returns an array of possible age group'), ()=> {
     ];
 
     expect(baselineGetters.ageGroupOptions(state)).toStrictEqual(expected);
-}
+})
+
+it('ageGroupOptions returns an empty array if no age options', ()=> {
+    const metadata = {
+        filterTypes: [
+            {
+                id: 'year',
+                column_id: 'year',
+                options: [
+                    {id:"2000",label:"2000"}
+                ]}
+        ],
+        indicators: [],
+        plotSettingsControl: {
+            population: {
+                plotSettings: []
+            },
+        }
+    }
+
+    const population = mockPopulationResponse({metadata});
+    const state = mockBaselineState({population});
+
+    expect(baselineGetters.ageGroupOptions(state)).toStrictEqual([]);
+});

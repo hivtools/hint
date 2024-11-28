@@ -550,7 +550,7 @@ export const mockPopulationDataResponse = (): PopulationResponseData => {
         calendar_quarter:"CY2008Q2",
         sex:"female",
         age_group:"Y000_004",
-        population:21299
+        population: 21299
     }]
 }
 
