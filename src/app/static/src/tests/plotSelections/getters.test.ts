@@ -451,13 +451,15 @@ describe("plotSelections getters", () => {
             label: "Female",
             data: [0, 3, 2],
             backgroundColor: PopulationColors.FEMALE,
-            isOutline: false
+            isOutline: false,
+            isMale: false
         });
         expect(datasets[1]).toStrictEqual({
             label: "Male",
             data: [-0, -5, -4],
             backgroundColor: PopulationColors.MALE,
-            isOutline: false
+            isOutline: false,
+            isMale: true
         });
     })
 
@@ -486,25 +488,29 @@ describe("plotSelections getters", () => {
             label: "Female",
             data: [0, 3/5, 2/5],
             backgroundColor: PopulationColors.FEMALE,
-            isOutline: false
+            isOutline: false,
+            isMale: false
         });
         expect(datasets[1]).toStrictEqual({
             label: "Male",
             data: [-0, -5/9, -4/9],
             backgroundColor: PopulationColors.MALE,
-            isOutline: false
+            isOutline: false,
+            isMale: true
         });
         expect(datasets[2]).toStrictEqual({
             label: "Female",
             data: [0, 3/5, 2/5],
             backgroundColor: PopulationColors.OUTLINE,
-            isOutline: true
+            isOutline: true,
+            isMale: false
         });
         expect(datasets[3]).toStrictEqual({
             label: "Male",
             data: [-0, -5/9, -4/9],
             backgroundColor: PopulationColors.OUTLINE,
-            isOutline: true
+            isOutline: true,
+            isMale: true
         });
     })
 

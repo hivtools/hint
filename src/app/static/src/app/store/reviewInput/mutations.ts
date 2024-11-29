@@ -1,7 +1,7 @@
 import {MutationTree} from 'vuex';
 import {ReviewInputState} from "./reviewInput";
 import {ReviewInputDataset, PayloadWithType} from "../../types";
-import {Error, InputComparisonResponse, Warning} from "../../generated";
+import {Error, InputComparisonResponse, InputPopulationMetadataResponse, Warning} from "../../generated";
 
 export enum ReviewInputMutation {
     SetDataset = "SetDataset",
@@ -14,6 +14,9 @@ export enum ReviewInputMutation {
     SetInputComparisonLoading = "SetInputComparisonLoading",
     SetInputComparisonError = "SetInputComparisonError",
     SetInputComparisonData = "SetInputComparisonData",
+    SetPopulationLoading = "SetPopulationLoading",
+    SetPopulationError = "SetPopulationError",
+    SetPopulationMetadata = "SetPopulationMetadata",
 }
 
 export interface SetDatasetPayload {
@@ -55,5 +58,14 @@ export const mutations: MutationTree<ReviewInputState> = {
     },
     [ReviewInputMutation.SetInputComparisonData](state: ReviewInputState, action: PayloadWithType<InputComparisonResponse>) {
         state.inputComparison.data = action.payload;
+    },
+    [ReviewInputMutation.SetPopulationLoading](state: ReviewInputState, action: PayloadWithType<boolean>) {
+        state.population.loading = action.payload;
+    },
+    [ReviewInputMutation.SetPopulationError](state: ReviewInputState, action: PayloadWithType<Error | null>) {
+        state.population.error = action.payload;
+    },
+    [ReviewInputMutation.SetPopulationMetadata](state: ReviewInputState, action: PayloadWithType<InputPopulationMetadataResponse>) {
+        state.population.data = action.payload;
     },
 };

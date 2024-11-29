@@ -54,7 +54,7 @@ const plotName = "population";
 const store = useStore<RootState>();
 
 const ageGroups = computed(
-  () => store.getters["baseline/ageGroupOptions"] as FilterOption[]
+  () => store.getters["reviewInput/ageGroupOptions"] as FilterOption[]
 );
 
 const plotControlGetter =

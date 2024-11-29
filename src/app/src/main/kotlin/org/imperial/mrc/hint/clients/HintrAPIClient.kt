@@ -41,6 +41,7 @@ interface HintrAPIClient
             ResponseEntity<String>
     fun getInputTimeSeriesChartData(type: String, files: Map<String, VersionFileWithPath>): ResponseEntity<String>
     fun getInputComparisonChartData(files: Map<String, VersionFileWithPath>): ResponseEntity<String>
+    fun getInputPopulationMetadata(files: Map<String, VersionFileWithPath>): ResponseEntity<String>
     fun get(url: String): ResponseEntity<String>
     fun downloadOutputSubmit(
         type: String,
@@ -274,5 +275,13 @@ class HintrFuelAPIClient(
         val json = objectMapper.writeValueAsString(files)
 
         return postJson("chart-data/input-comparison", json)
+    }
+
+    override fun getInputPopulationMetadata(files: Map<String, VersionFileWithPath>)
+            : ResponseEntity<String>
+    {
+        val json = objectMapper.writeValueAsString(files)
+
+        return postJson("chart-data/input-population", json)
     }
 }

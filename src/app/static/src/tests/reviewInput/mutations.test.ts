@@ -2,7 +2,7 @@ import {mutations} from "../../app/store/reviewInput/mutations";
 import {
     mockIndicatorMetadata,
     mockInputComparisonData,
-    mockInputComparisonMetadata,
+    mockInputComparisonMetadata, mockInputPopulationMetadataResponse,
     mockReviewInputState,
     mockWarning
 } from "../mocks";
@@ -127,5 +127,27 @@ describe("reviewInput mutations", () => {
         const state = mockReviewInputState();
         mutations.SetInputComparisonData(state, {payload: inputComparisonResponse});
         expect(state.inputComparison.data).toBe(inputComparisonResponse);
+    });
+
+    it("sets input population metadata loading state", () => {
+        const testState = mockReviewInputState();
+        mutations.SetPopulationLoading(testState, {payload: true});
+        expect(testState.population.loading).toBeTruthy();
+        mutations.SetPopulationLoading(testState, {payload: false});
+        expect(testState.population.loading).toBeFalsy();
+    });
+
+    it("sets input population metadata error", () => {
+        const state = mockReviewInputState();
+        const error = {"detail": "TEST ERROR", "error": "OTHER_ERROR"};
+        mutations.SetPopulationError(state, {payload: error});
+        expect(state.population.error).toBe(error);
+    });
+
+    it("sets input population metadata", () => {
+        const inputPopulationMetadataResponse = mockInputPopulationMetadataResponse();
+        const state = mockReviewInputState();
+        mutations.SetPopulationMetadata(state, {payload: inputPopulationMetadataResponse});
+        expect(state.population.data).toBe(inputPopulationMetadataResponse);
     });
 });

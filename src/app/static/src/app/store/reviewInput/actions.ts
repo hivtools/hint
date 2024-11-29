@@ -5,8 +5,7 @@ import {ReviewInputMutation} from "./mutations";
 import {ReviewInputDataset} from "../../types";
 import {RootState} from "../../root";
 import {commitPlotDefaultSelections, filtersAfterUseShapeRegions} from "../plotSelections/utils";
-import {InputComparisonResponse} from "../../generated";
-import { BaselineMutation } from '../baseline/mutations';
+import {InputComparisonResponse, InputPopulationMetadataResponse} from "../../generated";
 
 export interface ReviewInputActions {
     getDataset: (store: ActionContext<ReviewInputState, RootState>, payload: getDatasetPayload) => void
@@ -76,13 +75,19 @@ export const actions: ActionTree<ReviewInputState, RootState> & ReviewInputActio
 
     async getPopulationDataset(context) {
         const {commit, rootState, rootGetters} = context;
-        const populationMetadata = rootState.baseline.population!.metadata
-        const populationMetadataClone = {...populationMetadata}
-        const populationData = rootState.baseline.population
-        const populationDataClone = { ...populationData}
-        populationMetadataClone.filterTypes = filtersAfterUseShapeRegions(populationMetadataClone.filterTypes, rootState);
-        populationDataClone.metadata = populationMetadataClone
-        commit(`baseline/${BaselineMutation.PopulationUpdated}`, {payload: populationDataClone}, {root:true});
-        await commitPlotDefaultSelections(populationMetadataClone, commit, rootState, rootGetters);
+        commit({type: ReviewInputMutation.SetPopulationLoading, payload: true})
+        commit({type: ReviewInputMutation.SetPopulationError, payload: null});
+        await api<ReviewInputMutation, ReviewInputMutation>(context)
+            .withSuccess(ReviewInputMutation.SetPopulationMetadata)
+            .withError(ReviewInputMutation.SetPopulationError)
+            .get<InputPopulationMetadataResponse>("/chart-data/input-population")
+            .then(async (response) => {
+                if (response) {
+                    const metadata = response.data;
+                    metadata.filterTypes = filtersAfterUseShapeRegions(metadata.filterTypes, rootState);
+                    await commitPlotDefaultSelections(metadata, commit, rootState, rootGetters);
+                }
+                commit({type: ReviewInputMutation.SetPopulationLoading, payload: false});
+            })
     }
 };

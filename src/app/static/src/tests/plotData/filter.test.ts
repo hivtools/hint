@@ -14,13 +14,14 @@ import {
     mockReviewInputMetadata,
     mockRootState,
     mockSuccess,
-    mockSurveyAndProgramState, mockBaselineState, mockPopulationResponse, mockPlotMetadataFrame
+    mockSurveyAndProgramState, mockBaselineState, mockPopulationResponse, mockPlotMetadataFrame, mockReviewInputState
 } from "../mocks";
 import {
     getCalibrateFilteredDataset,
     getComparisonFilteredDataset,
     getInputChoroplethFilteredData,
-    getOutputFilteredData, getPopulationFilteredData,
+    getOutputFilteredData,
+    getPopulationFilteredData,
     getTimeSeriesFilteredDataset
 } from "../../app/store/plotData/filter";
 import {PlotDataMutations, PlotDataUpdate} from "../../app/store/plotData/mutations";
@@ -30,7 +31,8 @@ import {CommitOptions} from "vuex";
 import {
     AncDataRow,
     CalibratePlotResponse,
-    ComparisonPlotRow, PopulationDataRow, PopulationResponseData,
+    ComparisonPlotRow,
+    PopulationResponseData,
     ReviewInputFilterMetadataResponse
 } from "../../app/generated";
 import {FilterSelection} from "../../app/store/plotSelections/plotSelections";
@@ -856,9 +858,15 @@ describe("filter tests", () => {
                 baseline: mockBaselineState({
                     population: mockPopulationResponse(
                         {
-                            data,
-                            metadata
+                            data
                     })
+                }),
+                reviewInput: mockReviewInputState({
+                    population: {
+                        data: metadata,
+                        error: null,
+                        loading: false
+                    }
                 })
             })
         });

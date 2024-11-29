@@ -56,7 +56,7 @@ const data = computed(
 );
 
 const ageGroups = computed(
-  () => store.getters["baseline/ageGroupOptions"] as FilterOption[]
+  () => store.getters["reviewInput/ageGroupOptions"] as FilterOption[]
 );
 
 const chartDataGetter = store.getters["plotSelections/populationChartData"];

@@ -1391,6 +1391,91 @@ export interface InputDatasets {
     filename: string;
   };
 }
+export interface InputPopulationMetadataRequest {
+  population: {
+    path: string | null;
+    hash: string;
+    filename: string;
+    fromADR?: boolean;
+    resource_url?: string | null;
+  };
+}
+export interface InputPopulationMetadataResponse {
+  filterTypes: {
+    id: string;
+    column_id: string;
+    options: {
+      label: string;
+      id: string;
+      description?: string;
+    }[];
+    use_shape_regions?: boolean;
+    use_shape_area_level?: boolean;
+  }[];
+  indicators: {
+    indicator: string;
+    value_column: string;
+    error_low_column?: string;
+    error_high_column?: string;
+    indicator_column?: string;
+    indicator_value?: string;
+    indicator_sort_order?: number;
+    name: string;
+    min: number;
+    max: number;
+    colour: string;
+    invert_scale: boolean;
+    scale: number;
+    accuracy: number | null;
+    format: string;
+  }[];
+  plotSettingsControl: {
+    population: {
+      defaultEffect?: {
+        setFilters?: {
+          filterId: string;
+          label: string;
+          stateFilterId: string;
+        }[];
+        setMultiple?: string[];
+        setFilterValues?: {
+          [k: string]: string[];
+        };
+        setHidden?: string[];
+        customPlotEffect?: {
+          row: string[];
+          column: string[];
+        };
+      };
+      plotSettings: {
+        id: string;
+        label: string;
+        options: {
+          id: string;
+          label: string;
+          effect: {
+            setFilters?: {
+              filterId: string;
+              label: string;
+              stateFilterId: string;
+            }[];
+            setMultiple?: string[];
+            setFilterValues?: {
+              [k: string]: string[];
+            };
+            setHidden?: string[];
+            customPlotEffect?: {
+              row: string[];
+              column: string[];
+            };
+          };
+        }[];
+        value?: string;
+        hidden?: boolean;
+      }[];
+    };
+  };
+}
 export type InputTimeSeriesData = {
   area_id: string;
   area_name: string;
@@ -2557,83 +2642,6 @@ export interface PopulationResponse {
     population: number;
     [k: string]: any;
   }[];
-  metadata: {
-    filterTypes: {
-      id: string;
-      column_id: string;
-      options: {
-        label: string;
-        id: string;
-        description?: string;
-      }[];
-      use_shape_regions?: boolean;
-      use_shape_area_level?: boolean;
-    }[];
-    indicators: {
-      indicator: string;
-      value_column: string;
-      error_low_column?: string;
-      error_high_column?: string;
-      indicator_column?: string;
-      indicator_value?: string;
-      indicator_sort_order?: number;
-      name: string;
-      min: number;
-      max: number;
-      colour: string;
-      invert_scale: boolean;
-      scale: number;
-      accuracy: number | null;
-      format: string;
-    }[];
-    plotSettingsControl: {
-      population: {
-        defaultEffect?: {
-          setFilters?: {
-            filterId: string;
-            label: string;
-            stateFilterId: string;
-          }[];
-          setMultiple?: string[];
-          setFilterValues?: {
-            [k: string]: string[];
-          };
-          setHidden?: string[];
-          customPlotEffect?: {
-            row: string[];
-            column: string[];
-          };
-        };
-        plotSettings: {
-          id: string;
-          label: string;
-          options: {
-            id: string;
-            label: string;
-            effect: {
-              setFilters?: {
-                filterId: string;
-                label: string;
-                stateFilterId: string;
-              }[];
-              setMultiple?: string[];
-              setFilterValues?: {
-                [k: string]: string[];
-              };
-              setHidden?: string[];
-              customPlotEffect?: {
-                row: string[];
-                column: string[];
-              };
-            };
-          }[];
-          value?: string;
-          hidden?: boolean;
-        }[];
-      };
-    };
-    [k: string]: any;
-  };
   filters?: null;
 }
 export interface ProgrammeResponse {

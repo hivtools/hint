@@ -7,7 +7,6 @@ import {
     PopulationResponse,
     ShapeResponse,
     Error,
-    FilterOption,
 } from "../../generated";
 import { Dataset, Release, Dict, DatasetResourceSet, DatasetResource } from "../../types";
 import {ReadyState, RootState} from "../../root";
@@ -138,7 +137,6 @@ export const baselineGetters = {
         const properties = state.shape?.data.features
             .map(f => f.properties)
             .filter(f => f !== undefined);
-        console.log("properties", properties)
         if (!properties) {
             return {}
         }
@@ -146,14 +144,7 @@ export const baselineGetters = {
             acc[cur.area_id] = cur.area_name
             return acc;
         }, {})
-    },
-    ageGroupOptions: (state:BaselineState): FilterOption[] => {
-        const options = state.population?.metadata.filterTypes.find(f=>f.id==='age')?.options;
-        if (!options) {
-            return []
-        }
-        return [...options].reverse();
-    },
+    }
 };
 
 const getters = baselineGetters;

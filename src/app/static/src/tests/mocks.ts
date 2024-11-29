@@ -27,7 +27,7 @@ import {
     Warning,
     InputComparisonMetadata,
     InputComparisonData,
-    PopulationResponseData
+    PopulationResponseData, InputPopulationMetadataResponse
 } from "../app/generated";
 import {initialModelRunState, ModelRunState} from "../app/store/modelRun/modelRun";
 import {emptyState, RootState} from "../app/root";
@@ -502,18 +502,21 @@ export const mockPopulationResponse = (props: Partial<PopulationResponse> = {}):
         type: "population",
         hash: "1234.csv",
         filename: "test.csv",
-        metadata: {
-            filterTypes: [],
-            indicators: [],
-            plotSettingsControl: {
-                population: {
-                    plotSettings: []
-                },
-            }
-        },
         ...props
     }
 };
+
+export const mockInputPopulationMetadataResponse = (props: Partial<InputPopulationMetadataResponse> = {}): InputPopulationMetadataResponse => {
+    return {
+        filterTypes: [],
+        indicators: [],
+        plotSettingsControl: {
+            population: {
+                plotSettings: []
+            },
+        }
+    }
+}
 
 export const mockValidateBaselineResponse = (props: Partial<ValidateBaselineResponse> = {}): ValidateBaselineResponse => {
     return {

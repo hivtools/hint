@@ -192,4 +192,13 @@ class HintrApiClientTests
         assertThat(result.statusCodeValue).isEqualTo(400)
         JSONValidator().validateError(result.body!!, "INVALID_INPUT")
     }
+
+    @Test
+    fun `can get input population metadata`()
+    {
+        val sut = HintrFuelAPIClient(ConfiguredAppProperties(), ObjectMapper())
+        val result = sut.getInputPopulationMetadata(emptyMap())
+        assertThat(result.statusCodeValue).isEqualTo(400)
+        JSONValidator().validateError(result.body!!, "INVALID_INPUT")
+    }
 }

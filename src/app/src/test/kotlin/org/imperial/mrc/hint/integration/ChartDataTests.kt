@@ -90,4 +90,21 @@ class ChartDataTests : SecureIntegrationTests()
         val responseEntity = testRestTemplate.getForEntity<String>("/chart-data/input-comparison")
         assertError(responseEntity, HttpStatus.BAD_REQUEST, "INVALID_INPUT")
     }
+
+    @Test
+    fun `can get input population metadata`()
+    {
+        val populationPostEntity = getTestEntity("population.csv")
+        testRestTemplate.postForEntity<String>("/baseline/population/", populationPostEntity)
+
+        val responseEntity = testRestTemplate.getForEntity<String>("/chart-data/input-population")
+        assertSuccess(responseEntity, "InputPopulationMetadataResponse")
+    }
+
+    @Test
+    fun `can get error for input population metadata`()
+    {
+        val responseEntity = testRestTemplate.getForEntity<String>("/chart-data/input-population")
+        assertError(responseEntity, HttpStatus.BAD_REQUEST, "INVALID_INPUT")
+    }
 }

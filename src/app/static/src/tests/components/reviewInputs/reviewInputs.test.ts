@@ -45,6 +45,10 @@ describe("Review inputs page", () => {
 
     const mockDispatch = vi.fn();
 
+    afterEach(() => {
+        vi.resetAllMocks();
+    });
+
     const createStore = (sapState: SurveyAndProgramState, dataFetched = true, error = false) => {
         const store = new Vuex.Store({
             state: emptyState(),
@@ -92,11 +96,10 @@ describe("Review inputs page", () => {
         expect(wrapper.findComponent(LoadingSpinner).exists()).toBeTruthy();
         expect(wrapper.findComponent(ErrorAlert).exists()).toBeFalsy();
 
-        // Fetches population metadata and review input metadata on mount
+        // Fetches review input metadata on mount
         await nextTick();
-        expect(mockDispatch).toHaveBeenCalledTimes(2);
+        expect(mockDispatch).toHaveBeenCalledTimes(1);
         expect(mockDispatch).toHaveBeenNthCalledWith(1, "metadata/getReviewInputMetadata", {}, {root: true})
-        expect(mockDispatch).toHaveBeenNthCalledWith(2, "reviewInput/getPopulationDataset", {}, {root: true})
     });
 
     test("renders as expected when only survey data fetched", () => {
@@ -145,12 +148,16 @@ describe("Review inputs page", () => {
         expect(wrapper.findComponent(ErrorAlert).exists()).toBeFalsy();
         expect(wrapper.find("#plot-description").text()).toContain("Values are shown in red when");
 
+        // Fetches review input metadata on mount
+        await nextTick();
+        expect(mockDispatch).toHaveBeenCalledTimes(1);
+        expect(mockDispatch).toHaveBeenNthCalledWith(1, "metadata/getReviewInputMetadata", {}, {root: true});
+
         plotTabs[1].trigger("click");
         await nextTick();
-        let plotTabsPostClick = wrapper.findAll(".nav-link");
-        expect(plotTabsPostClick[0].classes()).not.contains("active");
-        expect(plotTabsPostClick[1].classes()).contains("active");
-        expect(plotTabsPostClick[2].classes()).not.contains("active");
+        expect(plotTabs[0].classes()).not.contains("active");
+        expect(plotTabs[1].classes()).contains("active");
+        expect(plotTabs[2].classes()).not.contains("active");
         expect(plotTabs[3].classes()).not.contains("active");
         expect(plotTabs[4].classes()).not.contains("active");
         expect(wrapper.findComponent(TimeSeries).exists()).toBeFalsy();
@@ -162,12 +169,15 @@ describe("Review inputs page", () => {
         expect(wrapper.findComponent(ErrorAlert).exists()).toBeFalsy();
         expect(wrapper.find("#plot-description").exists()).toBeFalsy();
 
+        // No new fetch
+        await nextTick();
+        expect(mockDispatch).toHaveBeenCalledTimes(1);
+
         plotTabs[2].trigger("click");
         await nextTick();
-        plotTabsPostClick = wrapper.findAll(".nav-link");
-        expect(plotTabsPostClick[0].classes()).not.contains("active");
-        expect(plotTabsPostClick[1].classes()).not.contains("active");
-        expect(plotTabsPostClick[2].classes()).contains("active");
+        expect(plotTabs[0].classes()).not.contains("active");
+        expect(plotTabs[1].classes()).not.contains("active");
+        expect(plotTabs[2].classes()).contains("active");
         expect(plotTabs[3].classes()).not.contains("active");
         expect(plotTabs[4].classes()).not.contains("active");
         expect(wrapper.findComponent(TimeSeries).exists()).toBeFalsy();
@@ -179,12 +189,16 @@ describe("Review inputs page", () => {
         expect(wrapper.findComponent(ErrorAlert).exists()).toBeFalsy();
         expect(wrapper.find("#plot-description").exists()).toBeFalsy();
 
+        // Fetches input comparison data when opening an input comparison plot
+        await nextTick();
+        expect(mockDispatch).toHaveBeenCalledTimes(2);
+        expect(mockDispatch).toHaveBeenNthCalledWith(2, "reviewInput/getInputComparisonDataset", {}, {root: true});
+
         plotTabs[3].trigger("click");
         await nextTick();
-        plotTabsPostClick = wrapper.findAll(".nav-link");
-        expect(plotTabsPostClick[0].classes()).not.contains("active");
-        expect(plotTabsPostClick[1].classes()).not.contains("active");
-        expect(plotTabsPostClick[2].classes()).not.contains("active");
+        expect(plotTabs[0].classes()).not.contains("active");
+        expect(plotTabs[1].classes()).not.contains("active");
+        expect(plotTabs[2].classes()).not.contains("active");
         expect(plotTabs[3].classes()).contains("active");
         expect(plotTabs[4].classes()).not.contains("active");
         expect(wrapper.findComponent(TimeSeries).exists()).toBeFalsy();
@@ -196,12 +210,15 @@ describe("Review inputs page", () => {
         expect(wrapper.findComponent(ErrorAlert).exists()).toBeFalsy();
         expect(wrapper.find("#plot-description").exists()).toBeFalsy();
 
+        // It will fetch in tested because action is mocked, but with a real store this won't increment
+        await nextTick();
+        expect(mockDispatch).toHaveBeenCalledTimes(3);
+
         plotTabs[4].trigger("click");
         await nextTick();
-        plotTabsPostClick = wrapper.findAll(".nav-link");
-        expect(plotTabsPostClick[0].classes()).not.contains("active");
-        expect(plotTabsPostClick[1].classes()).not.contains("active");
-        expect(plotTabsPostClick[2].classes()).not.contains("active");
+        expect(plotTabs[0].classes()).not.contains("active");
+        expect(plotTabs[1].classes()).not.contains("active");
+        expect(plotTabs[2].classes()).not.contains("active");
         expect(plotTabs[3].classes()).not.contains("active");
         expect(plotTabs[4].classes()).contains("active");
         expect(wrapper.findComponent(TimeSeries).exists()).toBeFalsy();
@@ -212,6 +229,11 @@ describe("Review inputs page", () => {
         expect(wrapper.findComponent(LoadingSpinner).exists()).toBeFalsy();
         expect(wrapper.findComponent(ErrorAlert).exists()).toBeFalsy();
         expect(wrapper.find("#plot-description").exists()).toBeFalsy();
+
+        // Fetches population metadata
+        await nextTick();
+        expect(mockDispatch).toHaveBeenCalledTimes(4);
+        expect(mockDispatch).toHaveBeenNthCalledWith(4, "reviewInput/getPopulationDataset", {}, {root: true});
     });
 
     test("renders as expected when error fetching review input metadata", async () => {
