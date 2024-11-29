@@ -70,7 +70,7 @@ describe("plotSelections getters", () => {
         "modelCalibrate/filterIdToColumnId": (plotName: PlotName, id: string) => {
             return id + "ColumnId"
         },
-        "baseline/areaIdToLevelMap": {"MWI_1_1": 1},
+        "baseline/areaIdToPropertiesMap": {"MWI_1_1": {area_level: 1}},
         "modelCalibrate/cascadePlotIndicators": ["disagg_byControlSelectionFilterSelectionB",
             "disagg_byControlSelectionFilterSelectionA"]
     };
@@ -251,7 +251,7 @@ describe("plotSelections getters", () => {
         ])
         expect(mockPlotDataToChartData.mock.calls[0][6]).toStrictEqual(xAxisOptions)
         expect(mockPlotDataToChartData.mock.calls[0][7]).toStrictEqual("detailOptA")
-        expect(mockPlotDataToChartData.mock.calls[0][8]).toStrictEqual({"MWI_1_1": 1})
+        expect(mockPlotDataToChartData.mock.calls[0][8]).toStrictEqual({"MWI_1_1": {area_level: 1}})
     });
 
     it("barchartData getters returns empty if xaxis or disaggregate not set", () => {
@@ -299,7 +299,7 @@ describe("plotSelections getters", () => {
     });
 
     it("barchartData doesn't pass area level and area id map if viewing calibration plot", () => {
-        // Doesn't pass areaLevel or areaIdToLevelMap if called for calibrate plot
+        // Doesn't pass areaLevel or areaIdToPropertiesMap if called for calibrate plot
         // these are only required to build error bars, which we don't have on calibrate plot
         const rootState = mockRootState({
             modelCalibrate: mockModelCalibrateState({

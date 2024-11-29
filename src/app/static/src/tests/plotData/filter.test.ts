@@ -14,7 +14,10 @@ import {
     mockReviewInputMetadata,
     mockRootState,
     mockSuccess,
-    mockSurveyAndProgramState, mockBaselineState, mockPopulationResponse, mockPlotMetadataFrame, mockReviewInputState
+    mockSurveyAndProgramState,
+    mockBaselineState,
+    mockPopulationResponse,
+    mockReviewInputState
 } from "../mocks";
 import {
     getCalibrateFilteredDataset,
@@ -871,22 +874,13 @@ describe("filter tests", () => {
             })
         });
 
-        const mockAreaIdToLevelMap = {
-            "MWI": 0,
-            "MWI_1_1": 1,
-            "MWI_1_2": 1,
-            "MWI_2_1": 2,
-            "MWI_2_2": 2,
-            "MWI_2_3": 2,
-        };
-
-        const mockAreaIdToAreaName = {
-            "MWI": "Malawi",
-            "MWI_1_1": "Northern",
-            "MWI_1_2": "Central",
-            "MWI_2_1": "Chitipa",
-            "MWI_2_2": "Karonga",
-            "MWI_2_3": "Mchinji",
+        const mockAreaIdPropertiesMap = {
+            "MWI": {area_level: 0, area_name: "Malawi", area_sort_order: 1},
+            "MWI_1_1": {area_level: 1, area_name: "Northern", area_sort_order: 2},
+            "MWI_1_2": {area_level: 1, area_name: "Central", area_sort_order: 3},
+            "MWI_2_1": {area_level: 2, area_name: "Chitipa", area_sort_order: 4},
+            "MWI_2_2": {area_level: 2, area_name: "Karonga", area_sort_order: 5},
+            "MWI_2_3": {area_level: 2, area_name: "Mchinji", area_sort_order: 6},
         };
 
         const mockAreaIdToParentPath = {
@@ -899,9 +893,8 @@ describe("filter tests", () => {
         };
 
         const rootGetters = {
-            "baseline/areaIdToLevelMap": mockAreaIdToLevelMap,
+            "baseline/areaIdToPropertiesMap": mockAreaIdPropertiesMap,
             "baseline/areaIdToParentPath": mockAreaIdToParentPath,
-            "baseline/areaIdToAreaName": mockAreaIdToAreaName
         };
 
         const commit = vi.fn();

@@ -60,6 +60,12 @@ export const initialBaselineState = (): BaselineState => {
     }
 };
 
+export type AreaProperties = {
+    area_level: number,
+    area_name: string,
+    area_sort_order: number
+}
+
 export const baselineGetters = {
     complete: (state: BaselineState) => {
         return state.validatedConsistent &&
@@ -86,15 +92,19 @@ export const baselineGetters = {
         }
         return resources
     },
-    areaIdToLevelMap: (state: BaselineState): Dict<number> => {
+    areaIdToPropertiesMap: (state: BaselineState): Dict<AreaProperties> => {
         const features = state.shape?.data.features
         if (!features) {
             return {}
         }
         return features.reduce(
-            (map: Dict<number>, feature: any) => {
+            (map: Dict<AreaProperties>, feature: any) => {
                 if (feature.properties?.area_id) {
-                    map[feature.properties.area_id] = feature.properties.area_level;
+                    map[feature.properties.area_id] = {
+                        area_level: feature.properties.area_level,
+                        area_name: feature.properties.area_name,
+                        area_sort_order: feature.properties.area_sort_order
+                    }
                 }
                 return map;
             }, {});
@@ -132,18 +142,6 @@ export const baselineGetters = {
             acc[cur.area_id] = getParentAreaIdChain(cur.area_id)
             return acc
         },{})
-    },
-    areaIdToAreaName: (state: BaselineState): Dict<string> => {
-        const properties = state.shape?.data.features
-            .map(f => f.properties)
-            .filter(f => f !== undefined);
-        if (!properties) {
-            return {}
-        }
-        return properties.reduce((acc,cur)=>{
-            acc[cur.area_id] = cur.area_name
-            return acc;
-        }, {})
     }
 };
 

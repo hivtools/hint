@@ -17,6 +17,7 @@ import {RootState} from "../../root";
 import {PlotData} from "../plotData/plotData";
 import {Dict} from "../../types";
 import {getMetadataFromPlotName} from "./actions";
+import {AreaProperties} from "../baseline/baseline";
 
 export const getters = {
     controlSelectionFromId: (state: PlotSelectionsState) => (plotName: PlotName, controlId: string): FilterOption | undefined => {
@@ -57,17 +58,17 @@ export const getters = {
         const xAxisOptions = metadata.filterTypes.find(f => f.id === xAxis!.id)!.options;
         // For calibrate barchart we never have detail level on the x-axis as it is fixed. So we
         // can just keep these as empty.
-        let areaIdToLevelMap = {} as Dict<number>;
+        let areaIdToPropertiesMap = {} as Dict<AreaProperties>;
         let areaLevel = null;
         if (plotName === "barchart" || plotName === "comparison" || plotName === "cascade") {
-            areaIdToLevelMap = rootGetters["baseline/areaIdToLevelMap"];
+            areaIdToPropertiesMap = rootGetters["baseline/areaIdToPropertiesMap"];
             areaLevel = filterSelections.find(f => f.filterId == "detail")?.selection[0]?.id;
         }
         if (disaggregateId && xAxisId && xAxisOptions) {
             const data = plotDataToChartData(plotData, indicatorMetadata,
                 disaggregateId, disaggregateSelections,
                 xAxisId, xAxisSelections, xAxisOptions,
-                areaLevel, areaIdToLevelMap);
+                areaLevel, areaIdToPropertiesMap);
             if (plotName === "cascade") {
                 // This is a bit ugly that it is here...
                 // In general this code is becoming a bit hard to follow, perhaps worth refactoring at some point?

@@ -1,4 +1,4 @@
-import {baselineGetters} from "../../app/store/baseline/baseline";
+import {AreaProperties, baselineGetters} from "../../app/store/baseline/baseline";
 import {
     mockADRDatasetState,
     mockADRDataState,
@@ -155,7 +155,8 @@ const shape = {
                     "area_id": "MWI",
                     "area_level": 0,
                     "area_name": "Malawi",
-                    "parent_area_id": null
+                    "parent_area_id": null,
+                    "area_sort_order": 1
                 }
             },
             {
@@ -163,7 +164,8 @@ const shape = {
                     "area_id": "MWI_1_1",
                     "area_level": 1,
                     "area_name": "Northern",
-                    "parent_area_id": "MWI"
+                    "parent_area_id": "MWI",
+                    "area_sort_order": 2
                 }
             },
             {
@@ -171,7 +173,8 @@ const shape = {
                     "area_id": "MWI_2_1",
                     "area_level": 2,
                     "area_name": "Chitipa",
-                    "parent_area_id": "MWI_1_1"
+                    "parent_area_id": "MWI_1_1",
+                    "area_sort_order": 3
                 }
             },
             {
@@ -179,7 +182,8 @@ const shape = {
                     "area_id": "MWI_2_2",
                     "area_level": 2,
                     "area_name": "Karonga",
-                    "parent_area_id": "MWI_1_1"
+                    "parent_area_id": "MWI_1_1",
+                    "area_sort_order": 4
                 }
             }
         ]
@@ -197,14 +201,14 @@ const state = mockBaselineState({
     shape
 });
 
-it("areaIdToLevelMap returns map of area ID to level", () => {
+it("areaIdToPropertiesMap returns map of area ID to properties", () => {
     const expected = {
-        "MWI": 0,
-        "MWI_1_1": 1,
-        "MWI_2_1": 2,
-        "MWI_2_2": 2
-    } as Dict<number>
-    expect(baselineGetters.areaIdToLevelMap(state)).toStrictEqual(expected);
+        "MWI": {area_level: 0, area_name: "Malawi", area_sort_order: 1},
+        "MWI_1_1": {area_level: 1, area_name: "Northern", area_sort_order: 2},
+        "MWI_2_1": {area_level: 2, area_name: "Chitipa", area_sort_order: 3},
+        "MWI_2_2": {area_level: 2, area_name: "Karonga", area_sort_order: 4}
+    } as Dict<AreaProperties>
+    expect(baselineGetters.areaIdToPropertiesMap(state)).toStrictEqual(expected);
 })
 
 const shapeEmptyProperties = {
@@ -234,23 +238,11 @@ const stateEmptyProperties = mockBaselineState({
     shape: shapeEmptyProperties
 });
 
-it("areaIdToLevelMap returns empty if no shape data or properties", () => {
+it("areaIdToPropertiesMap returns empty if no shape data or properties", () => {
     let state = mockBaselineState();
-    expect(baselineGetters.areaIdToLevelMap(state)).toStrictEqual({});
+    expect(baselineGetters.areaIdToPropertiesMap(state)).toStrictEqual({});
 
-    expect(baselineGetters.areaIdToLevelMap(stateEmptyProperties)).toStrictEqual({});
-});
-
-it("can get area id to area name map", () => {
-    const expected = {
-        "MWI": "Malawi",
-        "MWI_1_1": "Northern",
-        "MWI_2_1": "Chitipa",
-        "MWI_2_2": "Karonga"
-    } as Dict<string>
-    expect(baselineGetters.areaIdToAreaName(state)).toStrictEqual(expected);
-
-    expect(baselineGetters.areaIdToAreaName(stateEmptyProperties)).toStrictEqual({});
+    expect(baselineGetters.areaIdToPropertiesMap(stateEmptyProperties)).toStrictEqual({});
 });
 
 it("can get area ID to area hierarchy path map", () => {

@@ -9,6 +9,8 @@ import {PlotData} from "../../../../app/store/plotData/plotData";
 import {IndicatorMetadata, FilterOption, InputComparisonData} from "../../../../app/generated";
 import {mockIndicatorMetadata, mockInputComparisonData} from "../../../mocks";
 import {Language} from "../../../../app/store/translations/locales";
+import {AreaProperties} from "../../../../app/store/baseline/baseline";
+import {Dict} from "../../../../app/types";
 
 describe("barchart utils work as expected", () => {
     const indicator = mockIndicatorMetadata()
@@ -239,11 +241,11 @@ describe("barchart utils work as expected", () => {
             },
         ];
         const areaLevel = "1";
-        const areaIdToLevelMap = {
-            "MWI_1_1": 1,
-            "MWI_1_2": 1,
-            "MWI_2_1": 2
-        };
+        const areaIdToPropertiesMap = {
+            "MWI_1_1": {area_level: 1},
+            "MWI_1_2": {area_level: 1},
+            "MWI_2_1": {area_level: 2},
+        } as any as Dict<AreaProperties>;
 
         const xAxis = "area_id";
         const xAxisSelections: FilterOption[] = [
@@ -260,7 +262,7 @@ describe("barchart utils work as expected", () => {
         const result = plotDataToChartData(data, indicator,
             disAggBy, disAggSelections,
             xAxis, xAxisSelections, xAxisOptions,
-            areaLevel, areaIdToLevelMap)
+            areaLevel, areaIdToPropertiesMap)
 
         expect(result).toStrictEqual({
             labels: ["Northern", "Central"],

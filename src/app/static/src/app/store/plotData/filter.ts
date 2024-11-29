@@ -24,6 +24,7 @@ import { InputTimeSeriesKey } from "./plotData";
 import { Dict } from "@reside-ic/vue-next-dynamic-form";
 import { SurveyAndProgramState } from "../surveyAndProgram/surveyAndProgram";
 import {aggregatePopulation} from "./aggregate";
+import {AreaProperties} from "../baseline/baseline";
 
 type FilteredDataContext = {
     commit: Commit,
@@ -276,11 +277,14 @@ export const getPopulationFilteredData = async (payload: PlotSelectionUpdate, co
     const filteredData: PopulationResponseData = filterData(filters, data, filterTypes);
 
     const selectedAreaLevel = Number(filters.find(f=>f.stateFilterId === 'area_level')?.selection[0].id) || 0;
-    const areaIdToLevelMap: Dict<number> = rootGetters["baseline/areaIdToLevelMap"];
+    const areaIdToPropertiesMap: Dict<AreaProperties> = rootGetters["baseline/areaIdToPropertiesMap"];
     const areaIdToParentPath: Dict<string[]> = rootGetters["baseline/areaIdToParentPath"];
-    const areaIdToAreaName: Dict<string> = rootGetters["baseline/areaIdToAreaName"];
     const aggregatedData = aggregatePopulation(filteredData, selectedAreaLevel,
-        areaIdToLevelMap, areaIdToParentPath, areaIdToAreaName)
+        areaIdToPropertiesMap, areaIdToParentPath)
+
+    aggregatedData.sort((a, b) =>
+        areaIdToPropertiesMap[a.area_id].area_sort_order - areaIdToPropertiesMap[b.area_id].area_sort_order
+    )
 
     const plotDataPayload: PlotDataUpdate = {
         plot: payload.plot,

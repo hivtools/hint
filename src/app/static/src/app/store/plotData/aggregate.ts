@@ -1,10 +1,13 @@
 import {Dict} from "../../types";
 import {PopulationResponseData} from "../../generated";
+import {AreaProperties} from "../baseline/baseline";
 
-export const aggregatePopulation = (data: PopulationResponseData, areaLevel: number, areaIdToLevelMap: Dict<number>,
-                                    areaIdToParentPath: Dict<string[]>, areaIdToAreaName: Dict<string>) => {
+export const aggregatePopulation = (data: PopulationResponseData, areaLevel: number,
+                                    areaIdToPropertiesMap: Dict<AreaProperties>,
+                                    areaIdToParentPath: Dict<string[]>) => {
 
-    const highestUploadedAreaLevel = Math.max(...new Set(data.map(ind=>areaIdToLevelMap[ind.area_id])));
+    const highestUploadedAreaLevel = Math.max(...new Set(data.map(ind=>
+        areaIdToPropertiesMap[ind.area_id].area_level)));
 
     if (areaLevel > highestUploadedAreaLevel) {
         return [];
@@ -12,12 +15,14 @@ export const aggregatePopulation = (data: PopulationResponseData, areaLevel: num
 
     // Population data may be uploaded at multiple area levels. Check to see if there are existing indicators at
     // the selected area level, and if so use them to initialize the aggregation.
-    const existingIndicators = data.filter(ind=>areaIdToLevelMap[ind.area_id] === areaLevel)
+    const existingIndicators = data.filter(ind=>
+        areaIdToPropertiesMap[ind.area_id].area_level === areaLevel)
 
     const aggregatePopulationIndicators = () => {
         // Indicators at the most disaggregated area level will be used to create aggregated indicators if they do not already exist.
         // This assumes complete data at the most disaggregated area level.
-        const indicatorsToAggregate = data.filter(ind=>areaIdToLevelMap[ind.area_id] === highestUploadedAreaLevel)
+        const indicatorsToAggregate = data.filter(ind=>
+            areaIdToPropertiesMap[ind.area_id].area_level === highestUploadedAreaLevel)
         return indicatorsToAggregate.reduce((acc, ind)=>{
             const {area_id, calendar_quarter, age_group, sex, population} = ind;
             const matchingParentId = areaIdToParentPath[area_id][areaLevel];
@@ -31,7 +36,7 @@ export const aggregatePopulation = (data: PopulationResponseData, areaLevel: num
             if (existingIndicator) {
                 existingIndicator.population += population;
             } else {
-                const name = areaIdToAreaName[matchingParentId]
+                const name = areaIdToPropertiesMap[matchingParentId].area_name
 
                 acc.push({
                     age_group,
