@@ -11,7 +11,8 @@ import {
     FilterTypes,
     InputComparisonData,
     InputTimeSeriesData,
-    InputTimeSeriesRow, PopulationResponseData,
+    InputTimeSeriesRow,
+    PopulationResponseData,
     ProgrammeResponse,
     SurveyResponse
 } from "../../generated";

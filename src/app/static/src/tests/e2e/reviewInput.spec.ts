@@ -217,7 +217,7 @@ test("can view population pyramid chart", async ({ projectPage }) => {
 
     // When I change indicator
     await page.getByRole('button', { name: 'Population' }).click();
-    await page.locator('a').filter({ hasText: 'Population ratio' }).click();
+    await page.locator('a').filter({ hasText: 'Population proportion' }).click();
 
     // Population pyramid grid has been updated
     await page.waitForTimeout(500);
