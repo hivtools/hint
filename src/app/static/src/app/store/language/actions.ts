@@ -24,6 +24,10 @@ export const ChangeLanguageAction = async (context: ActionContext<RootState, Roo
 
     const actions: Promise<unknown>[] = [];
 
+    if (rootState.reviewInput.population.data !== null && rootGetters["baseline/complete"]) {
+        actions.push(dispatch("reviewInput/getPopulationDataset"));
+    }
+
     // Re-fetch input comparison data to get translated metadata if the data has previously been fetched
     if (rootState.reviewInput.inputComparison.data !== null && rootGetters["baseline/complete"] && rootGetters["surveyAndProgram/complete"]) {
         actions.push(dispatch("reviewInput/getInputComparisonDataset"));

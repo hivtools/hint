@@ -480,6 +480,11 @@ describe("root actions", () => {
                         loading: false,
                         error: null,
                         data: {} as any
+                    },
+                    population: {
+                        loading: false,
+                        error: null,
+                        data: {} as any
                     }
                 })
             });
@@ -491,9 +496,10 @@ describe("root actions", () => {
 
         expectChangeLanguageMutations(commit);
 
-        expect(dispatch.mock.calls.length).toBe(2);
-        expect(dispatch.mock.calls[0][0]).toStrictEqual("reviewInput/getInputComparisonDataset");
-        expect(dispatch.mock.calls[1][0]).toStrictEqual("modelCalibrate/getResult");
+        expect(dispatch.mock.calls.length).toBe(3);
+        expect(dispatch.mock.calls[0][0]).toStrictEqual("reviewInput/getPopulationDataset");
+        expect(dispatch.mock.calls[1][0]).toStrictEqual("reviewInput/getInputComparisonDataset");
+        expect(dispatch.mock.calls[2][0]).toStrictEqual("modelCalibrate/getResult");
     });
 
     it("changeLanguage does not fetch review input metadata if country code is empty", async () => {

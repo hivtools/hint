@@ -109,8 +109,7 @@ describe("reviewInput actions", () => {
             .mockImplementation(async (_metadata, _commit, _rootState, _rootGetters) => {});
         const mockFiltersAfterUseShapeRegions = vi
             .spyOn(utils, "filtersAfterUseShapeRegions")
-            .mockImplementation((...args) => [])
-        const deepFreeze = vi.spyOn(freezer, "deepFreeze");
+            .mockImplementation((...args) => []);
         await actions.getPopulationDataset({commit, rootState, rootGetters} as any);
 
         expect(commit).toHaveBeenCalledTimes(4);
