@@ -81,6 +81,7 @@ export interface BarchartMetadata {
       description?: string;
     }[];
     use_shape_regions?: boolean | null;
+    use_shape_area_level?: boolean | null;
   }[];
   defaults?: {
     indicator_id: string;
@@ -116,6 +117,7 @@ export interface CalibrateMetadataResponse {
       description?: string;
     }[];
     use_shape_regions?: boolean;
+    use_shape_area_level?: boolean;
   }[];
   indicators: {
     indicator: string;
@@ -390,6 +392,7 @@ export interface CalibratePlotMetadata {
       description?: string;
     }[];
     use_shape_regions?: boolean;
+    use_shape_area_level?: boolean;
   }[];
   indicators: {
     indicator: string;
@@ -478,6 +481,7 @@ export interface CalibratePlotResponse {
         description?: string;
       }[];
       use_shape_regions?: boolean;
+      use_shape_area_level?: boolean;
     }[];
     indicators: {
       indicator: string;
@@ -619,6 +623,7 @@ export interface ChoroplethMetadata {
       description?: string;
     }[];
     use_shape_regions?: boolean | null;
+    use_shape_area_level?: boolean | null;
   }[];
 }
 export interface Column {
@@ -672,6 +677,7 @@ export interface ComparisonBarchartMetadata {
       description?: string;
     }[];
     use_shape_regions?: boolean | null;
+    use_shape_area_level?: boolean | null;
   }[];
   defaults: {
     indicator_id: string;
@@ -714,6 +720,7 @@ export interface ComparisonPlotMetadata {
       description?: string;
     }[];
     use_shape_regions?: boolean;
+    use_shape_area_level?: boolean;
   }[];
   indicators: {
     indicator: string;
@@ -805,6 +812,7 @@ export interface ComparisonPlotResponse {
         description?: string;
       }[];
       use_shape_regions?: boolean;
+      use_shape_area_level?: boolean;
     }[];
     indicators: {
       indicator: string;
@@ -1023,6 +1031,7 @@ export interface Filter {
     description?: string;
   }[];
   use_shape_regions?: boolean | null;
+  use_shape_area_level?: boolean | null;
 }
 export interface FilterOption {
   label: string;
@@ -1043,6 +1052,7 @@ export interface FilterTypes {
     description?: string;
   }[];
   use_shape_regions?: boolean;
+  use_shape_area_level?: boolean;
 }
 export interface HintrVersionResponse {
   [k: string]: string;
@@ -1087,6 +1097,7 @@ export interface InputComparisonMetadata {
       description?: string;
     }[];
     use_shape_regions?: boolean;
+    use_shape_area_level?: boolean;
   }[];
   indicators: {
     indicator: string;
@@ -1221,6 +1232,7 @@ export interface InputComparisonResponse {
         description?: string;
       }[];
       use_shape_regions?: boolean;
+      use_shape_area_level?: boolean;
     }[];
     indicators: {
       indicator: string;
@@ -1377,6 +1389,91 @@ export interface InputDatasets {
   anc?: {
     path: string | null;
     filename: string;
+  };
+}
+export interface InputPopulationMetadataRequest {
+  population: {
+    path: string | null;
+    hash: string;
+    filename: string;
+    fromADR?: boolean;
+    resource_url?: string | null;
+  };
+}
+export interface InputPopulationMetadataResponse {
+  filterTypes: {
+    id: string;
+    column_id: string;
+    options: {
+      label: string;
+      id: string;
+      description?: string;
+    }[];
+    use_shape_regions?: boolean;
+    use_shape_area_level?: boolean;
+  }[];
+  indicators: {
+    indicator: string;
+    value_column: string;
+    error_low_column?: string;
+    error_high_column?: string;
+    indicator_column?: string;
+    indicator_value?: string;
+    indicator_sort_order?: number;
+    name: string;
+    min: number;
+    max: number;
+    colour: string;
+    invert_scale: boolean;
+    scale: number;
+    accuracy: number | null;
+    format: string;
+  }[];
+  plotSettingsControl: {
+    population: {
+      defaultEffect?: {
+        setFilters?: {
+          filterId: string;
+          label: string;
+          stateFilterId: string;
+        }[];
+        setMultiple?: string[];
+        setFilterValues?: {
+          [k: string]: string[];
+        };
+        setHidden?: string[];
+        customPlotEffect?: {
+          row: string[];
+          column: string[];
+        };
+      };
+      plotSettings: {
+        id: string;
+        label: string;
+        options: {
+          id: string;
+          label: string;
+          effect: {
+            setFilters?: {
+              filterId: string;
+              label: string;
+              stateFilterId: string;
+            }[];
+            setMultiple?: string[];
+            setFilterValues?: {
+              [k: string]: string[];
+            };
+            setHidden?: string[];
+            customPlotEffect?: {
+              row: string[];
+              column: string[];
+            };
+          };
+        }[];
+        value?: string;
+        hidden?: boolean;
+      }[];
+    };
   };
 }
 export type InputTimeSeriesData = {
@@ -1946,7 +2043,101 @@ export interface PlotSettingsControl {
     hidden?: boolean;
   }[];
 }
-export type PopulationResponseData = null;
+export interface PopulationDataRow {
+  area_id: string;
+  area_name: string;
+  calendar_quarter: string;
+  sex: string;
+  age_group: string;
+  population: number;
+  [k: string]: any;
+}
+export type PopulationResponseData = {
+  area_id: string;
+  area_name: string;
+  calendar_quarter: string;
+  sex: string;
+  age_group: string;
+  population: number;
+  [k: string]: any;
+}[];
+export interface PopulationResponseMetadata {
+  filterTypes: {
+    id: string;
+    column_id: string;
+    options: {
+      label: string;
+      id: string;
+      description?: string;
+    }[];
+    use_shape_regions?: boolean;
+    use_shape_area_level?: boolean;
+  }[];
+  indicators: {
+    indicator: string;
+    value_column: string;
+    error_low_column?: string;
+    error_high_column?: string;
+    indicator_column?: string;
+    indicator_value?: string;
+    indicator_sort_order?: number;
+    name: string;
+    min: number;
+    max: number;
+    colour: string;
+    invert_scale: boolean;
+    scale: number;
+    accuracy: number | null;
+    format: string;
+  }[];
+  plotSettingsControl: {
+    population: {
+      defaultEffect?: {
+        setFilters?: {
+          filterId: string;
+          label: string;
+          stateFilterId: string;
+        }[];
+        setMultiple?: string[];
+        setFilterValues?: {
+          [k: string]: string[];
+        };
+        setHidden?: string[];
+        customPlotEffect?: {
+          row: string[];
+          column: string[];
+        };
+      };
+      plotSettings: {
+        id: string;
+        label: string;
+        options: {
+          id: string;
+          label: string;
+          effect: {
+            setFilters?: {
+              filterId: string;
+              label: string;
+              stateFilterId: string;
+            }[];
+            setMultiple?: string[];
+            setFilterValues?: {
+              [k: string]: string[];
+            };
+            setHidden?: string[];
+            customPlotEffect?: {
+              row: string[];
+              column: string[];
+            };
+          };
+        }[];
+        value?: string;
+        hidden?: boolean;
+      }[];
+    };
+  };
+  [k: string]: any;
+}
 export interface PrerunRequest {
   inputs: {
     pjnz: {
@@ -2195,6 +2386,7 @@ export interface ReviewInputFilterMetadataResponse {
       description?: string;
     }[];
     use_shape_regions?: boolean;
+    use_shape_area_level?: boolean;
   }[];
   indicators: {
     indicator: string;
@@ -2441,7 +2633,15 @@ export interface PopulationResponse {
   fromADR?: boolean;
   resource_url?: string | null;
   type: "population";
-  data: null;
+  data: {
+    area_id: string;
+    area_name: string;
+    calendar_quarter: string;
+    sex: string;
+    age_group: string;
+    population: number;
+    [k: string]: any;
+  }[];
   filters?: null;
 }
 export interface ProgrammeResponse {

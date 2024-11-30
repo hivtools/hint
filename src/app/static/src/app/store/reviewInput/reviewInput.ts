@@ -3,7 +3,7 @@ import {actions} from "./actions";
 import {mutations} from "./mutations";
 import {RootState, WarningsState} from "../../root";
 import {ReviewInputDataset} from "../../types";
-import {Error, InputComparisonResponse} from "../../generated";
+import {Error, FilterOption, InputComparisonResponse, InputPopulationMetadataResponse} from "../../generated";
 
 export interface ReviewInputState extends WarningsState {
     datasets: Record<string, ReviewInputDataset>
@@ -13,6 +13,11 @@ export interface ReviewInputState extends WarningsState {
         loading: boolean,
         error: Error | null,
         data: InputComparisonResponse | null
+    },
+    population: {
+        loading: boolean,
+        error: Error | null,
+        data: InputPopulationMetadataResponse | null
     }
 }
 
@@ -26,9 +31,26 @@ export const initialReviewInputState = (): ReviewInputState => {
             loading: false,
             error: null,
             data: null
+        },
+        population: {
+            loading: false,
+            error: null,
+            data: null
         }
     }
 };
+
+export const reviewInputGetters = {
+    ageGroupOptions: (state: ReviewInputState): FilterOption[] => {
+        const options = state.population?.data?.filterTypes.find(f=>f.id==='age')?.options;
+        if (!options) {
+            return []
+        }
+        return [...options].reverse();
+    },
+};
+
+const getters = reviewInputGetters;
 
 const namespaced = true;
 
@@ -37,4 +59,5 @@ export const reviewInput: Module<ReviewInputState, RootState> = {
     state: {...initialReviewInputState()},
     actions,
     mutations,
+    getters
 };

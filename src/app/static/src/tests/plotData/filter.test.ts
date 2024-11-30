@@ -14,13 +14,17 @@ import {
     mockReviewInputMetadata,
     mockRootState,
     mockSuccess,
-    mockSurveyAndProgramState
+    mockSurveyAndProgramState,
+    mockBaselineState,
+    mockPopulationResponse,
+    mockReviewInputState
 } from "../mocks";
 import {
     getCalibrateFilteredDataset,
     getComparisonFilteredDataset,
     getInputChoroplethFilteredData,
     getOutputFilteredData,
+    getPopulationFilteredData,
     getTimeSeriesFilteredDataset
 } from "../../app/store/plotData/filter";
 import {PlotDataMutations, PlotDataUpdate} from "../../app/store/plotData/mutations";
@@ -31,6 +35,7 @@ import {
     AncDataRow,
     CalibratePlotResponse,
     ComparisonPlotRow,
+    PopulationResponseData,
     ReviewInputFilterMetadataResponse
 } from "../../app/generated";
 import {FilterSelection} from "../../app/store/plotSelections/plotSelections";
@@ -795,6 +800,210 @@ describe("filter tests", () => {
             expect(commit.mock.calls[0][1].payload).toStrictEqual({
                 plot: "inputChoropleth",
                 data: [row1, row2, row3, row4]
+            });
+        });
+    });
+
+    describe("getPopulationFilteredData works as expected", () => {
+        const createPayload = (filterSelection: FilterSelection[]) => ({
+            plot: "population",
+            selections: {
+                controls: [],
+                filters: filterSelection,
+            }
+        } as PlotSelectionUpdate);
+
+        const data: PopulationResponseData = [
+            {area_id: "MWI_2_1", area_name: "A", calendar_quarter: "CY2018Q1", sex: "male", age_group: "Y000_004", population: 10},
+            {area_id: "MWI_2_1", area_name: "A", calendar_quarter: "CY2018Q1", sex: "female", age_group: "Y000_004", population: 12},
+            {area_id: "MWI_2_1", area_name: "A", calendar_quarter: "CY2019Q1", sex: "male", age_group: "Y000_004", population: 13},
+            {area_id: "MWI_2_1", area_name: "A", calendar_quarter: "CY2019Q1", sex: "female", age_group: "Y000_004", population: 15},
+            {area_id: "MWI_2_2", area_name: "B", calendar_quarter: "CY2018Q1", sex: "male", age_group: "Y000_004", population: 9},
+            {area_id: "MWI_2_2", area_name: "B", calendar_quarter: "CY2018Q1", sex: "female", age_group: "Y000_004", population: 8},
+            {area_id: "MWI_2_2", area_name: "B", calendar_quarter: "CY2019Q1", sex: "male", age_group: "Y000_004", population: 11},
+            {area_id: "MWI_2_2", area_name: "B", calendar_quarter: "CY2019Q1", sex: "female", age_group: "Y000_004", population: 13},
+            {area_id: "MWI_2_3", area_name: "C", calendar_quarter: "CY2018Q1", sex: "male", age_group: "Y000_004", population: 23},
+            {area_id: "MWI_2_3", area_name: "C", calendar_quarter: "CY2018Q1", sex: "female", age_group: "Y000_004", population: 22},
+            {area_id: "MWI_2_3", area_name: "C", calendar_quarter: "CY2019Q1", sex: "male", age_group: "Y000_004", population: 24},
+            {area_id: "MWI_2_3", area_name: "C", calendar_quarter: "CY2019Q1", sex: "female", age_group: "Y000_004", population: 25}
+        ]
+
+        const metadata = {
+            filterTypes: [
+                {
+                    id: "calendar_quarter",
+                    column_id: "calendar_quarter",
+                    options: [
+                        {id: "CY2019Q1", label: "1"},
+                        {id: "CY2018Q1", label: "2"}
+                    ]
+                },
+                {
+                    id: "area_level",
+                    column_id: "level",
+                    options: [
+                        {id: "0", label: "Country"},
+                        {id: "1", label: "Region"},
+                        {id: "2", label: "District"}
+                    ]
+                }
+            ],
+            indicators: [],
+            plotSettingsControl: {
+                population: {
+                    plotSettings: []
+                }
+            },
+        }
+
+        const createRootState = (() => {
+            return mockRootState({
+                baseline: mockBaselineState({
+                    population: mockPopulationResponse(
+                        {
+                            data
+                    })
+                }),
+                reviewInput: mockReviewInputState({
+                    population: {
+                        data: metadata,
+                        error: null,
+                        loading: false
+                    }
+                })
+            })
+        });
+
+        const mockAreaIdPropertiesMap = {
+            "MWI": {area_level: 0, area_name: "Malawi", area_sort_order: 1},
+            "MWI_1_1": {area_level: 1, area_name: "Northern", area_sort_order: 2},
+            "MWI_1_2": {area_level: 1, area_name: "Central", area_sort_order: 3},
+            "MWI_2_1": {area_level: 2, area_name: "Chitipa", area_sort_order: 4},
+            "MWI_2_2": {area_level: 2, area_name: "Karonga", area_sort_order: 5},
+            "MWI_2_3": {area_level: 2, area_name: "Mchinji", area_sort_order: 6},
+        };
+
+        const mockAreaIdToParentPath = {
+            "MWI": [],
+            "MWI_1_1": ["MWI"],
+            "MWI_1_2": ["MWI"],
+            "MWI_2_1": ["MWI", "MWI_1_1"],
+            "MWI_2_2": ["MWI", "MWI_1_1"],
+            "MWI_2_3": ["MWI", "MWI_1_2"],
+        };
+
+        const rootGetters = {
+            "baseline/areaIdToPropertiesMap": mockAreaIdPropertiesMap,
+            "baseline/areaIdToParentPath": mockAreaIdToParentPath,
+        };
+
+        const commit = vi.fn();
+
+        it("commits empty plot data if population data is missing", async () => {
+            const rootState = mockRootState();
+            const payload = createPayload([mockFilterSelection({
+                filterId: "calendar_quarter",
+                stateFilterId: "calendar_quarter",
+                label: "Calendar quarter filter",
+                multiple: false,
+                selection: [{id: "CY2019Q1", label: "2019 Q1"}],
+            })]);
+
+            await getPopulationFilteredData(payload, commit, rootState, rootGetters);
+
+            expect(commit.mock.calls.length).toBe(1);
+            expect(commit.mock.calls[0][0]).toStrictEqual(`plotData/${PlotDataMutations.updatePlotData}`);
+            expect(commit.mock.calls[0][1].payload).toStrictEqual({
+                plot: "population",
+                data: []
+            });
+        });
+
+        it("filters and aggregates plot data", async () => {
+            const rootState = createRootState();
+            const payload = createPayload([mockFilterSelection({
+                filterId: "calendar_quarter",
+                stateFilterId: "calendar_quarter",
+                label: "Calendar quarter filter",
+                multiple: false,
+                selection: [{id: "CY2019Q1", label: "2019 Q1"}],
+            })]);
+
+            await getPopulationFilteredData(payload, commit, rootState, rootGetters);
+
+            const expectedData: PopulationResponseData = [
+                {area_id: "MWI", area_name: "Malawi", calendar_quarter: "CY2019Q1", sex: "male", age_group: "Y000_004", population: 13 + 11 + 24},
+                {area_id: "MWI", area_name: "Malawi", calendar_quarter: "CY2019Q1", sex: "female", age_group: "Y000_004", population: 15 + 13 + 25},
+            ]
+            expect(commit.mock.calls.length).toBe(1);
+            expect(commit.mock.calls[0][0]).toStrictEqual(`plotData/${PlotDataMutations.updatePlotData}`);
+            expect(commit.mock.calls[0][1].payload).toStrictEqual({
+                plot: "population",
+                data: expectedData
+            });
+        });
+
+        it("aggregates to selected area level", async () => {
+            const rootState = createRootState();
+            const payload = createPayload([
+                mockFilterSelection({
+                    filterId: "calendar_quarter",
+                    stateFilterId: "calendar_quarter",
+                    label: "Calendar quarter filter",
+                    multiple: false,
+                    selection: [{id: "CY2019Q1", label: "2019 Q1"}],
+                }),
+                mockFilterSelection({
+                    filterId: "area_level",
+                    stateFilterId: "area_level",
+                    label: "Area level filter",
+                    multiple: false,
+                    selection: [{id: "1", label: "Region"}],
+                })
+            ]);
+
+            await getPopulationFilteredData(payload, commit, rootState, rootGetters);
+
+            const expectedData: PopulationResponseData = [
+                {area_id: "MWI_1_1", area_name: "Northern", calendar_quarter: "CY2019Q1", sex: "male", age_group: "Y000_004", population: 13 + 11},
+                {area_id: "MWI_1_1", area_name: "Northern", calendar_quarter: "CY2019Q1", sex: "female", age_group: "Y000_004", population: 15 + 13},
+                {area_id: "MWI_1_2", area_name: "Central", calendar_quarter: "CY2019Q1", sex: "male", age_group: "Y000_004", population: 24},
+                {area_id: "MWI_1_2", area_name: "Central", calendar_quarter: "CY2019Q1", sex: "female", age_group: "Y000_004", population: 25}
+            ]
+            expect(commit.mock.calls.length).toBe(1);
+            expect(commit.mock.calls[0][0]).toStrictEqual(`plotData/${PlotDataMutations.updatePlotData}`);
+            expect(commit.mock.calls[0][1].payload).toStrictEqual({
+                plot: "population",
+                data: expectedData
+            });
+        });
+
+        it("commits empty plot data if aggregation level is higher than available population data", async () => {
+            const rootState = mockRootState();
+            const payload = createPayload([
+                mockFilterSelection({
+                    filterId: "calendar_quarter",
+                    stateFilterId: "calendar_quarter",
+                    label: "Calendar quarter filter",
+                    multiple: false,
+                    selection: [{id: "CY2019Q1", label: "2019 Q1"}],
+                }),
+                mockFilterSelection({
+                    filterId: "area_level",
+                    stateFilterId: "area_level",
+                    label: "Area level filter",
+                    multiple: false,
+                    selection: [{id: "3", label: "District + Metro"}],
+                })
+            ]);
+
+            await getPopulationFilteredData(payload, commit, rootState, rootGetters);
+
+            expect(commit.mock.calls.length).toBe(1);
+            expect(commit.mock.calls[0][0]).toStrictEqual(`plotData/${PlotDataMutations.updatePlotData}`);
+            expect(commit.mock.calls[0][1].payload).toStrictEqual({
+                plot: "population",
+                data: []
             });
         });
     });

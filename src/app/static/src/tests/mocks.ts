@@ -26,7 +26,8 @@ import {
     VmmcResponse,
     Warning,
     InputComparisonMetadata,
-    InputComparisonData
+    InputComparisonData,
+    PopulationResponseData, InputPopulationMetadataResponse
 } from "../app/generated";
 import {initialModelRunState, ModelRunState} from "../app/store/modelRun/modelRun";
 import {emptyState, RootState} from "../app/root";
@@ -497,13 +498,25 @@ export const mockVmmcResponse = (props: Partial<VmmcResponse> = {}): VmmcRespons
 
 export const mockPopulationResponse = (props: Partial<PopulationResponse> = {}): PopulationResponse => {
     return {
-        data: null,
+        data: [],
         type: "population",
         hash: "1234.csv",
         filename: "test.csv",
         ...props
     }
 };
+
+export const mockInputPopulationMetadataResponse = (props: Partial<InputPopulationMetadataResponse> = {}): InputPopulationMetadataResponse => {
+    return {
+        filterTypes: [],
+        indicators: [],
+        plotSettingsControl: {
+            population: {
+                plotSettings: []
+            },
+        }
+    }
+}
 
 export const mockValidateBaselineResponse = (props: Partial<ValidateBaselineResponse> = {}): ValidateBaselineResponse => {
     return {
@@ -532,6 +545,17 @@ export const mockModelResultResponse = (props: Partial<ModelResultResponse> = {}
         ...props
     };
 };
+
+export const mockPopulationDataResponse = (): PopulationResponseData => {
+    return [{
+        area_id:"MWI_4_10_demo",
+        area_name:"Ntchisi",
+        calendar_quarter:"CY2008Q2",
+        sex:"female",
+        age_group:"Y000_004",
+        population: 21299
+    }]
+}
 
 export const mockCalibrateDataResponse = (): CalibrateDataResponse["data"] => {
     return [{

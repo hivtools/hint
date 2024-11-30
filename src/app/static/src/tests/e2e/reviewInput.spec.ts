@@ -198,3 +198,36 @@ test("can view input comparison table", async ({ projectPage }) => {
     // Table has been updated
     await expect(page.locator("#review-inputs")).toHaveScreenshot("input-comparison-table-anc.png");
 });
+
+test("can view population pyramid chart", async ({ projectPage }) => {
+    // NOTE: We need to give time for the animation to settle before expecting screenshots to match.
+    // A 500 ms delay seems to be sufficient.
+
+    const page = projectPage.page;
+    await projectPage.goToStep(Step.ReviewInputs);
+
+    // Given map plot is open
+    await page.getByText("Population").click();
+
+    // Population pyramid grid is rendered
+    await expect(page.locator("#review-loading")).toHaveCount(0, {timeout: 10_000});
+    await expect(page.locator('.chart-grid')).toBeVisible();
+    await page.waitForTimeout(500);
+    await expect(page.locator("#review-inputs")).toHaveScreenshot("population-landing.png");
+
+    // When I change indicator
+    await page.getByRole('button', { name: 'Population' }).click();
+    await page.locator('a').filter({ hasText: 'Population proportion' }).click();
+
+    // Population pyramid grid has been updated
+    await page.waitForTimeout(500);
+    await expect(page.locator("#review-inputs")).toHaveScreenshot("population-proportion.png");
+
+    // When I change area level filter
+    await page.getByRole('button', { name: 'District + Metro' }).click();
+    await page.locator('a').filter({ hasText: 'Region' }).click();
+
+    // Population pyramid grid has been updated
+    await page.waitForTimeout(500);
+    await expect(page.locator("#review-inputs")).toHaveScreenshot("population-proportion-aggregated.png");
+});

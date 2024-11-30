@@ -13,6 +13,7 @@
         </div>
         <error-alert v-else-if="!!error" :error="error!"></error-alert>
         <error-alert v-else-if="!!inputComparisonError" :error="inputComparisonError!"></error-alert>
+        <error-alert v-else-if="!!populationMetadataError" :error="populationMetadataError!"></error-alert>
         <div class="row" v-else>
             <div class="mt-2 col-md-3">
                 <plot-control-set :plot="activePlot"/>
@@ -33,6 +34,7 @@
             <Table class="col-md-9" v-if="activePlot === 'inputComparisonTable'"
                     :plotName="'inputComparisonTable'"
                     :download-enabled="false"/>
+            <population-grid class="col-md-9" v-if="activePlot === 'population'"/>
         </div>
     </div>
 </template>
@@ -51,6 +53,7 @@ import ErrorAlert from "../ErrorAlert.vue";
 import DownloadTimeSeries from "../plots/timeSeries/downloadTimeSeries/DownloadTimeSeries.vue";
 import Barchart from "../plots/bar/Barchart.vue";
 import Table from "../plots/table/Table.vue";
+import PopulationGrid from '../plots/population/PopulationGrid.vue';
 import FilterWithReset from '../plots/FilterWithReset.vue';
 
 export default defineComponent({
@@ -64,7 +67,8 @@ export default defineComponent({
         TimeSeries,
         Choropleth,
         LoadingSpinner,
-        FilterWithReset
+        FilterWithReset,
+        PopulationGrid
     },
     setup() {
         const store = useStore<RootState>();
@@ -83,13 +87,18 @@ export default defineComponent({
             if (inputComparisonPlots.includes(activePlot.value) && !store.state.reviewInput.inputComparison.data) {
                 await store.dispatch("reviewInput/getInputComparisonDataset", {}, {root: true});
             }
+            if (activePlot.value === "population" && !store.state.reviewInput.population.data) {
+                await store.dispatch('reviewInput/getPopulationDataset', {}, { root: true })
+            }
         }
         const loading = computed(() => store.state.reviewInput.loading ||
-            store.state.reviewInput.inputComparison.loading);
+            store.state.reviewInput.inputComparison.loading || store.state.reviewInput.population.loading);
 
         const plotDescription = computed(() => {
             if (activePlot.value === "timeSeries") {
                 return "inputTimeSeriesDescription"
+            } else if (activePlot.value === 'population' && isPopulationProportion.value) {
+                return 'populationPlotNote'
             } else {
                 return null
             }
@@ -103,6 +112,17 @@ export default defineComponent({
             return store.state.reviewInput.inputComparison.error
         });
 
+        const populationMetadataError = computed(() => {
+            return store.state.reviewInput.population.error
+        });
+
+        const plotControlGetter = store.getters["plotSelections/controlSelectionFromId"];
+
+        const isPopulationProportion = computed(() => {
+            const plotTypeSelection = plotControlGetter?.("population", "plot")?.id
+            return plotTypeSelection === "population_proportion"
+        });
+
         onBeforeMount(async () => {
             await store.dispatch("metadata/getReviewInputMetadata", {}, { root: true });
         });
@@ -114,7 +134,8 @@ export default defineComponent({
             loading,
             plotDescription,
             error,
-            inputComparisonError
+            inputComparisonError,
+            populationMetadataError
         }
     }
 })

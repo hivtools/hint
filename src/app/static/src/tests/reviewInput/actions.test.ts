@@ -1,4 +1,12 @@
-import {mockAxios, mockFailure, mockRootState, mockSuccess} from "../mocks";
+import {
+    mockAxios,
+    mockBaselineState,
+    mockFailure,
+    mockInputPopulationMetadataResponse,
+    mockPopulationResponse,
+    mockRootState,
+    mockSuccess
+} from "../mocks";
 import {actions} from "../../app/store/reviewInput/actions";
 import {ReviewInputMutation} from "../../app/store/reviewInput/mutations";
 import {freezer} from "../../app/utils";
@@ -18,6 +26,8 @@ describe("reviewInput actions", () => {
     });
 
     const rootState = mockRootState();
+
+    const rootGetters = {};
 
     it("gets dataset and warnings", async () => {
         const response = {data: "TEST DATASET", metadata: "TEST META", warnings: "TEST WARNINGS"}
@@ -70,9 +80,9 @@ describe("reviewInput actions", () => {
         const commit = vi.fn();
         const mockCommitPlotDefaultSelections = vi
             .spyOn(utils, "commitPlotDefaultSelections")
-            .mockImplementation(async (_metadata, _commit, _rootState) => {});
+            .mockImplementation(async (_metadata, _commit, _rootState, _rootGetters) => {});
         const deepFreeze = vi.spyOn(freezer, "deepFreeze");
-        await actions.getInputComparisonDataset({commit, rootState} as any);
+        await actions.getInputComparisonDataset({commit, rootState, rootGetters} as any);
 
         expect(commit).toHaveBeenCalledTimes(4);
         expect(commit.mock.calls[0][0]["type"]).toBe(ReviewInputMutation.SetInputComparisonLoading);
@@ -85,6 +95,35 @@ describe("reviewInput actions", () => {
         expect(commit.mock.calls[3][0]["type"]).toBe(ReviewInputMutation.SetInputComparisonLoading);
         expect(commit.mock.calls[3][0]["payload"]).toBeFalsy();
         expect(mockCommitPlotDefaultSelections).toHaveBeenCalledTimes(1);
-        expect(mockCommitPlotDefaultSelections).toHaveBeenLastCalledWith("TEST META", commit, rootState);
+        expect(mockCommitPlotDefaultSelections).toHaveBeenLastCalledWith("TEST META", commit, rootState, rootGetters);
+    });
+
+    it("gets input population metadata", async () => {
+        const response = {"data": "RESPONSE"}
+        const mockResponse = mockSuccess(response);
+        mockAxios.onGet("/chart-data/input-population")
+            .reply(200, mockResponse);
+        const commit = vi.fn();
+        const mockCommitPlotDefaultSelections = vi
+            .spyOn(utils, "commitPlotDefaultSelections")
+            .mockImplementation(async (_metadata, _commit, _rootState, _rootGetters) => {});
+        const mockFiltersAfterUseShapeRegions = vi
+            .spyOn(utils, "filtersAfterUseShapeRegions")
+            .mockImplementation((...args) => []);
+        await actions.getPopulationDataset({commit, rootState, rootGetters} as any);
+
+        expect(commit).toHaveBeenCalledTimes(4);
+        expect(commit.mock.calls[0][0]["type"]).toBe(ReviewInputMutation.SetPopulationLoading);
+        expect(commit.mock.calls[0][0]["payload"]).toBeTruthy();
+        expect(commit.mock.calls[1][0]["type"]).toBe(ReviewInputMutation.SetPopulationError);
+        expect(commit.mock.calls[1][0]["payload"]).toBeNull();
+        expect(commit.mock.calls[2][0]["type"]).toBe(ReviewInputMutation.SetPopulationMetadata);
+        expect(commit.mock.calls[2][0]["payload"]).toStrictEqual({"data": "RESPONSE", filterTypes: []});
+        expect(commit.mock.calls[3][0]["type"]).toBe(ReviewInputMutation.SetPopulationLoading);
+        expect(commit.mock.calls[3][0]["payload"]).toBeFalsy();
+        expect(mockCommitPlotDefaultSelections).toHaveBeenCalledTimes(1);
+        expect(mockCommitPlotDefaultSelections).toHaveBeenLastCalledWith({"data": "RESPONSE", filterTypes: []},
+            commit, rootState, rootGetters);
+        expect(mockFiltersAfterUseShapeRegions).toHaveBeenCalledTimes(1);
     });
 });

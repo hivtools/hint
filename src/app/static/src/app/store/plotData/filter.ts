@@ -12,6 +12,7 @@ import {
     InputComparisonData,
     InputTimeSeriesData,
     InputTimeSeriesRow,
+    PopulationResponseData,
     ProgrammeResponse,
     SurveyResponse
 } from "../../generated";
@@ -22,6 +23,8 @@ import { getMetadataFromPlotName } from "../plotSelections/actions";
 import { InputTimeSeriesKey } from "./plotData";
 import { Dict } from "@reside-ic/vue-next-dynamic-form";
 import { SurveyAndProgramState } from "../surveyAndProgram/surveyAndProgram";
+import {aggregatePopulation} from "./aggregate";
+import {AreaProperties} from "../baseline/baseline";
 
 type FilteredDataContext = {
     commit: Commit,
@@ -253,6 +256,43 @@ export const getInputComparisonFilteredData = async (payload: PlotSelectionUpdat
     };
     commit(`plotData/${PlotDataMutations.updatePlotData}`, { payload: plotDataPayload }, { root: true });
 };
+
+export const getPopulationFilteredData = async (payload: PlotSelectionUpdate, commit: Commit, rootState: RootState, rootGetters: any) => {
+    const data =  rootState.baseline.population?.data
+
+    if (!data) {
+        const plotDataPayload: PlotDataUpdate = {
+            plot: payload.plot,
+            data: []
+        };
+
+        commit(`plotData/${PlotDataMutations.updatePlotData}`, { payload: plotDataPayload }, { root: true });
+        return;
+    }
+
+    // Filter the data on the current selections
+    // filteredData still contains data for all uploaded area levels, which is then handled in the aggregation logic below
+    const { filters } = payload.selections;
+    const { filterTypes } = getMetadataFromPlotName(rootState, payload.plot);
+    const filteredData: PopulationResponseData = filterData(filters, data, filterTypes);
+
+    const selectedAreaLevel = Number(filters.find(f=>f.stateFilterId === 'area_level')?.selection[0].id) || 0;
+    const areaIdToPropertiesMap: Dict<AreaProperties> = rootGetters["baseline/areaIdToPropertiesMap"];
+    const areaIdToParentPath: Dict<string[]> = rootGetters["baseline/areaIdToParentPath"];
+    const aggregatedData = aggregatePopulation(filteredData, selectedAreaLevel,
+        areaIdToPropertiesMap, areaIdToParentPath)
+
+    aggregatedData.sort((a, b) =>
+        areaIdToPropertiesMap[a.area_id].area_sort_order - areaIdToPropertiesMap[b.area_id].area_sort_order
+    )
+
+    const plotDataPayload: PlotDataUpdate = {
+        plot: payload.plot,
+        data: aggregatedData
+    };
+      
+    commit(`plotData/${PlotDataMutations.updatePlotData}`, { payload: plotDataPayload }, { root: true });
+}
 
 const filterData = (filters: FilterSelection[], data: any[], filterTypes: FilterTypes[]) => {
     const filterObject: Record<string, (string| number)[]> = {} as any;

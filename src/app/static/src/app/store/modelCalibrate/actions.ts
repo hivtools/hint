@@ -77,7 +77,7 @@ export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrat
     },
 
     async getCalibratePlot(context) {
-        const {commit, state, rootState} = context;
+        const {commit, state, rootState, rootGetters} = context;
         const calibrateId = state.calibrateId;
         commit(ModelCalibrateMutation.CalibrationPlotStarted);
 
@@ -89,13 +89,13 @@ export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrat
 
         if (response) {
             commit(ModelCalibrateMutation.SetCalibratePlotResult, response.data);
-            await commitPlotDefaultSelections(response.data.metadata, commit, rootState);
+            await commitPlotDefaultSelections(response.data.metadata, commit, rootState, rootGetters);
             commit(ModelCalibrateMutation.CalibratePlotFetched);
         }
     },
 
     async getComparisonPlot(context) {
-        const {commit, state, rootState} = context;
+        const {commit, state, rootState, rootGetters} = context;
         const calibrateId = state.calibrateId;
         commit(ModelCalibrateMutation.ComparisonPlotStarted);
 
@@ -108,7 +108,7 @@ export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrat
             commit(ModelCalibrateMutation.SetComparisonPlotData, response.data);
             const metadata= response.data.metadata
             metadata.filterTypes = filtersAfterUseShapeRegions(metadata.filterTypes, rootState);
-            await commitPlotDefaultSelections(metadata, commit, rootState);
+            await commitPlotDefaultSelections(metadata, commit, rootState, rootGetters);
         }
     },
 
@@ -121,7 +121,7 @@ export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrat
 };
 
 export const getResultMetadata = async function (context: ActionContext<ModelCalibrateState, RootState>) {
-    const {commit, dispatch, state, rootState} = context;
+    const {commit, dispatch, state, rootState, rootGetters} = context;
     const calibrateId = state.calibrateId;
 
     const response = await api<ModelCalibrateMutation, ModelCalibrateMutation>(context)
@@ -134,7 +134,7 @@ export const getResultMetadata = async function (context: ActionContext<ModelCal
         data.filterTypes = filtersAfterUseShapeRegions(data.filterTypes, rootState);
         commit({type: ModelCalibrateMutation.MetadataFetched, payload: data});
 
-        await commitPlotDefaultSelections(data, commit, rootState);
+        await commitPlotDefaultSelections(data, commit, rootState, rootGetters);
         commitInitialScaleSelections(data.indicators, commit);
 
         commit(ModelCalibrateMutation.Calibrated);

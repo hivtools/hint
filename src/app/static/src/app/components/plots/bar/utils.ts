@@ -5,6 +5,7 @@ import {formatOutput} from "../utils";
 import {PlotData} from "../../../store/plotData/plotData";
 import {Dict} from "../../../types";
 import i18next from "i18next";
+import {AreaProperties} from "../../../store/baseline/baseline";
 
 type BarChartDataset<Data> = ChartDataset<"bar", Data>
 
@@ -37,7 +38,7 @@ export interface BarChartData<Data = BarChartDefaultData> extends ChartDataWithE
  * @param xAxisSelections The selected options for the x-axis control
  * @param xAxisOptions The available options for the x-axis control. We need this as we want
  *   to show the x-axis in the same order as the options are in the dropdown
- * @param areaIdToLevelMap Mapping of area IDs to area levels
+ * @param areaIdToPropertiesMap Mapping of area IDs to area levels
  * @return Data required for chartJS. This includes:
  *   labels - array of labels for the x-axis
  *   datasets - array of datasets, each of them represents a bar in the barchart, with a label, a colour,
@@ -52,7 +53,7 @@ export const plotDataToChartData = function (plotData: PlotData,
                                              xAxisSelections: FilterOption[],
                                              xAxisOptions: FilterOption[],
                                              areaLevel: string | undefined | null,
-                                             areaIdToLevelMap: Dict<number>): BarChartData {
+                                             areaIdToPropertiesMap: Dict<AreaProperties>): BarChartData {
 
     const disaggregateSelectionsMap: Dict<string> = disaggregateSelections.reduce(
         (map: Dict<string>, opt: FilterOption) => {
@@ -63,7 +64,7 @@ export const plotDataToChartData = function (plotData: PlotData,
         if (xAxisId === "area_id") {
             // If it is x-axis filtered on area we also want to include the area level
             // in the filtering of the x-axis
-            const level = areaIdToLevelMap[opt.id];
+            const level = areaIdToPropertiesMap[opt.id].area_level;
             return level.toString() === areaLevel
         } else {
             return true
@@ -152,7 +153,7 @@ export const inputComparisonPlotDataToChartData = function (plotData: InputCompa
         initialBarChartDataset("Spectrum", colors[1]),
     ];
 
-    const formatCallback = getNumberFormatCallback(indicatorMetadata)
+    const formatCallback = getNumberFormatCallback(indicatorMetadata, false)
 
     for (const row of plotData) {
 
@@ -296,17 +297,19 @@ const getErrorLineConfig = function(
     }
 }
 
-const getNumberFormatCallback = function(indicatorMetadata: IndicatorMetadata) {
+const getNumberFormatCallback = function(indicatorMetadata: IndicatorMetadata, absoluteValue: boolean) {
     return (value: number | string) => {
         return formatOutput(value,
             indicatorMetadata.format,
             indicatorMetadata.scale,
-            indicatorMetadata.accuracy)
+            indicatorMetadata.accuracy,
+            true,
+            absoluteValue)
     }
 }
 
-export const buildTooltipCallback = function(indicatorMetadata: IndicatorMetadata, showErrorRange: boolean) {
-    const formatCallback = getNumberFormatCallback(indicatorMetadata)
+export const buildTooltipCallback = function(indicatorMetadata: IndicatorMetadata, showErrorRange: boolean, absoluteValue = false) {
+    const formatCallback = getNumberFormatCallback(indicatorMetadata, absoluteValue)
 
     // See https://www.chartjs.org/docs/latest/configuration/tooltip.html#tooltip-item-context for items
     // available on context

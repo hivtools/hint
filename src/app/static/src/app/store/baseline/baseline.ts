@@ -60,6 +60,12 @@ export const initialBaselineState = (): BaselineState => {
     }
 };
 
+export type AreaProperties = {
+    area_level: number,
+    area_name: string,
+    area_sort_order: number
+}
+
 export const baselineGetters = {
     complete: (state: BaselineState) => {
         return state.validatedConsistent &&
@@ -86,19 +92,57 @@ export const baselineGetters = {
         }
         return resources
     },
-    areaIdToLevelMap: (state: BaselineState): Dict<number> => {
+    areaIdToPropertiesMap: (state: BaselineState): Dict<AreaProperties> => {
         const features = state.shape?.data.features
         if (!features) {
             return {}
         }
         return features.reduce(
-            (map: Dict<number>, feature: any) => {
+            (map: Dict<AreaProperties>, feature: any) => {
                 if (feature.properties?.area_id) {
-                    map[feature.properties.area_id] = feature.properties.area_level;
+                    map[feature.properties.area_id] = {
+                        area_level: feature.properties.area_level,
+                        area_name: feature.properties.area_name,
+                        area_sort_order: feature.properties.area_sort_order
+                    }
                 }
                 return map;
             }, {});
     },
+    // Build a map of all area IDs to their full area ID path
+    areaIdToParentPath: (state: BaselineState): Dict<string[]> => {
+        const properties = state.shape?.data.features
+            .map(f => f.properties)
+            .filter(f => f !== undefined);
+        if (!properties) {
+            return {}
+        }
+
+        // Map of all feature area ids and their parent area id
+        const parentMap: Dict<string> = properties.reduce((acc,cur)=>{
+            acc[cur.area_id] = cur.parent_area_id
+            return acc
+        },{});
+
+        // Returns an array of areaIds that make up the full parent chain for a given area id
+        const getParentAreaIdChain = (areaId: string): string[] => {
+            const parentAreaIds: string[] = [];
+            let currentAreaId = parentMap[areaId];
+
+            while (currentAreaId !== null) {
+                parentAreaIds.push(currentAreaId);
+                currentAreaId = parentMap[currentAreaId];
+            }
+
+            return parentAreaIds.reverse(); // Return in order from root to current
+        };
+
+        // Map of each indicator area id to their full parent chain
+        return properties.reduce((acc,cur)=>{
+            acc[cur.area_id] = getParentAreaIdChain(cur.area_id)
+            return acc
+        },{})
+    }
 };
 
 const getters = baselineGetters;

@@ -8,9 +8,10 @@ import {
     mockPlotSelectionsState,
     mockRootState,
     mockReviewInputState,
-    mockInputComparisonMetadata
+    mockInputComparisonMetadata,
+    mockPopulationDataResponse
 } from "../mocks";
-import {getters} from "../../app/store/plotSelections/getters";
+import {getters, PopulationColors} from "../../app/store/plotSelections/getters";
 import {PlotName} from "../../app/store/plotSelections/plotSelections";
 import * as barUtils from "../../app/components/plots/bar/utils";
 import {InputComparisonData} from "../../app/generated";
@@ -69,7 +70,7 @@ describe("plotSelections getters", () => {
         "modelCalibrate/filterIdToColumnId": (plotName: PlotName, id: string) => {
             return id + "ColumnId"
         },
-        "baseline/areaIdToLevelMap": {"MWI_1_1": 1},
+        "baseline/areaIdToPropertiesMap": {"MWI_1_1": {area_level: 1}},
         "modelCalibrate/cascadePlotIndicators": ["disagg_byControlSelectionFilterSelectionB",
             "disagg_byControlSelectionFilterSelectionA"]
     };
@@ -250,7 +251,7 @@ describe("plotSelections getters", () => {
         ])
         expect(mockPlotDataToChartData.mock.calls[0][6]).toStrictEqual(xAxisOptions)
         expect(mockPlotDataToChartData.mock.calls[0][7]).toStrictEqual("detailOptA")
-        expect(mockPlotDataToChartData.mock.calls[0][8]).toStrictEqual({"MWI_1_1": 1})
+        expect(mockPlotDataToChartData.mock.calls[0][8]).toStrictEqual({"MWI_1_1": {area_level: 1}})
     });
 
     it("barchartData getters returns empty if xaxis or disaggregate not set", () => {
@@ -298,7 +299,7 @@ describe("plotSelections getters", () => {
     });
 
     it("barchartData doesn't pass area level and area id map if viewing calibration plot", () => {
-        // Doesn't pass areaLevel or areaIdToLevelMap if called for calibrate plot
+        // Doesn't pass areaLevel or areaIdToPropertiesMap if called for calibrate plot
         // these are only required to build error bars, which we don't have on calibrate plot
         const rootState = mockRootState({
             modelCalibrate: mockModelCalibrateState({
@@ -394,5 +395,141 @@ describe("plotSelections getters", () => {
         // Datasets are in correct order
         expect(data.datasets[0].label).toBe("Option B");
         expect(data.datasets[1].label).toBe("Option A");
+    });
+
+    const populationData = [
+        {
+            area_id: "MWI_4_10_demo",
+            area_name: "Ntchisi",
+            calendar_quarter: "CY2008Q2",
+            sex: "female",
+            age_group: "Y000_004",
+            population: 2
+        },
+        {
+            area_id: "MWI_4_10_demo",
+            area_name: "Ntchisi",
+            calendar_quarter: "CY2008Q2",
+            sex: "female",
+            age_group: "Y005_009",
+            population: 3
+        },
+        {
+            area_id: "MWI_4_10_demo",
+            area_name: "Ntchisi",
+            calendar_quarter: "CY2008Q2",
+            sex: "male",
+            age_group: "Y000_004",
+            population: 4
+        },
+        {
+            area_id: "MWI_4_10_demo",
+            area_name: "Ntchisi",
+            calendar_quarter: "CY2008Q2",
+            sex: "male",
+            age_group: "Y005_009",
+            population: 5
+        }
+    ];
+
+    it ('population data returns two datasets when population plot type is selected', () => {
+        const getter = getters.populationChartData(mockPlotSelectionsState(), mockGetters);
+
+        const ageGroups = [
+            {id:"Y010_014",label:"10-14"},
+            {id:"Y005_009",label:"5-9"},
+            {id:"Y000_004",label:"0-4"}
+        ];
+
+        const data = getter('population', populationData, ageGroups);
+
+        expect(data).toHaveLength(1);
+        expect(data[0].title).toStrictEqual("Ntchisi");
+        const datasets = data[0].datasets;
+        expect(datasets).toHaveLength(2);
+        expect(datasets[0]).toStrictEqual({
+            label: "Female",
+            data: [0, 3, 2],
+            backgroundColor: PopulationColors.FEMALE,
+            isOutline: false,
+            isMale: false
+        });
+        expect(datasets[1]).toStrictEqual({
+            label: "Male",
+            data: [-0, -5, -4],
+            backgroundColor: PopulationColors.MALE,
+            isOutline: false,
+            isMale: true
+        });
+    })
+
+    it ('population data calculates proportion and returns four datasets when proportion plot type is selected', () => {
+        const mockGetters = {
+            controlSelectionFromId: (plotName: PlotName, controlId: string) => {
+                return {id: 'population_proportion'}
+            }
+        };
+
+        const getter = getters.populationChartData(mockPlotSelectionsState(), mockGetters);
+
+        const ageGroups = [
+            {id:"Y010_014",label:"10-14"},
+            {id:"Y005_009",label:"5-9"},
+            {id:"Y000_004",label:"0-4"}
+        ];
+
+        const data = getter('population', populationData, ageGroups);
+
+        expect(data).toHaveLength(1);
+        expect(data[0].title).toStrictEqual("Ntchisi");
+        const datasets = data[0].datasets;
+        expect(datasets).toHaveLength(4);
+        expect(datasets[0]).toStrictEqual({
+            label: "Female",
+            data: [0, 3/5, 2/5],
+            backgroundColor: PopulationColors.FEMALE,
+            isOutline: false,
+            isMale: false
+        });
+        expect(datasets[1]).toStrictEqual({
+            label: "Male",
+            data: [-0, -5/9, -4/9],
+            backgroundColor: PopulationColors.MALE,
+            isOutline: false,
+            isMale: true
+        });
+        expect(datasets[2]).toStrictEqual({
+            label: "Female",
+            data: [0, 3/5, 2/5],
+            backgroundColor: PopulationColors.OUTLINE,
+            isOutline: true,
+            isMale: false
+        });
+        expect(datasets[3]).toStrictEqual({
+            label: "Male",
+            data: [-0, -5/9, -4/9],
+            backgroundColor: PopulationColors.OUTLINE,
+            isOutline: true,
+            isMale: true
+        });
+    })
+
+    it ('population data returns 0 datasets when plot type not known ', () => {
+        const plotData = mockPopulationDataResponse();
+        const mockGetters = {
+            controlSelectionFromId: (plotName: PlotName, controlId: string) => {
+                return null
+            }
+        };
+        const getter = getters.populationChartData(mockPlotSelectionsState(), mockGetters);
+        const ageGroups = [
+            {id:"Y010_014",label:"10-14"},
+            {id:"Y005_009",label:"5-9"},
+            {id:"Y000_004",label:"0-4"}
+        ];
+
+        const data = getter('population', plotData, ageGroups);
+
+        expect(data).toStrictEqual([]);
     });
 });
