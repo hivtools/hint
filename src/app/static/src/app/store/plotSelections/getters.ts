@@ -87,7 +87,7 @@ export const getters = {
 
     // Called with already filtered and aggregated PopulationResponseData, this getter transforms the table of
     // data into the format needed for chart js.
-    populationChartData: (state: PlotSelectionsState, getters: any) =>
+    populationChartData: (state: PlotSelectionsState, getters: any, rootState: RootState) =>
         (plotName: PlotName, plotData: PopulationResponseData, ageGroups: FilterOption[]): PopulationChartData => {
 
         const plotType = getters.controlSelectionFromId(plotName, "plot");
@@ -103,7 +103,7 @@ export const getters = {
         // Country data for stepped outline
         let countryData: PopulationChartDataset[] = []
         if (isProportion) {
-            countryData = getSinglePopulationChartDataset({indicators: plotData, ageGroups, isOutline: true, isProportion})
+            countryData = rootState.reviewInput.population.countryLevelData
         }
 
         // Group data by area_id
@@ -126,7 +126,7 @@ export const getters = {
     }
 };
 
-const getSinglePopulationChartDataset = ({
+export const getSinglePopulationChartDataset = ({
                                              indicators,
                                              ageGroups,
                                              isOutline,

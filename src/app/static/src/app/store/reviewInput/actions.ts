@@ -6,6 +6,7 @@ import {ReviewInputDataset} from "../../types";
 import {RootState} from "../../root";
 import {commitPlotDefaultSelections, filtersAfterUseShapeRegions} from "../plotSelections/utils";
 import {InputComparisonResponse, InputPopulationMetadataResponse} from "../../generated";
+import {commitCountryLevelPopulationData} from "./utils";
 
 export interface ReviewInputActions {
     getDataset: (store: ActionContext<ReviewInputState, RootState>, payload: getDatasetPayload) => void
@@ -83,6 +84,7 @@ export const actions: ActionTree<ReviewInputState, RootState> & ReviewInputActio
             .get<InputPopulationMetadataResponse>("/chart-data/input-population")
             .then(async (response) => {
                 if (response) {
+                    await commitCountryLevelPopulationData(commit, rootState, rootGetters);
                     const metadata = response.data;
                     metadata.filterTypes = filtersAfterUseShapeRegions(metadata.filterTypes, rootState);
                     await commitPlotDefaultSelections(metadata, commit, rootState, rootGetters);

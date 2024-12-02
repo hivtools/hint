@@ -484,7 +484,8 @@ describe("root actions", () => {
                     population: {
                         loading: false,
                         error: null,
-                        data: {} as any
+                        data: {} as any,
+                        countryLevelData: []
                     }
                 })
             });

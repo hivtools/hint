@@ -2,7 +2,6 @@ import {
     mockAxios,
     mockBaselineState,
     mockFailure,
-    mockInputPopulationMetadataResponse,
     mockPopulationResponse,
     mockRootState,
     mockSuccess
@@ -12,6 +11,8 @@ import {ReviewInputMutation} from "../../app/store/reviewInput/mutations";
 import {freezer} from "../../app/utils";
 import {Mock} from "vitest";
 import * as utils from "../../app/store/plotSelections/utils";
+import * as reviewInputUtils from "../../app/store/reviewInput/utils";
+import {nextTick} from "vue";
 
 describe("reviewInput actions", () => {
     beforeEach(() => {
@@ -110,7 +111,12 @@ describe("reviewInput actions", () => {
         const mockFiltersAfterUseShapeRegions = vi
             .spyOn(utils, "filtersAfterUseShapeRegions")
             .mockImplementation((...args) => []);
+        const mockCommitCountryLevelPopulationData = vi
+            .spyOn(reviewInputUtils, "commitCountryLevelPopulationData")
+            .mockImplementation(async (...args) => {})
         await actions.getPopulationDataset({commit, rootState, rootGetters} as any);
+
+        await nextTick();
 
         expect(commit).toHaveBeenCalledTimes(4);
         expect(commit.mock.calls[0][0]["type"]).toBe(ReviewInputMutation.SetPopulationLoading);
@@ -125,5 +131,6 @@ describe("reviewInput actions", () => {
         expect(mockCommitPlotDefaultSelections).toHaveBeenLastCalledWith({"data": "RESPONSE", filterTypes: []},
             commit, rootState, rootGetters);
         expect(mockFiltersAfterUseShapeRegions).toHaveBeenCalledTimes(1);
+        expect(mockCommitCountryLevelPopulationData).toHaveBeenCalledTimes(1);
     });
 });

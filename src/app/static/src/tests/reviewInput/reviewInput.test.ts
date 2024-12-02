@@ -26,7 +26,8 @@ describe("review input getters", () => {
             population: {
                 loading: false,
                 error: null,
-                data: metadata
+                data: metadata,
+                countryLevelData: []
             }
         });
 
@@ -61,7 +62,8 @@ describe("review input getters", () => {
             population: {
                 loading: false,
                 error: null,
-                data: metadata
+                data: metadata,
+                countryLevelData: []
             }
         });
 

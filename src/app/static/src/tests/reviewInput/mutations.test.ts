@@ -6,6 +6,7 @@ import {
     mockReviewInputState,
     mockWarning
 } from "../mocks";
+import {PopulationChartDataset} from "../../app/store/plotSelections/plotSelections";
 
 describe("reviewInput mutations", () => {
     it("sets dataset",  () => {
@@ -149,5 +150,20 @@ describe("reviewInput mutations", () => {
         const state = mockReviewInputState();
         mutations.SetPopulationMetadata(state, {payload: inputPopulationMetadataResponse});
         expect(state.population.data).toBe(inputPopulationMetadataResponse);
+    });
+
+    it("sets input population country level data", () => {
+        const inputPopulationCountryData = [
+            {
+                label: "132",
+                data: [1, 2],
+                backgroundColor: "green",
+                isOutline: true,
+                isMale: false
+            }
+        ] as PopulationChartDataset[];
+        const state = mockReviewInputState();
+        mutations.SetPopulationCountryLevel(state, {payload: inputPopulationCountryData});
+        expect(state.population.countryLevelData).toBe(inputPopulationCountryData);
     });
 });

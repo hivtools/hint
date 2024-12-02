@@ -3,7 +3,13 @@ import {actions} from "./actions";
 import {mutations} from "./mutations";
 import {RootState, WarningsState} from "../../root";
 import {ReviewInputDataset} from "../../types";
-import {Error, FilterOption, InputComparisonResponse, InputPopulationMetadataResponse} from "../../generated";
+import {
+    Error,
+    FilterOption,
+    InputComparisonResponse,
+    InputPopulationMetadataResponse
+} from "../../generated";
+import {PopulationChartDataset} from "../plotSelections/plotSelections";
 
 export interface ReviewInputState extends WarningsState {
     datasets: Record<string, ReviewInputDataset>
@@ -17,7 +23,8 @@ export interface ReviewInputState extends WarningsState {
     population: {
         loading: boolean,
         error: Error | null,
-        data: InputPopulationMetadataResponse | null
+        data: InputPopulationMetadataResponse | null,
+        countryLevelData: PopulationChartDataset[]
     }
 }
 
@@ -35,7 +42,8 @@ export const initialReviewInputState = (): ReviewInputState => {
         population: {
             loading: false,
             error: null,
-            data: null
+            data: null,
+            countryLevelData: [],
         }
     }
 };

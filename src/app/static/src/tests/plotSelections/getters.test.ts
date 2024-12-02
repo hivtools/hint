@@ -9,7 +9,7 @@ import {
     mockRootState,
     mockReviewInputState,
     mockInputComparisonMetadata,
-    mockPopulationDataResponse
+    mockPopulationDataResponse,
 } from "../mocks";
 import {getters, PopulationColors} from "../../app/store/plotSelections/getters";
 import {PlotName} from "../../app/store/plotSelections/plotSelections";
@@ -433,7 +433,9 @@ describe("plotSelections getters", () => {
     ];
 
     it ('population data returns two datasets when population plot type is selected', () => {
-        const getter = getters.populationChartData(mockPlotSelectionsState(), mockGetters);
+        const rootState = mockRootState();
+
+        const getter = getters.populationChartData(mockPlotSelectionsState(), mockGetters, rootState);
 
         const ageGroups = [
             {id:"Y010_014",label:"10-14"},
@@ -470,7 +472,35 @@ describe("plotSelections getters", () => {
             }
         };
 
-        const getter = getters.populationChartData(mockPlotSelectionsState(), mockGetters);
+        const mockCountryLevel = [
+            {
+                label: "Female",
+                data: [0, 3/5, 2/5],
+                backgroundColor: PopulationColors.OUTLINE,
+                isOutline: true,
+                isMale: false
+            },
+            {
+                label: "Male",
+                data: [-0, -5/9, -4/9],
+                backgroundColor: PopulationColors.OUTLINE,
+                isOutline: true,
+                isMale: true
+            }
+        ]
+
+        const rootState = mockRootState({
+            reviewInput: mockReviewInputState({
+                population: {
+                    data: null,
+                    error: null,
+                    loading: false,
+                    countryLevelData: mockCountryLevel
+                }
+            })
+        });
+
+        const getter = getters.populationChartData(mockPlotSelectionsState(), mockGetters, rootState);
 
         const ageGroups = [
             {id:"Y010_014",label:"10-14"},
@@ -498,30 +528,19 @@ describe("plotSelections getters", () => {
             isOutline: false,
             isMale: true
         });
-        expect(datasets[2]).toStrictEqual({
-            label: "Female",
-            data: [0, 3/5, 2/5],
-            backgroundColor: PopulationColors.OUTLINE,
-            isOutline: true,
-            isMale: false
-        });
-        expect(datasets[3]).toStrictEqual({
-            label: "Male",
-            data: [-0, -5/9, -4/9],
-            backgroundColor: PopulationColors.OUTLINE,
-            isOutline: true,
-            isMale: true
-        });
+        expect(datasets[2]).toStrictEqual(mockCountryLevel[0]);
+        expect(datasets[3]).toStrictEqual(mockCountryLevel[1]);
     })
 
     it ('population data returns 0 datasets when plot type not known ', () => {
         const plotData = mockPopulationDataResponse();
+        const rootState = mockRootState();
         const mockGetters = {
             controlSelectionFromId: (plotName: PlotName, controlId: string) => {
                 return null
             }
         };
-        const getter = getters.populationChartData(mockPlotSelectionsState(), mockGetters);
+        const getter = getters.populationChartData(mockPlotSelectionsState(), mockGetters, rootState);
         const ageGroups = [
             {id:"Y010_014",label:"10-14"},
             {id:"Y005_009",label:"5-9"},

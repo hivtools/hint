@@ -868,7 +868,8 @@ describe("filter tests", () => {
                     population: {
                         data: metadata,
                         error: null,
-                        loading: false
+                        loading: false,
+                        countryLevelData: []
                     }
                 })
             })

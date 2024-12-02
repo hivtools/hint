@@ -1,7 +1,13 @@
 import {MutationTree} from 'vuex';
 import {ReviewInputState} from "./reviewInput";
 import {ReviewInputDataset, PayloadWithType} from "../../types";
-import {Error, InputComparisonResponse, InputPopulationMetadataResponse, Warning} from "../../generated";
+import {
+    Error,
+    InputComparisonResponse,
+    InputPopulationMetadataResponse,
+    Warning
+} from "../../generated";
+import {PopulationChartDataset} from "../plotSelections/plotSelections";
 
 export enum ReviewInputMutation {
     SetDataset = "SetDataset",
@@ -17,6 +23,7 @@ export enum ReviewInputMutation {
     SetPopulationLoading = "SetPopulationLoading",
     SetPopulationError = "SetPopulationError",
     SetPopulationMetadata = "SetPopulationMetadata",
+    SetPopulationCountryLevel = "SetPopulationCountryLevel",
 }
 
 export interface SetDatasetPayload {
@@ -67,5 +74,8 @@ export const mutations: MutationTree<ReviewInputState> = {
     },
     [ReviewInputMutation.SetPopulationMetadata](state: ReviewInputState, action: PayloadWithType<InputPopulationMetadataResponse>) {
         state.population.data = action.payload;
+    },
+    [ReviewInputMutation.SetPopulationCountryLevel](state: ReviewInputState, action: PayloadWithType<PopulationChartDataset[]>) {
+        state.population.countryLevelData = action.payload;
     },
 };
