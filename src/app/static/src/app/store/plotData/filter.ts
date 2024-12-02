@@ -278,10 +278,8 @@ export const getPopulationFilteredData = async (payload: PlotSelectionUpdate, co
     const { filters } = payload.selections;
     const { filterTypes } = getMetadataFromPlotName(rootState, payload.plot);
     const nonAreaFilter = filters.filter((f: FilterSelection) => f.filterId !== "area")
-    console.log("nonAreaFilter", nonAreaFilter)
     const areaFilter = filters.filter((f: FilterSelection) => f.filterId === "area")
     const allAreaData = filterData(nonAreaFilter, data, filterTypes);
-    console.log("allAreaData", allAreaData)
     const filteredData: PopulationResponseData = filterData(areaFilter, allAreaData, filterTypes);
 
     const selectedAreaLevel = Number(filters.find(f=>f.stateFilterId === 'area_level')?.selection[0].id) || 0;
