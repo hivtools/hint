@@ -42,7 +42,7 @@ describe("download indicator", () => {
 
     const reviewInputDatasets = {
         anc: mockReviewInputDataset({
-            data: mockUnfilteredDataset as PlotData
+            data: mockUnfilteredDataset
         })
     }
 

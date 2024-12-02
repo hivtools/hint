@@ -286,9 +286,18 @@ export const getPopulationFilteredData = async (payload: PlotSelectionUpdate, co
         areaIdToPropertiesMap[a.area_id].area_sort_order - areaIdToPropertiesMap[b.area_id].area_sort_order
     )
 
+    // For showing the national proportion, we want to remove any specific area level filter
+    // but we still want to filter on all other items e.g. calendar quarter. And then aggregate up too
+    const filtersForNational = filters.filter((f: FilterSelection) => f.filterId !== "area")
+    const nationalLevelData = filterData(filtersForNational, data, filterTypes);
+    const nationalData = aggregatePopulation(nationalLevelData, 0, areaIdToPropertiesMap, areaIdToParentPath);
+
     const plotDataPayload: PlotDataUpdate = {
         plot: payload.plot,
-        data: aggregatedData
+        data: {
+            data: aggregatedData,
+            nationalLevelData: nationalData
+        },
     };
       
     commit(`plotData/${PlotDataMutations.updatePlotData}`, { payload: plotDataPayload }, { root: true });

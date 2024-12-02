@@ -10,7 +10,13 @@ import {
 import { PlotName, plotNames } from "../plotSelections/plotSelections"
 import { mutations } from "./mutations"
 
-export type PlotData = CalibrateDataResponse["data"] | InputTimeSeriesData | CalibratePlotData | ComparisonPlotData | InputComparisonData | PopulationResponseData;
+export type PopulationPyramidData = {
+    data: PopulationResponseData;
+    nationalLevelData: PopulationResponseData;
+}
+
+export type PlotData = CalibrateDataResponse["data"] | InputTimeSeriesData | CalibratePlotData | ComparisonPlotData | InputComparisonData | PopulationPyramidData;
+export type SquarePlotData = Exclude<PlotData, PopulationPyramidData>;
 export type InputTimeSeriesKey = keyof InputTimeSeriesRow;
 export type PlotDataState = {
     [P in PlotName]: PlotData

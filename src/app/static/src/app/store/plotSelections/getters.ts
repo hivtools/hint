@@ -14,7 +14,7 @@ import {
     sortDatasets
 } from "../../components/plots/bar/utils";
 import {RootState} from "../../root";
-import {PlotData} from "../plotData/plotData";
+import {PlotData, PopulationPyramidData} from "../plotData/plotData";
 import {Dict} from "../../types";
 import {getMetadataFromPlotName} from "./actions";
 import {AreaProperties} from "../baseline/baseline";
@@ -88,7 +88,7 @@ export const getters = {
     // Called with already filtered and aggregated PopulationResponseData, this getter transforms the table of
     // data into the format needed for chart js.
     populationChartData: (state: PlotSelectionsState, getters: any) =>
-        (plotName: PlotName, plotData: PopulationResponseData, ageGroups: FilterOption[]): PopulationChartData => {
+        (plotName: PlotName, plotData: PopulationPyramidData, ageGroups: FilterOption[]): PopulationChartData => {
 
         const plotType = getters.controlSelectionFromId(plotName, "plot");
 
@@ -103,11 +103,11 @@ export const getters = {
         // Country data for stepped outline
         let countryData: PopulationChartDataset[] = []
         if (isProportion) {
-            countryData = getSinglePopulationChartDataset({indicators: plotData, ageGroups, isOutline: true, isProportion})
+            countryData = getSinglePopulationChartDataset({indicators: plotData.nationalLevelData, ageGroups, isOutline: true, isProportion})
         }
 
         // Group data by area_id
-        plotData.forEach((ind: PopulationResponseData[0]) => {
+        plotData.data.forEach((ind: PopulationResponseData[0]) => {
           if (!groupedData[ind.area_id]) {
             groupedData[ind.area_id] = [];
           }
