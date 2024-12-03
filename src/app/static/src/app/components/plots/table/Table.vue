@@ -18,7 +18,7 @@ import DownloadButton from '../timeSeries/downloadTimeSeries/DownloadButton.vue'
 import { exportService } from '../../../dataExportService';
 import { appendCurrentDateTime } from '../../../utils';
 import { formatOutput, getIndicatorMetadata } from '../utils';
-import { PlotData } from "../../../store/plotData/plotData";
+import {TableData} from "../../../store/plotData/plotData";
 import { PlotName } from "../../../store/plotSelections/plotSelections";
 
 // defines the order of headers on the excel download
@@ -45,7 +45,7 @@ export default defineComponent({
     },
     setup(props) {
         const store = useStore<RootState>();
-        const plotData = computed<PlotData>(() => store.state.plotData[props.plotName]);
+        const plotData = computed<TableData>(() => store.state.plotData[props.plotName] as TableData);
         const filterSelections = computed(() => store.state.plotSelections[props.plotName].filters);
         const indicatorMetadata = computed<IndicatorMetadata>(() => {
             const indicator = filterSelections.value.find(f => f.stateFilterId === "indicator")!.selection[0].id;

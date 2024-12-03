@@ -270,11 +270,17 @@ export const getPopulationFilteredData = async (payload: PlotSelectionUpdate, co
         return;
     }
 
-    // Filter the data on the current selections
-    // filteredData still contains data for all uploaded area levels, which is then handled in the aggregation logic below
+    // Filter the data on the current selections. The raw data has no area_level column so the
+    // filteredData still contains data for all uploaded area levels. Setting the area filter is
+    // handled in the area aggregation logic below
+    // We want to show national proportions too, to calculate this we need to remove any specific area level filter,
+    // but we still want to filter on all other items e.g. calendar quarter.
     const { filters } = payload.selections;
     const { filterTypes } = getMetadataFromPlotName(rootState, payload.plot);
-    const filteredData: PopulationResponseData = filterData(filters, data, filterTypes);
+    const nonAreaFilter = filters.filter((f: FilterSelection) => f.filterId !== "area")
+    const areaFilter = filters.filter((f: FilterSelection) => f.filterId === "area")
+    const allAreaData = filterData(nonAreaFilter, data, filterTypes);
+    const filteredData: PopulationResponseData = filterData(areaFilter, allAreaData, filterTypes);
 
     const selectedAreaLevel = Number(filters.find(f=>f.stateFilterId === 'area_level')?.selection[0].id) || 0;
     const areaIdToPropertiesMap: Dict<AreaProperties> = rootGetters["baseline/areaIdToPropertiesMap"];
@@ -286,9 +292,14 @@ export const getPopulationFilteredData = async (payload: PlotSelectionUpdate, co
         areaIdToPropertiesMap[a.area_id].area_sort_order - areaIdToPropertiesMap[b.area_id].area_sort_order
     )
 
+    const nationalData = aggregatePopulation(allAreaData, 0, areaIdToPropertiesMap, areaIdToParentPath);
+
     const plotDataPayload: PlotDataUpdate = {
         plot: payload.plot,
-        data: aggregatedData
+        data: {
+            data: aggregatedData,
+            nationalLevelData: nationalData
+        },
     };
       
     commit(`plotData/${PlotDataMutations.updatePlotData}`, { payload: plotDataPayload }, { root: true });

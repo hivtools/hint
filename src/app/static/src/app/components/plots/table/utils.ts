@@ -1,4 +1,4 @@
-import {PlotData} from "../../../store/plotData/plotData";
+import {TableData} from "../../../store/plotData/plotData";
 import {FilterSelection, PlotName,} from "../../../store/plotSelections/plotSelections";
 import {
     CalibrateDataResponse,
@@ -21,7 +21,7 @@ export interface TableHeaderDef {
 export const DIFFERENCE_POSITIVE_COLOR = "rgb(55, 126, 184)";
 export const DIFFERENCE_NEGATIVE_COLOR = "rgb(228, 26, 28)";
 
-export const getTableValues = (plot: PlotName, disaggregateColumn: string, row: PlotData[0]) => {
+export const getTableValues = (plot: PlotName, disaggregateColumn: string, row: TableData[0]) => {
     if (plot === "table") {
         const r = row as CalibrateDataResponse["data"][0];
         return {
