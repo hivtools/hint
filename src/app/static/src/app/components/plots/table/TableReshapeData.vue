@@ -11,9 +11,10 @@ import { computed, defineComponent, PropType } from 'vue';
 import TableDisplay from './TableDisplay.vue';
 import { useStore } from 'vuex';
 import { RootState } from '../../../root';
-import {CalibrateDataResponse, FilterOption, InputComparisonData, TableMetadata} from '../../../generated';
+import {FilterOption, TableMetadata} from '../../../generated';
 import { FilterSelection, PlotName } from "../../../store/plotSelections/plotSelections";
 import {getTableValues, TableHeaderDef} from "./utils";
+import {TableData} from "../../../store/plotData/plotData";
 
 export default defineComponent({
     components: {
@@ -21,7 +22,7 @@ export default defineComponent({
     },
     props: {
         data: {
-            type: Object as PropType<CalibrateDataResponse["data"] | InputComparisonData>,
+            type: Object as PropType<TableData>,
             required: true
         },
         plot: {

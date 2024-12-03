@@ -16,7 +16,7 @@ export type PopulationPyramidData = {
 }
 
 export type PlotData = CalibrateDataResponse["data"] | InputTimeSeriesData | CalibratePlotData | ComparisonPlotData | InputComparisonData | PopulationPyramidData;
-export type SquarePlotData = Exclude<PlotData, PopulationPyramidData>;
+export type TableData = CalibrateDataResponse["data"] | InputComparisonData;
 export type InputTimeSeriesKey = keyof InputTimeSeriesRow;
 export type PlotDataState = {
     [P in PlotName]: PlotData
