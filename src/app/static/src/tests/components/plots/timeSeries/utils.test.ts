@@ -1,8 +1,11 @@
 import {
+    expressionToString,
     getChartDataByArea,
     getLayoutFromData,
-    getScatterPointsFromAreaIds, getTooltipTemplate, Layout,
+    getScatterPointsFromAreaIds,
+    getTooltipTemplate,
     numeralJsToD3format,
+    Operator,
     PlotColours
 } from "../../../../app/components/plots/timeSeries/utils";
 import {format} from "d3-format";
@@ -100,10 +103,9 @@ describe("time series utils", () => {
         ] as any as InputTimeSeriesData;
 
         const layoutData = {
-            topMargin: 0,
-            responsive: true,
             subplots: {
-                rows: 2
+                rows: 2,
+                distinctColumn: "area_id"
             }
         };
 
@@ -224,16 +226,15 @@ describe("time series utils", () => {
         ] as any
 
         const dataByArea = getChartDataByArea(chartData);
-        const areaIds = Object.keys(dataByArea);
         const timePeriods = chartData.map(dataPoint => dataPoint.time_period).sort() || [];
 
         it("can build layout from data", () => {
-            const layout = getLayoutFromData(areaIds, dataByArea, layoutData, timePeriods);
+            const layout = getLayoutFromData(dataByArea, layoutData, timePeriods);
             expect(layout).toStrictEqual(expectedLayout)
         });
 
         it("can build scatter points from data", () => {
-            const data = getScatterPointsFromAreaIds(areaIds, dataByArea, Language.en);
+            const data = getScatterPointsFromAreaIds(dataByArea, Language.en);
             expect(data).toStrictEqual(expectedData)
         });
     });
@@ -343,11 +344,9 @@ describe("time series utils", () => {
         ] as any as InputTimeSeriesData;
 
         const layoutData = {
-            topMargin: 0,
-            responsive: true,
             subplots: {
                 columns: 2,
-                distinctColumn: "area_name",
+                distinctColumn: "area_id",
                 heightPerRow: 100,
                 subplotsPerPage: 99,
                 rows: 2
@@ -431,16 +430,15 @@ describe("time series utils", () => {
         ] as any
 
         const dataByArea = getChartDataByArea(chartData);
-        const areaIds = Object.keys(dataByArea);
         const timePeriods = chartData.map(dataPoint => dataPoint.time_period).sort() || [];
 
         it("can build scatter points from data", () => {
-            const data = getScatterPointsFromAreaIds(areaIds, dataByArea, Language.en);
+            const data = getScatterPointsFromAreaIds(dataByArea, Language.en);
             expect(data).toStrictEqual(expectedData)
         });
 
         it("can build layout data", () => {
-            const layout = getLayoutFromData(areaIds, dataByArea, layoutData, timePeriods);
+            const layout = getLayoutFromData(dataByArea, layoutData, timePeriods);
 
             expect(Object.keys(layout)).toStrictEqual([
                 "margin", "dragmode", "grid", "annotations",
@@ -565,7 +563,7 @@ describe("time series utils", () => {
             responsive: true,
             subplots: {
                 columns: 2,
-                distinctColumn: "area_name",
+                distinctColumn: "area_id",
                 heightPerRow: 100,
                 subplotsPerPage: 99,
                 rows: 2
@@ -631,16 +629,15 @@ describe("time series utils", () => {
         ];
 
         const dataByArea = getChartDataByArea(chartData);
-        const areaIds = Object.keys(dataByArea);
         const timePeriods = chartData.map(dataPoint => dataPoint.time_period).sort() || [];
 
         it("can build scatter points from data", () => {
-            const data = getScatterPointsFromAreaIds(areaIds, dataByArea, Language.en);
+            const data = getScatterPointsFromAreaIds(dataByArea, Language.en);
             expect(data).toStrictEqual(expectedData)
         });
 
         it("can build layout data", () => {
-            const layout = getLayoutFromData(areaIds, dataByArea, layoutData, timePeriods);
+            const layout = getLayoutFromData(dataByArea, layoutData, timePeriods);
 
             expect(layout.annotations).toStrictEqual([
                 {
@@ -707,7 +704,7 @@ describe("time series utils", () => {
                 }
             ] as any as InputTimeSeriesData;
 
-            const template = getTooltipTemplate(dataNullHierarchy, "", Language.en);
+            const template = getTooltipTemplate(dataNullHierarchy, "", null, Language.en);
 
             expect(template).toStrictEqual(["%{x}, %{y}<extra></extra>", "%{x}, %{y}<extra></extra>"]);
         });
@@ -751,7 +748,7 @@ describe("time series utils", () => {
                 }
             ] as any as InputTimeSeriesData;
 
-            const template = getTooltipTemplate(chartData, "Northern/Chitipa", Language.en);
+            const template = getTooltipTemplate(chartData, "Northern/Chitipa", null, Language.en);
 
             expect(template).toStrictEqual([
                 "%{x}, %{y}<br>Northern/Chitipa<extra></extra>",
@@ -761,8 +758,7 @@ describe("time series utils", () => {
             ]);
 
             const dataByArea = getChartDataByArea(chartData);
-            const areaIds = Object.keys(dataByArea);
-            const points = getScatterPointsFromAreaIds(areaIds, dataByArea, Language.en);
+            const points = getScatterPointsFromAreaIds(dataByArea, Language.en);
 
             expect(points).toStrictEqual([
                 {
@@ -830,5 +826,58 @@ describe("time series utils", () => {
                 },
             ]);
         });
+    });
+
+    describe("format expression as latex", () => {
+        const idTolabelMap = new Map<string, string>([
+            ["anc_prevalence", "ANC Prevalence"],
+            ["anc_total_pos", "ANC total pos"],
+            ["anc_status", "ANC status"],
+        ]);
+
+        it ("can format an expression as a latex string", () => {
+            const expectedAncPrev = `\\textcolor{${PlotColours.NORMAL.BASE}}{\\text{ANC Prevalence}}`
+            expect(expressionToString("anc_prevalence", idTolabelMap))
+                .toStrictEqual(expectedAncPrev)
+
+            const expectedAncTotalPos = `\\textcolor{#4daf4a}{\\text{ANC total pos}}`
+            expect(expressionToString("anc_total_pos", idTolabelMap))
+                .toStrictEqual(expectedAncTotalPos)
+
+            const addEx = {
+                op: Operator.Add,
+                a: "anc_prevalence",
+                b: "anc_total_pos",
+            }
+            expect(expressionToString(addEx, idTolabelMap))
+                .toStrictEqual(`${expectedAncPrev}\\text{ + }${expectedAncTotalPos}`)
+
+            const eqEx = {
+                op: Operator.Eq,
+                a: "anc_prevalence",
+                b: "anc_total_pos",
+            }
+            expect(expressionToString(eqEx, idTolabelMap))
+                .toStrictEqual(`${expectedAncPrev}=${expectedAncTotalPos}`)
+
+            const divideEx = {
+                op: Operator.Divide,
+                a: "anc_prevalence",
+                b: "anc_total_pos",
+            }
+            expect(expressionToString(divideEx, idTolabelMap))
+                .toStrictEqual(`\\frac{${expectedAncPrev}}{${expectedAncTotalPos}}`)
+
+            const nestedEx = {
+                op: Operator.Divide,
+                a: addEx,
+                b: addEx
+            }
+            expect(expressionToString(nestedEx, idTolabelMap))
+                .toStrictEqual(`\\frac{${expectedAncPrev}\\text{ + }${expectedAncTotalPos}}{${expectedAncPrev}\\text{ + }${expectedAncTotalPos}}`)
+
+            expect(expressionToString("unkn", idTolabelMap)).toStrictEqual(`\\textcolor{${PlotColours.NORMAL.BASE}}{\\text{unkn}}`)
+        })
+
     })
 });

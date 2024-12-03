@@ -130,6 +130,20 @@ a.down::after {
   overflow: auto;
 }
 
+#time-series-modal .modal-dialog {
+  max-width: 80vw;
+  width: 80vw;
+}
+
+.annotation-text tspan {
+  font-size: 20px;
+  fill: $theme-red;
+
+  &:hover {
+    fill: darken($theme-red, 10%);
+  }
+}
+
 .icon-small svg {
   height: 20px;
   width: 20px;

@@ -10,6 +10,7 @@ import {
     ReviewInputFilterMetadataResponse
 } from "../../generated";
 import {RootState} from '../../root';
+import {getters} from "./getters";
 
 export type PlotMetadataFrame = {
     filterTypes: FilterTypes[],
@@ -42,6 +43,7 @@ export const metadata = (existingState: Partial<RootState> | null): Module<Metad
         namespaced,
         state: {...initialMetadataState(), ...existingState && existingState.metadata},
         actions,
-        mutations
+        mutations,
+        getters
     };
 };

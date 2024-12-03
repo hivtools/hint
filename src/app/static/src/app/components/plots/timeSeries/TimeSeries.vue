@@ -6,7 +6,8 @@
                     :chart-data="chartDataForPage"
                     :layout="layout"
                     :style="{ height: spaceNeededForPlots }"
-                    :page-number="pageNumber"/>
+                    :page-number="pageNumber"
+                    @open-context="handleOpenContext"/>
             <div v-else class="mt-5" id="empty-generic-chart-data">
                 <div class="empty-chart-message px-3 py-2">
                     <span class="lead">
@@ -20,6 +21,12 @@
                       :page-number="pageNumber"
                       :total-pages="totalPages"
                       @set-page="(newPageNumber: number) => pageNumber = newPageNumber"/>
+        <time-series-modal
+            id="time-series-modal"
+            :open-modal="contextModalOpen"
+            :area-id="contextModalAreaId"
+            :plot-type="contextModalPlotType"
+            @close-modal="() => contextModalOpen = false"/>
     </div>
 </template>
 
@@ -34,6 +41,7 @@ import Plotly from "./Plotly.vue";
 import PageControl from './PageControl.vue';
 import {InputTimeSeriesData} from '../../../generated';
 import { InputTimeSeriesKey } from "../../../store/plotData/plotData";
+import TimeSeriesModal from "./TimeSeriesModal.vue";
 
 const plot = "timeSeries" as InputPlotName;
 
@@ -46,6 +54,7 @@ const subplotsConfig = {
 
 export default defineComponent({
     components: {
+        TimeSeriesModal,
         Plotly,
         PageControl,
     },
@@ -121,12 +130,25 @@ export default defineComponent({
             };
         });
 
+        const contextModalOpen = ref<boolean>(false);
+        const contextModalAreaId = ref<string>("");
+        const contextModalPlotType = ref<string>("");
+        const handleOpenContext = (areaId: string, plotType: string) => {
+            contextModalOpen.value = true
+            contextModalAreaId.value = areaId
+            contextModalPlotType.value = plotType
+        }
+
         return {
             chartDataForPage,
             layout,
             spaceNeededForPlots,
             pageNumber,
-            totalPages
+            totalPages,
+            contextModalOpen,
+            contextModalAreaId,
+            contextModalPlotType,
+            handleOpenContext,
         }
     }
 })
