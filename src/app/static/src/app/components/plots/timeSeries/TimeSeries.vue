@@ -19,21 +19,20 @@
                       class="page-controls"
                       :page-number="pageNumber"
                       :total-pages="totalPages"
-                      @back="pageNumber--"
-                      @next="pageNumber++"/>
+                      @set-page="(newPageNumber: number) => pageNumber = newPageNumber"/>
     </div>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, ref, watch } from 'vue';
+import {computed, defineComponent, ref, watch} from 'vue';
 import { useStore } from 'vuex';
 import { RootState } from '../../../root';
-import { InputPlotName } from '../../../store/plotSelections/plotSelections';
+import {InputPlotName, PlotSelectionsState} from '../../../store/plotSelections/plotSelections';
 import { ReviewInputDataColumnValue } from '../../../types';
 import { numeralJsToD3format } from "./utils";
 import Plotly from "./Plotly.vue";
 import PageControl from './PageControl.vue';
-import { InputTimeSeriesData } from '../../../generated';
+import {InputTimeSeriesData} from '../../../generated';
 import { InputTimeSeriesKey } from "../../../store/plotData/plotData";
 
 const plot = "timeSeries" as InputPlotName;
@@ -52,8 +51,18 @@ export default defineComponent({
     },
     setup() {
         const store = useStore<RootState>();
-        const pageNumber = ref<number>(0);
-        watch(() => store.state.plotSelections[plot], () => pageNumber.value = 0)
+        const pageNumber = ref<number>(1);
+        watch(() => store.state.plotSelections[plot],
+            (oldState: PlotSelectionsState["timeSeries"], newState: PlotSelectionsState["timeSeries"]) => {
+                const oldAreaLevel = oldState.filters.find(f => f.filterId.includes("area_level"))?.selection[0].id;
+                const newAreaLevel = newState.filters.find(f => f.filterId.includes("area_level"))?.selection[0].id;
+                if (oldAreaLevel !== newAreaLevel) {
+                    // Reset only when the area level changes, all other filters and controls
+                    // won't affect the number of plots, so keep the paging to make comparing easier
+                    pageNumber.value = 1
+                }
+            }
+        );
 
         const valueFormat = computed(() => {
             const plotTypeFilter = store.state.plotSelections[plot].filters.find(f => f.stateFilterId === "plotType")!;
@@ -81,8 +90,8 @@ export default defineComponent({
 
         const visiblePlots = computed(() => {
             const { subplotsPerPage } = subplotsConfig;
-            const startIndex = pageNumber.value * subplotsPerPage;
-            const endIndex = (pageNumber.value + 1) * subplotsPerPage;
+            const startIndex = (pageNumber.value - 1) * subplotsPerPage;
+            const endIndex = pageNumber.value * subplotsPerPage;
             return distinctPlots.value.slice(startIndex, endIndex);
         });
 
