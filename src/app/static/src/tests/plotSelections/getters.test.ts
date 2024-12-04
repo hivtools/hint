@@ -9,7 +9,7 @@ import {
     mockRootState,
     mockReviewInputState,
     mockInputComparisonMetadata,
-    mockPopulationDataResponse
+    mockPopulationDataResponse, mockPopulationPyramidData
 } from "../mocks";
 import {getters, PopulationColors} from "../../app/store/plotSelections/getters";
 import {PlotName} from "../../app/store/plotSelections/plotSelections";
@@ -397,40 +397,76 @@ describe("plotSelections getters", () => {
         expect(data.datasets[1].label).toBe("Option A");
     });
 
-    const populationData = [
-        {
-            area_id: "MWI_4_10_demo",
-            area_name: "Ntchisi",
-            calendar_quarter: "CY2008Q2",
-            sex: "female",
-            age_group: "Y000_004",
-            population: 2
-        },
-        {
-            area_id: "MWI_4_10_demo",
-            area_name: "Ntchisi",
-            calendar_quarter: "CY2008Q2",
-            sex: "female",
-            age_group: "Y005_009",
-            population: 3
-        },
-        {
-            area_id: "MWI_4_10_demo",
-            area_name: "Ntchisi",
-            calendar_quarter: "CY2008Q2",
-            sex: "male",
-            age_group: "Y000_004",
-            population: 4
-        },
-        {
-            area_id: "MWI_4_10_demo",
-            area_name: "Ntchisi",
-            calendar_quarter: "CY2008Q2",
-            sex: "male",
-            age_group: "Y005_009",
-            population: 5
-        }
-    ];
+    const populationData = {
+        data: [
+            {
+                area_id: "MWI_4_10_demo",
+                area_name: "Ntchisi",
+                calendar_quarter: "CY2008Q2",
+                sex: "female",
+                age_group: "Y000_004",
+                population: 2
+            },
+            {
+                area_id: "MWI_4_10_demo",
+                area_name: "Ntchisi",
+                calendar_quarter: "CY2008Q2",
+                sex: "female",
+                age_group: "Y005_009",
+                population: 3
+            },
+            {
+                area_id: "MWI_4_10_demo",
+                area_name: "Ntchisi",
+                calendar_quarter: "CY2008Q2",
+                sex: "male",
+                age_group: "Y000_004",
+                population: 4
+            },
+            {
+                area_id: "MWI_4_10_demo",
+                area_name: "Ntchisi",
+                calendar_quarter: "CY2008Q2",
+                sex: "male",
+                age_group: "Y005_009",
+                population: 5
+            }
+        ],
+        nationalLevelData: [
+            {
+                area_id: "MWI",
+                area_name: "Malawi",
+                calendar_quarter: "CY2008Q2",
+                sex: "female",
+                age_group: "Y000_004",
+                population: 2
+            },
+            {
+                area_id: "MWI",
+                area_name: "Malawi",
+                calendar_quarter: "CY2008Q2",
+                sex: "female",
+                age_group: "Y005_009",
+                population: 3
+            },
+            {
+                area_id: "MWI",
+                area_name: "Malawi",
+                calendar_quarter: "CY2008Q2",
+                sex: "male",
+                age_group: "Y000_004",
+                population: 4
+            },
+            {
+                area_id: "MWI",
+                area_name: "Malawi",
+                calendar_quarter: "CY2008Q2",
+                sex: "male",
+                age_group: "Y005_009",
+                population: 5
+            },
+        ]
+    };
 
     it ('population data returns two datasets when population plot type is selected', () => {
         const getter = getters.populationChartData(mockPlotSelectionsState(), mockGetters);
@@ -515,7 +551,7 @@ describe("plotSelections getters", () => {
     })
 
     it ('population data returns 0 datasets when plot type not known ', () => {
-        const plotData = mockPopulationDataResponse();
+        const plotData = mockPopulationPyramidData();
         const mockGetters = {
             controlSelectionFromId: (plotName: PlotName, controlId: string) => {
                 return null

@@ -59,7 +59,7 @@ import {
     initialPlotSelectionsState,
     PlotSelectionsState
 } from "../app/store/plotSelections/plotSelections";
-import { PlotDataState, initialPlotDataState } from "../app/store/plotData/plotData";
+import {PlotDataState, initialPlotDataState, PopulationPyramidData} from "../app/store/plotData/plotData";
 import { PlotState, initialPlotState } from "../app/store/plotState/plotState";
 
 export const mockAxios = new MockAdapter(axios);
@@ -555,6 +555,27 @@ export const mockPopulationDataResponse = (): PopulationResponseData => {
         age_group:"Y000_004",
         population: 21299
     }]
+}
+
+export const mockPopulationPyramidData = (): PopulationPyramidData => {
+    return {
+        data: [{
+            area_id: "MWI_4_10_demo",
+            area_name: "Ntchisi",
+            calendar_quarter: "CY2008Q2",
+            sex: "female",
+            age_group: "Y000_004",
+            population: 21299
+        }],
+        nationalLevelData: [{
+            area_id: "MWI",
+            area_name: "Malawi",
+            calendar_quarter: "CY2008Q2",
+            sex: "female",
+            age_group: "Y000_004",
+            population: 21299
+        }]
+    }
 }
 
 export const mockCalibrateDataResponse = (): CalibrateDataResponse["data"] => {

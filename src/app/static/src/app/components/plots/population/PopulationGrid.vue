@@ -27,12 +27,13 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
-import { FilterOption, PopulationResponseData } from "../../../generated";
+import { FilterOption } from "../../../generated";
 import Population from "./Population.vue";
 import { useStore } from "vuex";
 import { RootState } from "../../../root";
 import PageControl from "../timeSeries/PageControl.vue";
 import {PlotSelectionsState, PopulationChartData} from "../../../store/plotSelections/plotSelections";
+import {PopulationPyramidData} from "../../../store/plotData/plotData";
 
 const subplotsConfig = {
   columns: 3,
@@ -63,7 +64,7 @@ watch(
 );
 
 const data = computed(
-  () => store.state.plotData.population as PopulationResponseData
+  () => store.state.plotData.population as PopulationPyramidData
 );
 
 const ageGroups = computed(

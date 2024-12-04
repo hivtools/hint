@@ -939,7 +939,10 @@ describe("filter tests", () => {
             expect(commit.mock.calls[0][0]).toStrictEqual(`plotData/${PlotDataMutations.updatePlotData}`);
             expect(commit.mock.calls[0][1].payload).toStrictEqual({
                 plot: "population",
-                data: expectedData
+                data: {
+                    data: expectedData,
+                    nationalLevelData: expectedData
+                }
             });
         });
 
@@ -970,11 +973,18 @@ describe("filter tests", () => {
                 {area_id: "MWI_1_2", area_name: "Central", calendar_quarter: "CY2019Q1", sex: "male", age_group: "Y000_004", population: 24},
                 {area_id: "MWI_1_2", area_name: "Central", calendar_quarter: "CY2019Q1", sex: "female", age_group: "Y000_004", population: 25}
             ]
+            const expectedNationalData: PopulationResponseData = [
+                {area_id: "MWI", area_name: "Malawi", calendar_quarter: "CY2019Q1", sex: "male", age_group: "Y000_004", population: 13 + 11 + 24},
+                {area_id: "MWI", area_name: "Malawi", calendar_quarter: "CY2019Q1", sex: "female", age_group: "Y000_004", population: 15 + 13 + 25},
+            ]
             expect(commit.mock.calls.length).toBe(1);
             expect(commit.mock.calls[0][0]).toStrictEqual(`plotData/${PlotDataMutations.updatePlotData}`);
             expect(commit.mock.calls[0][1].payload).toStrictEqual({
                 plot: "population",
-                data: expectedData
+                data: {
+                    data: expectedData,
+                    nationalLevelData: expectedNationalData
+                }
             });
         });
 
