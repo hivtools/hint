@@ -13,8 +13,7 @@
       class="page-controls"
       :page-number="pageNumber"
       :total-pages="totalPages"
-      @back="pageNumber--"
-      @next="pageNumber++"
+      @set-page="(newPageNumber: number) => pageNumber = newPageNumber"
     />
   </div>
   <div v-else class="mt-5" id="empty-generic-chart-data">
@@ -33,7 +32,7 @@ import Population from "./Population.vue";
 import { useStore } from "vuex";
 import { RootState } from "../../../root";
 import PageControl from "../timeSeries/PageControl.vue";
-import {PopulationChartData} from "../../../store/plotSelections/plotSelections";
+import {PlotSelectionsState, PopulationChartData} from "../../../store/plotSelections/plotSelections";
 import {PopulationPyramidData} from "../../../store/plotData/plotData";
 
 const subplotsConfig = {
@@ -45,11 +44,23 @@ const plotName = "population"
 
 const store = useStore<RootState>();
 
-const pageNumber = ref<number>(0);
+const pageNumber = ref<number>(1);
 
 watch(
-  () => store.state.plotSelections["population"],
-  () => (pageNumber.value = 0)
+    () => store.state.plotSelections["population"],
+    (oldState: PlotSelectionsState["timeSeries"], newState: PlotSelectionsState["timeSeries"]) => {
+        console.log(oldState)
+        const oldAreaLevel = oldState.filters.find(f => f.filterId == "area_level")?.selection[0].id;
+        const newAreaLevel = newState.filters.find(f => f.filterId == "area_level")?.selection[0].id;
+        const oldAreas = oldState.filters.find(f => f.filterId == "area")?.selection;
+        const newAreas = newState.filters.find(f => f.filterId == "area")?.selection;
+
+        if (oldAreaLevel !== newAreaLevel || oldAreas?.length != newAreas?.length ) {
+            // Reset only when the area or area level changes, all other filters and controls
+            // won't affect the number of plots, so keep the paging to make comparing easier
+            pageNumber.value = 1
+        }
+    }
 );
 
 const data = computed(
@@ -72,8 +83,8 @@ const totalPages = computed(() => {
 
 const visiblePlots = computed(() => {
   const subplotsPerPage = subplotsConfig.columns * subplotsConfig.rows;
-  const startIndex = pageNumber.value * subplotsPerPage;
-  const endIndex = (pageNumber.value + 1) * subplotsPerPage;
+  const startIndex = (pageNumber.value - 1) * subplotsPerPage;
+  const endIndex = pageNumber.value * subplotsPerPage;
   return chartData.value.slice(startIndex, endIndex);
 });
 </script>
