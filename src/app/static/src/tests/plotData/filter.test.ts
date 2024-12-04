@@ -814,18 +814,18 @@ describe("filter tests", () => {
         } as PlotSelectionUpdate);
 
         const data: PopulationResponseData = [
-            {area_id: "MWI_2_1", area_name: "A", calendar_quarter: "CY2018Q1", sex: "male", age_group: "Y000_004", population: 10},
-            {area_id: "MWI_2_1", area_name: "A", calendar_quarter: "CY2018Q1", sex: "female", age_group: "Y000_004", population: 12},
-            {area_id: "MWI_2_1", area_name: "A", calendar_quarter: "CY2019Q1", sex: "male", age_group: "Y000_004", population: 13},
-            {area_id: "MWI_2_1", area_name: "A", calendar_quarter: "CY2019Q1", sex: "female", age_group: "Y000_004", population: 15},
-            {area_id: "MWI_2_2", area_name: "B", calendar_quarter: "CY2018Q1", sex: "male", age_group: "Y000_004", population: 9},
-            {area_id: "MWI_2_2", area_name: "B", calendar_quarter: "CY2018Q1", sex: "female", age_group: "Y000_004", population: 8},
-            {area_id: "MWI_2_2", area_name: "B", calendar_quarter: "CY2019Q1", sex: "male", age_group: "Y000_004", population: 11},
-            {area_id: "MWI_2_2", area_name: "B", calendar_quarter: "CY2019Q1", sex: "female", age_group: "Y000_004", population: 13},
-            {area_id: "MWI_2_3", area_name: "C", calendar_quarter: "CY2018Q1", sex: "male", age_group: "Y000_004", population: 23},
-            {area_id: "MWI_2_3", area_name: "C", calendar_quarter: "CY2018Q1", sex: "female", age_group: "Y000_004", population: 22},
-            {area_id: "MWI_2_3", area_name: "C", calendar_quarter: "CY2019Q1", sex: "male", age_group: "Y000_004", population: 24},
-            {area_id: "MWI_2_3", area_name: "C", calendar_quarter: "CY2019Q1", sex: "female", age_group: "Y000_004", population: 25}
+            {area_id: "MWI_2_1", calendar_quarter: "CY2018Q1", sex: "male", age_group: "Y000_004", population: 10},
+            {area_id: "MWI_2_1", calendar_quarter: "CY2018Q1", sex: "female", age_group: "Y000_004", population: 12},
+            {area_id: "MWI_2_1", calendar_quarter: "CY2019Q1", sex: "male", age_group: "Y000_004", population: 13},
+            {area_id: "MWI_2_1", calendar_quarter: "CY2019Q1", sex: "female", age_group: "Y000_004", population: 15},
+            {area_id: "MWI_2_2", calendar_quarter: "CY2018Q1", sex: "male", age_group: "Y000_004", population: 9},
+            {area_id: "MWI_2_2", calendar_quarter: "CY2018Q1", sex: "female", age_group: "Y000_004", population: 8},
+            {area_id: "MWI_2_2", calendar_quarter: "CY2019Q1", sex: "male", age_group: "Y000_004", population: 11},
+            {area_id: "MWI_2_2", calendar_quarter: "CY2019Q1", sex: "female", age_group: "Y000_004", population: 13},
+            {area_id: "MWI_2_3", calendar_quarter: "CY2018Q1", sex: "male", age_group: "Y000_004", population: 23},
+            {area_id: "MWI_2_3", calendar_quarter: "CY2018Q1", sex: "female", age_group: "Y000_004", population: 22},
+            {area_id: "MWI_2_3", calendar_quarter: "CY2019Q1", sex: "male", age_group: "Y000_004", population: 24},
+            {area_id: "MWI_2_3", calendar_quarter: "CY2019Q1", sex: "female", age_group: "Y000_004", population: 25}
         ]
 
         const metadata = {

@@ -2045,7 +2045,6 @@ export interface PlotSettingsControl {
 }
 export interface PopulationDataRow {
   area_id: string;
-  area_name: string;
   calendar_quarter: string;
   sex: string;
   age_group: string;
@@ -2054,7 +2053,6 @@ export interface PopulationDataRow {
 }
 export type PopulationResponseData = {
   area_id: string;
-  area_name: string;
   calendar_quarter: string;
   sex: string;
   age_group: string;
@@ -2635,7 +2633,6 @@ export interface PopulationResponse {
   type: "population";
   data: {
     area_id: string;
-    area_name: string;
     calendar_quarter: string;
     sex: string;
     age_group: string;

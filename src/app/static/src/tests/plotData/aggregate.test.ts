@@ -21,18 +21,18 @@ describe("aggregate data", () => {
 
     it("can aggregate population data to different levels", () => {
         const data: PopulationResponseData = [
-            {area_id: "MWI_2_1", area_name: "A", calendar_quarter: "CY2018Q1", sex: "male", age_group: "Y000_004", population: 10},
-            {area_id: "MWI_2_1", area_name: "A", calendar_quarter: "CY2018Q1", sex: "female", age_group: "Y000_004", population: 12},
-            {area_id: "MWI_2_1", area_name: "A", calendar_quarter: "CY2018Q1", sex: "male", age_group: "Y005_009", population: 13},
-            {area_id: "MWI_2_1", area_name: "A", calendar_quarter: "CY2018Q1", sex: "female", age_group: "Y005_009", population: 15},
-            {area_id: "MWI_2_2", area_name: "B", calendar_quarter: "CY2018Q1", sex: "male", age_group: "Y000_004", population: 9},
-            {area_id: "MWI_2_2", area_name: "B", calendar_quarter: "CY2018Q1", sex: "female", age_group: "Y000_004", population: 8},
-            {area_id: "MWI_2_2", area_name: "B", calendar_quarter: "CY2018Q1", sex: "male", age_group: "Y005_009", population: 11},
-            {area_id: "MWI_2_2", area_name: "B", calendar_quarter: "CY2018Q1", sex: "female", age_group: "Y005_009", population: 13},
-            {area_id: "MWI_2_3", area_name: "C", calendar_quarter: "CY2018Q1", sex: "male", age_group: "Y000_004", population: 23},
-            {area_id: "MWI_2_3", area_name: "C", calendar_quarter: "CY2018Q1", sex: "female", age_group: "Y000_004", population: 22},
-            {area_id: "MWI_2_3", area_name: "C", calendar_quarter: "CY2018Q1", sex: "male", age_group: "Y005_009", population: 24},
-            {area_id: "MWI_2_3", area_name: "C", calendar_quarter: "CY2018Q1", sex: "female", age_group: "Y005_009", population: 25}
+            {area_id: "MWI_2_1", calendar_quarter: "CY2018Q1", sex: "male", age_group: "Y000_004", population: 10},
+            {area_id: "MWI_2_1", calendar_quarter: "CY2018Q1", sex: "female", age_group: "Y000_004", population: 12},
+            {area_id: "MWI_2_1", calendar_quarter: "CY2018Q1", sex: "male", age_group: "Y005_009", population: 13},
+            {area_id: "MWI_2_1", calendar_quarter: "CY2018Q1", sex: "female", age_group: "Y005_009", population: 15},
+            {area_id: "MWI_2_2", calendar_quarter: "CY2018Q1", sex: "male", age_group: "Y000_004", population: 9},
+            {area_id: "MWI_2_2", calendar_quarter: "CY2018Q1", sex: "female", age_group: "Y000_004", population: 8},
+            {area_id: "MWI_2_2", calendar_quarter: "CY2018Q1", sex: "male", age_group: "Y005_009", population: 11},
+            {area_id: "MWI_2_2", calendar_quarter: "CY2018Q1", sex: "female", age_group: "Y005_009", population: 13},
+            {area_id: "MWI_2_3", calendar_quarter: "CY2018Q1", sex: "male", age_group: "Y000_004", population: 23},
+            {area_id: "MWI_2_3", calendar_quarter: "CY2018Q1", sex: "female", age_group: "Y000_004", population: 22},
+            {area_id: "MWI_2_3", calendar_quarter: "CY2018Q1", sex: "male", age_group: "Y005_009", population: 24},
+            {area_id: "MWI_2_3", calendar_quarter: "CY2018Q1", sex: "female", age_group: "Y005_009", population: 25}
         ]
 
         const res = aggregatePopulation(data, 1, areaIdToPropertiesMap, areaIdToParentPath)
@@ -60,10 +60,10 @@ describe("aggregate data", () => {
 
     it("groups by calendar quarter when aggregating", () => {
         const data: PopulationResponseData = [
-            {area_id: "MWI_2_1", area_name: "A", calendar_quarter: "CY2018Q1", sex: "male", age_group: "Y000_004", population: 10},
-            {area_id: "MWI_2_1", area_name: "A", calendar_quarter: "CY2019Q1", sex: "male", age_group: "Y000_004", population: 12},
-            {area_id: "MWI_2_2", area_name: "B", calendar_quarter: "CY2018Q1", sex: "male", age_group: "Y000_004", population: 9},
-            {area_id: "MWI_2_2", area_name: "B", calendar_quarter: "CY2019Q1", sex: "male", age_group: "Y000_004", population: 8},
+            {area_id: "MWI_2_1", calendar_quarter: "CY2018Q1", sex: "male", age_group: "Y000_004", population: 10},
+            {area_id: "MWI_2_1", calendar_quarter: "CY2019Q1", sex: "male", age_group: "Y000_004", population: 12},
+            {area_id: "MWI_2_2", calendar_quarter: "CY2018Q1", sex: "male", age_group: "Y000_004", population: 9},
+            {area_id: "MWI_2_2", calendar_quarter: "CY2019Q1", sex: "male", age_group: "Y000_004", population: 8},
         ];
         const expected: PopulationResponseData = [
             {area_id: "MWI_1_1", area_name: "Northern", calendar_quarter: "CY2018Q1", sex: "male", age_group: "Y000_004", population: 10 + 9},
@@ -79,11 +79,12 @@ describe("aggregate data", () => {
             {area_id: "MWI_1_1", area_name: "Northern", calendar_quarter: "CY2019Q1", sex: "male", age_group: "Y000_004", population: 400},
         ]
         const data: PopulationResponseData = [
-            ...expected,
-            {area_id: "MWI_2_1", area_name: "A", calendar_quarter: "CY2018Q1", sex: "male", age_group: "Y000_004", population: 10},
-            {area_id: "MWI_2_1", area_name: "A", calendar_quarter: "CY2019Q1", sex: "male", age_group: "Y000_004", population: 12},
-            {area_id: "MWI_2_2", area_name: "B", calendar_quarter: "CY2018Q1", sex: "male", age_group: "Y000_004", population: 9},
-            {area_id: "MWI_2_2", area_name: "B", calendar_quarter: "CY2019Q1", sex: "male", age_group: "Y000_004", population: 8},
+            {area_id: "MWI_1_1", calendar_quarter: "CY2018Q1", sex: "male", age_group: "Y000_004", population: 300},
+            {area_id: "MWI_1_1", calendar_quarter: "CY2019Q1", sex: "male", age_group: "Y000_004", population: 400},
+            {area_id: "MWI_2_1", calendar_quarter: "CY2018Q1", sex: "male", age_group: "Y000_004", population: 10},
+            {area_id: "MWI_2_1", calendar_quarter: "CY2019Q1", sex: "male", age_group: "Y000_004", population: 12},
+            {area_id: "MWI_2_2", calendar_quarter: "CY2018Q1", sex: "male", age_group: "Y000_004", population: 9},
+            {area_id: "MWI_2_2", calendar_quarter: "CY2019Q1", sex: "male", age_group: "Y000_004", population: 8},
         ];
         const res = aggregatePopulation(data, 1, areaIdToPropertiesMap, areaIdToParentPath);
         expect(res).toStrictEqual(expected);
@@ -91,8 +92,8 @@ describe("aggregate data", () => {
 
     it("returns empty if asked to aggregate downward", () => {
         const data: PopulationResponseData = [
-            {area_id: "MWI_1_1", area_name: "Northern", calendar_quarter: "CY2018Q1", sex: "male", age_group: "Y000_004", population: 300},
-            {area_id: "MWI_1_1", area_name: "Northern", calendar_quarter: "CY2019Q1", sex: "male", age_group: "Y000_004", population: 400},
+            {area_id: "MWI_1_1", calendar_quarter: "CY2018Q1", sex: "male", age_group: "Y000_004", population: 300},
+            {area_id: "MWI_1_1", calendar_quarter: "CY2019Q1", sex: "male", age_group: "Y000_004", population: 400},
         ]
         const res = aggregatePopulation(data, 2, areaIdToPropertiesMap, areaIdToParentPath);
         expect(res).toStrictEqual([]);
