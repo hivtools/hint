@@ -11,7 +11,7 @@ test("can view time series plot", async ({ projectPage }) => {
     await expect(page.locator("#review-inputs")).toHaveScreenshot("time-series-landing.png");
 
     // and we're on first page
-    await expect(page.locator("#page-number")).toHaveText("Page 1 of 3");
+    await expect(page.locator("#page-number-input")).toHaveValue("1");
     await expect(page.getByRole("button", { name: "Previous page" })).toBeDisabled();
     await expect(page.getByRole("button", { name: "Next page" })).not.toBeDisabled();
 
@@ -19,7 +19,7 @@ test("can view time series plot", async ({ projectPage }) => {
     await page.getByRole("button", { name: "Next page" }).click();
 
     // We're on page 2
-    await expect(page.locator("#page-number")).toHaveText("Page 2 of 3");
+    await expect(page.locator("#page-number-input")).toHaveValue("2");
     await expect(page.getByRole("button", { name: "Previous page" })).not.toBeDisabled();
     await expect(page.getByRole("button", { name: "Next page" })).not.toBeDisabled();
 
@@ -30,7 +30,7 @@ test("can view time series plot", async ({ projectPage }) => {
     await page.getByRole("button", { name: "Next page" }).click();
 
     // Paging is updated
-    await expect(page.locator("#page-number")).toHaveText("Page 3 of 3");
+    await expect(page.locator("#page-number-input")).toHaveValue("3");
     await expect(page.getByRole("button", { name: "Previous page" })).not.toBeDisabled();
     await expect(page.getByRole("button", { name: "Next page" })).toBeDisabled();
 
