@@ -27,7 +27,8 @@ import {
     Warning,
     InputComparisonMetadata,
     InputComparisonData,
-    PopulationResponseData, InputPopulationMetadataResponse
+    PopulationResponseData,
+    InputPopulationMetadataResponse
 } from "../app/generated";
 import {initialModelRunState, ModelRunState} from "../app/store/modelRun/modelRun";
 import {emptyState, RootState} from "../app/root";
@@ -549,7 +550,6 @@ export const mockModelResultResponse = (props: Partial<ModelResultResponse> = {}
 export const mockPopulationDataResponse = (): PopulationResponseData => {
     return [{
         area_id:"MWI_4_10_demo",
-        area_name:"Ntchisi",
         calendar_quarter:"CY2008Q2",
         sex:"female",
         age_group:"Y000_004",

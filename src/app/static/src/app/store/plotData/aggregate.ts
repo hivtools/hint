@@ -15,8 +15,14 @@ export const aggregatePopulation = (data: PopulationResponseData, areaLevel: num
 
     // Population data may be uploaded at multiple area levels. Check to see if there are existing indicators at
     // the selected area level, and if so use them to initialize the aggregation.
-    const existingIndicators = data.filter(ind=>
-        areaIdToPropertiesMap[ind.area_id].area_level === areaLevel)
+    const existingIndicators: PopulationResponseData = data
+        .filter(ind=> areaIdToPropertiesMap[ind.area_id].area_level === areaLevel)
+        .map(ind => {
+                return {
+                    ...ind,
+                    area_name: areaIdToPropertiesMap[ind.area_id].area_name
+                }
+        })
 
     const aggregatePopulationIndicators = () => {
         // Indicators at the most disaggregated area level will be used to create aggregated indicators if they do not already exist.
