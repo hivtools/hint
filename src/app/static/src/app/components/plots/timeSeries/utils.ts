@@ -50,8 +50,8 @@ export const getTooltipTemplate = (plotData: (InputTimeSeriesRow | null)[], area
                                    indicator: string | null, currentLanguage: string) => {
     const hierarchyText = areaHierarchy ? "<br>" + areaHierarchy : "";
     const tooltip = "%{x}, %{y}" + hierarchyText;
+    const indicatorText = indicator ? indicator + "<br>" : ""
     return plotData.map((entry: InputTimeSeriesRow | null) => {
-        const indicatorText = indicator ? indicator + "<br>" : ""
         let missingIdsText = "";
         if (entry?.missing_ids?.length) {
             // If the area ID matches the missing_id then this is a synthetic value we have appended
@@ -249,8 +249,6 @@ export const getLayoutFromData = (dataByArea: Dict<InputTimeSeriesData>, layout:
     };
 
     const plotIds = Object.keys(dataByArea);
-    console.log("plotIds", plotIds)
-    console.log("dataByArea", dataByArea)
 
     if (layout.subplots.distinctColumn == "area_id") {
         baseLayout.annotations = plotIds.map((id, index) => {
@@ -294,9 +292,10 @@ export const getLayoutFromData = (dataByArea: Dict<InputTimeSeriesData>, layout:
         const row = Math.floor(i / layout.subplots.columns);
         const maxOfData = Math.max(...dataByArea[plotIds[i]].map(d => d.value || 0));
         const yStart = 1 - (row / layout.subplots.rows);
+        const tickFormat = typeof layout.yAxisFormat === "string" ? layout.yAxisFormat : layout.yAxisFormat[i]
         baseLayout[`yaxis${i + 1}`] = {
             zeroline: false,
-            tickformat: layout.yAxisFormat,
+            tickformat: tickFormat,
             tickfont: {color: "grey"},
             domain: [yStart, yStart - subPlotHeight],
             range: [-maxOfData * 0.1, maxOfData * 1.1],
