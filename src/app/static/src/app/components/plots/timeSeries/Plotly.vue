@@ -70,16 +70,8 @@ export default defineComponent({
                 });
         };
 
-        const resize = async () => {
-            Plotly.Plots.resize(chart.value!)
-        };
-
         onMounted(drawChart);
         watch(() => [props.chartData], async () => {if (props.layout.isModal) {
-            // Bit gross but we need to resize here because when opening this in a modal it reverts to
-            // default width of 700px unless we manually call the resize function. Not really sure why
-            // or what is going on here.
-            await resize()
             await drawChart()
         }})
         watch(() => [store.state.plotSelections.timeSeries, props.pageNumber], () => {
@@ -87,8 +79,7 @@ export default defineComponent({
         });
 
         return {
-            chart,
-            resize
+            chart
         }
     }
 });
