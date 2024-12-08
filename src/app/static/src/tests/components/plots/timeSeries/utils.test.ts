@@ -103,6 +103,7 @@ describe("time series utils", () => {
         ] as any as InputTimeSeriesData;
 
         const layoutData = {
+            yAxisFormat: ",",
             subplots: {
                 rows: 2,
                 distinctColumn: "area_id"
@@ -166,7 +167,7 @@ describe("time series utils", () => {
                 ],
                 domain: [NaN, NaN],
                 tickfont: {color: "grey"},
-                tickformat: undefined,
+                tickformat: ",",
                 type: "linear",
                 zeroline: false
             },
@@ -177,7 +178,7 @@ describe("time series utils", () => {
                 ],
                 domain: [NaN, NaN],
                 tickfont: {color: "grey"},
-                tickformat: undefined,
+                tickformat: ",",
                 type: "linear",
                 zeroline: false
             },
