@@ -22,6 +22,7 @@
                       :total-pages="totalPages"
                       @set-page="(newPageNumber: number) => pageNumber = newPageNumber"/>
         <time-series-modal
+            v-if="contextModalOpen"
             id="time-series-modal"
             :open-modal="contextModalOpen"
             :area-id="contextModalAreaId"
