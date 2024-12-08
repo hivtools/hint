@@ -36,10 +36,11 @@ import {computed} from "vue";
 import {useStore} from "vuex";
 import { RootState } from '../../../root';
 import {filterTimeSeriesData} from "../../../store/plotData/filter";
-import {FilterSelection} from "../../../store/plotSelections/plotSelections";
-import {expressionToString, Layout, timeSeriesExpandedViews} from "./utils";
+import {FilterSelection, InputPlotName} from "../../../store/plotSelections/plotSelections";
+import {expressionToString, Layout, numeralJsToD3format, timeSeriesExpandedViews} from "./utils";
 import Equation from "../../common/Equation.vue";
 import TimeSeriesLegend from "./TimeSeriesLegend.vue";
+import {ReviewInputDataColumnValue} from "@/app/types";
 
 const props = defineProps({
     openModal: {
@@ -86,7 +87,21 @@ const chartData = computed<InputTimeSeriesData>(() => {
     const { data } = store.state.reviewInput.datasets[dataSource];
     const singleAreaData = data.filter((f: any) => f.area_id === props.areaId && indicatorsToKeep.includes(f.plot));
     return filterTimeSeriesData(singleAreaData, {plot: "timeSeries", selections: modalSelections}, store.state)
-})
+});
+
+const valueFormats = computed(() => {
+    const indicatorsForPlotType = timeSeriesExpandedViews.get(props.plotType)?.plots
+    if (!indicatorsForPlotType) {
+        return []
+    }
+    const allIndicators = ([] as string[]).concat(...indicatorsForPlotType)
+    const plotTypeFilter = store.state.plotSelections["timeSeries"].filters.find(f => f.stateFilterId === "plotType")!;
+    const filterType = store.state.metadata.reviewInputMetadata!.filterTypes.find(ft => ft.id === plotTypeFilter.filterId)!;
+    return allIndicators.map(ind => {
+        const columnValue = filterType.options.find(op => op.id === ind) as ReviewInputDataColumnValue;
+        return numeralJsToD3format(columnValue.format)
+    });
+});
 
 const timeSeriesPlotLabels = store.getters["metadata/timeSeriesPlotTypeLabel"];
 
@@ -95,6 +110,7 @@ const layout = computed<Layout>(() => {
         isModal: true,
         margin: {l: 40, r: 40, t: 10, b: 40},
         timeSeriesPlotLabels: timeSeriesPlotLabels,
+        yAxisFormat: valueFormats.value,
         subplots: {
             rows: 1,
             columns: 3,
