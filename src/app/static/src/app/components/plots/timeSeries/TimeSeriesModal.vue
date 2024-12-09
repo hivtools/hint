@@ -1,7 +1,10 @@
 <template>
-    <modal :open="openModal">
-        <div id="modal-content" class="flex-column" style="max-height: 80vh">
+    <modal :open="openModal" @close-modal="() => $emit('close-modal')">
+        <template v-slot:header>
             <h4>{{areaName}} ({{areaId}})</h4>
+        </template>
+
+        <div class="flex-column" style="max-height: 80vh">
 
             <time-series-legend
                 v-if="chartData.length > 0"
@@ -17,17 +20,7 @@
             <equation class="text-center h2"
                     :formula="formula"/>
         </div>
-
-        <template v-slot:footer>
-            <button id="close-time-series-modal"
-                    type="button"
-                    class="btn btn-white"
-                    @click="$emit('close-modal')"
-                    v-translate="'close'">
-            </button>
-        </template>
     </modal>
-
 </template>
 
 <script setup lang="ts">
@@ -38,11 +31,11 @@ import {computed} from "vue";
 import {useStore} from "vuex";
 import { RootState } from '../../../root';
 import {filterTimeSeriesData} from "../../../store/plotData/filter";
-import {FilterSelection, InputPlotName} from "../../../store/plotSelections/plotSelections";
+import {FilterSelection} from "../../../store/plotSelections/plotSelections";
 import {expressionToString, Layout, numeralJsToD3format, timeSeriesExpandedViews} from "./utils";
 import Equation from "../../common/Equation.vue";
 import TimeSeriesLegend from "./TimeSeriesLegend.vue";
-import {ReviewInputDataColumnValue} from "@/app/types";
+import {ReviewInputDataColumnValue} from "../../../types";
 
 const props = defineProps({
     openModal: {

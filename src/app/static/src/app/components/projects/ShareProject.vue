@@ -6,7 +6,7 @@
                 v-translate:aria-label="'share'">
             <vue-feather type="share-2" size="20"></vue-feather>
         </button>
-        <modal :open="open">
+        <modal :open="open" @close-modal="cancelShareProject">
             <h4 v-translate="'shareProject'"></h4>
             <div v-if="!cloningProject">
                 <div v-html="instructions" id="instructions"></div>

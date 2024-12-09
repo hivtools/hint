@@ -1,6 +1,6 @@
 <template>
     <div id="upload-progress">
-        <modal :open="openModal">
+        <modal :open="openModal" @close-modal="cancel">
             <div class="mt-3 d-flex align-items-end h4">
                 <div class="d-flex align-items-center height-40 mr-2">
                     <span id="upload-header" v-translate="'uploadFromZip'"></span>
