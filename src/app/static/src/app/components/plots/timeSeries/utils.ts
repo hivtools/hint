@@ -228,9 +228,13 @@ export const getChartDataByArea = (chartData: InputTimeSeriesData): Dict<InputTi
 
 export const getChartDataByIndicatorGroup = (chartData: InputTimeSeriesData, plotGroups: string[][]): Dict<InputTimeSeriesData> => {
     return chartData.reduce((obj, data) => {
-        const indicatorGroupIdx = plotGroups.findIndex((group: string[]) => group.includes(data.plot!))
-        obj[indicatorGroupIdx] = obj[indicatorGroupIdx] || [];
-        obj[indicatorGroupIdx].push(data);
+        plotGroups.reduce((indices: number[], group: string[], index: number) => {
+            if (group.includes(data.plot!)) {
+                obj[index] = obj[index] || [];
+                obj[index].push(data);
+            }
+            return indices;
+        }, []);
         return obj;
     }, {} as Record<string, InputTimeSeriesData>);
 }
@@ -363,8 +367,36 @@ export const timeSeriesExpandedViews = new Map<string, TimeSeriesExpandedConfig>
                     },
                     b: {
                         op: Operator.Add,
-                        a: "anc_tested",
+                        a: {
+                            op: Operator.Add,
+                            a: "anc_known_pos",
+                            b: "anc_tested"
+                        },
                         b: "anc_known_neg"
+                    }
+                }
+            }
+        }
+    }],
+    ["anc_art_coverage", {
+        plots: [["anc_art_coverage"], ["anc_already_art", "anc_total_pos"], ["anc_already_art", "anc_known_pos", "anc_tested_pos"]],
+        formula: {
+            op: Operator.Eq,
+            a: "anc_art_coverage",
+            b: {
+                op: Operator.Eq,
+                a: {
+                    op: Operator.Divide,
+                    a: "anc_already_art",
+                    b: "anc_total_pos"
+                },
+                b: {
+                    op: Operator.Divide,
+                    a: "anc_already_art",
+                    b: {
+                        op: Operator.Add,
+                        a: "anc_known_pos",
+                        b: "anc_tested_pos"
                     }
                 }
             }
@@ -375,6 +407,7 @@ export const timeSeriesExpandedViews = new Map<string, TimeSeriesExpandedConfig>
 export const timeSeriesFixedColours = new Map<string, typeof PlotColours.NORMAL>([
     ["anc_total_pos", {BASE: "#4daf4a", MISSING: "#dcdcdc"}],
     ["anc_status", {BASE: "#377eb8", MISSING: "#dcdcdc"}],
+    ["anc_already_art", {BASE: "#377eb8", MISSING: "#dcdcdc"}],
     ["anc_known_pos", {BASE: "#005500", MISSING: "#dcdcdc"}],
     ["anc_tested_pos", {BASE: "#1c7e19", MISSING: "#dcdcdc"}],
     ["anc_tested", {BASE: "#064d87", MISSING: "#dcdcdc"}],
