@@ -144,7 +144,12 @@ a.down::after {
 
 .modal-header {
   border-bottom: none;
-  padding-bottom: 0px;
+  padding-bottom: 0;
+}
+
+.modal-body {
+  max-height: 75vh;
+  overflow: auto;
 }
 
 .annotation-text tspan {
