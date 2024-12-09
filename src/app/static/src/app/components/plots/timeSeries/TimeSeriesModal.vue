@@ -1,20 +1,22 @@
 <template>
     <modal :open="openModal">
-        <h4>{{areaName}} ({{areaId}})</h4>
+        <div id="modal-content" class="overflow-auto flex-column" style="max-height: 90vh">
+            <h4>{{areaName}} ({{areaId}})</h4>
 
-        <time-series-legend
-            v-if="chartData.length > 0"
-            :plot-type="plotType"/>
-
-        <plotly class="chart"
+            <time-series-legend
                 v-if="chartData.length > 0"
-                :chart-data="chartData"
-                :layout="layout"
-                :page-number="0"
-                @open-context="() => {}"/>
+                :plot-type="plotType"/>
 
-        <equation class="text-center h2"
-                  :formula="formula"/>
+            <plotly class="chart"
+                    v-if="chartData.length > 0"
+                    :chart-data="chartData"
+                    :layout="layout"
+                    :page-number="0"
+                    @open-context="() => {}"/>
+
+            <equation class="text-center h2"
+                    :formula="formula"/>
+        </div>
 
         <template v-slot:footer>
             <button id="close-time-series-modal"
