@@ -1,6 +1,6 @@
 <template>
     <modal :open="openModal">
-        <div id="modal-content" class="flex-column" style="max-height: 90vh">
+        <div id="modal-content" class="flex-column" style="max-height: 80vh">
             <h4>{{areaName}} ({{areaId}})</h4>
 
             <time-series-legend
