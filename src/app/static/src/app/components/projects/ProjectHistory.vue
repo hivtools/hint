@@ -211,7 +211,7 @@
                 </div>
             </b-collapse>
         </div>
-        <modal :open="!!projectToDelete || !!versionToDelete">
+        <modal :open="!!projectToDelete || !!versionToDelete" @close-modal="cancelDelete">
             <h4 v-if="projectToDelete" v-translate="'deleteProject'"></h4>
             <h4 v-if="versionToDelete" v-translate="'deleteVersion'"></h4>
             <template v-slot:footer>
@@ -227,7 +227,7 @@
                     v-translate="'cancel'"></button>
             </template>
         </modal>
-        <modal :open="!!versionToPromote">
+        <modal :open="!!versionToPromote" @close-modal="cancelPromotion">
             <h4 v-html="promoteVersionHeader" id="promoteVersionHeader"></h4>
             <label class="h5" for="new-project-name" v-translate="'enterProjectName'"></label>
             <input type="text"
@@ -252,7 +252,7 @@
                         v-translate="'cancel'"></button>
             </template>
         </modal>
-        <modal :open="!!projectToRename">
+        <modal :open="!!projectToRename" @close-modal="cancelRename">
             <label class="h4" for="rename-project" v-translate="'renameProjectHeader'"></label>
             <input type="text"
                    id="rename-project"
@@ -282,7 +282,7 @@
             </template>
         </modal>
 
-        <modal :open="!!versionNoteToEdit || !!projectNoteToEdit">
+        <modal :open="!!versionNoteToEdit || !!projectNoteToEdit" @close-modal="cancelNoteEditing">
             <div v-if="versionNoteToEdit">
                 <label class="h4" for="edit-note-id"
                        v-html="editVersionNoteHeader"
