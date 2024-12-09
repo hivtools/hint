@@ -1,6 +1,8 @@
 <template>
-    <modal :open="open">
-        <h4 v-translate="'troubleshootingRequest'"></h4>
+    <modal :open="open" @close-modal="close">
+        <template v-slot:header>
+            <h4 v-translate="'troubleshootingRequest'"></h4>
+        </template>
         <form class="form was-validated" id="report-form" v-if="!showFeedback">
             <div class="form-group">
                 <slot name="projectView"/>

@@ -41,7 +41,6 @@ const numberUpdate = (event: any) => {
         val = Math.round(val / step) * step
     }
     if (val > max) {
-        console.log("setting to max ", max)
         val = max
     }
     if (val < min) {
