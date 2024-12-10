@@ -17,7 +17,7 @@
                     :page-number="0"
                     @open-context="() => {}"/>
 
-            <equation class="text-center h2"
+            <equation class="equation text-center"
                     :formula="formula"/>
         </div>
     </modal>
@@ -124,3 +124,8 @@ const formula = computed<string>(() => {
     return expressionToString(expression, timeSeriesPlotLabels);
 })
 </script>
+<style scoped>
+.equation {
+    font-size: 2vw;
+}
+</style>
