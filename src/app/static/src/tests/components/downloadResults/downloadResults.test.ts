@@ -122,7 +122,7 @@ describe("Download Results component", () => {
         expectTranslated(buttons[0], "Download", "Télécharger", "Descarregar", store);
         expectTranslated(buttons[1], "Download", "Télécharger", "Descarregar", store);
         expectTranslated(buttons[2], "Download", "Télécharger", "Descarregar", store);
-        expectTranslated(buttons[3], "buttons.Download", "Télécharger", "Descarregar", store);
+        expectTranslated(buttons[3], "Download", "Télécharger", "Descarregar", store);
         expectTranslated(buttons[4], "Download", "Télécharger", "Descarregar", store);
         expectTranslated(buttons[5], "Upload", "Télécharger", "Carregar", store);
     });
