@@ -23,7 +23,7 @@ class DownloadController(val apiClient: HintrAPIClient,
         if (type == "agyw") {
             val file = fileManager.getFile(FileType.PJNZ)
             payload["pjnz"] = file
-        } else if (type == "spectrum") {
+        } else if (type == "spectrum" || type == "datapack") {
             val file = fileManager.getFile(FileType.Vmmc)
             if (file != null) {
                 payload["vmmc"] = file

@@ -25,7 +25,8 @@ const switches: Record<DownloadType, boolean> = {
     Summary: true,
     Comparison: true,
     Spectrum: true,
-    CoarseOutput: true
+    CoarseOutput: true,
+    Datapack: true,
 };
 
 const createStore = (adr: Partial<ADRState> = {userCanUpload: true},
@@ -110,16 +111,20 @@ describe("Download Results component", () => {
             "Télécharger le rapport de synthèse", "Descarregar relatório de síntese", store);
         expectTranslated(headers[3], "Download comparison report",
             "Télécharger le rapport de comparaison", "Baixar relatório de comparação", store);
-        expectTranslated(headers[4], "Upload to ADR",
+        expectTranslated(headers[4], "Download outputs for PEPFAR Target Setting Tool (TST)",
+            "Télécharger les sorties pour PEPFAR Target Setting Tool (TST)",
+            "Descarregar resultados para PEPFAR Target Setting Tool (TST)", store);
+        expectTranslated(headers[5], "Upload to ADR",
             "Télécharger vers ADR", "Carregar para o ADR", store);
 
         const buttons = wrapper.findAll("button");
-        expect(buttons.length).toBe(5);
+        expect(buttons.length).toBe(6);
         expectTranslated(buttons[0], "Download", "Télécharger", "Descarregar", store);
         expectTranslated(buttons[1], "Download", "Télécharger", "Descarregar", store);
         expectTranslated(buttons[2], "Download", "Télécharger", "Descarregar", store);
-        expectTranslated(buttons[3], "Download", "Télécharger", "Descarregar", store);
-        expectTranslated(buttons[4], "Upload", "Télécharger", "Carregar", store);
+        expectTranslated(buttons[3], "buttons.Download", "Télécharger", "Descarregar", store);
+        expectTranslated(buttons[4], "Download", "Télécharger", "Descarregar", store);
+        expectTranslated(buttons[5], "Upload", "Télécharger", "Carregar", store);
     });
 
     it(`renders, opens and closes dialog as expected`, async () => {
@@ -299,6 +304,7 @@ describe("Download Results component", () => {
         expect(downloadButtons[1].props("disabled")).toBe(true)
         expect(downloadButtons[2].props("disabled")).toBe(true)
         expect(downloadButtons[3].props("disabled")).toBe(true)
+        expect(downloadButtons[4].props("disabled")).toBe(true)
     });
 
     it("calls prepareOutputs on mount", () => {
