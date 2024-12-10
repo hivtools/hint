@@ -1,19 +1,18 @@
 <template>
     <div class="container">
         <div class="row">
-            <div class="col-sm">
+            <div class="col">
+                <h2 v-translate="'download'" class="pb-2 row"></h2>
                 <template v-for="type in Object.values(DownloadType)" :key="type">
                     <div :id="`${type}-download`" v-if="switches[type]">
-                        <download :translate-key="getDownloadTranslationKey(type)"
-                                  :disabled="!state[type].downloadId || state[type].preparing || !!state[type].metadataError"
-                                  :file="state[type]"/>
-                        <div class="pb-2">
-                            <error-alert v-if="state[type].downloadError" :error="state[type].downloadError"></error-alert>
-                        </div>
+                        <download-table-row :type="type"/>
                     </div>
                 </template>
+                <download-error-alert/>
             </div>
-            <div id="upload" v-if="hasUploadPermission" class="col-sm">
+        </div>
+        <div class="row">
+            <div id="upload" v-if="hasUploadPermission" class="col px-0 mt-5">
                 <h4 v-translate="'uploadFileToAdr'"></h4>
                 <button @click.prevent="handleUploadModal"
                         class="btn btn-lg my-3"
@@ -65,9 +64,10 @@
     import ErrorAlert from "../ErrorAlert.vue";
     import i18next from "i18next";
     import {ADRUploadState} from "../../store/adrUpload/adrUpload";
-    import Download from "./Download.vue";
     import { defineComponent } from "vue";
     import { downloadSwitches, DownloadType, getDownloadTranslationKey } from "../../store/downloadResults/downloadConfig";
+    import DownloadTableRow from "./DownloadTableRow.vue";
+    import DownloadErrorAlert from "./DownloadErrorAlert.vue";
 
     interface Data {
         uploadModalOpen: boolean,
@@ -141,7 +141,8 @@
             Cross,
             ErrorAlert,
             UploadModal,
-            Download
+            DownloadTableRow,
+            DownloadErrorAlert
         }
     });
 </script>

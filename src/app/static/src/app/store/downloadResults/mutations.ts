@@ -42,6 +42,7 @@ export const mutations: MutationTree<DownloadResultsState> = {
         state: DownloadResultsState,
         { payload: { type, payload } }: PayloadWithType<WithDownloadType<DownloadStatusResponse>>
     ) {
+        state[type].statusResponse = payload;
         if (payload.done) {
             state[type].complete = true;
             state[type].preparing = false;

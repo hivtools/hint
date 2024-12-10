@@ -9,15 +9,15 @@ import {
 } from "../../mocks";
 import DownloadResults from "../../../app/components/downloadResults/DownloadResults.vue";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
-import {emptyState, RootState} from "../../../app/root";
+import {emptyState} from "../../../app/root";
 import {expectTranslated, mountWithTranslate, shallowMountWithTranslate} from "../../testHelpers";
 import UploadModal from "../../../app/components/downloadResults/UploadModal.vue";
 import {DownloadResultsState} from "../../../app/store/downloadResults/downloadResults";
-import Download from "../../../app/components/downloadResults/Download.vue";
 import {ADRState} from "../../../app/store/adr/adr";
 import {ADRUploadState} from "../../../app/store/adrUpload/adrUpload";
 import ErrorAlert from "../../../app/components/ErrorAlert.vue";
 import { DownloadType } from '../../../app/store/downloadResults/downloadConfig';
+import DownloadTableRow from '../../../app/components/downloadResults/DownloadTableRow.vue';
 
 const mockPrepareAllOutputs = vi.fn();
 
@@ -74,11 +74,6 @@ const createStore = (adr: Partial<ADRState> = {userCanUpload: true},
     return store;
 };
 
-// Mock the download element creation
-const mockClick = vi.fn();
-const mockRemove = vi.fn();
-const mockLink = {click: mockClick, remove: mockRemove};
-
 describe("Download Results component", () => {
     afterEach(() => {
         vi.useRealTimers();
@@ -91,35 +86,20 @@ describe("Download Results component", () => {
             {
                 global: {
                     plugins: [store],
-                    stubs: ["upload-modal"],
+                    stubs: ["upload-modal", "download-table-row"],
                 },
                 data() {
-                    return {
-                        comparisonSwitch: true
-                    }
+                    return { switches }
                 }
-            });
-
-        const headers = wrapper.findAll("h4");
-        expectTranslated(headers[0], "Download Naomi results",
-            "Télécharger les résultats de Naomi", "Baixe os resultados de Naomi", store);
-        expectTranslated(headers[1], "Download coarse age group outputs",
-            "Télécharger les résultats grossiers du groupe d'âge",
-            "Descarregar resultados de grupos etários grosseiros", store);
-        expectTranslated(headers[2], "Download summary report",
-            "Télécharger le rapport de synthèse", "Descarregar relatório de síntese", store);
-        expectTranslated(headers[3], "Download comparison report",
-            "Télécharger le rapport de comparaison", "Baixar relatório de comparação", store);
-        expectTranslated(headers[4], "Upload to ADR",
-            "Télécharger vers ADR", "Carregar para o ADR", store);
-
+            }
+        );
+        const downloadTableRows = wrapper.findAllComponents(DownloadTableRow);
+        expect(downloadTableRows.length).toBe(4);
+        Object.values(DownloadType).forEach((type, index) => {
+            expect(downloadTableRows[index].props("type")).toBe(type);
+        });
         const buttons = wrapper.findAll("button");
-        expect(buttons.length).toBe(5);
-        expectTranslated(buttons[0], "Download", "Télécharger", "Descarregar", store);
-        expectTranslated(buttons[1], "Download", "Télécharger", "Descarregar", store);
-        expectTranslated(buttons[2], "Download", "Télécharger", "Descarregar", store);
-        expectTranslated(buttons[3], "Download", "Télécharger", "Descarregar", store);
-        expectTranslated(buttons[4], "Upload", "Télécharger", "Carregar", store);
+        expect(buttons.length).toBe(1);
     });
 
     it(`renders, opens and closes dialog as expected`, async () => {
@@ -280,27 +260,6 @@ describe("Download Results component", () => {
         expect(uploadButton.classes()).toEqual(["btn", "btn-lg", "my-3", "btn-secondary"]);
     });
 
-    it("disables download buttons when upload in progress", () => {
-        const store = createStore({userCanUpload: true}, vi.fn(), {uploading: true});
-        const wrapper = shallowMount(DownloadResults, {
-            global: {
-                plugins: [store]
-            },
-            data() {
-                return {
-                    switches
-                }
-            }
-        });
-
-        const downloadButtons = wrapper.findAllComponents(Download);
-        expect(downloadButtons.length).toBe(Object.values(DownloadType).length)
-        expect(downloadButtons[0].props("disabled")).toBe(true)
-        expect(downloadButtons[1].props("disabled")).toBe(true)
-        expect(downloadButtons[2].props("disabled")).toBe(true)
-        expect(downloadButtons[3].props("disabled")).toBe(true)
-    });
-
     it("calls prepareOutputs on mount", () => {
         const store = createStore();
         shallowMount(DownloadResults, {
@@ -322,77 +281,3 @@ describe("Download Results component", () => {
         expect(spy).toHaveBeenCalledTimes(1)
     });
 });
-
-describe("Single DownloadType button", () => {
-    afterEach(() => {
-        vi.useRealTimers();
-        vi.restoreAllMocks();
-    })
-
-    Object.values(DownloadType).forEach(type => testDownloadButton(type));
-});
-
-const testDownloadButton = (type: DownloadType) => {
-    const mountWithSwitchesOn = (downloadResultsDep = {}) => {
-        const store = createStore({}, vi.fn(), {}, {
-            [type]: mockDownloadResultsDependency(downloadResultsDep)
-        });
-
-        return mountWithTranslate(DownloadResults, store, {
-            global: {
-                plugins: [store],
-                stubs: ["upload-modal"]
-            },
-            data: () => ({ switches })
-        });
-    };
-
-    const getButton = (wrapper: VueWrapper) => wrapper.find(`#${type}-download`).find("button");
-
-    it("cannot download output while preparing", () => {
-        const wrapper = mountWithSwitchesOn({
-            preparing: true,
-            downloadId: "1"
-        });
-        const button = getButton(wrapper);
-        expect(button.attributes().disabled).toBe("");
-    });
-
-    it("cannot download output if downloadId does not exist", async () => {
-        const wrapper = mountWithSwitchesOn();
-        const button = getButton(wrapper);
-        expect(button.attributes().disabled).toBe("");
-    });
-
-    it("can download file once prepared", async () => {
-        const wrapper = mountWithSwitchesOn({
-            preparing: false,
-            complete: true,
-            error: null,
-            downloadId: "123"
-        });
-
-        vi.spyOn(document, "createElement").mockReturnValue(mockLink as any);
-
-        const button = getButton(wrapper);
-        await button.trigger("click")
-        expect(document.createElement).toHaveBeenCalledTimes(1);
-        expect(document.createElement).toHaveBeenCalledWith("a");
-        expect(mockClick).toHaveBeenCalledTimes(1);
-        expect((mockLink as any).href).toBe("/download/result/123");
-        expect((mockLink as any).download).toBe("downloaded_file");
-    });
-
-    it("can display error message for download file when errored", async () => {
-        const error = { error: "oops...", detail: "i did it again" };
-        const wrapper = mountWithSwitchesOn({
-            preparing: false,
-            complete: true,
-            error,
-            downloadId: "123"
-        });
-        const button = getButton(wrapper);
-        expect(button.attributes().disabled).toBeUndefined();
-        expect(wrapper.findComponent(ErrorAlert).props("error")).toEqual(error);
-    });
-};
