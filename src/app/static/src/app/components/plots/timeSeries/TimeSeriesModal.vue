@@ -94,7 +94,7 @@ const valueFormats = computed(() => {
     const filterType = store.state.metadata.reviewInputMetadata!.filterTypes.find(ft => ft.id === plotTypeFilter.filterId)!;
     return allIndicators.map(ind => {
         const columnValue = filterType.options.find(op => op.id === ind) as ReviewInputDataColumnValue;
-        return numeralJsToD3format(columnValue.format)
+        return columnValue.format ? numeralJsToD3format(columnValue.format) : ""
     });
 });
 
