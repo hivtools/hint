@@ -320,7 +320,8 @@ describe("root actions", () => {
                 [DownloadType.SPECTRUM]: "spectrum123",
                 [DownloadType.SUMMARY]: "summary123",
                 [DownloadType.COARSE]: "none",
-                [DownloadType.COMPARISON]: "comparison123"
+                [DownloadType.COMPARISON]: "comparison123",
+                [DownloadType.DATAPACK]: "none"
             },
             description: "desc",
             section: "reviewInputs",
@@ -407,7 +408,13 @@ describe("root actions", () => {
             timeStamp: new Date(),
             modelRunId: "no associated modelRunId",
             calibrateId: "no associated calibrateId",
-            downloadIds: {[DownloadType.SPECTRUM]: "none", [DownloadType.SUMMARY]: "none", [DownloadType.COARSE]: "none", [DownloadType.COMPARISON]: "none"},
+            downloadIds: {
+                [DownloadType.SPECTRUM]: "none",
+                [DownloadType.SUMMARY]: "none",
+                [DownloadType.COARSE]: "none",
+                [DownloadType.COMPARISON]: "none",
+                [DownloadType.DATAPACK]: "none"
+            },
             description: "desc",
             section: "reviewInputs",
             stepsToReproduce: "repro",
