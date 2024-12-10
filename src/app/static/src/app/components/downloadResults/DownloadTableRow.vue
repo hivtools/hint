@@ -2,10 +2,10 @@
     <div class="row d-flex align-items-center">
         <span class="d-flex align-items-center col-md pl-0">
             <div class="py-2 file-type-container">
-                <vue-feather :type="fileTypeUIConfigs[type].icon" size="25" class="baseline-aligned-icon"></vue-feather>
-                <p class="mb-0 file-type-text" :style="{ color: fileTypeUIConfigs[props.type].color }">{{ fileTypeUIConfigs[type].text.toUpperCase() }}</p>
+                <vue-feather :type="fileTypeUIConfigs[downloadType].icon" size="25" class="baseline-aligned-icon"></vue-feather>
+                <p class="mb-0 file-type-text" :style="{ color: fileTypeUIConfigs[downloadType].color }">{{ fileTypeUIConfigs[downloadType].text.toUpperCase() }}</p>
             </div>
-            <h4 v-translate="getDownloadTranslationKey(type)" class="mb-0"></h4>
+            <h4 v-translate="getDownloadTranslationKey(downloadType)" class="mb-0"></h4>
         </span>
         <span class="d-flex align-items-center col-md-3" :class="!downloadState.statusResponse?.done && 'dot-dot-dot'">
             <vue-feather :type="statusUIConfigs[downloadStatus].icon"
@@ -32,12 +32,12 @@ import { useStore } from "vuex";
 import { RootState } from "../../root";
 
 const props = defineProps({
-    type: { type: String as PropType<DownloadType>, required: true }
+    downloadType: { type: String as PropType<DownloadType>, required: true }
 });
 
 const store = useStore<RootState>();
 
-const downloadState = computed(() => store.state.downloadResults[props.type]);
+const downloadState = computed(() => store.state.downloadResults[props.downloadType]);
 const disabled = computed(() => {
     return !downloadState.value.downloadId || downloadState.value.preparing || !!downloadState.value.metadataError;
 });

@@ -24,7 +24,7 @@ describe("Download Table Row tests", () => {
         });
         return mount(DownloadTableRow, {
             global: { plugins: [store] },
-            props: { type: downloadType }
+            props: { downloadType }
         })
     };
 

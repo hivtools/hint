@@ -1,9 +1,8 @@
-import {mount, shallowMount, VueWrapper} from '@vue/test-utils';
-import Vuex, {Store} from 'vuex';
+import {mount, shallowMount} from '@vue/test-utils';
+import Vuex from 'vuex';
 import {
     mockADRState,
     mockADRUploadState,
-    mockDownloadResultsDependency,
     mockDownloadResultsState,
     mockModelCalibrateState,
 } from "../../mocks";
@@ -96,7 +95,7 @@ describe("Download Results component", () => {
         const downloadTableRows = wrapper.findAllComponents(DownloadTableRow);
         expect(downloadTableRows.length).toBe(4);
         Object.values(DownloadType).forEach((type, index) => {
-            expect(downloadTableRows[index].props("type")).toBe(type);
+            expect((downloadTableRows[index] as any).props("downloadType")).toBe(type);
         });
         const buttons = wrapper.findAll("button");
         expect(buttons.length).toBe(1);
