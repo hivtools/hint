@@ -50,7 +50,11 @@ const gridOptions = {
     suppressColumnVirtualisation: true,
     rowHeight: ROW_HEIGHT,
     // Reduce delay on showing tooltips to 500ms
-    tooltipShowDelay: 500
+    tooltipShowDelay: 500,
+    autoSizeStrategy: {
+        type: 'fitCellContents',
+        skipHeader: true
+    }
 }
 
 

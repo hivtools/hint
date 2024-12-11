@@ -64,6 +64,7 @@ export const getColumnDefs = (plot: PlotName, dataSource: string | null, indicat
         return {
             headerName: header.columnLabel,
             field: header.columnField,
+            minWidth: 125,
             // Override default filter type
             filter: "agTextColumnFilter",
             pinned: "left"
@@ -113,6 +114,9 @@ export const getColumnDefs = (plot: PlotName, dataSource: string | null, indicat
                 return {
                     headerName: i18next.t(key, {lng: currentLanguage}),
                     colId: selection.id,
+                    minWidth: 100,
+                    sortable: false,
+                    filter: false,
                     valueGetter: getValue(key, selection.id),
                     valueFormatter: (params: ValueFormatterParams) => {
                         if (key === "difference_ratio") {
@@ -133,7 +137,7 @@ export const getColumnDefs = (plot: PlotName, dataSource: string | null, indicat
             return {
                 headerName: selection.label,
                 colId: selection.id,
-                children: childrenColumns
+                children: childrenColumns,
             }
         });
     }
