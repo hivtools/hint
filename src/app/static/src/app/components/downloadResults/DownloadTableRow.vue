@@ -1,5 +1,5 @@
 <template>
-    <div class="row d-flex align-items-center">
+    <div class="row d-flex align-items-center hover-row">
         <span class="d-flex align-items-center col-md pl-0">
             <div class="py-2 file-type-container">
                 <vue-feather :type="fileTypeUIConfigs[downloadType].icon" size="25" class="baseline-aligned-icon"></vue-feather>
@@ -14,12 +14,11 @@
                          class="icon mr-2"></vue-feather>
             <h6 class="mb-0">{{ downloadStatus[0].toUpperCase() + downloadStatus.substring(1).toLowerCase() }}</h6>
         </span>
-        <button class="btn btn-lg col-md-auto mr-0"
-                :class="disabled ? 'btn-secondary' : 'btn-red'"
+        <button class="btn btn-sm col-md-auto mr-0"
+                :class="disabled ? '' : 'red-color'"
                 :disabled="disabled"
                 @click="download">
-            <span v-translate="'download'"></span>
-            <vue-feather type="download" size="20" class="icon ml-2 baseline-aligned-icon"></vue-feather>
+            <vue-feather type="download" size="25" class="icon baseline-aligned-icon"></vue-feather>
         </button>
     </div>
 </template>
@@ -89,6 +88,7 @@ const download = () => {
     text-align: center;
     margin-right: 10px;
     width: 3rem;
+    justify-content: center;
 }
 
 .file-type-text {
@@ -98,5 +98,18 @@ const download = () => {
 
 .baseline-aligned-icon {
     margin-bottom: -4px;
+}
+
+.red-color {
+    color: #de1a37;
+}
+
+.red-color:hover {
+    color: #b41230;
+}
+
+.hover-row:hover {
+    background-color: rgba(138, 138, 138, 0.116);
+    border-radius: 3px
 }
 </style>

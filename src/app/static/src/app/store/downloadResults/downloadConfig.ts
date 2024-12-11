@@ -68,8 +68,8 @@ export const statusUIConfigs: Record<TaskStatus, IconConfig> = {
 // file type UI
 type FileType = { icon: string, color: string, text: string }
 export const fileTypeUIConfigs: Record<DownloadType, FileType> = {
-    [DownloadType.SPECTRUM]: { icon: "folder", color: "#0400b9", text: "pjnz" },
-    [DownloadType.COARSE]: { icon: "table", color: "#088501", text: "csv" },
+    [DownloadType.SPECTRUM]: { icon: "folder", color: "#0400b9", text: "zip" },
+    [DownloadType.COARSE]: { icon: "folder", color: "#0400b9", text: "zip" },
     [DownloadType.SUMMARY]: { icon: "code", color: "#b0090a", text: "html" },
     [DownloadType.COMPARISON]: { icon: "code", color: "#b0090a", text: "html" }
 };
