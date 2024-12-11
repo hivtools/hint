@@ -77,5 +77,6 @@ export const fileTypeUIConfigs: Record<DownloadType, FileType> = {
     [DownloadType.SPECTRUM]: { icon: "folder", color: "#0400b9", text: "zip" },
     [DownloadType.COARSE]: { icon: "folder", color: "#0400b9", text: "zip" },
     [DownloadType.SUMMARY]: { icon: "code", color: "#b0090a", text: "html" },
-    [DownloadType.COMPARISON]: { icon: "code", color: "#b0090a", text: "html" }
+    [DownloadType.COMPARISON]: { icon: "code", color: "#b0090a", text: "html" },
+    [DownloadType.DATAPACK]: { icon: "table", color: "#088501", text: "xlsx" }
 };
