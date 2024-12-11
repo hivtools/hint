@@ -101,6 +101,16 @@ export const getTimeSeriesFilteredDataset = async (payload: PlotSelectionUpdate,
         return
     }
     // filter
+    const { data } = rootState.reviewInput.datasets[dataSource];
+    const filteredData = filterTimeSeriesData(data, payload, rootState)
+    const plotDataPayload: PlotDataUpdate = {
+        plot: payload.plot,
+        data: filteredData
+    };
+    commit(`plotData/${PlotDataMutations.updatePlotData}`, { payload: plotDataPayload }, { root: true });
+};
+
+export const filterTimeSeriesData = (data: ReviewInputDataset["data"], payload: PlotSelectionUpdate, rootState: RootState) => {
     const metadata = getMetadataFromPlotName(rootState, payload.plot);
     const { filters } = payload.selections;
     const filterObject: Record<InputTimeSeriesKey, (string| number)[]> = {} as any;
@@ -112,7 +122,6 @@ export const getTimeSeriesFilteredDataset = async (payload: PlotSelectionUpdate,
                 f.selection.map(s => s.id);
         }
     });
-    const { data } = rootState.reviewInput.datasets[dataSource];
     const filteredData: InputTimeSeriesData = [];
     outer: for (let i = 0; i < data.length; i++) {
         const currRow = data[i] as unknown as InputTimeSeriesRow;
@@ -124,12 +133,8 @@ export const getTimeSeriesFilteredDataset = async (payload: PlotSelectionUpdate,
         }
         filteredData.push(currRow);
     }
-    const plotDataPayload: PlotDataUpdate = {
-        plot: payload.plot,
-        data: filteredData
-    };
-    commit(`plotData/${PlotDataMutations.updatePlotData}`, { payload: plotDataPayload }, { root: true });
-};
+    return filteredData
+}
 
 export const getCalibrateFilteredDataset = async (payload: PlotSelectionUpdate, commit: Commit, rootState: RootState) => {
     const calibratePlotResult = rootState.modelCalibrate.calibratePlotResult;

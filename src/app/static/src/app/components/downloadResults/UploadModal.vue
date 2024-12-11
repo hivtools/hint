@@ -1,6 +1,6 @@
 <template>
     <div id="dialog">
-        <modal :open="true">
+        <modal :open="true" @close-modal="handleCancel">
             <h4 v-translate="'uploadFileToAdr'"></h4>
             <div class="container">
                 <div id="dataset-id" class="mt-4">

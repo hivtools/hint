@@ -68,4 +68,33 @@ describe("modal", () => {
         expect(wrapper.find(".modal-footer").text()).toBe("test-footer");
     });
 
+    it("includes header slot if provided", () => {
+        const wrapper = shallowMount(Modal, {
+            props: {
+                open: true
+            },
+            slots: {
+                default: "TEST",
+                header: "test-header"
+            }
+        });
+
+        expect(wrapper.findAll(".modal-header").length).toBe(1);
+        expect(wrapper.find(".modal-header").text()).toBe("test-header");
+        expect(wrapper.find("#modal-close-button").isVisible()).toBeTruthy();
+
+        wrapper.find("#modal-close-button").trigger("click");
+        expect(wrapper.emitted("close-modal")).toBeTruthy()
+    });
+
+    it("emits close-modal event when background clicked", () => {
+        const wrapper = shallowMount(Modal, {
+            props: {
+                open: true
+            }
+        });
+
+        wrapper.find(".modal-backdrop").trigger("click");
+        expect(wrapper.emitted("close-modal")).toBeTruthy();
+    });
 });
