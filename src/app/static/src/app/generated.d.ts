@@ -1077,16 +1077,48 @@ export interface IndicatorMetadata {
   accuracy: number | null;
   format: string;
 }
-export type InputComparisonData = {
+export interface InputComparisonAncRow {
   indicator: string;
   area_name: string;
   year: number;
   group: string;
   value_spectrum: number | null;
   value_naomi: number | null;
-  difference?: number | null;
   [k: string]: any;
-}[];
+}
+export interface InputComparisonArtRow {
+  indicator: string;
+  area_name: string;
+  year: number;
+  group: string;
+  value_spectrum_reported: number | null;
+  value_spectrum_adjusted: number | null;
+  value_naomi: number | null;
+  value_spectrum_reallocated: number | null;
+  [k: string]: any;
+}
+export interface InputComparisonData {
+  anc: {
+    indicator: string;
+    area_name: string;
+    year: number;
+    group: string;
+    value_spectrum: number | null;
+    value_naomi: number | null;
+    [k: string]: any;
+  }[];
+  art: {
+    indicator: string;
+    area_name: string;
+    year: number;
+    group: string;
+    value_spectrum_reported: number | null;
+    value_spectrum_adjusted: number | null;
+    value_naomi: number | null;
+    value_spectrum_reallocated: number | null;
+    [k: string]: any;
+  }[];
+}
 export interface InputComparisonMetadata {
   filterTypes: {
     id: string;
@@ -1213,15 +1245,27 @@ export type InputComparisonRequest = {
 };
 export interface InputComparisonResponse {
   data: {
-    indicator: string;
-    area_name: string;
-    year: number;
-    group: string;
-    value_spectrum: number | null;
-    value_naomi: number | null;
-    difference?: number | null;
-    [k: string]: any;
-  }[];
+    anc: {
+      indicator: string;
+      area_name: string;
+      year: number;
+      group: string;
+      value_spectrum: number | null;
+      value_naomi: number | null;
+      [k: string]: any;
+    }[];
+    art: {
+      indicator: string;
+      area_name: string;
+      year: number;
+      group: string;
+      value_spectrum_reported: number | null;
+      value_spectrum_adjusted: number | null;
+      value_naomi: number | null;
+      value_spectrum_reallocated: number | null;
+      [k: string]: any;
+    }[];
+  };
   metadata: {
     filterTypes: {
       id: string;
@@ -1354,16 +1398,6 @@ export interface InputComparisonResponse {
       | "download_results"
     )[];
   }[];
-}
-export interface InputComparisonRow {
-  indicator: string;
-  area_name: string;
-  year: number;
-  group: string;
-  value_spectrum: number | null;
-  value_naomi: number | null;
-  difference?: number | null;
-  [k: string]: any;
 }
 export interface InputDatasets {
   pjnz: {

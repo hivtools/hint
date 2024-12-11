@@ -25,6 +25,7 @@ import { Dict } from "@reside-ic/vue-next-dynamic-form";
 import { SurveyAndProgramState } from "../surveyAndProgram/surveyAndProgram";
 import {aggregatePopulation} from "./aggregate";
 import {AreaProperties} from "../baseline/baseline";
+import {InputComparisonPlotData} from "../reviewInput/reviewInput";
 
 type FilteredDataContext = {
     commit: Commit,
@@ -230,25 +231,41 @@ export const getInputComparisonFilteredData = async (payload: PlotSelectionUpdat
         return;
     }
     const data: InputComparisonData = comparisonPlotResponse.data;
+    // We're assuming here that ANC and ART indicators will always be mutually exclusive
+    const artIndicators = new Set(data["art"].map(row => row.indicator));
 
     // Filter the data on the current selections
     const metadata = getMetadataFromPlotName(rootState, payload.plot);
     const { filters } = payload.selections;
+    const selectedIndicator = filters.find(f => f.filterId === "indicator")?.selection[0].id;
+    if (!selectedIndicator) {
+        return;
+    }
     const filterObject: Dict<(string| number)[]> = {};
     filters.forEach(f => {
         const filterType = metadata.filterTypes.find(ft => ft.id === f.filterId)!;
         filterObject[filterType.column_id] = f.selection.map(s => s.id);
     });
-    const filteredData: InputComparisonData = [];
-    outer: for (let i = 0; i < data.length; i++) {
-        const currRow = data[i];
+    let dataToFilter: InputComparisonPlotData;
+    if (artIndicators.has(selectedIndicator)) {
+        dataToFilter = data["art"];
+        commit(`reviewInput/${ReviewInputMutation.SetInputComparisonDataSource}`, { payload: "art" }, { root: true });
+    } else {
+        dataToFilter = data["anc"];
+        commit(`reviewInput/${ReviewInputMutation.SetInputComparisonDataSource}`, { payload: "anc" }, { root: true });
+    }
+    const filteredData: InputComparisonPlotData = [];
+    outer: for (let i = 0; i < dataToFilter.length; i++) {
+        const currRow = dataToFilter[i];
         for (const column_id in filterObject) {
             // Filter values are always strings, so we cast the data to a string so the comparison works
             if (!filterObject[column_id].includes(currRow[column_id].toString())) {
                 continue outer;
             }
         }
-        filteredData.push(currRow);
+        // We know this will be the same type as dataToFilter, but typescript not smart enough
+        // to know this, so just cast as any to bypass the error
+        filteredData.push(currRow as any);
     }
     const plotDataPayload: PlotDataUpdate = {
         plot: payload.plot,

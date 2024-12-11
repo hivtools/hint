@@ -19,9 +19,9 @@ import "ag-grid-community/styles/ag-theme-alpine.css";
 import { useStore } from "vuex";
 import { RootState } from "../../../root";
 import { getIndicatorMetadata } from "../utils";
-import { PlotName } from "../../../store/plotSelections/plotSelections";
 import { IndicatorMetadata, TableMetadata } from "../../../generated";
 import {getColumnDefs, TableHeaderDef} from "./utils";
+import {PlotName} from "../../../store/plotSelections/plotSelections";
 
 const defaultColDef = {
     // Set the default filter type
@@ -38,6 +38,8 @@ const defaultColDef = {
     sortable: true,
     // Stop the columns from being draggable to rearrange order or remove them
     suppressMovable: true,
+    // Allow column header to wrap
+    wrapHeaderText: true
 };
 const ROW_HEIGHT = 35;
 const MAX_TABLE_HEIGHT = 700;
@@ -46,7 +48,9 @@ const gridOptions = {
     // e.g. if they are off to the side, we won't get auto resize
     // because ag grid does this automatically
     suppressColumnVirtualisation: true,
-    rowHeight: ROW_HEIGHT
+    rowHeight: ROW_HEIGHT,
+    // Reduce delay on showing tooltips to 500ms
+    tooltipShowDelay: 500
 }
 
 
@@ -103,13 +107,14 @@ export default defineComponent({
             handleTableResize(event);
         };
         const store = useStore<RootState>();
+        const dataSource = computed<string | null>(() => store.state.reviewInput.inputComparison.dataSource);
         const filterSelections = computed(() => store.state.plotSelections[props.plot].filters);
         const indicatorMetadata = computed<IndicatorMetadata>(() => {
             const indicator = filterSelections.value.find(f => f.stateFilterId === "indicator")!.selection[0].id;
             return getIndicatorMetadata(store, props.plot, indicator);
         });
         const columnDefs = computed(() => {
-            return getColumnDefs(props.plot, indicatorMetadata.value, props.tableMetadata,
+            return getColumnDefs(props.plot, dataSource.value, indicatorMetadata.value, props.tableMetadata,
                 filterSelections.value, props.headerDefs, store.state.language)
         });
 

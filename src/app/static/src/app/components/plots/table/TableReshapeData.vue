@@ -37,6 +37,8 @@ export default defineComponent({
             return store.getters["modelCalibrate/tableMetadata"](props.plot);
         });
 
+        const dataSource = computed<string | null>(() => store.state.reviewInput.inputComparison.dataSource);
+
         const reshapedData = computed(() => {
             const data = props.data;
             if (tableMetadata.value && data) {
@@ -62,7 +64,7 @@ export default defineComponent({
                     const index = tableData.findIndex(d =>
                         rowIds.every(rowId => d[rowId] === rowLabels[rowId])
                     );
-                    const tableValues = getTableValues(props.plot, columnKey, currentRow);
+                    const tableValues = getTableValues(props.plot, dataSource.value,  columnKey, currentRow);
                     if (index === -1) {
                         tableData.push({
                             ...rowLabels,

@@ -4,13 +4,13 @@ import {
     CalibrateDataResponse,
     FilterOption,
     IndicatorMetadata,
-    InputComparisonData,
+    InputComparisonResponse,
     TableMetadata
 } from "../../../generated";
 import {formatOutput} from "../utils";
 import i18next from "i18next";
 import {Language} from "../../../store/translations/locales";
-import {ValueFormatterParams, ValueGetterParams} from "ag-grid-community";
+import {ITooltipComp, ITooltipParams, ValueFormatterParams, ValueGetterParams} from "ag-grid-community";
 import DifferenceColumnRenderer from "./DifferenceColumnRenderer.vue";
 
 export interface TableHeaderDef {
@@ -21,7 +21,7 @@ export interface TableHeaderDef {
 export const DIFFERENCE_POSITIVE_COLOR = "rgb(55, 126, 184)";
 export const DIFFERENCE_NEGATIVE_COLOR = "rgb(228, 26, 28)";
 
-export const getTableValues = (plot: PlotName, disaggregateColumn: string, row: TableData[0]) => {
+export const getTableValues = (plot: PlotName, dataSource: string | null, disaggregateColumn: string, row: TableData[0]) => {
     if (plot === "table") {
         const r = row as CalibrateDataResponse["data"][0];
         return {
@@ -30,20 +30,34 @@ export const getTableValues = (plot: PlotName, disaggregateColumn: string, row: 
             [`lower_${r[disaggregateColumn]}`]: r.lower,
         }
     } else if (plot === "inputComparisonTable") {
-        const r = row as InputComparisonData[0];
-        return {
-            [`spectrum_${r[disaggregateColumn]}`]: r.value_spectrum,
-            [`naomi_${r[disaggregateColumn]}`]: r.value_naomi,
-            [`difference_${r[disaggregateColumn]}`]: (r.value_naomi != null && r.value_spectrum != null) ? r.value_naomi - r.value_spectrum : null,
-        };
+        if (dataSource === "anc") {
+            const r = row as InputComparisonResponse["data"]["anc"][0];
+            return {
+                [`spectrum_${r[disaggregateColumn]}`]: r.value_spectrum,
+                [`naomi_${r[disaggregateColumn]}`]: r.value_naomi,
+                [`difference_${r[disaggregateColumn]}`]: (r.value_naomi != null && r.value_spectrum != null) ? r.value_naomi - r.value_spectrum : null,
+            };
+        } else {
+            const r = row as InputComparisonResponse["data"]["art"][0];
+            const difference =  (r.value_naomi != null && r.value_spectrum_adjusted != null) ? r.value_naomi - r.value_spectrum_adjusted : null
+            const difference_ratio = (difference != null && r.value_spectrum_adjusted != null) ? 1 - (difference / r.value_spectrum_adjusted) : null
+            return {
+                [`spectrum_adjusted_${r[disaggregateColumn]}`]: r.value_spectrum_adjusted,
+                [`spectrum_reported_${r[disaggregateColumn]}`]: r.value_spectrum_reported,
+                [`spectrum_reallocated_${r[disaggregateColumn]}`]: r.value_spectrum_reallocated,
+                [`naomi_${r[disaggregateColumn]}`]: r.value_naomi,
+                [`difference_${r[disaggregateColumn]}`]: difference,
+                [`difference_ratio_${r[disaggregateColumn]}`]: difference_ratio
+            };
+        }
     } else {
         throw new Error(`Unreachable, if seeing this you're missing data type '${plot}' in table data prep util.`)
     }
 }
 
-export const getColumnDefs = (plot: PlotName, indicatorMetadata: IndicatorMetadata, tableMetadata: TableMetadata,
-                              filterSelections: FilterSelection[], headerDefs: TableHeaderDef[],
-                              currentLanguage: Language) => {
+export const getColumnDefs = (plot: PlotName, dataSource: string | null, indicatorMetadata: IndicatorMetadata,
+                              tableMetadata: TableMetadata, filterSelections: FilterSelection[],
+                              headerDefs: TableHeaderDef[], currentLanguage: Language) => {
     const columnId = tableMetadata.column[0];
     const columnSelection = filterSelections.find((f: FilterSelection) => f.filterId == columnId);
     const baseColumns = headerDefs.map((header: TableHeaderDef) => {
@@ -67,12 +81,13 @@ export const getColumnDefs = (plot: PlotName, indicatorMetadata: IndicatorMetada
                 valueFormatter: getFormat(selection.id, filterSelections, indicatorMetadata)
             }
         });
-    } else if (plot === "inputComparisonTable") {
-        const valueKeys = ["naomi", "spectrum", "difference"];
+    } else if (plot === "inputComparisonTable" && dataSource === "anc") {
+        const valueKeys = ["spectrum", "naomi", "difference"];
         dataColumns = columnSelection.selection.map((selection: FilterOption) => {
             const childrenColumns = valueKeys.map(key => {
                 return {
                     headerName: i18next.t(key, {lng: currentLanguage}),
+                    colId: selection.id,
                     valueGetter: getValue(key, selection.id),
                     valueFormatter: (params: ValueFormatterParams) => {
                         // Format actual values (including 0) but return null if data is missing
@@ -87,6 +102,37 @@ export const getColumnDefs = (plot: PlotName, indicatorMetadata: IndicatorMetada
             })
             return {
                 headerName: selection.label,
+                colId: selection.id,
+                children: childrenColumns
+            }
+        });
+    } else if (plot === "inputComparisonTable" && dataSource === "art") {
+        const valueKeys = ["spectrum_reported", "spectrum_adjusted", "naomi", "difference", "difference_ratio"];
+        dataColumns = columnSelection.selection.map((selection: FilterOption) => {
+            const childrenColumns = valueKeys.map(key => {
+                return {
+                    headerName: i18next.t(key, {lng: currentLanguage}),
+                    colId: selection.id,
+                    valueGetter: getValue(key, selection.id),
+                    valueFormatter: (params: ValueFormatterParams) => {
+                        if (key === "difference_ratio") {
+                            return formatOutput(params.value, "0.00", null, null)
+                        } else if (params.value != null) {
+                            // Format actual values (including 0) but return null if data is missing
+                            return formatOutput(params.value, indicatorMetadata.format, indicatorMetadata.scale, indicatorMetadata.accuracy)
+                        } else {
+                            return null
+                        }
+                    },
+                    cellRenderer: key === "difference" ? DifferenceColumnRenderer : null,
+                    headerTooltip: key === "difference" || key === "difference_ratio" ? i18next.t(`tableArtTooltip${key}`) : null,
+                    tooltipValueGetter: key === "difference" || key === "difference_ratio" ? inputComparisonTooltipCallback : null,
+                    tooltipComponent: InputComparisonTooltip
+                }
+            })
+            return {
+                headerName: selection.label,
+                colId: selection.id,
                 children: childrenColumns
             }
         });
@@ -95,6 +141,43 @@ export const getColumnDefs = (plot: PlotName, indicatorMetadata: IndicatorMetada
         ...baseColumns,
         ...dataColumns
     ];
+}
+
+export class InputComparisonTooltip implements ITooltipComp {
+    eGui: any;
+    init(params: ITooltipParams) {
+        const eGui = (this.eGui = document.createElement('div'));
+        eGui.classList.add('ag-tooltip');
+        eGui.innerHTML = params.value;
+    }
+
+    getGui() {
+        return this.eGui;
+    }
+}
+
+
+const inputComparisonTooltipCallback = (params: ITooltipParams) => {
+    const column = params.column;
+    if (!isColumnWithParent(column)) {
+        return null
+    }
+    const groupId = column.parent.providedColumnGroup.colGroupDef.colId;
+    if (!groupId) {
+        return null
+    }
+    const reallocation = params.data[`spectrum_reallocated_${groupId}`];
+    const adjustmentRatio = (params.data[`naomi_${groupId}`] - params.data[`spectrum_adjusted_${groupId}`] +
+        reallocation) / params.data[`spectrum_adjusted_${groupId}`];
+    const formattedRelocation = formatOutput(reallocation, "0,0", null, null);
+    const formattedRatio = formatOutput(adjustmentRatio, "0.00%", null, null);
+    return `<div><b>Spectrum rellocation:</b> ${formattedRelocation}</div>
+    <div><b>Naomi:Spectrum adjustment ratio:</b> ${formattedRatio}</div>`
+
+};
+
+function isColumnWithParent(column: any): column is { parent: any } {
+    return column && 'parent' in column;
 }
 
 const getValue = (key: string, disaggregation: string) => {
