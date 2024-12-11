@@ -1,12 +1,15 @@
 import {
     expressionToString,
     getChartDataByArea,
+    getChartDataByIndicatorGroup,
     getLayoutFromData,
     getScatterPointsFromAreaIds,
+    getScatterPointsFromIndicator,
     getTooltipTemplate,
     numeralJsToD3format,
     Operator,
-    PlotColours
+    PlotColours,
+    timeSeriesFixedColours
 } from "../../../../app/components/plots/timeSeries/utils";
 import {format} from "d3-format";
 import {InputTimeSeriesData} from "../../../../app/generated";
@@ -248,10 +251,10 @@ describe("time series utils", () => {
         "type": "category"
     };
 
-    const expectYAxis = (domainStart: number, domainEnd: number, actual: any) => {
+    const expectYAxis = (domainStart: number, domainEnd: number, actual: any, tickFormat: any = ".0f") => {
         expect(Object.keys(actual)).toStrictEqual(["zeroline", "tickformat", "tickfont", "domain", "range", "type"]);
         expect(actual.zeroline).toBe(false);
-        expect(actual.tickformat).toBe(".0f");
+        expect(actual.tickformat).toBe(tickFormat);
         expect(actual.tickfont).toStrictEqual({"color": "grey"});
         expect(actual.range[0]).toBeLessThan(0);
         expect(actual.range[1]).toBeGreaterThan(2663);
@@ -879,6 +882,174 @@ describe("time series utils", () => {
 
             expect(expressionToString("unkn", idTolabelMap)).toStrictEqual(`\\textcolor{${PlotColours.NORMAL.BASE}}{\\text{unkn}}`)
         })
+    });
 
-    })
+    describe("can build layout and scatter points for time series by indicator groups", () => {
+        // Test data set for four areas, where number of columns is 2, so 2 rows will be required.
+        // Areas 1 to 3 have two data points. The first two areas' diff between first and second points violates
+        // threshold so these will be highlighted, the third area does not.
+        // The fourth area has only 1 data point
+        const chartData = [
+            {
+                "area_id": "MWI_4_1_demo",
+                "area_name": "Chitipa",
+                "area_hierarchy": "Northern/Chitipa",
+                "area_level": 4,
+                "quarter": "Q4",
+                "time_period": "2011 Q4",
+                "plot": "anc_status",
+                "value": 2116,
+                "page": 1
+            },
+            {
+                "area_id": "MWI_4_1_demo",
+                "area_name": "Chitipa",
+                "area_hierarchy": "Northern/Chitipa",
+                "area_level": 4,
+                "quarter": "Q4",
+                "time_period": "2012 Q4",
+                "plot": "anc_status",
+                "value": 2663,
+                "page": 1
+            },
+            {
+                "area_id": "MWI_4_1_demo",
+                "area_name": "Chitipa",
+                "area_hierarchy": "Northern/Chitipa",
+                "area_level": 4,
+                "quarter": "Q4",
+                "time_period": "2011 Q4",
+                "plot": "anc_total_pos",
+                "value": 4555,
+                "page": 1
+            },
+            {
+                "area_id": "MWI_4_1_demo",
+                "area_name": "Chitipa",
+                "area_hierarchy": "Northern/Chitipa",
+                "area_level": 4,
+                "quarter": "Q4",
+                "time_period": "2012 Q4",
+                "plot": "anc_total_pos",
+                "value": 4795,
+                "page": 1
+            },
+        ] as any as InputTimeSeriesData;
+
+        const plotNameMap = new Map<string, string>([
+            ["anc_status", "ANC status"],
+            ["anc_total_pos", "ANC total"]
+        ])
+
+        const layoutData = {
+            isModal: true,
+            margin: {l: 40, r: 40, t: 10, b: 40},
+            timeSeriesPlotLabels: plotNameMap,
+            yAxisFormat: [".0f", ","],
+            subplots: {
+                columns: 2,
+                distinctColumn: "plot",
+                rows: 1,
+                indicators: [["anc_status"], ["anc_status", "anc_total_pos"]]
+            },
+        };
+
+        const expectedData = [
+            {
+                "name": "ANC status",
+                "showlegend": false,
+                "x": ["2011 Q4", "2012 Q4"],
+                "y": [2116, 2663],
+                "xaxis": "x1",
+                "yaxis": "y1",
+                "type": "scatter",
+                "line": {"color": PlotColours.HIGHLIGHT.BASE},
+                "marker": {
+                    "color": Array(2).fill(PlotColours.HIGHLIGHT.BASE),
+                    "line": {
+                        "width": 0.5,
+                        "color": Array(2).fill(PlotColours.HIGHLIGHT.BASE)
+                    }
+                },
+                "hovertemplate": Array(2).fill("ANC status<br>%{x}, %{y}<br>Northern/Chitipa<extra></extra>")
+            },
+            {
+                "name": "ANC status",
+                "showlegend": false,
+                "x": ["2011 Q4", "2012 Q4"],
+                "y": [2116, 2663],
+                "xaxis": "x2",
+                "yaxis": "y2",
+                "type": "scatter",
+                "line": {"color": timeSeriesFixedColours.get("anc_status")!.BASE},
+                "marker": {
+                    "color": Array(2).fill(timeSeriesFixedColours.get("anc_status")!.BASE),
+                    "line": {
+                        "width": 0.5,
+                        "color": Array(2).fill(timeSeriesFixedColours.get("anc_status")!.BASE)
+                    }
+                },
+                "hovertemplate": Array(2).fill("ANC status<br>%{x}, %{y}<br>Northern/Chitipa<extra></extra>")
+            },
+            {
+                "name": "ANC total",
+                "showlegend": false,
+                "x": ["2011 Q4", "2012 Q4"],
+                "y": [4555, 4795],
+                "xaxis": "x2",
+                "yaxis": "y2",
+                "type": "scatter",
+                "line": {"color": timeSeriesFixedColours.get("anc_total_pos")!.BASE},
+                "marker": {
+                    "color": Array(2).fill(timeSeriesFixedColours.get("anc_total_pos")!.BASE),
+                    "line": {
+                        "width": 0.5,
+                        "color": Array(2).fill(timeSeriesFixedColours.get("anc_total_pos")!.BASE)
+                    }
+                },
+                "hovertemplate": Array(2).fill("ANC total<br>%{x}, %{y}<br>Northern/Chitipa<extra></extra>")
+            },
+        ] as any
+
+        const dataByIndicatorGroup = getChartDataByIndicatorGroup(chartData, layoutData.subplots.indicators);
+        const timePeriods = chartData.map(dataPoint => dataPoint.time_period).sort() || [];
+
+        it("can get chart data split by indicator group", () => {
+            expect(Object.keys(dataByIndicatorGroup)).toStrictEqual(["0", "1"]);
+
+            const firstGroupPlotTypes = Array.from(new Set(dataByIndicatorGroup[0].map(obj => obj.plot)))
+            expect(firstGroupPlotTypes).toStrictEqual(["anc_status"])
+            const secondGroupPlotTypes = Array.from(new Set(dataByIndicatorGroup[1].map(obj => obj.plot)))
+            expect(secondGroupPlotTypes).toStrictEqual(["anc_status", "anc_total_pos"])
+        });
+
+        it("can build scatter points from data", () => {
+            const data = getScatterPointsFromIndicator(layoutData.subplots.indicators, dataByIndicatorGroup,
+                plotNameMap, Language.en);
+            expect(data).toStrictEqual(expectedData)
+        });
+
+        it("can build layout data", () => {
+            const layout = getLayoutFromData(dataByIndicatorGroup, layoutData, timePeriods);
+
+            expect(Object.keys(layout)).toStrictEqual([
+                "margin", "dragmode", "grid", "yaxis1", "xaxis1", "yaxis2", "xaxis2"
+            ]);
+            expect(layout.margin).toStrictEqual({l: 40, r: 40, t: 10, b: 40});
+            expect(layout.dragmode).toBe(false);
+            expect(layout.grid).toStrictEqual({
+                "columns": 2,
+                "rows": 1,
+                "pattern": "independent",
+                "xgap": 0.25,
+                "ygap": 0.4,
+            });
+
+            expect(layout.xaxis1).toStrictEqual(expectedXAxis);
+            expect(layout.xaxis2).toStrictEqual(expectedXAxis);
+
+            expectYAxis(1, 0.4, layout.yaxis1);
+            expectYAxis(1, 0.4, layout.yaxis2, ",");
+        });
+    });
 });

@@ -100,6 +100,11 @@ export const test = base.extend<{ projectPage: ProjectPage }>({
         const projectPage = new ProjectPage(page);
         await projectPage.page.goto("/");
         await use(projectPage);
+        // Close modal by clicking background, if it is visible
+        const modalBackdrop = page.locator('.modal-backdrop');
+        if (await modalBackdrop.isVisible()) {
+            await page.locator('.modal-backdrop').first().click({position: {x: 10, y: 10}});
+        }
         await projectPage.deleteAllProjects();
     },
 });
