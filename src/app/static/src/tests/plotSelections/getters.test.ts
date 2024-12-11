@@ -9,7 +9,7 @@ import {
     mockRootState,
     mockReviewInputState,
     mockInputComparisonMetadata,
-    mockPopulationDataResponse, mockPopulationPyramidData
+    mockPopulationPyramidData
 } from "../mocks";
 import {getters, PopulationColors} from "../../app/store/plotSelections/getters";
 import {PlotName} from "../../app/store/plotSelections/plotSelections";
@@ -342,17 +342,18 @@ describe("plotSelections getters", () => {
                     loading: false,
                     error: null,
                     data: {
-                        data: [],
+                        data: {anc: [], art: []},
                         metadata: inputComparisonMetadata,
                         warnings: []
-                    }
+                    },
+                    dataSource: null
                 }
             })
         });
 
         const getter = getters.barchartData(mockPlotSelectionsState(), mockGetters, rootState, rootGetters);
 
-        const plotData: InputComparisonData = [
+        const plotData: InputComparisonData["anc"] = [
             {indicator: "prevalence", area_name: "Malawi", year: 2020, group: "Adult Males", value_spectrum: 2, value_naomi: 3}
         ]
         const indicatorMetadata = mockIndicatorMetadata();

@@ -97,7 +97,7 @@ describe("modelCalibrate getters", () => {
 
     it("can get tableMetadata from default effect if no effect on plot control", () => {
         const inputComparisonResponse: InputComparisonResponse = {
-            data: [],
+            data: {anc: [], art: []},
             warnings: [],
             metadata: mockInputComparisonMetadata({
                 plotSettingsControl: {
@@ -141,7 +141,7 @@ describe("modelCalibrate getters", () => {
 
     it("tableMetadata returns undefined if no custom table metadata", () => {
         const inputComparisonResponse: InputComparisonResponse = {
-            data: [],
+            data: {anc: [], art: []},
             warnings: [],
             metadata: mockInputComparisonMetadata({
                 plotSettingsControl: {

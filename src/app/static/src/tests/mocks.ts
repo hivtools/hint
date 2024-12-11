@@ -296,17 +296,90 @@ export const mockInputComparisonState = (props?: Partial<ReviewInputState["input
         loading: false,
         error: null,
         data: null,
+        dataSource: null,
         ...props
     }
 }
 
 export const mockInputComparisonData = (props?: Partial<InputComparisonData>): InputComparisonData => {
-    return [
-        {indicator: "prevalence", area_name: "Malawi", year: 2020, group: "Adult Males", value_spectrum: 2001, value_naomi: 3000},
-        {indicator: "prevalence", area_name: "Malawi", year: 2021, group: "Adult Males", value_spectrum: null, value_naomi: 2000},
-        {indicator: "prevalence", area_name: "Malawi", year: 2022, group: "Adult Females", value_spectrum: 5001, value_naomi: 2000},
-        {indicator: "prevalence", area_name: "Malawi", year: 2023, group: "Adult Females", value_spectrum: 6000, value_naomi: 6000},
-    ]
+    return {
+        anc: [
+            {
+                indicator: "prevalence",
+                area_name: "Malawi",
+                year: 2020,
+                group: "Adult Males",
+                value_spectrum: 2001,
+                value_naomi: 3000
+            },
+            {
+                indicator: "prevalence",
+                area_name: "Malawi",
+                year: 2021,
+                group: "Adult Males",
+                value_spectrum: null,
+                value_naomi: 2000
+            },
+            {
+                indicator: "prevalence",
+                area_name: "Malawi",
+                year: 2022,
+                group: "Adult Females",
+                value_spectrum: 5001,
+                value_naomi: 2000
+            },
+            {
+                indicator: "prevalence",
+                area_name: "Malawi",
+                year: 2023,
+                group: "Adult Females",
+                value_spectrum: 6000,
+                value_naomi: 6000
+            }
+        ],
+        art: [
+            {
+                indicator: "prevalence",
+                area_name: "Malawi",
+                year: 2020,
+                group: "Adult Males",
+                value_spectrum_adjusted: 2001,
+                value_spectrum_reported: 2002,
+                value_spectrum_reallocated: 0,
+                value_naomi: 3000
+            },
+            {
+                indicator: "prevalence",
+                area_name: "Malawi",
+                year: 2021,
+                group: "Adult Males",
+                value_spectrum_adjusted: null,
+                value_spectrum_reported: null,
+                value_spectrum_reallocated: null,
+                value_naomi: 2000
+            },
+            {
+                indicator: "prevalence",
+                area_name: "Malawi",
+                year: 2022,
+                group: "Adult Females",
+                value_spectrum_adjusted: 5001,
+                value_spectrum_reported: 5002,
+                value_spectrum_reallocated: 0,
+                value_naomi: 2000
+            },
+            {
+                indicator: "prevalence",
+                area_name: "Malawi",
+                year: 2023,
+                group: "Adult Females",
+                value_spectrum_adjusted: 6000,
+                value_spectrum_reported: 6001,
+                value_spectrum_reallocated: 0,
+                value_naomi: 6000
+            }
+        ]
+    }
 }
 
 export const mockReviewInputDataset = (props?: Partial<ReviewInputDataset>): ReviewInputDataset => {
