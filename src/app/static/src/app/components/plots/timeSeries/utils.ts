@@ -200,6 +200,9 @@ export const getScatterPointsFromIndicator = (indicatorGroups: string[][], dataB
     return indicatorGroups.flatMap((group, groupIndex) => {
         return group.reduce((r, indicatorName) => {
             const groupData = dataByGroup[groupIndex];
+            if (!groupData) {
+                return r
+            }
             const indicatorData = groupData.filter(row => row.plot === indicatorName)
             if (groupIndex == 0) {
                 const scatterPoints = getScatterPointsWithHighlight(indicatorData, groupIndex, true, plotNameMap, currentLanguage)
