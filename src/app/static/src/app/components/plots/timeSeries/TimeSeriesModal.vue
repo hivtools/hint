@@ -101,6 +101,7 @@ const valueFormats = computed(() => {
 const timeSeriesPlotLabels = store.getters["metadata/timeSeriesPlotTypeLabel"];
 
 const layout = computed<Layout>(() => {
+    const plots = timeSeriesExpandedViews.get(props.plotType)?.plots
     return {
         isModal: true,
         margin: {l: 40, r: 40, t: 10, b: 40},
@@ -108,10 +109,10 @@ const layout = computed<Layout>(() => {
         yAxisFormat: valueFormats.value,
         subplots: {
             rows: 1,
-            columns: 3,
+            columns: plots?.length ?? 1,
             xgap: 0.15,
             distinctColumn: "plot",
-            indicators: timeSeriesExpandedViews.get(props.plotType)?.plots
+            indicators: plots
         }
     }
 });
