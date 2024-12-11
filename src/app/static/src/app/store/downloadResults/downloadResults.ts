@@ -9,7 +9,7 @@ export type DownloadResultsState = {
     [K in DownloadType]: DownloadResultsDependency
 }
 
-export const initialDownloadResults = {
+export const initialDownloadResults: DownloadResultsDependency = {
     fetchingDownloadId: false,
     downloadId: "",
     preparing: false,
@@ -17,7 +17,8 @@ export const initialDownloadResults = {
     complete: false,
     error: null,
     downloadError: null,
-    metadataError: null
+    metadataError: null,
+    statusResponse: null
 }
 
 export const initialDownloadResultsState = (): DownloadResultsState => {
