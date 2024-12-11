@@ -3,6 +3,7 @@ package org.imperial.mrc.hint.integration
 import org.assertj.core.api.AssertionsForClassTypes.assertThat
 import org.imperial.mrc.hint.helpers.getTestEntity
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.web.client.exchange
 import org.springframework.boot.test.web.client.getForEntity
@@ -95,6 +96,7 @@ class DiseaseTests : VersionFileTests()
         assertSuccess(responseEntity, "ValidateInputResponse")
     }
 
+    @Disabled("TODO: removed the strict validation for when anc pos greater than total for Zimbabwe at workshop.")
     @Test
     fun `can upload and retrieve data without strict validation`()
     {

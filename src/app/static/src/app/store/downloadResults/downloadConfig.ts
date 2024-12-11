@@ -8,6 +8,7 @@ export enum DownloadType {
     COARSE = "CoarseOutput",
     SUMMARY = "Summary",
     COMPARISON = "Comparison",
+    DATAPACK = "Datapack"
 }
 
 // switches to control which buttons are shown in download page
@@ -16,6 +17,7 @@ export const downloadSwitches = {
     [DownloadType.COARSE]: true,
     [DownloadType.SUMMARY]: true,
     [DownloadType.COMPARISON]: switches.comparisonOutput,
+    [DownloadType.DATAPACK]: true
 };
 
 // function to get translation key from the type
@@ -42,6 +44,10 @@ export const downloadPostConfig: Record<DownloadType, PostObject> = {
     [DownloadType.COMPARISON]: {
         url: (store) => `download/submit/comparison/${store.rootState.modelCalibrate.calibrateId}`,
         body: () => ({})
+    },
+    [DownloadType.DATAPACK]: {
+        url: (store) => `download/submit/datapack/${store.rootState.modelCalibrate.calibrateId}`,
+        body: (store) => store.rootGetters.projectState
     },
 } as const;
 

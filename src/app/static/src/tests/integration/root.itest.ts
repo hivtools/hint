@@ -38,6 +38,9 @@ describe(`root actions`, () => {
                 },
                 [DownloadType.COMPARISON]: {
                     downloadId: "comparison123"
+                },
+                [DownloadType.DATAPACK]: {
+                    downloadId: "datapack123"
                 }
             },
             projects: {currentProject: {name: "v1", id: 1, versions: []}}
