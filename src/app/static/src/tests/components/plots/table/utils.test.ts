@@ -98,12 +98,14 @@ describe("getColumnDefs util works as expected", () => {
             "field": "age",
             "filter": "agTextColumnFilter",
             "headerName": "Age",
+            "minWidth": "125",
             "pinned": "left",
         },
         {
             "field": "sex",
             "filter": "agTextColumnFilter",
             "headerName": "Sex",
+            "minWidth": "125",
             "pinned": "left",
         },
     ];
