@@ -70,7 +70,7 @@ const chartData = computed<InputTimeSeriesData>(() => {
     }
     const indicatorsToKeep = ([] as string[]).concat(...indicatorsForPlotType)
 
-    const modalSelections = structuredClone(selections)
+    const modalSelections = {...selections}
     modalSelections.filters = [
         ...modalSelections.filters.filter((f: FilterSelection) => f.filterId !== "time_series_anc_plot_type")
     ]
