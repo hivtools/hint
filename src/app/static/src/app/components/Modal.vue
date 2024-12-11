@@ -6,7 +6,8 @@
                 <div class="modal-content">
                     <div class="modal-header" v-if="hasHeaderSlot">
                         <slot name="header"></slot>
-                        <a @click="$emit('close-modal')"
+                        <a id="modal-close-button"
+                           @click="$emit('close-modal')"
                            style="cursor: pointer">
                             <vue-feather type="x" class="align-middle"/>
                         </a>
