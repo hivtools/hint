@@ -3,7 +3,13 @@ import {actions} from "./actions";
 import {mutations} from "./mutations";
 import {RootState, WarningsState} from "../../root";
 import {ReviewInputDataset} from "../../types";
-import {Error, FilterOption, InputComparisonResponse, InputPopulationMetadataResponse} from "../../generated";
+import {
+    Error,
+    FilterOption,
+    InputComparisonData,
+    InputComparisonResponse,
+    InputPopulationMetadataResponse
+} from "../../generated";
 
 export interface ReviewInputState extends WarningsState {
     datasets: Record<string, ReviewInputDataset>
@@ -12,7 +18,8 @@ export interface ReviewInputState extends WarningsState {
     inputComparison: {
         loading: boolean,
         error: Error | null,
-        data: InputComparisonResponse | null
+        data: InputComparisonResponse | null,
+        dataSource: string | null,
     },
     population: {
         loading: boolean,
@@ -30,7 +37,8 @@ export const initialReviewInputState = (): ReviewInputState => {
         inputComparison: {
             loading: false,
             error: null,
-            data: null
+            data: null,
+            dataSource: null
         },
         population: {
             loading: false,
@@ -39,6 +47,8 @@ export const initialReviewInputState = (): ReviewInputState => {
         }
     }
 };
+
+export type InputComparisonPlotData = InputComparisonData["anc"] | InputComparisonData["art"];
 
 export const reviewInputGetters = {
     ageGroupOptions: (state: ReviewInputState): FilterOption[] => {

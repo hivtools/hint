@@ -1,11 +1,12 @@
 import {ChartData, ChartDataset, DefaultDataPoint} from "chart.js";
-import {IndicatorMetadata, FilterOption, InputComparisonData} from "../../../generated";
+import {IndicatorMetadata, FilterOption} from "../../../generated";
 import {AnnotationOptions} from "chartjs-plugin-annotation";
 import {formatOutput} from "../utils";
 import {PlotData} from "../../../store/plotData/plotData";
 import {Dict} from "../../../types";
 import i18next from "i18next";
 import {AreaProperties} from "../../../store/baseline/baseline";
+import {InputComparisonPlotData} from "../../../store/reviewInput/reviewInput";
 
 type BarChartDataset<Data> = ChartDataset<"bar", Data>
 
@@ -137,7 +138,7 @@ const pushDatasetValue = (idx: number, dataset: any, value: number | null, toolt
     dataset.tooltipExtraText[idx] = tooltip;
 }
 
-export const inputComparisonPlotDataToChartData = function (plotData: InputComparisonData,
+export const inputComparisonPlotDataToChartData = function (plotData: InputComparisonPlotData,
                                                             indicatorMetadata: IndicatorMetadata,
                                                             xAxisId: string,
                                                             xAxisSelections: FilterOption[],
@@ -165,7 +166,10 @@ export const inputComparisonPlotDataToChartData = function (plotData: InputCompa
             continue;
         }
 
-        const spectrumValue = row["value_spectrum"]
+        let spectrumValue = row["value_spectrum"]
+        if (!spectrumValue) {
+            spectrumValue = row["value_spectrum_adjusted"] ?? null
+        }
         const naomiValue = row["value_naomi"]
         const difference = spectrumValue && naomiValue ? spectrumValue - naomiValue : null
         const naomiValueTooltip = difference !== null ? i18next.t("inputComparisonTooltipDifferenceNaomi", {

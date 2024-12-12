@@ -6,7 +6,7 @@ import {
     PopulationChartData,
     PopulationChartDataset
 } from "./plotSelections";
-import {IndicatorMetadata, FilterOption, InputComparisonData, PopulationResponseData} from "../../generated";
+import {IndicatorMetadata, FilterOption, PopulationResponseData} from "../../generated";
 import {
     BarChartData,
     inputComparisonPlotDataToChartData,
@@ -18,6 +18,7 @@ import {PlotData, PopulationPyramidData} from "../plotData/plotData";
 import {Dict} from "../../types";
 import {getMetadataFromPlotName} from "./actions";
 import {AreaProperties} from "../baseline/baseline";
+import {InputComparisonPlotData} from "../reviewInput/reviewInput";
 
 export const getters = {
     controlSelectionFromId: (state: PlotSelectionsState) => (plotName: PlotName, controlId: string): FilterOption | undefined => {
@@ -42,7 +43,7 @@ export const getters = {
             const xAxisId = "year";
             const xAxisSelections = getters.filterSelectionFromId(plotName, xAxisId);
             const xAxisOptions = metadata.filterTypes.find(f => f.id === xAxisId)!.options;
-            return inputComparisonPlotDataToChartData(plotData as InputComparisonData, indicatorMetadata,
+            return inputComparisonPlotDataToChartData(plotData as InputComparisonPlotData, indicatorMetadata,
                 xAxisId, xAxisSelections, xAxisOptions, currentLanguage)
         }
         const disaggregateBy = getters.controlSelectionFromId(plotName, "disagg_by");
