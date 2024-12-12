@@ -247,7 +247,7 @@ describe("ADR dataset-related actions", () => {
 
         expect(commit.mock.calls[2][0]).toStrictEqual({
             type: "reviewInput/ClearDataset",
-            payload: "art"
+            payload: "programme"
         });
         expect(dispatch.mock.calls[0][0]).toBe("setProgramResponse");
         expect(dispatch.mock.calls[0][1]["filename"])
