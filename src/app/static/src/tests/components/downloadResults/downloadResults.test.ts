@@ -94,7 +94,7 @@ describe("Download Results component", () => {
             }
         );
         const downloadTableRows = wrapper.findAllComponents(DownloadTableRow);
-        expect(downloadTableRows.length).toBe(4);
+        expect(downloadTableRows.length).toBe(5);
         Object.values(DownloadType).forEach((type, index) => {
             expect((downloadTableRows[index] as any).props("downloadType")).toBe(type);
         });

@@ -120,6 +120,6 @@ test("can go through whole estimates process", async ({ projectPage }) => {
 
     // And I can see file downloads
     Object.values(DownloadType).forEach(async type => {
-        await expect(page.locator(`#${type}-download button`)).toHaveClass(/btn-secondary/);
+        await expect(page.locator(`#${type}-download button`)).toHaveClass(/btn-sm/);
     });
 });
