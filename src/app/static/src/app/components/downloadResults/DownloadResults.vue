@@ -1,8 +1,8 @@
 <template>
     <div class="container">
         <div class="row">
-            <div id="upload" v-if="hasUploadPermission" class="col px-0 mb-5">
-                <h2 v-translate="'uploadFileToAdr'"></h2>
+            <div id="upload" v-if="hasUploadPermission" class="col px-0 mb-5 pl-1">
+                <h2 v-translate="'uploadFileToAdr'" class="save-results-title"></h2>
                 <button @click.prevent="handleUploadModal"
                         class="btn btn-lg my-3"
                         :class="uploading || isPreparing ? 'btn-secondary' : 'btn-red'"
@@ -38,7 +38,7 @@
         </div>
         <div class="row">
             <div class="col">
-                <h2 v-translate="'download'" class="pb-2 pl-1 row"></h2>
+                <h2 v-translate="'download'" class="pb-2 pl-1 row save-results-title"></h2>
                 <template v-for="type in Object.values(DownloadType)" :key="type">
                     <div :id="`${type}-download`" v-if="switches[type]">
                         <download-table-row :download-type="type"/>
@@ -146,3 +146,9 @@
         }
     });
 </script>
+
+<style lang="css" scoped>
+.save-results-title {
+    font-weight: bold;
+}
+</style>

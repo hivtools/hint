@@ -5,7 +5,7 @@
                 <vue-feather :type="fileTypeUIConfigs[downloadType].icon" size="25" class="baseline-aligned-icon"></vue-feather>
                 <p class="mb-0 file-type-text" :style="{ color: fileTypeUIConfigs[downloadType].color }">{{ fileTypeUIConfigs[downloadType].text.toUpperCase() }}</p>
             </div>
-            <h4 v-translate="getDownloadTranslationKey(downloadType)" class="mb-0"></h4>
+            <p v-translate="getDownloadTranslationKey(downloadType)" class="mb-0" style="font-size: large;"></p>
         </span>
         <span class="d-flex align-items-center col-md-3" :class="!downloadState.statusResponse?.done && 'dot-dot-dot'">
             <vue-feather :type="statusUIConfigs[downloadStatus].icon"
@@ -93,7 +93,7 @@ const download = () => {
 
 .file-type-text {
     font-size: small;
-    font-weight: 900;
+    font-weight: 600;
 }
 
 .baseline-aligned-icon {
