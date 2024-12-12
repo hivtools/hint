@@ -131,7 +131,8 @@ export const getColumnDefs = (plot: PlotName, dataSource: string | null, indicat
                     cellRenderer: key === "difference" ? DifferenceColumnRenderer : null,
                     headerTooltip: key === "difference" || key === "difference_ratio" ? i18next.t(`tableArtTooltip${key}`) : null,
                     tooltipValueGetter: key === "difference" || key === "difference_ratio" ? inputComparisonTooltipCallback : null,
-                    tooltipComponent: InputComparisonTooltip
+                    tooltipComponent: InputComparisonTooltip,
+                    tooltipComponentParams: { language: currentLanguage }
                 }
             })
             return {
@@ -161,7 +162,7 @@ export class InputComparisonTooltip implements ITooltipComp {
 }
 
 
-const inputComparisonTooltipCallback = (params: ITooltipParams) => {
+const inputComparisonTooltipCallback = (params: ITooltipParams & { language: Language }) => {
     const column = params.column;
     if (!isColumnWithParent(column)) {
         return null
@@ -175,8 +176,8 @@ const inputComparisonTooltipCallback = (params: ITooltipParams) => {
         reallocation) / params.data[`spectrum_adjusted_${groupId}`];
     const formattedRelocation = formatOutput(reallocation, "0,0", null, null);
     const formattedRatio = formatOutput(adjustmentRatio, "0.00%", null, null);
-    return `<div><b>Spectrum rellocation:</b> ${formattedRelocation}</div>
-    <div><b>Naomi:Spectrum adjustment ratio:</b> ${formattedRatio}</div>`
+    return `<div><b>${i18next.t("spectrumReallocation")}</b> ${formattedRelocation}</div>
+    <div><b>${i18next.t("spectrumAdjustmentRatio")}</b> ${formattedRatio}</div>`
 
 };
 
