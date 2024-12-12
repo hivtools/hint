@@ -32,7 +32,7 @@ export interface SurveyAndProgramActions {
 
 const enum DATASET_TYPE {
     ANC = "anc",
-    ART = "art",
+    ART = "programme",
     SURVEY = "survey",
     VMMC = "vmmc"
 }
