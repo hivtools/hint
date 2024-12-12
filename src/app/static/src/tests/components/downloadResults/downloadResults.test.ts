@@ -156,8 +156,8 @@ describe("Download Results component", () => {
                     }
                 }
             });
-        const headers = wrapper.findAll("h4");
-        expect(headers.length).toBe(Object.values(DownloadType).length);
+        const rows = wrapper.findAllComponents(DownloadTableRow);
+        expect(rows.length).toBe(Object.values(DownloadType).length);
     });
 
     it("does not render status messages or error alerts without appropriate states", () => {
