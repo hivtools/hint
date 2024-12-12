@@ -486,7 +486,8 @@ describe("root actions", () => {
                     inputComparison: {
                         loading: false,
                         error: null,
-                        data: {} as any
+                        data: {} as any,
+                        dataSource: null
                     },
                     population: {
                         loading: false,
@@ -611,7 +612,8 @@ describe("root actions", () => {
                     inputComparison: {
                         loading: false,
                         error: null,
-                        data: {} as any
+                        data: {} as any,
+                        dataSource: null
                     }
                 })
             });

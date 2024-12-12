@@ -73,14 +73,16 @@ describe("reviewInput mutations", () => {
                     metadata: mockInputComparisonMetadata(),
                     warnings: []
                 },
-                error: null
+                error: null,
+                dataSource: null,
             }
         });
         mutations.ClearInputComparison(state);
         expect(state.inputComparison).toEqual({
             loading: false,
             data: null,
-            error: null
+            error: null,
+            dataSource: null
         });
     })
 
@@ -128,6 +130,12 @@ describe("reviewInput mutations", () => {
         mutations.SetInputComparisonData(state, {payload: inputComparisonResponse});
         expect(state.inputComparison.data).toBe(inputComparisonResponse);
     });
+
+    it("sets input comparison data source", () => {
+        const state = mockReviewInputState();
+        mutations.SetInputComparisonDataSource(state, {payload: "anc"})
+        expect(state.inputComparison.dataSource).toBe("anc");
+    })
 
     it("sets input population metadata loading state", () => {
         const testState = mockReviewInputState();

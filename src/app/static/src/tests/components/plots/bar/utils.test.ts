@@ -294,7 +294,8 @@ describe("barchart utils work as expected", () => {
         });
     });
 
-    it("can get barchart data for input comparison", () => {
+    it.each(["anc", "art"])("can get barchart data for input comparison %i", (source: string) => {
+        const src = source as "anc" | "art";
         const xAxis = "year";
         const xAxisSelections: FilterOption[] = [
             {id: "2022", label: "2022"},
@@ -325,7 +326,7 @@ describe("barchart utils work as expected", () => {
         };
 
         const result = inputComparisonPlotDataToChartData(
-            inputComparisonData, indicator, xAxis, xAxisSelections, xAxisOptions, Language.en);
+            inputComparisonData[src], indicator, xAxis, xAxisSelections, xAxisOptions, Language.en);
 
         expect(result).toStrictEqual({
             labels: ["2020", "2021", "2022", "2023"],
@@ -354,7 +355,7 @@ describe("barchart utils work as expected", () => {
 
         // Tooltip text is translated
         const resultFr = inputComparisonPlotDataToChartData(
-            inputComparisonData, indicator, xAxis, xAxisSelections, xAxisOptions, Language.fr);
+            inputComparisonData[src], indicator, xAxis, xAxisSelections, xAxisOptions, Language.fr);
 
         expect(resultFr.datasets[0].tooltipExtraText)
             .toStrictEqual(["Différence avec le Spectrum: 999", "", "Différence avec le Spectrum: -3,001",

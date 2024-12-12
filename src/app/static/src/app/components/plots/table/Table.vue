@@ -17,7 +17,7 @@ import TableReshapeData from './TableReshapeData.vue';
 import DownloadButton from '../timeSeries/downloadTimeSeries/DownloadButton.vue';
 import { exportService } from '../../../dataExportService';
 import { appendCurrentDateTime } from '../../../utils';
-import { formatOutput, getIndicatorMetadata } from '../utils';
+import { formatOutput, getIndicatorMetadata} from '../utils';
 import {TableData} from "../../../store/plotData/plotData";
 import { PlotName } from "../../../store/plotSelections/plotSelections";
 

@@ -14,6 +14,7 @@ export enum ReviewInputMutation {
     SetInputComparisonLoading = "SetInputComparisonLoading",
     SetInputComparisonError = "SetInputComparisonError",
     SetInputComparisonData = "SetInputComparisonData",
+    SetInputComparisonDataSource = "SetInputComparisonDataSource",
     SetPopulationLoading = "SetPopulationLoading",
     SetPopulationError = "SetPopulationError",
     SetPopulationMetadata = "SetPopulationMetadata",
@@ -35,7 +36,8 @@ export const mutations: MutationTree<ReviewInputState> = {
         state.inputComparison = {
             loading: false,
             error: null,
-            data: null
+            data: null,
+            dataSource: null
         };
     },
     [ReviewInputMutation.SetError](state: ReviewInputState, action: PayloadWithType<Error | null>) {
@@ -58,6 +60,9 @@ export const mutations: MutationTree<ReviewInputState> = {
     },
     [ReviewInputMutation.SetInputComparisonData](state: ReviewInputState, action: PayloadWithType<InputComparisonResponse>) {
         state.inputComparison.data = action.payload;
+    },
+    [ReviewInputMutation.SetInputComparisonDataSource](state: ReviewInputState, action: PayloadWithType<string>) {
+        state.inputComparison.dataSource = action.payload;
     },
     [ReviewInputMutation.SetPopulationLoading](state: ReviewInputState, action: PayloadWithType<boolean>) {
         state.population.loading = action.payload;
