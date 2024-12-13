@@ -62,6 +62,19 @@ test("can view time series plot", async ({ projectPage }) => {
     // updates, returning and erroring. So wait for response before testing it.
     await page.waitForResponse(resp => resp.url().includes('/chart-data/input-time-series/anc') && resp.status() === 200)
     await expect(page.locator("#review-inputs")).toHaveScreenshot("time-series-anc.png")
+
+    // When I open expanded plot view
+    await page.locator('tspan').first().click();
+
+    // Then I can see expanded plot view
+    await page.setViewportSize({width: 1920, height: 1080}) // Set viewport size to see entire dialog content
+    await expect(page.locator('div:nth-child(2) > .modal-dialog > .modal-content')).toHaveScreenshot("time-series-expanded.png");
+
+    // When I click background
+    await page.locator('.modal-backdrop').first().click({position: {x: 10, y: 10}});
+
+    // Then dialog has closed
+    await expect(page.locator('div:nth-child(2) > .modal-dialog > .modal-content')).not.toBeVisible();
 });
 
 test("can view input map plot", async ({ projectPage }) => {
