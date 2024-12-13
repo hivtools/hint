@@ -49,7 +49,6 @@ const pageNumber = ref<number>(1);
 watch(
     () => store.state.plotSelections["population"],
     (oldState: PlotSelectionsState["timeSeries"], newState: PlotSelectionsState["timeSeries"]) => {
-        console.log(oldState)
         const oldAreaLevel = oldState.filters.find(f => f.filterId == "area_level")?.selection[0].id;
         const newAreaLevel = newState.filters.find(f => f.filterId == "area_level")?.selection[0].id;
         const oldAreas = oldState.filters.find(f => f.filterId == "area")?.selection;

@@ -44,7 +44,7 @@ describe("Survey and programme actions", () => {
         await actions.uploadProgram({commit, dispatch, rootState} as any, formData);
 
         expect(commit.mock.calls[2][0]["type"]).toBe("reviewInput/ClearDataset");
-        expect(commit.mock.calls[2][0]["payload"]).toBe("art");
+        expect(commit.mock.calls[2][0]["payload"]).toBe("programme");
 
         expect(dispatch.mock.calls[0][0]).toBe("setProgramResponse");
         expect(dispatch.mock.calls[0][1]["filename"]).toBe("programme.csv");
