@@ -203,7 +203,7 @@ describe("Survey and programme actions", () => {
 
         expect(commit.mock.calls[2][0]).toStrictEqual({
             type: "reviewInput/ClearDataset",
-            payload: "art"
+            payload: "programme"
         });
 
         expect(commit.mock.calls[3][0]).toStrictEqual({
@@ -257,7 +257,7 @@ describe("Survey and programme actions", () => {
 
         expect(commit.mock.calls[2][0]).toStrictEqual({
             type: "reviewInput/ClearDataset",
-            payload: "art"
+            payload: "programme"
         });
 
         expect(commit.mock.calls[3][0]).toStrictEqual({
@@ -668,7 +668,7 @@ describe("Survey and programme actions", () => {
         expect(commit.mock.calls[0][0]["type"]).toBe(SurveyAndProgramMutation.ProgramUpdated);
         expect(commit.mock.calls[1][0]).toEqual({
             type: "reviewInput/ClearDataset",
-            payload: "art"
+            payload: "programme"
         })
         expect(commit.mock.calls[2][0]).toStrictEqual({
             type: "reviewInput/ClearInputComparison"
