@@ -33,7 +33,6 @@
 import {computed, onMounted, ref, watch} from "vue";
 import {useStore} from "vuex";
 import {RootState} from "../../../root";
-import {PlotData} from "../../../store/plotData/plotData";
 import { LMap, LGeoJson, LTileLayer } from "@vue-leaflet/vue-leaflet";
 import { Feature } from "geojson";
 import {
@@ -81,7 +80,7 @@ const sizeIndicatorMetadata = computed<IndicatorMetadata>(() => {
 const plotData = computed<OutputData>(() => {
     const data = store.state.plotData[plotName] as OutputData;
     const indicators = data.map(d => d.indicator);
-    if (!indicators.includes(colourIndicator.value) || !indicators.includes(sizeIndicator.value)) {
+    if (!indicators.includes(getColourIndicator()) || !indicators.includes(getSizeIndicator())) {
         return [];
     }
     return data;
