@@ -62,8 +62,6 @@ const plotName = "bubble";
 type OutputData = CalibrateDataResponse["data"]
 
 const tileLayerUrl = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
-
-const plotData = computed<PlotData>(() => store.state.plotData[plotName]);
 const getColourIndicator = () => {
     return store.state.plotSelections[plotName].filters.find(f => f.stateFilterId === "colourIndicator")!.selection[0].id
 }
@@ -78,6 +76,15 @@ const colourIndicatorMetadata = computed<IndicatorMetadata>(() => {
 });
 const sizeIndicatorMetadata = computed<IndicatorMetadata>(() => {
     return  getIndicatorMetadata(store, plotName, sizeIndicator.value)
+});
+
+const plotData = computed<OutputData>(() => {
+    const data = store.state.plotData[plotName] as OutputData;
+    const indicators = data.map(d => d.indicator);
+    if (!indicators.includes(colourIndicator.value) || !indicators.includes(sizeIndicator.value)) {
+        return [];
+    }
+    return data;
 });
 
 const colourRange = ref<NumericRange | null>(null);
