@@ -822,6 +822,7 @@ export const mockDownloadResultsDependency = (props: Partial<DownloadResultsDepe
         error: null,
         downloadError: null,
         metadataError: null,
+        statusResponse: null,
         ...props
     }
 }
