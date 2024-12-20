@@ -15,10 +15,10 @@
             <h6 class="mb-0">{{ downloadStatus[0].toUpperCase() + downloadStatus.substring(1).toLowerCase() }}</h6>
         </span>
         <button class="btn btn-sm col-md-auto mr-0"
-                :class="disabled ? '' : 'red-color'"
+                :class="disabled ? 'base-download-btn' : 'base-download-btn red-download-btn'"
                 :disabled="disabled"
                 @click="download">
-            <vue-feather type="download" size="25" class="icon baseline-aligned-icon"></vue-feather>
+            <vue-feather type="download" size="22" class="icon baseline-aligned-icon"></vue-feather>
         </button>
     </div>
 </template>
@@ -100,12 +100,20 @@ const download = () => {
     margin-bottom: -4px;
 }
 
-.red-color {
-    color: #de1a37;
+.base-download-btn {
+    padding-left: 10px;
+    padding-right: 10px;
+    margin-right: 0.5rem !important;
 }
 
-.red-color:hover {
-    color: #b41230;
+.red-download-btn {
+    color: white;
+    background-color: #eb1436;
+}
+
+.red-download-btn:hover {
+    color: white;
+    background-color: #b41230;
 }
 
 .hover-row:hover {

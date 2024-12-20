@@ -63,8 +63,8 @@ export enum TaskStatus {
 // vue feather icon type and color for each status state
 type IconConfig = { icon: string, color: string }
 export const statusUIConfigs: Record<TaskStatus, IconConfig> = {
-    [TaskStatus.PENDING]: { icon: "clock", color: "#bba22e" },
-    [TaskStatus.RUNNING]: { icon: "server", color: "#2d0a9d" },
+    [TaskStatus.PENDING]: { icon: "clock", color: "black" },
+    [TaskStatus.RUNNING]: { icon: "server", color: "black" },
     [TaskStatus.COMPLETE]: { icon: "check-circle", color: "darkgreen" },
     [TaskStatus.ERROR]: { icon: "alert-octagon", color: "darkred" },
     [TaskStatus.UNKNOWN]: { icon: "alert-triangle", color: "darkorange" },
