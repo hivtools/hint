@@ -78,18 +78,25 @@ export default defineComponent({
         };
 
         const highlightTrace = (plotType: string) => {
-            const data = getData()
-            const newStyle = data.map(line => {
+            const data = getData();
+            const highlightedTrace: any[] = [];
+            const greyedOutTraces: any[] = [];
+
+            data.forEach(line => {
                 if (line.plotType === plotType) {
-                    return {}
+                    highlightedTrace.push(line);
                 } else {
-                    return {
-                        line: {color: "lightgrey"},
-                        marker: {color: "lightgrey", line: {color: "lightgrey"}}
-                    }
+                    greyedOutTraces.push({
+                        ...line,
+                        line: { color: "lightgrey" },
+                        marker: { color: "lightgrey", line: { color: "lightgrey" } },
+                    });
                 }
-            })
-            animate(newStyle);
+            });
+
+            // Reorder data so the highlighted trace is last
+            const newData = [...greyedOutTraces, ...highlightedTrace];
+            animate(newData);
         };
 
         const resetStyle = () => {
@@ -103,7 +110,7 @@ export default defineComponent({
                 layout: layout
             }, {
                 transition: { duration: 0 },
-                frame: { duration: 0, redraw: false },
+                frame: { duration: 0 },
             })
         }
 

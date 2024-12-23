@@ -20,7 +20,7 @@
                     :page-number="0"
                     @open-context="() => {}"/>
 
-            <equation class="equation text-center"
+            <equation class="equation text-center pb-3"
                     :formula="formula"
                     @enter-plot-type="highlightTrace"
                     @leave-plot-type="resetTrace"/>
@@ -129,7 +129,8 @@ const formula = computed<string>(() => {
     if (!expression) {
         return ""
     }
-    return "\\htmlClass{hoverable}{" + expressionToString(expression, timeSeriesPlotLabels) + "}";
+    console.log(expressionToString(expression, timeSeriesPlotLabels))
+    return expressionToString(expression, timeSeriesPlotLabels);
 });
 
 const highlightTrace = (plotType: string) => {
@@ -144,6 +145,6 @@ const resetTrace = (plotType: string) => {
 </script>
 <style scoped>
 .equation {
-    font-size: 2vw;
+    font-size: 1.7vw;
 }
 </style>

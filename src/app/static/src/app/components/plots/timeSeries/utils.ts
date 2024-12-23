@@ -114,6 +114,7 @@ const getScatterPoints = (plotData: (InputTimeSeriesRow | null)[], pointMetadata
             line: { width: 0.5, color: markerOutlineColors },
         },
         line: { color: colours.BASE },
+        zorder: 0,
         hovertemplate: getTooltipTemplate(plotData, pointMetadata.areaHierarchy, indicatorLabel, currentLanguage)
     }
     return points
@@ -278,7 +279,8 @@ export const getLayoutFromData = (dataByArea: Dict<InputTimeSeriesData>, layout:
                     return {
                         x: 1.1, y: 1.1,
                         xanchor: "right", yanchor: "middle",
-                        xref: `x${index+1} domain`, yref: `y${index+1} domain`,
+                        xref: `x${index+1} domain`,
+                        yref: `y${index+1} domain`,
                         text: `<span>⇱</span>`,
                         textangle: "90",
                         hovertext: "Expand plot",
@@ -307,7 +309,7 @@ export const getLayoutFromData = (dataByArea: Dict<InputTimeSeriesData>, layout:
             tickfont: {color: "grey"},
             domain: [yStart, yStart - subPlotHeight],
             range: [-maxOfData * 0.1, maxOfData * 1.1],
-            type: "linear"
+            type: "linear",
         };
         baseLayout[`xaxis${i + 1}`] = {
             zeroline: false,
@@ -341,7 +343,7 @@ export const expressionToString = (expression: Expression | string, plotIdToLabe
     if (typeof expression === "string") {
         const colour = timeSeriesFixedColours.get(expression) ?? PlotColours.NORMAL;
         const label = plotIdToLabels.get(expression) ?? expression;
-        return `\\textcolor{${colour.BASE}}{\\text{${label}}}`;
+        return `\\htmlClass{hoverable}{\\htmlId{${expression}}{\\textcolor{${colour.BASE}}{\\text{${label}}}}}`;
     } else if (expression.op === Operator.Divide) {
         return `${expression.op}{${expressionToString(expression.a, plotIdToLabels)}}{${expressionToString(expression.b, plotIdToLabels)}}`
     } else {
