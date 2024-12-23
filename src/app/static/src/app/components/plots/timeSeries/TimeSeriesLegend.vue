@@ -6,7 +6,9 @@
                 <div class="d-flex flex-wrap justify-content-center">
                     <div v-for="plotType in group"
                          :key="plotType"
-                         class="d-flex align-items-center mr-2">
+                         class="d-flex align-items-center mr-2"
+                         @mouseenter="$emit('enter-plot-type', plotType)"
+                         @mouseleave="$emit('leave-plot-type', plotType)">
                         <vue-feather type="square" :fill="getColor(plotType)" :stroke="getColor(plotType)" size="19" class="mr-1"/>
                         <span class="small">{{timeSeriesPlotLabels.get(plotType) ?? plotType}}</span>
                     </div>
@@ -32,6 +34,11 @@ const props = defineProps({
         required: true
     },
 });
+
+defineEmits<{
+    (e: "enter-plot-type", plotType: string): void
+    (e: "leave-plot-type", plotType: string): void
+}>();
 
 const store = useStore<RootState>();
 const timeSeriesPlotLabels = store.getters["metadata/timeSeriesPlotTypeLabel"];

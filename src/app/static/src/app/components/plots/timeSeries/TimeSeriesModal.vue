@@ -8,9 +8,12 @@
 
             <time-series-legend
                 v-if="chartData.length > 0"
-                :plot-type="plotType"/>
+                :plot-type="plotType"
+                @enter-plot-type="highlightTrace"
+                @leave-plot-type="resetTrace"/>
 
             <plotly class="chart"
+                    ref="chart"
                     v-if="chartData.length > 0"
                     :chart-data="chartData"
                     :layout="layout"
@@ -18,7 +21,9 @@
                     @open-context="() => {}"/>
 
             <equation class="equation text-center"
-                    :formula="formula"/>
+                    :formula="formula"
+                    @enter-plot-type="highlightTrace"
+                    @leave-plot-type="resetTrace"/>
         </div>
     </modal>
 </template>
@@ -27,7 +32,7 @@
 import Modal from "../../Modal.vue";
 import Plotly from "./Plotly.vue";
 import {InputTimeSeriesData} from '../../../generated';
-import {computed} from "vue";
+import {computed, ref} from "vue";
 import {useStore} from "vuex";
 import { RootState } from '../../../root';
 import {filterTimeSeriesData} from "../../../store/plotData/filter";
@@ -52,7 +57,9 @@ const props = defineProps({
     }
 });
 
-defineEmits(["close-modal"])
+defineEmits(["close-modal"]);
+
+const chart = ref<typeof Plotly | null>(null);
 
 const store = useStore<RootState>();
 
@@ -122,8 +129,18 @@ const formula = computed<string>(() => {
     if (!expression) {
         return ""
     }
-    return expressionToString(expression, timeSeriesPlotLabels);
-})
+    return "\\htmlClass{hoverable}{" + expressionToString(expression, timeSeriesPlotLabels) + "}";
+});
+
+const highlightTrace = (plotType: string) => {
+    console.log("triggering highlight", plotType)
+    chart.value?.highlightTrace(plotType);
+};
+
+const resetTrace = (plotType: string) => {
+    console.log("triggering reset")
+    chart.value?.resetStyle(plotType);
+};
 </script>
 <style scoped>
 .equation {

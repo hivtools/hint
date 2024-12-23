@@ -103,6 +103,7 @@ const getScatterPoints = (plotData: (InputTimeSeriesRow | null)[], pointMetadata
     const indicatorLabel = pointMetadata.plotType ? pointMetadata.pointName : null
     const points: any = {
         name: pointMetadata.pointName,
+        plotType: pointMetadata.plotType,
         showlegend: false,
         x: plotData.map(x => x?.time_period),
         y: plotData.map(x => x?.value),
