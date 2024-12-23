@@ -1,6 +1,6 @@
 <template>
     <div>
-        <modal :open="open">
+        <modal :open="open" @close-modal="cancelEditing">
             <h4 v-if="isGuest" v-translate="'haveYouSaved'"></h4>
             <h4 v-if="!isGuest" v-translate="'saveVersion'"></h4>
 

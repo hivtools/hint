@@ -1,7 +1,9 @@
 <template>
-    <div id="load-error-modal">
+    <div id="load-error-modal" @close-modal="clearLoadError">
         <modal :open="hasError">
-            <h4 v-translate="'loadError'"></h4>
+            <template v-slot:header>
+                <h4 v-translate="'loadError'"></h4>
+            </template>
             <p id="load-error-error">{{ loadError }}</p>
             <template v-slot:footer>
                 <button id="ok-load-error"

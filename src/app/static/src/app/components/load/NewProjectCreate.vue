@@ -1,6 +1,6 @@
 <template>
     <div id="new-project-create">
-        <modal id="load" :open="openModal">
+        <modal id="load" :open="openModal" @close-modal="cancelCreate">
             <label class="h5" v-translate="'enterProjectName'"></label>
             <input id="project-name-input"
                    type="text"

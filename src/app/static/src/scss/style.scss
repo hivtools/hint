@@ -125,9 +125,41 @@ a.down::after {
   height: 40px;
 }
 
+.modal {
+  // Stop pointer events, this means that the background of the modal
+  // is clickable, which we can use to close it. The modal dialog still
+  // remains clickable.
+  pointer-events: none;
+}
+
 #upload-modal .modal-content {
   max-height: 95vh;
   overflow: auto;
+}
+
+#time-series-modal .modal-dialog {
+  max-width: 80vw;
+  width: 80vw;
+}
+
+.modal-header {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.modal-body {
+  max-height: 75vh;
+  overflow: auto;
+}
+
+.annotation-text tspan {
+  @include button-outline-variant($theme-red, darken($theme-red, 10%));
+  font-size: 20px;
+  fill: $theme-red;
+
+  &:hover {
+    fill: darken($theme-red, 10%);
+  }
 }
 
 .icon-small svg {
