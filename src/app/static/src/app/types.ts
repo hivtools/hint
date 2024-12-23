@@ -1,5 +1,5 @@
 import {Payload} from "vuex";
-import {Error, FilterOption, VersionInfo, Warning} from "./generated";
+import {DownloadStatusResponse, Error, FilterOption, VersionInfo, Warning} from "./generated";
 import {Language} from "./store/translations/locales";
 
 export interface PayloadWithType<T> extends Payload {
@@ -164,7 +164,8 @@ export interface DownloadResultsDependency {
     complete: boolean
     downloadError: Error | null
     error: Error | null
-    metadataError: Error | null
+    metadataError: Error | null,
+    statusResponse: DownloadStatusResponse | null
 }
 
 export interface ReviewInputDataColumnValue extends FilterOption {

@@ -50,3 +50,33 @@ export const downloadPostConfig: Record<DownloadType, PostObject> = {
         body: (store) => store.rootGetters.projectState
     },
 } as const;
+
+// enum defining UI download status states
+export enum TaskStatus {
+    PENDING = "PENDING",
+    RUNNING = "RUNNING",
+    COMPLETE = "COMPLETE",
+    ERROR = "ERROR",
+    UNKNOWN = "UNKNOWN"
+}
+
+// vue feather icon type and color for each status state
+type IconConfig = { icon: string, color: string }
+export const statusUIConfigs: Record<TaskStatus, IconConfig> = {
+    [TaskStatus.PENDING]: { icon: "clock", color: "black" },
+    [TaskStatus.RUNNING]: { icon: "server", color: "black" },
+    [TaskStatus.COMPLETE]: { icon: "check-circle", color: "darkgreen" },
+    [TaskStatus.ERROR]: { icon: "alert-octagon", color: "darkred" },
+    [TaskStatus.UNKNOWN]: { icon: "alert-triangle", color: "darkorange" },
+};
+
+// vue feather icon type, color and text underneath icon for
+// file type UI
+type FileType = { icon: string, color: string, text: string }
+export const fileTypeUIConfigs: Record<DownloadType, FileType> = {
+    [DownloadType.SPECTRUM]: { icon: "folder", color: "#0400b9", text: "zip" },
+    [DownloadType.COARSE]: { icon: "folder", color: "#0400b9", text: "zip" },
+    [DownloadType.SUMMARY]: { icon: "code", color: "#b0090a", text: "html" },
+    [DownloadType.COMPARISON]: { icon: "code", color: "#b0090a", text: "html" },
+    [DownloadType.DATAPACK]: { icon: "table", color: "#088501", text: "xlsx" }
+};

@@ -1,3 +1,7 @@
+# hint 3.14.0
+
+* Update download page UI to table format
+
 # hint 3.7.0
 
 * Remove data exploration mode. This mode has not had much uptake from countries and in particular UNAIDS have stopped telling country teams about it. Have agreed with UNAIDS, Jeff and Rachel that we can remove it.
