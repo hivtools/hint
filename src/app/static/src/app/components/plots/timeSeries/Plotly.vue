@@ -15,7 +15,7 @@ import {
     getChartDataByIndicatorGroup,
     getScatterPointsFromIndicator,
     getLayoutFromData,
-    HintPlotlyAnnotation
+    HintPlotlyAnnotation, timeSeriesFixedColours
 } from "./utils";
 import Plotly from "plotly.js-basic-dist";
 
@@ -82,13 +82,13 @@ export default defineComponent({
             const highlightedTrace: any[] = [];
             const greyedOutTraces: any[] = [];
 
-            data.forEach(line => {
-                if (line.plotType === plotType) {
-                    highlightedTrace.push(line);
+            data.forEach(points => {
+                if (points.plotType === plotType) {
+                    highlightedTrace.push(points);
                 } else {
                     greyedOutTraces.push({
-                        ...line,
-                        line: { color: "lightgrey" },
+                        ...points,
+                        line: { color: "lightgrey", dash: points.line.dash },
                         marker: { color: "lightgrey", line: { color: "lightgrey" } },
                     });
                 }

@@ -129,17 +129,14 @@ const formula = computed<string>(() => {
     if (!expression) {
         return ""
     }
-    console.log(expressionToString(expression, timeSeriesPlotLabels))
     return expressionToString(expression, timeSeriesPlotLabels);
 });
 
 const highlightTrace = (plotType: string) => {
-    console.log("triggering highlight", plotType)
     chart.value?.highlightTrace(plotType);
 };
 
 const resetTrace = (plotType: string) => {
-    console.log("triggering reset")
     chart.value?.resetStyle(plotType);
 };
 </script>
