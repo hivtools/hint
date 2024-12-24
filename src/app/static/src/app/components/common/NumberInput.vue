@@ -46,7 +46,9 @@ const numberUpdate = (event: any) => {
     if (val < min) {
         val = min
     }
-    emit("set-value", val)
+    if (!isNaN(val)) {
+        emit("set-value", val)
+    }
 }
 
 </script>
