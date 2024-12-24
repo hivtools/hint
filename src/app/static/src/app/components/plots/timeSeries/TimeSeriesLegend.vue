@@ -41,7 +41,6 @@
 
 <script setup lang="ts">
 import {useStore} from "vuex";
-import VueFeather from "vue-feather";
 import { RootState } from '../../../root';
 import {PlotColours, timeSeriesExpandedViews, timeSeriesFixedColours} from "./utils";
 

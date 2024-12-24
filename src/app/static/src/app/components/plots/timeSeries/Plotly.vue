@@ -15,7 +15,7 @@ import {
     getChartDataByIndicatorGroup,
     getScatterPointsFromIndicator,
     getLayoutFromData,
-    HintPlotlyAnnotation, timeSeriesFixedColours
+    HintPlotlyAnnotation
 } from "./utils";
 import Plotly from "plotly.js-basic-dist";
 

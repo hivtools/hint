@@ -142,6 +142,6 @@ const resetTrace = (plotType: string) => {
 </script>
 <style scoped>
 .equation {
-    font-size: 1.7vw;
+    font-size: 1.6vw;
 }
 </style>
