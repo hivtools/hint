@@ -190,7 +190,7 @@ describe("time series utils", () => {
         const expectedData = [
             {
                 hovertemplate: Array(2).fill("%{x}, %{y}<br>hierarchy11<extra></extra>"),
-                line: {color: PlotColours.HIGHLIGHT.BASE},
+                line: {color: PlotColours.HIGHLIGHT.BASE, dash: "solid"},
                 marker: {
                     color: Array(2).fill(PlotColours.HIGHLIGHT.BASE),
                     line: {
@@ -199,6 +199,7 @@ describe("time series utils", () => {
                     }
                 },
                 name: "name11",
+                plotType: null,
                 showlegend: false,
                 type: "scatter",
                 x: ["date11", "date12"],
@@ -211,7 +212,7 @@ describe("time series utils", () => {
                     "%{x}, %{y}<br>hierarchy21<br>Aggregate value missing data for 2 regions<extra></extra>",
                     "%{x}, %{y}<br>hierarchy21<extra></extra>"
                 ],
-                line: {color: PlotColours.HIGHLIGHT.BASE},
+                line: {color: PlotColours.HIGHLIGHT.BASE, dash: "solid"},
                 marker: {
                     color: [PlotColours.HIGHLIGHT.MISSING, PlotColours.HIGHLIGHT.BASE],
                     line: {
@@ -220,6 +221,7 @@ describe("time series utils", () => {
                     }
                 },
                 name: "name21",
+                plotType: null,
                 showlegend: false,
                 type: "scatter",
                 x: ["date21", "date22"],
@@ -244,18 +246,18 @@ describe("time series utils", () => {
     });
 
     const expectedXAxis = {
-        "zeroline": false,
-        "tickvals": ["2011 Q4", "2012 Q4"],
-        "tickfont": {"color": "grey"},
-        "autorange": true,
-        "type": "category"
+        zeroline: false,
+        tickvals: ["2011 Q4", "2012 Q4"],
+        tickfont: {color: "grey"},
+        autorange: true,
+        type: "category"
     };
 
     const expectYAxis = (domainStart: number, domainEnd: number, actual: any, tickFormat: any = ".0f") => {
         expect(Object.keys(actual)).toStrictEqual(["zeroline", "tickformat", "tickfont", "domain", "range", "type"]);
         expect(actual.zeroline).toBe(false);
         expect(actual.tickformat).toBe(tickFormat);
-        expect(actual.tickfont).toStrictEqual({"color": "grey"});
+        expect(actual.tickfont).toStrictEqual({color: "grey"});
         expect(actual.range[0]).toBeLessThan(0);
         expect(actual.range[1]).toBeGreaterThan(2663);
         expect(actual.domain[0]).toBeCloseTo(domainStart, 8);
@@ -269,81 +271,81 @@ describe("time series utils", () => {
         // The fourth area has only 1 data point
         const chartData = [
             {
-                "area_id": "MWI_4_1_demo",
-                "area_name": "Chitipa",
-                "area_hierarchy": "Northern/Chitipa",
-                "area_level": 4,
-                "quarter": "Q4",
-                "time_period": "2011 Q4",
-                "plot": "art_total",
-                "value": 2116,
-                "page": 1
+                area_id: "MWI_4_1_demo",
+                area_name: "Chitipa",
+                area_hierarchy: "Northern/Chitipa",
+                area_level: 4,
+                quarter: "Q4",
+                time_period: "2011 Q4",
+                plot: "art_total",
+                value: 2116,
+                page: 1
             },
             {
-                "area_id": "MWI_4_1_demo",
-                "area_name": "Chitipa",
-                "area_hierarchy": "Northern/Chitipa",
-                "area_level": 4,
-                "quarter": "Q4",
-                "time_period": "2012 Q4",
-                "plot": "art_total",
-                "value": 2663,
-                "page": 1
+                area_id: "MWI_4_1_demo",
+                area_name: "Chitipa",
+                area_hierarchy: "Northern/Chitipa",
+                area_level: 4,
+                quarter: "Q4",
+                time_period: "2012 Q4",
+                plot: "art_total",
+                value: 2663,
+                page: 1
             },
             {
-                "area_id": "MWI_4_2_demo",
-                "area_name": "Karonga",
-                "area_hierarchy": "Northern/Karonga",
-                "area_level": 4,
-                "quarter": "Q4",
-                "time_period": "2011 Q4",
-                "plot": "art_total",
-                "value": 5673,
-                "page": 1
+                area_id: "MWI_4_2_demo",
+                area_name: "Karonga",
+                area_hierarchy: "Northern/Karonga",
+                area_level: 4,
+                quarter: "Q4",
+                time_period: "2011 Q4",
+                plot: "art_total",
+                value: 5673,
+                page: 1
             },
             {
-                "area_id": "MWI_4_2_demo",
-                "area_name": "Karonga",
-                "area_hierarchy": "Northern/Karonga",
-                "area_level": 4,
-                "quarter": "Q4",
-                "time_period": "2012 Q4",
-                "plot": "art_total",
-                "value": 7674,
-                "page": 1
+                area_id: "MWI_4_2_demo",
+                area_name: "Karonga",
+                area_hierarchy: "Northern/Karonga",
+                area_level: 4,
+                quarter: "Q4",
+                time_period: "2012 Q4",
+                plot: "art_total",
+                value: 7674,
+                page: 1
             },
             {
-                "area_id": "MWI_4_3_demo",
-                "area_name": "Rumphi",
-                "area_hierarchy": "Northern/Rumphi",
-                "area_level": 4,
-                "quarter": "Q4",
-                "time_period": "2011 Q4",
-                "plot": "art_total",
-                "value": 4555,
-                "page": 1
+                area_id: "MWI_4_3_demo",
+                area_name: "Rumphi",
+                area_hierarchy: "Northern/Rumphi",
+                area_level: 4,
+                quarter: "Q4",
+                time_period: "2011 Q4",
+                plot: "art_total",
+                value: 4555,
+                page: 1
             },
             {
-                "area_id": "MWI_4_3_demo",
-                "area_name": "Rumphi",
-                "area_hierarchy": "Northern/Rumphi",
-                "area_level": 4,
-                "quarter": "Q4",
-                "time_period": "2012 Q4",
-                "plot": "art_total",
-                "value": 4795,
-                "page": 1
+                area_id: "MWI_4_3_demo",
+                area_name: "Rumphi",
+                area_hierarchy: "Northern/Rumphi",
+                area_level: 4,
+                quarter: "Q4",
+                time_period: "2012 Q4",
+                plot: "art_total",
+                value: 4795,
+                page: 1
             },
             {
-                "area_id": "MWI_4_4_demo",
-                "area_name": "Mzuzu City",
-                "area_hierarchy": "Northern/Mzuzu City",
-                "area_level": 4,
-                "quarter": "Q4",
-                "time_period": "2012 Q4",
-                "plot": "art_total",
-                "value": 1024,
-                "page": 1
+                area_id: "MWI_4_4_demo",
+                area_name: "Mzuzu City",
+                area_hierarchy: "Northern/Mzuzu City",
+                area_level: 4,
+                quarter: "Q4",
+                time_period: "2012 Q4",
+                plot: "art_total",
+                value: 1024,
+                page: 1
             }
         ] as any as InputTimeSeriesData;
 
@@ -360,76 +362,80 @@ describe("time series utils", () => {
 
         const expectedData = [
             {
-                "name": "Chitipa",
-                "showlegend": false,
-                "x": ["2011 Q4", "2012 Q4"],
-                "y": [2116, 2663],
-                "xaxis": "x1",
-                "yaxis": "y1",
-                "type": "scatter",
-                "line": {"color": PlotColours.HIGHLIGHT.BASE},
-                "marker": {
-                    "color": Array(2).fill(PlotColours.HIGHLIGHT.BASE),
-                    "line": {
-                        "width": 0.5,
-                        "color": Array(2).fill(PlotColours.HIGHLIGHT.BASE)
+                name: "Chitipa",
+                plotType: null,
+                showlegend: false,
+                x: ["2011 Q4", "2012 Q4"],
+                y: [2116, 2663],
+                xaxis: "x1",
+                yaxis: "y1",
+                type: "scatter",
+                line: {color: PlotColours.HIGHLIGHT.BASE, dash: "solid"},
+                marker: {
+                    color: Array(2).fill(PlotColours.HIGHLIGHT.BASE),
+                    line: {
+                        width: 0.5,
+                        color: Array(2).fill(PlotColours.HIGHLIGHT.BASE)
                     }
                 },
-                "hovertemplate": Array(2).fill("%{x}, %{y}<br>Northern/Chitipa<extra></extra>")
+                hovertemplate: Array(2).fill("%{x}, %{y}<br>Northern/Chitipa<extra></extra>")
             },
             {
-                "name": "Karonga",
-                "showlegend": false,
-                "x": ["2011 Q4", "2012 Q4"],
-                "y": [5673, 7674],
-                "xaxis": "x2",
-                "yaxis": "y2",
-                "type": "scatter",
-                "line": {"color": PlotColours.HIGHLIGHT.BASE},
-                "marker": {
-                    "color": Array(2).fill(PlotColours.HIGHLIGHT.BASE),
-                    "line": {
-                        "width": 0.5,
-                        "color": Array(2).fill(PlotColours.HIGHLIGHT.BASE)
+                name: "Karonga",
+                plotType: null,
+                showlegend: false,
+                x: ["2011 Q4", "2012 Q4"],
+                y: [5673, 7674],
+                xaxis: "x2",
+                yaxis: "y2",
+                type: "scatter",
+                line: {color: PlotColours.HIGHLIGHT.BASE, dash: "solid"},
+                marker: {
+                    color: Array(2).fill(PlotColours.HIGHLIGHT.BASE),
+                    line: {
+                        width: 0.5,
+                        color: Array(2).fill(PlotColours.HIGHLIGHT.BASE)
                     }
                 },
-                "hovertemplate": Array(2).fill("%{x}, %{y}<br>Northern/Karonga<extra></extra>")
+                hovertemplate: Array(2).fill("%{x}, %{y}<br>Northern/Karonga<extra></extra>")
             },
             {
-                "name": "Rumphi",
-                "showlegend": false,
-                "x": ["2011 Q4", "2012 Q4"],
-                "y": [4555, 4795],
-                "xaxis": "x3",
-                "yaxis": "y3",
-                "type": "scatter",
-                "line": {"color": PlotColours.NORMAL.BASE},
-                "marker": {
-                    "color": Array(2).fill(PlotColours.NORMAL.BASE),
-                    "line": {
-                        "width": 0.5,
-                        "color": Array(2).fill(PlotColours.NORMAL.BASE)
+                name: "Rumphi",
+                plotType: null,
+                showlegend: false,
+                x: ["2011 Q4", "2012 Q4"],
+                y: [4555, 4795],
+                xaxis: "x3",
+                yaxis: "y3",
+                type: "scatter",
+                line: {color: PlotColours.NORMAL.BASE, dash: "solid"},
+                marker: {
+                    color: Array(2).fill(PlotColours.NORMAL.BASE),
+                    line: {
+                        width: 0.5,
+                        color: Array(2).fill(PlotColours.NORMAL.BASE)
                     }
                 },
-                "hovertemplate": Array(2).fill("%{x}, %{y}<br>Northern/Rumphi<extra></extra>")
+                hovertemplate: Array(2).fill("%{x}, %{y}<br>Northern/Rumphi<extra></extra>")
             },
             {
-                "name": "Mzuzu City",
-                "showlegend": false,
-                "x": ["2012 Q4"],
-                "y": [1024],
-                "xaxis": "x4",
-                "yaxis": "y4",
-                "type": "scatter",
-                "line": {"color": PlotColours.NORMAL.BASE},
-                "marker": {
-                    "color": [PlotColours.NORMAL.BASE],
-                    "line": {
-                        "width": 0.5,
-                        "color": [PlotColours.NORMAL.BASE]
+                name: "Mzuzu City",
+                plotType: null,
+                showlegend: false,
+                x: ["2012 Q4"],
+                y: [1024],
+                xaxis: "x4",
+                yaxis: "y4",
+                type: "scatter",
+                line: {color: PlotColours.NORMAL.BASE, dash: "solid"},
+                marker: {
+                    color: [PlotColours.NORMAL.BASE],
+                    line: {
+                        width: 0.5,
+                        color: [PlotColours.NORMAL.BASE]
                     }
                 },
-                "hovertemplate": ["%{x}, %{y}<br>Northern/Mzuzu City<extra></extra>"]
+                hovertemplate: ["%{x}, %{y}<br>Northern/Mzuzu City<extra></extra>"]
             }
         ] as any
 
@@ -448,60 +454,60 @@ describe("time series utils", () => {
                 "margin", "dragmode", "grid", "annotations",
                 "yaxis1", "xaxis1", "yaxis2", "xaxis2", "yaxis3", "xaxis3", "yaxis4", "xaxis4"
             ]);
-            expect(layout.margin).toStrictEqual({"t": 32});
+            expect(layout.margin).toStrictEqual({t: 32});
             expect(layout.dragmode).toBe(false);
             expect(layout.grid).toStrictEqual({
-                "columns": 2,
-                "rows": 2,
-                "pattern": "independent",
-                "xgap": 0.25,
-                "ygap": 0.4,
+                columns: 2,
+                rows: 2,
+                pattern: "independent",
+                xgap: 0.25,
+                ygap: 0.4,
             });
 
             expect(layout.annotations).toStrictEqual([
                 {
-                    "text": "Chitipa (MWI_4_1_demo)",
-                    "textfont": {},
-                    "showarrow": false,
-                    "x": 0.5,
-                    "xanchor": "middle",
-                    "xref": "x1 domain",
-                    "y": 1.1,
-                    "yanchor": "middle",
-                    "yref": "y1 domain"
+                    text: "Chitipa (MWI_4_1_demo)",
+                    textfont: {},
+                    showarrow: false,
+                    x: 0.5,
+                    xanchor: "middle",
+                    xref: "x1 domain",
+                    y: 1.1,
+                    yanchor: "middle",
+                    yref: "y1 domain"
                 },
                 {
-                    "text": "Karonga (MWI_4_2_demo)",
-                    "textfont": {},
-                    "showarrow": false,
-                    "x": 0.5,
-                    "xanchor": "middle",
-                    "xref": "x2 domain",
-                    "y": 1.1,
-                    "yanchor": "middle",
-                    "yref": "y2 domain"
+                    text: "Karonga (MWI_4_2_demo)",
+                    textfont: {},
+                    showarrow: false,
+                    x: 0.5,
+                    xanchor: "middle",
+                    xref: "x2 domain",
+                    y: 1.1,
+                    yanchor: "middle",
+                    yref: "y2 domain"
                 },
                 {
-                    "text": "Rumphi (MWI_4_3_demo)",
-                    "textfont": {},
-                    "showarrow": false,
-                    "x": 0.5,
-                    "xanchor": "middle",
-                    "xref": "x3 domain",
-                    "y": 1.1,
-                    "yanchor": "middle",
-                    "yref": "y3 domain"
+                    text: "Rumphi (MWI_4_3_demo)",
+                    textfont: {},
+                    showarrow: false,
+                    x: 0.5,
+                    xanchor: "middle",
+                    xref: "x3 domain",
+                    y: 1.1,
+                    yanchor: "middle",
+                    yref: "y3 domain"
                 },
                 {
-                    "text": "Mzuzu City (MWI_4_4_demo)",
-                    "textfont": {},
-                    "showarrow": false,
-                    "x": 0.5,
-                    "xanchor": "middle",
-                    "xref": "x4 domain",
-                    "y": 1.1,
-                    "yanchor": "middle",
-                    "yref": "y4 domain"
+                    text: "Mzuzu City (MWI_4_4_demo)",
+                    textfont: {},
+                    showarrow: false,
+                    x: 0.5,
+                    xanchor: "middle",
+                    xref: "x4 domain",
+                    y: 1.1,
+                    yanchor: "middle",
+                    yref: "y4 domain"
                 }
             ]);
 
@@ -519,46 +525,46 @@ describe("time series utils", () => {
     describe("evaluates separate subplots for different areas with identical names", () => {
         const chartData = [
             {
-                "area_id": "MWI_4_1_demo",
-                "area_name": "Chitipa",
-                "area_hierarchy": "Northern/Chitipa",
-                "time_period": "2011 Q4",
-                "value": 2116
+                area_id: "MWI_4_1_demo",
+                area_name: "Chitipa",
+                area_hierarchy: "Northern/Chitipa",
+                time_period: "2011 Q4",
+                value: 2116
             },
             {
-                "area_id": "MWI_4_1_demo",
-                "area_name": "Chitipa",
-                "area_hierarchy": "Northern/Chitipa",
-                "time_period": "2012 Q4",
-                "value": 2663
+                area_id: "MWI_4_1_demo",
+                area_name: "Chitipa",
+                area_hierarchy: "Northern/Chitipa",
+                time_period: "2012 Q4",
+                value: 2663
             },
             {
-                "area_id": "MWI_4_2_demo",
-                "area_name": "Karonga",
-                "area_hierarchy": "Northern/Karonga",
-                "time_period": "2011 Q4",
-                "value": 5673
+                area_id: "MWI_4_2_demo",
+                area_name: "Karonga",
+                area_hierarchy: "Northern/Karonga",
+                time_period: "2011 Q4",
+                value: 5673
             },
             {
-                "area_id": "MWI_4_2_demo",
-                "area_name": "Karonga",
-                "area_hierarchy": "Northern/Karonga",
-                "time_period": "2012 Q4",
-                "value": 7674
+                area_id: "MWI_4_2_demo",
+                area_name: "Karonga",
+                area_hierarchy: "Northern/Karonga",
+                time_period: "2012 Q4",
+                value: 7674
             },
             {
-                "area_id": "MWI_4_3_demo",
-                "area_name": "Chitipa",
-                "area_hierarchy": "Southern/Chitipa",
-                "time_period": "2011 Q4",
-                "value": 4555
+                area_id: "MWI_4_3_demo",
+                area_name: "Chitipa",
+                area_hierarchy: "Southern/Chitipa",
+                time_period: "2011 Q4",
+                value: 4555
             },
             {
-                "area_id": "MWI_4_3_demo",
-                "area_name": "Chitipa",
-                "area_hierarchy": "Southern/Chitipa",
-                "time_period": "2012 Q4",
-                "value": 4795
+                area_id: "MWI_4_3_demo",
+                area_name: "Chitipa",
+                area_hierarchy: "Southern/Chitipa",
+                time_period: "2012 Q4",
+                value: 4795
             }
         ] as any as InputTimeSeriesData;
 
@@ -577,58 +583,61 @@ describe("time series utils", () => {
 
         const expectedData = [
             {
-                "name": "Chitipa",
-                "showlegend": false,
-                "x": ["2011 Q4", "2012 Q4"],
-                "y": [2116, 2663],
-                "xaxis": "x1",
-                "yaxis": "y1",
-                "type": "scatter",
-                "line": {"color": PlotColours.HIGHLIGHT.BASE},
-                "marker": {
-                    "color": Array(2).fill(PlotColours.HIGHLIGHT.BASE),
-                    "line": {
-                        "width": 0.5,
-                        "color": Array(2).fill(PlotColours.HIGHLIGHT.BASE)
+                name: "Chitipa",
+                plotType: null,
+                showlegend: false,
+                x: ["2011 Q4", "2012 Q4"],
+                y: [2116, 2663],
+                xaxis: "x1",
+                yaxis: "y1",
+                type: "scatter",
+                line: {color: PlotColours.HIGHLIGHT.BASE, dash: "solid"},
+                marker: {
+                    color: Array(2).fill(PlotColours.HIGHLIGHT.BASE),
+                    line: {
+                        width: 0.5,
+                        color: Array(2).fill(PlotColours.HIGHLIGHT.BASE)
                     }
                 },
-                "hovertemplate": Array(2).fill("%{x}, %{y}<br>Northern/Chitipa<extra></extra>")
+                hovertemplate: Array(2).fill("%{x}, %{y}<br>Northern/Chitipa<extra></extra>")
             },
             {
-                "name": "Karonga",
-                "showlegend": false,
-                "x": ["2011 Q4", "2012 Q4"],
-                "y": [5673, 7674],
-                "xaxis": "x2",
-                "yaxis": "y2",
-                "type": "scatter",
-                "line": {"color": PlotColours.HIGHLIGHT.BASE},
-                "marker": {
-                    "color": Array(2).fill(PlotColours.HIGHLIGHT.BASE),
-                    "line": {
-                        "width": 0.5,
-                        "color": Array(2).fill(PlotColours.HIGHLIGHT.BASE)
+                name: "Karonga",
+                plotType: null,
+                showlegend: false,
+                x: ["2011 Q4", "2012 Q4"],
+                y: [5673, 7674],
+                xaxis: "x2",
+                yaxis: "y2",
+                type: "scatter",
+                line: {color: PlotColours.HIGHLIGHT.BASE, dash: "solid"},
+                marker: {
+                    color: Array(2).fill(PlotColours.HIGHLIGHT.BASE),
+                    line: {
+                        width: 0.5,
+                        color: Array(2).fill(PlotColours.HIGHLIGHT.BASE)
                     }
                 },
-                "hovertemplate": Array(2).fill("%{x}, %{y}<br>Northern/Karonga<extra></extra>")
+                hovertemplate: Array(2).fill("%{x}, %{y}<br>Northern/Karonga<extra></extra>")
             },
             {
-                "name": "Chitipa",
-                "showlegend": false,
-                "x": ["2011 Q4", "2012 Q4"],
-                "y": [4555, 4795],
-                "xaxis": "x3",
-                "yaxis": "y3",
-                "type": "scatter",
-                "line": {"color": PlotColours.NORMAL.BASE},
-                "marker": {
-                    "color": Array(2).fill(PlotColours.NORMAL.BASE),
-                    "line": {
-                        "width": 0.5,
-                        "color": Array(2).fill(PlotColours.NORMAL.BASE)
+                name: "Chitipa",
+                plotType: null,
+                showlegend: false,
+                x: ["2011 Q4", "2012 Q4"],
+                y: [4555, 4795],
+                xaxis: "x3",
+                yaxis: "y3",
+                type: "scatter",
+                line: {color: PlotColours.NORMAL.BASE, dash: "solid"},
+                marker: {
+                    color: Array(2).fill(PlotColours.NORMAL.BASE),
+                    line: {
+                        width: 0.5,
+                        color: Array(2).fill(PlotColours.NORMAL.BASE)
                     }
                 },
-                "hovertemplate": Array(2).fill("%{x}, %{y}<br>Southern/Chitipa<extra></extra>")
+                hovertemplate: Array(2).fill("%{x}, %{y}<br>Southern/Chitipa<extra></extra>")
             },
         ];
 
@@ -645,37 +654,37 @@ describe("time series utils", () => {
 
             expect(layout.annotations).toStrictEqual([
                 {
-                    "text": "Chitipa (MWI_4_1_demo)",
-                    "textfont": {},
-                    "showarrow": false,
-                    "x": 0.5,
-                    "xanchor": "middle",
-                    "xref": "x1 domain",
-                    "y": 1.1,
-                    "yanchor": "middle",
-                    "yref": "y1 domain"
+                    text: "Chitipa (MWI_4_1_demo)",
+                    textfont: {},
+                    showarrow: false,
+                    x: 0.5,
+                    xanchor: "middle",
+                    xref: "x1 domain",
+                    y: 1.1,
+                    yanchor: "middle",
+                    yref: "y1 domain"
                 },
                 {
-                    "text": "Karonga (MWI_4_2_demo)",
-                    "textfont": {},
-                    "showarrow": false,
-                    "x": 0.5,
-                    "xanchor": "middle",
-                    "xref": "x2 domain",
-                    "y": 1.1,
-                    "yanchor": "middle",
-                    "yref": "y2 domain"
+                    text: "Karonga (MWI_4_2_demo)",
+                    textfont: {},
+                    showarrow: false,
+                    x: 0.5,
+                    xanchor: "middle",
+                    xref: "x2 domain",
+                    y: 1.1,
+                    yanchor: "middle",
+                    yref: "y2 domain"
                 },
                 {
-                    "text": "Chitipa (MWI_4_3_demo)",
-                    "textfont": {},
-                    "showarrow": false,
-                    "x": 0.5,
-                    "xanchor": "middle",
-                    "xref": "x3 domain",
-                    "y": 1.1,
-                    "yanchor": "middle",
-                    "yref": "y3 domain"
+                    text: "Chitipa (MWI_4_3_demo)",
+                    textfont: {},
+                    showarrow: false,
+                    x: 0.5,
+                    xanchor: "middle",
+                    xref: "x3 domain",
+                    y: 1.1,
+                    yanchor: "middle",
+                    yref: "y3 domain"
                 }
             ]);
 
@@ -693,18 +702,18 @@ describe("time series utils", () => {
         it("evaluates single-line tooltips for area with empty hierarchy", async () => {
             const dataNullHierarchy = [
                 {
-                    "area_id": "MWI_1_1_demo",
-                    "area_name": "Malawi",
-                    "area_hierarchy": "",
-                    "time_period": "2011 Q4",
-                    "value": 2116
+                    area_id: "MWI_1_1_demo",
+                    area_name: "Malawi",
+                    area_hierarchy: "",
+                    time_period: "2011 Q4",
+                    value: 2116
                 },
                 {
-                    "area_id": "MWI_1_1_demo",
-                    "area_name": null,
-                    "area_hierarchy": "Northern/Chitipa",
-                    "time_period": "2012 Q4",
-                    "value": 4663
+                    area_id: "MWI_1_1_demo",
+                    area_name: null,
+                    area_hierarchy: "Northern/Chitipa",
+                    time_period: "2012 Q4",
+                    value: 4663
                 }
             ] as any as InputTimeSeriesData;
 
@@ -719,36 +728,36 @@ describe("time series utils", () => {
             // Large change between 2 and 3 and 3 and 4
             const chartData = [
                 {
-                    "area_id": "MWI_1_1_demo",
-                    "area_name": "Malawi",
-                    "area_hierarchy": "Northern/Chitipa",
-                    "time_period": "2011 Q4",
-                    "value": 2116,
-                    "missing_ids": []
+                    area_id: "MWI_1_1_demo",
+                    area_name: "Malawi",
+                    area_hierarchy: "Northern/Chitipa",
+                    time_period: "2011 Q4",
+                    value: 2116,
+                    missing_ids: []
                 },
                 {
-                    "area_id": "MWI_1_1_demo",
-                    "area_name": "Malawi",
-                    "area_hierarchy": "Northern/Chitipa",
-                    "time_period": "2012 Q4",
-                    "value": 2116,
-                    "missing_ids": ["MWI_1_1_demo"]
+                    area_id: "MWI_1_1_demo",
+                    area_name: "Malawi",
+                    area_hierarchy: "Northern/Chitipa",
+                    time_period: "2012 Q4",
+                    value: 2116,
+                    missing_ids: ["MWI_1_1_demo"]
                 },
                 {
-                    "area_id": "MWI_1_1_demo",
-                    "area_name": "Malawi",
-                    "area_hierarchy": "Northern/Chitipa",
-                    "time_period": "2013 Q4",
-                    "value": 4663,
-                    "missing_ids": ["MWI_1_2_demo", "MWI_1_3_demo"]
+                    area_id: "MWI_1_1_demo",
+                    area_name: "Malawi",
+                    area_hierarchy: "Northern/Chitipa",
+                    time_period: "2013 Q4",
+                    value: 4663,
+                    missing_ids: ["MWI_1_2_demo", "MWI_1_3_demo"]
                 },
                 {
-                    "area_id": "MWI_1_1_demo",
-                    "area_name": "Malawi",
-                    "area_hierarchy": "Northern/Chitipa",
-                    "time_period": "2014 Q4",
-                    "value": 5567,
-                    "missing_ids": ["MWI_1_2_demo", "MWI_1_3_demo", "MWI_1_4_demo", "MWI_1_5_demo", "MWI_1_6_demo"]
+                    area_id: "MWI_1_1_demo",
+                    area_name: "Malawi",
+                    area_hierarchy: "Northern/Chitipa",
+                    time_period: "2014 Q4",
+                    value: 5567,
+                    missing_ids: ["MWI_1_2_demo", "MWI_1_3_demo", "MWI_1_4_demo", "MWI_1_5_demo", "MWI_1_6_demo"]
                 }
             ] as any as InputTimeSeriesData;
 
@@ -766,64 +775,67 @@ describe("time series utils", () => {
 
             expect(points).toStrictEqual([
                 {
-                    "name": "Malawi",
-                    "showlegend": false,
-                    "x": ["2011 Q4", "2012 Q4"],
-                    "y": [2116, 2116],
-                    "xaxis": "x1",
-                    "yaxis": "y1",
-                    "type": "scatter",
-                    "line": {"color": PlotColours.NORMAL.BASE},
-                    "marker": {
-                        "color": [PlotColours.NORMAL.BASE, PlotColours.NORMAL.MISSING],
-                        "line": {
-                            "width": 0.5,
-                            "color": [PlotColours.NORMAL.BASE, PlotColours.NORMAL.BASE]
+                    name: "Malawi",
+                    plotType: null,
+                    showlegend: false,
+                    x: ["2011 Q4", "2012 Q4"],
+                    y: [2116, 2116],
+                    xaxis: "x1",
+                    yaxis: "y1",
+                    type: "scatter",
+                    line: {color: PlotColours.NORMAL.BASE, dash: "solid"},
+                    marker: {
+                        color: [PlotColours.NORMAL.BASE, PlotColours.NORMAL.MISSING],
+                        line: {
+                            width: 0.5,
+                            color: [PlotColours.NORMAL.BASE, PlotColours.NORMAL.BASE]
                         }
                     },
-                    "hovertemplate": [
+                    hovertemplate: [
                         "%{x}, %{y}<br>Northern/Chitipa<extra></extra>",
                         "%{x}, %{y}<br>Northern/Chitipa<br>This value is missing from the uploaded data<extra></extra>",
                     ]
                 },
                 {
-                    "name": "Malawi",
-                    "showlegend": false,
-                    "x": ["2012 Q4", "2013 Q4"],
-                    "y": [2116, 4663],
-                    "xaxis": "x1",
-                    "yaxis": "y1",
-                    "type": "scatter",
-                    "line": {"color": PlotColours.HIGHLIGHT.BASE},
-                    "marker": {
-                        "color": [PlotColours.HIGHLIGHT.MISSING, PlotColours.HIGHLIGHT.MISSING],
-                        "line": {
-                            "width": 0.5,
-                            "color": [PlotColours.HIGHLIGHT.BASE, PlotColours.HIGHLIGHT.BASE]
+                    name: "Malawi",
+                    plotType: null,
+                    showlegend: false,
+                    x: ["2012 Q4", "2013 Q4"],
+                    y: [2116, 4663],
+                    xaxis: "x1",
+                    yaxis: "y1",
+                    type: "scatter",
+                    line: {color: PlotColours.HIGHLIGHT.BASE, dash: "solid"},
+                    marker: {
+                        color: [PlotColours.HIGHLIGHT.MISSING, PlotColours.HIGHLIGHT.MISSING],
+                        line: {
+                            width: 0.5,
+                            color: [PlotColours.HIGHLIGHT.BASE, PlotColours.HIGHLIGHT.BASE]
                         }
                     },
-                    "hovertemplate": [
+                    hovertemplate: [
                         "%{x}, %{y}<br>Northern/Chitipa<br>This value is missing from the uploaded data<extra></extra>",
                         "%{x}, %{y}<br>Northern/Chitipa<br>Aggregate value missing data for 2 regions<extra></extra>"
                     ]
                 },
                 {
-                    "name": "Malawi",
-                    "showlegend": false,
-                    "x": ["2013 Q4", "2014 Q4"],
-                    "y": [4663, 5567],
-                    "xaxis": "x1",
-                    "yaxis": "y1",
-                    "type": "scatter",
-                    "line": {"color": PlotColours.NORMAL.BASE},
-                    "marker": {
-                        "color": [PlotColours.HIGHLIGHT.MISSING, PlotColours.NORMAL.MISSING],
-                        "line": {
-                            "width": 0.5,
-                            "color": [PlotColours.HIGHLIGHT.BASE, PlotColours.NORMAL.BASE]
+                    name: "Malawi",
+                    plotType: null,
+                    showlegend: false,
+                    x: ["2013 Q4", "2014 Q4"],
+                    y: [4663, 5567],
+                    xaxis: "x1",
+                    yaxis: "y1",
+                    type: "scatter",
+                    line: {color: PlotColours.NORMAL.BASE, dash: "solid"},
+                    marker: {
+                        color: [PlotColours.HIGHLIGHT.MISSING, PlotColours.NORMAL.MISSING],
+                        line: {
+                            width: 0.5,
+                            color: [PlotColours.HIGHLIGHT.BASE, PlotColours.NORMAL.BASE]
                         }
                     },
-                    "hovertemplate": [
+                    hovertemplate: [
                         "%{x}, %{y}<br>Northern/Chitipa<br>Aggregate value missing data for 2 regions<extra></extra>",
                         "%{x}, %{y}<br>Northern/Chitipa<br>Aggregate value missing data for 5 regions<extra></extra>"
                     ]
@@ -840,11 +852,11 @@ describe("time series utils", () => {
         ]);
 
         it ("can format an expression as a latex string", () => {
-            const expectedAncPrev = `\\textcolor{${PlotColours.NORMAL.BASE}}{\\text{ANC Prevalence}}`
+            const expectedAncPrev = `\\htmlClass{hoverable}{\\htmlId{anc_prevalence}{\\textcolor{${PlotColours.NORMAL.BASE}}{\\text{ANC Prevalence}}}}`
             expect(expressionToString("anc_prevalence", idTolabelMap))
                 .toStrictEqual(expectedAncPrev)
 
-            const expectedAncTotalPos = `\\textcolor{#4daf4a}{\\text{ANC total pos}}`
+            const expectedAncTotalPos = `\\htmlClass{hoverable}{\\htmlId{anc_total_pos}{\\textcolor{#1c7e19}{\\text{ANC total pos}}}}`
             expect(expressionToString("anc_total_pos", idTolabelMap))
                 .toStrictEqual(expectedAncTotalPos)
 
@@ -880,7 +892,8 @@ describe("time series utils", () => {
             expect(expressionToString(nestedEx, idTolabelMap))
                 .toStrictEqual(`\\frac{${expectedAncPrev}\\text{ + }${expectedAncTotalPos}}{${expectedAncPrev}\\text{ + }${expectedAncTotalPos}}`)
 
-            expect(expressionToString("unkn", idTolabelMap)).toStrictEqual(`\\textcolor{${PlotColours.NORMAL.BASE}}{\\text{unkn}}`)
+            expect(expressionToString("unkn", idTolabelMap))
+                .toStrictEqual(`\\htmlClass{hoverable}{\\htmlId{unkn}{\\textcolor{${PlotColours.NORMAL.BASE}}{\\text{unkn}}}}`)
         })
     });
 
@@ -891,54 +904,54 @@ describe("time series utils", () => {
         // The fourth area has only 1 data point
         const chartData = [
             {
-                "area_id": "MWI_4_1_demo",
-                "area_name": "Chitipa",
-                "area_hierarchy": "Northern/Chitipa",
-                "area_level": 4,
-                "quarter": "Q4",
-                "time_period": "2011 Q4",
-                "plot": "anc_status",
-                "value": 2116,
-                "page": 1
+                area_id: "MWI_4_1_demo",
+                area_name: "Chitipa",
+                area_hierarchy: "Northern/Chitipa",
+                area_level: 4,
+                quarter: "Q4",
+                time_period: "2011 Q4",
+                plot: "anc_status",
+                value: 2116,
+                page: 1
             },
             {
-                "area_id": "MWI_4_1_demo",
-                "area_name": "Chitipa",
-                "area_hierarchy": "Northern/Chitipa",
-                "area_level": 4,
-                "quarter": "Q4",
-                "time_period": "2012 Q4",
-                "plot": "anc_status",
-                "value": 2663,
-                "page": 1
+                area_id: "MWI_4_1_demo",
+                area_name: "Chitipa",
+                area_hierarchy: "Northern/Chitipa",
+                area_level: 4,
+                quarter: "Q4",
+                time_period: "2012 Q4",
+                plot: "anc_status",
+                value: 2663,
+                page: 1
             },
             {
-                "area_id": "MWI_4_1_demo",
-                "area_name": "Chitipa",
-                "area_hierarchy": "Northern/Chitipa",
-                "area_level": 4,
-                "quarter": "Q4",
-                "time_period": "2011 Q4",
-                "plot": "anc_total_pos",
-                "value": 4555,
-                "page": 1
+                area_id: "MWI_4_1_demo",
+                area_name: "Chitipa",
+                area_hierarchy: "Northern/Chitipa",
+                area_level: 4,
+                quarter: "Q4",
+                time_period: "2011 Q4",
+                plot: "anc_known_pos",
+                value: 4555,
+                page: 1
             },
             {
-                "area_id": "MWI_4_1_demo",
-                "area_name": "Chitipa",
-                "area_hierarchy": "Northern/Chitipa",
-                "area_level": 4,
-                "quarter": "Q4",
-                "time_period": "2012 Q4",
-                "plot": "anc_total_pos",
-                "value": 4795,
-                "page": 1
+                area_id: "MWI_4_1_demo",
+                area_name: "Chitipa",
+                area_hierarchy: "Northern/Chitipa",
+                area_level: 4,
+                quarter: "Q4",
+                time_period: "2012 Q4",
+                plot: "anc_known_pos",
+                value: 4795,
+                page: 1
             },
         ] as any as InputTimeSeriesData;
 
         const plotNameMap = new Map<string, string>([
             ["anc_status", "ANC status"],
-            ["anc_total_pos", "ANC total"]
+            ["anc_known_pos", "ANC known pos"]
         ])
 
         const layoutData = {
@@ -950,64 +963,67 @@ describe("time series utils", () => {
                 columns: 2,
                 distinctColumn: "plot",
                 rows: 1,
-                indicators: [["anc_status"], ["anc_status", "anc_total_pos"]]
+                indicators: [["anc_status"], ["anc_status", "anc_known_pos"]]
             },
         };
 
         const expectedData = [
             {
-                "name": "ANC status",
-                "showlegend": false,
-                "x": ["2011 Q4", "2012 Q4"],
-                "y": [2116, 2663],
-                "xaxis": "x1",
-                "yaxis": "y1",
-                "type": "scatter",
-                "line": {"color": PlotColours.HIGHLIGHT.BASE},
-                "marker": {
-                    "color": Array(2).fill(PlotColours.HIGHLIGHT.BASE),
-                    "line": {
-                        "width": 0.5,
-                        "color": Array(2).fill(PlotColours.HIGHLIGHT.BASE)
+                name: "ANC status",
+                plotType: "anc_status",
+                showlegend: false,
+                x: ["2011 Q4", "2012 Q4"],
+                y: [2116, 2663],
+                xaxis: "x1",
+                yaxis: "y1",
+                type: "scatter",
+                line: {color: PlotColours.HIGHLIGHT.BASE, dash: "solid"},
+                marker: {
+                    color: Array(2).fill(PlotColours.HIGHLIGHT.BASE),
+                    line: {
+                        width: 0.5,
+                        color: Array(2).fill(PlotColours.HIGHLIGHT.BASE)
                     }
                 },
-                "hovertemplate": Array(2).fill("ANC status<br>%{x}, %{y}<br>Northern/Chitipa<extra></extra>")
+                hovertemplate: Array(2).fill("ANC status<br>%{x}, %{y}<br>Northern/Chitipa<extra></extra>")
             },
             {
-                "name": "ANC status",
-                "showlegend": false,
-                "x": ["2011 Q4", "2012 Q4"],
-                "y": [2116, 2663],
-                "xaxis": "x2",
-                "yaxis": "y2",
-                "type": "scatter",
-                "line": {"color": timeSeriesFixedColours.get("anc_status")!.BASE},
-                "marker": {
-                    "color": Array(2).fill(timeSeriesFixedColours.get("anc_status")!.BASE),
-                    "line": {
-                        "width": 0.5,
-                        "color": Array(2).fill(timeSeriesFixedColours.get("anc_status")!.BASE)
+                name: "ANC status",
+                plotType: "anc_status",
+                showlegend: false,
+                x: ["2011 Q4", "2012 Q4"],
+                y: [2116, 2663],
+                xaxis: "x2",
+                yaxis: "y2",
+                type: "scatter",
+                line: {color: timeSeriesFixedColours.get("anc_status")!.BASE, dash: "solid"},
+                marker: {
+                    color: Array(2).fill(timeSeriesFixedColours.get("anc_status")!.BASE),
+                    line: {
+                        width: 0.5,
+                        color: Array(2).fill(timeSeriesFixedColours.get("anc_status")!.BASE)
                     }
                 },
-                "hovertemplate": Array(2).fill("ANC status<br>%{x}, %{y}<br>Northern/Chitipa<extra></extra>")
+                hovertemplate: Array(2).fill("ANC status<br>%{x}, %{y}<br>Northern/Chitipa<extra></extra>")
             },
             {
-                "name": "ANC total",
-                "showlegend": false,
-                "x": ["2011 Q4", "2012 Q4"],
-                "y": [4555, 4795],
-                "xaxis": "x2",
-                "yaxis": "y2",
-                "type": "scatter",
-                "line": {"color": timeSeriesFixedColours.get("anc_total_pos")!.BASE},
-                "marker": {
-                    "color": Array(2).fill(timeSeriesFixedColours.get("anc_total_pos")!.BASE),
-                    "line": {
-                        "width": 0.5,
-                        "color": Array(2).fill(timeSeriesFixedColours.get("anc_total_pos")!.BASE)
+                name: "ANC known pos",
+                plotType: "anc_known_pos",
+                showlegend: false,
+                x: ["2011 Q4", "2012 Q4"],
+                y: [4555, 4795],
+                xaxis: "x2",
+                yaxis: "y2",
+                type: "scatter",
+                line: {color: timeSeriesFixedColours.get("anc_known_pos")!.BASE, dash: "dash"},
+                marker: {
+                    color: Array(2).fill(timeSeriesFixedColours.get("anc_known_pos")!.BASE),
+                    line: {
+                        width: 0.5,
+                        color: Array(2).fill(timeSeriesFixedColours.get("anc_known_pos")!.BASE)
                     }
                 },
-                "hovertemplate": Array(2).fill("ANC total<br>%{x}, %{y}<br>Northern/Chitipa<extra></extra>")
+                hovertemplate: Array(2).fill("ANC known pos<br>%{x}, %{y}<br>Northern/Chitipa<extra></extra>")
             },
         ] as any
 
@@ -1020,7 +1036,7 @@ describe("time series utils", () => {
             const firstGroupPlotTypes = Array.from(new Set(dataByIndicatorGroup[0].map(obj => obj.plot)))
             expect(firstGroupPlotTypes).toStrictEqual(["anc_status"])
             const secondGroupPlotTypes = Array.from(new Set(dataByIndicatorGroup[1].map(obj => obj.plot)))
-            expect(secondGroupPlotTypes).toStrictEqual(["anc_status", "anc_total_pos"])
+            expect(secondGroupPlotTypes).toStrictEqual(["anc_status", "anc_known_pos"])
         });
 
         it("can build scatter points from data", () => {
@@ -1038,11 +1054,11 @@ describe("time series utils", () => {
             expect(layout.margin).toStrictEqual({l: 40, r: 40, t: 10, b: 40});
             expect(layout.dragmode).toBe(false);
             expect(layout.grid).toStrictEqual({
-                "columns": 2,
-                "rows": 1,
-                "pattern": "independent",
-                "xgap": 0.25,
-                "ygap": 0.4,
+                columns: 2,
+                rows: 1,
+                pattern: "independent",
+                xgap: 0.25,
+                ygap: 0.4,
             });
 
             expect(layout.xaxis1).toStrictEqual(expectedXAxis);

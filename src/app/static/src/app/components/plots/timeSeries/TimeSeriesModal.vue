@@ -9,8 +9,8 @@
             <time-series-legend
                 v-if="chartData.length > 0"
                 :plot-type="plotType"
-                @enter-plot-type="highlightTrace"
-                @leave-plot-type="resetTrace"/>
+                @enter-plot-type="chart?.highlightTrace"
+                @leave-plot-type="chart?.resetStyle"/>
 
             <plotly class="chart"
                     ref="chart"
@@ -22,8 +22,8 @@
 
             <equation class="equation text-center pb-3"
                     :formula="formula"
-                    @enter-plot-type="highlightTrace"
-                    @leave-plot-type="resetTrace"/>
+                    @enter-plot-type="chart?.highlightTrace"
+                    @leave-plot-type="chart?.resetStyle"/>
         </div>
     </modal>
 </template>
@@ -132,13 +132,6 @@ const formula = computed<string>(() => {
     return expressionToString(expression, timeSeriesPlotLabels);
 });
 
-const highlightTrace = (plotType: string) => {
-    chart.value?.highlightTrace(plotType);
-};
-
-const resetTrace = (plotType: string) => {
-    chart.value?.resetStyle(plotType);
-};
 </script>
 <style scoped>
 .equation {
