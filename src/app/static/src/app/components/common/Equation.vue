@@ -13,11 +13,30 @@ const props = defineProps({
     },
 });
 
+const emit = defineEmits<{
+    (e: "enter-plot-type", plotType: string): void
+    (e: "leave-plot-type", plotType: string): void
+}>();
+
 const equation = ref<HTMLElement | null>(null);
 
 const renderEquation = () => {
     katex.render(props.formula, equation.value!, {
-        output: "mathml"
+        trust: true,
+        strict: false
+    });
+
+    equation.value!.querySelectorAll(".hoverable").forEach((element) => {
+        element.addEventListener("mouseenter", () => {
+            if (element.firstElementChild) {
+                emit("enter-plot-type", element.firstElementChild.id);
+            }
+        });
+        element.addEventListener("mouseleave", () => {
+            if (element.firstElementChild) {
+                emit("leave-plot-type", element.firstElementChild.id);
+            }
+        });
     });
 };
 

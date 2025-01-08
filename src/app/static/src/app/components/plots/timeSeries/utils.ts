@@ -85,7 +85,7 @@ type PointMetadata = {
     pointName: string
     areaHierarchy: string,
     plotType: string | null
-    colours: typeof PlotColours.HIGHLIGHT,
+    colours: TimeSeriesIndicatorStyle,
     isFirstPointHighlight: boolean
 }
 
@@ -97,12 +97,14 @@ const getScatterPoints = (plotData: (InputTimeSeriesRow | null)[], pointMetadata
         }
         return x?.missing_ids?.length ? colours.MISSING : colours.BASE;
     });
+    const lineStyle = colours.DASH ?? "solid";
     const markerOutlineColors = plotData.map((_x, i) => {
         return isFirstPointHighlight && i === 0 ? PlotColours.HIGHLIGHT.BASE : colours.BASE;
     });
     const indicatorLabel = pointMetadata.plotType ? pointMetadata.pointName : null
     const points: any = {
         name: pointMetadata.pointName,
+        plotType: pointMetadata.plotType,
         showlegend: false,
         x: plotData.map(x => x?.time_period),
         y: plotData.map(x => x?.value),
@@ -112,7 +114,7 @@ const getScatterPoints = (plotData: (InputTimeSeriesRow | null)[], pointMetadata
             color: markerFillColors,
             line: { width: 0.5, color: markerOutlineColors },
         },
-        line: { color: colours.BASE },
+        line: { color: colours.BASE, dash: lineStyle },
         hovertemplate: getTooltipTemplate(plotData, pointMetadata.areaHierarchy, indicatorLabel, currentLanguage)
     }
     return points
@@ -277,11 +279,13 @@ export const getLayoutFromData = (dataByArea: Dict<InputTimeSeriesData>, layout:
                     return {
                         x: 1.1, y: 1.1,
                         xanchor: "right", yanchor: "middle",
-                        xref: `x${index+1} domain`, yref: `y${index+1} domain`,
+                        xref: `x${index+1} domain`,
+                        yref: `y${index+1} domain`,
                         text: `<span>⇱</span>`,
                         textangle: "90",
                         hovertext: "Expand plot",
-                        showarrow: false, textfont: {},
+                        showarrow: false,
+                        textfont: {},
                         captureevents: true,
                         areaId: id,
                         plotType: plotType
@@ -306,7 +310,7 @@ export const getLayoutFromData = (dataByArea: Dict<InputTimeSeriesData>, layout:
             tickfont: {color: "grey"},
             domain: [yStart, yStart - subPlotHeight],
             range: [-maxOfData * 0.1, maxOfData * 1.1],
-            type: "linear"
+            type: "linear",
         };
         baseLayout[`xaxis${i + 1}`] = {
             zeroline: false,
@@ -340,7 +344,7 @@ export const expressionToString = (expression: Expression | string, plotIdToLabe
     if (typeof expression === "string") {
         const colour = timeSeriesFixedColours.get(expression) ?? PlotColours.NORMAL;
         const label = plotIdToLabels.get(expression) ?? expression;
-        return `\\textcolor{${colour.BASE}}{\\text{${label}}}`;
+        return `\\htmlClass{hoverable}{\\htmlId{${expression}}{\\textcolor{${colour.BASE}}{\\text{${label}}}}}`;
     } else if (expression.op === Operator.Divide) {
         return `${expression.op}{${expressionToString(expression.a, plotIdToLabels)}}{${expressionToString(expression.b, plotIdToLabels)}}`
     } else {
@@ -407,12 +411,17 @@ export const timeSeriesExpandedViews = new Map<string, TimeSeriesExpandedConfig>
     }]
 ]);
 
-export const timeSeriesFixedColours = new Map<string, typeof PlotColours.NORMAL>([
-    ["anc_total_pos", {BASE: "#4daf4a", MISSING: "#dcdcdc"}],
-    ["anc_status", {BASE: "#377eb8", MISSING: "#dcdcdc"}],
-    ["anc_already_art", {BASE: "#377eb8", MISSING: "#dcdcdc"}],
-    ["anc_known_pos", {BASE: "#005500", MISSING: "#dcdcdc"}],
-    ["anc_tested_pos", {BASE: "#1c7e19", MISSING: "#dcdcdc"}],
-    ["anc_tested", {BASE: "#064d87", MISSING: "#dcdcdc"}],
-    ["anc_known_neg", {BASE: "#569dd7", MISSING: "#dcdcdc"}],
+
+type TimeSeriesIndicatorStyle = typeof PlotColours.NORMAL & {
+    DASH?: string
+};
+
+export const timeSeriesFixedColours = new Map<string, TimeSeriesIndicatorStyle>([
+    ["anc_total_pos", {BASE: "#1c7e19", MISSING: "#dcdcdc", DASH: "solid"}],
+    ["anc_status", {BASE: "#064d87", MISSING: "#dcdcdc", DASH: "solid"}],
+    ["anc_already_art", {BASE: "#064d87", MISSING: "#dcdcdc", DASH: "solid"}],
+    ["anc_known_pos", {BASE: "#1c7e19", MISSING: "#dcdcdc", DASH: "dash"}],
+    ["anc_tested_pos", {BASE: "#1c7e19", MISSING: "#dcdcdc", DASH: "dot"}],
+    ["anc_tested", {BASE: "#064d87", MISSING: "#dcdcdc", DASH: "dash"}],
+    ["anc_known_neg", {BASE: "#064d87", MISSING: "#dcdcdc", DASH: "dot"}],
 ])
