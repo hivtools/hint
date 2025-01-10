@@ -3,7 +3,7 @@
         <button id="previous-page"
                 class="btn btn-sm mr-2 btn-red"
                 v-translate:aria-label="'previousPage'"
-                :disabled="pageNumber === 1"
+                :disabled="pageNumber == 1"
                 @click="pageUpdate(pageNumber - 1)">
             <vue-feather type="chevron-left" size="20" class="pagination-icon"></vue-feather>
         </button>
