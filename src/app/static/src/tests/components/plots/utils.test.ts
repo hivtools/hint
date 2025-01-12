@@ -295,6 +295,9 @@ describe("plot utils", () => {
         result = getIndicatorRange(plhiv, dynamicFilteredScale, data);
         expect(result).toStrictEqual({min: 13, max: 15});
 
+        result = getIndicatorRange(plhiv, undefined as any, data);
+        expect(result).toStrictEqual({min: 13, max: 15});
+
         const prev = {
             indicator: "prevalence",
             value_column: "mean",
