@@ -1,28 +1,14 @@
 {
-  "compilerOptions": {
-    "outDir": "./built/",
-    "sourceMap": true,
-    "strict": true,
-    "noImplicitReturns": true,
-    "module": "esnext",
-    "moduleResolution": "node",
-    "target": "esnext",
-    "experimentalDecorators": true,
-    "esModuleInterop": true,
-    "types": ["vitest/globals"],
-    "noImplicitThis": false,
-  },
-  "include": [
-    "./src/app/**/*.ts",
-    "./src/app/**/*.vue",
-    "./src/app/**/*.js",
-    "./src/tests/**/*.ts"
-  ],
-  "files": [
-    "./vue-shims.d.ts",
-    "./vuex-shims.d.ts"
-  ],
-  "exclude": [
-    "node_modules"
+  "files": [],
+  "references": [
+    {
+      "path": "./tsconfig.node.json"
+    },
+    {
+      "path": "./tsconfig.app.json"
+    },
+    {
+      "path": "./tsconfig.vitest.json"
+    }
   ]
 }

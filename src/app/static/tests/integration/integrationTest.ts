@@ -1,0 +1,35 @@
+import axios from 'axios';
+import {Language} from "../../src/store/translations/locales";
+import FormData from 'form-data';
+
+declare let appUrl: string; // configured by jest
+
+export const rootState = {
+    language: Language.en,
+    metadata: {}
+};
+
+export const login = async (username = "test.user@example.com", password = "password") => {
+    const formData = new FormData();
+    formData.append('username', username);
+    formData.append('password', password);
+
+    const res = await axios.post(appUrl + "callback/formClient",
+        formData,
+        {
+            headers: formData.getHeaders(),
+            maxRedirects: 0,
+            validateStatus: (status) => status == 303
+        });
+
+    const cookie = res.headers["set-cookie"]![0].split(";")[0];
+
+    // Register middleware to pass the session cookie with all requests
+    axios.interceptors.request.use(cfg => {
+        cfg.headers!["Cookie"] = cookie;
+        return cfg;
+    })
+
+    // GET the homepage to save the session
+    await axios.get(appUrl);
+};

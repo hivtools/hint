@@ -112,6 +112,7 @@ task copyAssets() {
 //defined in gradle.properties
 bootRun {
     bootRun.systemProperty 'spring.profiles.active', springProfile
+    bootRun.systemProperty 'hot.reload', hotReload
 }
 
 processResources.dependsOn 'compileFrontEnd', 'copyAssets'
