@@ -39,7 +39,7 @@ jobs:
 
             - name: Test back end
               run: |
-                src/gradlew -p src -PexcludeADR=true :app:test --parallel :app:jacocoTestReport -x app:compileFrontEnd
+                src/gradlew -p src -PexcludeADR=true :app:test --parallel :app:jacocoTestReport -x app:compileFrontEnd -x app:copyAssets
                 codecov -p . -f src/app/coverage/test/*.xml
               env:
                 CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
