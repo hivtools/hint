@@ -36,7 +36,7 @@ jobs:
                 npx playwright install-deps chromium
 
             - name: Test browser e2e
-              run: npm run browser-test --prefix=src/app/static
+              run: npm run test:e2e --prefix=src/app/static
 
             - uses: actions/upload-artifact@v4
               if: ${{ !cancelled() }}

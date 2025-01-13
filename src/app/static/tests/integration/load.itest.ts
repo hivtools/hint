@@ -10,7 +10,7 @@ describe("load actions", () => {
     beforeAll(async () => {
         await login();
         const commit = vi.fn();
-        const formData = getFormData("./testdata/malawi.geojson");
+        const formData = getFormData("../testdata/malawi.geojson");
 
         await baselineActions.uploadShape({commit, dispatch: vi.fn(), rootState} as any, formData);
 

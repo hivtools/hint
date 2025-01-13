@@ -4,31 +4,31 @@ import {translate} from "./translationUtils";
 const uploadFileTypes = {
     spectrum: {
         translationKey: "PJNZ",
-        testFile: "./testdata/Malawi2024.PJNZ"
+        testFile: "../testdata/Malawi2024.PJNZ"
     },
     shape: {
         translationKey: "shape",
-        testFile: "./testdata/malawi.geojson"
+        testFile: "../testdata/malawi.geojson"
     },
     population: {
         translationKey: "population",
-        testFile: "./testdata/population.csv"
+        testFile: "../testdata/population.csv"
     },
     survey: {
         translationKey: "survey",
-        testFile: "./testdata/survey.csv"
+        testFile: "../testdata/survey.csv"
     },
     programme: {
         translationKey: "ART",
-        testFile: "./testdata/programme.csv"
+        testFile: "../testdata/programme.csv"
     },
     anc: {
         translationKey: "ANC",
-        testFile: "./testdata/anc.csv"
+        testFile: "../testdata/anc.csv"
     },
     vmmc: {
         translationKey: "VMMC",
-        testFile: "./testdata/vmmc.xlsx"
+        testFile: "../testdata/vmmc.xlsx"
     },
 }
 

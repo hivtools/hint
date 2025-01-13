@@ -2,7 +2,7 @@ import axios from 'axios';
 import {Language} from "../../src/store/translations/locales";
 import FormData from 'form-data';
 
-declare let appUrl: string; // configured by jest
+declare let appUrl: string; // declared in setup.integration.ts
 
 export const rootState = {
     language: Language.en,

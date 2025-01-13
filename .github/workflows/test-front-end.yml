@@ -26,7 +26,7 @@ jobs:
               run: npm run lint --prefix=src/app/static -- --quiet
 
             - name: Front-end tests
-              run: npm run test --prefix=src/app/static
+              run: npm run test:unit --prefix=src/app/static
 
             - name: CodeCov
               run: |

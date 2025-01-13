@@ -29,7 +29,7 @@ jobs:
               run: scripts/run-kotlin-server.sh
 
             - name: Integration tests
-              run: npm run integration-test --prefix=src/app/static
+              run: npm run test:integration --prefix=src/app/static
 
             - name: CodeCov
               run: |
