@@ -15,7 +15,8 @@
     "type-check": "vue-tsc -p tsconfig.app.json",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "copy-build-files": "rm -rf public && mkdir -p public && cp -r ./dist/. ./public/"
+    "copy-build-files": "rm -rf public && mkdir -p public && cp -r ./dist/. ./public/",
+    "copy-assets-to-public": "rm -rf public && mkdir -p public && cp -r ./assets/. ./public/"
   },
   "license": "MIT",
   "web-types": "./web-types.json",

@@ -39,6 +39,7 @@ jobs:
 
             - name: Test back end
               run: |
+                npm run copy-assets-to-public --prefix=src/app/static
                 src/gradlew -p src -PexcludeADR=true :app:test --parallel :app:jacocoTestReport -x app:compileFrontEnd -x app:copyAssets
                 codecov -p . -f src/app/coverage/test/*.xml
               env:
