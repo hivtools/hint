@@ -33,7 +33,6 @@
 import {computed, onMounted, ref, watch} from "vue";
 import {useStore} from "vuex";
 import {RootState} from "../../../root";
-import {PlotData} from "../../../store/plotData/plotData";
 import { LMap, LGeoJson, LTileLayer } from "@vue-leaflet/vue-leaflet";
 import { Feature } from "geojson";
 import {
@@ -62,8 +61,6 @@ const plotName = "bubble";
 type OutputData = CalibrateDataResponse["data"]
 
 const tileLayerUrl = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
-
-const plotData = computed<PlotData>(() => store.state.plotData[plotName]);
 const getColourIndicator = () => {
     return store.state.plotSelections[plotName].filters.find(f => f.stateFilterId === "colourIndicator")!.selection[0].id
 }
@@ -78,6 +75,15 @@ const colourIndicatorMetadata = computed<IndicatorMetadata>(() => {
 });
 const sizeIndicatorMetadata = computed<IndicatorMetadata>(() => {
     return  getIndicatorMetadata(store, plotName, sizeIndicator.value)
+});
+
+const plotData = computed<OutputData>(() => {
+    const data = store.state.plotData[plotName] as OutputData;
+    const indicators = data.map(d => d.indicator);
+    if (!indicators.includes(getColourIndicator()) || !indicators.includes(getSizeIndicator())) {
+        return [];
+    }
+    return data;
 });
 
 const colourRange = ref<NumericRange | null>(null);
