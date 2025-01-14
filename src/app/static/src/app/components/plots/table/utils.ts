@@ -131,8 +131,7 @@ export const getColumnDefs = (plot: PlotName, dataSource: string | null, indicat
                     cellRenderer: key === "difference" ? DifferenceColumnRenderer : null,
                     headerTooltip: key === "difference" || key === "difference_ratio" ? i18next.t(`tableArtTooltip${key}`) : null,
                     tooltipValueGetter: key === "difference" || key === "difference_ratio" ? inputComparisonTooltipCallback : null,
-                    tooltipComponent: InputComparisonTooltip,
-                    tooltipComponentParams: { language: currentLanguage }
+                    tooltipComponent: InputComparisonTooltip
                 }
             })
             return {
@@ -162,7 +161,7 @@ export class InputComparisonTooltip implements ITooltipComp {
 }
 
 
-const inputComparisonTooltipCallback = (params: ITooltipParams & { language: Language }) => {
+const inputComparisonTooltipCallback = (params: ITooltipParams) => {
     const column = params.column;
     if (!isColumnWithParent(column)) {
         return null
