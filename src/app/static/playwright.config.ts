@@ -39,6 +39,7 @@ const config: PlaywrightTestConfig = {
     },
     fullyParallel: true,
     retries: process.env.CI ? 1 : 0,
+    workers: 4,
     use: {
       screenshot: "on-first-failure"
     }
