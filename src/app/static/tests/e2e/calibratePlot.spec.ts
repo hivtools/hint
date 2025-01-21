@@ -2,7 +2,7 @@ import {expect, test} from "./fixtures/project-page";
 import {Step} from "../../src/types";
 import {calibrateModel} from "./utils/utils";
 
-test("can view time series plot", async ({ projectPage }) => {
+test("can view calibrate plot", async ({ projectPage }) => {
     const page = projectPage.page;
     await projectPage.goToStep(Step.CalibrateModel);
 
