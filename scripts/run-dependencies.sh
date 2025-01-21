@@ -14,11 +14,13 @@ GHCR=ghcr.io/hivtools
 DB_IMAGE=$GHCR/hint-db:main
 DB_MIGRATE_IMAGE=$GHCR/hint-db-migrate:main
 HINTR_IMAGE=$GHCR/$API:$HINTR_VERSION
+REDIS_SRC=ghcr.io/mrc-ide/docker-official-images/redis:6
 
 docker network create $NETWORK
 docker pull $DB_IMAGE
 docker pull $HINTR_IMAGE
 docker pull $DB_MIGRATE_IMAGE
+docker pull $REDIS_SRC
 
 docker run --rm -d \
   --network=$NETWORK \
@@ -27,7 +29,7 @@ docker run --rm -d \
   -p 5432:5432 \
   $DB_IMAGE
 
-docker run --rm -d --network=$NETWORK --name $REDIS --network-alias=redis redis
+docker run --rm -d --network=$NETWORK --name $REDIS --network-alias=redis $REDIS_SRC
 
 mkdir -p $HERE/../src/app/uploads
 mkdir -p $HERE/../src/app/results
