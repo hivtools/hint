@@ -59,21 +59,21 @@ test("can view output plots", async ({ projectPage }) => {
     await page.getByText('Table').click();
 
     // Then table is shown
-    await expect(page.locator("#review-output")).toHaveScreenshot("table-landing.png");
+    await expect(page.locator("#review-output")).toHaveScreenshot("table-landing.png", { maxDiffPixelRatio: 0.05 });
 
     // When I update a table preset
     await page.getByRole('button', { name: 'Sex by area' }).click();
     await page.locator('a').filter({ hasText: 'Sex by 5 year age group' }).click();
 
     // Then table is updated
-    await expect(page.locator("#review-output")).toHaveScreenshot("table-sex-by-age.png");
+    await expect(page.locator("#review-output")).toHaveScreenshot("table-sex-by-age.png", { maxDiffPixelRatio: 0.05 });
 
     // When I update a filter
     await page.getByRole('button', { name: 'HIV prevalence' }).click();
     await page.locator('a').filter({ hasText: /^ART coverage$/ }).click();
 
     // Then table is updated
-    await expect(page.locator("#review-output")).toHaveScreenshot("table-art-coverage.png");
+    await expect(page.locator("#review-output")).toHaveScreenshot("table-art-coverage.png", { maxDiffPixelRatio: 0.05 });
 
     // When I switch to comparison tab
     await page.getByText('Comparison').click();

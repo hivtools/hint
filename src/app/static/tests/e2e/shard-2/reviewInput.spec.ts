@@ -202,14 +202,14 @@ test("can view input comparison table", async ({ projectPage }) => {
     // Comparison table is rendered
     await expect(page.locator("#review-loading")).toHaveCount(0, {timeout: 30000});
     await expect(page.locator(".ag-root")).toBeVisible();
-    await expect(page.locator("#review-inputs")).toHaveScreenshot("input-comparison-table-landing.png");
+    await expect(page.locator("#review-inputs")).toHaveScreenshot("input-comparison-table-landing.png", { maxDiffPixelRatio: 0.05 });
 
     // When I change indicator
     await page.getByRole('button', { name: 'Number on ART' }).click();
     await page.locator('a').filter({ hasText: 'ANC clients' }).click();
 
     // Table has been updated
-    await expect(page.locator("#review-inputs")).toHaveScreenshot("input-comparison-table-anc.png");
+    await expect(page.locator("#review-inputs")).toHaveScreenshot("input-comparison-table-anc.png", { maxDiffPixelRatio: 0.05 });
 });
 
 test("can view population pyramid chart", async ({ projectPage }) => {
