@@ -35,7 +35,7 @@ jobs:
                 : # gzip which is what the last command does
                 mkdir -p src/app/static/public
                 mkdir -p src/app/static/public/css
-                yes ".class {height: 500px;}" | head -n 200 >> src/app/static/public/css/app.css
+                yes ".class {height: 500px;}" | head -n 200 >> src/app/static/public/app.css
 
             - name: Test back end
               run: |
