@@ -37,8 +37,9 @@ const config: PlaywrightTestConfig = {
             maxDiffPixelRatio: 0.02
         }
     },
-    fullyParallel: true,
+    fullyParallel: false,
     retries: process.env.CI ? 1 : 0,
+    workers: 1,
     use: {
       screenshot: "on-first-failure"
     }
