@@ -171,6 +171,7 @@ const getPlotDataForIndicator = (indicatorMetadata: IndicatorMetadata, plotData:
 
 export const getIndicatorRange = (indicatorMetadata: IndicatorMetadata, scaleSettings: ScaleSettings, plotData: CalibrateDataResponse["data"]): NumericRange => {
     const indicatorData = getPlotDataForIndicator(indicatorMetadata, plotData);
+    if (!scaleSettings) return getDynamicRange(indicatorData, indicatorMetadata);
     switch (scaleSettings.type) {
         case ScaleType.DynamicFiltered:
             return getDynamicRange(indicatorData, indicatorMetadata);

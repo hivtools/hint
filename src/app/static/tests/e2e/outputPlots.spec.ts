@@ -1,6 +1,5 @@
 import {expect, test} from "./fixtures/project-page";
 import {Step} from "../../src/types";
-import {calibrateModel, waitForAnimations} from "./utils/utils";
 
 test("can view output plots", async ({ projectPage }) => {
     const page = projectPage.page;
@@ -158,4 +157,22 @@ test("can view output plots", async ({ projectPage }) => {
 
     // Cascade plot is shown
     await expect(page.locator("#review-output")).toHaveScreenshot("cascade-landing.png");
+})
+
+test("shows empty map if one of the indicators is not available in bubble plot", async ({ projectPage }) => {
+    const page = projectPage.page;
+    await projectPage.goToStep(Step.ReviewOutput);
+
+    // When I switch to bubble tab
+    await page.getByText('Bubble').click();
+
+    // Then bubble plot is shown
+    await expect(page.locator("#review-output")).toHaveScreenshot("bubble-landing.png");
+
+    // When I change the size indicator to indicator with no data
+    await page.getByRole('button', { name: 'PLHIV' }).click();
+    await page.locator('a').filter({ hasText: 'ANC HIV prevalence' }).nth(1).click();
+
+    // bubble plot is empty
+    await expect(page.locator("#review-output")).toHaveScreenshot("bubble-empty.png");
 })

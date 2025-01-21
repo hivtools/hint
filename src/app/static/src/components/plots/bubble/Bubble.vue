@@ -33,7 +33,6 @@
 import {computed, onMounted, ref, watch} from "vue";
 import {useStore} from "vuex";
 import {RootState} from "../../../root";
-import {PlotData} from "../../../store/plotData/plotData";
 import { LMap, LGeoJson, LTileLayer } from "@vue-leaflet/vue-leaflet";
 import { Feature } from "geojson";
 import {
@@ -63,7 +62,6 @@ type OutputData = CalibrateDataResponse["data"]
 
 const tileLayerUrl = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
 
-const plotData = computed(() => store.state.plotData[plotName] as CalibrateDataResponse["data"]);
 const getColourIndicator = () => {
     return store.state.plotSelections[plotName].filters.find(f => f.stateFilterId === "colourIndicator")!.selection[0].id
 }
@@ -78,6 +76,15 @@ const colourIndicatorMetadata = computed<IndicatorMetadata>(() => {
 });
 const sizeIndicatorMetadata = computed<IndicatorMetadata>(() => {
     return  getIndicatorMetadata(store, plotName, sizeIndicator.value)
+});
+
+const plotData = computed<OutputData>(() => {
+    const data = store.state.plotData[plotName] as OutputData;
+    const indicators = data.map(d => d.indicator);
+    if (!indicators.includes(getColourIndicator()) || !indicators.includes(getSizeIndicator())) {
+        return [];
+    }
+    return data;
 });
 
 const colourRange = ref<NumericRange | null>(null);
@@ -153,6 +160,7 @@ const emptyFeature = computed(() => {
     return featuresWithBubbles.value.length == 0
 });
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const circles = ref<CircleMarker<any>[]>([]);
 
 const buildBubbles = () => {
@@ -160,13 +168,13 @@ const buildBubbles = () => {
         circles.value.forEach(circle => circle.remove())
         circles.value = []
     }
-    let circlesArray: CircleMarker[] = [];
+    const circlesArray: CircleMarker[] = [];
     if (!emptyFeature.value) {
         currentFeatures.value.forEach((feature: Feature) => {
             if (!showBubble(feature)) {
                 return;
             }
-            let circle = circleMarker([feature.properties?.center_y, feature.properties?.center_x], {
+            const circle = circleMarker([feature.properties?.center_y, feature.properties?.center_x], {
                 radius: getRadius(feature),
                 fillOpacity: 0.75,
                 opacity: 0.75,
