@@ -3,10 +3,9 @@
         <div v-for="(group, index) in plotIndicators"
              :key="`indicator-legend-${index}`"
              class="col mr-4 ml-4">
-            <div :class="group.length > 1 ? 'legend-grid' : 'd-flex flex-wrap justify-content-center'">
+            <div class="legend-grid">
                 <div v-for="plotType in group"
                      :key="plotType"
-                     class="d-flex align-items-center"
                      @mouseenter="$emit('enter-plot-type', plotType)"
                      @mouseleave="$emit('leave-plot-type', plotType)">
 
@@ -82,7 +81,6 @@ const getLineStyle = (plotType: string) => {
 <style scoped>
 .legend-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    column-gap: 1em;
+    justify-content: center
 }
 </style>
