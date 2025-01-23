@@ -70,6 +70,20 @@ test("can view time series plot", async ({ projectPage }) => {
     await page.setViewportSize({width: 1920, height: 1080}) // Set viewport size to see entire dialog content
     await expect(page.locator('div:nth-child(2) > .modal-dialog > .modal-content')).toHaveScreenshot("time-series-expanded.png");
 
+    // When I hover on legend
+    const hivPosLegendLabel = page.locator('#time-series-modal div').filter({ hasText: /^ANC total HIV positive$/ })
+    await hivPosLegendLabel.hover()
+
+    // That line is highlighted in plot
+    await expect(page.locator('div:nth-child(2) > .modal-dialog > .modal-content')).toHaveScreenshot("time-series-legend-highlight.png");
+
+    // When I hover over equation
+    const hivKnownPosEquation = page.locator('#equation').getByText('ANC known positive').nth(3)
+    await hivKnownPosEquation.hover()
+
+    // The line is highlighted in plot
+    await expect(page.locator('div:nth-child(2) > .modal-dialog > .modal-content')).toHaveScreenshot("time-series-equation-highlight.png");
+
     // When I click background
     await page.locator('.modal-backdrop').first().click({position: {x: 10, y: 10}});
 
