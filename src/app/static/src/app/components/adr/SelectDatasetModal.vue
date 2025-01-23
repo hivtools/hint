@@ -144,3 +144,9 @@ watchEffect(() => {
 });
 watch(datasets, preSelectDataset);
 </script>
+
+<style scoped>
+:deep(.modal-body) {
+    overflow: visible
+}
+</style>
