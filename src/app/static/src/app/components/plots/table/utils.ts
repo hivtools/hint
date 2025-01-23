@@ -175,8 +175,8 @@ const inputComparisonTooltipCallback = (params: ITooltipParams) => {
         reallocation) / params.data[`spectrum_adjusted_${groupId}`];
     const formattedRelocation = formatOutput(reallocation, "0,0", null, null);
     const formattedRatio = formatOutput(adjustmentRatio, "0.00%", null, null);
-    return `<div><b>Spectrum rellocation:</b> ${formattedRelocation}</div>
-    <div><b>Naomi:Spectrum adjustment ratio:</b> ${formattedRatio}</div>`
+    return `<div><b>${i18next.t("spectrumReallocation")}</b> ${formattedRelocation}</div>
+    <div><b>${i18next.t("spectrumAdjustmentRatio")}</b> ${formattedRatio}</div>`
 
 };
 
