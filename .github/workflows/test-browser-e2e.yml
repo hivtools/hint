@@ -31,7 +31,7 @@ jobs:
             - name: Install playwright et al
               run: |
                 cd src/app/static
-                npm install @playwright/test@1.35.1
+                npm install @playwright/test@1.49.1
                 npx playwright install chromium
                 npx playwright install-deps chromium
 
