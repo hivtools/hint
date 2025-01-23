@@ -1,5 +1,5 @@
 import * as fs from 'fs';
-import {locales}  from "../src/app/store/translations/locales"
+import {locales}  from "../src/store/translations/locales"
 import path from "path";
 
 // Import the locales file dynamically

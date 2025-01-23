@@ -1,4 +1,4 @@
-FROM openjdk:18
+FROM ghcr.io/mrc-ide/docker-official-images/openjdk:18
 
 RUN mkdir /static/public -p
 

@@ -1,15 +1,18 @@
-import baseConfig from "../vitest.config.mts";
-import { mergeConfig, defineConfig } from "vitest/config";
+import { cfg } from "../vitest.config";
+import { mergeConfig, defineConfig, configDefaults } from "vitest/config";
 
 export default mergeConfig(
-    baseConfig,
+    cfg,
     defineConfig({
         test: {
+            environment: "jsdom",
             include: ['**/*.{itest,ispec}.?(c|m)[jt]s?(x)'],
-            exclude: ["**/adr-dataset.itest.ts"],
-            coverage: { reportsDirectory: "./coverage/integration/" },
+            globals: true,
+            maxConcurrency: 4,
+            exclude: [...configDefaults.exclude, "**/adr-dataset.itest.ts"],
+            coverage: { provider: "v8", reportsDirectory: "./coverage/integration/" },
             testTimeout: 6000,
-            setupFiles: ["./src/tests/setup.integration.ts"]
+            setupFiles: ["./tests/setup.integration.ts"]
         }
     })
 );

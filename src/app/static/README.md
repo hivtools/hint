@@ -1,35 +1,64 @@
-## HINT Front End
-js and sass source files and tests can be found in `./src`. Compiled files are written to `./public`.
+# hintUpgrade
 
-### Generating type definitions
-Type definitions are auto-generated based on the
-[hintr API schema](https://github.com/hivtools/hintr/tree/main/inst/schema). To
-re-generate types run
+This template should help get you started developing with Vue 3 in Vite.
 
-    ./scripts/generate-types.sh <BRANCH_NAME>
+## Recommended IDE Setup
 
-from this directory
+[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
 
-### Testing
-Tests are run with jest and playwright. Files with the suffix `.test.ts` are treated as unit tests, files
-with the suffix `.itest.ts` treated as integration tests and files with suffix `.etest.ts`
-as browser tests. Config for each can be found in
-`jest.config.js`, `jest.integration.config.js` and `playwright.config.ts` respectively.
-- run unit tests with `npm test`
-- run integration tests with `npm run integration-test` having first started the app and
-all dependencies by running `./scripts/run-dev-dependencies-for-integration-tests.sh` from this
-directory
-- run browser tests with `npm run browser-test`
+## Type Support for `.vue` Imports in TS
 
-## Linting
-On CI we run `eslint` and the build will fail if there are any errors. To check your code locally,
-run `npm run lint`. We are using the basic Typescript and Vue recommendations. Our only custom rule is that
-nested content under both the `<template>` and `<script>` tags in a Vue component should be indented by 4
-spaces. We have IntelliJ project style files included in this repo, so making your code conform with indenting rules
-is as simple as running IntelliJ's auto-formatting command (<kbd>ctrl + alt + l</kbd> in Linux)
+TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
 
-### Compiling
-- sass is compiled using gulp - this task can be triggered by running `npm run sass`
-- js is bundled using webpack - this task can be triggered by running `npm run js`
+## Customize configuration
 
-Or to compile both at once, `npm run build`
+See [Vite Configuration Reference](https://vite.dev/config/).
+
+## Project Setup
+
+```sh
+npm install
+```
+
+### Compile and Hot-Reload for Development
+
+```sh
+npm run dev
+```
+
+### Type-Check, Compile and Minify for Production
+
+```sh
+npm run build
+```
+
+### Run Unit Tests with [Vitest](https://vitest.dev/)
+
+```sh
+npm run test:unit
+```
+
+### Run End-to-End Tests with [Playwright](https://playwright.dev)
+
+```sh
+# Install browsers for the first run
+npx playwright install
+
+# When testing on CI, must build the project first
+npm run build
+
+# Runs the end-to-end tests
+npm run test:e2e
+# Runs the tests only on Chromium
+npm run test:e2e -- --project=chromium
+# Runs the tests of a specific file
+npm run test:e2e -- tests/example.spec.ts
+# Runs the tests in debug mode
+npm run test:e2e -- --debug
+```
+
+### Lint with [ESLint](https://eslint.org/)
+
+```sh
+npm run lint
+```

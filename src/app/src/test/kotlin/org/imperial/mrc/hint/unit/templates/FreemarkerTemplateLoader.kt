@@ -17,7 +17,7 @@ import java.net.URL
 import java.util.*
 import javax.xml.transform.Source
 
-class FreemarkerTemplateLoader(val templateName: String, val templatePath: String = "static/templates")
+class FreemarkerTemplateLoader(val templateName: String, val templatePath: String = "static/assets")
 {
     companion object
     {

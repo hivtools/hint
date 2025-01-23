@@ -103,7 +103,7 @@ task compileFrontEnd() {
 task copyAssets() {
     doLast {
         exec {
-            commandLine npmCommand, "run", "copy", "--prefix=$projectDir/static/"
+            commandLine npmCommand, "run", "copy-build-files", "--prefix=$projectDir/static/"
         }
     }
 }
@@ -112,6 +112,7 @@ task copyAssets() {
 //defined in gradle.properties
 bootRun {
     bootRun.systemProperty 'spring.profiles.active', springProfile
+    bootRun.systemProperty 'hot.reload', hotReload
 }
 
 processResources.dependsOn 'compileFrontEnd', 'copyAssets'

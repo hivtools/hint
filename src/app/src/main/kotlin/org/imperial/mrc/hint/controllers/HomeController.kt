@@ -28,6 +28,8 @@ class HomeController(
         versionRepository.saveVersion(session.getVersionId(), null)
         model["title"] = appProperties.applicationTitle
         model["user"] = userProfile.id
+        model["hotReload"] = System.getProperty("hot.reload") ?: "false"
+
         return "index"
     }
 

@@ -1,0 +1,187 @@
+@import "partials/variables";
+@import "../node_modules/bootstrap/scss/bootstrap.scss";
+@import "../node_modules/bootstrap/scss//mixins";
+@import "../node_modules/leaflet/dist/leaflet.css";
+@import "../node_modules/@reside-ic/vue3-treeselect/dist/vue3-treeselect.css";
+@import "../node_modules/bootstrap-vue-next/dist/bootstrap-vue-next.css";
+//@import "../app/vue-dynamic-form/src/style-partial.scss";
+@import "partials/maps";
+@import "partials/stepper";
+@import "partials/header";
+@import "partials/tooltips";
+@import "partials/progress";
+@import "partials/files";
+@import "partials/timeSeries";
+@import "partials/login";
+
+a {
+  color: $theme-red;
+  text-decoration: none;
+
+  &:hover {
+    color: darken($theme-red, 10%);
+  }
+
+  &.disabled {
+    color: $gray-600;
+    cursor: default;
+
+    &:hover {
+      text-decoration: none;
+    }
+  }
+}
+
+.color-red {
+  color: $theme-red;
+}
+
+.btn-red {
+  @include button-variant($theme-red, darken($theme-red, 10%))
+}
+
+.btn-red-icons {
+  color: $theme-red;
+
+  &:hover {
+    color: darken($theme-red, 10%);
+  }
+}
+
+#model-options .btn-submit {
+  @extend .btn-red !optional
+}
+
+.btn-white {
+  @include button-variant(#ffffff, $theme-red, rgba(198, 26, 53, 0.1));
+  color: $theme-red !important;
+
+  &:active {
+    background: rgba(198, 26, 53, 0.1);
+  }
+}
+
+button:disabled {
+  pointer-events: none
+}
+
+.tick {
+  margin-left: 5px;
+  margin-bottom: 5px;
+  margin-top: -5px;
+  height: 21px;
+  width: 21px;
+
+  path {
+    transform: scale(0.2);
+    stroke-dasharray: 1000;
+    stroke-dashoffset: 1000;
+    animation: dash 2s linear forwards;
+  }
+
+  @keyframes dash {
+    from {
+      stroke-dashoffset: 1000;
+    }
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+
+}
+
+.lds-spin.xs {
+  margin-top: -15px;
+}
+
+.reset-password-form {
+  width: 30em;
+}
+
+a.up::after {
+  content: '\25b2';
+}
+
+a.down::after {
+  content: '\25bc';
+}
+
+.collapsed > .when-open {
+  display: none;
+}
+
+.not-collapsed > .when-closed {
+  display: none;
+}
+
+.form-control.is-invalid {
+  background-image: none;
+}
+
+.error-page {
+  padding-top: 10%;
+  background-color: red;
+}
+
+.height-40 {
+  height: 40px;
+}
+
+.modal {
+  // Stop pointer events, this means that the background of the modal
+  // is clickable, which we can use to close it. The modal dialog still
+  // remains clickable.
+  pointer-events: none;
+}
+
+#upload-modal .modal-content {
+  max-height: 95vh;
+  overflow: auto;
+}
+
+#time-series-modal .modal-dialog {
+  max-width: 80vw;
+  width: 80vw;
+}
+
+.modal-header {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.modal-body {
+  max-height: 75vh;
+  overflow: auto;
+}
+
+.annotation-text tspan {
+  @include button-outline-variant($theme-red, darken($theme-red, 10%));
+  font-size: 20px;
+  fill: $theme-red;
+
+  &:hover {
+    fill: darken($theme-red, 10%);
+  }
+}
+
+.icon-small svg {
+  height: 20px;
+  width: 20px;
+  vertical-align: sub;
+}
+
+.noDataMessage {
+  width: 60%;
+  position: absolute;
+  border: 1px solid #adb5bd;
+  bottom: 50%;
+  left: 25%;
+  background: #fff;
+  margin: auto;
+}
+
+@media (min-width:1000px) {
+  #load-invalid-modal .modal-dialog {
+    max-width: 800px;
+  }
+}

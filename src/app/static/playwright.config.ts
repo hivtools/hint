@@ -8,7 +8,7 @@ dotenv.config();
 export const baseURL =  process.env.baseURL ? process.env.baseURL : 'http://localhost:8080'
 
 const config: PlaywrightTestConfig = {
-    testDir: './src/tests/e2e',
+    testDir: './tests/e2e',
     projects: [
         {
             name: 'chromium',
@@ -39,7 +39,10 @@ const config: PlaywrightTestConfig = {
     },
     fullyParallel: false,
     retries: process.env.CI ? 1 : 0,
-    workers: process.env.CI ? 1 : undefined,
+    workers: 1,
+    use: {
+      screenshot: "on-first-failure"
+    }
 };
 
 export default config;
