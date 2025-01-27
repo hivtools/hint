@@ -12,7 +12,6 @@
                       class="mr-1"
                       :value="pageNumber"
                       @set-value="pageUpdate"
-                      type="number"
                       name="page-number-input"
                       :min="1"
                       :max="totalPages"

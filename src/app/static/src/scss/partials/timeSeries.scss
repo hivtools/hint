@@ -24,3 +24,15 @@
 .xaxislayer-above {
   transform: translateY(6px);
 }
+
+.equation .vlist-r {
+  /* katex uses vlist-r elements to display fractions but it always seems
+   to have a large empty one which covers half the denominator which makes
+   hovering over it unreliable. Turn off hover on the parent and use the hover
+   directly from the hoverable text instead */
+  pointer-events: none;
+
+  .hoverable {
+    pointer-events: auto;
+  }
+}

@@ -36,31 +36,38 @@ export default defineComponent({
         },
     },
     emits: ['open-context'],
+    expose: ['highlightTrace', 'resetStyle'],
     setup(props, { emit }) {
         const store = useStore<RootState>();
         const currentLanguage = computed(() => store.state.language);
 
-        const getData = () => {
-            if (!props.chartData || props.chartData.length == 0) return { data: [], layout: {} };
-            let data
-            let dataByGroup
+        const dataByGroup = computed(() => {
+            if (!props.chartData || props.chartData.length == 0) return {};
             if (props.layout.subplots.distinctColumn === "plot") {
-                dataByGroup = getChartDataByIndicatorGroup(props.chartData, props.layout.subplots.indicators);
-                data = getScatterPointsFromIndicator(props.layout.subplots.indicators, dataByGroup, props.layout.timeSeriesPlotLabels, currentLanguage.value);
+                return getChartDataByIndicatorGroup(props.chartData, props.layout.subplots.indicators);
             } else {
-                dataByGroup = getChartDataByArea(props.chartData);
-                data = getScatterPointsFromAreaIds(dataByGroup, currentLanguage.value);
+                return getChartDataByArea(props.chartData);
             }
-            const timePeriods = props.chartData.map(dataPoint => dataPoint.time_period).sort() || [];
-            const layout = getLayoutFromData(dataByGroup, props.layout, timePeriods)
-            return { data, layout };
+        });
+
+        const getData = () => {
+            if (props.layout.subplots.distinctColumn === "plot") {
+                return getScatterPointsFromIndicator(props.layout.subplots.indicators, dataByGroup.value, props.layout.timeSeriesPlotLabels, currentLanguage.value);
+            } else {
+                return getScatterPointsFromAreaIds(dataByGroup.value, currentLanguage.value);
+            }
         };
+
+        const layout = computed(() => {
+            const timePeriods = props.chartData.map(dataPoint => dataPoint.time_period).sort() || [];
+            return getLayoutFromData(dataByGroup.value, props.layout, timePeriods)
+        });
 
         const chart = ref<HTMLElement | null>(null);
 
         const drawChart = async () => {
-            const drawData = getData();
-            await Plotly.newPlot(chart.value!, drawData.data, drawData.layout, drawConfig as any)
+            const data = getData()
+            await Plotly.newPlot(chart.value!, data, layout.value, drawConfig as any)
                 .then(gd => {
                     gd.on('plotly_clickannotation', (data) => {
                         emit("open-context",
@@ -69,6 +76,43 @@ export default defineComponent({
                     })
                 });
         };
+
+        const highlightTrace = (plotType: string) => {
+            const data = getData();
+            const highlightedTrace: any[] = [];
+            const greyedOutTraces: any[] = [];
+
+            data.forEach(points => {
+                if (points.plotType === plotType) {
+                    highlightedTrace.push(points);
+                } else {
+                    greyedOutTraces.push({
+                        ...points,
+                        line: { color: "lightgrey", dash: points.line.dash },
+                        marker: { color: "lightgrey", line: { color: "lightgrey" } },
+                    });
+                }
+            });
+
+            // Reorder data so the highlighted trace is last
+            const newData = [...greyedOutTraces, ...highlightedTrace];
+            animate(newData);
+        };
+
+        const resetStyle = () => {
+            const data = getData();
+            animate(data);
+        }
+
+        const animate = (data: any = [], layout: any = {}) => {
+            Plotly.animate(chart.value!, {
+                data: data,
+                layout: layout
+            }, {
+                transition: { duration: 0 },
+                frame: { duration: 0 },
+            })
+        }
 
         onMounted(drawChart);
         watch(() => [props.chartData], async () => {if (props.layout.isModal) {
@@ -84,7 +128,9 @@ export default defineComponent({
           }});
 
         return {
-            chart
+            chart,
+            highlightTrace,
+            resetStyle
         }
     }
 });
