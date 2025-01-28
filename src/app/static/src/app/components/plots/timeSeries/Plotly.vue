@@ -122,6 +122,11 @@ export default defineComponent({
             if (!props.layout.isModal) drawChart()
         });
 
+        watch(() => [...props.chartData], (newData, oldData) => {
+          if (newData.length !== oldData.length) {
+               drawChart();
+          }});
+
         return {
             chart,
             highlightTrace,

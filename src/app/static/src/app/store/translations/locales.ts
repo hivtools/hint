@@ -302,8 +302,10 @@ export type Translations = {
     sharedBy: string,
     shareProject: string,
     shareProjectInstructions: string,
+    showAll: string,
     showLess: string,
     showMore: string,
+    showSelected: string,
     showBaseMap: string,
     sizeIndicator: string,
     spectrum: string,
@@ -711,8 +713,10 @@ const en: Translations = {
         "this project with. Press Enter to add a new address. " +
         "These email addresses must be already registered with Naomi." +
         "</p>",
+    showAll: 'Show all',
     showLess: "Show less",
     showMore: "Show more",
+    showSelected: "Show selected",
     showBaseMap: "Show base map",
     sizeIndicator: "Size Indicator",
     spectrum: "Spectrum",
@@ -1113,8 +1117,10 @@ const fr: Partial<Translations> = {
         "avec lesquelles vous souhaitez partager ce projet. Appuyez sur Enter pour ajouter une autre adresse. Ces adresses e-mails doivent être " +
         "déjà enregistrées dans Naomi." +
         "</p>",
+    showAll: "Afficher tout",
     showLess: "Montrer moins",
     showMore: "Montrer plus",
+    showSelected: "Afficher la sélection",
     showBaseMap: "Afficher la carte de base",
     sizeIndicator: "Indicateur de taille",
     spectrum: "Spectrum",
@@ -1514,8 +1520,10 @@ const pt: Partial<Translations> = {
         " Por favor, introduza os endereços de e-mail com os quais gostaria de partilhar este projeto. " +
         "Prima Enter para adicionar um novo endereço. Estes endereços de e-mail já devem estar registados na Naomi." +
         "</p>",
+    showAll: "Mostrar tudo",
     showLess: "Mostre menos",
     showMore: "Mostre mais",
+    showSelected: "Mostrar selecionado",
     showBaseMap: "Mostrar mapa base",
     sizeIndicator: "Indicador de tamanho",
     spectrum: "Spectrum",

@@ -89,6 +89,22 @@ test("can view time series plot", async ({ projectPage }) => {
 
     // Then dialog has closed
     await expect(page.locator('div:nth-child(2) > .modal-dialog > .modal-content')).not.toBeVisible();
+
+    // When I select three checkboxes and click the show selected button
+    await page.locator('input:nth-child(6)').check();
+    await page.locator('input:nth-child(10)').check();
+    await page.locator('input:nth-child(11)').check();
+    await page.getByRole('button', { name: 'Show selected' }).click();
+
+    // Plot has updated
+    await expect(page.locator("#review-inputs")).toHaveScreenshot("time-series-show-selected.png", {timeout: 6000})
+
+    // When I click show all
+    await page.getByRole('button', { name: 'Show all' }).click();
+
+    // Plot has updated
+    await expect(page.locator("#review-inputs")).toHaveScreenshot("time-series-show-all.png", {timeout: 6000})
+
 });
 
 test("can view input map plot", async ({ projectPage }) => {
