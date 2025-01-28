@@ -227,6 +227,7 @@ export default defineComponent({
 
         const handleShowChecked = () => {
             showChecked.value = !showChecked.value;
+            pageNumber.value = 1;
         };
 
         const updateChartContainerSize = () => {
@@ -240,10 +241,6 @@ export default defineComponent({
                 chartContainerSize.value.height = height;
             }
         };
-
-        watch(showChecked, () => {
-            pageNumber.value = 1;
-        });
 
         watch([rows, numRenderedColumns], () => {
             nextTick(() => {
