@@ -1,9 +1,17 @@
 #!/usr/bin/env bash
 set -e
+
+# Check for --azure flag
+if [[ "$1" == "--azure" ]]; then
+    shift # Remove the flag from arguments
+    exec "$(dirname "$0")/entrypoint_azure" "$@" # Replace current process with entrypoint_azure
+fi
+
 PATH_CONFIG=/etc/hint/config.properties
-if [ ! -f $PATH_CONFIG ]; then
+
+if [ ! -f "$PATH_CONFIG" ]; then
     echo "Waiting for configuration at '$PATH_CONFIG'"
-    while [ ! -f $PATH_CONFIG ]; do
+    while [ ! -f "$PATH_CONFIG" ]; do
         sleep 1
         echo "...still waiting"
     done
@@ -11,4 +19,4 @@ if [ ! -f $PATH_CONFIG ]; then
 fi
 
 echo "Starting app"
-/app-boot/bin/app
+exec /app-boot/bin/app
