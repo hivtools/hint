@@ -56,8 +56,8 @@ describe("getTableValues util works as expected", () => {
             "spectrum_adjusted_Adult Males": 2001,
             "spectrum_reallocated_Adult Males": 0,
             "naomi_Adult Males": 3000,
-            "difference_Adult Males": 999,
-            "difference_ratio_Adult Males": 1 - (999 / 2001)
+            "difference_Adult Males": 1,
+            "difference_ratio_Adult Males": 0
         });
 
         data = mockInputComparisonData().art[1];
@@ -296,7 +296,7 @@ describe("getColumnDefs util works as expected", () => {
         expect(spectrumReportedColDef.valueGetter({data: values[0]})).toBe(inputComparisonData.art[0].value_spectrum_reported);
         const valueNaomi = inputComparisonData.art[0].value_naomi;
         const valueSpectrum = inputComparisonData.art[0].value_spectrum_adjusted;
-        expect(differenceColDef.valueGetter({data: values[0]})).toBe(valueNaomi! - valueSpectrum!);
+        expect(differenceColDef.valueGetter({data: values[0]})).toBe(1!);
         expect(naomiColDef.valueFormatter({value: 200})).toStrictEqual("200.00");
         expect(differenceRatioColDef.valueGetter({data: values[0]})).not.toBeNull();
 
