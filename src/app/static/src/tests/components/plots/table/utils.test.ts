@@ -296,7 +296,7 @@ describe("getColumnDefs util works as expected", () => {
         expect(spectrumReportedColDef.valueGetter({data: values[0]})).toBe(inputComparisonData.art[0].value_spectrum_reported);
         const valueNaomi = inputComparisonData.art[0].value_naomi;
         const valueSpectrum = inputComparisonData.art[0].value_spectrum_adjusted;
-        expect(differenceColDef.valueGetter({data: values[0]})).toBe(1!);
+        expect(differenceColDef.valueGetter({data: values[0]})).toBe(1);
         expect(naomiColDef.valueFormatter({value: 200})).toStrictEqual("200.00");
         expect(differenceRatioColDef.valueGetter({data: values[0]})).not.toBeNull();
 

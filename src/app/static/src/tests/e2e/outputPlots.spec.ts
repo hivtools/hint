@@ -23,7 +23,7 @@ test("can view output plots", async ({ projectPage }) => {
     await page.getByRole('button', { name: 'Age' }).click();
     await page.locator('a').filter({ hasText: 'Area' }).first().click();
     // This can take a little while to redraw the error bars, so give it a second
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(1000);
 
     // barchart is rendered as expected
     await expect(page.locator("#review-output")).toHaveScreenshot("barchart-x-axis.png");
