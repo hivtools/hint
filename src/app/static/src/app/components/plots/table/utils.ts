@@ -39,15 +39,13 @@ export const getTableValues = (plot: PlotName, dataSource: string | null, disagg
             };
         } else {
             const r = row as InputComparisonResponse["data"]["art"][0];
-            const difference =  (r.value_naomi != null && r.value_spectrum_adjusted != null) ? r.value_naomi - r.value_spectrum_adjusted : null
-            const difference_ratio = (difference != null && r.value_spectrum_adjusted != null) ? 1 - (difference / r.value_spectrum_adjusted) : null
             return {
                 [`spectrum_adjusted_${r[disaggregateColumn]}`]: r.value_spectrum_adjusted,
                 [`spectrum_reported_${r[disaggregateColumn]}`]: r.value_spectrum_reported,
                 [`spectrum_reallocated_${r[disaggregateColumn]}`]: r.value_spectrum_reallocated,
                 [`naomi_${r[disaggregateColumn]}`]: r.value_naomi,
-                [`difference_${r[disaggregateColumn]}`]: difference,
-                [`difference_ratio_${r[disaggregateColumn]}`]: difference_ratio
+                [`difference_${r[disaggregateColumn]}`]: r.difference,
+                [`difference_ratio_${r[disaggregateColumn]}`]: r.difference_ratio
             };
         }
     } else {
@@ -130,7 +128,7 @@ export const getColumnDefs = (plot: PlotName, dataSource: string | null, indicat
                     },
                     cellRenderer: key === "difference" ? DifferenceColumnRenderer : null,
                     headerTooltip: key === "difference" || key === "difference_ratio" ? i18next.t(`tableArtTooltip${key}`) : null,
-                    tooltipValueGetter: key === "difference" || key === "difference_ratio" ? inputComparisonTooltipCallback : null,
+                    tooltipValueGetter: key === "spectrum_adjusted" ? inputComparisonTooltipCallback : null,
                     tooltipComponent: InputComparisonTooltip
                 }
             })
@@ -171,12 +169,8 @@ const inputComparisonTooltipCallback = (params: ITooltipParams) => {
         return null
     }
     const reallocation = params.data[`spectrum_reallocated_${groupId}`];
-    const adjustmentRatio = (params.data[`naomi_${groupId}`] - params.data[`spectrum_adjusted_${groupId}`] +
-        reallocation) / params.data[`spectrum_adjusted_${groupId}`];
     const formattedRelocation = formatOutput(reallocation, "0,0", null, null);
-    const formattedRatio = formatOutput(adjustmentRatio, "0.00%", null, null);
-    return `<div><b>${i18next.t("spectrumReallocation")}</b> ${formattedRelocation}</div>
-    <div><b>${i18next.t("spectrumAdjustmentRatio")}</b> ${formattedRatio}</div>`
+    return `<div><b>${i18next.t("spectrumReallocation")}</b> ${formattedRelocation}</div>`
 
 };
 
