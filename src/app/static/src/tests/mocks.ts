@@ -346,9 +346,7 @@ export const mockInputComparisonData = (props?: Partial<InputComparisonData>): I
                 value_spectrum_adjusted: 2001,
                 value_spectrum_reported: 2002,
                 value_spectrum_reallocated: 0,
-                value_naomi: 3000,
-                difference: 1,
-                difference_ratio: 0
+                value_naomi: 3000
             },
             {
                 indicator: "prevalence",
@@ -358,9 +356,7 @@ export const mockInputComparisonData = (props?: Partial<InputComparisonData>): I
                 value_spectrum_adjusted: null,
                 value_spectrum_reported: null,
                 value_spectrum_reallocated: null,
-                value_naomi: 2000,
-                difference: null,
-                difference_ratio: null
+                value_naomi: 2000
             },
             {
                 indicator: "prevalence",
@@ -370,9 +366,7 @@ export const mockInputComparisonData = (props?: Partial<InputComparisonData>): I
                 value_spectrum_adjusted: 5001,
                 value_spectrum_reported: 5002,
                 value_spectrum_reallocated: 0,
-                value_naomi: 2000,
-                difference: 1,
-                difference_ratio: 0
+                value_naomi: 2000
             },
             {
                 indicator: "prevalence",
@@ -382,9 +376,7 @@ export const mockInputComparisonData = (props?: Partial<InputComparisonData>): I
                 value_spectrum_adjusted: 6000,
                 value_spectrum_reported: 6001,
                 value_spectrum_reallocated: 0,
-                value_naomi: 6000,
-                difference: 1,
-                difference_ratio: 0
+                value_naomi: 6000
             }
         ]
     }

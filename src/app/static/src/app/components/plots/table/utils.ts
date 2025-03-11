@@ -39,13 +39,15 @@ export const getTableValues = (plot: PlotName, dataSource: string | null, disagg
             };
         } else {
             const r = row as InputComparisonResponse["data"]["art"][0];
+            const difference =  (r.value_naomi != null && r.value_spectrum_reported != null) ? r.value_naomi - r.value_spectrum_reported : null
+            const difference_ratio = (difference != null && r.value_spectrum_reported != null) ? 1 - (difference / r.value_spectrum_reported) : null
             return {
                 [`spectrum_adjusted_${r[disaggregateColumn]}`]: r.value_spectrum_adjusted,
                 [`spectrum_reported_${r[disaggregateColumn]}`]: r.value_spectrum_reported,
                 [`spectrum_reallocated_${r[disaggregateColumn]}`]: r.value_spectrum_reallocated,
                 [`naomi_${r[disaggregateColumn]}`]: r.value_naomi,
-                [`difference_${r[disaggregateColumn]}`]: r.difference,
-                [`difference_ratio_${r[disaggregateColumn]}`]: r.difference_ratio
+                [`difference_${r[disaggregateColumn]}`]: difference,
+                [`difference_ratio_${r[disaggregateColumn]}`]: difference_ratio
             };
         }
     } else {

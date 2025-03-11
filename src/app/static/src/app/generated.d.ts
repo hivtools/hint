@@ -1095,8 +1095,6 @@ export interface InputComparisonArtRow {
   value_spectrum_adjusted: number | null;
   value_naomi: number | null;
   value_spectrum_reallocated: number | null;
-  difference: number | null;
-  difference_ratio: number | null;
   [k: string]: any;
 }
 export interface InputComparisonData {
@@ -1118,8 +1116,6 @@ export interface InputComparisonData {
     value_spectrum_adjusted: number | null;
     value_naomi: number | null;
     value_spectrum_reallocated: number | null;
-    difference: number | null;
-    difference_ratio: number | null;
     [k: string]: any;
   }[];
 }
@@ -1267,8 +1263,6 @@ export interface InputComparisonResponse {
       value_spectrum_adjusted: number | null;
       value_naomi: number | null;
       value_spectrum_reallocated: number | null;
-      difference: number | null;
-      difference_ratio: number | null;
       [k: string]: any;
     }[];
   };
