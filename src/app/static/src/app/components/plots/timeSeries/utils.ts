@@ -130,21 +130,21 @@ type LineSegmentsInfo = {
     points: InputTimeSeriesRow[]
 };
 
-export const getScatterPointsFromAreaIds = (dataByArea: Dict<InputTimeSeriesData>, currentLanguage: string) => {
+export const getScatterPointsFromAreaIds = (dataByArea: Dict<InputTimeSeriesData>, currentLanguage: string,
+                                            plotNameMap: Map<string, string>) => {
     return Object.keys(dataByArea).reduce((r, id, index) => {
         const areaData = dataByArea[id];
         const plots = [...new Set(areaData.map(a => a.plot!))];
-        console.log("plots are ", plots);
-        return plots.flatMap(plotName => {
+        const multipleIndicators = plots.length > 1;
+        const plotData =  plots.flatMap((plotName, plotDataIdx) => {
             const plotData = areaData.filter(row => row.plot === plotName);
-            if (index == 0) {
-                const scatterPoints = getScatterPointsWithHighlight(plotData, index, false, null, currentLanguage)
-                return [...r, ...scatterPoints]
+            if (plotDataIdx == 0) {
+                return getScatterPointsWithHighlight(plotData, index, multipleIndicators, plotNameMap, currentLanguage);
             } else {
-                const scatterPoints = getScatterPointsNoHighlight(plotData, index, null, currentLanguage)
-                return [...r, scatterPoints]
+                return getScatterPointsNoHighlight(plotData, index, plotNameMap, currentLanguage);
             }
         })
+        return [...r, ...plotData];
     }, [] as any[])
 };
 
@@ -195,9 +195,9 @@ const getScatterPointsWithHighlight = (data: InputTimeSeriesData, groupIndex: nu
 }
 
 const getScatterPointsNoHighlight = (data: InputTimeSeriesData, groupIndex: number,
-                                     plotNameMap: Map<string, string> | null,
+                                     plotNameMap: Map<string, string>,
                                      currentLanguage: string) => {
-    const name = plotNameMap ? plotNameMap.get(data[0].plot!) ?? data[0].plot! : data[0].area_name;
+    const name = plotNameMap.get(data[0].plot!) ?? data[0].plot!;
     const pointMetadata = {
         pointName: name,
         areaHierarchy: data[0].area_hierarchy,
@@ -435,4 +435,10 @@ export const timeSeriesFixedColours = new Map<string, TimeSeriesIndicatorStyle>(
     ["anc_tested_pos", {BASE: "#1c7e19", MISSING: "#dcdcdc", DASH: "dot"}],
     ["anc_tested", {BASE: "#064d87", MISSING: "#dcdcdc", DASH: "dash"}],
     ["anc_known_neg", {BASE: "#064d87", MISSING: "#dcdcdc", DASH: "dot"}],
+    ["art_new", {BASE: "#18ab16", MISSING: "#dcdcdc", DASH: "dash"}],
+    ["art_current_adjusted", {BASE: "#18ab16", MISSING: "#dcdcdc", DASH: "solid"}],
+    ["art_adjusted_adult", {BASE: "#18ab16", MISSING: "#dcdcdc", DASH: "solid"}],
+    ["art_adjusted_adult_f", {BASE: "#18ab16", MISSING: "#dcdcdc", DASH: "solid"}],
+    ["art_adjusted_adult_m", {BASE: "#18ab16", MISSING: "#dcdcdc", DASH: "solid"}],
+    ["art_adjusted_child", {BASE: "#18ab16", MISSING: "#dcdcdc", DASH: "solid"}],
 ])

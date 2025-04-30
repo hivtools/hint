@@ -105,8 +105,14 @@ describe("time series utils", () => {
             }
         ] as any as InputTimeSeriesData;
 
+        const plotNameMap = new Map<string, string>([
+            ["anc_status", "ANC status"],
+            ["anc_known_pos", "ANC known pos"]
+        ]);
+
         const layoutData = {
             yAxisFormat: ",",
+            timeSeriesPlotLabels: plotNameMap,
             subplots: {
                 rows: 2,
                 distinctColumn: "area_id"
@@ -240,7 +246,7 @@ describe("time series utils", () => {
         });
 
         it("can build scatter points from data", () => {
-            const data = getScatterPointsFromAreaIds(dataByArea, Language.en);
+            const data = getScatterPointsFromAreaIds(dataByArea, Language.en, plotNameMap);
             expect(data).toStrictEqual(expectedData)
         });
     });
@@ -349,7 +355,13 @@ describe("time series utils", () => {
             }
         ] as any as InputTimeSeriesData;
 
+        const plotNameMap = new Map<string, string>([
+            ["anc_status", "ANC status"],
+            ["anc_known_pos", "ANC known pos"]
+        ]);
+
         const layoutData = {
+            timeSeriesPlotLabels: plotNameMap,
             subplots: {
                 columns: 2,
                 distinctColumn: "area_id",
@@ -443,7 +455,7 @@ describe("time series utils", () => {
         const timePeriods = chartData.map(dataPoint => dataPoint.time_period).sort() || [];
 
         it("can build scatter points from data", () => {
-            const data = getScatterPointsFromAreaIds(dataByArea, Language.en);
+            const data = getScatterPointsFromAreaIds(dataByArea, Language.en, plotNameMap);
             expect(data).toStrictEqual(expectedData)
         });
 
@@ -568,9 +580,15 @@ describe("time series utils", () => {
             }
         ] as any as InputTimeSeriesData;
 
+        const plotNameMap = new Map<string, string>([
+            ["anc_status", "ANC status"],
+            ["anc_known_pos", "ANC known pos"]
+        ]);
+
         const layoutData = {
             topMargin: 0,
             responsive: true,
+            timeSeriesPlotLabels: plotNameMap,
             subplots: {
                 columns: 2,
                 distinctColumn: "area_id",
@@ -645,7 +663,7 @@ describe("time series utils", () => {
         const timePeriods = chartData.map(dataPoint => dataPoint.time_period).sort() || [];
 
         it("can build scatter points from data", () => {
-            const data = getScatterPointsFromAreaIds(dataByArea, Language.en);
+            const data = getScatterPointsFromAreaIds(dataByArea, Language.en, plotNameMap);
             expect(data).toStrictEqual(expectedData)
         });
 
@@ -761,6 +779,11 @@ describe("time series utils", () => {
                 }
             ] as any as InputTimeSeriesData;
 
+            const plotNameMap = new Map<string, string>([
+                ["anc_status", "ANC status"],
+                ["anc_known_pos", "ANC known pos"]
+            ]);
+
             const template = getTooltipTemplate(chartData, "Northern/Chitipa", null, Language.en);
 
             expect(template).toStrictEqual([
@@ -770,8 +793,9 @@ describe("time series utils", () => {
                 "%{x}, %{y}<br>Northern/Chitipa<br>Aggregate value missing data for 5 regions<extra></extra>"
             ]);
 
+
             const dataByArea = getChartDataByArea(chartData);
-            const points = getScatterPointsFromAreaIds(dataByArea, Language.en);
+            const points = getScatterPointsFromAreaIds(dataByArea, Language.en, plotNameMap);
 
             expect(points).toStrictEqual([
                 {
@@ -1066,6 +1090,119 @@ describe("time series utils", () => {
 
             expectYAxis(1, 0.4, layout.yaxis1);
             expectYAxis(1, 0.4, layout.yaxis2, ",");
+        });
+    });
+
+    describe("build scatter plot layout and data by area for multiple indicator data", () => {
+        // Test data set for a single area, 2 indicators and 2 time points for each indicator
+        const chartData = [
+            {
+                area_id: "MWI_4_1_demo",
+                area_name: "Chitipa",
+                area_hierarchy: "Northern/Chitipa",
+                area_level: 4,
+                quarter: "Q4",
+                time_period: "2011 Q4",
+                plot: "anc_status",
+                value: 2116,
+                page: 1
+            },
+            {
+                area_id: "MWI_4_1_demo",
+                area_name: "Chitipa",
+                area_hierarchy: "Northern/Chitipa",
+                area_level: 4,
+                quarter: "Q4",
+                time_period: "2012 Q4",
+                plot: "anc_status",
+                value: 2663,
+                page: 1
+            },
+            {
+                area_id: "MWI_4_1_demo",
+                area_name: "Chitipa",
+                area_hierarchy: "Northern/Chitipa",
+                area_level: 4,
+                quarter: "Q4",
+                time_period: "2011 Q4",
+                plot: "anc_known_pos",
+                value: 4555,
+                page: 1
+            },
+            {
+                area_id: "MWI_4_1_demo",
+                area_name: "Chitipa",
+                area_hierarchy: "Northern/Chitipa",
+                area_level: 4,
+                quarter: "Q4",
+                time_period: "2012 Q4",
+                plot: "anc_known_pos",
+                value: 4795,
+                page: 1
+            },
+        ] as any as InputTimeSeriesData;
+
+        const plotNameMap = new Map<string, string>([
+            ["anc_status", "ANC status"],
+            ["anc_known_pos", "ANC known pos"]
+        ])
+
+        const layoutData = {
+            timeSeriesPlotLabels: plotNameMap,
+            subplots: {
+                rows: 2,
+                distinctColumn: "area_id"
+            },
+            yAxisFormat: ".0f"
+        };
+
+        const expectedData = [
+            {
+                name: "ANC status",
+                plotType: "anc_status",
+                showlegend: false,
+                x: ["2011 Q4", "2012 Q4"],
+                y: [2116, 2663],
+                xaxis: "x1",
+                yaxis: "y1",
+                type: "scatter",
+                line: {color: PlotColours.HIGHLIGHT.BASE, dash: "solid"},
+                marker: {
+                    color: Array(2).fill(PlotColours.HIGHLIGHT.BASE),
+                    line: {
+                        width: 0.5,
+                        color: Array(2).fill(PlotColours.HIGHLIGHT.BASE)
+                    }
+                },
+                hovertemplate: Array(2).fill("ANC status<br>%{x}, %{y}<br>Northern/Chitipa<extra></extra>")
+            },
+            {
+                name: "ANC known pos",
+                plotType: "anc_known_pos",
+                showlegend: false,
+                x: ["2011 Q4", "2012 Q4"],
+                y: [4555, 4795],
+                xaxis: "x1",
+                yaxis: "y1",
+                type: "scatter",
+                line: {color: timeSeriesFixedColours.get("anc_known_pos")!.BASE, dash: "dash"},
+                marker: {
+                    color: Array(2).fill(timeSeriesFixedColours.get("anc_known_pos")!.BASE),
+                    line: {
+                        width: 0.5,
+                        color: Array(2).fill(timeSeriesFixedColours.get("anc_known_pos")!.BASE)
+                    }
+                },
+                hovertemplate: Array(2).fill("ANC known pos<br>%{x}, %{y}<br>Northern/Chitipa<extra></extra>")
+            },
+        ] as any
+
+        const dataByArea = getChartDataByArea(chartData);
+        const timePeriods = chartData.map(dataPoint => dataPoint.time_period).sort() || [];
+
+        it("can build scatter points from data", () => {
+            const data = getScatterPointsFromAreaIds(dataByArea, Language.en, plotNameMap);
+            expect(data).toStrictEqual(expectedData)
         });
     });
 });

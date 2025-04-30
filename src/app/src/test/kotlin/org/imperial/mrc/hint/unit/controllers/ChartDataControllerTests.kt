@@ -38,7 +38,7 @@ class ChartDataControllerTests {
     fun `can get programme input time series`()
     {
         val mockFileManager = mock<FileManager> {
-            on { getFiles(FileType.Shape, FileType.Programme) } doReturn mockFiles
+            on { getFiles(FileType.Shape, FileType.PJNZ, FileType.Programme) } doReturn mockFiles
         }
         val mockClient = mock<HintrAPIClient> {
             on { getInputTimeSeriesChartData("programme", mockFiles) } doReturn mockResponse

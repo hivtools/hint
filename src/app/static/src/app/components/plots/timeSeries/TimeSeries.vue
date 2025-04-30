@@ -169,9 +169,12 @@ export default defineComponent({
             return `${Math.min(subplotsConfig.heightPerRow * rows.value! + 70, 640)}px`;
         });
 
+        const timeSeriesPlotLabels = store.getters["metadata/timeSeriesPlotTypeLabel"];
+
         const layout = computed(() => {
             return {
                 yAxisFormat: valueFormat.value,
+                timeSeriesPlotLabels: timeSeriesPlotLabels,
                 subplots: {
                     ...subplotsConfig,
                     rows: rows.value,
