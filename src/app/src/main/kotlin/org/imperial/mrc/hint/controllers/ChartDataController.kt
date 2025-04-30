@@ -24,7 +24,7 @@ class ChartDataController(val fileManager: FileManager, val apiClient: HintrAPIC
             else -> throw HintException("unknownInputTimeSeriesType", HttpStatus.BAD_REQUEST)
         }
 
-        val files = fileManager.getFiles(FileType.Shape, inputFileType)
+        val files = fileManager.getFiles(FileType.Shape, FileType.PJNZ, inputFileType)
         return apiClient.getInputTimeSeriesChartData(inputFileType.toString(), files)
     }
 

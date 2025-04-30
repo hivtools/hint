@@ -133,14 +133,25 @@ type LineSegmentsInfo = {
 export const getScatterPointsFromAreaIds = (dataByArea: Dict<InputTimeSeriesData>, currentLanguage: string) => {
     return Object.keys(dataByArea).reduce((r, id, index) => {
         const areaData = dataByArea[id];
-        const scatterPoints = getScatterPointsWithHighlight(areaData, index, false, null, currentLanguage)
-        return [...r, ...scatterPoints]
-    }, [] as any[]);
+        const plots = [...new Set(areaData.map(a => a.plot!))];
+        console.log("plots are ", plots);
+        return plots.flatMap(plotName => {
+            const plotData = areaData.filter(row => row.plot === plotName);
+            if (index == 0) {
+                const scatterPoints = getScatterPointsWithHighlight(plotData, index, false, null, currentLanguage)
+                return [...r, ...scatterPoints]
+            } else {
+                const scatterPoints = getScatterPointsNoHighlight(plotData, index, null, currentLanguage)
+                return [...r, scatterPoints]
+            }
+        })
+    }, [] as any[])
 };
 
 const getScatterPointsWithHighlight = (data: InputTimeSeriesData, groupIndex: number, multipleIndicator: boolean,
                                        plotNameMap: Map<string, string> | null, currentLanguage: string) => {
     const pointsInfo: PointInfo[] = [];
+    console.log("data in scatter points highlight is ", data)
     for (let i = 0; i < data.length; i++) {
         if (i === data.length - 1) {
             pointsInfo.push({
@@ -184,9 +195,9 @@ const getScatterPointsWithHighlight = (data: InputTimeSeriesData, groupIndex: nu
 }
 
 const getScatterPointsNoHighlight = (data: InputTimeSeriesData, groupIndex: number,
-                                     plotNameMap: Map<string, string>,
+                                     plotNameMap: Map<string, string> | null,
                                      currentLanguage: string) => {
-    const name = plotNameMap.get(data[0].plot!) ?? data[0].plot!;
+    const name = plotNameMap ? plotNameMap.get(data[0].plot!) ?? data[0].plot! : data[0].area_name;
     const pointMetadata = {
         pointName: name,
         areaHierarchy: data[0].area_hierarchy,
