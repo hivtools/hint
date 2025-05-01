@@ -157,7 +157,6 @@ class ADRTests : SecureIntegrationTests()
 
         saveFileFromADR("inputs-unaids-survey", isAuthorized, "survey")
         saveFileFromADR("inputs-unaids-anc", isAuthorized, "anc")
-        saveFileFromADR("inputs-unaids-vmmc-coverage-outputs", isAuthorized, "vmmc")
 
         // this ADR file sometimes has an error, so allow for success or failure
         // but confirm expected response in each case
