@@ -16,11 +16,11 @@ describe("reviewInput actions", () => {
         const dispatch = vi.fn();
         const shapeFormData = getFormData("malawi.geojson");
         await baselineActions.uploadShape({commit, dispatch, rootState} as any, shapeFormData);
-        const pjnzFormData = getFormData("Malawi2019.PJNZ");
+        const pjnzFormData = getFormData("Malawi2024.PJNZ");
         await baselineActions.uploadPJNZ({commit, dispatch, rootState} as any, pjnzFormData);
         const ancFormData = getFormData("anc.csv");
         await sapActions.uploadANC({commit, dispatch, rootState} as any, ancFormData);
-        const artFormData = getFormData("programme.csv")
+        const artFormData = getFormData("programme.csv");
         await sapActions.uploadProgram({commit, dispatch, rootState} as any, artFormData);
     };
 
