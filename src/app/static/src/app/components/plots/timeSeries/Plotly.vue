@@ -54,7 +54,7 @@ export default defineComponent({
             if (props.layout.subplots.distinctColumn === "plot") {
                 return getScatterPointsFromIndicator(props.layout.subplots.indicators, dataByGroup.value, props.layout.timeSeriesPlotLabels, currentLanguage.value);
             } else {
-                return getScatterPointsFromAreaIds(dataByGroup.value, currentLanguage.value);
+                return getScatterPointsFromAreaIds(dataByGroup.value, currentLanguage.value, props.layout.timeSeriesPlotLabels);
             }
         };
 

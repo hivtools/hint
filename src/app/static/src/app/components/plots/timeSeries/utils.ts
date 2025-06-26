@@ -130,17 +130,28 @@ type LineSegmentsInfo = {
     points: InputTimeSeriesRow[]
 };
 
-export const getScatterPointsFromAreaIds = (dataByArea: Dict<InputTimeSeriesData>, currentLanguage: string) => {
+export const getScatterPointsFromAreaIds = (dataByArea: Dict<InputTimeSeriesData>, currentLanguage: string,
+                                            plotNameMap: Map<string, string>) => {
     return Object.keys(dataByArea).reduce((r, id, index) => {
         const areaData = dataByArea[id];
-        const scatterPoints = getScatterPointsWithHighlight(areaData, index, false, null, currentLanguage)
-        return [...r, ...scatterPoints]
-    }, [] as any[]);
+        const plots = [...new Set(areaData.map(a => a.plot!))];
+        const multipleIndicators = plots.length > 1;
+        const plotData =  plots.flatMap((plotName, plotDataIdx) => {
+            const plotData = areaData.filter(row => row.plot === plotName);
+            if (plotDataIdx == 0) {
+                return getScatterPointsWithHighlight(plotData, index, multipleIndicators, plotNameMap, currentLanguage);
+            } else {
+                return getScatterPointsNoHighlight(plotData, index, plotNameMap, currentLanguage);
+            }
+        })
+        return [...r, ...plotData];
+    }, [] as any[])
 };
 
 const getScatterPointsWithHighlight = (data: InputTimeSeriesData, groupIndex: number, multipleIndicator: boolean,
                                        plotNameMap: Map<string, string> | null, currentLanguage: string) => {
     const pointsInfo: PointInfo[] = [];
+    console.log("data in scatter points highlight is ", data)
     for (let i = 0; i < data.length; i++) {
         if (i === data.length - 1) {
             pointsInfo.push({
@@ -424,4 +435,10 @@ export const timeSeriesFixedColours = new Map<string, TimeSeriesIndicatorStyle>(
     ["anc_tested_pos", {BASE: "#1c7e19", MISSING: "#dcdcdc", DASH: "dot"}],
     ["anc_tested", {BASE: "#064d87", MISSING: "#dcdcdc", DASH: "dash"}],
     ["anc_known_neg", {BASE: "#064d87", MISSING: "#dcdcdc", DASH: "dot"}],
+    ["art_new", {BASE: "#18ab16", MISSING: "#dcdcdc", DASH: "dash"}],
+    ["art_current_adjusted", {BASE: "#18ab16", MISSING: "#dcdcdc", DASH: "solid"}],
+    ["art_adjusted_adult", {BASE: "#18ab16", MISSING: "#dcdcdc", DASH: "solid"}],
+    ["art_adjusted_adult_f", {BASE: "#18ab16", MISSING: "#dcdcdc", DASH: "solid"}],
+    ["art_adjusted_adult_m", {BASE: "#18ab16", MISSING: "#dcdcdc", DASH: "solid"}],
+    ["art_adjusted_child", {BASE: "#18ab16", MISSING: "#dcdcdc", DASH: "solid"}],
 ])

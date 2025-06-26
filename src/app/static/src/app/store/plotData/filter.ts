@@ -66,9 +66,15 @@ export const getOutputFilteredData = async (plot: OutputPlotName, selections: Pl
     }
 };
 
+const COMPARISON_TIME_SERIES_DATA_SOURCE_REGEX = /_comparison/
+
 export const getTimeSeriesFilteredDataset = async (payload: PlotSelectionUpdate, commit: Commit, rootState: RootState) => {
     commit(`reviewInput/${ReviewInputMutation.SetError}`, { payload: null }, { root: true });
-    const dataSource = payload.selections.controls.find(c => c.id === "time_series_data_source")?.selection[0].id;
+    // If this is a comparison data source, then the data source we want is the normal data, so remove the
+    // comparison part
+    const dataSource = payload.selections.controls
+        .find(c => c.id === "time_series_data_source")?.selection[0].id
+        .replace(COMPARISON_TIME_SERIES_DATA_SOURCE_REGEX, '');
     if (!dataSource) {
         // If this error occurs it is probably because metadata from hintr is broken.
         const err = {
@@ -117,9 +123,18 @@ export const filterTimeSeriesData = (data: ReviewInputDataset["data"], payload: 
     filters.forEach(f => {
         const filterType = metadata.filterTypes.find(ft => ft.id === f.filterId);
         if (filterType) {
-            filterObject[filterType.column_id as InputTimeSeriesKey] = filterType.column_id === "area_level" ?
-                f.selection.map(s => parseInt(s.id)) :
-                f.selection.map(s => s.id);
+            const key = filterType.column_id as InputTimeSeriesKey;
+
+            filterObject[filterType.column_id as InputTimeSeriesKey] = (function() {
+                switch (key) {
+                    case "area_level":
+                        return f.selection.map(s => parseInt(s.id));
+                    case "plot":
+                        return f.selection.flatMap(s => s.id.split(":"));
+                    default:
+                        return f.selection.map(s => s.id);
+                }
+            })();
         }
     });
     const filteredData: InputTimeSeriesData = [];

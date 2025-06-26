@@ -206,20 +206,18 @@ describe("filter tests", () => {
 
     describe("getTimeSeriesFilteredDataset works as expected", () => {
 
-        const createPayload = (filterSelections = [{label: "Option B", id: "opt2"}]) => ({
+        const createPayload = (filterSelections = [{label: "Option B", id: "opt2"}],
+                               controlSelections = [{label: "ANC", id: "anc"}]) => ({
             plot: "timeSeries",
             selections: {
                 controls: [mockControlSelection({
                     id: "time_series_data_source",
-                    selection: [
-                        {label: "ANC", id: "anc"},
-                        {label: "ART", id: "art"}
-                    ],
+                    selection: controlSelections,
                 })],
                 filters: [mockFilterSelection({
-                    filterId: "time_series_data_source",
-                    stateFilterId: "time_series_data_source",
-                    label: "Data source filter",
+                    filterId: "time_series_plot_type",
+                    stateFilterId: "time_series_plot_type",
+                    label: "Plot type filter",
                     multiple: false,
                     selection: filterSelections,
                 })],
@@ -241,14 +239,23 @@ describe("filter tests", () => {
             }
         });
 
+        // Data source
         const mockData = [
             {
-                "data_source": "opt1",
-                "value": 1
+                "plot": "opt1",
+                "value": 1,
             },
             {
-                "data_source": "opt2",
-                "value": 2
+                "plot": "opt2",
+                "value": 2,
+            },
+            {
+                "plot": "opt3",
+                "value": 1,
+            },
+            {
+                "plot": "opt4",
+                "value": 2,
             },
         ]
         const mockTimeSeriesData = mockReviewInputDataset({
@@ -261,8 +268,8 @@ describe("filter tests", () => {
 
             const rootState = createMockRootState([
                 {
-                    id: "time_series_data_source",
-                    column_id: "data_source",
+                    id: "time_series_plot_type",
+                    column_id: "plot",
                     options: [
                         {id: "opt1", label: "lab1"},
                         {id: "opt2", label: "lab1"}
@@ -288,7 +295,7 @@ describe("filter tests", () => {
                 plot: "timeSeries",
                 data: [
                     {
-                        "data_source": "opt2",
+                        "plot": "opt2",
                         "value": 2
                     },
                 ]
@@ -311,7 +318,7 @@ describe("filter tests", () => {
                 plot: "timeSeries",
                 data: [
                     {
-                        "data_source": "opt1",
+                        "plot": "opt1",
                         "value": 1
                     },
                 ]
@@ -345,22 +352,22 @@ describe("filter tests", () => {
         it("converts type when filtering on area level", async () => {
             const mockData = [
                 {
-                    "data_source": "opt1",
+                    "plot": "opt1",
                     "area_level": 1,
                     "value": 1
                 },
                 {
-                    "data_source": "opt1",
+                    "plot": "opt1",
                     "area_level": 2,
                     "value": 1
                 },
                 {
-                    "data_source": "opt2",
+                    "plot": "opt2",
                     "area_level": 1,
                     "value": 2
                 },
                 {
-                    "data_source": "opt2",
+                    "plot": "opt2",
                     "area_level": 2,
                     "value": 2
                 },
@@ -374,8 +381,8 @@ describe("filter tests", () => {
 
             const rootState = createMockRootState([
                 {
-                    id: "time_series_data_source",
-                    column_id: "data_source",
+                    id: "time_series_plot_type",
+                    column_id: "plot",
                     options: [
                         {
                             id: "opt1",
@@ -433,7 +440,7 @@ describe("filter tests", () => {
                 plot: "timeSeries",
                 data: [
                     {
-                        "data_source": "opt2",
+                        "plot": "opt2",
                         "area_level": 1,
                         "value": 2
                     },
@@ -482,17 +489,81 @@ describe("filter tests", () => {
                 plot: "timeSeries",
                 data: [
                     {
-                        "data_source": "opt1",
+                        "plot": "opt1",
                         "value": 1
                     },
                     {
-                        "data_source": "opt2",
+                        "plot": "opt2",
+                        "value": 2
+                    },
+                    {
+                        "plot": "opt3",
+                        "value": 1
+                    },
+                    {
+                        "plot": "opt4",
                         "value": 2
                     },
                 ]
             };
             expect(commit.mock.calls[3][1].payload).toStrictEqual(expectedPayload);
         });
+
+        it("fetches data for time series comparisons correctly", async () => {
+            mockAxios.onGet(`/chart-data/input-time-series/programme`)
+                .reply(200, mockSuccess(mockTimeSeriesData));
+
+            const rootState = createMockRootState([
+                {
+                    id: "time_series_plot_type",
+                    column_id: "plot",
+                    options: [
+                        {id: "opt1", label: "lab1"},
+                        {id: "opt2", label: "lab2"},
+                        {id: "opt3", label: "lab3"},
+                        {id: "opt4", label: "lab4"},
+                    ]
+                }
+            ]);
+
+            const commit = createMockCommit(rootState);
+            const payload = createPayload(
+                [{label: "Option 2 vs Option 3", id: "opt2:opt3"},
+                               {label: "Option 2 vs Option 3", id: "opt4:opt5"}],
+                [{label: "ART", id: "programme_comparison"}]);
+
+            await getTimeSeriesFilteredDataset(payload, commit, rootState);
+
+            expect(commit.mock.calls.length).toBe(4);
+            expect(commit.mock.calls[0][0]).toStrictEqual(`reviewInput/${ReviewInputMutation.SetError}`);
+            expect(commit.mock.calls[1][0]).toStrictEqual(`reviewInput/${ReviewInputMutation.SetDataset}`);
+            expect(commit.mock.calls[1][1].payload).toStrictEqual({
+                datasetId: "programme",
+                dataset: mockTimeSeriesData
+            });
+
+            expect(commit.mock.calls[2][0]).toStrictEqual(`reviewInput/${ReviewInputMutation.WarningsFetched}`);
+            expect(commit.mock.calls[2][1].payload).toStrictEqual(mockTimeSeriesData.warnings);
+            const expectedPayload = {
+                plot: "timeSeries",
+                data: [
+                    {
+                        "plot": "opt2",
+                        "value": 2
+                    },
+                    {
+                        "plot": "opt3",
+                        "value": 1
+                    },
+                    {
+                        "plot": "opt4",
+                        "value": 2
+                    },
+                ]
+            };
+            expect(commit.mock.calls[3][0]).toStrictEqual(`plotData/${PlotDataMutations.updatePlotData}`);
+            expect(commit.mock.calls[3][1].payload).toStrictEqual(expectedPayload);
+        })
     });
 
     describe("getCalibrateFilteredDataset works as expected", () => {
