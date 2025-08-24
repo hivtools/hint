@@ -71,5 +71,5 @@ cp "$HERE"/config.properties $PATH_CONFIG
 
 check_required_env_vars
 
-echo "Starting app"
+echo "Starting app for azure"
 /app-boot/bin/app
