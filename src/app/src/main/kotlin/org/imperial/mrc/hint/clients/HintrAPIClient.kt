@@ -113,8 +113,9 @@ class HintrFuelAPIClient(
 
         val json = objectMapper.writeValueAsString(
                 mapOf("options" to modelRunOptions.options,
-                        "version" to modelRunOptions.version,
-                        "data" to data))
+                      "version" to modelRunOptions.version,
+                      "iso3" to modelRunOptions.iso3,
+                      "data" to data))
 
         return postJson("model/submit", json)
     }
@@ -125,7 +126,7 @@ class HintrFuelAPIClient(
 
         val json = objectMapper.writeValueAsString(
                 mapOf("options" to modelRunOptions.options,
-                        "data" to data))
+                      "data" to data))
 
         return postJson("validate/options", json)
     }
