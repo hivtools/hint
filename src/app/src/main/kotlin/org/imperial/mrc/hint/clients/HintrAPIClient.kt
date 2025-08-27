@@ -54,6 +54,7 @@ interface HintrAPIClient
     fun submitRehydrate(outputZip: VersionFileWithPath): ResponseEntity<String>
     fun rehydrateStatus(id: String): ResponseEntity<String>
     fun rehydrateResult(id: String): ResponseEntity<String>
+    fun wakeUpWorkers(): ResponseEntity<String>
 }
 
 @Component
@@ -284,5 +285,10 @@ class HintrFuelAPIClient(
         val json = objectMapper.writeValueAsString(files)
 
         return postJson("chart-data/input-population", json)
+    }
+
+    override fun wakeUpWorkers(): ResponseEntity<String>
+    {
+        return get("/wake")
     }
 }
