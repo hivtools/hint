@@ -16,7 +16,7 @@ class ModelRunControllerTests
 {
 
     private val mockResponse = mock<ResponseEntity<String>>()
-    private val modelRunOptions = ModelOptions(mapOf(), mapOf())
+    private val modelRunOptions = ModelOptions(mapOf(), mapOf(), null)
 
     @Test
     fun `can run`()

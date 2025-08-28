@@ -45,15 +45,18 @@ const mockRootGetters = {
                     note: "Notes from the first version"
                 }
             ]
-        }
-    }
+        },
+        iso3: "MWI"
+    },
+    projectIso3: {iso3: "MWI"}
 };
 
 const testDownloadIntegration = (type: DownloadType) => {
     const getStore = (state: Partial<DownloadResultsState> = {}) => {
         const root = {
             ...rootState,
-            modelCalibrate: { calibrateId: "calibrate123" }
+            modelCalibrate: { calibrateId: "calibrate123" },
+            baseline: {iso3: "MWI"}
         };
         return { commit: vi.fn(), dispatch: vi.fn(), state, rootState: root, rootGetters: mockRootGetters }
     };

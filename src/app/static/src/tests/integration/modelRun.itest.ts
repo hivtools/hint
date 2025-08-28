@@ -18,6 +18,9 @@ describe("Model run actions", () => {
             modelOptions: {
                 options: {},
                 version: {hintr: "unknown", naomi: "unknown", rrq: "unknown"}
+            },
+            baseline: {
+                iso3: "MWI"
             }
         } as RootState;
 
@@ -32,6 +35,9 @@ describe("Model run actions", () => {
             modelOptions: {
                 options: {},
                 version: {hintr: "unknown", naomi: "unknown", rrq: "unknown"}
+            },
+            baseline: {
+                iso3: "MWI"
             }
         } as RootState;
         const mockState = {

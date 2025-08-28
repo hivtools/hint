@@ -57,7 +57,7 @@ class HintrApiClientTests
     fun `can submit model run`()
     {
         val sut = HintrFuelAPIClient(ConfiguredAppProperties(), ObjectMapper())
-        val result = sut.submit(emptyMap(), ModelOptions(emptyMap(), emptyMap()))
+        val result = sut.submit(emptyMap(), ModelOptions(emptyMap(), emptyMap(), null))
         assertThat(result.statusCodeValue).isEqualTo(400)
         JSONValidator().validateError(result.body!!, "INVALID_INPUT")
     }
@@ -67,7 +67,7 @@ class HintrApiClientTests
     {
         val sut = HintrFuelAPIClient(ConfiguredAppProperties(), ObjectMapper())
 
-        val result = sut.validateModelOptions(emptyMap(), ModelOptions(emptyMap(), emptyMap()))
+        val result = sut.validateModelOptions(emptyMap(), ModelOptions(emptyMap(), emptyMap(), null))
         assertThat(result.statusCodeValue).isEqualTo(400)
         JSONValidator().validateError(result.body!!, "INVALID_INPUT")
     }
@@ -93,7 +93,7 @@ class HintrApiClientTests
     fun `can submit calibrate`()
     {
         val sut = HintrFuelAPIClient(ConfiguredAppProperties(), ObjectMapper())
-        val result = sut.calibrateSubmit("1234", ModelOptions(emptyMap(), versionInfo))
+        val result = sut.calibrateSubmit("1234", ModelOptions(emptyMap(), versionInfo, "MWI"))
         assertThat(result.statusCodeValue).isEqualTo(400)
         JSONValidator().validateError(result.body!!, "FAILED_TO_RETRIEVE_RESULT")
     }

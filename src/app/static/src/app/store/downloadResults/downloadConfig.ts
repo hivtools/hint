@@ -35,15 +35,15 @@ export const downloadPostConfig: Record<DownloadType, PostObject> = {
     },
     [DownloadType.COARSE]: {
         url: (store) => `download/submit/coarse-output/${store.rootState.modelCalibrate.calibrateId}`,
-        body: () => ({})
+        body: (store) => store.rootGetters.projectIso3
     },
     [DownloadType.SUMMARY]: {
         url: (store) => `download/submit/summary/${store.rootState.modelCalibrate.calibrateId}`,
-        body: () => ({})
+        body: (store) => store.rootGetters.projectIso3
     },
     [DownloadType.COMPARISON]: {
         url: (store) => `download/submit/comparison/${store.rootState.modelCalibrate.calibrateId}`,
-        body: () => ({})
+        body: (store) => store.rootGetters.projectIso3
     },
     [DownloadType.DATAPACK]: {
         url: (store) => `download/submit/datapack/${store.rootState.modelCalibrate.calibrateId}`,

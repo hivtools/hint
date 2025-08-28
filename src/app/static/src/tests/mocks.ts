@@ -851,6 +851,7 @@ export const mockProjectOutputState = (props: Partial<DownloadSubmitRequest> = {
             },
             version_notes: []
         },
+        iso3: "MWI",
         ...props
     }
 }

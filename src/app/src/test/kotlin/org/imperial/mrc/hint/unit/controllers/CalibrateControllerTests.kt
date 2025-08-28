@@ -21,7 +21,6 @@ import org.jooq.tools.json.JSONArray
 class CalibrateControllerTests
 {
     private val mockResponse = mock<ResponseEntity<String>>()
-    private val modelRunOptions = ModelOptions(mapOf(), mapOf())
     private val mockResultRow = CalibrateResultRow(
         "testIndicator", "testCalendarQuarter", "testAgeGroup", "testSex",
         "testAreaId", 1, 2, 3, 4, 5
@@ -33,7 +32,7 @@ class CalibrateControllerTests
     @Test
     fun `can submit calibrate`()
     {
-        val modelCalibrationOptions = ModelOptions(mapOf(), mapOf())
+        val modelCalibrationOptions = ModelOptions(mapOf(), mapOf(), null)
         val mockAPIClient = mock<HintrAPIClient> {
             on { calibrateSubmit("testId", modelCalibrationOptions) } doReturn mockResponse
         }

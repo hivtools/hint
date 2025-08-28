@@ -42,8 +42,11 @@ class HomeControllerTests
             on { applicationTitle } doReturn "Test App Title"
         }
         val mockModel = mock<Model>()
+        val mockAPIClient = mock<HintrAPIClient> {
+            on { wakeUpWorkers() } doReturn ResponseEntity(fakeAPIResponseBody, HttpStatus.OK)
+        }
 
-        val sut = HomeController(mockRepo, mockSession, mockAppProps, mock())
+        val sut = HomeController(mockRepo, mockSession, mockAppProps, mockAPIClient)
 
         val result = sut.index(mockModel)
         assertThat(result).isEqualTo("index")
@@ -51,6 +54,7 @@ class HomeControllerTests
         verify(mockRepo).saveVersion("test-version", null)
         verify(mockModel).addAttribute("title", "Test App Title")
         verify(mockModel).addAttribute("user", "test-user")
+        verify(mockAPIClient).wakeUpWorkers()
     }
 
     @Test

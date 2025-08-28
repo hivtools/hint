@@ -19,13 +19,14 @@ export const actions: ActionTree<ModelRunState, RootState> & ModelRunActions = {
         commit({type: ModelRunMutation.StartedRunning, payload: true})
         const options = rootState.modelOptions.options;
         const version = rootState.modelOptions.version;
+        const iso3 = rootState.baseline.iso3;
         if (state.statusPollId !== -1) {
             commit(ModelRunMutation.RunCancelled);
         }
         await api<ModelRunMutation, ModelRunMutation>(context)
             .withSuccess(ModelRunMutation.ModelRunStarted)
             .withError(ModelRunMutation.ModelRunError)
-            .postAndReturn<ModelSubmitResponse>("/model/run/", {options, version})
+            .postAndReturn<ModelSubmitResponse>("/model/run/", {options, version, iso3})
     },
 
     poll(context, runId, interval = null) {

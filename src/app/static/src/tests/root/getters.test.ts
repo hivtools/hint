@@ -490,6 +490,15 @@ describe("root getters", () => {
             } as any
         }))
     })
+
+    it(`can get iso3 from root state`, () => {
+        const rootState = mockRootState({
+            baseline: mockBaselineState({iso3: "MWI"})
+        })
+        const result = getters.projectIso3(rootState, null, rootState, null)
+
+        expect(result).toStrictEqual({iso3: "MWI"})
+    })
 })
 
 const projectStateTestData = (props: Partial<any> = {}) => {
@@ -500,7 +509,8 @@ const projectStateTestData = (props: Partial<any> = {}) => {
         baseline: mockBaselineState({
             pjnz: {filename: "pjnz", hash: "pjnzHash"} as any,
             population: {filename: "population", hash: "populationHash"} as any,
-            shape: {filename: "shape", hash: "shapeHash"} as any
+            shape: {filename: "shape", hash: "shapeHash"} as any,
+            iso3: "MWI"
         }),
         surveyAndProgram: mockSurveyAndProgramState({
             warnings: surveyAndProgramWarnings,

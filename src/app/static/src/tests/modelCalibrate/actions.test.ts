@@ -66,6 +66,7 @@ describe("ModelCalibrate actions", () => {
         const mockVersion = {naomi: "1.0.0", hintr: "1.0.0", rrq: "1.0.0"};
         const state = mockModelCalibrateState({version: mockVersion});
         const root = mockRootState({
+            baseline: mockBaselineState({iso3: "MWI"}),
             modelRun: mockModelRunState({modelRunId: "123A"})
         });
         const mockOptions = {"param_1": "value 1"};
@@ -76,7 +77,8 @@ describe("ModelCalibrate actions", () => {
 
         expect(mockAxios.history.post.length).toBe(1);
         expect(mockAxios.history.post[0].url).toBe(url);
-        expect(JSON.parse(mockAxios.history.post[0].data)).toStrictEqual({version: mockVersion, options: mockOptions});
+        expect(JSON.parse(mockAxios.history.post[0].data))
+            .toStrictEqual({version: mockVersion, options: mockOptions, iso3: "MWI"});
 
         expect(commit.mock.calls.length).toBe(3);
         expect(commit.mock.calls[0][0].type).toBe(ModelCalibrateMutation.SetOptionsData);
