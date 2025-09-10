@@ -7,6 +7,7 @@ import org.imperial.mrc.hint.*
 import org.imperial.mrc.hint.models.ModelOptions
 import org.imperial.mrc.hint.models.VersionFileWithPath
 import org.springframework.http.ResponseEntity
+import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Component
 import org.springframework.web.context.request.RequestContextHolder
 import org.springframework.web.context.request.ServletRequestAttributes
@@ -43,6 +44,7 @@ interface HintrAPIClient
     fun getInputComparisonChartData(files: Map<String, VersionFileWithPath>): ResponseEntity<String>
     fun getInputPopulationMetadata(files: Map<String, VersionFileWithPath>): ResponseEntity<String>
     fun get(url: String): ResponseEntity<String>
+    fun getAndForget(url: String)
     fun downloadOutputSubmit(
         type: String,
         id: String,
@@ -54,7 +56,7 @@ interface HintrAPIClient
     fun submitRehydrate(outputZip: VersionFileWithPath): ResponseEntity<String>
     fun rehydrateStatus(id: String): ResponseEntity<String>
     fun rehydrateResult(id: String): ResponseEntity<String>
-    fun wakeUpWorkers(): ResponseEntity<String>
+    fun wakeUpWorkers()
 }
 
 @Component
@@ -287,8 +289,8 @@ class HintrFuelAPIClient(
         return postJson("chart-data/input-population", json)
     }
 
-    override fun wakeUpWorkers(): ResponseEntity<String>
+    override fun wakeUpWorkers()
     {
-        return get("/wake")
+        getAndForget("wake")
     }
 }

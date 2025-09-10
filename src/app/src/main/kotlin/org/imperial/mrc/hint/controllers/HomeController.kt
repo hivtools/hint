@@ -24,7 +24,6 @@ class HomeController(
     @GetMapping(value = ["/", "/projects", "accessibility", "privacy"])
     fun index(model: Model): String
     {
-        hintrAPIClient.wakeUpWorkers()
         val userProfile = session.getUserProfile()
         versionRepository.saveVersion(session.getVersionId(), null)
         model["title"] = appProperties.applicationTitle

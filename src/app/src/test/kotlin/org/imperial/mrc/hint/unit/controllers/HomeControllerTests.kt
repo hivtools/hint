@@ -42,9 +42,7 @@ class HomeControllerTests
             on { applicationTitle } doReturn "Test App Title"
         }
         val mockModel = mock<Model>()
-        val mockAPIClient = mock<HintrAPIClient> {
-            on { wakeUpWorkers() } doReturn ResponseEntity(fakeAPIResponseBody, HttpStatus.OK)
-        }
+        val mockAPIClient = mock<HintrAPIClient>()
 
         val sut = HomeController(mockRepo, mockSession, mockAppProps, mockAPIClient)
 
@@ -54,7 +52,6 @@ class HomeControllerTests
         verify(mockRepo).saveVersion("test-version", null)
         verify(mockModel).addAttribute("title", "Test App Title")
         verify(mockModel).addAttribute("user", "test-user")
-        verify(mockAPIClient).wakeUpWorkers()
     }
 
     @Test
