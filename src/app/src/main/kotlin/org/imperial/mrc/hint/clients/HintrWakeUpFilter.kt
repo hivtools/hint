@@ -10,11 +10,11 @@ import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
 @Component
+@Suppress("MagicNumber")
 class HintrWakeUpFilter(
     private val hintrAPIClient: HintrAPIClient,
     properties: AppProperties
 ) : OncePerRequestFilter() {
-
     private val lastWakeUp = AtomicLong(0)
     private val wakeUpIntervalMillis = properties.hintrWakeUpInterval?.times(1000) ?: (2 * 60 * 1000) // 2 minutes
 
