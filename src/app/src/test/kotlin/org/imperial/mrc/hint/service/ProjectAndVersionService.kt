@@ -151,8 +151,8 @@ class ProjectServiceTest
     }
 
     private val mockHintrAPIClient = mock<HintrAPIClient> {
-        on { taskExists("fit123") } doReturn ResponseEntity("""{"id":"fit123","exists":true}""", HttpStatus.OK)
-        on { taskExists("cal123") } doReturn ResponseEntity("""{"id":"cal123","exists":true}""", HttpStatus.OK)
+        on { taskExists("fit123") } doReturn ResponseEntity("""{"data": {"id":"fit123","exists":true}}""", HttpStatus.OK)
+        on { taskExists("cal123") } doReturn ResponseEntity("""{"data": {"id":"cal123","exists":true}}""", HttpStatus.OK)
     }
 
     @Test
@@ -226,8 +226,8 @@ class ProjectServiceTest
     @Test
     fun `rehydrateProject fails if modelFit id missing`() {
         val mockHintrAPIClient = mock<HintrAPIClient> {
-            on { taskExists("fit123") } doReturn ResponseEntity("""{"id":"fit123","exists":false}""", HttpStatus.OK)
-            on { taskExists("cal123") } doReturn ResponseEntity("""{"id":"cal123","exists":true}""", HttpStatus.OK)
+            on { taskExists("fit123") } doReturn ResponseEntity("""{"data": {"id":"fit123","exists":false}}""", HttpStatus.OK)
+            on { taskExists("cal123") } doReturn ResponseEntity("""{"data": {"id":"cal123","exists":true}}""", HttpStatus.OK)
         }
 
         val datasetFile = Paths.get(mockProperties.uploadDirectory, "file.csv").toFile()
@@ -249,8 +249,8 @@ class ProjectServiceTest
     @Test
     fun `rehydrateProject fails if calibrate id missing`() {
         val mockHintrAPIClient = mock<HintrAPIClient> {
-            on { taskExists("fit123") } doReturn ResponseEntity("""{"id":"fit123","exists":true}""", HttpStatus.OK)
-            on { taskExists("cal123") } doReturn ResponseEntity("""{"id":"cal123","exists":false}""", HttpStatus.OK)
+            on { taskExists("fit123") } doReturn ResponseEntity("""{"data": {"id":"fit123","exists":true}}""", HttpStatus.OK)
+            on { taskExists("cal123") } doReturn ResponseEntity("""{"data": {"id":"cal123","exists":false}}""", HttpStatus.OK)
         }
 
         val datasetFile = Paths.get(mockProperties.uploadDirectory, "file.csv").toFile()

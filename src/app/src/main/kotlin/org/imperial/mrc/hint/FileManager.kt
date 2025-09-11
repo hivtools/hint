@@ -10,6 +10,7 @@ import org.imperial.mrc.hint.models.VersionFile
 import org.imperial.mrc.hint.models.VersionFileWithPath
 import org.imperial.mrc.hint.security.Session
 import org.imperial.mrc.hint.service.ADRService
+import org.imperial.mrc.hint.service.getFileBytes
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Component
 import org.springframework.web.multipart.MultipartFile
@@ -66,7 +67,8 @@ class LocalFileManager(
 
     override fun saveFile(data: AdrResource, type: FileType): VersionFileWithPath
     {
-        val adrFileBytes = adrService.getFileBytes(data)
+        val adrClient = adrService.build()
+        val adrFileBytes = getFileBytes(adrClient, data)
         val originalFilename = data.url.split("/").last().split("?").first()
         val resourceUrl = getResourceUrl(data, originalFilename)
 

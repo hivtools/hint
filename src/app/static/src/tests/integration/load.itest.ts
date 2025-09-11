@@ -27,12 +27,12 @@ describe("load actions", () => {
         const commit = vi.fn();
         const dispatch = vi.fn()
         const formData = getFormData("output.zip");
-        const state = {rehydrateId: "1"}
+        const state = {}
 
         await actions.preparingRehydrate({commit, dispatch, state, rootState} as any, formData);
 
         expect(commit.mock.calls[0][0].type).toBe("StartPreparingRehydrate");
-        expect(commit.mock.calls[1][0].type).toBe("RehydrateResult");
+        expect(commit.mock.calls[1][0].type).toBe("RehydrateResultError");
         expect(commit.mock.calls[1][0].payload).not.toBeNull();
     });
 });

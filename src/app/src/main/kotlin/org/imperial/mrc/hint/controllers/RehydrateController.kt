@@ -6,6 +6,7 @@ import org.imperial.mrc.hint.models.AdrResource
 import org.imperial.mrc.hint.service.ADRService
 import org.imperial.mrc.hint.service.ProjectService
 import org.imperial.mrc.hint.service.RehydratedProject
+import org.imperial.mrc.hint.service.getFileBytes
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
@@ -25,7 +26,8 @@ class RehydrateController(val projectService: ProjectService,
     @PostMapping("/adr")
     fun submitAdrRehydrate(@RequestBody data: AdrResource): ResponseEntity<HintrApiResponse<RehydratedProject>>
     {
-        val adrFileBytes = adrService.getFileBytes(data)
+        val adrClient = adrService.build()
+        val adrFileBytes = getFileBytes(adrClient, data)
         val result = projectService.rehydrateProject(adrFileBytes)
         return ResponseEntity.ok(asHintrSuccessResponse(result))
     }

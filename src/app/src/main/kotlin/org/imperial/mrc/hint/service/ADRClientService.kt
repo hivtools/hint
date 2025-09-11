@@ -13,7 +13,6 @@ import java.io.InputStream
 interface ADRService
 {
     fun build(): ADRClient
-    fun getFileBytes(resource: AdrResource): InputStream
 }
 
 @Service
@@ -31,29 +30,28 @@ class ADRClientService(
 
         return adrClientBuilder.buildSSO()
     }
+}
 
-    override fun getFileBytes(resource: AdrResource): InputStream
+fun getFileBytes(adr: ADRClient, resource: AdrResource): InputStream
+{
+    val response = adr.getInputStream(resource.url)
+
+    if (response.statusCode() != HttpStatus.OK.value())
     {
-        val adr = this.build()
-        val response = adr.getInputStream(resource.url)
-
-        if (response.statusCode() != HttpStatus.OK.value())
+        /**
+         * When a user is unauthenticated or lack required permission, the user gets redirected
+         * to auth0 login page. handleAdrException handles permission and unexpected ADR errors
+         */
+        if (response.statusCode() == HttpStatus.FOUND.value())
         {
-            /**
-             * When a user is unauthenticated or lack required permission, the user gets redirected
-             * to auth0 login page. handleAdrException handles permission and unexpected ADR errors
-             */
-            if (response.statusCode() == HttpStatus.FOUND.value())
-            {
-                throw AdrException(
-                    "noPermissionToAccessResource",
-                    HttpStatus.valueOf(response.statusCode()),
-                    resource.url
-                )
-            }
-
-            throw AdrException("adrResourceError", HttpStatus.valueOf(response.statusCode()), resource.url)
+            throw AdrException(
+                "noPermissionToAccessResource",
+                HttpStatus.valueOf(response.statusCode()),
+                resource.url
+            )
         }
-        return response.body()
+
+        throw AdrException("adrResourceError", HttpStatus.valueOf(response.statusCode()), resource.url)
     }
+    return response.body()
 }

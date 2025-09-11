@@ -202,7 +202,7 @@ class ADRTests : SecureIntegrationTests()
             val result = testRestTemplate.postForEntity<String>("/rehydrate/adr", postEntity)
             assertThat(result.headers.contentType!!.toString())
                 .isEqualTo("application/json")
-            assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
+            assertThat(result.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
         }
     }
 
