@@ -1,5 +1,5 @@
 import {
-    mockAxios,
+    mockAxios, mockBaselineState,
     mockError,
     mockFailure,
     mockModelOptionsState,
@@ -41,13 +41,14 @@ describe("Model run actions", () => {
         vi.useRealTimers();
     })
 
-    it("passes model options and version from state", async () => {
+    it("passes model options, version and iso3 from state", async () => {
 
         mockAxios.onPost(`/model/run/`)
             .reply(200, mockSuccess({id: "12345"}));
 
         const commit = vi.fn();
         const rootState = mockRootState({
+            baseline: mockBaselineState({iso3: "MWI"}),
             modelOptions: mockModelOptionsState({
                 options: {1: "TEST"},
                 version: "v1" as any
@@ -60,7 +61,7 @@ describe("Model run actions", () => {
 
         await actions.run({commit, rootState, state} as any);
         expect(JSON.parse(mockAxios.history.post[0].data))
-            .toStrictEqual({options: {1: "TEST"}, version: "v1"})
+            .toStrictEqual({options: {1: "TEST"}, version: "v1", iso3: "MWI"})
     });
 
     it("commits run id after triggering a model run", async () => {

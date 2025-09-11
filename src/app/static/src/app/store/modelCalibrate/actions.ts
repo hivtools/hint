@@ -44,13 +44,14 @@ export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrat
         const {commit, dispatch, state, rootState} = context;
         const modelRunId = rootState.modelRun.modelRunId;
         const version = state.version;
+        const iso3 = rootState.baseline.iso3;
 
         commit({type: ModelCalibrateMutation.SetOptionsData, payload: options});
 
         const response = await api<ModelCalibrateMutation, ModelCalibrateMutation>(context)
             .withSuccess(ModelCalibrateMutation.CalibrateStarted)
             .withError(ModelCalibrateMutation.SetError)
-            .postAndReturn<ModelSubmitResponse>(`calibrate/submit/${modelRunId}`, {options, version});
+            .postAndReturn<ModelSubmitResponse>(`calibrate/submit/${modelRunId}`, {options, version, iso3});
 
         if (response) {
             commit({type: `downloadResults/${DownloadResultsMutation.ResetIds}`}, {root: true});

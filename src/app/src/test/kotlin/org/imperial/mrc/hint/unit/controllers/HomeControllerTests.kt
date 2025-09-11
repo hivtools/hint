@@ -42,8 +42,9 @@ class HomeControllerTests
             on { applicationTitle } doReturn "Test App Title"
         }
         val mockModel = mock<Model>()
+        val mockAPIClient = mock<HintrAPIClient>()
 
-        val sut = HomeController(mockRepo, mockSession, mockAppProps, mock())
+        val sut = HomeController(mockRepo, mockSession, mockAppProps, mockAPIClient)
 
         val result = sut.index(mockModel)
         assertThat(result).isEqualTo("index")

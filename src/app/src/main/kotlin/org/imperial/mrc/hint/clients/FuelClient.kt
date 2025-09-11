@@ -38,6 +38,17 @@ abstract class FuelClient(protected val baseUrl: String)
                 .asResponseEntity()
     }
 
+    // Fire off a get request and ignore the response, used for wake-up call
+    open fun getAndForget(url: String)
+    {
+        "$baseUrl/$url".httpGet()
+            .header(standardHeaders())
+            .addTimeouts()
+            .response { _, _, _ ->
+                // ignore success/failure, we're firing off and forgetting
+            }
+    }
+
     fun post(url: String, params: List<Pair<String, String>>): ResponseEntity<String>
     {
         return "$baseUrl/$url".httpPost(params)

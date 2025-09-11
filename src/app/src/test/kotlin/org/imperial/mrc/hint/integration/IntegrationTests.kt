@@ -57,17 +57,25 @@ abstract class SecureIntegrationTests : CleanDatabaseTests()
         val versionJson = parser.readTree(optionsResponseEntity.body!!)["version"]
         val version = parser.treeToValue<Map<String, String>>(versionJson)
 
-        val modelRunOptions = ModelOptions(modelEntity, version)
+        val modelRunOptions = ModelOptions(modelEntity, version, "MWI")
         val headers = HttpHeaders()
         headers.contentType = MediaType.APPLICATION_JSON
         val jsonString = ObjectMapper().writeValueAsString(modelRunOptions)
         return HttpEntity(jsonString, headers)
     }
 
+    protected fun getDownloadSubmitEntity(): HttpEntity<String>
+    {
+        val headers = HttpHeaders()
+        headers.contentType = MediaType.APPLICATION_JSON
+        val jsonString = "{\"iso3\": \"MWI\"}"
+        return HttpEntity(jsonString, headers)
+    }
+
     protected fun getValidationOptions(): HttpEntity<String>
     {
         uploadMinimalFiles()
-        val modelRunOptions = ModelOptions(getMockModelOptions(), emptyMap())
+        val modelRunOptions = ModelOptions(getMockModelOptions(), emptyMap(), null)
 
         val headers = HttpHeaders()
         headers.contentType = MediaType.APPLICATION_JSON
@@ -127,7 +135,8 @@ abstract class SecureIntegrationTests : CleanDatabaseTests()
 
     protected fun waitForSubmitDownloadOutput(calibrateId: String, type: String): String
     {
-        val response = testRestTemplate.postForEntity<String>("/download/submit/$type/$calibrateId")
+        val entity = getDownloadSubmitEntity()
+        val response = testRestTemplate.postForEntity<String>("/download/submit/$type/$calibrateId", entity)
         assertSuccess(response, "DownloadSubmitResponse")
         val bodyJSON = ObjectMapper().readTree(response.body)
         val responseId = bodyJSON["data"]["id"].asText()

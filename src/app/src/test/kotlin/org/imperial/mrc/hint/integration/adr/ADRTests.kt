@@ -157,7 +157,10 @@ class ADRTests : SecureIntegrationTests()
 
         saveFileFromADR("inputs-unaids-survey", isAuthorized, "survey")
         saveFileFromADR("inputs-unaids-anc", isAuthorized, "anc")
-        saveFileFromADR("inputs-unaids-vmmc-coverage-outputs", isAuthorized, "vmmc")
+        // Ideally this would not be commented out, but with 2025 datasets there is no VMMC resource. Even
+        // though we would like to import this automatically. We've asked ADR to add it, but they
+        // have no capacity at the moment, and it is not clear they ever will. Comment out for now.
+        // saveFileFromADR("inputs-unaids-vmmc-coverage-outputs", isAuthorized, "vmmc")
 
         // this ADR file sometimes has an error, so allow for success or failure
         // but confirm expected response in each case

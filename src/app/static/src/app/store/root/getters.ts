@@ -75,7 +75,14 @@ export const getters: RootGetters & GetterTree<RootState, RootState> = {
                     note: rootState.projects.currentProject?.note || ""
                 },
                 version_notes: getVersionNotes(versions, name)
-            }
+            },
+            iso3: rootState.baseline.iso3
+        }
+    },
+
+    projectIso3: (rootState: RootState): DownloadSubmitRequest => {
+        return {
+            iso3: rootState.baseline.iso3
         }
     },
 

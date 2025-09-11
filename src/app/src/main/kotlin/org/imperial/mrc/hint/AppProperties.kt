@@ -48,6 +48,7 @@ interface AppProperties
     val oauth2ClientAudience: String
     val oauth2ClientScope: String
     val oauth2LoginMethod: Boolean
+    val hintrWakeUpInterval: Int?
     val fileTypeMappings: Map<String, String>
 }
 
@@ -96,6 +97,7 @@ class ConfiguredAppProperties(
     final override val oauth2ClientAdrServerUrl = propString("oauth2_client_adr_server_url")
     final override val oauth2ClientScope = propString("oauth2_client_scope")
     final override val oauth2LoginMethod = propString("oauth2_login_method").toBoolean()
+    final override val hintrWakeUpInterval = propString("hintr_wake_up_interval_s").toIntOrNull()
     final override val fileTypeMappings = mapOf(
             "baseUrl" to adrUrl,
             "anc" to adrANCSchema,

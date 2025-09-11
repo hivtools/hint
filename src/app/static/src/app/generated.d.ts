@@ -591,6 +591,7 @@ export interface CalibrateSubmitRequest {
     rrq: string;
     [k: string]: any;
   };
+  iso3: string;
 }
 export interface CalibrateSubmitResponse {
   id: string;
@@ -1003,6 +1004,7 @@ export interface DownloadSubmitRequest {
     fromADR?: boolean;
     resource_url?: string | null;
   };
+  iso3: string;
 }
 export interface DownloadSubmitResponse {
   id: string;
@@ -1940,6 +1942,7 @@ export interface ModelSubmitRequest {
     rrq: string;
     [k: string]: any;
   };
+  iso3: string;
 }
 export interface ModelSubmitResponse {
   id: string;
@@ -2808,6 +2811,11 @@ export interface VersionInfo {
   [k: string]: any;
 }
 export type VmmcResponseData = null;
+export interface WakeUpResponse {
+  ids: {
+    [k: string]: string;
+  };
+}
 export interface Warning {
   text: string;
   locations: (

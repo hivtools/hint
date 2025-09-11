@@ -35,7 +35,8 @@ class DownloadTests : SecureIntegrationTests()
     @Test
     fun `can submit coarse output download`()
     {
-        val responseEntity = testRestTemplate.postForEntity<String>("/download/submit/coarse-output/$modelId")
+        val postEntity = getDownloadSubmitEntity()
+        val responseEntity = testRestTemplate.postForEntity<String>("/download/submit/coarse-output/$modelId", postEntity)
         assertSuccess(responseEntity, "DownloadSubmitResponse")
     }
 
@@ -50,7 +51,7 @@ class DownloadTests : SecureIntegrationTests()
     @Test
     fun `can submit summary download`()
     {
-        val postEntity = getJsonEntity(emptyMap())
+        val postEntity = getDownloadSubmitEntity()
         val responseEntity = testRestTemplate.postForEntity<String>("/download/submit/summary/$modelId", postEntity)
         assertSuccess(responseEntity, "DownloadSubmitResponse")
     }
@@ -93,6 +94,7 @@ class DownloadTests : SecureIntegrationTests()
                         "version_notes" to listOf(note, note)
                 ),
                 "vmmc" to mapOf("filename" to "vmmc", "hash" to "123", "path" to "uploads/vmmc"),
+                "iso3" to "MWI",
         )
 
         val postEntity = getJsonEntity(state)
@@ -136,7 +138,8 @@ class DownloadTests : SecureIntegrationTests()
 
     fun downloadOutputResponseId(): String
     {
-        val response = testRestTemplate.postForEntity<String>("/download/submit/spectrum/$calibrateId")
+        val postEntity = getDownloadSubmitEntity()
+        val response = testRestTemplate.postForEntity<String>("/download/submit/spectrum/$calibrateId", postEntity)
         val bodyJSON = ObjectMapper().readTree(response.body)
         return bodyJSON["data"]["id"].asText()
     }

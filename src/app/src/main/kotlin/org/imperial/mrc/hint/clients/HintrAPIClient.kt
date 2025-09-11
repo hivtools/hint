@@ -7,6 +7,7 @@ import org.imperial.mrc.hint.*
 import org.imperial.mrc.hint.models.ModelOptions
 import org.imperial.mrc.hint.models.VersionFileWithPath
 import org.springframework.http.ResponseEntity
+import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Component
 import org.springframework.web.context.request.RequestContextHolder
 import org.springframework.web.context.request.ServletRequestAttributes
@@ -43,6 +44,7 @@ interface HintrAPIClient
     fun getInputComparisonChartData(files: Map<String, VersionFileWithPath>): ResponseEntity<String>
     fun getInputPopulationMetadata(files: Map<String, VersionFileWithPath>): ResponseEntity<String>
     fun get(url: String): ResponseEntity<String>
+    fun getAndForget(url: String)
     fun downloadOutputSubmit(
         type: String,
         id: String,
@@ -54,6 +56,7 @@ interface HintrAPIClient
     fun submitRehydrate(outputZip: VersionFileWithPath): ResponseEntity<String>
     fun rehydrateStatus(id: String): ResponseEntity<String>
     fun rehydrateResult(id: String): ResponseEntity<String>
+    fun wakeUpWorkers()
 }
 
 @Component
@@ -113,8 +116,9 @@ class HintrFuelAPIClient(
 
         val json = objectMapper.writeValueAsString(
                 mapOf("options" to modelRunOptions.options,
-                        "version" to modelRunOptions.version,
-                        "data" to data))
+                      "version" to modelRunOptions.version,
+                      "iso3" to modelRunOptions.iso3,
+                      "data" to data))
 
         return postJson("model/submit", json)
     }
@@ -125,7 +129,7 @@ class HintrFuelAPIClient(
 
         val json = objectMapper.writeValueAsString(
                 mapOf("options" to modelRunOptions.options,
-                        "data" to data))
+                      "data" to data))
 
         return postJson("validate/options", json)
     }
@@ -283,5 +287,10 @@ class HintrFuelAPIClient(
         val json = objectMapper.writeValueAsString(files)
 
         return postJson("chart-data/input-population", json)
+    }
+
+    override fun wakeUpWorkers()
+    {
+        getAndForget("wake")
     }
 }
