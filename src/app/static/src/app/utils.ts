@@ -1,6 +1,6 @@
 import {ActionMethod, CustomVue, mapActions, mapGetters, mapMutations, mapState, MutationMethod} from "vuex";
 import {ADRSchemas, Dataset, DatasetResource, DatasetResourceType, Dict, UploadFile, Version} from "./types";
-import {Error, FilterOption, NestedFilterOption, ProjectRehydrateResultResponse, Response} from "./generated";
+import {Error, FilterOption, NestedFilterOption, Response} from "./generated";
 import moment, {utc} from 'moment';
 import {
     DynamicControlGroup,
@@ -15,6 +15,7 @@ import {initialModelCalibrateState} from "./store/modelCalibrate/modelCalibrate"
 import {AxiosResponse} from "axios";
 import {ComputedGetter} from 'vue';
 import {isDropdown, isMultiselectControl} from "./store/modelOptions/optionsUtils";
+import {RehydrateProjectResponse} from "./store/load/state";
 
 export type ComputedWithType<T> = () => T;
 
@@ -435,7 +436,7 @@ const transformPathToHash = (dataset: any) => {
     return dataset
 }
 
-export const constructRehydrateProjectState = (data: ProjectRehydrateResultResponse) => {
+export const constructRehydrateProjectState = (data: RehydrateProjectResponse) => {
     const files = transformPathToHash({...data.state.datasets});
 
     const modelOptions = {

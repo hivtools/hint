@@ -1,4 +1,4 @@
-import {Error, ProjectRehydrateResultResponse} from "../../generated";
+import {Error, ProjectState} from "../../generated";
 
 // NB We define state and initialLoadState in separate file to the load module to 
 // avoid circular dependency issues when calling root emptyState from 
@@ -6,14 +6,17 @@ import {Error, ProjectRehydrateResultResponse} from "../../generated";
 
 export enum LoadingState { NotLoading, SettingFiles, UpdatingState, LoadFailed }
 
+export type RehydrateProjectResponse = {
+    notes?: string | null,
+    state: ProjectState
+}
+
 export interface LoadState {
     loadingState: LoadingState,
     loadError: Error | null,
-    rehydrateId: string
     preparing: boolean
-    statusPollId: number
     complete: boolean
-    rehydrateResult: ProjectRehydrateResultResponse
+    rehydrateResult: RehydrateProjectResponse
     newProjectName: string
 }
 
@@ -21,11 +24,9 @@ export const initialLoadState = (): LoadState => {
     return {
         loadingState: LoadingState.NotLoading,
         loadError: null,
-        rehydrateId: "",
         preparing: false,
-        statusPollId: -1,
         complete: false,
-        rehydrateResult: {} as ProjectRehydrateResultResponse,
+        rehydrateResult: {} as RehydrateProjectResponse,
         newProjectName: ""
     }
 };

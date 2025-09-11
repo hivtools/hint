@@ -32,7 +32,7 @@ docker run --rm -d --network=$NETWORK --name $REDIS --network-alias=redis redis
 mkdir -p $HERE/../src/app/uploads
 mkdir -p $HERE/../src/app/results
 
-docker run --rm -d \
+docker run -d \
   --network=$NETWORK \
   --name=$API \
   -p 8888:8888 \

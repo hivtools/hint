@@ -66,33 +66,11 @@ class LocalFileManager(
 
     override fun saveFile(data: AdrResource, type: FileType): VersionFileWithPath
     {
+        val adrFileBytes = adrService.getFileBytes(data)
         val originalFilename = data.url.split("/").last().split("?").first()
-
-        val adr = adrService.build()
-
         val resourceUrl = getResourceUrl(data, originalFilename)
 
-        val response = adr.getInputStream(data.url)
-
-        if (response.statusCode() != HttpStatus.OK.value())
-        {
-            /**
-             * When a user is unauthenticated or lack required permission, the user gets redirected
-             * to auth0 login page. handleAdrException handles permission and unexpected ADR errors
-             */
-            if (response.statusCode() == HttpStatus.FOUND.value())
-            {
-                throw AdrException(
-                    "noPermissionToAccessResource",
-                    HttpStatus.valueOf(response.statusCode()),
-                    data.url
-                )
-            }
-
-            throw AdrException("adrResourceError", HttpStatus.valueOf(response.statusCode()), data.url)
-        }
-
-        return saveFile(response.body(), originalFilename, type, true, resourceUrl)
+        return saveFile(adrFileBytes, originalFilename, type, true, resourceUrl)
     }
 
     private fun saveFile(

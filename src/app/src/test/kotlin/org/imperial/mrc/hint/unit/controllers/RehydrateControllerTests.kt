@@ -1,92 +1,65 @@
 package org.imperial.mrc.hint.unit.controllers
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.nhaarman.mockito_kotlin.*
-import org.assertj.core.api.Assertions.assertThat
-import org.imperial.mrc.hint.FileManager
-import org.imperial.mrc.hint.FileType
-import org.imperial.mrc.hint.clients.HintrAPIClient
-import org.imperial.mrc.hint.controllers.ADRController
 import org.imperial.mrc.hint.controllers.RehydrateController
 import org.imperial.mrc.hint.models.AdrResource
-import org.imperial.mrc.hint.models.VersionFileWithPath
+import org.imperial.mrc.hint.service.ADRService
+import org.imperial.mrc.hint.service.ProjectService
+import org.imperial.mrc.hint.service.RehydratedProject
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
-import org.springframework.http.ResponseEntity
+import org.springframework.http.HttpStatus
 import org.springframework.web.multipart.MultipartFile
-import javax.servlet.http.HttpServletRequest
+import java.io.InputStream
 
 class RehydrateControllerTests
 {
+    private val objectMapper = ObjectMapper()
+    private val project = RehydratedProject(
+        notes = "my file notes",
+        state = objectMapper.readTree("{\"hello\": \"world\"}")
+    )
+    private val fileStream = mock<InputStream>()
+
     @Test
     fun `submit output zip file`()
     {
-        val payload = VersionFileWithPath("testdata/output.zip", "1", "output", false)
-        val mockResponse = mock<ResponseEntity<String>>()
-        val multipartFile = mock<MultipartFile>()
-
-        val mockFileManager = mock<FileManager> {
-            on {saveOutputZip(multipartFile)} doReturn payload
+        val multipartFile = mock<MultipartFile>{
+            on {inputStream} doReturn fileStream
         }
 
-        val mockAPIClient = mock<HintrAPIClient> {
-            on { submitRehydrate(payload) } doReturn mockResponse
+        val mockProjectService = mock<ProjectService> {
+            on {rehydrateProject(fileStream)} doReturn project
         }
+        val mockADRService = mock<ADRService>()
 
-        val sut = RehydrateController(mockAPIClient, mockFileManager)
+        val sut = RehydrateController(mockProjectService, mockADRService)
         val result = sut.submitRehydrate(multipartFile)
-        verify(mockAPIClient).submitRehydrate(payload)
-        assertThat(result).isSameAs(mockResponse)
+
+        verify(mockProjectService).rehydrateProject(fileStream)
+        Assertions.assertEquals(result.statusCode, HttpStatus.OK)
+        Assertions.assertEquals(result.body, project)
     }
 
     @Test
     fun `submit rehydrate from ADR`()
     {
         val adrResource = AdrResource("test-url", "123")
-        val payload = VersionFileWithPath("testdata/output.zip", "1", "output", false)
-        val mockResponse = mock<ResponseEntity<String>>()
 
-        val mockFileManager = mock<FileManager> {
-            on {
-                saveFile(any<AdrResource>(), eq(FileType.OutputZip))
-            } doReturn payload
+        val mockProjectService = mock<ProjectService> {
+            on {rehydrateProject(fileStream)} doReturn project
         }
-        val mockAPIClient = mock<HintrAPIClient> {
-            on { submitRehydrate(payload) } doReturn mockResponse
+        val mockADRService = mock<ADRService>{
+            on {getFileBytes(adrResource)} doReturn fileStream
         }
 
-        val sut = RehydrateController(mockAPIClient, mockFileManager)
+        val sut = RehydrateController(mockProjectService, mockADRService)
         val result = sut.submitAdrRehydrate(adrResource)
-        verify(mockFileManager).saveFile(adrResource, FileType.OutputZip)
-        verify(mockAPIClient).submitRehydrate(payload)
-        assertThat(result).isSameAs(mockResponse)
-    }
 
-    @Test
-    fun `get rehydrate status`()
-    {
-        val mockResponse = mock<ResponseEntity<String>>()
-        val mockFileManager = mock<FileManager>()
-        val mockAPIClient = mock<HintrAPIClient> {
-            on { rehydrateStatus("id") } doReturn mockResponse
-        }
-
-        val sut = RehydrateController(mockAPIClient, mockFileManager)
-        val result = sut.getRehydrateStatus("id")
-        verify(mockAPIClient).rehydrateStatus("id")
-        assertThat(result).isSameAs(mockResponse)
-    }
-
-    @Test
-    fun `get rehydrate result`()
-    {
-        val mockResponse = mock<ResponseEntity<String>>()
-        val mockFileManager = mock<FileManager>()
-        val mockAPIClient = mock<HintrAPIClient> {
-            on { rehydrateResult("id") } doReturn mockResponse
-        }
-
-        val sut = RehydrateController(mockAPIClient, mockFileManager)
-        val result = sut.getRehydrateResult("id")
-        verify(mockAPIClient).rehydrateResult("id")
-        assertThat(result).isSameAs(mockResponse)
+        verify(mockADRService).getFileBytes(adrResource)
+        verify(mockProjectService).rehydrateProject(fileStream)
+        Assertions.assertEquals(result.statusCode, HttpStatus.OK)
+        Assertions.assertEquals(result.body, project)
     }
 }

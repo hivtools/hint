@@ -1,11 +1,7 @@
 import {Mutation, MutationTree} from 'vuex';
-import {LoadingState, LoadState} from "./state";
+import {LoadingState, LoadState, RehydrateProjectResponse} from "./state";
 import {PayloadWithType} from "../../types";
-import {
-    Error, ProjectRehydrateResultResponse,
-    ProjectRehydrateStatusResponse
-    , ProjectRehydrateSubmitResponse
-} from "../../generated";
+import {Error} from "../../generated";
 
 type LoadMutation = Mutation<LoadState>
 
@@ -14,14 +10,10 @@ export interface LoadMutations {
     UpdatingState: LoadMutation,
     LoadFailed: LoadMutation,
     LoadStateCleared: LoadMutation,
-    PreparingRehydrate: LoadMutation,
     StartPreparingRehydrate: LoadMutation,
-    RehydrateStatusUpdated: LoadMutation,
-    RehydratePollingStarted: LoadMutation,
     RehydrateResult: LoadMutation,
     RehydrateResultError: LoadMutation,
     SetNewProjectName: LoadMutation,
-    RehydrateCancel: LoadMutation
 }
 
 export const mutations: MutationTree<LoadState> & LoadMutations = {
@@ -30,13 +22,6 @@ export const mutations: MutationTree<LoadState> & LoadMutations = {
     },
     SetNewProjectName(state: LoadState, projectName: string) {
         state.newProjectName = projectName
-    },
-    RehydrateCancel(state: LoadState) {
-        state.preparing = false;
-        state.loadingState = LoadingState.NotLoading;
-        if (state.statusPollId > -1) {
-            stopPolling(state);
-        }
     },
     UpdatingState(state: LoadState) {
         state.loadingState = LoadingState.UpdatingState;
@@ -50,42 +35,22 @@ export const mutations: MutationTree<LoadState> & LoadMutations = {
         state.loadingState = LoadingState.NotLoading;
         state.loadError = null;
     },
-    RehydrateResult(state: LoadState, action: PayloadWithType<ProjectRehydrateResultResponse>) {
+    StartPreparingRehydrate(state: LoadState) {
+        state.preparing = true;
+        state.loadingState = LoadingState.SettingFiles;
+    },
+    RehydrateResult(state: LoadState, action: PayloadWithType<RehydrateProjectResponse>) {
+        console.log("committing rehydrate result", action)
         state.rehydrateResult = action.payload;
         state.preparing = false;
         state.loadingState = LoadingState.NotLoading;
         state.loadError = null;
     },
     RehydrateResultError(state: LoadState, action: PayloadWithType<Error>) {
+        console.log("committing rehydrate result error", action)
         state.loadError = action.payload;
         state.preparing = false;
-        state.rehydrateResult = {} as ProjectRehydrateResultResponse
+        state.rehydrateResult = {} as RehydrateProjectResponse
         state.loadingState = LoadingState.LoadFailed;
-        if (state.statusPollId > -1) {
-            stopPolling(state);
-        }
     },
-    PreparingRehydrate(state: LoadState, action: PayloadWithType<ProjectRehydrateSubmitResponse>) {
-        state.rehydrateId = action.payload.id;
-        state.complete = false;
-        state.loadError = null;
-    },
-    StartPreparingRehydrate(state: LoadState) {
-        state.preparing = true;
-        state.loadingState = LoadingState.SettingFiles;
-    },
-    RehydrateStatusUpdated(state: LoadState, action: PayloadWithType<ProjectRehydrateStatusResponse>) {
-        if (action.payload.done) {
-            stopPolling(state);
-        }
-        state.loadError = null;
-    },
-    RehydratePollingStarted(state: LoadState, action: PayloadWithType<number>) {
-        state.statusPollId = action.payload;
-    }
-};
-
-const stopPolling = (state: LoadState) => {
-    clearInterval(state.statusPollId);
-    state.statusPollId = -1;
 };
