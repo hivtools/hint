@@ -97,7 +97,7 @@ class ProjectService (
     }
 
     private fun validateRehydrateState(state: JsonNode?) {
-        // TODO: Think about errors here, if we no longer store all historic versions then
+        // Think about errors here, if we no longer store all historic versions then
         //   we could end up in a situation where the outputs or inputs don't exist on
         //   disk anymore. In that case we should improve the error message, saying
         //   "this project is too old to rehydrate" or something.
