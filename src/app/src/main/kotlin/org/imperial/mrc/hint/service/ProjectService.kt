@@ -26,7 +26,11 @@ data class RehydratedProject(
     val state: JsonNode
 )
 
+private const val PROJECT_STATE_PATH = "info/project_state.json"
+private const val NOTES_PATH = "notes.txt"
+
 @Service
+@Suppress("LongParameterList")
 class ProjectService (
     private val session: Session,
     private val versionRepository: VersionRepository,
@@ -57,8 +61,6 @@ class ProjectService (
 
     fun rehydrateProject(outputZip: InputStream): RehydratedProject
     {
-        val PROJECT_STATE_PATH = "info/project_state.json"
-        val NOTES_PATH = "notes.txt"
         val objectMapper = jacksonObjectMapper()
 
         var stateJson: JsonNode? = null
@@ -82,9 +84,9 @@ class ProjectService (
             }
         }
 
-        validateRehydrateState(stateJson)
-
-        return RehydratedProject(notes = notes, state = stateJson!!)
+        val safeStateJson = stateJson ?: throw HintException("failedZipRehydrate", HttpStatus.BAD_REQUEST)
+        validateRehydrateState(safeStateJson)
+        return RehydratedProject(notes = notes, state = safeStateJson)
     }
 
     private fun taskExists(id: String): Boolean
@@ -96,6 +98,7 @@ class ProjectService (
         return jsonNode.path("data").path("exists").asBoolean(false)
     }
 
+    @Suppress("ThrowsCount")
     private fun validateRehydrateState(state: JsonNode?) {
         // Think about errors here, if we no longer store all historic versions then
         //   we could end up in a situation where the outputs or inputs don't exist on
