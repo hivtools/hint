@@ -2238,84 +2238,6 @@ export interface ProgressPhase {
   name: string;
   helpText?: string;
 }
-export interface ProjectRehydrateResultResponse {
-  notes: string | null;
-  state: {
-    datasets: {
-      pjnz: {
-        path: string | null;
-        filename: string;
-      };
-      population: {
-        path: string | null;
-        filename: string;
-      };
-      shape: {
-        path: string | null;
-        filename: string;
-      };
-      survey: {
-        path: string | null;
-        filename: string;
-      };
-      programme?: {
-        path: string | null;
-        filename: string;
-      };
-      anc?: {
-        path: string | null;
-        filename: string;
-      };
-    };
-    model_fit: {
-      options: {
-        [k: string]: any;
-      };
-      id: string;
-    };
-    calibrate: {
-      options: {
-        [k: string]: any;
-      };
-      id: string;
-    };
-    version: {
-      hintr: string;
-      naomi: string;
-      rrq: string;
-      [k: string]: any;
-    };
-  };
-}
-export interface ProjectRehydrateStatusResponse {
-  id: string;
-  done: boolean | null;
-  status: string;
-  success: boolean | null;
-  queue: number;
-  progress: (
-    | {
-        started: boolean;
-        complete: boolean;
-        value?: number;
-        name: string;
-        helpText?: string;
-      }
-    | string
-  )[];
-}
-export interface ProjectRehydrateSubmitRequest {
-  file: {
-    path: string | null;
-    hash: string;
-    filename: string;
-    fromADR?: boolean;
-    resource_url?: string | null;
-  };
-}
-export interface ProjectRehydrateSubmitResponse {
-  id: string;
-}
 export interface ProjectState {
   datasets: {
     pjnz: {
@@ -2585,6 +2507,10 @@ export type SurveyResponseData = {
   ci_upper: number | null;
   [k: string]: any;
 }[];
+export interface TaskExistsResponse {
+  id?: string;
+  exists?: boolean;
+}
 export type URI = string;
 export interface ValidateBaselineRequest {
   pjnz: string | null;

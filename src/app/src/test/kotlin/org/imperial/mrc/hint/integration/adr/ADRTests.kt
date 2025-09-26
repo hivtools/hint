@@ -2,6 +2,7 @@ package org.imperial.mrc.hint.integration.adr
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.kittinunf.fuel.httpPost
+import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.imperial.mrc.hint.ConfiguredAppProperties
 import org.imperial.mrc.hint.helpers.JSONValidator
@@ -198,8 +199,10 @@ class ADRTests : SecureIntegrationTests()
             val resourceId = extractResourceId(isAuthorized, "inputs-unaids-naomi-output-zip")
             val file = extractUrl(isAuthorized, "inputs-unaids-naomi-output-zip")
             val postEntity = getPostEntityWithUrl(AdrResource(file, getDatasetId(isAuthorized), resourceId))
-            val result = testRestTemplate.postForEntity<String>("/rehydrate/submit/adr", postEntity)
-            assertSuccess(result, "ProjectRehydrateSubmitResponse")
+            val result = testRestTemplate.postForEntity<String>("/rehydrate/adr", postEntity)
+            assertThat(result.headers.contentType!!.toString())
+                .isEqualTo("application/json")
+            assertThat(result.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
         }
     }
 

@@ -1,41 +1,34 @@
 package org.imperial.mrc.hint.controllers
 
-import org.imperial.mrc.hint.FileManager
-import org.imperial.mrc.hint.FileType
-import org.imperial.mrc.hint.clients.HintrAPIClient
+import org.imperial.mrc.hint.clients.HintrApiResponse
+import org.imperial.mrc.hint.clients.asHintrSuccessResponse
 import org.imperial.mrc.hint.models.AdrResource
+import org.imperial.mrc.hint.service.ADRService
+import org.imperial.mrc.hint.service.ProjectService
+import org.imperial.mrc.hint.service.RehydratedProject
+import org.imperial.mrc.hint.service.getFileBytes
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 
 @RestController
 @RequestMapping("rehydrate")
-class RehydrateController(val apiClient: HintrAPIClient,
-                          val fileManager: FileManager)
+class RehydrateController(val projectService: ProjectService,
+                          val adrService: ADRService)
 {
-    @PostMapping("/submit")
-    fun submitRehydrate(@RequestParam("file") file: MultipartFile): ResponseEntity<String>
+    @PostMapping("/zip")
+    fun submitRehydrate(@RequestParam("file") file: MultipartFile): ResponseEntity<HintrApiResponse<RehydratedProject>>
     {
-        val outputZip = fileManager.saveOutputZip(file)
-        return apiClient.submitRehydrate(outputZip)
+        val result = projectService.rehydrateProject(file.inputStream)
+        return ResponseEntity.ok(asHintrSuccessResponse(result))
     }
 
-    @PostMapping("/submit/adr")
-    fun submitAdrRehydrate(@RequestBody data: AdrResource): ResponseEntity<String>
+    @PostMapping("/adr")
+    fun submitAdrRehydrate(@RequestBody data: AdrResource): ResponseEntity<HintrApiResponse<RehydratedProject>>
     {
-        val outputZip = fileManager.saveFile(data, FileType.OutputZip)
-        return apiClient.submitRehydrate(outputZip)
-    }
-
-    @GetMapping("/status/{id}")
-    fun getRehydrateStatus(@PathVariable("id") id: String): ResponseEntity<String>
-    {
-        return apiClient.rehydrateStatus(id)
-    }
-
-    @GetMapping("/result/{id}")
-    fun getRehydrateResult(@PathVariable("id") id: String): ResponseEntity<String>
-    {
-        return apiClient.rehydrateResult(id)
+        val adrClient = adrService.build()
+        val adrFileBytes = getFileBytes(adrClient, data)
+        val result = projectService.rehydrateProject(adrFileBytes)
+        return ResponseEntity.ok(asHintrSuccessResponse(result))
     }
 }

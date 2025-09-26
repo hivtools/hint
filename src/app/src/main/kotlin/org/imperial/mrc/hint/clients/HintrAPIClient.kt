@@ -13,6 +13,20 @@ import org.springframework.web.context.request.RequestContextHolder
 import org.springframework.web.context.request.ServletRequestAttributes
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody
 
+data class HintrApiResponse<T>(
+    val status: String = "success",
+    val data: T? = null,
+    val errors: List<Any>? = null
+)
+
+fun <T> asHintrSuccessResponse(data: T): HintrApiResponse<T> {
+    return HintrApiResponse(
+        status = "success",
+        data = data,
+        errors = null,
+    )
+}
+
 interface HintrAPIClient
 {
     fun validateBaselineIndividual(file: VersionFileWithPath, type: FileType): ResponseEntity<String>
@@ -53,10 +67,8 @@ interface HintrAPIClient
     fun downloadOutputStatus(id: String): ResponseEntity<String>
     fun downloadOutputResult(id: String): ResponseEntity<StreamingResponseBody>
     fun getUploadMetadata(id: String): ResponseEntity<String>
-    fun submitRehydrate(outputZip: VersionFileWithPath): ResponseEntity<String>
-    fun rehydrateStatus(id: String): ResponseEntity<String>
-    fun rehydrateResult(id: String): ResponseEntity<String>
     fun wakeUpWorkers()
+    fun taskExists(id: String): ResponseEntity<String>
 }
 
 @Component
@@ -211,26 +223,6 @@ class HintrFuelAPIClient(
         return get("hintr/version")
     }
 
-    override fun submitRehydrate(outputZip: VersionFileWithPath): ResponseEntity<String>
-    {
-        val payload = mapOf(
-                "filename" to outputZip.filename,
-                "hash" to outputZip.hash,
-                "path" to outputZip.path
-        )
-        return postJson("rehydrate/submit", objectMapper.writeValueAsString(mapOf("file" to payload)))
-    }
-
-    override fun rehydrateStatus(id: String): ResponseEntity<String>
-    {
-        return get("rehydrate/status/${id}")
-    }
-
-    override fun rehydrateResult(id: String): ResponseEntity<String>
-    {
-        return get("rehydrate/result/${id}")
-    }
-
     override fun downloadOutputSubmit(
         type: String,
         id: String,
@@ -292,5 +284,10 @@ class HintrFuelAPIClient(
     override fun wakeUpWorkers()
     {
         getAndForget("wake")
+    }
+
+    override fun taskExists(id: String): ResponseEntity<String>
+    {
+        return get("task/${id}/exists")
     }
 }

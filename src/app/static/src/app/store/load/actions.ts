@@ -1,5 +1,5 @@
 import {ActionContext, ActionTree} from "vuex";
-import {LoadingState, LoadState} from "./state";
+import {LoadingState, LoadState, RehydrateProjectResponse} from "./state";
 import {emptyState, RootState} from "../../root";
 import {api} from "../../apiService";
 import {
@@ -10,10 +10,6 @@ import {DatasetResource, Dict, LocalSessionFile, VersionDetails} from "../../typ
 import {localStorageManager} from "../../localStorageManager";
 import {router} from "../../router";
 import {initialStepperState} from "../stepper/stepper";
-import {
-    ModelStatusResponse,
-    ProjectRehydrateResultResponse,
-} from "../../generated";
 import {DynamicFormData} from "@reside-ic/vue-next-dynamic-form";
 import {ModelCalibrateState} from "../modelCalibrate/modelCalibrate";
 import {LoadMutations} from "./mutations";
@@ -28,7 +24,6 @@ export interface LoadActions {
     loadFromVersion: (store: ActionContext<LoadState, RootState>, versionDetails: VersionDetails) => void
     updateStoreState: (store: ActionContext<LoadState, RootState>, savedState: Partial<RootState>) => void
     clearLoadState: (store: ActionContext<LoadState, RootState>) => void
-    pollRehydrate: (store: ActionContext<LoadState, RootState>, interval?: number | null) => void
 }
 
 export const actions: ActionTree<LoadState, RootState> & LoadActions = {
@@ -69,81 +64,54 @@ export const actions: ActionTree<LoadState, RootState> & LoadActions = {
     },
 
     async preparingRehydrate(context, formData) {
-        const {dispatch, commit} = context
+        const {commit} = context
         commit({type: "StartPreparingRehydrate", payload: null});
-        const response = await api<LoadActionTypes, LoadErrorActionTypes>(context)
-            .withSuccess("PreparingRehydrate")
+        await api<LoadActionTypes, LoadErrorActionTypes>(context)
+            .withSuccess("RehydrateResult")
             .withError("RehydrateResultError")
-            .postAndReturn("rehydrate/submit", formData);
-
-        if (response) {
-            await dispatch("pollRehydrate");
-        }
+            .postAndReturn<RehydrateProjectResponse>("/rehydrate/zip", formData)
+            .then(async (response) => {
+                if (response && response.data) {
+                    await rehydrateFromState(context, response.data);
+                }
+            })
     },
 
     async preparingRehydrateFromAdr(context, datasetResource) {
-        const {dispatch, commit} = context
+        const {commit} = context
         commit({type: "StartPreparingRehydrate", payload: null});
-        const response = await api<LoadActionTypes, LoadErrorActionTypes>(context)
-            .withSuccess("PreparingRehydrate")
+        await api<LoadActionTypes, LoadErrorActionTypes>(context)
+            .withSuccess("RehydrateResult")
             .withError("RehydrateResultError")
-            .postAndReturn("rehydrate/submit/adr", datasetResource);
-
-        if (response) {
-            await dispatch("pollRehydrate");
-        }
+            .postAndReturn<RehydrateProjectResponse>("/rehydrate/adr", datasetResource)
+            .then(async (response) => {
+                if (response && response.data) {
+                    await rehydrateFromState(context, response.data);
+                }
+            })
     },
-
-    async pollRehydrate(context, interval = null) {
-        const {commit} = context;
-        const id = setInterval(() => {
-            getRehydrateStatus(context)
-        }, interval || 2000);
-
-        commit({type: "RehydratePollingStarted", payload: id});
-    }
 };
 
-const getRehydrateResult = async (context: ActionContext<LoadState, RootState>) => {
+const rehydrateFromState = async (context: ActionContext<LoadState, RootState>, data: RehydrateProjectResponse) => {
     const {rootGetters, state, dispatch, rootState} = context
-    const rehydrateId = state.rehydrateId
-    const response = await api<LoadActionTypes, LoadErrorActionTypes>(context)
-        .withSuccess("RehydrateResult")
-        .withError("RehydrateResultError")
-        .get<ProjectRehydrateResultResponse>(`rehydrate/result/${rehydrateId}`);
 
-    if (response && response.data) {
-        const {files, savedState} = constructRehydrateProjectState(response.data)
+    const {files, savedState} = constructRehydrateProjectState(data)
 
-        if (!rootGetters.isGuest) {
-            await dispatch("projects/createProject",
-                {
-                    name: state.newProjectName,
-                    isUploaded: true
-                }, {root: true});
+    if (!rootGetters.isGuest) {
+        await dispatch("projects/createProject",
+            {
+                name: state.newProjectName,
+                isUploaded: true
+            }, {root: true});
             
-            savedState.projects!.currentProject = rootState.projects.currentProject
-            savedState.projects!.currentVersion = rootState.projects.currentVersion
+        savedState.projects!.currentProject = rootState.projects.currentProject
+        savedState.projects!.currentVersion = rootState.projects.currentVersion
 
-            const newRootState = {...emptyState(), ...savedState}
+        const newRootState = {...emptyState(), ...savedState}
 
-            Object.assign(rootState, newRootState);
-        }
-
-        await getFilesAndLoad(context, files, savedState)
+        Object.assign(rootState, newRootState);
     }
-}
-
-const getRehydrateStatus = async (context: ActionContext<LoadState, RootState>) => {
-    const rehydrateId = context.state.rehydrateId
-    const response = await api<LoadActionTypes, LoadErrorActionTypes>(context)
-        .withSuccess("RehydrateStatusUpdated")
-        .withError("RehydrateResultError")
-        .get<ModelStatusResponse>(`rehydrate/status/${rehydrateId}`);
-
-    if (response && response.data.done) {
-        await getRehydrateResult(context)
-    }
+    await getFilesAndLoad(context, files, savedState)
 }
 
 async function getFilesAndLoad(context: ActionContext<LoadState, RootState>,
