@@ -40,14 +40,12 @@ export const mutations: MutationTree<LoadState> & LoadMutations = {
         state.loadingState = LoadingState.SettingFiles;
     },
     RehydrateResult(state: LoadState, action: PayloadWithType<RehydrateProjectResponse>) {
-        console.log("committing rehydrate result", action)
         state.rehydrateResult = action.payload;
         state.preparing = false;
         state.loadingState = LoadingState.NotLoading;
         state.loadError = null;
     },
     RehydrateResultError(state: LoadState, action: PayloadWithType<Error>) {
-        console.log("committing rehydrate result error", action)
         state.loadError = action.payload;
         state.preparing = false;
         state.rehydrateResult = {} as RehydrateProjectResponse
