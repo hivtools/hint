@@ -50,6 +50,9 @@ interface AppProperties
     val oauth2LoginMethod: Boolean
     val hintrWakeUpInterval: Int?
     val fileTypeMappings: Map<String, String>
+    val githubAuthBaseUrl: String
+    val githubAuthOrg: String
+    val githubAuthTeamSlug: String
 }
 
 //prevent auto-wiring of default Properties
@@ -98,6 +101,9 @@ class ConfiguredAppProperties(
     final override val oauth2ClientScope = propString("oauth2_client_scope")
     final override val oauth2LoginMethod = propString("oauth2_login_method").toBoolean()
     final override val hintrWakeUpInterval = propString("hintr_wake_up_interval_s").toIntOrNull()
+    final override val githubAuthBaseUrl = "https://api.github.com"
+    final override val githubAuthOrg = propString("github_auth_org")
+    final override val githubAuthTeamSlug = propString("github_auth_team_slug")
     final override val fileTypeMappings = mapOf(
             "baseUrl" to adrUrl,
             "anc" to adrANCSchema,

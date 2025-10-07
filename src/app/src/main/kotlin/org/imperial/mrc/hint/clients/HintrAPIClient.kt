@@ -7,11 +7,13 @@ import org.imperial.mrc.hint.*
 import org.imperial.mrc.hint.models.ModelOptions
 import org.imperial.mrc.hint.models.VersionFileWithPath
 import org.springframework.http.ResponseEntity
-import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Component
 import org.springframework.web.context.request.RequestContextHolder
 import org.springframework.web.context.request.ServletRequestAttributes
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody
+import java.io.ByteArrayInputStream
+import java.io.InputStream
+import javax.servlet.http.HttpServletResponse
 
 data class HintrApiResponse<T>(
     val status: String = "success",
@@ -69,6 +71,7 @@ interface HintrAPIClient
     fun getUploadMetadata(id: String): ResponseEntity<String>
     fun wakeUpWorkers()
     fun taskExists(id: String): ResponseEntity<String>
+    fun downloadDebug(id: String, response: HttpServletResponse)
 }
 
 @Component
@@ -289,5 +292,23 @@ class HintrFuelAPIClient(
     override fun taskExists(id: String): ResponseEntity<String>
     {
         return get("task/${id}/exists")
+    }
+
+    override fun downloadDebug(id: String, response: HttpServletResponse)
+    {
+        val returnEmptyInputStream: () -> InputStream = { ByteArrayInputStream(ByteArray(0)) }
+
+        val (_, _, _) = "$baseUrl/model/debug/${id}"
+            .httpDownload()
+            .streamDestination { fuelResp, _ ->
+                // Set headers from the Fuel response
+                response.status = fuelResp.statusCode
+                fuelResp.headers.forEach { (key, values) ->
+                    values.forEach { value -> response.addHeader(key, value) }
+                }
+
+                Pair(response.outputStream, returnEmptyInputStream)
+            }
+            .response()
     }
 }

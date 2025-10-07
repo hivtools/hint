@@ -6,6 +6,7 @@ import org.assertj.core.api.Assertions
 import org.assertj.core.api.AssertionsForClassTypes.assertThat
 import org.imperial.mrc.hint.AppProperties
 import org.imperial.mrc.hint.ConfiguredAppProperties
+import org.imperial.mrc.hint.clients.GitHubApiException
 import org.imperial.mrc.hint.exceptions.*
 import org.imperial.mrc.hint.helpers.JSONValidator
 import org.imperial.mrc.hint.helpers.Language
@@ -248,6 +249,16 @@ class ExceptionHandlerTests : SecureIntegrationTests()
                 "OTHER_ERROR",
                 "some message")
         assertThat(result.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
+    }
+
+    @Test
+    fun `github API exceptions are handled`()
+    {
+        val sut = HintExceptionHandler(mock(), mock(), mock())
+        val exception = GitHubApiException("My github error")
+        val result = sut.handleGitHubApiException(exception, mock(), mock())
+        assertThat(result.statusCode).isEqualTo(HttpStatus.BAD_GATEWAY)
+        assertThat(result.body).isEqualTo(mapOf("error" to "My github error"))
     }
 
     private fun expectTranslatedAdrException(

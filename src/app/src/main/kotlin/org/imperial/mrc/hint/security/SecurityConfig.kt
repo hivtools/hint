@@ -2,6 +2,7 @@ package org.imperial.mrc.hint.security
 
 import org.imperial.mrc.hint.db.UserRepository
 import org.imperial.mrc.hint.logic.DbProfileServiceUserLogic.Companion.GUEST_USER
+import org.imperial.mrc.hint.security.github.GitHubAuthenticator
 import org.pac4j.core.config.Config
 import org.pac4j.core.context.WebContext
 import org.pac4j.core.context.session.SessionStore
@@ -31,9 +32,9 @@ class Pac4jConfig
     }
 
     @Bean
-    fun getPac4jConfig(profileService: DbProfileService, userRepository: UserRepository): Config
+    fun getPac4jConfig(profileService: DbProfileService, userRepository: UserRepository, githubAuthenticator: GitHubAuthenticator): Config
     {
-        return HintPac4jConfigService(profileService, userRepository).getConfig()
+        return HintPac4jConfigService(profileService, userRepository, githubAuthenticator).getConfig()
     }
 }
 
@@ -81,7 +82,6 @@ class Session(
     {
         return getUserProfile().id == GUEST_USER
     }
-
 
     fun setRequestedUrl(url: String?)
     {
