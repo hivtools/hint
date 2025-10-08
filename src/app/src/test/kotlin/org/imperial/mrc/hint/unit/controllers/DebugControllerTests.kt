@@ -8,6 +8,7 @@ import org.imperial.mrc.hint.clients.HintrAPIClient
 import org.imperial.mrc.hint.controllers.DebugController
 import org.imperial.mrc.hint.security.Session
 import org.junit.jupiter.api.Test
+import org.pac4j.core.profile.CommonProfile
 import org.springframework.http.ResponseEntity
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody
 import javax.servlet.http.HttpServletResponse
@@ -19,7 +20,12 @@ class DebugControllerTests {
     {
         val mockResponse = mock<HttpServletResponse>()
         val mockAPIClient = mock<HintrAPIClient>()
-        val mockSession = mock<Session>()
+        val mockProfile = mock<CommonProfile> {
+            on { id } doReturn "testUser"
+        }
+        val mockSession = mock<Session> {
+            on { getUserProfile() } doReturn mockProfile
+        }
 
         val sut = DebugController(mockAPIClient, mockSession)
         sut.downloadDebug("id1", mockResponse)

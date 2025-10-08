@@ -26,7 +26,8 @@ abstract class FuelClient(protected val baseUrl: String)
 
     abstract fun standardHeaders(): Map<String, Any>
 
-    abstract fun httpRequestHeaders(): Array<String>
+    private fun Map<String, Any>.toHeaderArray(): Array<String> =
+        flatMap { listOf(it.key, it.value.toString()) }.toTypedArray()
 
     open fun get(url: String): ResponseEntity<String>
     {
@@ -112,7 +113,7 @@ abstract class FuelClient(protected val baseUrl: String)
         return HttpRequest
             .newBuilder()
             .uri(uri)
-            .headers(*httpRequestHeaders())
+            .headers(*standardHeaders().toHeaderArray())
             .GET()
             .build()
     }

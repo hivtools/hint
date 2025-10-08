@@ -22,11 +22,14 @@ class GitHubAuthenticator(
         val token = credentials.token
         val (isAuthorised, username) = githubAuthService.isAuthorized(token)
 
-        when(isAuthorised) {
+        when (isAuthorised) {
             true -> credentials.userProfile = CommonProfile().apply {
                 id = username
             }
-            false -> throw CredentialsException("Invalid GitHub token or user is not a member of team ${appProperties.githubAuthTeamSlug}")
+
+            false -> throw CredentialsException(
+                "Invalid GitHub token or user is not a member of team ${appProperties.githubAuthTeamSlug}"
+            )
         }
     }
 }

@@ -86,7 +86,11 @@ class HintExceptionHandler(private val errorCodeGenerator: ErrorCodeGenerator,
     }
 
     @ExceptionHandler(GitHubApiException::class)
-    fun handleGitHubApiException(error: GitHubApiException, request: HttpServletRequest, response: HttpServletResponse): ResponseEntity<Map<String, String>> {
+    fun handleGitHubApiException(
+        error: GitHubApiException,
+        request: HttpServletRequest,
+        response: HttpServletResponse
+    ): ResponseEntity<Map<String, String>> {
         logger.error(request, response, error.message)
 
         return ResponseEntity

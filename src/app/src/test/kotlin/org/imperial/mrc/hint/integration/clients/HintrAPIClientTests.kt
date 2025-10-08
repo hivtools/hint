@@ -178,13 +178,6 @@ class HintrApiClientTests
     }
 
     @Test
-    fun `httpRequestHeaders returns empty string`()
-    {
-        val sut = HintrFuelAPIClient(ConfiguredAppProperties(), ObjectMapper())
-        Assertions.assertThat(sut.httpRequestHeaders()).isEmpty()
-    }
-
-    @Test
     fun `can get input comparison chart data`()
     {
         val sut = HintrFuelAPIClient(ConfiguredAppProperties(), ObjectMapper())

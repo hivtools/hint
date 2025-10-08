@@ -32,7 +32,11 @@ class Pac4jConfig
     }
 
     @Bean
-    fun getPac4jConfig(profileService: DbProfileService, userRepository: UserRepository, githubAuthenticator: GitHubAuthenticator): Config
+    fun getPac4jConfig(
+        profileService: DbProfileService,
+        userRepository: UserRepository,
+        githubAuthenticator: GitHubAuthenticator
+    ): Config
     {
         return HintPac4jConfigService(profileService, userRepository, githubAuthenticator).getConfig()
     }

@@ -95,11 +95,6 @@ class HintrFuelAPIClient(
         return mapOf("Accept-Language" to getAcceptLanguage())
     }
 
-    override fun httpRequestHeaders(): Array<String>
-    {
-        return emptyArray()
-    }
-
     override fun validateBaselineIndividual(file: VersionFileWithPath,
                                             type: FileType): ResponseEntity<String>
     {

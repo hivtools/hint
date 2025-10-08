@@ -85,11 +85,6 @@ class ADRFuelClient(baseUrl: String,
         return mapOf(header.first to header.second)
     }
 
-    override fun httpRequestHeaders(): Array<String>
-    {
-        return arrayOf(header.first, header.second)
-    }
-
     override fun getInputStream(url: String): HttpResponse<InputStream>
     {
         return logADRRequestDuration({ getStream(getUri(url)) }, logger)
