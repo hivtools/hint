@@ -1,12 +1,15 @@
 package org.imperial.mrc.hint.security
 
 import org.imperial.mrc.hint.db.UserRepository
+import org.imperial.mrc.hint.security.github.GitHubAuthenticator
 import org.imperial.mrc.hint.security.oauth2.clients.HintClientsContext
 import org.imperial.mrc.hint.security.oauth2.clients.OAuth2Client
 import org.pac4j.core.client.Clients
+import org.pac4j.core.client.DirectClient
 import org.pac4j.core.client.IndirectClient
 import org.pac4j.core.config.Config
 import org.pac4j.core.http.callback.PathParameterCallbackUrlResolver
+import org.pac4j.http.client.direct.DirectBearerAuthClient
 import org.pac4j.http.client.indirect.FormClient
 import org.pac4j.jee.context.session.JEESessionStore
 import org.pac4j.sql.profile.service.DbProfileService
@@ -14,11 +17,12 @@ import org.pac4j.sql.profile.service.DbProfileService
 class HintPac4jConfigService(
     private val profileService: DbProfileService,
     private val userRepository: UserRepository,
+    private val githubAuthenticator: GitHubAuthenticator
 )
 {
     fun getConfig(): Config
     {
-        val clients = Clients("/callback", getFormClient(), getAuth2Client())
+        val clients = Clients("/callback", getFormClient(), getAuth2Client(), getGitHubClient())
         return Config(clients).apply {
             sessionStore = JEESessionStore.INSTANCE
         }
@@ -36,5 +40,12 @@ class HintPac4jConfigService(
         val oAuthClient = OAuth2Client(userRepository)
         val client = HintClientsContext(oAuthClient)
         return client.getIndirectClient()
+    }
+
+    private fun getGitHubClient(): DirectClient
+    {
+        val client = DirectBearerAuthClient(githubAuthenticator)
+        client.name = "githubClient"
+        return client
     }
 }

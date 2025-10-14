@@ -1,6 +1,7 @@
 package org.imperial.mrc.hint.exceptions
 
 import org.imperial.mrc.hint.AppProperties
+import org.imperial.mrc.hint.clients.GitHubApiException
 import org.imperial.mrc.hint.logging.GenericLogger
 import org.imperial.mrc.hint.models.ErrorDetail
 import org.imperial.mrc.hint.models.ErrorDetail.Companion.defaultError
@@ -28,6 +29,7 @@ import java.net.BindException
 import java.text.MessageFormat
 import java.util.*
 import javax.servlet.http.HttpServletRequest
+import javax.servlet.http.HttpServletResponse
 
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @ControllerAdvice
@@ -81,6 +83,19 @@ class HintExceptionHandler(private val errorCodeGenerator: ErrorCodeGenerator,
         logger.error(request, error)
 
         return translatedErrorArgs(error.key, error.args, error.httpStatus, request)
+    }
+
+    @ExceptionHandler(GitHubApiException::class)
+    fun handleGitHubApiException(
+        error: GitHubApiException,
+        request: HttpServletRequest,
+        response: HttpServletResponse
+    ): ResponseEntity<Map<String, String>> {
+        logger.error(request, response, error.message)
+
+        return ResponseEntity
+            .status(HttpStatus.BAD_GATEWAY)
+            .body(mapOf("error" to error.message.orEmpty()))
     }
 
     private fun getBundle(request: HttpServletRequest): ResourceBundle

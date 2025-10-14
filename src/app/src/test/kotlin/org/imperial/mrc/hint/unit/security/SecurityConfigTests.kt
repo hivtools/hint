@@ -16,14 +16,16 @@ class SecurityConfigTests
         val sut = MvcConfig(mock())
         val mockInterceptorProject = mock<InterceptorRegistration>() {
             on { addPathPatterns(SecurePaths.ADD.pathList()) } doReturn mock<InterceptorRegistration>()
+            on { addPathPatterns(SecurePaths.ADD_GITHUB.pathList()) } doReturn mock<InterceptorRegistration>()
         }
         val interceptors = mock<InterceptorRegistry>()
         {
             on { addInterceptor(any()) } doReturn mockInterceptorProject
         }
         sut.addInterceptors(interceptors)
-        verify(interceptors, times(1)).addInterceptor(any())
+        verify(interceptors, times(2)).addInterceptor(any())
         verify(mockInterceptorProject, times(1)).addPathPatterns(SecurePaths.ADD.pathList())
+        verify(mockInterceptorProject, times(1)).addPathPatterns(SecurePaths.ADD_GITHUB.pathList())
     }
 
 }

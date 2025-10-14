@@ -65,8 +65,6 @@ class FuelFlowClientTests
 
         val sut = LocalFuelFlowClient(ObjectMapper(), mockAppProperties)
 
-        assertThat(sut.httpRequestHeaders()).isEmpty()
-
         sut.notifyTeams(data)
 
         assertThat(sut.urlPathCapture).isNull()

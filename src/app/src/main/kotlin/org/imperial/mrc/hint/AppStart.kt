@@ -38,6 +38,8 @@ class MvcConfig(val config: Config) : WebMvcConfigurer
         registry.addInterceptor(SecurityInterceptor(config, ""))
                 .addPathPatterns(SecurePaths.ADD.pathList())
                 .excludePathPatterns(SecurePaths.EXCLUDE.pathList())
+        registry.addInterceptor(SecurityInterceptor(config, "githubClient"))
+                .addPathPatterns(SecurePaths.ADD_GITHUB.pathList())
     }
 
     override fun configureAsyncSupport(configurer: AsyncSupportConfigurer)
