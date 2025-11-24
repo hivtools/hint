@@ -21,7 +21,7 @@ import org.springframework.util.LinkedMultiValueMap
 class ADRTests : SecureIntegrationTests()
 {
     val ADR_KEY = "4c69b103-4532-4b30-8a37-27a15e56c0bb"
-    val ADR_TEST_DATASET_NAME = "antarctica-country-estimates-2025"
+    val ADR_TEST_DATASET_NAME = "antarctica-country-estimates-2026"
 
     @ParameterizedTest
     @EnumSource(IsAuthorized::class)
