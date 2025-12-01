@@ -1,4 +1,4 @@
-FROM openjdk:18
+FROM eclipse-temurin:18
 
 RUN mkdir /static/public -p
 
