@@ -44,9 +44,8 @@ class MetadataControllerTests
         }
 
         val mockFileManager = mock<FileManager> {}
-        val mockClassLoader = mock<ClassLoader> {}
 
-        val sut = MetadataController(mockAPIClient, mockClassLoader, mockFileManager)
+        val sut = MetadataController(mockAPIClient, mockFileManager)
         val result = sut.version()
         assertThat(result).isSameAs(mockResponse)
     }
@@ -60,9 +59,8 @@ class MetadataControllerTests
         }
 
         val mockFileManager = mock<FileManager> {}
-        val mockClassLoader = mock<ClassLoader> {}
 
-        val sut = MetadataController(mockAPIClient, mockClassLoader, mockFileManager)
+        val sut = MetadataController(mockAPIClient, mockFileManager)
         val result = sut.uploadMetadata("id1")
         assertThat(result).isSameAs(mockResponse)
     }
