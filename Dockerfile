@@ -1,4 +1,4 @@
-FROM openjdk:18
+FROM eclipse-temurin:18
 
 RUN mkdir /static/public -p
 
@@ -10,12 +10,12 @@ COPY ./docker/config.properties /config.properties
 ADD ./app/build/distributions/app-boot.tar /
 
 ARG SPRING_PROFILES_ACTIVE
-ENV SPRING_PROFILES_ACTIVE $SPRING_PROFILES_ACTIVE
+ENV SPRING_PROFILES_ACTIVE=$SPRING_PROFILES_ACTIVE
 
 # This path is needed for the eventual configuration
 RUN mkdir -p /etc/hint
 
 # Install jq to parse secrets from Avenir Auth server
-RUN microdnf install jq
+RUN apt-get update && apt-get install -y jq
 
 ENTRYPOINT ["/entrypoint"]

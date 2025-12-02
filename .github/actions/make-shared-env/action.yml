@@ -29,7 +29,7 @@ runs:
       with:
         username: ${{ inputs.dh-username }}
         password: ${{ inputs.dh-password }}
-        
+
     - name: Login to GHCR (GitHub Packages)
       uses: docker/login-action@v3
       with:
@@ -67,7 +67,7 @@ runs:
     - uses: actions/setup-java@v4
       with:
         distribution: 'temurin'
-        java-version: '18'
+        java-version: '17'
 
     - name: Install CodeCov
       run: npm install codecov -g

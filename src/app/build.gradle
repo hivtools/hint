@@ -21,7 +21,7 @@ tasks.jacocoTestReport {
 }
 
 group = 'org.imperial.mrc'
-sourceCompatibility = JavaVersion.VERSION_11
+sourceCompatibility = JavaVersion.VERSION_17
 def tomcatVersion = '9.0.65'
 
 // Determine npm command based on operating system. Windows needs 'npm.cmd'.
@@ -86,7 +86,7 @@ dependencies {
 tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile) {
     kotlinOptions {
         freeCompilerArgs = ['-Xjsr305=strict']
-        jvmTarget = JavaVersion.VERSION_11
+        jvmTarget = JavaVersion.VERSION_17
     }
 }
 

@@ -47,7 +47,7 @@ subprojects {
         }
     }
 
-    tasks.detekt.jvmTarget = JavaVersion.VERSION_11
+    tasks.detekt.jvmTarget = JavaVersion.VERSION_17
 
     dependencies {
         implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
@@ -81,5 +81,5 @@ subprojects {
     }
 
     group = 'org.imperial.mrc'
-    sourceCompatibility = JavaVersion.VERSION_11
+    sourceCompatibility = JavaVersion.VERSION_17
 }
