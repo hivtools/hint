@@ -7,10 +7,11 @@ export interface PayloadWithType<T> extends Payload {
 }
 
 export interface IndicatorValues {
-    value: number,
+    value: number
     color: string
     lower_value?: number
     upper_value?: number
+    missing_ids?: string[]
 }
 
 export interface BubbleIndicatorValues extends IndicatorValues {

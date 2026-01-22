@@ -510,21 +510,10 @@ export const mockProgramResponse = (props: Partial<ProgrammeResponse> = {}): Pro
     return {
         type: "programme",
         filename: "test.csv",
-        data: [],
+        data: null,
         hash: "1234.csv",
         filters: null,
         warnings: [],
-        ...props
-    }
-};
-
-export const mockProgramData = (props?: Partial<ProgrammeResponse["data"][0]>): ProgrammeResponse["data"][0] => {
-    return {
-        area_id: "MWI",
-        calendar_quarter: "Y2000Q3",
-        sex: "both",
-        age_group: "Y015-049",
-        art_current: 300,
         ...props
     }
 };
@@ -534,29 +523,12 @@ export const mockAncResponse = (props: Partial<AncResponse> = {}): AncResponse =
         type: "anc",
         filename: "test.csv",
         hash: "1234.csv",
-        data: [],
+        data: null,
         filters: null,
         warnings: [],
         ...props
     }
 };
-
-export const mockAncData = (props?: Partial<AncResponse["data"][0]>): AncResponse["data"][0] => {
-    return {
-        area_id: "MWI",
-        age_group: "Y015-049",
-        year: 2000,
-        anc_clients: 300,
-        anc_hiv_status: 300,
-        anc_known_pos: 300,
-        anc_already_art: 300,
-        anc_tested: 300,
-        anc_tested_pos: 300,
-        anc_prevalence: 300,
-        anc_art_coverage: 300,
-        ...props
-    }
-}
 
 export const mockVmmcResponse = (props: Partial<VmmcResponse> = {}): VmmcResponse => {
     return {

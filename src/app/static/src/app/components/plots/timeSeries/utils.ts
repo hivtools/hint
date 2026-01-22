@@ -1,7 +1,7 @@
-import i18next from "i18next";
 import { InputTimeSeriesData, InputTimeSeriesRow } from "../../../generated";
 import { Dict } from "../../../types";
 import { Annotations } from "plotly.js-basic-dist"
+import {build_missing_id_text} from "../utils";
 
 export function numeralJsToD3format(numeralJsFormat: string) {
     // Convert hintr metadata format (which are numeralJs style) to d3 format to be used by Plotly
@@ -42,28 +42,13 @@ export const drawConfig = {
     ]
 };
 
-const translate = (word: string, currentLanguage: string, args: any = null) => {
-    return i18next.t(word, {...args, lng: currentLanguage})
-}
-
 export const getTooltipTemplate = (plotData: (InputTimeSeriesRow | null)[], areaHierarchy: string,
                                    indicator: string | null, currentLanguage: string) => {
     const hierarchyText = areaHierarchy ? "<br>" + areaHierarchy : "";
     const tooltip = "%{x}, %{y}" + hierarchyText;
     const indicatorText = indicator ? indicator + "<br>" : ""
     return plotData.map((entry: InputTimeSeriesRow | null) => {
-        let missingIdsText = "";
-        if (entry?.missing_ids?.length) {
-            // If the area ID matches the missing_id then this is a synthetic value we have appended
-            // rather than an aggregate with some missing data. Show this with a slightly different
-            // message
-            if (entry.missing_ids.length == 1 && entry.missing_ids[0] == entry.area_id) {
-                missingIdsText = "<br>" + translate("timeSeriesMissingValue", currentLanguage);
-            } else {
-                missingIdsText = "<br>" + translate("timeSeriesMissingAggregate", currentLanguage,
-                    {count: entry.missing_ids.length});
-            }
-        }
+        const missingIdsText = build_missing_id_text(entry, entry?.area_id, currentLanguage);
         // Empty <extra></extra> tag removes the part of the hover where trace name is displayed in
         // contrasting colour. See https://plotly.com/python/hover-text-and-formatting/
         return indicatorText + tooltip + missingIdsText + "<extra></extra>";

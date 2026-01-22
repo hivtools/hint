@@ -4,7 +4,6 @@ import { FilterSelection, OutputPlotName } from "../plotSelections/plotSelection
 import { PlotSelectionUpdate, PlotSelectionsMutations } from "../plotSelections/mutations";
 import { api } from "../../apiService";
 import {
-    AncResponse,
     CalibrateDataResponse,
     CalibratePlotData,
     ComparisonPlotData,
@@ -13,7 +12,6 @@ import {
     InputTimeSeriesData,
     InputTimeSeriesRow,
     PopulationResponseData,
-    ProgrammeResponse,
     SurveyResponse
 } from "../../generated";
 import { PlotDataMutations, PlotDataUpdate } from "./mutations";
@@ -22,7 +20,6 @@ import { ReviewInputDataset } from "../../types";
 import { getMetadataFromPlotName } from "../plotSelections/actions";
 import { InputTimeSeriesKey } from "./plotData";
 import { Dict } from "@reside-ic/vue-next-dynamic-form";
-import { SurveyAndProgramState } from "../surveyAndProgram/surveyAndProgram";
 import {aggregatePopulation} from "./aggregate";
 import {AreaProperties} from "../baseline/baseline";
 import {InputComparisonPlotData} from "../reviewInput/reviewInput";
@@ -66,6 +63,23 @@ export const getOutputFilteredData = async (plot: OutputPlotName, selections: Pl
     }
 };
 
+const fetchTimeSeriesDataset = async (dataSource: string, commit: Commit, rootState: RootState) => {
+    const response = await api<ReviewInputMutation, ReviewInputMutation>({commit, rootState})
+        .ignoreSuccess()
+        .withError(ReviewInputMutation.SetError)
+        .freezeResponse()
+        .get(`chart-data/input-time-series/${dataSource}`);
+    if (response) {
+        const setDatasetPayload = {
+            datasetId: dataSource,
+            dataset: response.data
+        };
+        commit(`reviewInput/${ReviewInputMutation.SetDataset}`, { payload: setDatasetPayload }, { root: true });
+        const data = response.data as ReviewInputDataset;
+        commit(`reviewInput/${ReviewInputMutation.WarningsFetched}`, { payload: data.warnings }, { root: true });
+    }
+}
+
 export const getTimeSeriesFilteredDataset = async (payload: PlotSelectionUpdate, commit: Commit, rootState: RootState) => {
     commit(`reviewInput/${ReviewInputMutation.SetError}`, { payload: null }, { root: true });
     const dataSource = payload.selections.controls.find(c => c.id === "time_series_data_source")?.selection[0].id;
@@ -80,20 +94,7 @@ export const getTimeSeriesFilteredDataset = async (payload: PlotSelectionUpdate,
     }
     // fetch dataset
     if (!(dataSource in rootState.reviewInput.datasets)) {
-        const response = await api<ReviewInputMutation, ReviewInputMutation>({commit, rootState})
-                            .ignoreSuccess()
-                            .withError(ReviewInputMutation.SetError)
-                            .freezeResponse()
-                            .get(`chart-data/input-time-series/${dataSource}`);
-        if (response) {
-            const setDatasetPayload = {
-                datasetId: dataSource,
-                dataset: response.data
-            };
-            commit(`reviewInput/${ReviewInputMutation.SetDataset}`, { payload: setDatasetPayload }, { root: true });
-            const data = response.data as ReviewInputDataset;
-            commit(`reviewInput/${ReviewInputMutation.WarningsFetched}`, { payload: data.warnings }, { root: true });
-        }
+        await fetchTimeSeriesDataset(dataSource, commit, rootState)
     }
     if (!(dataSource in rootState.reviewInput.datasets)) {
         // This should not happen, and if it does then something bad happened above and there should be an
@@ -202,27 +203,36 @@ export const getComparisonFilteredDataset = async (payload: PlotSelectionUpdate,
     commit(`plotData/${PlotDataMutations.updatePlotData}`, { payload: plotDataPayload }, { root: true });
 };
 
-const dataSourceToState: Record<string, keyof SurveyAndProgramState> = {
-    survey: "survey",
-    anc: "anc",
-    programme: "program"
+const setEmptyPlotData = (commit: Commit) => {
+    const plotDataPayload: PlotDataUpdate = {
+        plot: "inputChoropleth",
+        data: []
+    };
+    commit(`plotData/${PlotDataMutations.updatePlotData}`, { payload: plotDataPayload }, { root: true });
+    return
 }
 
 export const getInputChoroplethFilteredData = async (payload: PlotSelectionUpdate, commit: Commit, rootState: RootState) => {
     const dataSource = payload.selections.controls.find(c => c.id === "input_choropleth_data_source")!.selection[0].id;
-    const response = rootState.surveyAndProgram[dataSourceToState[dataSource]];
-    if (!response) {
-        const plotDataPayload: PlotDataUpdate = {
-            plot: "inputChoropleth",
-            data: []
-        };
-        commit(`plotData/${PlotDataMutations.updatePlotData}`, { payload: plotDataPayload }, { root: true });
-        return
-    }
     const { filters } = payload.selections;
-    const { data } = response as SurveyResponse | AncResponse | ProgrammeResponse;
-    const { filterTypes } = getMetadataFromPlotName(rootState, payload.plot);
-    const filteredData = filterData(filters, data, filterTypes);
+    let filteredData;
+    if (dataSource == "survey") {
+        const response= rootState.surveyAndProgram["survey"]
+        if (!response) {
+            setEmptyPlotData(commit);
+            return
+        }
+        const { data } = response as SurveyResponse
+        const { filterTypes } = getMetadataFromPlotName(rootState, payload.plot);
+        filteredData = filterData(filters, data, filterTypes);
+    } else {
+        if (!(dataSource in rootState.reviewInput.datasets)) {
+            await fetchTimeSeriesDataset(dataSource, commit, rootState)
+        }
+        const data = rootState.reviewInput.datasets[dataSource].data;
+        filteredData = filterTimeSeriesData(data, payload, rootState)
+    }
+
     const plotDataPayload: PlotDataUpdate = {
         plot: payload.plot,
         data: filteredData

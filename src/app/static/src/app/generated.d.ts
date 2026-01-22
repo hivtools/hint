@@ -22,20 +22,7 @@ export interface AncDataRow {
   anc_art_coverage: number;
   [k: string]: any;
 }
-export type AncResponseData = {
-  area_id: string;
-  age_group: string;
-  year: number;
-  anc_clients: number;
-  anc_hiv_status?: number;
-  anc_known_pos: number;
-  anc_already_art: number;
-  anc_tested: number;
-  anc_tested_pos: number;
-  anc_prevalence: number;
-  anc_art_coverage: number;
-  [k: string]: any;
-}[];
+export type AncResponseData = null;
 export interface BarchartDefaults {
   indicator_id: string;
   x_axis_id: string;
@@ -2223,14 +2210,7 @@ export interface ProgrammeDataRow {
   art_current: number;
   [k: string]: any;
 }
-export type ProgrammeResponseData = {
-  area_id: string;
-  calendar_quarter: string;
-  sex: string;
-  age_group: string;
-  art_current: number;
-  [k: string]: any;
-}[];
+export type ProgrammeResponseData = null;
 export interface ProgressPhase {
   started: boolean;
   complete: boolean;
@@ -2610,14 +2590,7 @@ export interface ProgrammeResponse {
   fromADR?: boolean;
   resource_url?: string | null;
   type: "programme";
-  data: {
-    area_id: string;
-    calendar_quarter: string;
-    sex: string;
-    age_group: string;
-    art_current: number;
-    [k: string]: any;
-  }[];
+  data: null;
   filters?: null;
   warnings: {
     text: string;
@@ -2637,20 +2610,7 @@ export interface AncResponse {
   fromADR?: boolean;
   resource_url?: string | null;
   type: "anc";
-  data: {
-    area_id: string;
-    age_group: string;
-    year: number;
-    anc_clients: number;
-    anc_hiv_status?: number;
-    anc_known_pos: number;
-    anc_already_art: number;
-    anc_tested: number;
-    anc_tested_pos: number;
-    anc_prevalence: number;
-    anc_art_coverage: number;
-    [k: string]: any;
-  }[];
+  data: null;
   filters?: null;
   warnings: {
     text: string;

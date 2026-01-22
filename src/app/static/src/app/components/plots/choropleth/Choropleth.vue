@@ -83,7 +83,9 @@ const featureData = ref<IndicatorValuesDict>({});
 const map = ref<typeof LMap | null>(null);
 const featureRefs = ref<typeof LGeoJson[]>([]);
 
-const {createTooltips, updateTooltips} = useChoroplethTooltips(featureData, indicatorMetadata, currentFeatures, featureRefs)
+const currentLanguage = computed(() => store.state.language);
+
+const {createTooltips, updateTooltips} = useChoroplethTooltips(featureData, indicatorMetadata, currentFeatures, featureRefs, currentLanguage.value)
 
 const updateMap = () => {
     updateFeatures();
