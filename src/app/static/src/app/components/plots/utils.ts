@@ -1,5 +1,5 @@
-import {NumericRange} from "../../types";
-import {CalibrateDataResponse, IndicatorMetadata, FilterOption} from "../../generated";
+import {IndicatorValues, NumericRange} from "../../types";
+import {CalibrateDataResponse, IndicatorMetadata, FilterOption, InputTimeSeriesRow} from "../../generated";
 import * as d3ScaleChromatic from "d3-scale-chromatic";
 import {ScaleSettings, ScaleType} from "../../store/plotState/plotState";
 import {Feature} from "geojson";
@@ -9,6 +9,7 @@ import {RootState} from "../../root";
 import {getMetadataFromPlotName} from "../../store/plotSelections/actions";
 import {PlotName} from "../../store/plotSelections/plotSelections";
 import { StyleValue } from "vue";
+import i18next from "i18next";
 
 export const getIndicatorMetadata = (store: Store<RootState>, plotName: PlotName, selectedIndicator: string): IndicatorMetadata => {
     const metadata = getMetadataFromPlotName(store.state, plotName);
@@ -238,3 +239,24 @@ export const debounce_leading = (fn: Function, ms = 300) => {
     };
 };
 /* c8 ignore stop */
+
+
+const translate = (word: string, currentLanguage: string, args: any = null) => {
+    return i18next.t(word, {...args, lng: currentLanguage})
+}
+
+export const build_missing_id_text = (entry: InputTimeSeriesRow | IndicatorValues | null, area_id: string | undefined, currentLanguage: string) => {
+    let missingIdsText = "";
+    if (entry?.missing_ids?.length) {
+        // If the area ID matches the missing_id then this is a synthetic value we have appended
+        // rather than an aggregate with some missing data. Show this with a slightly different
+        // message
+        if (area_id && entry.missing_ids.length == 1 && entry.missing_ids[0] == area_id) {
+            missingIdsText = "<br>" + translate("timeSeriesMissingValue", currentLanguage);
+        } else {
+            missingIdsText = "<br>" + translate("timeSeriesMissingAggregate", currentLanguage,
+                {count: entry.missing_ids.length});
+        }
+    }
+    return missingIdsText
+}

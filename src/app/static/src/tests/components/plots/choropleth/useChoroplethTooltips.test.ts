@@ -35,7 +35,8 @@ describe("useChoroplethTooltips", () => {
                     props.featureData,
                     props.indicatorMetadata,
                     props.currentFeatures,
-                    props.featureRefs
+                    props.featureRefs,
+                    "en"
                 )
             }
         }
@@ -113,11 +114,9 @@ describe("useChoroplethTooltips", () => {
         wrapper.vm.updateTooltips();
 
         expect(mockLayer.setTooltipContent).toHaveBeenCalledTimes(1);
-        expect(mockLayer.setTooltipContent).toHaveBeenCalledWith(`<div>
-            <strong>Test Area</strong>
-            <br/>25.00%
-            <br/>(20.00% - 30.00%)
-        </div>`);
+        expect(mockLayer.setTooltipContent).toHaveBeenCalledWith(
+            "<div><strong>Test Area</strong><br>25.00%<br>(20.00% - 30.00%)</div>"
+        );
     });
 
     it("shows just value if no bounds", () => {
@@ -132,10 +131,9 @@ describe("useChoroplethTooltips", () => {
         wrapper.vm.updateTooltips();
 
         expect(mockLayer.setTooltipContent).toHaveBeenCalledTimes(1);
-        expect(mockLayer.setTooltipContent).toHaveBeenCalledWith(`<div>
-            <strong>Test Area</strong>
-            <br/>25.00%
-        </div>`);
+        expect(mockLayer.setTooltipContent).toHaveBeenCalledWith(
+            "<div><strong>Test Area</strong><br>25.00%</div>"
+        );
     });
 
     it("shows just region name if no value", () => {
@@ -143,9 +141,9 @@ describe("useChoroplethTooltips", () => {
         wrapper.vm.updateTooltips();
 
         expect(mockLayer.setTooltipContent).toHaveBeenCalledTimes(1);
-        expect(mockLayer.setTooltipContent).toHaveBeenCalledWith(`<div>
-            <strong>Test Area</strong>
-        </div>`);
+        expect(mockLayer.setTooltipContent).toHaveBeenCalledWith(
+            "<div><strong>Test Area</strong></div>"
+        );
     });
 
     it("shows 0 values", () => {
@@ -160,10 +158,44 @@ describe("useChoroplethTooltips", () => {
         wrapper.vm.updateTooltips();
 
         expect(mockLayer.setTooltipContent).toHaveBeenCalledTimes(1);
-        expect(mockLayer.setTooltipContent).toHaveBeenCalledWith(`<div>
-            <strong>Test Area</strong>
-            <br/>0.00%
-            <br/>(0.00% - 0.00%)
-        </div>`);
+        expect(mockLayer.setTooltipContent).toHaveBeenCalledWith(
+            "<div><strong>Test Area</strong><br>0.00%<br>(0.00% - 0.00%)</div>"
+        );
+    });
+
+    it("shows number of missing regions", () => {
+        featureData.value = {
+            MWI: {
+                value: 0.25,
+                lower_value: undefined,
+                upper_value: undefined,
+                color: "rgb(151, 151, 151)",
+                missing_ids: ["MWI"]
+            }
+        }
+        wrapper.vm.updateTooltips();
+
+        expect(mockLayer.setTooltipContent).toHaveBeenCalledTimes(1);
+        expect(mockLayer.setTooltipContent).toHaveBeenCalledWith(
+            "<div><strong>Test Area</strong><br>25.00%" +
+            "<br>This value is missing from the uploaded data</div>"
+        );
+
+        featureData.value = {
+            MWI: {
+                value: 0.25,
+                lower_value: undefined,
+                upper_value: undefined,
+                color: "rgb(151, 151, 151)",
+                missing_ids: ["MWI.1", "MWI.2"]
+            }
+        }
+        wrapper.vm.updateTooltips();
+
+        expect(mockLayer.setTooltipContent).toHaveBeenCalledTimes(2);
+        expect(mockLayer.setTooltipContent).toHaveBeenCalledWith(
+            "<div><strong>Test Area</strong><br>25.00%" +
+            "<br>This value is missing from the uploaded data</div>"
+        );
     });
 })

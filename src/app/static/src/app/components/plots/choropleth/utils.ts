@@ -13,7 +13,8 @@ export const getFeatureData = function (data: any[],
             value: value,
             color: getColour(value, indicatorMeta, colourRange),
             lower_value: indicatorMeta.error_low_column && row[indicatorMeta.error_low_column],
-            upper_value: indicatorMeta.error_high_column && row[indicatorMeta.error_high_column]
+            upper_value: indicatorMeta.error_high_column && row[indicatorMeta.error_high_column],
+            missing_ids: row["missing_ids"]
         }
     }
 

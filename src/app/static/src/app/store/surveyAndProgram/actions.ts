@@ -1,7 +1,7 @@
 import {ActionContext, ActionTree, Commit} from 'vuex';
 import {FileType, SurveyAndProgramState} from "./surveyAndProgram";
 import {api} from "../../apiService";
-import {AncResponse, ProgrammeResponse, SurveyResponse} from "../../generated";
+import {AncResponse, ProgrammeResponse, SurveyResponse, SurveyResponseData} from "../../generated";
 import {SurveyAndProgramMutation} from "./mutations";
 import {buildData, freezer, getFilenameFromImportUrl, getFilenameFromUploadFormData} from "../../utils";
 import {ReviewInputMutation} from "../reviewInput/mutations";
@@ -342,20 +342,12 @@ export const actions: ActionTree<SurveyAndProgramState, RootState> & SurveyAndPr
     },
 
     async setProgramResponse(context: ActionContext<SurveyAndProgramState, RootState>, response: ProgrammeResponse) {
-        const {commit, rootState} = context;
-        const shapeData = rootState.baseline.shape;
-        if (shapeData?.data) {
-            response.data = getDataWithAreaLevel(response.data, shapeData.data.features as Feature[])
-        }
+        const {commit} = context;
         commit({type: SurveyAndProgramMutation.ProgramUpdated, payload: freezer.deepFreeze(response)})
     },
 
     async setAncResponse(context: ActionContext<SurveyAndProgramState, RootState>, response: AncResponse) {
-        const {commit, rootState} = context;
-        const shapeData = rootState.baseline.shape;
-        if (shapeData?.data) {
-            response.data = getDataWithAreaLevel(response.data, shapeData.data.features as Feature[])
-        }
+        const {commit} = context;
         commit({type: SurveyAndProgramMutation.ANCUpdated, payload: freezer.deepFreeze(response)})
     }
 };
@@ -364,9 +356,7 @@ function getUrlWithQuery(url: string) {
     return `${url}?strict=true`
 }
 
-type InputData = AncResponse["data"] | SurveyResponse["data"] | ProgrammeResponse["data"]
-
-const getDataWithAreaLevel = <T extends InputData>(data: T, features: Feature[]) => {
+const getDataWithAreaLevel = (data: SurveyResponseData, features: Feature[]) => {
     const newData = structuredClone(data);
     for (let i = 0; i < data.length; i++) {
         newData[i]["area_level"] = features.find(f => f.properties!.area_id === data[i].area_id)!.properties!.area_level;

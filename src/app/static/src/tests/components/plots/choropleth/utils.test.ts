@@ -11,7 +11,8 @@ describe("choropleth utils", () => {
                 indicator: "prevalence",
                 mean: 0.25,
                 upper: 0.30,
-                lower: 0.20
+                lower: 0.20,
+                missing_ids: ["MWI.1", "MWI.2"]
             },
             {
                 area_id: "MWI_1",
@@ -40,12 +41,14 @@ describe("choropleth utils", () => {
                 lower_value: 0.20,
                 upper_value: 0.30,
                 color: getColour(0.25, metadata, range),
+                missing_ids: ["MWI.1", "MWI.2"]
             },
             MWI_1: {
                 value: 0.3,
                 lower_value: 0.25,
                 upper_value: 0.35,
                 color: getColour(0.3, metadata, range),
+                missing_ids: undefined
             }
         };
 

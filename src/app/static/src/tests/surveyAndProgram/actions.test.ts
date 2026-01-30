@@ -1,12 +1,10 @@
 import {actions} from "../../app/store/surveyAndProgram/actions";
 import {
-    mockAncData,
     mockAncResponse,
     mockAxios,
     mockBaselineState,
     mockError,
     mockFailure,
-    mockProgramData,
     mockProgramResponse,
     mockRootState,
     mockShapeResponse,
@@ -807,35 +805,27 @@ describe("Survey and programme actions", () => {
         expect(surveyResponse.data[0]["area_level"]).toBe(1);
     });
 
-    it("commits programme data with area level", () => {
+    it("commits programme data", () => {
         const commit = vi.fn();
-        const programData = [mockProgramData()];
-        expect(programData[0]["area_level"]).toBeUndefined();
-        const programResponse = mockProgramResponse({
-            data: programData
-        });
+        const programResponse = mockProgramResponse();
         actions.setProgramResponse({commit, rootState: rootStateWithShapeData} as any, programResponse)
 
         expectEqualsFrozen(commit.mock.calls[0][0], {
             type: SurveyAndProgramMutation.ProgramUpdated,
             payload: programResponse
         });
-        expect(programResponse.data[0]["area_level"]).toBe(1);
+        expect(programResponse.data).toBeNull();
     });
 
-    it("commits ANC data with area level", () => {
+    it("commits ANC data", () => {
         const commit = vi.fn();
-        const ancData = [mockAncData()];
-        expect(ancData[0]["area_level"]).toBeUndefined();
-        const ancResponse = mockAncResponse({
-            data: ancData
-        });
+        const ancResponse = mockAncResponse();
         actions.setAncResponse({commit, rootState: rootStateWithShapeData} as any, ancResponse)
 
         expectEqualsFrozen(commit.mock.calls[0][0], {
             type: SurveyAndProgramMutation.ANCUpdated,
             payload: ancResponse
         });
-        expect(ancResponse.data[0]["area_level"]).toBe(1);
+        expect(ancResponse.data).toBeNull();
     });
 });

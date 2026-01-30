@@ -17,7 +17,8 @@ import {
     mockSurveyAndProgramState,
     mockBaselineState,
     mockPopulationResponse,
-    mockReviewInputState
+    mockReviewInputState,
+    mockSurveyResponse
 } from "../mocks";
 import {
     getCalibrateFilteredDataset,
@@ -32,11 +33,11 @@ import {PlotSelectionUpdate} from "../../app/store/plotSelections/mutations";
 import {ReviewInputMutation} from "../../app/store/reviewInput/mutations";
 import {CommitOptions} from "vuex";
 import {
-    AncDataRow,
     CalibratePlotResponse,
     ComparisonPlotRow,
     PopulationResponseData,
-    ReviewInputFilterMetadataResponse
+    ReviewInputFilterMetadataResponse,
+    SurveyDataRow
 } from "../../app/generated";
 import {FilterSelection} from "../../app/store/plotSelections/plotSelections";
 import {Mock} from "vitest";
@@ -664,6 +665,7 @@ describe("filter tests", () => {
                 controls: [mockControlSelection({
                     id: "input_choropleth_data_source",
                     selection: [
+                        {label: "Survey", id: "survey"},
                         {label: "ANC", id: "anc"},
                         {label: "ART", id: "art"}
                     ],
@@ -672,28 +674,29 @@ describe("filter tests", () => {
             }
         } as PlotSelectionUpdate);
 
-        const createAncDataRow = (age_group: string, year: number) => ({
+        const createSurveyDataRow = (age_group: string, survey_id: string) => ({
+            indicator: "prevalence",
             area_id: "MWI",
             age_group: age_group,
-            year: year,
-            anc_clients: 0,
-            anc_known_pos: 0,
-            anc_already_art: 0,
-            anc_tested: 0,
-            anc_tested_pos: 0,
-            anc_prevalence: 0,
-            anc_art_coverage: 0,
-        } as AncDataRow);
+            survey_id: survey_id,
+            sex: "female",
+            n_clusters: 0,
+            n_observations: 0,
+            estimate: 1,
+            std_error: 0,
+            ci_lower: 0,
+            ci_upper: 0,
+        } as SurveyDataRow);
 
-        const row1 = createAncDataRow("1", 1970);
-        const row2 = createAncDataRow("2", 1970);
-        const row3 = createAncDataRow("1", 1971);
-        const row4 = createAncDataRow("2", 1971);
+        const row1 = createSurveyDataRow("1", "1970");
+        const row2 = createSurveyDataRow("2", "1970");
+        const row3 = createSurveyDataRow("1", "1971");
+        const row4 = createSurveyDataRow("2", "1971");
 
         const createRootState = (() => {
             return mockRootState({
                 surveyAndProgram: mockSurveyAndProgramState({
-                    anc: mockAncResponse({
+                    survey: mockSurveyResponse({
                         data: [row1, row2, row3, row4]
                     }),
                 }),
@@ -709,8 +712,8 @@ describe("filter tests", () => {
                                 ]
                             },
                             {
-                                id: "year",
-                                column_id: "year",
+                                id: "survey",
+                                column_id: "survey_id",
                                 options: [
                                     {id: "1970", label: "1970"},
                                     {id: "1971", label: "1971"}
@@ -767,9 +770,9 @@ describe("filter tests", () => {
         it("parses year and area level to string before filtering", async () => {
             const rootState = createRootState();
             const payload = createPayload([mockFilterSelection({
-                filterId: "year",
-                stateFilterId: "year",
-                label: "Age group filter",
+                filterId: "survey",
+                stateFilterId: "survey",
+                label: "Survey filter",
                 multiple: true,
                 selection: [{id: "1970", label: "1970"}],
             })]);

@@ -1,7 +1,7 @@
 import {Ref} from "vue";
 import {Feature} from "geojson";
 import {Layer} from "leaflet";
-import {formatOutput} from "../utils";
+import {build_missing_id_text, formatOutput} from "../utils";
 import {IndicatorValuesDict} from "../../../types";
 import {IndicatorMetadata} from "../../../generated";
 import {LGeoJson} from "@vue-leaflet/vue-leaflet";
@@ -9,10 +9,11 @@ import {LGeoJson} from "@vue-leaflet/vue-leaflet";
 export const useChoroplethTooltips = (featureData: Ref<IndicatorValuesDict>,
                                       indicatorMetadata: Ref<IndicatorMetadata>,
                                       currentFeatures: Ref<Feature[]>,
-                                      featureRefs: Ref<typeof LGeoJson[]>) => {
+                                      featureRefs: Ref<typeof LGeoJson[]>,
+                                      currentLanguage: string) => {
     const createTooltips = {
         onEachFeature: (feature: Feature, layer: Layer) => {
-            layer.bindTooltip(tooltipContent(feature, featureData.value, indicatorMetadata.value))
+            layer.bindTooltip(tooltipContent(feature, featureData.value, indicatorMetadata.value, currentLanguage))
         }
     };
 
@@ -31,7 +32,7 @@ export const useChoroplethTooltips = (featureData: Ref<IndicatorValuesDict>,
     };
 
     const setLayerTooltipContent = (layer: Layer, feature: Feature) => {
-        layer.setTooltipContent(tooltipContent(feature, featureData.value, indicatorMetadata.value))
+        layer.setTooltipContent(tooltipContent(feature, featureData.value, indicatorMetadata.value, currentLanguage))
     };
 
     return {
@@ -41,7 +42,7 @@ export const useChoroplethTooltips = (featureData: Ref<IndicatorValuesDict>,
 };
 
 const tooltipContent = function (feature: Feature, featureIndicators: IndicatorValuesDict,
-                                 indicatorMetadata: IndicatorMetadata): string {
+                                 indicatorMetadata: IndicatorMetadata, currentLanguage: string): string {
     let format = "";
     let scale = 1;
     let accuracy: number | null = null;
@@ -63,21 +64,12 @@ const tooltipContent = function (feature: Feature, featureIndicators: IndicatorV
     const stringLower = (lower_value || lower_value === 0) ? lower_value.toString() : "";
     const stringUpper = (upper_value || upper_value === 0) ? upper_value.toString() : "";
 
-    if (stringVal && stringLower) {
-        return `<div>
-            <strong>${area_name}</strong>
-            <br/>${ formatOutput(stringVal, format, scale, accuracy, true)}
-            <br/>(${formatOutput(stringLower, format, scale, accuracy, true) + " - " +
-        formatOutput(stringUpper, format, scale, accuracy, true)})
-        </div>`;
-    } else if (stringVal) {
-        return `<div>
-            <strong>${area_name}</strong>
-            <br/>${formatOutput(stringVal, format, scale, accuracy, true)}
-        </div>`;
-    } else {
-        return `<div>
-            <strong>${area_name}</strong>
-        </div>`;
-    }
+    const areaNameText = `<strong>${area_name}</strong>`
+    const stringValText = stringVal ? `<br>${formatOutput(stringVal, format, scale, accuracy, true)}` : "";
+    const boundariesText = stringLower && stringUpper ?
+        `<br>(${formatOutput(stringLower, format, scale, accuracy, true) + " - " + 
+        formatOutput(stringUpper, format, scale, accuracy, true)})` : "";
+    const missingIdsText = build_missing_id_text(values, area_id, currentLanguage);
+
+    return "<div>" + areaNameText + stringValText + boundariesText + missingIdsText + "</div>"
 }
