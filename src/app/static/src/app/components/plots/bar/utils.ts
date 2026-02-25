@@ -166,9 +166,11 @@ export const inputComparisonPlotDataToChartData = function (plotData: InputCompa
             continue;
         }
 
+        // ANC data has keys "value_spectrum" but ART data has keys "value_spectrum_reported"
+        // and "value_spectrum_adjusted", use the reported value for ART data
         let spectrumValue = row["value_spectrum"]
         if (!spectrumValue) {
-            spectrumValue = row["value_spectrum_adjusted"] ?? null
+            spectrumValue = row["value_spectrum_reported"] ?? null
         }
         const naomiValue = row["value_naomi"]
         const difference = spectrumValue && naomiValue ? spectrumValue - naomiValue : null
