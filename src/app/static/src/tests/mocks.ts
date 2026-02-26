@@ -343,8 +343,8 @@ export const mockInputComparisonData = (props?: Partial<InputComparisonData>): I
                 area_name: "Malawi",
                 year: 2020,
                 group: "Adult Males",
-                value_spectrum_adjusted: 2001,
-                value_spectrum_reported: 2002,
+                value_spectrum_adjusted: 2002,
+                value_spectrum_reported: 2001,
                 value_spectrum_reallocated: 0,
                 value_naomi: 3000
             },
@@ -363,8 +363,8 @@ export const mockInputComparisonData = (props?: Partial<InputComparisonData>): I
                 area_name: "Malawi",
                 year: 2022,
                 group: "Adult Females",
-                value_spectrum_adjusted: 5001,
-                value_spectrum_reported: 5002,
+                value_spectrum_adjusted: 5002,
+                value_spectrum_reported: 5001,
                 value_spectrum_reallocated: 0,
                 value_naomi: 2000
             },
@@ -373,8 +373,8 @@ export const mockInputComparisonData = (props?: Partial<InputComparisonData>): I
                 area_name: "Malawi",
                 year: 2023,
                 group: "Adult Females",
-                value_spectrum_adjusted: 6000,
-                value_spectrum_reported: 6001,
+                value_spectrum_adjusted: 6001,
+                value_spectrum_reported: 6000,
                 value_spectrum_reallocated: 0,
                 value_naomi: 6000
             }

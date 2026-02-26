@@ -52,12 +52,12 @@ describe("getTableValues util works as expected", () => {
         let values = getTableValues("inputComparisonTable", "art", "group", data);
 
         expect(values).toStrictEqual({
-            "spectrum_reported_Adult Males": 2002,
-            "spectrum_adjusted_Adult Males": 2001,
+            "spectrum_reported_Adult Males": 2001,
+            "spectrum_adjusted_Adult Males": 2002,
             "spectrum_reallocated_Adult Males": 0,
             "naomi_Adult Males": 3000,
-            "difference_Adult Males": 998,
-            "difference_ratio_Adult Males": 1 - (998 / 2002)
+            "difference_Adult Males": 999,
+            "difference_ratio_Adult Males": 1 - (999 / 2001)
         });
 
         data = mockInputComparisonData().art[1];
