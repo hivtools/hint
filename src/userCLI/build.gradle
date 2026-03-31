@@ -20,7 +20,7 @@ dependencies {
     implementation project(":app")
     implementation "com.offbytwo:docopt:0.6.0.20150202"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
-    implementation 'org.pac4j:pac4j-jwt:5.4.5'
+    implementation 'org.pac4j:pac4j-jwt:5.7.9'
     implementation 'org.pac4j:pac4j-sql:5.4.5'
     implementation 'org.pac4j:pac4j-core:5.4.5'
     implementation "org.jooq:jooq:3.14.16"
