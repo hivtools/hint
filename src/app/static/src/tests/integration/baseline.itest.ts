@@ -19,8 +19,8 @@ describe("Baseline actions", () => {
 
         await actions.uploadPJNZ({commit, state, dispatch, rootState} as any, formData);
 
-        expect(commit.mock.calls[1][0]["type"]).toBe(BaselineMutation.PJNZUpdated);
-        expect(commit.mock.calls[1][0]["payload"]["filename"])
+        expect(commit.mock.calls[4][0]["type"]).toBe(BaselineMutation.PJNZUpdated);
+        expect(commit.mock.calls[4][0]["payload"]["filename"])
             .toBe("Botswana2018.PJNZ");
     });
 
@@ -41,8 +41,8 @@ describe("Baseline actions", () => {
         const formData = getFormData("malawi.geojson");
         await actions.uploadShape({commit, dispatch, rootState} as any, formData);
 
-        expect(commit.mock.calls[1][0]["type"]).toBe(BaselineMutation.ShapeUpdated);
-        expect(commit.mock.calls[1][0]["payload"]["filename"])
+        expect(commit.mock.calls[4][0]["type"]).toBe(BaselineMutation.ShapeUpdated);
+        expect(commit.mock.calls[4][0]["payload"]["filename"])
             .toBe("malawi.geojson");
 
     }, 10000);
@@ -79,7 +79,7 @@ describe("Baseline actions", () => {
 
         // delete
         await actions.deletePJNZ({commit, dispatch, rootState} as any);
-        expect(commit.mock.calls[0][0]["type"]).toBe(BaselineMutation.PJNZUpdated);
+        expect(commit.mock.calls[3][0]["type"]).toBe(BaselineMutation.PJNZUpdated);
 
         commit.mockReset();
 
@@ -100,7 +100,7 @@ describe("Baseline actions", () => {
 
         // delete
         await actions.deleteShape({commit, dispatch, rootState} as any);
-        expect(commit.mock.calls[0][0]["type"]).toBe(BaselineMutation.ShapeUpdated);
+        expect(commit.mock.calls[3][0]["type"]).toBe(BaselineMutation.ShapeUpdated);
 
         commit.mockReset();
 
