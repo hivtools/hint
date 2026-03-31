@@ -15,7 +15,7 @@ import {
 } from "../mocks";
 import {actions} from "../../app/store/baseline/actions";
 import {BaselineMutation} from "../../app/store/baseline/mutations";
-import {expectEqualsFrozen, testUploadErrorCommitted} from "../testHelpers";
+import {expectClearReviewInputCommits, expectEqualsFrozen, testUploadErrorCommitted} from "../testHelpers";
 import {ADRSchemas} from "../../app/types";
 import {Mock} from "vitest";
 
@@ -206,9 +206,10 @@ describe("Baseline actions", () => {
     });
 
     const checkPJNZImportUpload = (commit: Mock, dispatch: Mock) => {
-        expect(commit.mock.calls.length).toBe(2);
+        expect(commit.mock.calls.length).toBe(5);
         expect(commit.mock.calls[0][0]).toStrictEqual({type: BaselineMutation.PJNZUpdated, payload: null});
-        expectEqualsFrozen(commit.mock.calls[1][0], {
+        expectClearReviewInputCommits(commit, 1);
+        expectEqualsFrozen(commit.mock.calls[4][0], {
             type: BaselineMutation.PJNZUpdated,
             payload: {data: {country: "Malawi", iso3: "MWI"}}
         });
@@ -244,10 +245,11 @@ describe("Baseline actions", () => {
         expect(dispatch.mock.calls.length).toBe(1);
         expect(dispatch.mock.calls[0][0]).toBe("surveyAndProgram/validateSurveyAndProgramData")
 
-        expect(commit.mock.calls.length).toBe(3);
+        expect(commit.mock.calls.length).toBe(6);
         expect(commit.mock.calls[0][0]).toStrictEqual({type: "PJNZUpdated", payload: null});
-        expect(commit.mock.calls[1][0]).toStrictEqual({type: "PJNZUploadError", payload: mockError("test error")});
-        expect(commit.mock.calls[2][0]).toStrictEqual({type: "PJNZErroredFile", payload: "some-file.txt"});
+        expectClearReviewInputCommits(commit, 1);
+        expect(commit.mock.calls[4][0]).toStrictEqual({type: "PJNZUploadError", payload: mockError("test error")});
+        expect(commit.mock.calls[5][0]).toStrictEqual({type: "PJNZErroredFile", payload: "some-file.txt"});
     });
 
     testUploadErrorCommitted("/baseline/pjnz/",
@@ -256,7 +258,8 @@ describe("Baseline actions", () => {
         BaselineMutation.PJNZErroredFile,
         "file.txt",
         mockFormData,
-        actions.uploadPJNZ);
+        actions.uploadPJNZ,
+        true);
 
     it("commits response and validates after shape file upload", async () => {
 
@@ -283,10 +286,11 @@ describe("Baseline actions", () => {
         expect(dispatch.mock.calls.length).toBe(1);
         expect(dispatch.mock.calls[0][0]).toBe("surveyAndProgram/validateSurveyAndProgramData");
 
-        expect(commit.mock.calls.length).toBe(3);
+        expect(commit.mock.calls.length).toBe(6);
         expect(commit.mock.calls[0][0]).toStrictEqual({type: "ShapeUpdated", payload: null});
-        expect(commit.mock.calls[1][0]).toStrictEqual({type: "ShapeUploadError", payload: mockError("test error")});
-        expect(commit.mock.calls[2][0]).toStrictEqual({type: "ShapeErroredFile", payload: "some-file.txt"});
+        expectClearReviewInputCommits(commit, 1);
+        expect(commit.mock.calls[4][0]).toStrictEqual({type: "ShapeUploadError", payload: mockError("test error")});
+        expect(commit.mock.calls[5][0]).toStrictEqual({type: "ShapeErroredFile", payload: "some-file.txt"});
     });
 
     it("commits response and validates after shape file import", async () => {
@@ -313,16 +317,19 @@ describe("Baseline actions", () => {
         "ShapeErroredFile",
         "file.txt",
         mockFormData,
-        actions.uploadShape);
+        actions.uploadShape,
+        true);
 
     const checkShapeImportUpload = (commit: Mock, dispatch: Mock, mockShape: any) => {
-        expect(commit.mock.calls.length).toBe(2);
+        expect(commit.mock.calls.length).toBe(5);
         expect(commit.mock.calls[0][0]).toStrictEqual({
             type: BaselineMutation.ShapeUpdated,
             payload: null
         });
 
-        expectEqualsFrozen(commit.mock.calls[1][0], {
+        expectClearReviewInputCommits(commit, 1);
+
+        expectEqualsFrozen(commit.mock.calls[4][0], {
             type: BaselineMutation.ShapeUpdated,
             payload: mockShape
         });
@@ -519,7 +526,9 @@ describe("Baseline actions", () => {
         const commit = vi.fn();
         const dispatch = vi.fn();
         await actions.deletePJNZ({commit, dispatch, rootState} as any);
-        expect(commit.mock.calls[0][0]["type"]).toBe(BaselineMutation.PJNZUpdated);
+        expect(commit.mock.calls.length).toBe(4);
+        expectClearReviewInputCommits(commit, 0);
+        expect(commit.mock.calls[3][0]["type"]).toBe(BaselineMutation.PJNZUpdated);
         expectValidationActionsDispatched(dispatch)
     });
 
@@ -531,7 +540,9 @@ describe("Baseline actions", () => {
         const commit = vi.fn();
         const dispatch = vi.fn();
         await actions.deleteShape({commit, dispatch, rootState} as any);
-        expect(commit.mock.calls[0][0]["type"]).toBe(BaselineMutation.ShapeUpdated);
+        expect(commit.mock.calls.length).toBe(4);
+        expectClearReviewInputCommits(commit, 0);
+        expect(commit.mock.calls[3][0]["type"]).toBe(BaselineMutation.ShapeUpdated);
         expectValidationActionsDispatched(dispatch)
     });
 

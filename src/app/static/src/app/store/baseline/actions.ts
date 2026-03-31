@@ -1,4 +1,4 @@
-import {ActionContext, ActionTree, Dispatch} from 'vuex';
+import {ActionContext, ActionTree, Commit, Dispatch} from 'vuex';
 import {BaselineState} from "./baseline";
 import {api} from "../../apiService";
 import {PjnzResponse, PopulationResponse, ShapeResponse, ValidateBaselineResponse} from "../../generated";
@@ -6,6 +6,8 @@ import {BaselineMutation} from "./mutations";
 import {buildData, findResource, getFilenameFromImportUrl, getFilenameFromUploadFormData} from "../../utils";
 import {DatasetResourceSet, DatasetResource, ADRSchemas, UploadImportPayload} from "../../types";
 import {RootState} from "../../root";
+import { ReviewInputMutation } from '../reviewInput/mutations';
+import { DATASET_TYPE } from '../surveyAndProgram/actions';
 
 export interface BaselineActions {
     refreshDatasetMetadata: (store: ActionContext<BaselineState, RootState>) => void
@@ -30,15 +32,24 @@ const uploadCallback = async (dispatch: Dispatch, response: any) => {
     await dispatch("surveyAndProgram/validateSurveyAndProgramData", {}, {root: true});
 }
 
+function commitClearReviewInputDataset(commit: Commit, dataType: string) {
+    if (dataType == DATASET_TYPE.SHAPE || dataType == DATASET_TYPE.PJNZ) {
+        // These review input plots both use shape and PJNZ to create the plot
+        commit({type: `reviewInput/${ReviewInputMutation.ClearDataset}`, payload: DATASET_TYPE.ART}, {root: true});
+        commit({type: `reviewInput/${ReviewInputMutation.ClearDataset}`, payload: DATASET_TYPE.ANC}, {root: true});
+        commit({type: `reviewInput/${ReviewInputMutation.ClearInputComparison}`}, {root: true});
+    }
+}
+
 interface UploadImportOptions {
     url: string
     payload: FormData | UploadImportPayload
 }
 
-
 async function uploadOrImportPJNZ(context: ActionContext<BaselineState, RootState>, options: UploadImportOptions, filename: string) {
     const {commit, dispatch} = context;
     commit({type: BaselineMutation.PJNZUpdated, payload: null});
+    commitClearReviewInputDataset(commit, DATASET_TYPE.PJNZ);
     await api<BaselineMutation, BaselineMutation>(context)
         .withSuccess(BaselineMutation.PJNZUpdated)
         .withError(BaselineMutation.PJNZUploadError)
@@ -71,6 +82,7 @@ async function uploadOrImportPopulation(context: ActionContext<BaselineState, Ro
 async function uploadOrImportShape(context: ActionContext<BaselineState, RootState>, options: UploadImportOptions, filename: string) {
     const {commit, dispatch} = context;
     commit({type: BaselineMutation.ShapeUpdated, payload: null});
+    commitClearReviewInputDataset(commit, DATASET_TYPE.SHAPE);
     await api<BaselineMutation, BaselineMutation>(context)
         .withSuccess(BaselineMutation.ShapeUpdated)
         .withError(BaselineMutation.ShapeUploadError)
@@ -163,6 +175,7 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
 
     async deletePJNZ(context) {
         const {commit, dispatch} = context;
+        commitClearReviewInputDataset(commit, DATASET_TYPE.PJNZ);
         await api<BaselineMutation, BaselineMutation>(context)
             .delete("/baseline/pjnz/")
             .then((response) => {
@@ -175,6 +188,7 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
 
     async deleteShape(context) {
         const {commit, dispatch} = context;
+        commitClearReviewInputDataset(commit, DATASET_TYPE.SHAPE);
         await api<BaselineMutation, BaselineMutation>(context)
             .delete("/baseline/shape/")
             .then((response) => {

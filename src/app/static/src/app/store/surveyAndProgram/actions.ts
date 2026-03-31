@@ -30,11 +30,13 @@ export interface SurveyAndProgramActions {
     setAncResponse: (store: ActionContext<SurveyAndProgramState, RootState>, data: AncResponse) => void;
 }
 
-const enum DATASET_TYPE {
+export const enum DATASET_TYPE {
     ANC = "anc",
     ART = "programme",
     SURVEY = "survey",
-    VMMC = "vmmc"
+    VMMC = "vmmc",
+    PJNZ = "pjnz",
+    SHAPE = "shape"
 }
 
 function commitClearReviewInputDataset(commit: Commit, dataType: string) {
