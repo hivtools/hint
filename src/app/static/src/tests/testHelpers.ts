@@ -16,13 +16,23 @@ export function expectEqualsFrozen(args: PayloadWithType<any>, expected: Payload
     expect(args).toStrictEqual(expected);
 }
 
+export function expectClearReviewInputCommits(commit: Mock, startIndex: number) {
+    expect(commit.mock.calls[startIndex][0]).toStrictEqual({type: "reviewInput/ClearDataset", payload: "programme"});
+    expect(commit.mock.calls[startIndex][1]).toStrictEqual({root: true});
+    expect(commit.mock.calls[startIndex + 1][0]).toStrictEqual({type: "reviewInput/ClearDataset", payload: "anc"});
+    expect(commit.mock.calls[startIndex + 1][1]).toStrictEqual({root: true});
+    expect(commit.mock.calls[startIndex + 2][0]).toStrictEqual({type: "reviewInput/ClearInputComparison"});
+    expect(commit.mock.calls[startIndex + 2][1]).toStrictEqual({root: true});
+}
+
 export function testUploadErrorCommitted(url: string,
                                          expectedErrorType: string,
                                          expectedSuccessType: string,
                                          expectedErroredFileType: string,
                                          expectedErroredFilename: string,
                                          formData: any,
-                                         action: (store: ActionContext<any, any>, formData: FormData) => void) {
+                                         action: (store: ActionContext<any, any>, formData: FormData) => void,
+                                         clearsReviewInput = false) {
 
     it(`commits error message when ${url} fails`, async () => {
 
@@ -41,13 +51,18 @@ export function testUploadErrorCommitted(url: string,
             payload: null
         });
 
+        const errorIndex = clearsReviewInput ? 4 : 1;
+        if (clearsReviewInput) {
+            expectClearReviewInputCommits(commit, 1);
+        }
+
         // then a call to set the error
-        expect(commit.mock.calls[1][0]).toStrictEqual({
+        expect(commit.mock.calls[errorIndex][0]).toStrictEqual({
             type: expectedErrorType,
             payload: mockError("Something went wrong")
         });
 
-        expect(commit.mock.calls[2][0]).toStrictEqual({
+        expect(commit.mock.calls[errorIndex + 1][0]).toStrictEqual({
             type: expectedErroredFileType,
             payload: expectedErroredFilename
         });
