@@ -19,8 +19,8 @@ describe("hintr translations", () => {
 
         await actions.uploadPJNZ({commit, state, dispatch, rootState} as any, formData);
 
-        expect(commit.mock.calls[1][0]["type"]).toBe(BaselineMutation.PJNZUploadError);
-        expect(commit.mock.calls[1][0]["payload"]["detail"])
+        expect(commit.mock.calls[4][0]["type"]).toBe(BaselineMutation.PJNZUploadError);
+        expect(commit.mock.calls[4][0]["payload"]["detail"])
             .toBe("Le fichier doit être de type PJNZ, zip, mais il est du type geojson.");
     });
 });
