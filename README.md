@@ -61,6 +61,8 @@ Ensure dependencies are running and then execute tests on the command line or th
 
 To run a specific test alone, add `--test` + the [fully qualified class name](https://docs.gradle.org/current/userguide/java_testing.html#full_qualified_name_pattern) to the command. For example, the command for running ProjectsControllerTests.kt would be: `./src/gradlew -p src :app:test --tests org.imperial.mrc.hint.unit.controllers.ProjectsControllerTests`
 
+To run the ADR tests you will need to setup and env var `ADR_TEST_KEY`. This should be a key for test user on the dev ADR system.
+
 ### Linting
 
 ```shell

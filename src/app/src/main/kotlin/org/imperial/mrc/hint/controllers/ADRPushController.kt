@@ -41,7 +41,7 @@ class ADRPushController(private val adrService: ADRService,
     {
         val adr = adrService.build()
         // checks for existing releases on ADR with the same name as the release being created
-        val releasesResponse = adr.get("/dataset_version_list?dataset_id=${id}")
+        val releasesResponse = adr.get("dataset_version_list?dataset_id=${id}")
         if (releasesResponse.statusCode != HttpStatus.OK)
         {
             return releasesResponse
@@ -52,13 +52,13 @@ class ADRPushController(private val adrService: ADRService,
         {
             val duplicateReleaseId = duplicateRelease["id"].asText()
             // if a release of the same name exists on ADR, request that it is deleted
-            val deleteResponse = adr.post("/version_delete", listOf("version_id" to duplicateReleaseId))
+            val deleteResponse = adr.post("version_delete", listOf("version_id" to duplicateReleaseId))
             if (deleteResponse.statusCode != HttpStatus.OK)
             {
                 return deleteResponse
             }
         }
-        return adr.post("/dataset_version_create", listOf("dataset_id" to id, "name" to name))
+        return adr.post("dataset_version_create", listOf("dataset_id" to id, "name" to name))
     }
 
     @PostMapping("/datasets/{id}/resource/{resourceType}/{downloadId}")
