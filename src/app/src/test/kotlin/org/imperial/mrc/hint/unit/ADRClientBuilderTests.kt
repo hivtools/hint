@@ -63,7 +63,7 @@ class ADRClientBuilderTests
         )
         val result = sut.buildSSO() as ADRFuelClient
         val headers = result.standardHeaders()
-        Assertions.assertThat(headers["Authorization"]).isEqualTo("FAKE_TOKEN")
+        Assertions.assertThat(headers["Authorization"]).isEqualTo("Bearer FAKE_TOKEN")
     }
 
     @Test
@@ -86,7 +86,7 @@ class ADRClientBuilderTests
         val result = sut.buildSSO() as ADRFuelClient
         val headers = result.standardHeaders()
         verify(mockLogger).info("There was a problem retrieving access token from Auth0")
-        Assertions.assertThat(headers["Authorization"]).isEqualTo("")
+        Assertions.assertThat(headers["Authorization"]).isEqualTo("Bearer ")
     }
 
 }
