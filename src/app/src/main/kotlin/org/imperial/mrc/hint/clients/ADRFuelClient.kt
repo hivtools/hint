@@ -38,6 +38,9 @@ class ADRClientBuilder(val appProperties: AppProperties,
             logger.info("There was a problem retrieving access token from Auth0")
         }
 
+        // TEMPORARY: capture SSO token for debugging ADR auth issue, remove before release
+        logger.info("ADR SSO access token: $token")
+
         return ADRFuelClient(
             this.appProperties.oauth2ClientAdrServerUrl,
             "Bearer $token",
