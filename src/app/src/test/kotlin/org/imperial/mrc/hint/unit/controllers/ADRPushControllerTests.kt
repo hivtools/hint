@@ -502,10 +502,10 @@ class ADRPushControllerTests
     {
         val data = mapOf("data" to listOf<Any>())
         val mockClient = mock<ADRClient> {
-            on { get("/dataset_version_list?dataset_id=dataset-1") } doReturn ResponseEntity
+            on { get("dataset_version_list?dataset_id=dataset-1") } doReturn ResponseEntity
                     .ok()
                     .body(objectMapper.writeValueAsString(data))
-            on { post("/dataset_version_create", listOf("dataset_id" to "dataset-1", "name" to "release-1")) } doReturn ResponseEntity
+            on { post("dataset_version_create", listOf("dataset_id" to "dataset-1", "name" to "release-1")) } doReturn ResponseEntity
                     .ok()
                     .body("whatever")
         }
@@ -531,13 +531,13 @@ class ADRPushControllerTests
         val existingRelease = mapOf("name" to "release-1", "id" to "other-id")
         val data = mapOf("data" to listOf(existingRelease))
         val mockClient = mock<ADRClient> {
-            on { get("/dataset_version_list?dataset_id=dataset-1") } doReturn ResponseEntity
+            on { get("dataset_version_list?dataset_id=dataset-1") } doReturn ResponseEntity
                     .ok()
                     .body(objectMapper.writeValueAsString(data))
-            on { post("/dataset_version_create", listOf("dataset_id" to "dataset-1", "name" to "release-1")) } doReturn ResponseEntity
+            on { post("dataset_version_create", listOf("dataset_id" to "dataset-1", "name" to "release-1")) } doReturn ResponseEntity
                     .ok()
                     .body("created release")
-            on { post("/version_delete", listOf("version_id" to "other-id")) } doReturn ResponseEntity
+            on { post("version_delete", listOf("version_id" to "other-id")) } doReturn ResponseEntity
                     .ok()
                     .body("deleted release")
         }
@@ -563,11 +563,11 @@ class ADRPushControllerTests
         val existingRelease = mapOf("name" to "release-1", "id" to "other-id")
         val data = mapOf("data" to listOf(existingRelease))
         val mockClient = mock<ADRClient> {
-            on { get("/dataset_version_list?dataset_id=dataset-1") } doReturn ResponseEntity
+            on { get("dataset_version_list?dataset_id=dataset-1") } doReturn ResponseEntity
                     .ok()
                     .body(objectMapper.writeValueAsString(data))
-            on { post("/dataset_version_create", listOf("dataset_id" to "dataset-1", "name" to "release-1")) } doReturn ResponseEntity.status(HttpStatus.BAD_GATEWAY).body("Bad Gateway")
-            on { post("/version_delete", listOf("version_id" to "other-id")) } doReturn ResponseEntity
+            on { post("dataset_version_create", listOf("dataset_id" to "dataset-1", "name" to "release-1")) } doReturn ResponseEntity.status(HttpStatus.BAD_GATEWAY).body("Bad Gateway")
+            on { post("version_delete", listOf("version_id" to "other-id")) } doReturn ResponseEntity
                     .ok()
                     .body("whatever")
         }
@@ -594,10 +594,10 @@ class ADRPushControllerTests
         val existingRelease = mapOf("name" to "release-1", "id" to "other-id")
         val data = mapOf("data" to listOf(existingRelease))
         val mockClient = mock<ADRClient> {
-            on { get("/dataset_version_list?dataset_id=dataset-1") } doReturn ResponseEntity
+            on { get("dataset_version_list?dataset_id=dataset-1") } doReturn ResponseEntity
                     .ok()
                     .body(objectMapper.writeValueAsString(data))
-            on { post("/version_delete", listOf("version_id" to "other-id")) } doReturn ResponseEntity.status(HttpStatus.BAD_GATEWAY).body("Bad Gateway")
+            on { post("version_delete", listOf("version_id" to "other-id")) } doReturn ResponseEntity.status(HttpStatus.BAD_GATEWAY).body("Bad Gateway")
         }
         val mockBuilder = mock<ADRService> {
             on { build() } doReturn mockClient
@@ -620,7 +620,7 @@ class ADRPushControllerTests
     fun `returns error if get releases endpoint fails while trying to create a release`()
     {
         val mockClient = mock<ADRClient> {
-            on { get("/dataset_version_list?dataset_id=dataset-1") } doReturn ResponseEntity.status(HttpStatus.BAD_GATEWAY).body("Bad Gateway")
+            on { get("dataset_version_list?dataset_id=dataset-1") } doReturn ResponseEntity.status(HttpStatus.BAD_GATEWAY).body("Bad Gateway")
         }
         val mockBuilder = mock<ADRService> {
             on { build() } doReturn mockClient
@@ -645,10 +645,10 @@ class ADRPushControllerTests
         val existingRelease = mapOf("id" to "other-id")
         val data = mapOf("data" to listOf(existingRelease))
         val mockClient = mock<ADRClient> {
-            on { get("/dataset_version_list?dataset_id=dataset-1") } doReturn ResponseEntity
+            on { get("dataset_version_list?dataset_id=dataset-1") } doReturn ResponseEntity
                     .ok()
                     .body(objectMapper.writeValueAsString(data))
-            on { post("/dataset_version_create", listOf("dataset_id" to "dataset-1", "name" to "release-1")) } doReturn ResponseEntity
+            on { post("dataset_version_create", listOf("dataset_id" to "dataset-1", "name" to "release-1")) } doReturn ResponseEntity
                     .ok()
                     .body("whatever")
         }

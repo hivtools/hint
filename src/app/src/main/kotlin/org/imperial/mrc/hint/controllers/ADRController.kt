@@ -157,7 +157,7 @@ class ADRController(private val encryption: Encryption,
                     @RequestParam type: String? = null): ResponseEntity<String>
     {
         val adr = adrService.build()
-        var releasesResponse = adr.get("/dataset_version_list?dataset_id=${id}")
+        var releasesResponse = adr.get("dataset_version_list?dataset_id=${id}")
         if (type == "output") {
             val releases = objectMapper.readTree(releasesResponse.body!!)["data"]
             val filteredReleases = releases?.filter { release ->

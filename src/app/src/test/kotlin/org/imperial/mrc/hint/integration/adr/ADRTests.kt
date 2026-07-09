@@ -20,7 +20,9 @@ import org.springframework.util.LinkedMultiValueMap
 // so are prone to flakiness when the ADR dev server goes down
 class ADRTests : SecureIntegrationTests()
 {
-    val ADR_KEY = "4c69b103-4532-4b30-8a37-27a15e56c0bb"
+    val ADR_KEY: String = System.getenv("ADR_TEST_KEY")
+        ?: error("ADR_TEST_KEY environment variable must be set to run ADR integration tests. " +
+                "Generate an API token for the test user on ${ConfiguredAppProperties().adrUrl}.")
     val ADR_TEST_DATASET_NAME = "antarctica-country-estimates-2026"
 
     @ParameterizedTest

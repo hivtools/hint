@@ -40,7 +40,7 @@ class ADRClientBuilder(val appProperties: AppProperties,
 
         return ADRFuelClient(
             this.appProperties.oauth2ClientAdrServerUrl,
-            "Bearer $token",
+            token,
             this.logger
         )
     }
