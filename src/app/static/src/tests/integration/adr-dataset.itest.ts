@@ -25,8 +25,11 @@ describe("ADR dataset-related actions", () => {
 
     beforeAll(async () => {
         await login();
-        // this key is for a test user who has access to 1 fake dataset
-        const adrKey = "4c69b103-4532-4b30-8a37-27a15e56c0bb"
+        const adrKey = process.env.ADR_TEST_KEY;
+        if (!adrKey) {
+            throw new Error("ADR_TEST_KEY environment variable must be set to run ADR integration tests. " +
+                "Generate an API token for the test user on the dev ADR.");
+        }
         await adrActions.saveKey({commit: vi.fn(), rootState} as any, adrKey)
 
         const commit = vi.fn();
@@ -186,8 +189,9 @@ describe("ADR dataset-related actions", () => {
         await baselineActions.importPJNZ({commit, state, dispatch, rootState} as any,
             "https://raw.githubusercontent.com/hivtools/hint/main/src/app/testdata/Malawi2024.PJNZ");
 
-        expect(commit.mock.calls[1][0]["type"]).toBe(BaselineMutation.PJNZUpdated);
-        expect(commit.mock.calls[1][0]["payload"]["filename"])
+        // calls 1-3 are reviewInput ClearDataset/ClearInputComparison commits
+        expect(commit.mock.calls[4][0]["type"]).toBe(BaselineMutation.PJNZUpdated);
+        expect(commit.mock.calls[4][0]["payload"]["filename"])
             .toBe("Malawi2024.PJNZ");
     }, 10000);
 
@@ -200,8 +204,9 @@ describe("ADR dataset-related actions", () => {
         await baselineActions.importShape({commit, dispatch, state, rootState} as any,
             "https://raw.githubusercontent.com/hivtools/hint/main/src/app/testdata/malawi.geojson");
 
-        expect(commit.mock.calls[1][0]["type"]).toBe(BaselineMutation.ShapeUpdated);
-        expect(commit.mock.calls[1][0]["payload"]["filename"])
+        // calls 1-3 are reviewInput ClearDataset/ClearInputComparison commits
+        expect(commit.mock.calls[4][0]["type"]).toBe(BaselineMutation.ShapeUpdated);
+        expect(commit.mock.calls[4][0]["payload"]["filename"])
             .toBe("malawi.geojson");
 
     }, 10000);

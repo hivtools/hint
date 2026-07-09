@@ -353,7 +353,7 @@ class ADRControllerTests : HintrControllerTests()
     @Test
     fun `gets releases by id`()
     {
-        val expectedUrl = "/dataset_version_list?dataset_id=1234"
+        val expectedUrl = "dataset_version_list?dataset_id=1234"
         val mockClient = mock<ADRClient> {
             on { get(expectedUrl) } doReturn ResponseEntity
                     .ok()
@@ -391,7 +391,7 @@ class ADRControllerTests : HintrControllerTests()
                 mapOf("id" to "rel1", "package_id" to "1234"),
                 mapOf("id" to "rel2", "package_id" to "1234"))))
 
-        val getReleasesUrl = "/dataset_version_list?dataset_id=1234"
+        val getReleasesUrl = "dataset_version_list?dataset_id=1234"
         val getDatasetUrl1 = "package_show?id=1234&release=rel1"
         val getDatasetUrl2 = "package_show?id=1234&release=rel2"
 
