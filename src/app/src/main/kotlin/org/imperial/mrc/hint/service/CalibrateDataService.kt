@@ -33,7 +33,8 @@ class CalibrateDataService(
     private val apiClient: HintrAPIClient,
     private val calibrateDataRepository: CalibrateDataRepository,
     private val session: Session,
-    private val appProperties: AppProperties
+    private val appProperties: AppProperties,
+    private val fileService: FileService
 ) : CalibrateService
 {
 
@@ -71,6 +72,15 @@ class CalibrateDataService(
     }
 
     private fun getCalibrateDataPath(id: String): Path {
+        val calibratePath = session.getCalibrateDataPath();
+        calibratePath?.let{
+            if (it.exists()) {
+                logger.info("Returning early, path exists")
+                return it
+            } else {
+                logger.info("path $it doesn't exist")
+            }
+        }
         val res = apiClient.getCalibrateResultData(id)
         val jsonBody = ObjectMapper().readTree(res.body?.toString())
         val filePath = jsonBody.get("data").get("path").textValue()
@@ -81,6 +91,9 @@ class CalibrateDataService(
                 "calibrateId" to id))
             throw HintException("missingCalibrateData", HttpStatus.BAD_REQUEST)
         }
+        val localCopy = fileService.copyToTempDir(path)
+        logger.info("file copied to $localCopy, which exists: ${localCopy.exists()}")
+        session.setCalibrateDataPath(localCopy)
         return path
     }
 }
