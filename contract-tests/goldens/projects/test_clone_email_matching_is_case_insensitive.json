@@ -1,0 +1,193 @@
+{
+  "scenario": "projects/test_clone_email_matching_is_case_insensitive",
+  "steps": [
+    {
+      "client": "A",
+      "name": "login test.user@example.com",
+      "request": {
+        "body": {
+          "form": {
+            "password": "password",
+            "username": "test.user@example.com"
+          }
+        },
+        "method": "POST",
+        "path": "/callback/formClient"
+      },
+      "response": {
+        "body": {
+          "empty": true
+        },
+        "headers": {
+          "location": "/"
+        },
+        "status": 303
+      }
+    },
+    {
+      "client": "A",
+      "name": "open /",
+      "request": {
+        "method": "GET",
+        "path": "/"
+      },
+      "response": {
+        "body": {
+          "html": true,
+          "title": "Naomi"
+        },
+        "headers": {
+          "content-type": "text/html"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "B",
+      "name": "login naomi-support@imperial.ac.uk",
+      "request": {
+        "body": {
+          "form": {
+            "password": "password",
+            "username": "naomi-support@imperial.ac.uk"
+          }
+        },
+        "method": "POST",
+        "path": "/callback/formClient"
+      },
+      "response": {
+        "body": {
+          "empty": true
+        },
+        "headers": {
+          "location": "/"
+        },
+        "status": 303
+      }
+    },
+    {
+      "client": "B",
+      "name": "open /",
+      "request": {
+        "method": "GET",
+        "path": "/"
+      },
+      "response": {
+        "body": {
+          "html": true,
+          "title": "Naomi"
+        },
+        "headers": {
+          "content-type": "text/html"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "create project shared",
+      "request": {
+        "body": {
+          "form": {
+            "name": "shared",
+            "note": "a note"
+          }
+        },
+        "method": "POST",
+        "path": "/project/"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {
+              "id": "<PROJECT:1>",
+              "name": "shared",
+              "note": null,
+              "sharedBy": "",
+              "uploaded": null,
+              "versions": [
+                {
+                  "created": "<TIMESTAMP>",
+                  "id": "<UUID:1>",
+                  "note": null,
+                  "updated": "<TIMESTAMP>",
+                  "versionNumber": 1
+                }
+              ]
+            },
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "POST /project/<PROJECT:1>/clone",
+      "request": {
+        "body": {
+          "form": {
+            "emails": "NAOMI-SUPPORT@IMPERIAL.AC.UK"
+          }
+        },
+        "method": "POST",
+        "path": "/project/<PROJECT:1>/clone"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": null,
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "B",
+      "name": "GET /projects/",
+      "request": {
+        "method": "GET",
+        "path": "/projects/"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": [
+              {
+                "id": "<PROJECT:2>",
+                "name": "shared",
+                "note": null,
+                "sharedBy": "test.user@example.com",
+                "uploaded": false,
+                "versions": [
+                  {
+                    "created": "<TIMESTAMP>",
+                    "id": "<UUID:2>",
+                    "note": null,
+                    "updated": "<TIMESTAMP>",
+                    "versionNumber": 1
+                  }
+                ]
+              }
+            ],
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    }
+  ]
+}

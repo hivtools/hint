@@ -1,0 +1,191 @@
+{
+  "scenario": "versions/test_open_soft_deleted_version_still_works",
+  "steps": [
+    {
+      "client": "A",
+      "name": "login test.user@example.com",
+      "request": {
+        "body": {
+          "form": {
+            "password": "password",
+            "username": "test.user@example.com"
+          }
+        },
+        "method": "POST",
+        "path": "/callback/formClient"
+      },
+      "response": {
+        "body": {
+          "empty": true
+        },
+        "headers": {
+          "location": "/"
+        },
+        "status": 303
+      }
+    },
+    {
+      "client": "A",
+      "name": "open /",
+      "request": {
+        "method": "GET",
+        "path": "/"
+      },
+      "response": {
+        "body": {
+          "html": true,
+          "title": "Naomi"
+        },
+        "headers": {
+          "content-type": "text/html"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "create project P",
+      "request": {
+        "body": {
+          "form": {
+            "name": "P",
+            "note": "pnote"
+          }
+        },
+        "method": "POST",
+        "path": "/project/"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {
+              "id": "<PROJECT:1>",
+              "name": "P",
+              "note": null,
+              "sharedBy": "",
+              "uploaded": null,
+              "versions": [
+                {
+                  "created": "<TIMESTAMP>",
+                  "id": "<UUID:1>",
+                  "note": null,
+                  "updated": "<TIMESTAMP>",
+                  "versionNumber": 1
+                }
+              ]
+            },
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "save state",
+      "request": {
+        "body": {
+          "raw": {
+            "content_type": "application/json",
+            "sha256": "46b45ac04f7ff7b965179f8d21a89d0db7ef0316011bdf5f4448140108465371",
+            "size": 55
+          }
+        },
+        "method": "POST",
+        "path": "/project/<PROJECT:1>/version/<UUID:1>/state"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": true,
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "POST /project/<PROJECT:1>/version/",
+      "request": {
+        "method": "POST",
+        "path": "/project/<PROJECT:1>/version/",
+        "query": {
+          "parent": "<UUID:1>"
+        }
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {
+              "created": "<TIMESTAMP>",
+              "id": "<UUID:2>",
+              "note": null,
+              "updated": "<TIMESTAMP>",
+              "versionNumber": 2
+            },
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "delete v2",
+      "request": {
+        "method": "DELETE",
+        "path": "/project/<PROJECT:1>/version/<UUID:2>"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": true,
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "open the deleted version",
+      "request": {
+        "method": "GET",
+        "path": "/project/<PROJECT:1>/version/<UUID:2>"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {
+              "files": {},
+              "state": "{\"datasets\": {}, \"model_fit\": {\"id\": \"abc\"}, \"step\": 3}"
+            },
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    }
+  ]
+}

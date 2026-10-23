@@ -1,0 +1,1083 @@
+{
+  "scenario": "downloads/test_submit_errors",
+  "steps": [
+    {
+      "client": "A",
+      "name": "login test.user@example.com",
+      "request": {
+        "body": {
+          "form": {
+            "password": "password",
+            "username": "test.user@example.com"
+          }
+        },
+        "method": "POST",
+        "path": "/callback/formClient"
+      },
+      "response": {
+        "body": {
+          "empty": true
+        },
+        "headers": {
+          "location": "/"
+        },
+        "status": 303
+      }
+    },
+    {
+      "client": "A",
+      "name": "open /",
+      "request": {
+        "method": "GET",
+        "path": "/"
+      },
+      "response": {
+        "body": {
+          "html": true,
+          "title": "Naomi"
+        },
+        "headers": {
+          "content-type": "text/html"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "unknown type",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "iso3": "MWI",
+            "notes": {
+              "project_notes": {
+                "name": "projectName",
+                "note": "test notes",
+                "updated": "2022/05/17 12:34:21"
+              },
+              "version_notes": [
+                {
+                  "name": "projectName",
+                  "note": "test notes",
+                  "updated": "2022/05/17 12:34:21"
+                },
+                {
+                  "name": "projectName",
+                  "note": "test notes",
+                  "updated": "2022/05/17 12:34:21"
+                }
+              ]
+            },
+            "state": {
+              "calibrate": {
+                "id": "<TASK:calibrate>",
+                "options": {
+                  "": ""
+                }
+              },
+              "datasets": {
+                "anc": {
+                  "filename": "anc",
+                  "path": "uploads/anc"
+                },
+                "pjnz": {
+                  "filename": "pjnz",
+                  "path": "uploads/pjnz"
+                },
+                "population": {
+                  "filename": "population",
+                  "path": "uploads/population"
+                },
+                "programme": {
+                  "filename": "programme",
+                  "path": "uploads/programme"
+                },
+                "shape": {
+                  "filename": "shape",
+                  "path": "uploads/shape"
+                },
+                "survey": {
+                  "filename": "survey",
+                  "path": "uploads/survey"
+                }
+              },
+              "model_fit": {
+                "id": "<TASK:fit>",
+                "options": {
+                  "": ""
+                }
+              },
+              "version": {
+                "hintr": "1",
+                "naomi": "1",
+                "rrq": "1"
+              }
+            }
+          },
+          "method": "POST",
+          "path": "/download/submit/bogus/<TASK:calibrate>",
+          "status": 400,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "json": {
+            "iso3": "MWI",
+            "notes": {
+              "project_notes": {
+                "name": "projectName",
+                "note": "test notes",
+                "updated": "2022/05/17 12:34:21"
+              },
+              "version_notes": [
+                {
+                  "name": "projectName",
+                  "note": "test notes",
+                  "updated": "2022/05/17 12:34:21"
+                },
+                {
+                  "name": "projectName",
+                  "note": "test notes",
+                  "updated": "2022/05/17 12:34:21"
+                }
+              ]
+            },
+            "state": {
+              "calibrate": {
+                "id": "<TASK:calibrate>",
+                "options": {
+                  "": ""
+                }
+              },
+              "datasets": {
+                "anc": {
+                  "filename": "anc",
+                  "path": "uploads/anc"
+                },
+                "pjnz": {
+                  "filename": "pjnz",
+                  "path": "uploads/pjnz"
+                },
+                "population": {
+                  "filename": "population",
+                  "path": "uploads/population"
+                },
+                "programme": {
+                  "filename": "programme",
+                  "path": "uploads/programme"
+                },
+                "shape": {
+                  "filename": "shape",
+                  "path": "uploads/shape"
+                },
+                "survey": {
+                  "filename": "survey",
+                  "path": "uploads/survey"
+                }
+              },
+              "model_fit": {
+                "id": "<TASK:fit>",
+                "options": {
+                  "": ""
+                }
+              },
+              "version": {
+                "hintr": "1",
+                "naomi": "1",
+                "rrq": "1"
+              }
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/download/submit/bogus/<TASK:calibrate>"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "client": "A",
+      "name": "unknown calibrate id",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "iso3": "MWI",
+            "notes": {
+              "project_notes": {
+                "name": "projectName",
+                "note": "test notes",
+                "updated": "2022/05/17 12:34:21"
+              },
+              "version_notes": [
+                {
+                  "name": "projectName",
+                  "note": "test notes",
+                  "updated": "2022/05/17 12:34:21"
+                },
+                {
+                  "name": "projectName",
+                  "note": "test notes",
+                  "updated": "2022/05/17 12:34:21"
+                }
+              ]
+            },
+            "state": {
+              "calibrate": {
+                "id": "<TASK:calibrate>",
+                "options": {
+                  "": ""
+                }
+              },
+              "datasets": {
+                "anc": {
+                  "filename": "anc",
+                  "path": "uploads/anc"
+                },
+                "pjnz": {
+                  "filename": "pjnz",
+                  "path": "uploads/pjnz"
+                },
+                "population": {
+                  "filename": "population",
+                  "path": "uploads/population"
+                },
+                "programme": {
+                  "filename": "programme",
+                  "path": "uploads/programme"
+                },
+                "shape": {
+                  "filename": "shape",
+                  "path": "uploads/shape"
+                },
+                "survey": {
+                  "filename": "survey",
+                  "path": "uploads/survey"
+                }
+              },
+              "model_fit": {
+                "id": "<TASK:fit>",
+                "options": {
+                  "": ""
+                }
+              },
+              "version": {
+                "hintr": "1",
+                "naomi": "1",
+                "rrq": "1"
+              }
+            }
+          },
+          "method": "POST",
+          "path": "/download/submit/spectrum/nonsense",
+          "status": 400,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "json": {
+            "iso3": "MWI",
+            "notes": {
+              "project_notes": {
+                "name": "projectName",
+                "note": "test notes",
+                "updated": "2022/05/17 12:34:21"
+              },
+              "version_notes": [
+                {
+                  "name": "projectName",
+                  "note": "test notes",
+                  "updated": "2022/05/17 12:34:21"
+                },
+                {
+                  "name": "projectName",
+                  "note": "test notes",
+                  "updated": "2022/05/17 12:34:21"
+                }
+              ]
+            },
+            "state": {
+              "calibrate": {
+                "id": "<TASK:calibrate>",
+                "options": {
+                  "": ""
+                }
+              },
+              "datasets": {
+                "anc": {
+                  "filename": "anc",
+                  "path": "uploads/anc"
+                },
+                "pjnz": {
+                  "filename": "pjnz",
+                  "path": "uploads/pjnz"
+                },
+                "population": {
+                  "filename": "population",
+                  "path": "uploads/population"
+                },
+                "programme": {
+                  "filename": "programme",
+                  "path": "uploads/programme"
+                },
+                "shape": {
+                  "filename": "shape",
+                  "path": "uploads/shape"
+                },
+                "survey": {
+                  "filename": "survey",
+                  "path": "uploads/survey"
+                }
+              },
+              "model_fit": {
+                "id": "<TASK:fit>",
+                "options": {
+                  "": ""
+                }
+              },
+              "version": {
+                "hintr": "1",
+                "naomi": "1",
+                "rrq": "1"
+              }
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/download/submit/spectrum/nonsense"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "client": "A",
+      "name": "unknown id fr",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "fr"
+          },
+          "json": {
+            "iso3": "MWI",
+            "notes": {
+              "project_notes": {
+                "name": "projectName",
+                "note": "test notes",
+                "updated": "2022/05/17 12:34:21"
+              },
+              "version_notes": [
+                {
+                  "name": "projectName",
+                  "note": "test notes",
+                  "updated": "2022/05/17 12:34:21"
+                },
+                {
+                  "name": "projectName",
+                  "note": "test notes",
+                  "updated": "2022/05/17 12:34:21"
+                }
+              ]
+            },
+            "state": {
+              "calibrate": {
+                "id": "<TASK:calibrate>",
+                "options": {
+                  "": ""
+                }
+              },
+              "datasets": {
+                "anc": {
+                  "filename": "anc",
+                  "path": "uploads/anc"
+                },
+                "pjnz": {
+                  "filename": "pjnz",
+                  "path": "uploads/pjnz"
+                },
+                "population": {
+                  "filename": "population",
+                  "path": "uploads/population"
+                },
+                "programme": {
+                  "filename": "programme",
+                  "path": "uploads/programme"
+                },
+                "shape": {
+                  "filename": "shape",
+                  "path": "uploads/shape"
+                },
+                "survey": {
+                  "filename": "survey",
+                  "path": "uploads/survey"
+                }
+              },
+              "model_fit": {
+                "id": "<TASK:fit>",
+                "options": {
+                  "": ""
+                }
+              },
+              "version": {
+                "hintr": "1",
+                "naomi": "1",
+                "rrq": "1"
+              }
+            }
+          },
+          "method": "POST",
+          "path": "/download/submit/spectrum/nonsense",
+          "status": 400,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "json": {
+            "iso3": "MWI",
+            "notes": {
+              "project_notes": {
+                "name": "projectName",
+                "note": "test notes",
+                "updated": "2022/05/17 12:34:21"
+              },
+              "version_notes": [
+                {
+                  "name": "projectName",
+                  "note": "test notes",
+                  "updated": "2022/05/17 12:34:21"
+                },
+                {
+                  "name": "projectName",
+                  "note": "test notes",
+                  "updated": "2022/05/17 12:34:21"
+                }
+              ]
+            },
+            "state": {
+              "calibrate": {
+                "id": "<TASK:calibrate>",
+                "options": {
+                  "": ""
+                }
+              },
+              "datasets": {
+                "anc": {
+                  "filename": "anc",
+                  "path": "uploads/anc"
+                },
+                "pjnz": {
+                  "filename": "pjnz",
+                  "path": "uploads/pjnz"
+                },
+                "population": {
+                  "filename": "population",
+                  "path": "uploads/population"
+                },
+                "programme": {
+                  "filename": "programme",
+                  "path": "uploads/programme"
+                },
+                "shape": {
+                  "filename": "shape",
+                  "path": "uploads/shape"
+                },
+                "survey": {
+                  "filename": "survey",
+                  "path": "uploads/survey"
+                }
+              },
+              "model_fit": {
+                "id": "<TASK:fit>",
+                "options": {
+                  "": ""
+                }
+              },
+              "version": {
+                "hintr": "1",
+                "naomi": "1",
+                "rrq": "1"
+              }
+            }
+          }
+        },
+        "headers": {
+          "accept-language": "fr"
+        },
+        "method": "POST",
+        "path": "/download/submit/spectrum/nonsense"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "client": "A",
+      "name": "failed calibration id",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "iso3": "MWI",
+            "notes": {
+              "project_notes": {
+                "name": "projectName",
+                "note": "test notes",
+                "updated": "2022/05/17 12:34:21"
+              },
+              "version_notes": [
+                {
+                  "name": "projectName",
+                  "note": "test notes",
+                  "updated": "2022/05/17 12:34:21"
+                },
+                {
+                  "name": "projectName",
+                  "note": "test notes",
+                  "updated": "2022/05/17 12:34:21"
+                }
+              ]
+            },
+            "state": {
+              "calibrate": {
+                "id": "<TASK:calibrate>",
+                "options": {
+                  "": ""
+                }
+              },
+              "datasets": {
+                "anc": {
+                  "filename": "anc",
+                  "path": "uploads/anc"
+                },
+                "pjnz": {
+                  "filename": "pjnz",
+                  "path": "uploads/pjnz"
+                },
+                "population": {
+                  "filename": "population",
+                  "path": "uploads/population"
+                },
+                "programme": {
+                  "filename": "programme",
+                  "path": "uploads/programme"
+                },
+                "shape": {
+                  "filename": "shape",
+                  "path": "uploads/shape"
+                },
+                "survey": {
+                  "filename": "survey",
+                  "path": "uploads/survey"
+                }
+              },
+              "model_fit": {
+                "id": "<TASK:fit>",
+                "options": {
+                  "": ""
+                }
+              },
+              "version": {
+                "hintr": "1",
+                "naomi": "1",
+                "rrq": "1"
+              }
+            }
+          },
+          "method": "POST",
+          "path": "/download/submit/spectrum/<TASK:calibrate-error>",
+          "status": 400,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "json": {
+            "iso3": "MWI",
+            "notes": {
+              "project_notes": {
+                "name": "projectName",
+                "note": "test notes",
+                "updated": "2022/05/17 12:34:21"
+              },
+              "version_notes": [
+                {
+                  "name": "projectName",
+                  "note": "test notes",
+                  "updated": "2022/05/17 12:34:21"
+                },
+                {
+                  "name": "projectName",
+                  "note": "test notes",
+                  "updated": "2022/05/17 12:34:21"
+                }
+              ]
+            },
+            "state": {
+              "calibrate": {
+                "id": "<TASK:calibrate>",
+                "options": {
+                  "": ""
+                }
+              },
+              "datasets": {
+                "anc": {
+                  "filename": "anc",
+                  "path": "uploads/anc"
+                },
+                "pjnz": {
+                  "filename": "pjnz",
+                  "path": "uploads/pjnz"
+                },
+                "population": {
+                  "filename": "population",
+                  "path": "uploads/population"
+                },
+                "programme": {
+                  "filename": "programme",
+                  "path": "uploads/programme"
+                },
+                "shape": {
+                  "filename": "shape",
+                  "path": "uploads/shape"
+                },
+                "survey": {
+                  "filename": "survey",
+                  "path": "uploads/survey"
+                }
+              },
+              "model_fit": {
+                "id": "<TASK:fit>",
+                "options": {
+                  "": ""
+                }
+              },
+              "version": {
+                "hintr": "1",
+                "naomi": "1",
+                "rrq": "1"
+              }
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/download/submit/spectrum/<TASK:calibrate-error>"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "client": "A",
+      "name": "a fit id instead of a calibrate id",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "iso3": "MWI",
+            "notes": {
+              "project_notes": {
+                "name": "projectName",
+                "note": "test notes",
+                "updated": "2022/05/17 12:34:21"
+              },
+              "version_notes": [
+                {
+                  "name": "projectName",
+                  "note": "test notes",
+                  "updated": "2022/05/17 12:34:21"
+                },
+                {
+                  "name": "projectName",
+                  "note": "test notes",
+                  "updated": "2022/05/17 12:34:21"
+                }
+              ]
+            },
+            "state": {
+              "calibrate": {
+                "id": "<TASK:calibrate>",
+                "options": {
+                  "": ""
+                }
+              },
+              "datasets": {
+                "anc": {
+                  "filename": "anc",
+                  "path": "uploads/anc"
+                },
+                "pjnz": {
+                  "filename": "pjnz",
+                  "path": "uploads/pjnz"
+                },
+                "population": {
+                  "filename": "population",
+                  "path": "uploads/population"
+                },
+                "programme": {
+                  "filename": "programme",
+                  "path": "uploads/programme"
+                },
+                "shape": {
+                  "filename": "shape",
+                  "path": "uploads/shape"
+                },
+                "survey": {
+                  "filename": "survey",
+                  "path": "uploads/survey"
+                }
+              },
+              "model_fit": {
+                "id": "<TASK:fit>",
+                "options": {
+                  "": ""
+                }
+              },
+              "version": {
+                "hintr": "1",
+                "naomi": "1",
+                "rrq": "1"
+              }
+            }
+          },
+          "method": "POST",
+          "path": "/download/submit/spectrum/<TASK:fit>",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "json": {
+            "iso3": "MWI",
+            "notes": {
+              "project_notes": {
+                "name": "projectName",
+                "note": "test notes",
+                "updated": "2022/05/17 12:34:21"
+              },
+              "version_notes": [
+                {
+                  "name": "projectName",
+                  "note": "test notes",
+                  "updated": "2022/05/17 12:34:21"
+                },
+                {
+                  "name": "projectName",
+                  "note": "test notes",
+                  "updated": "2022/05/17 12:34:21"
+                }
+              ]
+            },
+            "state": {
+              "calibrate": {
+                "id": "<TASK:calibrate>",
+                "options": {
+                  "": ""
+                }
+              },
+              "datasets": {
+                "anc": {
+                  "filename": "anc",
+                  "path": "uploads/anc"
+                },
+                "pjnz": {
+                  "filename": "pjnz",
+                  "path": "uploads/pjnz"
+                },
+                "population": {
+                  "filename": "population",
+                  "path": "uploads/population"
+                },
+                "programme": {
+                  "filename": "programme",
+                  "path": "uploads/programme"
+                },
+                "shape": {
+                  "filename": "shape",
+                  "path": "uploads/shape"
+                },
+                "survey": {
+                  "filename": "survey",
+                  "path": "uploads/survey"
+                }
+              },
+              "model_fit": {
+                "id": "<TASK:fit>",
+                "options": {
+                  "": ""
+                }
+              },
+              "version": {
+                "hintr": "1",
+                "naomi": "1",
+                "rrq": "1"
+              }
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/download/submit/spectrum/<TASK:fit>"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "no body",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "POST",
+          "path": "/download/submit/spectrum/<TASK:calibrate>",
+          "status": 400,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "path": "/download/submit/spectrum/<TASK:calibrate>"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "client": "A",
+      "name": "empty object (iso3 required)",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "POST",
+          "path": "/download/submit/spectrum/<TASK:calibrate>",
+          "status": 400,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "json": {}
+        },
+        "method": "POST",
+        "path": "/download/submit/spectrum/<TASK:calibrate>"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "client": "A",
+      "name": "iso3 only",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "iso3": "MWI"
+          },
+          "method": "POST",
+          "path": "/download/submit/spectrum/<TASK:calibrate>",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "json": {
+            "iso3": "MWI"
+          }
+        },
+        "method": "POST",
+        "path": "/download/submit/spectrum/<TASK:calibrate>"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "extra property",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "extra": 1,
+            "iso3": "MWI"
+          },
+          "method": "POST",
+          "path": "/download/submit/spectrum/<TASK:calibrate>",
+          "status": 400,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "json": {
+            "extra": 1,
+            "iso3": "MWI"
+          }
+        },
+        "method": "POST",
+        "path": "/download/submit/spectrum/<TASK:calibrate>"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "client": "A",
+      "name": "invalid notes",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "iso3": "MWI",
+            "notes": {
+              "project_notes": {
+                "note": "x",
+                "updated": "bad"
+              }
+            }
+          },
+          "method": "POST",
+          "path": "/download/submit/spectrum/<TASK:calibrate>",
+          "status": 400,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "json": {
+            "iso3": "MWI",
+            "notes": {
+              "project_notes": {
+                "note": "x",
+                "updated": "bad"
+              }
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/download/submit/spectrum/<TASK:calibrate>"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "client": "A",
+      "name": "malformed json",
+      "request": {
+        "body": {
+          "raw": {
+            "content_type": "application/json",
+            "sha256": "26b8317cfd9d065b7325a6ff3e6260dc62890ecf626448028a14a23fd6c1e04c",
+            "size": 5
+          }
+        },
+        "method": "POST",
+        "path": "/download/submit/spectrum/<TASK:calibrate>"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "An unexpected error occurred. If you see this message while you are using Naomi at a workshop, please contact your workshop technical support and show them this code: <ERROR_CODE>. Otherwise please contact support at naomi-support@imperial.ac.uk and quote this code: <ERROR_CODE>. JSON parse error: Unexpected character ('n' (code 110)): was expecting double-quote to start field name; nested exception is com.fasterxml.jackson.core.JsonParseException: Unexpected character ('n' (code 110)): was expecting double-quote to start field name\n at [Source: (org.springframework.util.StreamUtils$NonClosingInputStream); line: 1, column: 3]",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    }
+  ]
+}

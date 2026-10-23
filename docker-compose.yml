@@ -1,0 +1,112 @@
+# Everything hint needs to run in development, except hint itself (Kotlin), which you run from your IDE or gradle.
+#
+#   docker compose up -d --wait                       postgres (migrated, with users), redis, hintr
+#   docker compose --profile proxy up -d --wait       ... plus the Python API and the nginx proxy in front of
+#                                                     Kotlin and Python
+#
+# scripts/dev.sh wraps this (creates the upload dirs, pins the hintr version, can also start Kotlin).
+#
+# Test users, all with password "password": test.user@example.com, naomi-support@imperial.ac.uk (plus the passwordless
+# user "guest").
+
+name: hint
+
+services:
+  db:
+    image: ghcr.io/hivtools/hint-db:main
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    healthcheck:
+      # pg_isready reports ready too early for this image, see /hint-bin/wait-for-db
+      test: ["CMD-SHELL", "psql -U $$POSTGRES_USER -d $$POSTGRES_DB -c 'select 1' >/dev/null"]
+      interval: 1s
+      timeout: 3s
+      retries: 60
+
+  db-migrate:
+    image: ghcr.io/hivtools/hint-db-migrate:main
+    command: ["-url=jdbc:postgresql://db/hint"]
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db-users:
+    image: ghcr.io/hivtools/hint-user-cli:main
+    entrypoint:
+      - sh
+      - -c
+      - |
+        for user in "test.user@example.com password" "naomi-support@imperial.ac.uk password" "guest"; do
+          sh /userCLI/bin/userCLI add-user $$user || true
+        done
+    configs:
+      - source: user-cli-config
+        target: /etc/hint/config.properties
+    depends_on:
+      db-migrate:
+        condition: service_completed_successfully
+
+  redis:
+    image: redis:7-alpine
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 1s
+      retries: 30
+
+  hintr:
+    # scripts/dev.sh sets this from src/config/hintr_version
+    image: ghcr.io/hivtools/hintr:${HINTR_VERSION:-main}
+    # hint sends hintr the path "<upload_dir>/<hash>" with upload_dir relative (config.properties: "uploads"), and hintr
+    # runs in "/", so the folder is mounted at "/<name>". scripts/dev.sh gives a second stack (PORT_OFFSET) other names.
+    command: ["--results-dir=/${RESULTS_NAME:-results}", "--inputs-dir=/${UPLOADS_NAME:-uploads}"]
+    ports:
+      - "${HINTR_PORT:-8888}:8888"
+    volumes:
+      - ./src/app/${UPLOADS_NAME:-uploads}:/${UPLOADS_NAME:-uploads}
+      - ./src/app/${RESULTS_NAME:-results}:/${RESULTS_NAME:-results}
+    environment:
+      REDIS_URL: redis://redis:6379
+      USE_MOCK_MODEL: "true"
+    depends_on:
+      redis:
+        condition: service_healthy
+      # Nothing needs the users here, but without this `up --wait` can return before they have been added
+      db-users:
+        condition: service_completed_successfully
+
+  # ---- Migration to Python: only started with --profile proxy ----
+
+  python:
+    profiles: [proxy]
+    build: ./hint-py
+    # Not published to the host: the only way in is through the proxy, which sets the identity headers it trusts
+    expose:
+      - "8000"
+    volumes:
+      - ./hint-py:/app
+    command: ["uv", "run", "--frozen", "--no-dev", "fastapi", "dev", "main.py", "--host", "0.0.0.0", "--port", "8000"]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import socket; socket.create_connection(('127.0.0.1', 8000), 2)"]
+      interval: 1s
+      retries: 60
+
+  # The front door, on the port Kotlin normally uses (application_url is http://localhost:8080) so that redirects
+  # and cookies keep working. Kotlin has to be moved aside to KOTLIN_PORT.
+  proxy:
+    profiles: [proxy]
+    build: ./proxy
+    ports:
+      - "127.0.0.1:${PROXY_PORT:-8080}:80"
+    environment:
+      KOTLIN_UPSTREAM: host.docker.internal:${KOTLIN_PORT:-8081}
+      PYTHON_UPSTREAM: python:8000
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      python:
+        condition: service_healthy
+
+configs:
+  user-cli-config:
+    content: |
+      db_url=jdbc:postgresql://db/hint

@@ -1,0 +1,472 @@
+{
+  "scenario": "baseline_files/test_pjnz_errors",
+  "steps": [
+    {
+      "client": "A",
+      "name": "login test.user@example.com",
+      "request": {
+        "body": {
+          "form": {
+            "password": "password",
+            "username": "test.user@example.com"
+          }
+        },
+        "method": "POST",
+        "path": "/callback/formClient"
+      },
+      "response": {
+        "body": {
+          "empty": true
+        },
+        "headers": {
+          "location": "/"
+        },
+        "status": 303
+      }
+    },
+    {
+      "client": "A",
+      "name": "open /",
+      "request": {
+        "method": "GET",
+        "path": "/"
+      },
+      "response": {
+        "body": {
+          "html": true,
+          "title": "Naomi"
+        },
+        "headers": {
+          "content-type": "text/html"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "pjnz: geojson instead of pjnz",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "file": {
+              "filename": "malawi.geojson",
+              "fromADR": false,
+              "hash": "EBE533976BFAF0CABCA2C2E1B611B9C7.geojson",
+              "path": "<UPLOADS>/EBE533976BFAF0CABCA2C2E1B611B9C7.geojson",
+              "resource_url": null
+            },
+            "type": "pjnz"
+          },
+          "method": "POST",
+          "path": "/validate/baseline-individual",
+          "status": 400,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "multipart": {
+            "file": {
+              "filename": "malawi.geojson",
+              "fixture": "malawi.geojson",
+              "sha256": "fb9a189da2337c0b568998b3ab668ebf9e433e6ec26135cae95c20bf9bd5a953",
+              "size": 1045993
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/baseline/pjnz/"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "client": "A",
+      "name": "pjnz: csv instead of pjnz",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "file": {
+              "filename": "anc.csv",
+              "fromADR": false,
+              "hash": "212FBB9D1AE1077EF9497BD8EA83298F.csv",
+              "path": "<UPLOADS>/212FBB9D1AE1077EF9497BD8EA83298F.csv",
+              "resource_url": null
+            },
+            "type": "pjnz"
+          },
+          "method": "POST",
+          "path": "/validate/baseline-individual",
+          "status": 400,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "multipart": {
+            "file": {
+              "filename": "anc.csv",
+              "fixture": "anc.csv",
+              "sha256": "6c9f65bad5653d754a713c737fde3ca4186f7e51d9bddb43eec47dc669fdc90a",
+              "size": 28895
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/baseline/pjnz/"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "client": "A",
+      "name": "pjnz: xlsx instead of pjnz",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "file": {
+              "filename": "vmmc.xlsx",
+              "fromADR": false,
+              "hash": "B7C376E240D6E17D5D3EAFBF4539B771.xlsx",
+              "path": "<UPLOADS>/B7C376E240D6E17D5D3EAFBF4539B771.xlsx",
+              "resource_url": null
+            },
+            "type": "pjnz"
+          },
+          "method": "POST",
+          "path": "/validate/baseline-individual",
+          "status": 400,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "multipart": {
+            "file": {
+              "filename": "vmmc.xlsx",
+              "fixture": "vmmc.xlsx",
+              "sha256": "ae53e705f7b743fb13fccddecee6f075678a49c63df17c8808c86cba937c0aee",
+              "size": 413163
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/baseline/pjnz/"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "client": "A",
+      "name": "pjnz: zip without any pjnz",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "file": {
+              "filename": "output.zip",
+              "fromADR": false,
+              "hash": "F7E9993B4F569389BE84D39084875AEC.zip",
+              "path": "<UPLOADS>/F7E9993B4F569389BE84D39084875AEC.zip",
+              "resource_url": null
+            },
+            "type": "pjnz"
+          },
+          "method": "POST",
+          "path": "/validate/baseline-individual",
+          "status": 400,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "multipart": {
+            "file": {
+              "filename": "output.zip",
+              "fixture": "output.zip",
+              "sha256": "08ca7285af98b98b1d237b9cf776bd4dd8d3bd3630a23751db46097e50f6a20e",
+              "size": 860
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/baseline/pjnz/"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "client": "A",
+      "name": "pjnz: empty file",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "file": {
+              "filename": "empty.PJNZ",
+              "fromADR": false,
+              "hash": "D41D8CD98F00B204E9800998ECF8427E.PJNZ",
+              "path": "<UPLOADS>/D41D8CD98F00B204E9800998ECF8427E.PJNZ",
+              "resource_url": null
+            },
+            "type": "pjnz"
+          },
+          "method": "POST",
+          "path": "/validate/baseline-individual",
+          "status": 400,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "multipart": {
+            "file": {
+              "filename": "empty.PJNZ",
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "size": 0
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/baseline/pjnz/"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "client": "A",
+      "name": "pjnz: garbage bytes named .PJNZ",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "file": {
+              "filename": "garbage.PJNZ",
+              "fromADR": false,
+              "hash": "F672AFC07CC825DD2BA6101C65A06BD7.PJNZ",
+              "path": "<UPLOADS>/F672AFC07CC825DD2BA6101C65A06BD7.PJNZ",
+              "resource_url": null
+            },
+            "type": "pjnz"
+          },
+          "method": "POST",
+          "path": "/validate/baseline-individual",
+          "status": 400,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "multipart": {
+            "file": {
+              "filename": "garbage.PJNZ",
+              "sha256": "37fff20e21f67dfdb62dbf44a963fb21b9aed8cb4fda8a3550828e58fd9472e5",
+              "size": 10
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/baseline/pjnz/"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "client": "A",
+      "name": "pjnz: no extension at all",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "file": {
+              "filename": "README",
+              "fromADR": false,
+              "hash": "900150983CD24FB0D6963F7D28E17F72.README",
+              "path": "<UPLOADS>/900150983CD24FB0D6963F7D28E17F72.README",
+              "resource_url": null
+            },
+            "type": "pjnz"
+          },
+          "method": "POST",
+          "path": "/validate/baseline-individual",
+          "status": 400,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "multipart": {
+            "file": {
+              "filename": "README",
+              "sha256": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
+              "size": 3
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/baseline/pjnz/"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "client": "A",
+      "name": "pjnz: only an extension",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "file": {
+              "filename": ".PJNZ",
+              "fromADR": false,
+              "hash": "900150983CD24FB0D6963F7D28E17F72.PJNZ",
+              "path": "<UPLOADS>/900150983CD24FB0D6963F7D28E17F72.PJNZ",
+              "resource_url": null
+            },
+            "type": "pjnz"
+          },
+          "method": "POST",
+          "path": "/validate/baseline-individual",
+          "status": 400,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "multipart": {
+            "file": {
+              "filename": ".PJNZ",
+              "sha256": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
+              "size": 3
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/baseline/pjnz/"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "files": [
+        {
+          "name": "212FBB9D1AE1077EF9497BD8EA83298F.csv",
+          "name_matches_md5": true,
+          "size": 28895
+        },
+        {
+          "name": "900150983CD24FB0D6963F7D28E17F72.PJNZ",
+          "name_matches_md5": true,
+          "size": 3
+        },
+        {
+          "name": "900150983CD24FB0D6963F7D28E17F72.README",
+          "name_matches_md5": true,
+          "size": 3
+        },
+        {
+          "name": "B7C376E240D6E17D5D3EAFBF4539B771.xlsx",
+          "name_matches_md5": true,
+          "size": 413163
+        },
+        {
+          "name": "D41D8CD98F00B204E9800998ECF8427E.PJNZ",
+          "name_matches_md5": true,
+          "size": 0
+        },
+        {
+          "name": "EBE533976BFAF0CABCA2C2E1B611B9C7.geojson",
+          "name_matches_md5": true,
+          "size": 1045993
+        },
+        {
+          "name": "F672AFC07CC825DD2BA6101C65A06BD7.PJNZ",
+          "name_matches_md5": true,
+          "size": 10
+        },
+        {
+          "name": "F7E9993B4F569389BE84D39084875AEC.zip",
+          "name_matches_md5": true,
+          "size": 860
+        }
+      ],
+      "name": "uploads",
+      "type": "uploads"
+    }
+  ]
+}

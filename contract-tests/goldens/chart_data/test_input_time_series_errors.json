@@ -1,0 +1,212 @@
+{
+  "scenario": "chart_data/test_input_time_series_errors",
+  "steps": [
+    {
+      "client": "A",
+      "name": "login test.user@example.com",
+      "request": {
+        "body": {
+          "form": {
+            "password": "password",
+            "username": "test.user@example.com"
+          }
+        },
+        "method": "POST",
+        "path": "/callback/formClient"
+      },
+      "response": {
+        "body": {
+          "empty": true
+        },
+        "headers": {
+          "location": "/"
+        },
+        "status": 303
+      }
+    },
+    {
+      "client": "A",
+      "name": "open /",
+      "request": {
+        "method": "GET",
+        "path": "/"
+      },
+      "response": {
+        "body": {
+          "html": true,
+          "title": "Naomi"
+        },
+        "headers": {
+          "content-type": "text/html"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "unknown type",
+      "request": {
+        "method": "GET",
+        "path": "/chart-data/input-time-series/not-a-real-type"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "Unknown input time series type.",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "client": "A",
+      "name": "unknown type fr",
+      "request": {
+        "headers": {
+          "accept-language": "fr"
+        },
+        "method": "GET",
+        "path": "/chart-data/input-time-series/not-a-real-type"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "Type de série temporelle d'entrée inconnu",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "client": "A",
+      "name": "survey is not a time series type",
+      "request": {
+        "method": "GET",
+        "path": "/chart-data/input-time-series/survey"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "Unknown input time series type.",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "client": "A",
+      "name": "anc not uploaded",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "data": {
+              "shape": {
+                "filename": "malawi.geojson",
+                "fromADR": false,
+                "hash": "EBE533976BFAF0CABCA2C2E1B611B9C7.geojson",
+                "path": "<UPLOADS>/EBE533976BFAF0CABCA2C2E1B611B9C7.geojson",
+                "resource_url": null
+              }
+            }
+          },
+          "method": "POST",
+          "path": "/chart-data/input-time-series/anc",
+          "status": 400,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/chart-data/input-time-series/anc"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "client": "A",
+      "name": "programme not uploaded",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "data": {
+              "pjnz": {
+                "filename": "Malawi2024.PJNZ",
+                "fromADR": false,
+                "hash": "46E4A725064B0E287F573A8F11389895.PJNZ",
+                "path": "<UPLOADS>/46E4A725064B0E287F573A8F11389895.PJNZ",
+                "resource_url": null
+              },
+              "shape": {
+                "filename": "malawi.geojson",
+                "fromADR": false,
+                "hash": "EBE533976BFAF0CABCA2C2E1B611B9C7.geojson",
+                "path": "<UPLOADS>/EBE533976BFAF0CABCA2C2E1B611B9C7.geojson",
+                "resource_url": null
+              }
+            }
+          },
+          "method": "POST",
+          "path": "/chart-data/input-time-series/programme",
+          "status": 400,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/chart-data/input-time-series/programme"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    }
+  ]
+}

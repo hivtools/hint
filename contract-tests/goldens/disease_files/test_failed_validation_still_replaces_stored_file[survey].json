@@ -1,0 +1,217 @@
+{
+  "scenario": "disease_files/test_failed_validation_still_replaces_stored_file[survey]",
+  "steps": [
+    {
+      "client": "A",
+      "name": "login test.user@example.com",
+      "request": {
+        "body": {
+          "form": {
+            "password": "password",
+            "username": "test.user@example.com"
+          }
+        },
+        "method": "POST",
+        "path": "/callback/formClient"
+      },
+      "response": {
+        "body": {
+          "empty": true
+        },
+        "headers": {
+          "location": "/"
+        },
+        "status": 303
+      }
+    },
+    {
+      "client": "A",
+      "name": "open /",
+      "request": {
+        "method": "GET",
+        "path": "/"
+      },
+      "response": {
+        "body": {
+          "html": true,
+          "title": "Naomi"
+        },
+        "headers": {
+          "content-type": "text/html"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "upload survey",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "file": {
+              "filename": "survey.csv",
+              "fromADR": false,
+              "hash": "2D229A4507FECFE5471C2CC90431CB3C.csv",
+              "path": "<UPLOADS>/2D229A4507FECFE5471C2CC90431CB3C.csv",
+              "resource_url": null
+            },
+            "shape": "<UPLOADS>/EBE533976BFAF0CABCA2C2E1B611B9C7.geojson",
+            "type": "survey"
+          },
+          "method": "POST",
+          "path": "/validate/survey-and-programme",
+          "query": "strict=true",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "multipart": {
+            "file": {
+              "filename": "survey.csv",
+              "fixture": "survey.csv",
+              "sha256": "eb42de2efa19dfd6a51217433f48341a0680e739b8ebfcfe2914739231f3bafe",
+              "size": 5549429
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/disease/survey/"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "invalid upload",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "file": {
+              "filename": "population.csv",
+              "fromADR": false,
+              "hash": "C11BDC2B37E6BC924E6D5B6B96B1ECC3.csv",
+              "path": "<UPLOADS>/C11BDC2B37E6BC924E6D5B6B96B1ECC3.csv",
+              "resource_url": null
+            },
+            "shape": "<UPLOADS>/EBE533976BFAF0CABCA2C2E1B611B9C7.geojson",
+            "type": "survey"
+          },
+          "method": "POST",
+          "path": "/validate/survey-and-programme",
+          "query": "strict=true",
+          "status": 400,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "multipart": {
+            "file": {
+              "filename": "population.csv",
+              "fixture": "population.csv",
+              "sha256": "a792982c149e4b4e9ae83c23d0492112c2a2cf00af6cd479c737284bd2ce1ec6",
+              "size": 1994432
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/disease/survey/"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "client": "A",
+      "name": "GET reports the invalid file",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "file": {
+              "filename": "population.csv",
+              "fromADR": false,
+              "hash": "C11BDC2B37E6BC924E6D5B6B96B1ECC3.csv",
+              "path": "<UPLOADS>/C11BDC2B37E6BC924E6D5B6B96B1ECC3.csv",
+              "resource_url": null
+            },
+            "shape": "<UPLOADS>/EBE533976BFAF0CABCA2C2E1B611B9C7.geojson",
+            "type": "survey"
+          },
+          "method": "POST",
+          "path": "/validate/survey-and-programme",
+          "query": "strict=true",
+          "status": 400,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/disease/survey/"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "name": "db:version_file",
+      "rows": [
+        {
+          "filename": "Malawi2024.PJNZ",
+          "from_adr": false,
+          "hash": "46E4A725064B0E287F573A8F11389895.PJNZ",
+          "resource_url": null,
+          "type": "pjnz",
+          "version": "<UUID:1>"
+        },
+        {
+          "filename": "malawi.geojson",
+          "from_adr": false,
+          "hash": "EBE533976BFAF0CABCA2C2E1B611B9C7.geojson",
+          "resource_url": null,
+          "type": "shape",
+          "version": "<UUID:1>"
+        },
+        {
+          "filename": "population.csv",
+          "from_adr": false,
+          "hash": "C11BDC2B37E6BC924E6D5B6B96B1ECC3.csv",
+          "resource_url": null,
+          "type": "survey",
+          "version": "<UUID:1>"
+        }
+      ],
+      "table": "version_file",
+      "type": "db"
+    }
+  ]
+}

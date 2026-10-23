@@ -1,0 +1,44 @@
+{
+  "scenario": "hintr_faults/test_hintr_slow_but_ok",
+  "steps": [
+    {
+      "client": "A",
+      "name": "3 seconds late",
+      "outbound": [
+        {
+          "fault": "delay",
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "GET",
+          "path": "/hintr/version",
+          "status": 200,
+          "to": "hintr"
+        },
+        {
+          "fault": "delay",
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "GET",
+          "path": "/hintr/version",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/meta/hintr/version"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    }
+  ]
+}

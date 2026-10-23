@@ -1,0 +1,272 @@
+{
+  "scenario": "disease_files/test_upload_get_delete_cycle[guest-anc]",
+  "steps": [
+    {
+      "client": "A",
+      "name": "open /",
+      "request": {
+        "method": "GET",
+        "path": "/"
+      },
+      "response": {
+        "body": {
+          "html": true,
+          "title": "Naomi"
+        },
+        "headers": {
+          "content-type": "text/html"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "get before upload is null",
+      "request": {
+        "method": "GET",
+        "path": "/disease/anc/"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": null,
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "upload anc",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "file": {
+              "filename": "anc.csv",
+              "fromADR": false,
+              "hash": "212FBB9D1AE1077EF9497BD8EA83298F.csv",
+              "path": "<UPLOADS>/212FBB9D1AE1077EF9497BD8EA83298F.csv",
+              "resource_url": null
+            },
+            "shape": "<UPLOADS>/EBE533976BFAF0CABCA2C2E1B611B9C7.geojson",
+            "type": "anc"
+          },
+          "method": "POST",
+          "path": "/validate/survey-and-programme",
+          "query": "strict=true",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "multipart": {
+            "file": {
+              "filename": "anc.csv",
+              "fixture": "anc.csv",
+              "sha256": "6c9f65bad5653d754a713c737fde3ca4186f7e51d9bddb43eec47dc669fdc90a",
+              "size": 28895
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/disease/anc/"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "get after upload re-validates",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "file": {
+              "filename": "anc.csv",
+              "fromADR": false,
+              "hash": "212FBB9D1AE1077EF9497BD8EA83298F.csv",
+              "path": "<UPLOADS>/212FBB9D1AE1077EF9497BD8EA83298F.csv",
+              "resource_url": null
+            },
+            "shape": "<UPLOADS>/EBE533976BFAF0CABCA2C2E1B611B9C7.geojson",
+            "type": "anc"
+          },
+          "method": "POST",
+          "path": "/validate/survey-and-programme",
+          "query": "strict=true",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/disease/anc/"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "name": "db:version_file",
+      "rows": [
+        {
+          "filename": "anc.csv",
+          "from_adr": false,
+          "hash": "212FBB9D1AE1077EF9497BD8EA83298F.csv",
+          "resource_url": null,
+          "type": "anc",
+          "version": "<UUID:1>"
+        },
+        {
+          "filename": "Malawi2024.PJNZ",
+          "from_adr": false,
+          "hash": "46E4A725064B0E287F573A8F11389895.PJNZ",
+          "resource_url": null,
+          "type": "pjnz",
+          "version": "<UUID:1>"
+        },
+        {
+          "filename": "malawi.geojson",
+          "from_adr": false,
+          "hash": "EBE533976BFAF0CABCA2C2E1B611B9C7.geojson",
+          "resource_url": null,
+          "type": "shape",
+          "version": "<UUID:1>"
+        }
+      ],
+      "table": "version_file",
+      "type": "db"
+    },
+    {
+      "files": [
+        {
+          "name": "212FBB9D1AE1077EF9497BD8EA83298F.csv",
+          "name_matches_md5": true,
+          "size": 28895
+        },
+        {
+          "name": "46E4A725064B0E287F573A8F11389895.PJNZ",
+          "name_matches_md5": true,
+          "size": 1721376
+        },
+        {
+          "name": "EBE533976BFAF0CABCA2C2E1B611B9C7.geojson",
+          "name_matches_md5": true,
+          "size": 1045993
+        }
+      ],
+      "name": "uploads",
+      "type": "uploads"
+    },
+    {
+      "client": "A",
+      "name": "delete",
+      "request": {
+        "method": "DELETE",
+        "path": "/disease/anc/"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": true,
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "get after delete is null",
+      "request": {
+        "method": "GET",
+        "path": "/disease/anc/"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": null,
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "delete again",
+      "request": {
+        "method": "DELETE",
+        "path": "/disease/anc/"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": true,
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "name": "db:version_file",
+      "rows": [
+        {
+          "filename": "Malawi2024.PJNZ",
+          "from_adr": false,
+          "hash": "46E4A725064B0E287F573A8F11389895.PJNZ",
+          "resource_url": null,
+          "type": "pjnz",
+          "version": "<UUID:1>"
+        },
+        {
+          "filename": "malawi.geojson",
+          "from_adr": false,
+          "hash": "EBE533976BFAF0CABCA2C2E1B611B9C7.geojson",
+          "resource_url": null,
+          "type": "shape",
+          "version": "<UUID:1>"
+        }
+      ],
+      "table": "version_file",
+      "type": "db"
+    }
+  ]
+}

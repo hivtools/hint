@@ -1,0 +1,23 @@
+[project]
+name = "hint-contract-tests"
+version = "0.1.0"
+description = "Black-box regression (contract) tests for the hint web API"
+requires-python = ">=3.11"
+dependencies = [
+    "pytest>=8",
+    "httpx>=0.27",
+    "psycopg[binary]>=3.1",
+    "pyjwt[crypto]>=2.8",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-p no:cacheprovider"
+markers = [
+    "quirk: records current (possibly surprising) behaviour of the Kotlin app as-is",
+    "slow: takes more than ~30s (opt in with --run-slow)",
+    "sso: needs the SUT started in SSO mode (oauth2_login_method=true), see README",
+    "needs_db: observes Postgres side effects (needs --db-url)",
+    "needs_uploads: observes the uploads directory (needs --uploads-dir)",
+    "faulting: uses the fault-injection proxy",
+]

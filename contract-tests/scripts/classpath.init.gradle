@@ -1,0 +1,17 @@
+// Gradle init script used by scripts/dev.sh (up, restart-app). It adds a task that prints the
+// runtime classpath of the :app project so the app can be started with plain `java -cp`
+// (letting us put our own config.properties first on the classpath, see dev.sh).
+// It does not modify any project file.
+allprojects {
+    afterEvaluate { p ->
+        if (p.path == ':app') {
+            p.tasks.register('contractPrintClasspath') {
+                dependsOn p.tasks.named('classes')
+                doLast {
+                    def out = System.getenv('CONTRACT_CLASSPATH_OUT')
+                    new File(out).text = p.sourceSets.main.runtimeClasspath.files.join(File.pathSeparator)
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,29 @@
+{
+  "scenario": "pages_and_session/test_app_pages_guest[root]",
+  "steps": [
+    {
+      "client": "A",
+      "name": "guest GET /",
+      "request": {
+        "method": "GET",
+        "path": "/"
+      },
+      "response": {
+        "body": {
+          "contains": [
+            "var currentUser = \"guest\"",
+            "data-user=\"guest\"",
+            "data-title=\"Naomi\""
+          ],
+          "html": true,
+          "title": "Naomi"
+        },
+        "headers": {
+          "content-type": "text/html"
+        },
+        "status": 200
+      },
+      "session_cookie": "set"
+    }
+  ]
+}

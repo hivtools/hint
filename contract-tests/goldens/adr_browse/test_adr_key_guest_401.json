@@ -1,0 +1,97 @@
+{
+  "scenario": "adr_browse/test_adr_key_guest_401",
+  "steps": [
+    {
+      "client": "A",
+      "name": "open /",
+      "request": {
+        "method": "GET",
+        "path": "/"
+      },
+      "response": {
+        "body": {
+          "html": true,
+          "title": "Naomi"
+        },
+        "headers": {
+          "content-type": "text/html"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "get",
+      "request": {
+        "method": "GET",
+        "path": "/adr/key"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "error": "Unauthorized",
+            "path": "/adr/key",
+            "status": 401,
+            "timestamp": "<EPOCH_MS>"
+          }
+        },
+        "headers": {
+          "content-type": "application/json",
+          "www-authenticate": "Bearer realm=\"pac4j\""
+        },
+        "status": 401
+      }
+    },
+    {
+      "client": "A",
+      "name": "post",
+      "request": {
+        "body": {
+          "form": {
+            "key": "x"
+          }
+        },
+        "method": "POST",
+        "path": "/adr/key"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "error": "Unauthorized",
+            "path": "/adr/key",
+            "status": 401,
+            "timestamp": "<EPOCH_MS>"
+          }
+        },
+        "headers": {
+          "content-type": "application/json",
+          "www-authenticate": "Bearer realm=\"pac4j\""
+        },
+        "status": 401
+      }
+    },
+    {
+      "client": "A",
+      "name": "delete",
+      "request": {
+        "method": "DELETE",
+        "path": "/adr/key"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "error": "Unauthorized",
+            "path": "/adr/key",
+            "status": 401,
+            "timestamp": "<EPOCH_MS>"
+          }
+        },
+        "headers": {
+          "content-type": "application/json",
+          "www-authenticate": "Bearer realm=\"pac4j\""
+        },
+        "status": 401
+      }
+    }
+  ]
+}

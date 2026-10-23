@@ -1,0 +1,339 @@
+{
+  "scenario": "projects/test_create_project_as_guest_is_401",
+  "steps": [
+    {
+      "client": "A",
+      "name": "open /",
+      "request": {
+        "method": "GET",
+        "path": "/"
+      },
+      "response": {
+        "body": {
+          "html": true,
+          "title": "Naomi"
+        },
+        "headers": {
+          "content-type": "text/html"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "guest create",
+      "request": {
+        "body": {
+          "form": {
+            "name": "p"
+          }
+        },
+        "method": "POST",
+        "path": "/project/"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "error": "Unauthorized",
+            "path": "/project/",
+            "status": 401,
+            "timestamp": "<EPOCH_MS>"
+          }
+        },
+        "headers": {
+          "content-type": "application/json",
+          "www-authenticate": "Bearer realm=\"pac4j\""
+        },
+        "status": 401
+      }
+    },
+    {
+      "client": "A",
+      "name": "guest rename",
+      "request": {
+        "body": {
+          "form": {
+            "name": "p"
+          }
+        },
+        "method": "POST",
+        "path": "/project/1/rename"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "error": "Unauthorized",
+            "path": "/project/1/rename",
+            "status": 401,
+            "timestamp": "<EPOCH_MS>"
+          }
+        },
+        "headers": {
+          "content-type": "application/json",
+          "www-authenticate": "Bearer realm=\"pac4j\""
+        },
+        "status": 401
+      }
+    },
+    {
+      "client": "A",
+      "name": "guest note",
+      "request": {
+        "body": {
+          "form": {
+            "note": "p"
+          }
+        },
+        "method": "POST",
+        "path": "/project/1/note"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "error": "Unauthorized",
+            "path": "/project/1/note",
+            "status": 401,
+            "timestamp": "<EPOCH_MS>"
+          }
+        },
+        "headers": {
+          "content-type": "application/json",
+          "www-authenticate": "Bearer realm=\"pac4j\""
+        },
+        "status": 401
+      }
+    },
+    {
+      "client": "A",
+      "name": "guest clone",
+      "request": {
+        "body": {
+          "form": {
+            "emails": "naomi-support@imperial.ac.uk"
+          }
+        },
+        "method": "POST",
+        "path": "/project/1/clone"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "error": "Unauthorized",
+            "path": "/project/1/clone",
+            "status": 401,
+            "timestamp": "<EPOCH_MS>"
+          }
+        },
+        "headers": {
+          "content-type": "application/json",
+          "www-authenticate": "Bearer realm=\"pac4j\""
+        },
+        "status": 401
+      }
+    },
+    {
+      "client": "A",
+      "name": "guest delete",
+      "request": {
+        "method": "DELETE",
+        "path": "/project/1"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "error": "Unauthorized",
+            "path": "/project/1",
+            "status": 401,
+            "timestamp": "<EPOCH_MS>"
+          }
+        },
+        "headers": {
+          "content-type": "application/json",
+          "www-authenticate": "Bearer realm=\"pac4j\""
+        },
+        "status": 401
+      }
+    },
+    {
+      "client": "A",
+      "name": "guest new version",
+      "request": {
+        "method": "POST",
+        "path": "/project/1/version/",
+        "query": {
+          "parent": "x"
+        }
+      },
+      "response": {
+        "body": {
+          "json": {
+            "error": "Unauthorized",
+            "path": "/project/1/version/",
+            "status": 401,
+            "timestamp": "<EPOCH_MS>"
+          }
+        },
+        "headers": {
+          "content-type": "application/json",
+          "www-authenticate": "Bearer realm=\"pac4j\""
+        },
+        "status": 401
+      }
+    },
+    {
+      "client": "A",
+      "name": "guest state",
+      "request": {
+        "body": {
+          "raw": {
+            "content_type": "application/json",
+            "sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+            "size": 2
+          }
+        },
+        "method": "POST",
+        "path": "/project/1/version/x/state"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "error": "Unauthorized",
+            "path": "/project/1/version/x/state",
+            "status": 401,
+            "timestamp": "<EPOCH_MS>"
+          }
+        },
+        "headers": {
+          "content-type": "application/json",
+          "www-authenticate": "Bearer realm=\"pac4j\""
+        },
+        "status": 401
+      }
+    },
+    {
+      "client": "A",
+      "name": "guest promote",
+      "request": {
+        "body": {
+          "form": {
+            "name": "p"
+          }
+        },
+        "method": "POST",
+        "path": "/project/1/version/x/promote"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "error": "Unauthorized",
+            "path": "/project/1/version/x/promote",
+            "status": 401,
+            "timestamp": "<EPOCH_MS>"
+          }
+        },
+        "headers": {
+          "content-type": "application/json",
+          "www-authenticate": "Bearer realm=\"pac4j\""
+        },
+        "status": 401
+      }
+    },
+    {
+      "client": "A",
+      "name": "guest version note",
+      "request": {
+        "body": {
+          "form": {
+            "note": "p"
+          }
+        },
+        "method": "POST",
+        "path": "/project/1/version/x/note"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "error": "Unauthorized",
+            "path": "/project/1/version/x/note",
+            "status": 401,
+            "timestamp": "<EPOCH_MS>"
+          }
+        },
+        "headers": {
+          "content-type": "application/json",
+          "www-authenticate": "Bearer realm=\"pac4j\""
+        },
+        "status": 401
+      }
+    },
+    {
+      "client": "A",
+      "name": "guest get version",
+      "request": {
+        "method": "GET",
+        "path": "/project/1/version/x"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "error": "Unauthorized",
+            "path": "/project/1/version/x",
+            "status": 401,
+            "timestamp": "<EPOCH_MS>"
+          }
+        },
+        "headers": {
+          "content-type": "application/json",
+          "www-authenticate": "Bearer realm=\"pac4j\""
+        },
+        "status": 401
+      }
+    },
+    {
+      "client": "A",
+      "name": "guest delete version",
+      "request": {
+        "method": "DELETE",
+        "path": "/project/1/version/x"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "error": "Unauthorized",
+            "path": "/project/1/version/x",
+            "status": 401,
+            "timestamp": "<EPOCH_MS>"
+          }
+        },
+        "headers": {
+          "content-type": "application/json",
+          "www-authenticate": "Bearer realm=\"pac4j\""
+        },
+        "status": 401
+      }
+    },
+    {
+      "client": "A",
+      "name": "guest current",
+      "request": {
+        "method": "GET",
+        "path": "/project/current"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "error": "Unauthorized",
+            "path": "/project/current",
+            "status": 401,
+            "timestamp": "<EPOCH_MS>"
+          }
+        },
+        "headers": {
+          "content-type": "application/json",
+          "www-authenticate": "Bearer realm=\"pac4j\""
+        },
+        "status": 401
+      }
+    }
+  ]
+}

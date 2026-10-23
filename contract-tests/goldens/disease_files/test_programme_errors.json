@@ -1,0 +1,444 @@
+{
+  "scenario": "disease_files/test_programme_errors",
+  "steps": [
+    {
+      "client": "A",
+      "name": "login test.user@example.com",
+      "request": {
+        "body": {
+          "form": {
+            "password": "password",
+            "username": "test.user@example.com"
+          }
+        },
+        "method": "POST",
+        "path": "/callback/formClient"
+      },
+      "response": {
+        "body": {
+          "empty": true
+        },
+        "headers": {
+          "location": "/"
+        },
+        "status": 303
+      }
+    },
+    {
+      "client": "A",
+      "name": "open /",
+      "request": {
+        "method": "GET",
+        "path": "/"
+      },
+      "response": {
+        "body": {
+          "html": true,
+          "title": "Naomi"
+        },
+        "headers": {
+          "content-type": "text/html"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "programme: programme missing columns",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "file": {
+              "filename": "malformed_programme.csv",
+              "fromADR": false,
+              "hash": "188785E350C0207A5E5CC9B975D1C74A.csv",
+              "path": "<UPLOADS>/188785E350C0207A5E5CC9B975D1C74A.csv",
+              "resource_url": null
+            },
+            "shape": "<UPLOADS>/EBE533976BFAF0CABCA2C2E1B611B9C7.geojson",
+            "type": "programme"
+          },
+          "method": "POST",
+          "path": "/validate/survey-and-programme",
+          "query": "strict=true",
+          "status": 400,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "multipart": {
+            "file": {
+              "filename": "malformed_programme.csv",
+              "fixture": "malformed_programme.csv",
+              "sha256": "afcd876ae964abc30d8a9c5a6e6296a8fbc0a5ae4836093a13b8994954a6dcb2",
+              "size": 59433
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/disease/programme/"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "client": "A",
+      "name": "programme: programme with another country",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "file": {
+              "filename": "malformed_anc.csv",
+              "fromADR": false,
+              "hash": "3C8A4CFBAFDC1373F598A99835E0B174.csv",
+              "path": "<UPLOADS>/3C8A4CFBAFDC1373F598A99835E0B174.csv",
+              "resource_url": null
+            },
+            "shape": "<UPLOADS>/EBE533976BFAF0CABCA2C2E1B611B9C7.geojson",
+            "type": "programme"
+          },
+          "method": "POST",
+          "path": "/validate/survey-and-programme",
+          "query": "strict=true",
+          "status": 400,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "multipart": {
+            "file": {
+              "filename": "malformed_anc.csv",
+              "fixture": "malformed_anc.csv",
+              "sha256": "23b8e3a735c3c928447845763c68b5e3dbc8d461f53bb327a4a1775421ecf7b4",
+              "size": 42489
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/disease/programme/"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "client": "A",
+      "name": "programme: survey file",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "file": {
+              "filename": "survey.csv",
+              "fromADR": false,
+              "hash": "2D229A4507FECFE5471C2CC90431CB3C.csv",
+              "path": "<UPLOADS>/2D229A4507FECFE5471C2CC90431CB3C.csv",
+              "resource_url": null
+            },
+            "shape": "<UPLOADS>/EBE533976BFAF0CABCA2C2E1B611B9C7.geojson",
+            "type": "programme"
+          },
+          "method": "POST",
+          "path": "/validate/survey-and-programme",
+          "query": "strict=true",
+          "status": 400,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "multipart": {
+            "file": {
+              "filename": "survey.csv",
+              "fixture": "survey.csv",
+              "sha256": "eb42de2efa19dfd6a51217433f48341a0680e739b8ebfcfe2914739231f3bafe",
+              "size": 5549429
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/disease/programme/"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "client": "A",
+      "name": "programme: population file",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "file": {
+              "filename": "population.csv",
+              "fromADR": false,
+              "hash": "C11BDC2B37E6BC924E6D5B6B96B1ECC3.csv",
+              "path": "<UPLOADS>/C11BDC2B37E6BC924E6D5B6B96B1ECC3.csv",
+              "resource_url": null
+            },
+            "shape": "<UPLOADS>/EBE533976BFAF0CABCA2C2E1B611B9C7.geojson",
+            "type": "programme"
+          },
+          "method": "POST",
+          "path": "/validate/survey-and-programme",
+          "query": "strict=true",
+          "status": 400,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "multipart": {
+            "file": {
+              "filename": "population.csv",
+              "fixture": "population.csv",
+              "sha256": "a792982c149e4b4e9ae83c23d0492112c2a2cf00af6cd479c737284bd2ce1ec6",
+              "size": 1994432
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/disease/programme/"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "client": "A",
+      "name": "programme: anc file",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "file": {
+              "filename": "anc.csv",
+              "fromADR": false,
+              "hash": "212FBB9D1AE1077EF9497BD8EA83298F.csv",
+              "path": "<UPLOADS>/212FBB9D1AE1077EF9497BD8EA83298F.csv",
+              "resource_url": null
+            },
+            "shape": "<UPLOADS>/EBE533976BFAF0CABCA2C2E1B611B9C7.geojson",
+            "type": "programme"
+          },
+          "method": "POST",
+          "path": "/validate/survey-and-programme",
+          "query": "strict=true",
+          "status": 400,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "multipart": {
+            "file": {
+              "filename": "anc.csv",
+              "fixture": "anc.csv",
+              "sha256": "6c9f65bad5653d754a713c737fde3ca4186f7e51d9bddb43eec47dc669fdc90a",
+              "size": 28895
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/disease/programme/"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "client": "A",
+      "name": "programme: xlsx instead of csv",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "file": {
+              "filename": "vmmc.xlsx",
+              "fromADR": false,
+              "hash": "B7C376E240D6E17D5D3EAFBF4539B771.xlsx",
+              "path": "<UPLOADS>/B7C376E240D6E17D5D3EAFBF4539B771.xlsx",
+              "resource_url": null
+            },
+            "shape": "<UPLOADS>/EBE533976BFAF0CABCA2C2E1B611B9C7.geojson",
+            "type": "programme"
+          },
+          "method": "POST",
+          "path": "/validate/survey-and-programme",
+          "query": "strict=true",
+          "status": 400,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "multipart": {
+            "file": {
+              "filename": "vmmc.xlsx",
+              "fixture": "vmmc.xlsx",
+              "sha256": "ae53e705f7b743fb13fccddecee6f075678a49c63df17c8808c86cba937c0aee",
+              "size": 413163
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/disease/programme/"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "client": "A",
+      "name": "programme: empty file",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "file": {
+              "filename": "empty.csv",
+              "fromADR": false,
+              "hash": "D41D8CD98F00B204E9800998ECF8427E.csv",
+              "path": "<UPLOADS>/D41D8CD98F00B204E9800998ECF8427E.csv",
+              "resource_url": null
+            },
+            "shape": "<UPLOADS>/EBE533976BFAF0CABCA2C2E1B611B9C7.geojson",
+            "type": "programme"
+          },
+          "method": "POST",
+          "path": "/validate/survey-and-programme",
+          "query": "strict=true",
+          "status": 400,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "multipart": {
+            "file": {
+              "filename": "empty.csv",
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "size": 0
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/disease/programme/"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "client": "A",
+      "name": "programme: binary garbage",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "file": {
+              "filename": "garbage.csv",
+              "fromADR": false,
+              "hash": "E2C865DB4162BED963BFAA9EF6AC18F0.csv",
+              "path": "<UPLOADS>/E2C865DB4162BED963BFAA9EF6AC18F0.csv",
+              "resource_url": null
+            },
+            "shape": "<UPLOADS>/EBE533976BFAF0CABCA2C2E1B611B9C7.geojson",
+            "type": "programme"
+          },
+          "method": "POST",
+          "path": "/validate/survey-and-programme",
+          "query": "strict=true",
+          "status": 400,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "multipart": {
+            "file": {
+              "filename": "garbage.csv",
+              "sha256": "40aff2e9d2d8922e47afd4648e6967497158785fbd1da870e7110266bf944880",
+              "size": 256
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/disease/programme/"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    }
+  ]
+}

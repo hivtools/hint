@@ -1,0 +1,234 @@
+{
+  "scenario": "adr_browse/test_adr_key_is_per_user",
+  "steps": [
+    {
+      "client": "A",
+      "name": "login test.user@example.com",
+      "request": {
+        "body": {
+          "form": {
+            "password": "password",
+            "username": "test.user@example.com"
+          }
+        },
+        "method": "POST",
+        "path": "/callback/formClient"
+      },
+      "response": {
+        "body": {
+          "empty": true
+        },
+        "headers": {
+          "location": "/"
+        },
+        "status": 303
+      }
+    },
+    {
+      "client": "A",
+      "name": "open /",
+      "request": {
+        "method": "GET",
+        "path": "/"
+      },
+      "response": {
+        "body": {
+          "html": true,
+          "title": "Naomi"
+        },
+        "headers": {
+          "content-type": "text/html"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "B",
+      "name": "login naomi-support@imperial.ac.uk",
+      "request": {
+        "body": {
+          "form": {
+            "password": "password",
+            "username": "naomi-support@imperial.ac.uk"
+          }
+        },
+        "method": "POST",
+        "path": "/callback/formClient"
+      },
+      "response": {
+        "body": {
+          "empty": true
+        },
+        "headers": {
+          "location": "/"
+        },
+        "status": 303
+      }
+    },
+    {
+      "client": "B",
+      "name": "open /",
+      "request": {
+        "method": "GET",
+        "path": "/"
+      },
+      "response": {
+        "body": {
+          "html": true,
+          "title": "Naomi"
+        },
+        "headers": {
+          "content-type": "text/html"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "POST /adr/key",
+      "request": {
+        "body": {
+          "form": {
+            "key": "key-of-a"
+          }
+        },
+        "method": "POST",
+        "path": "/adr/key"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": "key-of-a",
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "B",
+      "name": "B has no key",
+      "request": {
+        "method": "GET",
+        "path": "/adr/key"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": null,
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "B",
+      "name": "POST /adr/key",
+      "request": {
+        "body": {
+          "form": {
+            "key": "key-of-b"
+          }
+        },
+        "method": "POST",
+        "path": "/adr/key"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": "key-of-b",
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "A still has own key",
+      "request": {
+        "method": "GET",
+        "path": "/adr/key"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": "key-of-a",
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "B",
+      "name": "B deletes its key",
+      "request": {
+        "method": "DELETE",
+        "path": "/adr/key"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": null,
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "A's key untouched",
+      "request": {
+        "method": "GET",
+        "path": "/adr/key"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": "key-of-a",
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "name": "db:adr_key",
+      "rows": [
+        {
+          "has_key": true,
+          "user_id": "test.user@example.com"
+        }
+      ],
+      "table": "adr_key",
+      "type": "db"
+    }
+  ]
+}

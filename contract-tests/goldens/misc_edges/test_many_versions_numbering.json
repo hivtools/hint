@@ -1,0 +1,570 @@
+{
+  "scenario": "misc_edges/test_many_versions_numbering",
+  "steps": [
+    {
+      "client": "A",
+      "name": "login test.user@example.com",
+      "request": {
+        "body": {
+          "form": {
+            "password": "password",
+            "username": "test.user@example.com"
+          }
+        },
+        "method": "POST",
+        "path": "/callback/formClient"
+      },
+      "response": {
+        "body": {
+          "empty": true
+        },
+        "headers": {
+          "location": "/"
+        },
+        "status": 303
+      }
+    },
+    {
+      "client": "A",
+      "name": "open /",
+      "request": {
+        "method": "GET",
+        "path": "/"
+      },
+      "response": {
+        "body": {
+          "html": true,
+          "title": "Naomi"
+        },
+        "headers": {
+          "content-type": "text/html"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "create project p",
+      "request": {
+        "body": {
+          "form": {
+            "name": "p",
+            "note": "a note"
+          }
+        },
+        "method": "POST",
+        "path": "/project/"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {
+              "id": "<PROJECT:1>",
+              "name": "p",
+              "note": null,
+              "sharedBy": "",
+              "uploaded": null,
+              "versions": [
+                {
+                  "created": "<TIMESTAMP>",
+                  "id": "<UUID:1>",
+                  "note": null,
+                  "updated": "<TIMESTAMP>",
+                  "versionNumber": 1
+                }
+              ]
+            },
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "version 2",
+      "request": {
+        "method": "POST",
+        "path": "/project/<PROJECT:1>/version/",
+        "query": {
+          "parent": "<UUID:1>"
+        }
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {
+              "created": "<TIMESTAMP>",
+              "id": "<UUID:2>",
+              "note": null,
+              "updated": "<TIMESTAMP>",
+              "versionNumber": 2
+            },
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "version 3",
+      "request": {
+        "method": "POST",
+        "path": "/project/<PROJECT:1>/version/",
+        "query": {
+          "parent": "<UUID:1>"
+        }
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {
+              "created": "<TIMESTAMP>",
+              "id": "<UUID:3>",
+              "note": null,
+              "updated": "<TIMESTAMP>",
+              "versionNumber": 3
+            },
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "version 4",
+      "request": {
+        "method": "POST",
+        "path": "/project/<PROJECT:1>/version/",
+        "query": {
+          "parent": "<UUID:1>"
+        }
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {
+              "created": "<TIMESTAMP>",
+              "id": "<UUID:4>",
+              "note": null,
+              "updated": "<TIMESTAMP>",
+              "versionNumber": 4
+            },
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "version 5",
+      "request": {
+        "method": "POST",
+        "path": "/project/<PROJECT:1>/version/",
+        "query": {
+          "parent": "<UUID:1>"
+        }
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {
+              "created": "<TIMESTAMP>",
+              "id": "<UUID:5>",
+              "note": null,
+              "updated": "<TIMESTAMP>",
+              "versionNumber": 5
+            },
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "version 6",
+      "request": {
+        "method": "POST",
+        "path": "/project/<PROJECT:1>/version/",
+        "query": {
+          "parent": "<UUID:1>"
+        }
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {
+              "created": "<TIMESTAMP>",
+              "id": "<UUID:6>",
+              "note": null,
+              "updated": "<TIMESTAMP>",
+              "versionNumber": 6
+            },
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "version 7",
+      "request": {
+        "method": "POST",
+        "path": "/project/<PROJECT:1>/version/",
+        "query": {
+          "parent": "<UUID:1>"
+        }
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {
+              "created": "<TIMESTAMP>",
+              "id": "<UUID:7>",
+              "note": null,
+              "updated": "<TIMESTAMP>",
+              "versionNumber": 7
+            },
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "version 8",
+      "request": {
+        "method": "POST",
+        "path": "/project/<PROJECT:1>/version/",
+        "query": {
+          "parent": "<UUID:1>"
+        }
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {
+              "created": "<TIMESTAMP>",
+              "id": "<UUID:8>",
+              "note": null,
+              "updated": "<TIMESTAMP>",
+              "versionNumber": 8
+            },
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "version 9",
+      "request": {
+        "method": "POST",
+        "path": "/project/<PROJECT:1>/version/",
+        "query": {
+          "parent": "<UUID:1>"
+        }
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {
+              "created": "<TIMESTAMP>",
+              "id": "<UUID:9>",
+              "note": null,
+              "updated": "<TIMESTAMP>",
+              "versionNumber": 9
+            },
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "version 10",
+      "request": {
+        "method": "POST",
+        "path": "/project/<PROJECT:1>/version/",
+        "query": {
+          "parent": "<UUID:1>"
+        }
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {
+              "created": "<TIMESTAMP>",
+              "id": "<UUID:10>",
+              "note": null,
+              "updated": "<TIMESTAMP>",
+              "versionNumber": 10
+            },
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "version 11",
+      "request": {
+        "method": "POST",
+        "path": "/project/<PROJECT:1>/version/",
+        "query": {
+          "parent": "<UUID:1>"
+        }
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {
+              "created": "<TIMESTAMP>",
+              "id": "<UUID:11>",
+              "note": null,
+              "updated": "<TIMESTAMP>",
+              "versionNumber": 11
+            },
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "version 12",
+      "request": {
+        "method": "POST",
+        "path": "/project/<PROJECT:1>/version/",
+        "query": {
+          "parent": "<UUID:1>"
+        }
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {
+              "created": "<TIMESTAMP>",
+              "id": "<UUID:12>",
+              "note": null,
+              "updated": "<TIMESTAMP>",
+              "versionNumber": 12
+            },
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "version 13",
+      "request": {
+        "method": "POST",
+        "path": "/project/<PROJECT:1>/version/",
+        "query": {
+          "parent": "<UUID:1>"
+        }
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {
+              "created": "<TIMESTAMP>",
+              "id": "<UUID:13>",
+              "note": null,
+              "updated": "<TIMESTAMP>",
+              "versionNumber": 13
+            },
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "twelve versions newest first",
+      "request": {
+        "method": "GET",
+        "path": "/projects/"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": [
+              {
+                "id": "<PROJECT:1>",
+                "name": "p",
+                "note": "a note",
+                "sharedBy": null,
+                "uploaded": null,
+                "versions": [
+                  {
+                    "created": "<TIMESTAMP>",
+                    "id": "<UUID:13>",
+                    "note": null,
+                    "updated": "<TIMESTAMP>",
+                    "versionNumber": 13
+                  },
+                  {
+                    "created": "<TIMESTAMP>",
+                    "id": "<UUID:12>",
+                    "note": null,
+                    "updated": "<TIMESTAMP>",
+                    "versionNumber": 12
+                  },
+                  {
+                    "created": "<TIMESTAMP>",
+                    "id": "<UUID:11>",
+                    "note": null,
+                    "updated": "<TIMESTAMP>",
+                    "versionNumber": 11
+                  },
+                  {
+                    "created": "<TIMESTAMP>",
+                    "id": "<UUID:10>",
+                    "note": null,
+                    "updated": "<TIMESTAMP>",
+                    "versionNumber": 10
+                  },
+                  {
+                    "created": "<TIMESTAMP>",
+                    "id": "<UUID:9>",
+                    "note": null,
+                    "updated": "<TIMESTAMP>",
+                    "versionNumber": 9
+                  },
+                  {
+                    "created": "<TIMESTAMP>",
+                    "id": "<UUID:8>",
+                    "note": null,
+                    "updated": "<TIMESTAMP>",
+                    "versionNumber": 8
+                  },
+                  {
+                    "created": "<TIMESTAMP>",
+                    "id": "<UUID:7>",
+                    "note": null,
+                    "updated": "<TIMESTAMP>",
+                    "versionNumber": 7
+                  },
+                  {
+                    "created": "<TIMESTAMP>",
+                    "id": "<UUID:6>",
+                    "note": null,
+                    "updated": "<TIMESTAMP>",
+                    "versionNumber": 6
+                  },
+                  {
+                    "created": "<TIMESTAMP>",
+                    "id": "<UUID:5>",
+                    "note": null,
+                    "updated": "<TIMESTAMP>",
+                    "versionNumber": 5
+                  },
+                  {
+                    "created": "<TIMESTAMP>",
+                    "id": "<UUID:4>",
+                    "note": null,
+                    "updated": "<TIMESTAMP>",
+                    "versionNumber": 4
+                  },
+                  {
+                    "created": "<TIMESTAMP>",
+                    "id": "<UUID:3>",
+                    "note": null,
+                    "updated": "<TIMESTAMP>",
+                    "versionNumber": 3
+                  },
+                  {
+                    "created": "<TIMESTAMP>",
+                    "id": "<UUID:2>",
+                    "note": null,
+                    "updated": "<TIMESTAMP>",
+                    "versionNumber": 2
+                  },
+                  {
+                    "created": "<TIMESTAMP>",
+                    "id": "<UUID:1>",
+                    "note": null,
+                    "updated": "<TIMESTAMP>",
+                    "versionNumber": 1
+                  }
+                ]
+              }
+            ],
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    }
+  ]
+}

@@ -1,0 +1,145 @@
+{
+  "scenario": "rehydrate/test_rehydrate_success_as_guest_and_only_basename_of_path_matters",
+  "steps": [
+    {
+      "client": "A",
+      "name": "open /",
+      "request": {
+        "method": "GET",
+        "path": "/"
+      },
+      "response": {
+        "body": {
+          "html": true,
+          "title": "Naomi"
+        },
+        "headers": {
+          "content-type": "text/html"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "upload pjnz",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "file": {
+              "filename": "Malawi2024.PJNZ",
+              "fromADR": false,
+              "hash": "46E4A725064B0E287F573A8F11389895.PJNZ",
+              "path": "<UPLOADS>/46E4A725064B0E287F573A8F11389895.PJNZ",
+              "resource_url": null
+            },
+            "type": "pjnz"
+          },
+          "method": "POST",
+          "path": "/validate/baseline-individual",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "multipart": {
+            "file": {
+              "filename": "Malawi2024.PJNZ",
+              "fixture": "Malawi2024.PJNZ",
+              "sha256": "49d688e8fe81c4d4dd49a081791e756bcdbbd1542587812bceea354bda02d3c1",
+              "size": 1721376
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/baseline/pjnz/"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "guest, foreign directory in path",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "GET",
+          "path": "/task/<TASK:fit>/exists",
+          "status": 200,
+          "to": "hintr"
+        },
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "GET",
+          "path": "/task/<TASK:calibrate>/exists",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "multipart": {
+            "file": {
+              "filename": "output.zip",
+              "volatile_content": true
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/rehydrate/zip"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {
+              "notes": "project notes\nline 2",
+              "state": {
+                "calibrate": {
+                  "id": "<TASK:calibrate>",
+                  "options": {}
+                },
+                "datasets": {
+                  "pjnz": {
+                    "filename": "x",
+                    "hash": "46E4A725064B0E287F573A8F11389895.PJNZ",
+                    "path": "/totally/different/dir/46E4A725064B0E287F573A8F11389895.PJNZ"
+                  }
+                },
+                "model_fit": {
+                  "id": "<TASK:fit>",
+                  "options": {}
+                },
+                "version": {
+                  "hintr": "1.2.23",
+                  "naomi": "2.10.23",
+                  "rrq": "0.7.23",
+                  "traduire": "0.1.1"
+                }
+              }
+            },
+            "errors": null,
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    }
+  ]
+}

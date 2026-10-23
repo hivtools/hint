@@ -1,0 +1,308 @@
+{
+  "scenario": "sso_mode/test_adr_uses_the_sso_access_token",
+  "steps": [
+    {
+      "client": "S",
+      "name": "start sso login",
+      "request": {
+        "method": "GET",
+        "path": "/oauth2"
+      },
+      "response": {
+        "body": {
+          "empty": true
+        },
+        "headers": {
+          "location": "https://<IDP_HOST>/authorize?response_type=code&client_id=fakeId&state=<STATE>&scope=openid+profile+email+access:adr&audience=naomi&redirect_uri=<APP>/callback/oauth2Client"
+        },
+        "status": 303
+      }
+    },
+    {
+      "client": "S",
+      "name": "sso callback",
+      "outbound": [
+        {
+          "form": {
+            "code": "c",
+            "grant_type": "authorization_code",
+            "redirect_uri": "<APP>/callback/oauth2Client/oauth2Client"
+          },
+          "method": "POST",
+          "path": "/oauth/token",
+          "to": "idp"
+        },
+        {
+          "method": "GET",
+          "path": "/userinfo",
+          "to": "idp"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/callback/oauth2Client",
+        "query": {
+          "code": "c",
+          "state": "<STATE>"
+        }
+      },
+      "response": {
+        "body": {
+          "empty": true
+        },
+        "headers": {
+          "location": "/"
+        },
+        "status": 302
+      }
+    },
+    {
+      "client": "S",
+      "name": "datasets with bearer token",
+      "outbound": [
+        {
+          "headers": {
+            "authorization": "Bearer stub-access-token"
+          },
+          "method": "GET",
+          "path": "/api/3/action/package_search",
+          "query": {
+            "hide_inaccessible_resources": "true",
+            "include_private": "true",
+            "q": "type:(country-estimates-26)",
+            "rows": "1000"
+          },
+          "to": "adr-sso"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/adr/datasets",
+        "query": {
+          "type": "input"
+        }
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": [
+              {
+                "id": "d1",
+                "name": "d1",
+                "resources": [
+                  {
+                    "id": "r1",
+                    "name": "r1",
+                    "resource_type": "inputs-unaids-spectrum-file",
+                    "url": "http://adr.example/r1"
+                  },
+                  {
+                    "id": "r3",
+                    "name": "r3",
+                    "resource_type": "inputs-unaids-naomi-output-zip",
+                    "url": "http://adr.example/r3"
+                  }
+                ],
+                "title": "Dataset d1",
+                "type": "country-estimates-26"
+              }
+            ],
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "S",
+      "name": "one dataset",
+      "outbound": [
+        {
+          "headers": {
+            "authorization": "Bearer stub-access-token"
+          },
+          "method": "GET",
+          "path": "/api/3/action/package_show",
+          "query": {
+            "id": "d1"
+          },
+          "to": "adr-sso"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/adr/datasets/d1"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {
+              "id": "d1",
+              "name": "d1",
+              "resources": [
+                {
+                  "id": "r1",
+                  "name": "r1",
+                  "resource_type": "inputs-unaids-spectrum-file",
+                  "url": "http://adr.example/r1"
+                },
+                {
+                  "id": "r3",
+                  "name": "r3",
+                  "resource_type": "inputs-unaids-naomi-output-zip",
+                  "url": "http://adr.example/r3"
+                }
+              ],
+              "title": "Dataset d1",
+              "type": "country-estimates-26"
+            },
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "S",
+      "name": "releases",
+      "outbound": [
+        {
+          "headers": {
+            "authorization": "Bearer stub-access-token"
+          },
+          "method": "GET",
+          "path": "/api/3/action/dataset_version_list",
+          "query": {
+            "dataset_id": "d1"
+          },
+          "to": "adr-sso"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/adr/datasets/d1/releases"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": [
+              {
+                "id": "rel-1",
+                "name": "v1"
+              }
+            ],
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "S",
+      "name": "orgs",
+      "outbound": [
+        {
+          "headers": {
+            "authorization": "Bearer stub-access-token"
+          },
+          "method": "GET",
+          "path": "/api/3/action/organization_list_for_user",
+          "query": {
+            "permission": "read"
+          },
+          "to": "adr-sso"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/adr/orgs",
+        "query": {
+          "permission": "read"
+        }
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": [
+              {
+                "id": "o1",
+                "name": "org"
+              }
+            ],
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "S",
+      "name": "create release",
+      "outbound": [
+        {
+          "headers": {
+            "authorization": "Bearer stub-access-token"
+          },
+          "method": "GET",
+          "path": "/api/3/action/dataset_version_list",
+          "query": {
+            "dataset_id": "d1"
+          },
+          "to": "adr-sso"
+        },
+        {
+          "form": {
+            "dataset_id": "d1",
+            "name": "v2"
+          },
+          "headers": {
+            "authorization": "Bearer stub-access-token"
+          },
+          "method": "POST",
+          "path": "/api/3/action/dataset_version_create",
+          "to": "adr-sso"
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "path": "/adr/datasets/d1/releases",
+        "query": {
+          "name": "v2"
+        }
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {
+              "dataset_id": "d1",
+              "id": "new-release-id",
+              "name": "v2"
+            },
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    }
+  ]
+}

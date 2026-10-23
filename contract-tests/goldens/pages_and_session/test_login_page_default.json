@@ -1,0 +1,28 @@
+{
+  "scenario": "pages_and_session/test_login_page_default",
+  "steps": [
+    {
+      "client": "A",
+      "name": "GET /login",
+      "request": {
+        "method": "GET",
+        "path": "/login"
+      },
+      "response": {
+        "body": {
+          "contains": [
+            "<title>Login</title>",
+            "id=\"login-form\"",
+            "value=\"\""
+          ],
+          "html": true,
+          "title": "Login"
+        },
+        "headers": {
+          "content-type": "text/html"
+        },
+        "status": 200
+      }
+    }
+  ]
+}

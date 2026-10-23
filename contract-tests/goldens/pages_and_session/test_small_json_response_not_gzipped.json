@@ -1,0 +1,29 @@
+{
+  "scenario": "pages_and_session/test_small_json_response_not_gzipped",
+  "steps": [
+    {
+      "client": "A",
+      "name": "small response",
+      "request": {
+        "headers": {
+          "accept-encoding": "gzip"
+        },
+        "method": "GET",
+        "path": "/sso"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": false,
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    }
+  ]
+}

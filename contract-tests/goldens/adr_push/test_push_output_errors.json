@@ -1,0 +1,581 @@
+{
+  "scenario": "adr_push/test_push_output_errors",
+  "steps": [
+    {
+      "client": "A",
+      "name": "login test.user@example.com",
+      "request": {
+        "body": {
+          "form": {
+            "password": "password",
+            "username": "test.user@example.com"
+          }
+        },
+        "method": "POST",
+        "path": "/callback/formClient"
+      },
+      "response": {
+        "body": {
+          "empty": true
+        },
+        "headers": {
+          "location": "/"
+        },
+        "status": 303
+      }
+    },
+    {
+      "client": "A",
+      "name": "open /",
+      "request": {
+        "method": "GET",
+        "path": "/"
+      },
+      "response": {
+        "body": {
+          "html": true,
+          "title": "Naomi"
+        },
+        "headers": {
+          "content-type": "text/html"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "description missing",
+      "request": {
+        "method": "POST",
+        "path": "/adr/datasets/ds1/resource/inputs-unaids-naomi-output-zip/<TASK:download-spectrum>",
+        "query": {
+          "resourceFileName": "o.zip",
+          "resourceName": "n"
+        }
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "description must be provided for output resourceType",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "client": "A",
+      "name": "resourceName missing",
+      "request": {
+        "method": "POST",
+        "path": "/adr/datasets/ds1/resource/inputs-unaids-naomi-output-zip/<TASK:download-spectrum>",
+        "query": {
+          "description": "d",
+          "resourceFileName": "o.zip"
+        }
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "An unexpected error occurred. If you see this message while you are using Naomi at a workshop, please contact your workshop technical support and show them this code: <ERROR_CODE>. Otherwise please contact support at naomi-support@imperial.ac.uk and quote this code: <ERROR_CODE>. Required request parameter 'resourceName' for method parameter type String is not present",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "client": "A",
+      "name": "resourceFileName missing",
+      "request": {
+        "method": "POST",
+        "path": "/adr/datasets/ds1/resource/inputs-unaids-naomi-output-zip/<TASK:download-spectrum>",
+        "query": {
+          "description": "d",
+          "resourceName": "n"
+        }
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "An unexpected error occurred. If you see this message while you are using Naomi at a workshop, please contact your workshop technical support and show them this code: <ERROR_CODE>. Otherwise please contact support at naomi-support@imperial.ac.uk and quote this code: <ERROR_CODE>. Required request parameter 'resourceFileName' for method parameter type String is not present",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "client": "A",
+      "name": "unknown download id",
+      "outbound": [
+        {
+          "method": "HEAD",
+          "path": "/download/result/nonsense",
+          "status": 400,
+          "to": "hintr"
+        },
+        {
+          "method": "GET",
+          "path": "/download/result/nonsense",
+          "status": 400,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "path": "/adr/datasets/ds1/resource/inputs-unaids-naomi-output-zip/nonsense",
+        "query": {
+          "description": "d",
+          "resourceFileName": "o.zip",
+          "resourceName": "n"
+        }
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "{\"status\":\"failure\",\"errors\":[{\"error\":\"FAILED_TO_RETRIEVE_RESULT\",\"detail\":\"Missing result for task: 'nonsense'\",\"key\":\"<ERROR_KEY>\"}],\"data\":null}",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "client": "A",
+      "name": "id of a model fit",
+      "outbound": [
+        {
+          "method": "HEAD",
+          "path": "/download/result/<TASK:fit>",
+          "status": 400,
+          "to": "hintr"
+        },
+        {
+          "method": "GET",
+          "path": "/download/result/<TASK:fit>",
+          "status": 400,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "path": "/adr/datasets/ds1/resource/inputs-unaids-naomi-output-zip/<TASK:fit>",
+        "query": {
+          "description": "d",
+          "resourceFileName": "o.zip",
+          "resourceName": "n"
+        }
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "{\"status\":\"failure\",\"errors\":[{\"error\":\"OUTPUT_GENERATION_FAILED\",\"detail\":\"Failed to generate download, output format is invalid\",\"key\":\"<ERROR_KEY>\"}],\"data\":null}",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "client": "A",
+      "name": "unknown resource type",
+      "request": {
+        "method": "POST",
+        "path": "/adr/datasets/ds1/resource/not-a-schema/<TASK:download-spectrum>",
+        "query": {
+          "description": "d",
+          "resourceFileName": "o.zip",
+          "resourceName": "n"
+        }
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "Invalid resourceType",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "client": "A",
+      "name": "adr resource_create returns an error",
+      "outbound": [
+        {
+          "method": "HEAD",
+          "path": "/download/result/<TASK:download-spectrum>",
+          "status": 200,
+          "to": "hintr"
+        },
+        {
+          "method": "GET",
+          "path": "/download/result/<TASK:download-spectrum>",
+          "status": 200,
+          "to": "hintr"
+        },
+        {
+          "headers": {
+            "authorization": "<UUID:1>"
+          },
+          "method": "POST",
+          "multipart": {
+            "fields": {
+              "description": "d",
+              "hash": "<MD5>",
+              "name": "n",
+              "package_id": "ds1",
+              "resource_type": "inputs-unaids-naomi-output-zip",
+              "restricted": "{\"allowed_organizations\":\"unaids\",\"allowed_users\":\"\",\"level\":\"restricted\"}"
+            },
+            "files": {
+              "upload": {
+                "filename": "o.zip",
+                "md5": "<MD5>",
+                "size": "<SIZE>"
+              }
+            }
+          },
+          "path": "/api/3/action/resource_create",
+          "to": "adr"
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "path": "/adr/datasets/ds1/resource/inputs-unaids-naomi-output-zip/<TASK:download-spectrum>",
+        "query": {
+          "description": "d",
+          "resourceFileName": "o.zip",
+          "resourceName": "n"
+        }
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "create failed",
+                "error": "ADR_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 500
+      }
+    },
+    {
+      "client": "A",
+      "name": "adr connection dropped",
+      "outbound": [
+        {
+          "method": "HEAD",
+          "path": "/download/result/<TASK:download-spectrum>",
+          "status": 200,
+          "to": "hintr"
+        },
+        {
+          "method": "GET",
+          "path": "/download/result/<TASK:download-spectrum>",
+          "status": 200,
+          "to": "hintr"
+        },
+        {
+          "headers": {
+            "authorization": "<UUID:1>"
+          },
+          "method": "POST",
+          "multipart": {
+            "fields": {
+              "description": "d",
+              "hash": "<MD5>",
+              "name": "n",
+              "package_id": "ds1",
+              "resource_type": "inputs-unaids-naomi-output-zip",
+              "restricted": "{\"allowed_organizations\":\"unaids\",\"allowed_users\":\"\",\"level\":\"restricted\"}"
+            },
+            "files": {
+              "upload": {
+                "filename": "o.zip",
+                "md5": "<MD5>",
+                "size": "<SIZE>"
+              }
+            }
+          },
+          "path": "/api/3/action/resource_create",
+          "to": "adr"
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "path": "/adr/datasets/ds1/resource/inputs-unaids-naomi-output-zip/<TASK:download-spectrum>",
+        "query": {
+          "description": "d",
+          "resourceFileName": "o.zip",
+          "resourceName": "n"
+        }
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "No response returned. The request may have timed out.",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 500
+      }
+    },
+    {
+      "client": "A",
+      "name": "adr garbage response",
+      "outbound": [
+        {
+          "method": "HEAD",
+          "path": "/download/result/<TASK:download-spectrum>",
+          "status": 200,
+          "to": "hintr"
+        },
+        {
+          "method": "GET",
+          "path": "/download/result/<TASK:download-spectrum>",
+          "status": 200,
+          "to": "hintr"
+        },
+        {
+          "headers": {
+            "authorization": "<UUID:1>"
+          },
+          "method": "POST",
+          "multipart": {
+            "fields": {
+              "description": "d",
+              "hash": "<MD5>",
+              "name": "n",
+              "package_id": "ds1",
+              "resource_type": "inputs-unaids-naomi-output-zip",
+              "restricted": "{\"allowed_organizations\":\"unaids\",\"allowed_users\":\"\",\"level\":\"restricted\"}"
+            },
+            "files": {
+              "upload": {
+                "filename": "o.zip",
+                "md5": "<MD5>",
+                "size": "<SIZE>"
+              }
+            }
+          },
+          "path": "/api/3/action/resource_create",
+          "to": "adr"
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "path": "/adr/datasets/ds1/resource/inputs-unaids-naomi-output-zip/<TASK:download-spectrum>",
+        "query": {
+          "description": "d",
+          "resourceFileName": "o.zip",
+          "resourceName": "n"
+        }
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "Could not parse response.",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 500
+      }
+    },
+    {
+      "client": "A",
+      "name": "resource_show fails",
+      "outbound": [
+        {
+          "method": "HEAD",
+          "path": "/download/result/<TASK:download-spectrum>",
+          "status": 200,
+          "to": "hintr"
+        },
+        {
+          "method": "GET",
+          "path": "/download/result/<TASK:download-spectrum>",
+          "status": 200,
+          "to": "hintr"
+        },
+        {
+          "headers": {
+            "authorization": "<UUID:1>"
+          },
+          "method": "GET",
+          "path": "/api/3/action/resource_show",
+          "query": {
+            "id": "res-1"
+          },
+          "to": "adr"
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "path": "/adr/datasets/ds1/resource/inputs-unaids-naomi-output-zip/<TASK:download-spectrum>",
+        "query": {
+          "description": "d",
+          "resourceFileName": "o.zip",
+          "resourceId": "res-1",
+          "resourceName": "n"
+        }
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "Unable to retrieve hash from ADR",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 500
+      }
+    },
+    {
+      "client": "A",
+      "name": "resource_show 404",
+      "outbound": [
+        {
+          "method": "HEAD",
+          "path": "/download/result/<TASK:download-spectrum>",
+          "status": 200,
+          "to": "hintr"
+        },
+        {
+          "method": "GET",
+          "path": "/download/result/<TASK:download-spectrum>",
+          "status": 200,
+          "to": "hintr"
+        },
+        {
+          "headers": {
+            "authorization": "<UUID:1>"
+          },
+          "method": "GET",
+          "path": "/api/3/action/resource_show",
+          "query": {
+            "id": "res-1"
+          },
+          "to": "adr"
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "path": "/adr/datasets/ds1/resource/inputs-unaids-naomi-output-zip/<TASK:download-spectrum>",
+        "query": {
+          "description": "d",
+          "resourceFileName": "o.zip",
+          "resourceId": "res-1",
+          "resourceName": "n"
+        }
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "Unable to retrieve hash from ADR",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 500
+      }
+    }
+  ]
+}

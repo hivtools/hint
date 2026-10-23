@@ -1,0 +1,768 @@
+{
+  "scenario": "hintr_faults/test_hintr_down_for_each_validation_endpoint",
+  "steps": [
+    {
+      "client": "A",
+      "name": "login test.user@example.com",
+      "request": {
+        "body": {
+          "form": {
+            "password": "password",
+            "username": "test.user@example.com"
+          }
+        },
+        "method": "POST",
+        "path": "/callback/formClient"
+      },
+      "response": {
+        "body": {
+          "empty": true
+        },
+        "headers": {
+          "location": "/"
+        },
+        "status": 303
+      }
+    },
+    {
+      "client": "A",
+      "name": "open /",
+      "request": {
+        "method": "GET",
+        "path": "/"
+      },
+      "response": {
+        "body": {
+          "html": true,
+          "title": "Naomi"
+        },
+        "headers": {
+          "content-type": "text/html"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "population upload",
+      "outbound": [
+        {
+          "fault": "close",
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "file": {
+              "filename": "population.csv",
+              "fromADR": false,
+              "hash": "C11BDC2B37E6BC924E6D5B6B96B1ECC3.csv",
+              "path": "<UPLOADS>/C11BDC2B37E6BC924E6D5B6B96B1ECC3.csv",
+              "resource_url": null
+            },
+            "type": "population"
+          },
+          "method": "POST",
+          "path": "/validate/baseline-individual",
+          "status": null,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "multipart": {
+            "file": {
+              "filename": "population.csv",
+              "fixture": "population.csv",
+              "sha256": "a792982c149e4b4e9ae83c23d0492112c2a2cf00af6cd479c737284bd2ce1ec6",
+              "size": 1994432
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/baseline/population/"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "No response returned. The request may have timed out.",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 500
+      }
+    },
+    {
+      "client": "A",
+      "name": "combined validation",
+      "outbound": [
+        {
+          "fault": "close",
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "pjnz": "<UPLOADS>/46E4A725064B0E287F573A8F11389895.PJNZ",
+            "population": "<UPLOADS>/C11BDC2B37E6BC924E6D5B6B96B1ECC3.csv",
+            "shape": "<UPLOADS>/EBE533976BFAF0CABCA2C2E1B611B9C7.geojson"
+          },
+          "method": "POST",
+          "path": "/validate/baseline-combined",
+          "status": null,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/baseline/validate/"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "No response returned. The request may have timed out.",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 500
+      }
+    },
+    {
+      "client": "A",
+      "name": "anc upload",
+      "outbound": [
+        {
+          "fault": "close",
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "file": {
+              "filename": "anc.csv",
+              "fromADR": false,
+              "hash": "212FBB9D1AE1077EF9497BD8EA83298F.csv",
+              "path": "<UPLOADS>/212FBB9D1AE1077EF9497BD8EA83298F.csv",
+              "resource_url": null
+            },
+            "shape": "<UPLOADS>/EBE533976BFAF0CABCA2C2E1B611B9C7.geojson",
+            "type": "anc"
+          },
+          "method": "POST",
+          "path": "/validate/survey-and-programme",
+          "query": "strict=true",
+          "status": null,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "multipart": {
+            "file": {
+              "filename": "anc.csv",
+              "fixture": "anc.csv",
+              "sha256": "6c9f65bad5653d754a713c737fde3ca4186f7e51d9bddb43eec47dc669fdc90a",
+              "size": 28895
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/disease/anc/"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "No response returned. The request may have timed out.",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 500
+      }
+    },
+    {
+      "client": "A",
+      "name": "model options",
+      "outbound": [
+        {
+          "fault": "close",
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "anc": {
+              "filename": "anc.csv",
+              "fromADR": false,
+              "hash": "212FBB9D1AE1077EF9497BD8EA83298F.csv",
+              "path": "<UPLOADS>/212FBB9D1AE1077EF9497BD8EA83298F.csv",
+              "resource_url": null
+            },
+            "shape": {
+              "filename": "malawi.geojson",
+              "fromADR": false,
+              "hash": "EBE533976BFAF0CABCA2C2E1B611B9C7.geojson",
+              "path": "<UPLOADS>/EBE533976BFAF0CABCA2C2E1B611B9C7.geojson",
+              "resource_url": null
+            }
+          },
+          "method": "POST",
+          "path": "/model/options",
+          "status": null,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/model/options/"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "No response returned. The request may have timed out.",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 500
+      }
+    },
+    {
+      "client": "A",
+      "name": "chart data",
+      "outbound": [
+        {
+          "fault": "close",
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "population": {
+              "filename": "population.csv",
+              "fromADR": false,
+              "hash": "C11BDC2B37E6BC924E6D5B6B96B1ECC3.csv",
+              "path": "<UPLOADS>/C11BDC2B37E6BC924E6D5B6B96B1ECC3.csv",
+              "resource_url": null
+            }
+          },
+          "method": "POST",
+          "path": "/chart-data/input-population",
+          "status": null,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/chart-data/input-population"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "No response returned. The request may have timed out.",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 500
+      }
+    },
+    {
+      "client": "A",
+      "name": "review inputs",
+      "outbound": [
+        {
+          "fault": "close",
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "data": {
+              "shape": {
+                "filename": "malawi.geojson",
+                "fromADR": false,
+                "hash": "EBE533976BFAF0CABCA2C2E1B611B9C7.geojson",
+                "path": "<UPLOADS>/EBE533976BFAF0CABCA2C2E1B611B9C7.geojson",
+                "resource_url": null
+              }
+            },
+            "iso3": "MWI"
+          },
+          "method": "POST",
+          "path": "/review-input/metadata",
+          "status": null,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "json": {
+            "types": [
+              "shape"
+            ]
+          }
+        },
+        "method": "POST",
+        "path": "/meta/review-inputs/MWI"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "No response returned. The request may have timed out.",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 500
+      }
+    },
+    {
+      "client": "A",
+      "name": "calibrate options",
+      "outbound": [
+        {
+          "fault": "close",
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "POST",
+          "path": "/calibrate/options/MWI",
+          "status": null,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/calibrate/options/MWI"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "No response returned. The request may have timed out.",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 500
+      }
+    },
+    {
+      "client": "A",
+      "name": "status",
+      "outbound": [
+        {
+          "fault": "close",
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "GET",
+          "path": "/model/status/x",
+          "status": null,
+          "to": "hintr"
+        },
+        {
+          "fault": "close",
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "GET",
+          "path": "/model/status/x",
+          "status": null,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/model/status/x"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "No response returned. The request may have timed out.",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 500
+      }
+    },
+    {
+      "client": "A",
+      "name": "result",
+      "outbound": [
+        {
+          "fault": "close",
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "GET",
+          "path": "/model/result/x",
+          "status": null,
+          "to": "hintr"
+        },
+        {
+          "fault": "close",
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "GET",
+          "path": "/model/result/x",
+          "status": null,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/model/result/x"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "No response returned. The request may have timed out.",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 500
+      }
+    },
+    {
+      "client": "A",
+      "name": "cancel",
+      "outbound": [
+        {
+          "fault": "close",
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "POST",
+          "path": "/model/cancel/x",
+          "status": null,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "path": "/model/cancel/x"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "No response returned. The request may have timed out.",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 500
+      }
+    },
+    {
+      "client": "A",
+      "name": "calibrate status",
+      "outbound": [
+        {
+          "fault": "close",
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "GET",
+          "path": "/calibrate/status/x",
+          "status": null,
+          "to": "hintr"
+        },
+        {
+          "fault": "close",
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "GET",
+          "path": "/calibrate/status/x",
+          "status": null,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/calibrate/status/x"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "No response returned. The request may have timed out.",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 500
+      }
+    },
+    {
+      "client": "A",
+      "name": "download status",
+      "outbound": [
+        {
+          "fault": "close",
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "GET",
+          "path": "/download/status/x",
+          "status": null,
+          "to": "hintr"
+        },
+        {
+          "fault": "close",
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "GET",
+          "path": "/download/status/x",
+          "status": null,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/download/status/x"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "No response returned. The request may have timed out.",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 500
+      }
+    },
+    {
+      "client": "A",
+      "name": "adr metadata",
+      "outbound": [
+        {
+          "fault": "close",
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "GET",
+          "path": "/meta/adr/x",
+          "status": null,
+          "to": "hintr"
+        },
+        {
+          "fault": "close",
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "GET",
+          "path": "/meta/adr/x",
+          "status": null,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/meta/adr/x"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "No response returned. The request may have timed out.",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 500
+      }
+    },
+    {
+      "client": "A",
+      "name": "metrics",
+      "outbound": [
+        {
+          "fault": "close",
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "GET",
+          "path": "/hintr/worker/status",
+          "status": null,
+          "to": "hintr"
+        },
+        {
+          "fault": "close",
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "GET",
+          "path": "/hintr/worker/status",
+          "status": null,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/metrics"
+      },
+      "response": {
+        "body": {
+          "text": "running 1\nbusy_workers 0\nidle_workers 0\npaused_workers 0\nexited_workers 0\nlost_workers 0\nlive_workers 0"
+        },
+        "headers": {
+          "content-type": "text/plain"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "GET re-validation",
+      "outbound": [
+        {
+          "fault": "close",
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "file": {
+              "filename": "Malawi2024.PJNZ",
+              "fromADR": false,
+              "hash": "46E4A725064B0E287F573A8F11389895.PJNZ",
+              "path": "<UPLOADS>/46E4A725064B0E287F573A8F11389895.PJNZ",
+              "resource_url": null
+            },
+            "type": "pjnz"
+          },
+          "method": "POST",
+          "path": "/validate/baseline-individual",
+          "status": null,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/baseline/pjnz/"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "No response returned. The request may have timed out.",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 500
+      }
+    }
+  ]
+}

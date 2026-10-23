@@ -1,0 +1,237 @@
+{
+  "scenario": "sso_mode/test_adr_without_token_or_with_adr_rejection_in_sso_mode",
+  "steps": [
+    {
+      "client": "S",
+      "name": "guest is 401",
+      "request": {
+        "method": "GET",
+        "path": "/adr/datasets",
+        "query": {
+          "type": "input"
+        }
+      },
+      "response": {
+        "body": {
+          "json": {
+            "error": "Unauthorized",
+            "path": "/adr/datasets",
+            "status": 401,
+            "timestamp": "<EPOCH_MS>"
+          }
+        },
+        "headers": {
+          "content-type": "application/json",
+          "www-authenticate": "Bearer realm=\"pac4j\""
+        },
+        "status": 401
+      }
+    },
+    {
+      "client": "S",
+      "name": "start sso login",
+      "request": {
+        "method": "GET",
+        "path": "/oauth2"
+      },
+      "response": {
+        "body": {
+          "empty": true
+        },
+        "headers": {
+          "location": "https://<IDP_HOST>/authorize?response_type=code&client_id=fakeId&state=<STATE>&scope=openid+profile+email+access:adr&audience=naomi&redirect_uri=<APP>/callback/oauth2Client"
+        },
+        "status": 303
+      }
+    },
+    {
+      "client": "S",
+      "name": "sso callback",
+      "outbound": [
+        {
+          "form": {
+            "code": "c",
+            "grant_type": "authorization_code",
+            "redirect_uri": "<APP>/callback/oauth2Client/oauth2Client"
+          },
+          "method": "POST",
+          "path": "/oauth/token",
+          "to": "idp"
+        },
+        {
+          "method": "GET",
+          "path": "/userinfo",
+          "to": "idp"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/callback/oauth2Client",
+        "query": {
+          "code": "c",
+          "state": "<STATE>"
+        }
+      },
+      "response": {
+        "body": {
+          "empty": true
+        },
+        "headers": {
+          "location": "/"
+        },
+        "status": 302
+      }
+    },
+    {
+      "client": "S",
+      "name": "empty token is sent as 'Bearer '",
+      "outbound": [
+        {
+          "headers": {
+            "authorization": "Bearer "
+          },
+          "method": "GET",
+          "path": "/api/3/action/package_search",
+          "query": {
+            "hide_inaccessible_resources": "true",
+            "include_private": "true",
+            "q": "type:(country-estimates-26)",
+            "rows": "1000"
+          },
+          "to": "adr-sso"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/adr/datasets",
+        "query": {
+          "type": "input"
+        }
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": [
+              {
+                "id": "d1",
+                "name": "d1",
+                "resources": [
+                  {
+                    "id": "r1",
+                    "name": "r1",
+                    "resource_type": "inputs-unaids-spectrum-file",
+                    "url": "http://adr.example/r1"
+                  },
+                  {
+                    "id": "r3",
+                    "name": "r3",
+                    "resource_type": "inputs-unaids-naomi-output-zip",
+                    "url": "http://adr.example/r3"
+                  }
+                ],
+                "title": "Dataset d1",
+                "type": "country-estimates-26"
+              }
+            ],
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "S",
+      "name": "adr rejects the token",
+      "outbound": [
+        {
+          "headers": {
+            "authorization": "Bearer "
+          },
+          "method": "GET",
+          "path": "/api/3/action/package_search",
+          "query": {
+            "hide_inaccessible_resources": "true",
+            "include_private": "true",
+            "q": "type:(country-estimates-26)",
+            "rows": "1000"
+          },
+          "to": "adr-sso"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/adr/datasets",
+        "query": {
+          "type": "input"
+        }
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "There was an error fetching datasets from ADR.",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 500
+      }
+    },
+    {
+      "client": "S",
+      "name": "no adr account",
+      "outbound": [
+        {
+          "headers": {
+            "authorization": "Bearer "
+          },
+          "method": "GET",
+          "path": "/api/3/action/package_search",
+          "query": {
+            "hide_inaccessible_resources": "true",
+            "include_private": "true",
+            "q": "type:(country-estimates-26)",
+            "rows": "1000"
+          },
+          "to": "adr-sso"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/adr/datasets",
+        "query": {
+          "type": "input"
+        }
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "Cannot fetch datasets from the ADR as you do not yet have an account. Please login to the ADR with your Auth0 credentials and then return here and try again.",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 500
+      }
+    }
+  ]
+}

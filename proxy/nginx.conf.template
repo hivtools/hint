@@ -1,0 +1,54 @@
+# Front door for hint while endpoints are migrated from Kotlin to Python.
+#
+# Everything goes to Kotlin unless it is listed below. To migrate an endpoint, add a `location` that includes
+# snippets/python.conf (most specific prefix wins). See that file for how authentication works.
+#
+# KOTLIN_UPSTREAM and PYTHON_UPSTREAM (host:port) are substituted from the environment on container start by the nginx
+# image's envsubst templating.
+
+# Trust X-Forwarded-Proto from an upstream TLS terminator, else use our own scheme.
+map $http_x_forwarded_proto $forwarded_proto {
+    default $http_x_forwarded_proto;
+    ''      $scheme;
+}
+
+upstream kotlin {
+    server ${KOTLIN_UPSTREAM};
+}
+
+upstream python {
+    server ${PYTHON_UPSTREAM};
+}
+
+server {
+    listen 80;
+
+    # Uploads can be large and are streamed straight through to the backend.
+    client_max_body_size 0;
+    proxy_request_buffering off;
+
+    # Model/ADR calls can be slow.
+    proxy_read_timeout 300s;
+    proxy_send_timeout 300s;
+
+    # ---- Migrated to Python ----
+    location /items/ { include snippets/python.conf; }
+
+    # ---- Identity bridge ----
+    # Only reachable from auth_request, never directly. The Cookie and Authorization headers of the original request
+    # are passed through by default, the body is not needed.
+    location = /_whoami {
+        internal;
+        include snippets/proxy-common.conf;
+        proxy_pass_request_body off;
+        proxy_set_header Content-Length "";
+        proxy_set_header X-Original-URI $request_uri;
+        proxy_pass http://kotlin/internal/whoami;
+    }
+
+    # Kotlin's /internal/ endpoints are for this proxy only
+    location ^~ /internal/ { return 404; }
+
+    # ---- Everything else is still Kotlin ----
+    location / { include snippets/kotlin.conf; }
+}

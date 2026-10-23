@@ -1,0 +1,360 @@
+{
+  "scenario": "projects/test_clone_project_to_another_user",
+  "steps": [
+    {
+      "client": "A",
+      "name": "login test.user@example.com",
+      "request": {
+        "body": {
+          "form": {
+            "password": "password",
+            "username": "test.user@example.com"
+          }
+        },
+        "method": "POST",
+        "path": "/callback/formClient"
+      },
+      "response": {
+        "body": {
+          "empty": true
+        },
+        "headers": {
+          "location": "/"
+        },
+        "status": 303
+      }
+    },
+    {
+      "client": "A",
+      "name": "open /",
+      "request": {
+        "method": "GET",
+        "path": "/"
+      },
+      "response": {
+        "body": {
+          "html": true,
+          "title": "Naomi"
+        },
+        "headers": {
+          "content-type": "text/html"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "B",
+      "name": "login naomi-support@imperial.ac.uk",
+      "request": {
+        "body": {
+          "form": {
+            "password": "password",
+            "username": "naomi-support@imperial.ac.uk"
+          }
+        },
+        "method": "POST",
+        "path": "/callback/formClient"
+      },
+      "response": {
+        "body": {
+          "empty": true
+        },
+        "headers": {
+          "location": "/"
+        },
+        "status": 303
+      }
+    },
+    {
+      "client": "B",
+      "name": "open /",
+      "request": {
+        "method": "GET",
+        "path": "/"
+      },
+      "response": {
+        "body": {
+          "html": true,
+          "title": "Naomi"
+        },
+        "headers": {
+          "content-type": "text/html"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "create project shared",
+      "request": {
+        "body": {
+          "form": {
+            "name": "shared",
+            "note": "note"
+          }
+        },
+        "method": "POST",
+        "path": "/project/"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {
+              "id": "<PROJECT:1>",
+              "name": "shared",
+              "note": null,
+              "sharedBy": "",
+              "uploaded": null,
+              "versions": [
+                {
+                  "created": "<TIMESTAMP>",
+                  "id": "<UUID:1>",
+                  "note": null,
+                  "updated": "<TIMESTAMP>",
+                  "versionNumber": 1
+                }
+              ]
+            },
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "v2",
+      "request": {
+        "method": "POST",
+        "path": "/project/<PROJECT:1>/version/",
+        "query": {
+          "note": "v2",
+          "parent": "<UUID:1>"
+        }
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {
+              "created": "<TIMESTAMP>",
+              "id": "<UUID:2>",
+              "note": "v2",
+              "updated": "<TIMESTAMP>",
+              "versionNumber": 2
+            },
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "clone to B",
+      "request": {
+        "body": {
+          "form": {
+            "emails": "naomi-support@imperial.ac.uk"
+          }
+        },
+        "method": "POST",
+        "path": "/project/<PROJECT:1>/clone"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": null,
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "B",
+      "name": "B has the copy with sharedBy and all versions",
+      "request": {
+        "method": "GET",
+        "path": "/projects/"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": [
+              {
+                "id": "<PROJECT:2>",
+                "name": "shared",
+                "note": null,
+                "sharedBy": "test.user@example.com",
+                "uploaded": false,
+                "versions": [
+                  {
+                    "created": "<TIMESTAMP>",
+                    "id": "<UUID:3>",
+                    "note": null,
+                    "updated": "<TIMESTAMP>",
+                    "versionNumber": 2
+                  },
+                  {
+                    "created": "<TIMESTAMP>",
+                    "id": "<UUID:4>",
+                    "note": null,
+                    "updated": "<TIMESTAMP>",
+                    "versionNumber": 1
+                  }
+                ]
+              }
+            ],
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "A unchanged",
+      "request": {
+        "method": "GET",
+        "path": "/projects/"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": [
+              {
+                "id": "<PROJECT:1>",
+                "name": "shared",
+                "note": "note",
+                "sharedBy": null,
+                "uploaded": null,
+                "versions": [
+                  {
+                    "created": "<TIMESTAMP>",
+                    "id": "<UUID:2>",
+                    "note": "v2",
+                    "updated": "<TIMESTAMP>",
+                    "versionNumber": 2
+                  },
+                  {
+                    "created": "<TIMESTAMP>",
+                    "id": "<UUID:1>",
+                    "note": null,
+                    "updated": "<TIMESTAMP>",
+                    "versionNumber": 1
+                  }
+                ]
+              }
+            ],
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "name": "db:project",
+      "rows": [
+        {
+          "id": "<PROJECT:1>",
+          "is_uploaded": null,
+          "name": "shared",
+          "note": "note",
+          "shared_by": null,
+          "user_id": "test.user@example.com"
+        },
+        {
+          "id": "<PROJECT:2>",
+          "is_uploaded": false,
+          "name": "shared",
+          "note": null,
+          "shared_by": "test.user@example.com",
+          "user_id": "naomi-support@imperial.ac.uk"
+        }
+      ],
+      "table": "project",
+      "type": "db"
+    },
+    {
+      "name": "db:project_version",
+      "rows": [
+        {
+          "deleted": false,
+          "has_state": false,
+          "id": "<UUID:5>",
+          "note": null,
+          "project_id": null,
+          "state": null,
+          "version_number": 1
+        },
+        {
+          "deleted": false,
+          "has_state": false,
+          "id": "<UUID:6>",
+          "note": null,
+          "project_id": null,
+          "state": null,
+          "version_number": 1
+        },
+        {
+          "deleted": false,
+          "has_state": false,
+          "id": "<UUID:1>",
+          "note": null,
+          "project_id": "<PROJECT:1>",
+          "state": null,
+          "version_number": 1
+        },
+        {
+          "deleted": false,
+          "has_state": false,
+          "id": "<UUID:2>",
+          "note": "v2",
+          "project_id": "<PROJECT:1>",
+          "state": null,
+          "version_number": 2
+        },
+        {
+          "deleted": false,
+          "has_state": false,
+          "id": "<UUID:4>",
+          "note": null,
+          "project_id": "<PROJECT:2>",
+          "state": null,
+          "version_number": 1
+        },
+        {
+          "deleted": false,
+          "has_state": false,
+          "id": "<UUID:3>",
+          "note": null,
+          "project_id": "<PROJECT:2>",
+          "state": null,
+          "version_number": 2
+        }
+      ],
+      "table": "project_version",
+      "type": "db"
+    }
+  ]
+}

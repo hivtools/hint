@@ -1,0 +1,104 @@
+{
+  "scenario": "file_storage/test_large_binary_upload_roundtrip_hash",
+  "steps": [
+    {
+      "client": "A",
+      "name": "login test.user@example.com",
+      "request": {
+        "body": {
+          "form": {
+            "password": "password",
+            "username": "test.user@example.com"
+          }
+        },
+        "method": "POST",
+        "path": "/callback/formClient"
+      },
+      "response": {
+        "body": {
+          "empty": true
+        },
+        "headers": {
+          "location": "/"
+        },
+        "status": 303
+      }
+    },
+    {
+      "client": "A",
+      "name": "open /",
+      "request": {
+        "method": "GET",
+        "path": "/"
+      },
+      "response": {
+        "body": {
+          "html": true,
+          "title": "Naomi"
+        },
+        "headers": {
+          "content-type": "text/html"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "3MB garbage as pjnz",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "file": {
+              "filename": "big.PJNZ",
+              "fromADR": false,
+              "hash": "58B690AFD9B5F549CACB9402BCFCBFA0.PJNZ",
+              "path": "<UPLOADS>/58B690AFD9B5F549CACB9402BCFCBFA0.PJNZ",
+              "resource_url": null
+            },
+            "type": "pjnz"
+          },
+          "method": "POST",
+          "path": "/validate/baseline-individual",
+          "status": 400,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "multipart": {
+            "file": {
+              "filename": "big.PJNZ",
+              "sha256": "0a5d49e5dd9cc7aa647824dc6f29fbbbffe477e210f5668eed4420c51c381521",
+              "size": 3000000
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/baseline/pjnz/"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "files": [
+        {
+          "name": "58B690AFD9B5F549CACB9402BCFCBFA0.PJNZ",
+          "name_matches_md5": true,
+          "size": 3000000
+        }
+      ],
+      "name": "uploads",
+      "type": "uploads"
+    }
+  ]
+}
