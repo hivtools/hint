@@ -1,0 +1,104 @@
+{
+  "scenario": "model/test_model_options_with_programme_and_anc_data",
+  "steps": [
+    {
+      "client": "A",
+      "name": "login test.user@example.com",
+      "request": {
+        "body": {
+          "form": {
+            "password": "password",
+            "username": "test.user@example.com"
+          }
+        },
+        "method": "POST",
+        "path": "/callback/formClient"
+      },
+      "response": {
+        "body": {
+          "empty": true
+        },
+        "headers": {
+          "location": "/"
+        },
+        "status": 303
+      }
+    },
+    {
+      "client": "A",
+      "name": "open /",
+      "request": {
+        "method": "GET",
+        "path": "/"
+      },
+      "response": {
+        "body": {
+          "html": true,
+          "title": "Naomi"
+        },
+        "headers": {
+          "content-type": "text/html"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "options with programme and anc",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "anc": {
+              "filename": "anc.csv",
+              "fromADR": false,
+              "hash": "212FBB9D1AE1077EF9497BD8EA83298F.csv",
+              "path": "<UPLOADS>/212FBB9D1AE1077EF9497BD8EA83298F.csv",
+              "resource_url": null
+            },
+            "programme": {
+              "filename": "programme.csv",
+              "fromADR": false,
+              "hash": "A900936E6908D6CECA92A099980667F3.csv",
+              "path": "<UPLOADS>/A900936E6908D6CECA92A099980667F3.csv",
+              "resource_url": null
+            },
+            "shape": {
+              "filename": "malawi.geojson",
+              "fromADR": false,
+              "hash": "EBE533976BFAF0CABCA2C2E1B611B9C7.geojson",
+              "path": "<UPLOADS>/EBE533976BFAF0CABCA2C2E1B611B9C7.geojson",
+              "resource_url": null
+            },
+            "survey": {
+              "filename": "survey.csv",
+              "fromADR": false,
+              "hash": "2D229A4507FECFE5471C2CC90431CB3C.csv",
+              "path": "<UPLOADS>/2D229A4507FECFE5471C2CC90431CB3C.csv",
+              "resource_url": null
+            }
+          },
+          "method": "POST",
+          "path": "/model/options",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/model/options/"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    }
+  ]
+}

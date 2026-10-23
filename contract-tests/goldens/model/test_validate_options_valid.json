@@ -1,0 +1,172 @@
+{
+  "scenario": "model/test_validate_options_valid",
+  "steps": [
+    {
+      "client": "A",
+      "name": "login test.user@example.com",
+      "request": {
+        "body": {
+          "form": {
+            "password": "password",
+            "username": "test.user@example.com"
+          }
+        },
+        "method": "POST",
+        "path": "/callback/formClient"
+      },
+      "response": {
+        "body": {
+          "empty": true
+        },
+        "headers": {
+          "location": "/"
+        },
+        "status": 303
+      }
+    },
+    {
+      "client": "A",
+      "name": "open /",
+      "request": {
+        "method": "GET",
+        "path": "/"
+      },
+      "response": {
+        "body": {
+          "html": true,
+          "title": "Naomi"
+        },
+        "headers": {
+          "content-type": "text/html"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "POST /model/validate/options/",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "data": {
+              "pjnz": {
+                "filename": "Malawi2024.PJNZ",
+                "fromADR": false,
+                "hash": "46E4A725064B0E287F573A8F11389895.PJNZ",
+                "path": "<UPLOADS>/46E4A725064B0E287F573A8F11389895.PJNZ",
+                "resource_url": null
+              },
+              "population": {
+                "filename": "population.csv",
+                "fromADR": false,
+                "hash": "C11BDC2B37E6BC924E6D5B6B96B1ECC3.csv",
+                "path": "<UPLOADS>/C11BDC2B37E6BC924E6D5B6B96B1ECC3.csv",
+                "resource_url": null
+              },
+              "shape": {
+                "filename": "malawi.geojson",
+                "fromADR": false,
+                "hash": "EBE533976BFAF0CABCA2C2E1B611B9C7.geojson",
+                "path": "<UPLOADS>/EBE533976BFAF0CABCA2C2E1B611B9C7.geojson",
+                "resource_url": null
+              },
+              "survey": {
+                "filename": "survey.csv",
+                "fromADR": false,
+                "hash": "2D229A4507FECFE5471C2CC90431CB3C.csv",
+                "path": "<UPLOADS>/2D229A4507FECFE5471C2CC90431CB3C.csv",
+                "resource_url": null
+              }
+            },
+            "options": {
+              "anc_art_coverage_year1": "2023",
+              "anc_clients_year2": 2023,
+              "anc_clients_year2_num_months": "9",
+              "anc_prevalence_year1": "2023",
+              "anc_prevalence_year2": "2023",
+              "area_level": "4",
+              "area_scope": "MWI",
+              "artattend": "false",
+              "artattend_log_gamma_offset": -4,
+              "artattend_t2": "true",
+              "calendar_quarter_t1": "CY2020Q3",
+              "calendar_quarter_t2": "CY2023Q4",
+              "calendar_quarter_t3": "CY2024Q3",
+              "calendar_quarter_t4": "CY2025Q3",
+              "calendar_quarter_t5": "CY2026Q3",
+              "deff_artcov": 1,
+              "deff_prev": 1,
+              "deff_recent": 1,
+              "include_art_t1": "false",
+              "include_art_t2": "false",
+              "max_iterations": 250,
+              "no_of_samples": 1000,
+              "output_aware_plhiv": "true",
+              "permissive": "false",
+              "rng_seed": 28,
+              "survey_art_coverage": "DEMO2020PHIA",
+              "survey_prevalence": "DEMO2020PHIA",
+              "survey_recently_infected": "DEMO2020PHIA"
+            }
+          },
+          "method": "POST",
+          "path": "/validate/options",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "json": {
+            "iso3": null,
+            "options": {
+              "anc_art_coverage_year1": "2023",
+              "anc_clients_year2": 2023,
+              "anc_clients_year2_num_months": "9",
+              "anc_prevalence_year1": "2023",
+              "anc_prevalence_year2": "2023",
+              "area_level": "4",
+              "area_scope": "MWI",
+              "artattend": "false",
+              "artattend_log_gamma_offset": -4,
+              "artattend_t2": "true",
+              "calendar_quarter_t1": "CY2020Q3",
+              "calendar_quarter_t2": "CY2023Q4",
+              "calendar_quarter_t3": "CY2024Q3",
+              "calendar_quarter_t4": "CY2025Q3",
+              "calendar_quarter_t5": "CY2026Q3",
+              "deff_artcov": 1,
+              "deff_prev": 1,
+              "deff_recent": 1,
+              "include_art_t1": "false",
+              "include_art_t2": "false",
+              "max_iterations": 250,
+              "no_of_samples": 1000,
+              "output_aware_plhiv": "true",
+              "permissive": "false",
+              "rng_seed": 28,
+              "survey_art_coverage": "DEMO2020PHIA",
+              "survey_prevalence": "DEMO2020PHIA",
+              "survey_recently_infected": "DEMO2020PHIA"
+            },
+            "version": {}
+          }
+        },
+        "method": "POST",
+        "path": "/model/validate/options/"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    }
+  ]
+}

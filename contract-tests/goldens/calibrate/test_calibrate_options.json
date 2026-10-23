@@ -1,0 +1,192 @@
+{
+  "scenario": "calibrate/test_calibrate_options",
+  "steps": [
+    {
+      "client": "A",
+      "name": "login test.user@example.com",
+      "request": {
+        "body": {
+          "form": {
+            "password": "password",
+            "username": "test.user@example.com"
+          }
+        },
+        "method": "POST",
+        "path": "/callback/formClient"
+      },
+      "response": {
+        "body": {
+          "empty": true
+        },
+        "headers": {
+          "location": "/"
+        },
+        "status": 303
+      }
+    },
+    {
+      "client": "A",
+      "name": "open /",
+      "request": {
+        "method": "GET",
+        "path": "/"
+      },
+      "response": {
+        "body": {
+          "html": true,
+          "title": "Naomi"
+        },
+        "headers": {
+          "content-type": "text/html"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "MWI",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "POST",
+          "path": "/calibrate/options/MWI",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/calibrate/options/MWI"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "MWI in french",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "fr"
+          },
+          "method": "POST",
+          "path": "/calibrate/options/MWI",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "headers": {
+          "accept-language": "fr"
+        },
+        "method": "GET",
+        "path": "/calibrate/options/MWI"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "MWI in portuguese",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "pt"
+          },
+          "method": "POST",
+          "path": "/calibrate/options/MWI",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "headers": {
+          "accept-language": "pt"
+        },
+        "method": "GET",
+        "path": "/calibrate/options/MWI"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "any iso3 is accepted",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "POST",
+          "path": "/calibrate/options/XXX",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/calibrate/options/XXX"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "G",
+      "name": "guest",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "POST",
+          "path": "/calibrate/options/MWI",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/calibrate/options/MWI"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    }
+  ]
+}

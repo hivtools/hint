@@ -1,0 +1,246 @@
+{
+  "scenario": "baseline_files/test_upload_get_delete_cycle[guest-population]",
+  "steps": [
+    {
+      "client": "A",
+      "name": "open /",
+      "request": {
+        "method": "GET",
+        "path": "/"
+      },
+      "response": {
+        "body": {
+          "html": true,
+          "title": "Naomi"
+        },
+        "headers": {
+          "content-type": "text/html"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "get before upload is null",
+      "request": {
+        "method": "GET",
+        "path": "/baseline/population/"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": null,
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "upload population",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "file": {
+              "filename": "population.csv",
+              "fromADR": false,
+              "hash": "C11BDC2B37E6BC924E6D5B6B96B1ECC3.csv",
+              "path": "<UPLOADS>/C11BDC2B37E6BC924E6D5B6B96B1ECC3.csv",
+              "resource_url": null
+            },
+            "type": "population"
+          },
+          "method": "POST",
+          "path": "/validate/baseline-individual",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "multipart": {
+            "file": {
+              "filename": "population.csv",
+              "fixture": "population.csv",
+              "sha256": "a792982c149e4b4e9ae83c23d0492112c2a2cf00af6cd479c737284bd2ce1ec6",
+              "size": 1994432
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/baseline/population/"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "get after upload re-validates the file",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "file": {
+              "filename": "population.csv",
+              "fromADR": false,
+              "hash": "C11BDC2B37E6BC924E6D5B6B96B1ECC3.csv",
+              "path": "<UPLOADS>/C11BDC2B37E6BC924E6D5B6B96B1ECC3.csv",
+              "resource_url": null
+            },
+            "type": "population"
+          },
+          "method": "POST",
+          "path": "/validate/baseline-individual",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/baseline/population/"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "name": "db:version_file",
+      "rows": [
+        {
+          "filename": "population.csv",
+          "from_adr": false,
+          "hash": "C11BDC2B37E6BC924E6D5B6B96B1ECC3.csv",
+          "resource_url": null,
+          "type": "population",
+          "version": "<UUID:1>"
+        }
+      ],
+      "table": "version_file",
+      "type": "db"
+    },
+    {
+      "name": "db:file",
+      "rows": [
+        {
+          "hash": "C11BDC2B37E6BC924E6D5B6B96B1ECC3.csv"
+        }
+      ],
+      "table": "file",
+      "type": "db"
+    },
+    {
+      "files": [
+        {
+          "name": "C11BDC2B37E6BC924E6D5B6B96B1ECC3.csv",
+          "name_matches_md5": true,
+          "size": 1994432
+        }
+      ],
+      "name": "uploads",
+      "type": "uploads"
+    },
+    {
+      "client": "A",
+      "name": "delete",
+      "request": {
+        "method": "DELETE",
+        "path": "/baseline/population/"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": true,
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "get after delete is null",
+      "request": {
+        "method": "GET",
+        "path": "/baseline/population/"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": null,
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "delete again is still a success",
+      "request": {
+        "method": "DELETE",
+        "path": "/baseline/population/"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": true,
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "name": "db:version_file",
+      "rows": [],
+      "table": "version_file",
+      "type": "db"
+    },
+    {
+      "files": [
+        {
+          "name": "C11BDC2B37E6BC924E6D5B6B96B1ECC3.csv",
+          "name_matches_md5": true,
+          "size": 1994432
+        }
+      ],
+      "name": "file stays on disk after delete",
+      "type": "uploads"
+    }
+  ]
+}

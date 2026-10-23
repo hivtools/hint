@@ -1,0 +1,254 @@
+{
+  "scenario": "chart_data/test_input_time_series_needs_shape_and_pjnz",
+  "steps": [
+    {
+      "client": "A",
+      "name": "login test.user@example.com",
+      "request": {
+        "body": {
+          "form": {
+            "password": "password",
+            "username": "test.user@example.com"
+          }
+        },
+        "method": "POST",
+        "path": "/callback/formClient"
+      },
+      "response": {
+        "body": {
+          "empty": true
+        },
+        "headers": {
+          "location": "/"
+        },
+        "status": 303
+      }
+    },
+    {
+      "client": "A",
+      "name": "open /",
+      "request": {
+        "method": "GET",
+        "path": "/"
+      },
+      "response": {
+        "body": {
+          "html": true,
+          "title": "Naomi"
+        },
+        "headers": {
+          "content-type": "text/html"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "anc without shape (rejected, stored)",
+      "request": {
+        "body": {
+          "multipart": {
+            "file": {
+              "filename": "anc.csv",
+              "fixture": "anc.csv",
+              "sha256": "6c9f65bad5653d754a713c737fde3ca4186f7e51d9bddb43eec47dc669fdc90a",
+              "size": 28895
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/disease/anc/",
+        "query": {
+          "strict": "false"
+        }
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "You must upload a shape file before uploading survey or programme data.",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "client": "A",
+      "name": "anc chart without shape",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "data": {
+              "anc": {
+                "filename": "anc.csv",
+                "fromADR": false,
+                "hash": "212FBB9D1AE1077EF9497BD8EA83298F.csv",
+                "path": "<UPLOADS>/212FBB9D1AE1077EF9497BD8EA83298F.csv",
+                "resource_url": null
+              }
+            }
+          },
+          "method": "POST",
+          "path": "/chart-data/input-time-series/anc",
+          "status": 400,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/chart-data/input-time-series/anc"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "client": "A",
+      "name": "upload shape",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "file": {
+              "filename": "malawi.geojson",
+              "fromADR": false,
+              "hash": "EBE533976BFAF0CABCA2C2E1B611B9C7.geojson",
+              "path": "<UPLOADS>/EBE533976BFAF0CABCA2C2E1B611B9C7.geojson",
+              "resource_url": null
+            },
+            "type": "shape"
+          },
+          "method": "POST",
+          "path": "/validate/baseline-individual",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "multipart": {
+            "file": {
+              "filename": "malawi.geojson",
+              "fixture": "malawi.geojson",
+              "sha256": "fb9a189da2337c0b568998b3ab668ebf9e433e6ec26135cae95c20bf9bd5a953",
+              "size": 1045993
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/baseline/shape/"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "programme without pjnz, strict (rejected, stored)",
+      "request": {
+        "body": {
+          "multipart": {
+            "file": {
+              "filename": "programme.csv",
+              "fixture": "programme.csv",
+              "sha256": "afb6c88a2bb60f786fb1ea6fb8ee8eed9738a133903b62414485e2baeeac0bed",
+              "size": 51582
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/disease/programme/"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "You must upload a Spectrum file before uploading survey or programme data.",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "client": "A",
+      "name": "programme chart without pjnz",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "data": {
+              "programme": {
+                "filename": "programme.csv",
+                "fromADR": false,
+                "hash": "A900936E6908D6CECA92A099980667F3.csv",
+                "path": "<UPLOADS>/A900936E6908D6CECA92A099980667F3.csv",
+                "resource_url": null
+              },
+              "shape": {
+                "filename": "malawi.geojson",
+                "fromADR": false,
+                "hash": "EBE533976BFAF0CABCA2C2E1B611B9C7.geojson",
+                "path": "<UPLOADS>/EBE533976BFAF0CABCA2C2E1B611B9C7.geojson",
+                "resource_url": null
+              }
+            }
+          },
+          "method": "POST",
+          "path": "/chart-data/input-time-series/programme",
+          "status": 400,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/chart-data/input-time-series/programme"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    }
+  ]
+}

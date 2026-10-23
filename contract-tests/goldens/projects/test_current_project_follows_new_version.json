@@ -1,0 +1,249 @@
+{
+  "scenario": "projects/test_current_project_follows_new_version",
+  "steps": [
+    {
+      "client": "A",
+      "name": "login test.user@example.com",
+      "request": {
+        "body": {
+          "form": {
+            "password": "password",
+            "username": "test.user@example.com"
+          }
+        },
+        "method": "POST",
+        "path": "/callback/formClient"
+      },
+      "response": {
+        "body": {
+          "empty": true
+        },
+        "headers": {
+          "location": "/"
+        },
+        "status": 303
+      }
+    },
+    {
+      "client": "A",
+      "name": "open /",
+      "request": {
+        "method": "GET",
+        "path": "/"
+      },
+      "response": {
+        "body": {
+          "html": true,
+          "title": "Naomi"
+        },
+        "headers": {
+          "content-type": "text/html"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "create project p",
+      "request": {
+        "body": {
+          "form": {
+            "name": "p",
+            "note": "a note"
+          }
+        },
+        "method": "POST",
+        "path": "/project/"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {
+              "id": "<PROJECT:1>",
+              "name": "p",
+              "note": null,
+              "sharedBy": "",
+              "uploaded": null,
+              "versions": [
+                {
+                  "created": "<TIMESTAMP>",
+                  "id": "<UUID:1>",
+                  "note": null,
+                  "updated": "<TIMESTAMP>",
+                  "versionNumber": 1
+                }
+              ]
+            },
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "new version",
+      "request": {
+        "method": "POST",
+        "path": "/project/<PROJECT:1>/version/",
+        "query": {
+          "note": "second",
+          "parent": "<UUID:1>"
+        }
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {
+              "created": "<TIMESTAMP>",
+              "id": "<UUID:2>",
+              "note": "second",
+              "updated": "<TIMESTAMP>",
+              "versionNumber": 2
+            },
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "current is the second version",
+      "request": {
+        "method": "GET",
+        "path": "/project/current"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {
+              "project": {
+                "id": "<PROJECT:1>",
+                "name": "p",
+                "note": "a note",
+                "sharedBy": null,
+                "uploaded": null,
+                "versions": [
+                  {
+                    "created": "<TIMESTAMP>",
+                    "id": "<UUID:1>",
+                    "note": null,
+                    "updated": "<TIMESTAMP>",
+                    "versionNumber": 1
+                  },
+                  {
+                    "created": "<TIMESTAMP>",
+                    "id": "<UUID:2>",
+                    "note": "second",
+                    "updated": "<TIMESTAMP>",
+                    "versionNumber": 2
+                  }
+                ]
+              },
+              "version": {
+                "created": "<TIMESTAMP>",
+                "id": "<UUID:2>",
+                "note": "second",
+                "updated": "<TIMESTAMP>",
+                "versionNumber": 2
+              }
+            },
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "open first version",
+      "request": {
+        "method": "GET",
+        "path": "/project/<PROJECT:1>/version/<UUID:1>"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "An unexpected error occurred. If you see this message while you are using Naomi at a workshop, please contact your workshop technical support and show them this code: <ERROR_CODE>. Otherwise please contact support at naomi-support@imperial.ac.uk and quote this code: <ERROR_CODE>.",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 500
+      }
+    },
+    {
+      "client": "A",
+      "name": "current is the first version again",
+      "request": {
+        "method": "GET",
+        "path": "/project/current"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {
+              "project": {
+                "id": "<PROJECT:1>",
+                "name": "p",
+                "note": "a note",
+                "sharedBy": null,
+                "uploaded": null,
+                "versions": [
+                  {
+                    "created": "<TIMESTAMP>",
+                    "id": "<UUID:1>",
+                    "note": null,
+                    "updated": "<TIMESTAMP>",
+                    "versionNumber": 1
+                  },
+                  {
+                    "created": "<TIMESTAMP>",
+                    "id": "<UUID:2>",
+                    "note": "second",
+                    "updated": "<TIMESTAMP>",
+                    "versionNumber": 2
+                  }
+                ]
+              },
+              "version": {
+                "created": "<TIMESTAMP>",
+                "id": "<UUID:2>",
+                "note": "second",
+                "updated": "<TIMESTAMP>",
+                "versionNumber": 2
+              }
+            },
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    }
+  ]
+}

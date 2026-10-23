@@ -1,0 +1,242 @@
+{
+  "scenario": "adr_browse/test_dataset_show",
+  "steps": [
+    {
+      "client": "A",
+      "name": "login test.user@example.com",
+      "request": {
+        "body": {
+          "form": {
+            "password": "password",
+            "username": "test.user@example.com"
+          }
+        },
+        "method": "POST",
+        "path": "/callback/formClient"
+      },
+      "response": {
+        "body": {
+          "empty": true
+        },
+        "headers": {
+          "location": "/"
+        },
+        "status": 303
+      }
+    },
+    {
+      "client": "A",
+      "name": "open /",
+      "request": {
+        "method": "GET",
+        "path": "/"
+      },
+      "response": {
+        "body": {
+          "html": true,
+          "title": "Naomi"
+        },
+        "headers": {
+          "content-type": "text/html"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "by id",
+      "outbound": [
+        {
+          "headers": {
+            "authorization": "<UUID:1>"
+          },
+          "method": "GET",
+          "path": "/api/3/action/package_show",
+          "query": {
+            "id": "d-input-1"
+          },
+          "to": "adr"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/adr/datasets/d-input-1"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {
+              "id": "d-input-1",
+              "name": "d-input-1",
+              "resources": [
+                {
+                  "id": "r1",
+                  "name": "r1",
+                  "resource_type": "inputs-unaids-spectrum-file",
+                  "url": "http://adr.example/r1"
+                },
+                {
+                  "id": "r2",
+                  "name": "r2",
+                  "resource_type": "inputs-unaids-geographic",
+                  "url": "http://adr.example/r2"
+                }
+              ],
+              "title": "Dataset d-input-1",
+              "type": "country-estimates-26"
+            },
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "with release",
+      "outbound": [
+        {
+          "headers": {
+            "authorization": "<UUID:1>"
+          },
+          "method": "GET",
+          "path": "/api/3/action/package_show",
+          "query": {
+            "id": "d-output-1",
+            "release": "rel-1"
+          },
+          "to": "adr"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/adr/datasets/d-output-1",
+        "query": {
+          "release": "rel-1"
+        }
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {
+              "id": "d-output-1",
+              "name": "d-output-1",
+              "resources": [
+                {
+                  "id": "r3",
+                  "name": "r3",
+                  "resource_type": "inputs-unaids-naomi-output-zip",
+                  "url": "http://adr.example/r3"
+                }
+              ],
+              "title": "Dataset d-output-1",
+              "type": "country-estimates-26"
+            },
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "unknown dataset (ckan not found)",
+      "outbound": [
+        {
+          "headers": {
+            "authorization": "<UUID:1>"
+          },
+          "method": "GET",
+          "path": "/api/3/action/package_show",
+          "query": {
+            "id": "unknown-dataset"
+          },
+          "to": "adr"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/adr/datasets/unknown-dataset"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "Not found",
+                "error": "ADR_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 500
+      }
+    },
+    {
+      "client": "A",
+      "name": "trailing slash",
+      "outbound": [
+        {
+          "headers": {
+            "authorization": "<UUID:1>"
+          },
+          "method": "GET",
+          "path": "/api/3/action/package_show",
+          "query": {
+            "id": "d-input-1"
+          },
+          "to": "adr"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/adr/datasets/d-input-1/"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {
+              "id": "d-input-1",
+              "name": "d-input-1",
+              "resources": [
+                {
+                  "id": "r1",
+                  "name": "r1",
+                  "resource_type": "inputs-unaids-spectrum-file",
+                  "url": "http://adr.example/r1"
+                },
+                {
+                  "id": "r2",
+                  "name": "r2",
+                  "resource_type": "inputs-unaids-geographic",
+                  "url": "http://adr.example/r2"
+                }
+              ],
+              "title": "Dataset d-input-1",
+              "type": "country-estimates-26"
+            },
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    }
+  ]
+}

@@ -1,0 +1,493 @@
+{
+  "scenario": "rehydrate/test_rehydrate_malformed_zips",
+  "steps": [
+    {
+      "client": "A",
+      "name": "login test.user@example.com",
+      "request": {
+        "body": {
+          "form": {
+            "password": "password",
+            "username": "test.user@example.com"
+          }
+        },
+        "method": "POST",
+        "path": "/callback/formClient"
+      },
+      "response": {
+        "body": {
+          "empty": true
+        },
+        "headers": {
+          "location": "/"
+        },
+        "status": 303
+      }
+    },
+    {
+      "client": "A",
+      "name": "open /",
+      "request": {
+        "method": "GET",
+        "path": "/"
+      },
+      "response": {
+        "body": {
+          "html": true,
+          "title": "Naomi"
+        },
+        "headers": {
+          "content-type": "text/html"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "the real output.zip fixture (not from this app)",
+      "request": {
+        "body": {
+          "multipart": {
+            "file": {
+              "filename": "output.zip",
+              "fixture": "output.zip",
+              "sha256": "08ca7285af98b98b1d237b9cf776bd4dd8d3bd3630a23751db46097e50f6a20e",
+              "size": 860
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/rehydrate/zip"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "Cannot load model outputs. This fit was not generated on the Naomi web application. Please contact support.",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "client": "A",
+      "name": "zip without project_state.json",
+      "request": {
+        "body": {
+          "multipart": {
+            "file": {
+              "filename": "output.zip",
+              "volatile_content": true
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/rehydrate/zip"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "Cannot load model outputs. This fit was not generated on the Naomi web application. Please contact support.",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "client": "A",
+      "name": "not a zip at all",
+      "request": {
+        "body": {
+          "multipart": {
+            "file": {
+              "filename": "o.zip",
+              "sha256": "6cc4c9e4b30aabdd3d97c660e0008c6171768ea667ee7f2e3ceccc5ede802a08",
+              "size": 17
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/rehydrate/zip"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "Cannot load model outputs. This fit was not generated on the Naomi web application. Please contact support.",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "client": "A",
+      "name": "empty file",
+      "request": {
+        "body": {
+          "multipart": {
+            "file": {
+              "filename": "o.zip",
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "size": 0
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/rehydrate/zip"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "Cannot load model outputs. This fit was not generated on the Naomi web application. Please contact support.",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "client": "A",
+      "name": "empty zip",
+      "request": {
+        "body": {
+          "multipart": {
+            "file": {
+              "filename": "o.zip",
+              "sha256": "8739c76e681f900923b900c9df0ef75cf421d39cabb54650c4b9ad19b6a76d85",
+              "size": 22
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/rehydrate/zip"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "Cannot load model outputs. This fit was not generated on the Naomi web application. Please contact support.",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "client": "A",
+      "name": "state is not valid json",
+      "request": {
+        "body": {
+          "multipart": {
+            "file": {
+              "filename": "output.zip",
+              "volatile_content": true
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/rehydrate/zip"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "An unexpected error occurred. If you see this message while you are using Naomi at a workshop, please contact your workshop technical support and show them this code: <ERROR_CODE>. Otherwise please contact support at naomi-support@imperial.ac.uk and quote this code: <ERROR_CODE>.",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 500
+      }
+    },
+    {
+      "client": "A",
+      "name": "state is json null",
+      "request": {
+        "body": {
+          "multipart": {
+            "file": {
+              "filename": "output.zip",
+              "volatile_content": true
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/rehydrate/zip"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "Unable to load output zip, model fit not generated on the web app. Please contact a system admin.",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "client": "A",
+      "name": "state is a json array",
+      "request": {
+        "body": {
+          "multipart": {
+            "file": {
+              "filename": "output.zip",
+              "volatile_content": true
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/rehydrate/zip"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "Unable to load output zip, model fit not generated on the web app. Please contact a system admin.",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "client": "A",
+      "name": "state is an empty object",
+      "request": {
+        "body": {
+          "multipart": {
+            "file": {
+              "filename": "output.zip",
+              "volatile_content": true
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/rehydrate/zip"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "Unable to load output zip, model fit not generated on the web app. Please contact a system admin.",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "client": "A",
+      "name": "any file name works",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "GET",
+          "path": "/task/<TASK:fit>/exists",
+          "status": 200,
+          "to": "hintr"
+        },
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "GET",
+          "path": "/task/<TASK:calibrate>/exists",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "multipart": {
+            "file": {
+              "filename": "state.txt",
+              "volatile_content": true
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/rehydrate/zip"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {
+              "notes": "project notes\nline 2",
+              "state": {
+                "calibrate": {
+                  "id": "<TASK:calibrate>",
+                  "options": {}
+                },
+                "datasets": {},
+                "model_fit": {
+                  "id": "<TASK:fit>",
+                  "options": {}
+                },
+                "version": {
+                  "hintr": "1.2.23",
+                  "naomi": "2.10.23",
+                  "rrq": "0.7.23",
+                  "traduire": "0.1.1"
+                }
+              }
+            },
+            "errors": null,
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "extra members are ignored",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "GET",
+          "path": "/task/<TASK:fit>/exists",
+          "status": 200,
+          "to": "hintr"
+        },
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "GET",
+          "path": "/task/<TASK:calibrate>/exists",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "multipart": {
+            "file": {
+              "filename": "output.zip",
+              "volatile_content": true
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/rehydrate/zip"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {
+              "notes": "project notes\nline 2",
+              "state": {
+                "calibrate": {
+                  "id": "<TASK:calibrate>",
+                  "options": {}
+                },
+                "datasets": {},
+                "model_fit": {
+                  "id": "<TASK:fit>",
+                  "options": {}
+                },
+                "version": {
+                  "hintr": "1.2.23",
+                  "naomi": "2.10.23",
+                  "rrq": "0.7.23",
+                  "traduire": "0.1.1"
+                }
+              }
+            },
+            "errors": null,
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "scenario": "pages_and_session/test_unknown_route_html_page",
+  "steps": [
+    {
+      "client": "A",
+      "name": "GET /nonsense/route/",
+      "request": {
+        "headers": {
+          "accept": "text/html"
+        },
+        "method": "GET",
+        "path": "/nonsense/route/"
+      },
+      "response": {
+        "body": {
+          "contains": [
+            "404 Error Page"
+          ],
+          "html": true,
+          "title": "404 Error Page"
+        },
+        "headers": {
+          "content-type": "text/html"
+        },
+        "status": 404
+      }
+    }
+  ]
+}

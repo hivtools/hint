@@ -1,0 +1,211 @@
+{
+  "scenario": "baseline_files/test_failed_validation_still_replaces_the_stored_file[shape]",
+  "steps": [
+    {
+      "client": "A",
+      "name": "login test.user@example.com",
+      "request": {
+        "body": {
+          "form": {
+            "password": "password",
+            "username": "test.user@example.com"
+          }
+        },
+        "method": "POST",
+        "path": "/callback/formClient"
+      },
+      "response": {
+        "body": {
+          "empty": true
+        },
+        "headers": {
+          "location": "/"
+        },
+        "status": 303
+      }
+    },
+    {
+      "client": "A",
+      "name": "open /",
+      "request": {
+        "method": "GET",
+        "path": "/"
+      },
+      "response": {
+        "body": {
+          "html": true,
+          "title": "Naomi"
+        },
+        "headers": {
+          "content-type": "text/html"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "upload shape",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "file": {
+              "filename": "malawi.geojson",
+              "fromADR": false,
+              "hash": "EBE533976BFAF0CABCA2C2E1B611B9C7.geojson",
+              "path": "<UPLOADS>/EBE533976BFAF0CABCA2C2E1B611B9C7.geojson",
+              "resource_url": null
+            },
+            "type": "shape"
+          },
+          "method": "POST",
+          "path": "/validate/baseline-individual",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "multipart": {
+            "file": {
+              "filename": "malawi.geojson",
+              "fixture": "malawi.geojson",
+              "sha256": "fb9a189da2337c0b568998b3ab668ebf9e433e6ec26135cae95c20bf9bd5a953",
+              "size": 1045993
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/baseline/shape/"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "upload invalid file over good one",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "file": {
+              "filename": "population.csv",
+              "fromADR": false,
+              "hash": "C11BDC2B37E6BC924E6D5B6B96B1ECC3.csv",
+              "path": "<UPLOADS>/C11BDC2B37E6BC924E6D5B6B96B1ECC3.csv",
+              "resource_url": null
+            },
+            "type": "shape"
+          },
+          "method": "POST",
+          "path": "/validate/baseline-individual",
+          "status": 400,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "multipart": {
+            "file": {
+              "filename": "population.csv",
+              "fixture": "population.csv",
+              "sha256": "a792982c149e4b4e9ae83c23d0492112c2a2cf00af6cd479c737284bd2ce1ec6",
+              "size": 1994432
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/baseline/shape/"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "client": "A",
+      "name": "GET now reports the invalid file",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "file": {
+              "filename": "population.csv",
+              "fromADR": false,
+              "hash": "C11BDC2B37E6BC924E6D5B6B96B1ECC3.csv",
+              "path": "<UPLOADS>/C11BDC2B37E6BC924E6D5B6B96B1ECC3.csv",
+              "resource_url": null
+            },
+            "type": "shape"
+          },
+          "method": "POST",
+          "path": "/validate/baseline-individual",
+          "status": 400,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/baseline/shape/"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "name": "db:version_file",
+      "rows": [
+        {
+          "filename": "population.csv",
+          "from_adr": false,
+          "hash": "C11BDC2B37E6BC924E6D5B6B96B1ECC3.csv",
+          "resource_url": null,
+          "type": "shape",
+          "version": "<UUID:1>"
+        }
+      ],
+      "table": "version_file",
+      "type": "db"
+    },
+    {
+      "files": [
+        {
+          "name": "C11BDC2B37E6BC924E6D5B6B96B1ECC3.csv",
+          "name_matches_md5": true,
+          "size": 1994432
+        },
+        {
+          "name": "EBE533976BFAF0CABCA2C2E1B611B9C7.geojson",
+          "name_matches_md5": true,
+          "size": 1045993
+        }
+      ],
+      "name": "uploads",
+      "type": "uploads"
+    }
+  ]
+}

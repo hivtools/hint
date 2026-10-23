@@ -1,0 +1,212 @@
+{
+  "scenario": "error_report/test_report_when_support_user_does_not_exist",
+  "steps": [
+    {
+      "client": "A",
+      "name": "login test.user@example.com",
+      "request": {
+        "body": {
+          "form": {
+            "password": "password",
+            "username": "test.user@example.com"
+          }
+        },
+        "method": "POST",
+        "path": "/callback/formClient"
+      },
+      "response": {
+        "body": {
+          "empty": true
+        },
+        "headers": {
+          "location": "/"
+        },
+        "status": 303
+      }
+    },
+    {
+      "client": "A",
+      "name": "open /",
+      "request": {
+        "method": "GET",
+        "path": "/"
+      },
+      "response": {
+        "body": {
+          "html": true,
+          "title": "Naomi"
+        },
+        "headers": {
+          "content-type": "text/html"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "create project p",
+      "request": {
+        "body": {
+          "form": {
+            "name": "p",
+            "note": "a note"
+          }
+        },
+        "method": "POST",
+        "path": "/project/"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {
+              "id": "<PROJECT:1>",
+              "name": "p",
+              "note": null,
+              "sharedBy": "",
+              "uploaded": null,
+              "versions": [
+                {
+                  "created": "<TIMESTAMP>",
+                  "id": "<UUID:1>",
+                  "note": null,
+                  "updated": "<TIMESTAMP>",
+                  "versionNumber": 1
+                }
+              ]
+            },
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "support account missing",
+      "outbound": [
+        {
+          "json": {
+            "browserAgent": "Mozilla/5.0 (Linux; Android 8.0.0; SM-G960F Build/R16NW)",
+            "calibrateId": "1234",
+            "country": "South Africa",
+            "description": "description of the error msg",
+            "downloadIds": {
+              "coarse_output": "coarse123",
+              "spectrum": "spectrum123",
+              "summary": "summary123"
+            },
+            "email": "test.user@example.com",
+            "errors": [
+              {
+                "detail": "Please contact support for troubleshooting1",
+                "error": "OTHER_ERROR",
+                "key": "go-now-then"
+              },
+              {
+                "detail": "Please contact support for support",
+                "error": "OTHER_ERROR",
+                "key": "go-later-then"
+              }
+            ],
+            "modelRunId": "job12",
+            "projectId": "<PROJECT:1>",
+            "projectName": "South 2 Worldpop",
+            "section": "Fit model",
+            "stepsToReproduce": "step to reproduce desc",
+            "timeStamp": "<TIMESTAMP>",
+            "versions": {
+              "hint": "v5",
+              "hintr": "v2",
+              "naomi": "v1",
+              "rrq": "v3",
+              "traduire": "v4"
+            }
+          },
+          "method": "POST",
+          "path": "/flow",
+          "to": "stub"
+        }
+      ],
+      "request": {
+        "body": {
+          "json": {
+            "browserAgent": "Mozilla/5.0 (Linux; Android 8.0.0; SM-G960F Build/R16NW)",
+            "calibrateId": "1234",
+            "country": "South Africa",
+            "description": "description of the error msg",
+            "downloadIds": {
+              "coarse_output": "coarse123",
+              "spectrum": "spectrum123",
+              "summary": "summary123"
+            },
+            "email": "test.user@example.com",
+            "errors": [
+              {
+                "detail": "Please contact support for troubleshooting1",
+                "error": "OTHER_ERROR",
+                "key": "go-now-then"
+              },
+              {
+                "detail": "Please contact support for support",
+                "error": "OTHER_ERROR",
+                "key": "go-later-then"
+              }
+            ],
+            "modelRunId": "job12",
+            "projectId": "<PROJECT:1>",
+            "projectName": "South 2 Worldpop",
+            "section": "Fit model",
+            "stepsToReproduce": "step to reproduce desc",
+            "timeStamp": "<TIMESTAMP>",
+            "versions": {
+              "hint": "v5",
+              "hintr": "v2",
+              "naomi": "v1",
+              "rrq": "v3",
+              "traduire": "v4"
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/error-report"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "User does not exist.",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "name": "db:project",
+      "rows": [
+        {
+          "id": "<PROJECT:1>",
+          "is_uploaded": null,
+          "name": "p",
+          "note": "a note",
+          "shared_by": null,
+          "user_id": "test.user@example.com"
+        }
+      ],
+      "table": "project",
+      "type": "db"
+    }
+  ]
+}

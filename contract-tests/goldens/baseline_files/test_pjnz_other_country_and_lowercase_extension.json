@@ -1,0 +1,157 @@
+{
+  "scenario": "baseline_files/test_pjnz_other_country_and_lowercase_extension",
+  "steps": [
+    {
+      "client": "A",
+      "name": "login test.user@example.com",
+      "request": {
+        "body": {
+          "form": {
+            "password": "password",
+            "username": "test.user@example.com"
+          }
+        },
+        "method": "POST",
+        "path": "/callback/formClient"
+      },
+      "response": {
+        "body": {
+          "empty": true
+        },
+        "headers": {
+          "location": "/"
+        },
+        "status": 303
+      }
+    },
+    {
+      "client": "A",
+      "name": "open /",
+      "request": {
+        "method": "GET",
+        "path": "/"
+      },
+      "response": {
+        "body": {
+          "html": true,
+          "title": "Naomi"
+        },
+        "headers": {
+          "content-type": "text/html"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "upload pjnz",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "file": {
+              "filename": "Botswana2018.PJNZ",
+              "fromADR": false,
+              "hash": "E66ECF0E9BE8BE814547EA7574700DD3.PJNZ",
+              "path": "<UPLOADS>/E66ECF0E9BE8BE814547EA7574700DD3.PJNZ",
+              "resource_url": null
+            },
+            "type": "pjnz"
+          },
+          "method": "POST",
+          "path": "/validate/baseline-individual",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "multipart": {
+            "file": {
+              "filename": "Botswana2018.PJNZ",
+              "fixture": "Botswana2018.PJNZ",
+              "sha256": "aa2cf45985160a3b8ac88b560dea922ceeff33bc8f25f78932a6b12ec45e0093",
+              "size": 945973
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/baseline/pjnz/"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "lowercase extension",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "file": {
+              "filename": "renamed.pjnz",
+              "fromADR": false,
+              "hash": "46E4A725064B0E287F573A8F11389895.pjnz",
+              "path": "<UPLOADS>/46E4A725064B0E287F573A8F11389895.pjnz",
+              "resource_url": null
+            },
+            "type": "pjnz"
+          },
+          "method": "POST",
+          "path": "/validate/baseline-individual",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "multipart": {
+            "file": {
+              "filename": "renamed.pjnz",
+              "sha256": "49d688e8fe81c4d4dd49a081791e756bcdbbd1542587812bceea354bda02d3c1",
+              "size": 1721376
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/baseline/pjnz/"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "files": [
+        {
+          "name": "46E4A725064B0E287F573A8F11389895.pjnz",
+          "name_matches_md5": true,
+          "size": 1721376
+        },
+        {
+          "name": "E66ECF0E9BE8BE814547EA7574700DD3.PJNZ",
+          "name_matches_md5": true,
+          "size": 945973
+        }
+      ],
+      "name": "uploads",
+      "type": "uploads"
+    }
+  ]
+}

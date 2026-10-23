@@ -1,0 +1,558 @@
+{
+  "scenario": "adr_browse/test_datasets_adr_failures",
+  "steps": [
+    {
+      "client": "A",
+      "name": "login test.user@example.com",
+      "request": {
+        "body": {
+          "form": {
+            "password": "password",
+            "username": "test.user@example.com"
+          }
+        },
+        "method": "POST",
+        "path": "/callback/formClient"
+      },
+      "response": {
+        "body": {
+          "empty": true
+        },
+        "headers": {
+          "location": "/"
+        },
+        "status": 303
+      }
+    },
+    {
+      "client": "A",
+      "name": "open /",
+      "request": {
+        "method": "GET",
+        "path": "/"
+      },
+      "response": {
+        "body": {
+          "html": true,
+          "title": "Naomi"
+        },
+        "headers": {
+          "content-type": "text/html"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "adr 401 ckan error",
+      "outbound": [
+        {
+          "headers": {
+            "authorization": "<UUID:1>"
+          },
+          "method": "GET",
+          "path": "/api/3/action/package_search",
+          "query": {
+            "hide_inaccessible_resources": "true",
+            "include_private": "true",
+            "q": "type:(country-estimates-26)",
+            "rows": "1000"
+          },
+          "to": "adr"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/adr/datasets",
+        "query": {
+          "type": "input"
+        }
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "There was an error fetching datasets from ADR.",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 500
+      }
+    },
+    {
+      "client": "A",
+      "name": "adr 403 not logged in",
+      "outbound": [
+        {
+          "headers": {
+            "authorization": "<UUID:1>"
+          },
+          "method": "GET",
+          "path": "/api/3/action/package_search",
+          "query": {
+            "hide_inaccessible_resources": "true",
+            "include_private": "true",
+            "q": "type:(country-estimates-26)",
+            "rows": "1000"
+          },
+          "to": "adr"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/adr/datasets",
+        "query": {
+          "type": "input"
+        }
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "Cannot fetch datasets from the ADR as you do not yet have an account. Please login to the ADR with your Auth0 credentials and then return here and try again.",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 500
+      }
+    },
+    {
+      "client": "A",
+      "name": "adr 404",
+      "outbound": [
+        {
+          "headers": {
+            "authorization": "<UUID:1>"
+          },
+          "method": "GET",
+          "path": "/api/3/action/package_search",
+          "query": {
+            "hide_inaccessible_resources": "true",
+            "include_private": "true",
+            "q": "type:(country-estimates-26)",
+            "rows": "1000"
+          },
+          "to": "adr"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/adr/datasets",
+        "query": {
+          "type": "input"
+        }
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "There was an error fetching datasets from ADR.",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 500
+      }
+    },
+    {
+      "client": "A",
+      "name": "adr 500 ckan error",
+      "outbound": [
+        {
+          "headers": {
+            "authorization": "<UUID:1>"
+          },
+          "method": "GET",
+          "path": "/api/3/action/package_search",
+          "query": {
+            "hide_inaccessible_resources": "true",
+            "include_private": "true",
+            "q": "type:(country-estimates-26)",
+            "rows": "1000"
+          },
+          "to": "adr"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/adr/datasets",
+        "query": {
+          "type": "input"
+        }
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "There was an error fetching datasets from ADR.",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 500
+      }
+    },
+    {
+      "client": "A",
+      "name": "adr 200 but success false",
+      "outbound": [
+        {
+          "headers": {
+            "authorization": "<UUID:1>"
+          },
+          "method": "GET",
+          "path": "/api/3/action/package_search",
+          "query": {
+            "hide_inaccessible_resources": "true",
+            "include_private": "true",
+            "q": "type:(country-estimates-26)",
+            "rows": "1000"
+          },
+          "to": "adr"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/adr/datasets",
+        "query": {
+          "type": "input"
+        }
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "There was an error fetching datasets from ADR.",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 500
+      }
+    },
+    {
+      "client": "A",
+      "name": "adr 500 html",
+      "outbound": [
+        {
+          "headers": {
+            "authorization": "<UUID:1>"
+          },
+          "method": "GET",
+          "path": "/api/3/action/package_search",
+          "query": {
+            "hide_inaccessible_resources": "true",
+            "include_private": "true",
+            "q": "type:(country-estimates-26)",
+            "rows": "1000"
+          },
+          "to": "adr"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/adr/datasets",
+        "query": {
+          "type": "input"
+        }
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "There was an error fetching datasets from ADR.",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 500
+      }
+    },
+    {
+      "client": "A",
+      "name": "adr 502 html",
+      "outbound": [
+        {
+          "headers": {
+            "authorization": "<UUID:1>"
+          },
+          "method": "GET",
+          "path": "/api/3/action/package_search",
+          "query": {
+            "hide_inaccessible_resources": "true",
+            "include_private": "true",
+            "q": "type:(country-estimates-26)",
+            "rows": "1000"
+          },
+          "to": "adr"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/adr/datasets",
+        "query": {
+          "type": "input"
+        }
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "There was an error fetching datasets from ADR.",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 502
+      }
+    },
+    {
+      "client": "A",
+      "name": "adr 504 html",
+      "outbound": [
+        {
+          "headers": {
+            "authorization": "<UUID:1>"
+          },
+          "method": "GET",
+          "path": "/api/3/action/package_search",
+          "query": {
+            "hide_inaccessible_resources": "true",
+            "include_private": "true",
+            "q": "type:(country-estimates-26)",
+            "rows": "1000"
+          },
+          "to": "adr"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/adr/datasets",
+        "query": {
+          "type": "input"
+        }
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "There was an error fetching datasets from ADR.",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 504
+      }
+    },
+    {
+      "client": "A",
+      "name": "adr malformed body",
+      "outbound": [
+        {
+          "headers": {
+            "authorization": "<UUID:1>"
+          },
+          "method": "GET",
+          "path": "/api/3/action/package_search",
+          "query": {
+            "hide_inaccessible_resources": "true",
+            "include_private": "true",
+            "q": "type:(country-estimates-26)",
+            "rows": "1000"
+          },
+          "to": "adr"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/adr/datasets",
+        "query": {
+          "type": "input"
+        }
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "There was an error fetching datasets from ADR.",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 500
+      }
+    },
+    {
+      "client": "A",
+      "name": "adr connection dropped",
+      "outbound": [
+        {
+          "headers": {
+            "authorization": "<UUID:1>"
+          },
+          "method": "GET",
+          "path": "/api/3/action/package_search",
+          "query": {
+            "hide_inaccessible_resources": "true",
+            "include_private": "true",
+            "q": "type:(country-estimates-26)",
+            "rows": "1000"
+          },
+          "to": "adr"
+        },
+        {
+          "headers": {
+            "authorization": "<UUID:1>"
+          },
+          "method": "GET",
+          "path": "/api/3/action/package_search",
+          "query": {
+            "hide_inaccessible_resources": "true",
+            "include_private": "true",
+            "q": "type:(country-estimates-26)",
+            "rows": "1000"
+          },
+          "to": "adr"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/adr/datasets",
+        "query": {
+          "type": "input"
+        }
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "There was an error fetching datasets from ADR.",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 500
+      }
+    },
+    {
+      "client": "A",
+      "name": "no account, portuguese",
+      "outbound": [
+        {
+          "headers": {
+            "authorization": "<UUID:1>"
+          },
+          "method": "GET",
+          "path": "/api/3/action/package_search",
+          "query": {
+            "hide_inaccessible_resources": "true",
+            "include_private": "true",
+            "q": "type:(country-estimates-26)",
+            "rows": "1000"
+          },
+          "to": "adr"
+        }
+      ],
+      "request": {
+        "headers": {
+          "accept-language": "pt"
+        },
+        "method": "GET",
+        "path": "/adr/datasets",
+        "query": {
+          "type": "input"
+        }
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "Não é possível buscar conjuntos de dados do ADR porque você ainda não possui uma conta. Faça login no ADR com suas credenciais Auth0, retorne aqui e tente novamente.",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 500
+      }
+    }
+  ]
+}

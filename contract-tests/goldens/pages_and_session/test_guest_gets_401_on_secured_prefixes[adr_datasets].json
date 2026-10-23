@@ -1,0 +1,28 @@
+{
+  "scenario": "pages_and_session/test_guest_gets_401_on_secured_prefixes[adr_datasets]",
+  "steps": [
+    {
+      "client": "A",
+      "name": "guest GET /adr/datasets",
+      "request": {
+        "method": "GET",
+        "path": "/adr/datasets"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "error": "Unauthorized",
+            "path": "/adr/datasets",
+            "status": 401,
+            "timestamp": "<EPOCH_MS>"
+          }
+        },
+        "headers": {
+          "content-type": "application/json",
+          "www-authenticate": "Bearer realm=\"pac4j\""
+        },
+        "status": 401
+      }
+    }
+  ]
+}

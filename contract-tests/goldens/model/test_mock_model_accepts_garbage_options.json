@@ -1,0 +1,233 @@
+{
+  "scenario": "model/test_mock_model_accepts_garbage_options",
+  "steps": [
+    {
+      "client": "A",
+      "name": "login test.user@example.com",
+      "request": {
+        "body": {
+          "form": {
+            "password": "password",
+            "username": "test.user@example.com"
+          }
+        },
+        "method": "POST",
+        "path": "/callback/formClient"
+      },
+      "response": {
+        "body": {
+          "empty": true
+        },
+        "headers": {
+          "location": "/"
+        },
+        "status": 303
+      }
+    },
+    {
+      "client": "A",
+      "name": "open /",
+      "request": {
+        "method": "GET",
+        "path": "/"
+      },
+      "response": {
+        "body": {
+          "html": true,
+          "title": "Naomi"
+        },
+        "headers": {
+          "content-type": "text/html"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "options",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "shape": {
+              "filename": "malawi.geojson",
+              "fromADR": false,
+              "hash": "EBE533976BFAF0CABCA2C2E1B611B9C7.geojson",
+              "path": "<UPLOADS>/EBE533976BFAF0CABCA2C2E1B611B9C7.geojson",
+              "resource_url": null
+            },
+            "survey": {
+              "filename": "survey.csv",
+              "fromADR": false,
+              "hash": "2D229A4507FECFE5471C2CC90431CB3C.csv",
+              "path": "<UPLOADS>/2D229A4507FECFE5471C2CC90431CB3C.csv",
+              "resource_url": null
+            }
+          },
+          "method": "POST",
+          "path": "/model/options",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/model/options/"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "garbage options",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "data": {
+              "pjnz": {
+                "filename": "Malawi2024.PJNZ",
+                "fromADR": false,
+                "hash": "46E4A725064B0E287F573A8F11389895.PJNZ",
+                "path": "<UPLOADS>/46E4A725064B0E287F573A8F11389895.PJNZ",
+                "resource_url": null
+              },
+              "population": {
+                "filename": "population.csv",
+                "fromADR": false,
+                "hash": "C11BDC2B37E6BC924E6D5B6B96B1ECC3.csv",
+                "path": "<UPLOADS>/C11BDC2B37E6BC924E6D5B6B96B1ECC3.csv",
+                "resource_url": null
+              },
+              "shape": {
+                "filename": "malawi.geojson",
+                "fromADR": false,
+                "hash": "EBE533976BFAF0CABCA2C2E1B611B9C7.geojson",
+                "path": "<UPLOADS>/EBE533976BFAF0CABCA2C2E1B611B9C7.geojson",
+                "resource_url": null
+              },
+              "survey": {
+                "filename": "survey.csv",
+                "fromADR": false,
+                "hash": "2D229A4507FECFE5471C2CC90431CB3C.csv",
+                "path": "<UPLOADS>/2D229A4507FECFE5471C2CC90431CB3C.csv",
+                "resource_url": null
+              }
+            },
+            "iso3": "MWI",
+            "options": {
+              "area_level": "bogus"
+            },
+            "version": {
+              "hintr": "1.2.23",
+              "naomi": "2.10.23",
+              "rrq": "0.7.23",
+              "traduire": "0.1.1"
+            }
+          },
+          "method": "POST",
+          "path": "/model/submit",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "json": {
+            "iso3": "MWI",
+            "options": {
+              "area_level": "bogus"
+            },
+            "version": {
+              "hintr": "1.2.23",
+              "naomi": "2.10.23",
+              "rrq": "0.7.23",
+              "traduire": "0.1.1"
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/model/run/"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "status",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "GET",
+          "path": "/model/status/<TASK:garbage>",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "poll": {
+        "until": "data.done == true"
+      },
+      "request": {
+        "method": "GET",
+        "path": "/model/status/<TASK:garbage>"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "result",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "GET",
+          "path": "/model/result/<TASK:garbage>",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/model/result/<TASK:garbage>"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    }
+  ]
+}

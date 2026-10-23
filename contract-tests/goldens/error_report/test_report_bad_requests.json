@@ -1,0 +1,309 @@
+{
+  "scenario": "error_report/test_report_bad_requests",
+  "steps": [
+    {
+      "client": "A",
+      "name": "login test.user@example.com",
+      "request": {
+        "body": {
+          "form": {
+            "password": "password",
+            "username": "test.user@example.com"
+          }
+        },
+        "method": "POST",
+        "path": "/callback/formClient"
+      },
+      "response": {
+        "body": {
+          "empty": true
+        },
+        "headers": {
+          "location": "/"
+        },
+        "status": 303
+      }
+    },
+    {
+      "client": "A",
+      "name": "open /",
+      "request": {
+        "method": "GET",
+        "path": "/"
+      },
+      "response": {
+        "body": {
+          "html": true,
+          "title": "Naomi"
+        },
+        "headers": {
+          "content-type": "text/html"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "no body",
+      "request": {
+        "method": "POST",
+        "path": "/error-report"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "An unexpected error occurred. If you see this message while you are using Naomi at a workshop, please contact your workshop technical support and show them this code: <ERROR_CODE>. Otherwise please contact support at naomi-support@imperial.ac.uk and quote this code: <ERROR_CODE>. Required request body is missing: public org.springframework.http.ResponseEntity<java.lang.String> org.imperial.mrc.hint.controllers.ErrorReportController.postErrorReport(org.imperial.mrc.hint.models.ErrorReport)",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "client": "A",
+      "name": "empty object",
+      "request": {
+        "body": {
+          "json": {}
+        },
+        "method": "POST",
+        "path": "/error-report"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "An unexpected error occurred. If you see this message while you are using Naomi at a workshop, please contact your workshop technical support and show them this code: <ERROR_CODE>. Otherwise please contact support at naomi-support@imperial.ac.uk and quote this code: <ERROR_CODE>. JSON parse error: Instantiation of [simple type, class org.imperial.mrc.hint.models.ErrorReport] value failed for JSON property email due to missing (therefore NULL) value for creator parameter email which is a non-nullable type; nested exception is com.fasterxml.jackson.module.kotlin.MissingKotlinParameterException: Instantiation of [simple type, class org.imperial.mrc.hint.models.ErrorReport] value failed for JSON property email due to missing (therefore NULL) value for creator parameter email which is a non-nullable type\n at [Source: (org.springframework.util.StreamUtils$NonClosingInputStream); line: 1, column: 2] (through reference chain: org.imperial.mrc.hint.models.ErrorReport[\"email\"])",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "client": "A",
+      "name": "most fields missing",
+      "request": {
+        "body": {
+          "json": {
+            "email": "test.user@example.com"
+          }
+        },
+        "method": "POST",
+        "path": "/error-report"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "An unexpected error occurred. If you see this message while you are using Naomi at a workshop, please contact your workshop technical support and show them this code: <ERROR_CODE>. Otherwise please contact support at naomi-support@imperial.ac.uk and quote this code: <ERROR_CODE>. JSON parse error: Instantiation of [simple type, class org.imperial.mrc.hint.models.ErrorReport] value failed for JSON property country due to missing (therefore NULL) value for creator parameter country which is a non-nullable type; nested exception is com.fasterxml.jackson.module.kotlin.MissingKotlinParameterException: Instantiation of [simple type, class org.imperial.mrc.hint.models.ErrorReport] value failed for JSON property country due to missing (therefore NULL) value for creator parameter country which is a non-nullable type\n at [Source: (org.springframework.util.StreamUtils$NonClosingInputStream); line: 1, column: 33] (through reference chain: org.imperial.mrc.hint.models.ErrorReport[\"country\"])",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "client": "A",
+      "name": "errors missing",
+      "request": {
+        "body": {
+          "json": {
+            "browserAgent": "Mozilla/5.0 (Linux; Android 8.0.0; SM-G960F Build/R16NW)",
+            "calibrateId": "1234",
+            "country": "South Africa",
+            "description": "description of the error msg",
+            "downloadIds": {
+              "coarse_output": "coarse123",
+              "spectrum": "spectrum123",
+              "summary": "summary123"
+            },
+            "email": "test.user@example.com",
+            "modelRunId": "job12",
+            "projectId": null,
+            "projectName": "South 2 Worldpop",
+            "section": "Fit model",
+            "stepsToReproduce": "step to reproduce desc",
+            "timeStamp": "<TIMESTAMP>",
+            "versions": {
+              "hint": "v5",
+              "hintr": "v2",
+              "naomi": "v1",
+              "rrq": "v3",
+              "traduire": "v4"
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/error-report"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "An unexpected error occurred. If you see this message while you are using Naomi at a workshop, please contact your workshop technical support and show them this code: <ERROR_CODE>. Otherwise please contact support at naomi-support@imperial.ac.uk and quote this code: <ERROR_CODE>. JSON parse error: Instantiation of [simple type, class org.imperial.mrc.hint.models.ErrorReport] value failed for JSON property errors due to missing (therefore NULL) value for creator parameter errors which is a non-nullable type; nested exception is com.fasterxml.jackson.module.kotlin.MissingKotlinParameterException: Instantiation of [simple type, class org.imperial.mrc.hint.models.ErrorReport] value failed for JSON property errors due to missing (therefore NULL) value for creator parameter errors which is a non-nullable type\n at [Source: (org.springframework.util.StreamUtils$NonClosingInputStream); line: 1, column: 544] (through reference chain: org.imperial.mrc.hint.models.ErrorReport[\"errors\"])",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "client": "A",
+      "name": "projectId not a number",
+      "request": {
+        "body": {
+          "json": {
+            "browserAgent": "Mozilla/5.0 (Linux; Android 8.0.0; SM-G960F Build/R16NW)",
+            "calibrateId": "1234",
+            "country": "South Africa",
+            "description": "description of the error msg",
+            "downloadIds": {
+              "coarse_output": "coarse123",
+              "spectrum": "spectrum123",
+              "summary": "summary123"
+            },
+            "email": "test.user@example.com",
+            "errors": [
+              {
+                "detail": "Please contact support for troubleshooting1",
+                "error": "OTHER_ERROR",
+                "key": "go-now-then"
+              },
+              {
+                "detail": "Please contact support for support",
+                "error": "OTHER_ERROR",
+                "key": "go-later-then"
+              }
+            ],
+            "modelRunId": "job12",
+            "projectId": "abc",
+            "projectName": "South 2 Worldpop",
+            "section": "Fit model",
+            "stepsToReproduce": "step to reproduce desc",
+            "timeStamp": "<TIMESTAMP>",
+            "versions": {
+              "hint": "v5",
+              "hintr": "v2",
+              "naomi": "v1",
+              "rrq": "v3",
+              "traduire": "v4"
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/error-report"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "An unexpected error occurred. If you see this message while you are using Naomi at a workshop, please contact your workshop technical support and show them this code: <ERROR_CODE>. Otherwise please contact support at naomi-support@imperial.ac.uk and quote this code: <ERROR_CODE>. JSON parse error: Cannot deserialize value of type `java.lang.Integer` from String \"abc\": not a valid `java.lang.Integer` value; nested exception is com.fasterxml.jackson.databind.exc.InvalidFormatException: Cannot deserialize value of type `java.lang.Integer` from String \"abc\": not a valid `java.lang.Integer` value\n at [Source: (org.springframework.util.StreamUtils$NonClosingInputStream); line: 1, column: 71] (through reference chain: org.imperial.mrc.hint.models.ErrorReport[\"projectId\"])",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "client": "A",
+      "name": "malformed json",
+      "request": {
+        "body": {
+          "raw": {
+            "content_type": "application/json",
+            "sha256": "861530244386f85ca5487174905849edcc832c2442eacf9d340b35582763a641",
+            "size": 3
+          }
+        },
+        "method": "POST",
+        "path": "/error-report"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "An unexpected error occurred. If you see this message while you are using Naomi at a workshop, please contact your workshop technical support and show them this code: <ERROR_CODE>. Otherwise please contact support at naomi-support@imperial.ac.uk and quote this code: <ERROR_CODE>. JSON parse error: Unexpected character ('n' (code 110)): was expecting double-quote to start field name; nested exception is com.fasterxml.jackson.core.JsonParseException: Unexpected character ('n' (code 110)): was expecting double-quote to start field name\n at [Source: (org.springframework.util.StreamUtils$NonClosingInputStream); line: 1, column: 3]",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "client": "A",
+      "name": "wrong method",
+      "request": {
+        "method": "GET",
+        "path": "/error-report"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "An unexpected error occurred. If you see this message while you are using Naomi at a workshop, please contact your workshop technical support and show them this code: <ERROR_CODE>. Otherwise please contact support at naomi-support@imperial.ac.uk and quote this code: <ERROR_CODE>. Request method 'GET' not supported",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 405
+      }
+    }
+  ]
+}

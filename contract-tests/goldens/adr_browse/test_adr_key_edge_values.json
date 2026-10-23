@@ -1,0 +1,258 @@
+{
+  "scenario": "adr_browse/test_adr_key_edge_values",
+  "steps": [
+    {
+      "client": "A",
+      "name": "login test.user@example.com",
+      "request": {
+        "body": {
+          "form": {
+            "password": "password",
+            "username": "test.user@example.com"
+          }
+        },
+        "method": "POST",
+        "path": "/callback/formClient"
+      },
+      "response": {
+        "body": {
+          "empty": true
+        },
+        "headers": {
+          "location": "/"
+        },
+        "status": 303
+      }
+    },
+    {
+      "client": "A",
+      "name": "open /",
+      "request": {
+        "method": "GET",
+        "path": "/"
+      },
+      "response": {
+        "body": {
+          "html": true,
+          "title": "Naomi"
+        },
+        "headers": {
+          "content-type": "text/html"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "empty key",
+      "request": {
+        "body": {
+          "form": {
+            "key": ""
+          }
+        },
+        "method": "POST",
+        "path": "/adr/key"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": "",
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "empty key read back",
+      "request": {
+        "method": "GET",
+        "path": "/adr/key"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": "",
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "latin-1 key",
+      "request": {
+        "body": {
+          "form": {
+            "key": "café-key"
+          }
+        },
+        "method": "POST",
+        "path": "/adr/key"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": "café-key",
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "latin-1 key read back",
+      "request": {
+        "method": "GET",
+        "path": "/adr/key"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": "café-key",
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "missing key parameter",
+      "request": {
+        "method": "POST",
+        "path": "/adr/key"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "An unexpected error occurred. If you see this message while you are using Naomi at a workshop, please contact your workshop technical support and show them this code: <ERROR_CODE>. Otherwise please contact support at naomi-support@imperial.ac.uk and quote this code: <ERROR_CODE>. Required request parameter 'key' for method parameter type String is not present",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "client": "A",
+      "name": "key in query string",
+      "request": {
+        "method": "POST",
+        "path": "/adr/key",
+        "query": {
+          "key": "from-query"
+        }
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": "from-query",
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "read back",
+      "request": {
+        "method": "GET",
+        "path": "/adr/key"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": "from-query",
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "trailing slash",
+      "request": {
+        "body": {
+          "form": {
+            "key": "slash"
+          }
+        },
+        "method": "POST",
+        "path": "/adr/key/"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": "slash",
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "delete with trailing slash",
+      "request": {
+        "method": "DELETE",
+        "path": "/adr/key/"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": null,
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    }
+  ]
+}

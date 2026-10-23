@@ -1,0 +1,431 @@
+{
+  "scenario": "rehydrate/test_rehydrate_unknown_task_ids",
+  "steps": [
+    {
+      "client": "A",
+      "name": "login test.user@example.com",
+      "request": {
+        "body": {
+          "form": {
+            "password": "password",
+            "username": "test.user@example.com"
+          }
+        },
+        "method": "POST",
+        "path": "/callback/formClient"
+      },
+      "response": {
+        "body": {
+          "empty": true
+        },
+        "headers": {
+          "location": "/"
+        },
+        "status": 303
+      }
+    },
+    {
+      "client": "A",
+      "name": "open /",
+      "request": {
+        "method": "GET",
+        "path": "/"
+      },
+      "response": {
+        "body": {
+          "html": true,
+          "title": "Naomi"
+        },
+        "headers": {
+          "content-type": "text/html"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "unknown model fit id",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "GET",
+          "path": "/task/nonsense/exists",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "multipart": {
+            "file": {
+              "filename": "output.zip",
+              "volatile_content": true
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/rehydrate/zip"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "Unable to load output zip, model fit not generated on the web app. Please contact a system admin.",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "client": "A",
+      "name": "unknown calibrate id",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "GET",
+          "path": "/task/<TASK:fit>/exists",
+          "status": 200,
+          "to": "hintr"
+        },
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "GET",
+          "path": "/task/nonsense/exists",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "multipart": {
+            "file": {
+              "filename": "output.zip",
+              "volatile_content": true
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/rehydrate/zip"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "Unable to load output zip, model calibrate not generated on the web app. Please contact a system admin.",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "client": "A",
+      "name": "unknown fit id (fr)",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "fr"
+          },
+          "method": "GET",
+          "path": "/task/nonsense/exists",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "multipart": {
+            "file": {
+              "filename": "output.zip",
+              "volatile_content": true
+            }
+          }
+        },
+        "headers": {
+          "accept-language": "fr"
+        },
+        "method": "POST",
+        "path": "/rehydrate/zip"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "Impossible de charger le zip de sortie, l'ajustement du modèle n'a pas été généré sur l'application web. Veuillez contacter un administrateur système.",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "client": "A",
+      "name": "unknown calibrate id (pt)",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "pt"
+          },
+          "method": "GET",
+          "path": "/task/<TASK:fit>/exists",
+          "status": 200,
+          "to": "hintr"
+        },
+        {
+          "headers": {
+            "accept-language": "pt"
+          },
+          "method": "GET",
+          "path": "/task/nonsense/exists",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "multipart": {
+            "file": {
+              "filename": "output.zip",
+              "volatile_content": true
+            }
+          }
+        },
+        "headers": {
+          "accept-language": "pt"
+        },
+        "method": "POST",
+        "path": "/rehydrate/zip"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "Não é possível carregar o zip de saída, a calibração do modelo não foi gerada na aplicação Web. Contacte um administrador do sistema.",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "client": "A",
+      "name": "no model_fit in state",
+      "request": {
+        "body": {
+          "multipart": {
+            "file": {
+              "filename": "output.zip",
+              "volatile_content": true
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/rehydrate/zip"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "Unable to load output zip, model fit not generated on the web app. Please contact a system admin.",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "client": "A",
+      "name": "no calibrate in state",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "GET",
+          "path": "/task/<TASK:fit>/exists",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "multipart": {
+            "file": {
+              "filename": "output.zip",
+              "volatile_content": true
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/rehydrate/zip"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "Unable to load output zip, model calibrate not generated on the web app. Please contact a system admin.",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "client": "A",
+      "name": "null fit id",
+      "request": {
+        "body": {
+          "multipart": {
+            "file": {
+              "filename": "output.zip",
+              "volatile_content": true
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/rehydrate/zip"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "Unable to load output zip, model fit not generated on the web app. Please contact a system admin.",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "client": "A",
+      "name": "fit id of a failed fit (exists)",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "GET",
+          "path": "/task/<TASK:fit-error>/exists",
+          "status": 200,
+          "to": "hintr"
+        },
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "GET",
+          "path": "/task/<TASK:calibrate>/exists",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "multipart": {
+            "file": {
+              "filename": "output.zip",
+              "volatile_content": true
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/rehydrate/zip"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {
+              "notes": "project notes\nline 2",
+              "state": {
+                "calibrate": {
+                  "id": "<TASK:calibrate>",
+                  "options": {}
+                },
+                "datasets": {},
+                "model_fit": {
+                  "id": "<TASK:fit-error>",
+                  "options": {}
+                },
+                "version": {
+                  "hintr": "1.2.23",
+                  "naomi": "2.10.23",
+                  "rrq": "0.7.23",
+                  "traduire": "0.1.1"
+                }
+              }
+            },
+            "errors": null,
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    }
+  ]
+}

@@ -1,0 +1,135 @@
+{
+  "scenario": "sso_mode/test_rehydrate_from_adr_with_sso_token",
+  "steps": [
+    {
+      "client": "S",
+      "name": "start sso login",
+      "request": {
+        "method": "GET",
+        "path": "/oauth2"
+      },
+      "response": {
+        "body": {
+          "empty": true
+        },
+        "headers": {
+          "location": "https://<IDP_HOST>/authorize?response_type=code&client_id=fakeId&state=<STATE>&scope=openid+profile+email+access:adr&audience=naomi&redirect_uri=<APP>/callback/oauth2Client"
+        },
+        "status": 303
+      }
+    },
+    {
+      "client": "S",
+      "name": "sso callback",
+      "outbound": [
+        {
+          "form": {
+            "code": "c",
+            "grant_type": "authorization_code",
+            "redirect_uri": "<APP>/callback/oauth2Client/oauth2Client"
+          },
+          "method": "POST",
+          "path": "/oauth/token",
+          "to": "idp"
+        },
+        {
+          "method": "GET",
+          "path": "/userinfo",
+          "to": "idp"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/callback/oauth2Client",
+        "query": {
+          "code": "c",
+          "state": "<STATE>"
+        }
+      },
+      "response": {
+        "body": {
+          "empty": true
+        },
+        "headers": {
+          "location": "/"
+        },
+        "status": 302
+      }
+    },
+    {
+      "client": "S",
+      "name": "rehydrate with sso token",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "GET",
+          "path": "/task/<TASK:fit>/exists",
+          "status": 200,
+          "to": "hintr"
+        },
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "GET",
+          "path": "/task/<TASK:calibrate>/exists",
+          "status": 200,
+          "to": "hintr"
+        },
+        {
+          "headers": {
+            "authorization": "Bearer stub-access-token"
+          },
+          "method": "GET",
+          "path": "/dataset/d1/resource/r9/download/out.zip",
+          "to": "adr-sso"
+        }
+      ],
+      "request": {
+        "body": {
+          "json": {
+            "datasetId": "d1",
+            "resourceId": "r9",
+            "url": "<ADR_SSO>/dataset/d1/resource/r9/download/out.zip"
+          }
+        },
+        "method": "POST",
+        "path": "/rehydrate/adr"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {
+              "notes": "n",
+              "state": {
+                "calibrate": {
+                  "id": "<TASK:calibrate>",
+                  "options": {}
+                },
+                "datasets": {},
+                "model_fit": {
+                  "id": "<TASK:fit>",
+                  "options": {}
+                },
+                "version": {
+                  "hintr": "1.2.23",
+                  "naomi": "2.10.23",
+                  "rrq": "0.7.23",
+                  "traduire": "0.1.1"
+                }
+              }
+            },
+            "errors": null,
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    }
+  ]
+}

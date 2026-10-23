@@ -1,0 +1,366 @@
+{
+  "scenario": "baseline_files/test_upload_request_errors",
+  "steps": [
+    {
+      "client": "A",
+      "name": "login test.user@example.com",
+      "request": {
+        "body": {
+          "form": {
+            "password": "password",
+            "username": "test.user@example.com"
+          }
+        },
+        "method": "POST",
+        "path": "/callback/formClient"
+      },
+      "response": {
+        "body": {
+          "empty": true
+        },
+        "headers": {
+          "location": "/"
+        },
+        "status": 303
+      }
+    },
+    {
+      "client": "A",
+      "name": "open /",
+      "request": {
+        "method": "GET",
+        "path": "/"
+      },
+      "response": {
+        "body": {
+          "html": true,
+          "title": "Naomi"
+        },
+        "headers": {
+          "content-type": "text/html"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "wrong part name",
+      "request": {
+        "body": {
+          "multipart": {
+            "other": {
+              "filename": "a.PJNZ",
+              "sha256": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
+              "size": 3
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/baseline/pjnz/"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "An unexpected error occurred. If you see this message while you are using Naomi at a workshop, please contact your workshop technical support and show them this code: <ERROR_CODE>. Otherwise please contact support at naomi-support@imperial.ac.uk and quote this code: <ERROR_CODE>. Required request part 'file' is not present",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "client": "A",
+      "name": "empty filename",
+      "request": {
+        "body": {
+          "multipart": {
+            "file": {
+              "filename": "",
+              "sha256": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
+              "size": 3
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/baseline/pjnz/"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "An unexpected error occurred. If you see this message while you are using Naomi at a workshop, please contact your workshop technical support and show them this code: <ERROR_CODE>. Otherwise please contact support at naomi-support@imperial.ac.uk and quote this code: <ERROR_CODE>. Required request part 'file' is not present",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "client": "A",
+      "name": "no body",
+      "request": {
+        "method": "POST",
+        "path": "/baseline/pjnz/"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "An unexpected error occurred. If you see this message while you are using Naomi at a workshop, please contact your workshop technical support and show them this code: <ERROR_CODE>. Otherwise please contact support at naomi-support@imperial.ac.uk and quote this code: <ERROR_CODE>.",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 500
+      }
+    },
+    {
+      "client": "A",
+      "name": "file sent as a plain form field",
+      "request": {
+        "body": {
+          "form": {
+            "file": "text"
+          }
+        },
+        "method": "POST",
+        "path": "/baseline/pjnz/"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "An unexpected error occurred. If you see this message while you are using Naomi at a workshop, please contact your workshop technical support and show them this code: <ERROR_CODE>. Otherwise please contact support at naomi-support@imperial.ac.uk and quote this code: <ERROR_CODE>.",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 500
+      }
+    },
+    {
+      "client": "A",
+      "name": "json body",
+      "request": {
+        "body": {
+          "json": {
+            "file": "x"
+          }
+        },
+        "method": "POST",
+        "path": "/baseline/pjnz/"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "An unexpected error occurred. If you see this message while you are using Naomi at a workshop, please contact your workshop technical support and show them this code: <ERROR_CODE>. Otherwise please contact support at naomi-support@imperial.ac.uk and quote this code: <ERROR_CODE>.",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 500
+      }
+    },
+    {
+      "client": "A",
+      "name": "unknown sub route",
+      "request": {
+        "method": "GET",
+        "path": "/baseline/pjnz/upload"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "An unexpected error occurred. If you see this message while you are using Naomi at a workshop, please contact your workshop technical support and show them this code: <ERROR_CODE>. Otherwise please contact support at naomi-support@imperial.ac.uk and quote this code: <ERROR_CODE>. No handler found for GET /baseline/pjnz/upload",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 404
+      }
+    },
+    {
+      "client": "A",
+      "name": "no trailing slash",
+      "request": {
+        "body": {
+          "multipart": {
+            "file": {
+              "filename": "Malawi2024.PJNZ",
+              "fixture": "Malawi2024.PJNZ",
+              "sha256": "49d688e8fe81c4d4dd49a081791e756bcdbbd1542587812bceea354bda02d3c1",
+              "size": 1721376
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/baseline/pjnz"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "An unexpected error occurred. If you see this message while you are using Naomi at a workshop, please contact your workshop technical support and show them this code: <ERROR_CODE>. Otherwise please contact support at naomi-support@imperial.ac.uk and quote this code: <ERROR_CODE>. No handler found for POST /baseline/pjnz",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 404
+      }
+    },
+    {
+      "client": "A",
+      "name": "french error text",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "fr"
+          },
+          "json": {
+            "file": {
+              "filename": "a.PJNZ",
+              "fromADR": false,
+              "hash": "900150983CD24FB0D6963F7D28E17F72.PJNZ",
+              "path": "<UPLOADS>/900150983CD24FB0D6963F7D28E17F72.PJNZ",
+              "resource_url": null
+            },
+            "type": "pjnz"
+          },
+          "method": "POST",
+          "path": "/validate/baseline-individual",
+          "status": 400,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "multipart": {
+            "file": {
+              "filename": "a.PJNZ",
+              "sha256": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
+              "size": 3
+            }
+          }
+        },
+        "headers": {
+          "accept-language": "fr"
+        },
+        "method": "POST",
+        "path": "/baseline/pjnz/"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "client": "A",
+      "name": "portuguese error text",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "pt"
+          },
+          "json": {
+            "file": {
+              "filename": "a.PJNZ",
+              "fromADR": false,
+              "hash": "900150983CD24FB0D6963F7D28E17F72.PJNZ",
+              "path": "<UPLOADS>/900150983CD24FB0D6963F7D28E17F72.PJNZ",
+              "resource_url": null
+            },
+            "type": "pjnz"
+          },
+          "method": "POST",
+          "path": "/validate/baseline-individual",
+          "status": 400,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "multipart": {
+            "file": {
+              "filename": "a.PJNZ",
+              "sha256": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
+              "size": 3
+            }
+          }
+        },
+        "headers": {
+          "accept-language": "pt"
+        },
+        "method": "POST",
+        "path": "/baseline/pjnz/"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    }
+  ]
+}

@@ -1,0 +1,252 @@
+{
+  "scenario": "adr_browse/test_adr_key_lifecycle",
+  "steps": [
+    {
+      "client": "A",
+      "name": "login test.user@example.com",
+      "request": {
+        "body": {
+          "form": {
+            "password": "password",
+            "username": "test.user@example.com"
+          }
+        },
+        "method": "POST",
+        "path": "/callback/formClient"
+      },
+      "response": {
+        "body": {
+          "empty": true
+        },
+        "headers": {
+          "location": "/"
+        },
+        "status": 303
+      }
+    },
+    {
+      "client": "A",
+      "name": "open /",
+      "request": {
+        "method": "GET",
+        "path": "/"
+      },
+      "response": {
+        "body": {
+          "html": true,
+          "title": "Naomi"
+        },
+        "headers": {
+          "content-type": "text/html"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "no key yet",
+      "request": {
+        "method": "GET",
+        "path": "/adr/key"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": null,
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "save key",
+      "request": {
+        "body": {
+          "form": {
+            "key": "<UUID:1>"
+          }
+        },
+        "method": "POST",
+        "path": "/adr/key"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": "<UUID:1>",
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "key returned decrypted",
+      "request": {
+        "method": "GET",
+        "path": "/adr/key"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": "<UUID:1>",
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "name": "db:adr_key",
+      "rows": [
+        {
+          "has_key": true,
+          "user_id": "test.user@example.com"
+        }
+      ],
+      "table": "adr_key",
+      "type": "db"
+    },
+    {
+      "client": "A",
+      "name": "overwrite",
+      "request": {
+        "body": {
+          "form": {
+            "key": "another-key"
+          }
+        },
+        "method": "POST",
+        "path": "/adr/key"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": "another-key",
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "new key",
+      "request": {
+        "method": "GET",
+        "path": "/adr/key"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": "another-key",
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "name": "db:adr_key",
+      "rows": [
+        {
+          "has_key": true,
+          "user_id": "test.user@example.com"
+        }
+      ],
+      "table": "adr_key",
+      "type": "db"
+    },
+    {
+      "client": "A",
+      "name": "delete",
+      "request": {
+        "method": "DELETE",
+        "path": "/adr/key"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": null,
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "gone",
+      "request": {
+        "method": "GET",
+        "path": "/adr/key"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": null,
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "delete again",
+      "request": {
+        "method": "DELETE",
+        "path": "/adr/key"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": null,
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "name": "db:adr_key",
+      "rows": [],
+      "table": "adr_key",
+      "type": "db"
+    }
+  ]
+}

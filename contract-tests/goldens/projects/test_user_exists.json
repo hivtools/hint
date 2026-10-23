@@ -1,0 +1,185 @@
+{
+  "scenario": "projects/test_user_exists",
+  "steps": [
+    {
+      "client": "A",
+      "name": "login test.user@example.com",
+      "request": {
+        "body": {
+          "form": {
+            "password": "password",
+            "username": "test.user@example.com"
+          }
+        },
+        "method": "POST",
+        "path": "/callback/formClient"
+      },
+      "response": {
+        "body": {
+          "empty": true
+        },
+        "headers": {
+          "location": "/"
+        },
+        "status": 303
+      }
+    },
+    {
+      "client": "A",
+      "name": "open /",
+      "request": {
+        "method": "GET",
+        "path": "/"
+      },
+      "response": {
+        "body": {
+          "html": true,
+          "title": "Naomi"
+        },
+        "headers": {
+          "content-type": "text/html"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "known",
+      "request": {
+        "method": "GET",
+        "path": "/user/test.user@example.com/exists"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": true,
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "known, other case",
+      "request": {
+        "method": "GET",
+        "path": "/user/TEST.USER@EXAMPLE.COM/exists"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": true,
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "unknown",
+      "request": {
+        "method": "GET",
+        "path": "/user/nobody@example.com/exists"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": false,
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "the guest user",
+      "request": {
+        "method": "GET",
+        "path": "/user/guest/exists"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": true,
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "no @ sign",
+      "request": {
+        "method": "GET",
+        "path": "/user/not-an-email/exists"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "Please provide a valid email address.",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "client": "A",
+      "name": "no @ sign, french",
+      "request": {
+        "headers": {
+          "accept-language": "fr"
+        },
+        "method": "GET",
+        "path": "/user/not-an-email/exists"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "Veuillez fournir une adresse e-mail valide.",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    }
+  ]
+}

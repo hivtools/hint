@@ -1,0 +1,64 @@
+{
+  "scenario": "session_files/test_set_files_before_opening_app",
+  "steps": [
+    {
+      "client": "A",
+      "name": "empty map on a session with no version row",
+      "request": {
+        "body": {
+          "json": {}
+        },
+        "method": "POST",
+        "path": "/session/files/"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "with a hash",
+      "request": {
+        "body": {
+          "json": {
+            "pjnz": {
+              "filename": "f.csv",
+              "fromAdr": false,
+              "hash": "badhash"
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/session/files/"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "Unable to load files for session. Specified files do not exist on the server.",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    }
+  ]
+}

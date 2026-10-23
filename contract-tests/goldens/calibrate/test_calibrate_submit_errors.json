@@ -1,0 +1,482 @@
+{
+  "scenario": "calibrate/test_calibrate_submit_errors",
+  "steps": [
+    {
+      "client": "A",
+      "name": "login test.user@example.com",
+      "request": {
+        "body": {
+          "form": {
+            "password": "password",
+            "username": "test.user@example.com"
+          }
+        },
+        "method": "POST",
+        "path": "/callback/formClient"
+      },
+      "response": {
+        "body": {
+          "empty": true
+        },
+        "headers": {
+          "location": "/"
+        },
+        "status": 303
+      }
+    },
+    {
+      "client": "A",
+      "name": "open /",
+      "request": {
+        "method": "GET",
+        "path": "/"
+      },
+      "response": {
+        "body": {
+          "html": true,
+          "title": "Naomi"
+        },
+        "headers": {
+          "content-type": "text/html"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "unknown model fit id",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "iso3": "MWI",
+            "options": {
+              "calibrate_method": "logistic",
+              "spectrum_artnum_calibration_level": "national",
+              "spectrum_artnum_calibration_strat": "sex_age_coarse",
+              "spectrum_aware_calibration_level": "none",
+              "spectrum_aware_calibration_strat": "sex_age_coarse",
+              "spectrum_infections_calibration_level": "national",
+              "spectrum_infections_calibration_strat": "sex_age_coarse",
+              "spectrum_plhiv_calibration_level": "national",
+              "spectrum_plhiv_calibration_strat": "sex_age_coarse"
+            },
+            "version": {
+              "hintr": "1.2.23",
+              "naomi": "2.10.23",
+              "rrq": "0.7.23",
+              "traduire": "0.1.1"
+            }
+          },
+          "method": "POST",
+          "path": "/calibrate/submit/nonsense",
+          "status": 400,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "json": {
+            "iso3": "MWI",
+            "options": {
+              "calibrate_method": "logistic",
+              "spectrum_artnum_calibration_level": "national",
+              "spectrum_artnum_calibration_strat": "sex_age_coarse",
+              "spectrum_aware_calibration_level": "none",
+              "spectrum_aware_calibration_strat": "sex_age_coarse",
+              "spectrum_infections_calibration_level": "national",
+              "spectrum_infections_calibration_strat": "sex_age_coarse",
+              "spectrum_plhiv_calibration_level": "national",
+              "spectrum_plhiv_calibration_strat": "sex_age_coarse"
+            },
+            "version": {
+              "hintr": "1.2.23",
+              "naomi": "2.10.23",
+              "rrq": "0.7.23",
+              "traduire": "0.1.1"
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/calibrate/submit/nonsense"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "client": "A",
+      "name": "unknown id in french",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "fr"
+          },
+          "json": {
+            "iso3": "MWI",
+            "options": {
+              "calibrate_method": "logistic",
+              "spectrum_artnum_calibration_level": "national",
+              "spectrum_artnum_calibration_strat": "sex_age_coarse",
+              "spectrum_aware_calibration_level": "none",
+              "spectrum_aware_calibration_strat": "sex_age_coarse",
+              "spectrum_infections_calibration_level": "national",
+              "spectrum_infections_calibration_strat": "sex_age_coarse",
+              "spectrum_plhiv_calibration_level": "national",
+              "spectrum_plhiv_calibration_strat": "sex_age_coarse"
+            },
+            "version": {
+              "hintr": "1.2.23",
+              "naomi": "2.10.23",
+              "rrq": "0.7.23",
+              "traduire": "0.1.1"
+            }
+          },
+          "method": "POST",
+          "path": "/calibrate/submit/nonsense",
+          "status": 400,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "json": {
+            "iso3": "MWI",
+            "options": {
+              "calibrate_method": "logistic",
+              "spectrum_artnum_calibration_level": "national",
+              "spectrum_artnum_calibration_strat": "sex_age_coarse",
+              "spectrum_aware_calibration_level": "none",
+              "spectrum_aware_calibration_strat": "sex_age_coarse",
+              "spectrum_infections_calibration_level": "national",
+              "spectrum_infections_calibration_strat": "sex_age_coarse",
+              "spectrum_plhiv_calibration_level": "national",
+              "spectrum_plhiv_calibration_strat": "sex_age_coarse"
+            },
+            "version": {
+              "hintr": "1.2.23",
+              "naomi": "2.10.23",
+              "rrq": "0.7.23",
+              "traduire": "0.1.1"
+            }
+          }
+        },
+        "headers": {
+          "accept-language": "fr"
+        },
+        "method": "POST",
+        "path": "/calibrate/submit/nonsense"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "client": "A",
+      "name": "failed model fit",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "iso3": "MWI",
+            "options": {
+              "calibrate_method": "logistic",
+              "spectrum_artnum_calibration_level": "national",
+              "spectrum_artnum_calibration_strat": "sex_age_coarse",
+              "spectrum_aware_calibration_level": "none",
+              "spectrum_aware_calibration_strat": "sex_age_coarse",
+              "spectrum_infections_calibration_level": "national",
+              "spectrum_infections_calibration_strat": "sex_age_coarse",
+              "spectrum_plhiv_calibration_level": "national",
+              "spectrum_plhiv_calibration_strat": "sex_age_coarse"
+            },
+            "version": {
+              "hintr": "1.2.23",
+              "naomi": "2.10.23",
+              "rrq": "0.7.23",
+              "traduire": "0.1.1"
+            }
+          },
+          "method": "POST",
+          "path": "/calibrate/submit/<TASK:fit-error>",
+          "status": 400,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "json": {
+            "iso3": "MWI",
+            "options": {
+              "calibrate_method": "logistic",
+              "spectrum_artnum_calibration_level": "national",
+              "spectrum_artnum_calibration_strat": "sex_age_coarse",
+              "spectrum_aware_calibration_level": "none",
+              "spectrum_aware_calibration_strat": "sex_age_coarse",
+              "spectrum_infections_calibration_level": "national",
+              "spectrum_infections_calibration_strat": "sex_age_coarse",
+              "spectrum_plhiv_calibration_level": "national",
+              "spectrum_plhiv_calibration_strat": "sex_age_coarse"
+            },
+            "version": {
+              "hintr": "1.2.23",
+              "naomi": "2.10.23",
+              "rrq": "0.7.23",
+              "traduire": "0.1.1"
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/calibrate/submit/<TASK:fit-error>"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "client": "A",
+      "name": "a calibrate id instead of a fit id",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "iso3": "MWI",
+            "options": {
+              "calibrate_method": "logistic",
+              "spectrum_artnum_calibration_level": "national",
+              "spectrum_artnum_calibration_strat": "sex_age_coarse",
+              "spectrum_aware_calibration_level": "none",
+              "spectrum_aware_calibration_strat": "sex_age_coarse",
+              "spectrum_infections_calibration_level": "national",
+              "spectrum_infections_calibration_strat": "sex_age_coarse",
+              "spectrum_plhiv_calibration_level": "national",
+              "spectrum_plhiv_calibration_strat": "sex_age_coarse"
+            },
+            "version": {
+              "hintr": "1.2.23",
+              "naomi": "2.10.23",
+              "rrq": "0.7.23",
+              "traduire": "0.1.1"
+            }
+          },
+          "method": "POST",
+          "path": "/calibrate/submit/<TASK:calibrate>",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "json": {
+            "iso3": "MWI",
+            "options": {
+              "calibrate_method": "logistic",
+              "spectrum_artnum_calibration_level": "national",
+              "spectrum_artnum_calibration_strat": "sex_age_coarse",
+              "spectrum_aware_calibration_level": "none",
+              "spectrum_aware_calibration_strat": "sex_age_coarse",
+              "spectrum_infections_calibration_level": "national",
+              "spectrum_infections_calibration_strat": "sex_age_coarse",
+              "spectrum_plhiv_calibration_level": "national",
+              "spectrum_plhiv_calibration_strat": "sex_age_coarse"
+            },
+            "version": {
+              "hintr": "1.2.23",
+              "naomi": "2.10.23",
+              "rrq": "0.7.23",
+              "traduire": "0.1.1"
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/calibrate/submit/<TASK:calibrate>"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "no body",
+      "request": {
+        "method": "POST",
+        "path": "/calibrate/submit/<TASK:fit>"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "An unexpected error occurred. If you see this message while you are using Naomi at a workshop, please contact your workshop technical support and show them this code: <ERROR_CODE>. Otherwise please contact support at naomi-support@imperial.ac.uk and quote this code: <ERROR_CODE>. Required request body is missing: public org.springframework.http.ResponseEntity<java.lang.String> org.imperial.mrc.hint.controllers.CalibrateController.calibrateSubmit(java.lang.String,org.imperial.mrc.hint.models.ModelOptions)",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "client": "A",
+      "name": "missing version",
+      "request": {
+        "body": {
+          "json": {
+            "options": {}
+          }
+        },
+        "method": "POST",
+        "path": "/calibrate/submit/<TASK:fit>"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "An unexpected error occurred. If you see this message while you are using Naomi at a workshop, please contact your workshop technical support and show them this code: <ERROR_CODE>. Otherwise please contact support at naomi-support@imperial.ac.uk and quote this code: <ERROR_CODE>. JSON parse error: Instantiation of [simple type, class org.imperial.mrc.hint.models.ModelOptions] value failed for JSON property version due to missing (therefore NULL) value for creator parameter version which is a non-nullable type; nested exception is com.fasterxml.jackson.module.kotlin.MissingKotlinParameterException: Instantiation of [simple type, class org.imperial.mrc.hint.models.ModelOptions] value failed for JSON property version due to missing (therefore NULL) value for creator parameter version which is a non-nullable type\n at [Source: (org.springframework.util.StreamUtils$NonClosingInputStream); line: 1, column: 14] (through reference chain: org.imperial.mrc.hint.models.ModelOptions[\"version\"])",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "client": "A",
+      "name": "missing options",
+      "request": {
+        "body": {
+          "json": {
+            "iso3": "MWI",
+            "version": {
+              "hintr": "1",
+              "naomi": "1",
+              "rrq": "1"
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/calibrate/submit/<TASK:fit>"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "An unexpected error occurred. If you see this message while you are using Naomi at a workshop, please contact your workshop technical support and show them this code: <ERROR_CODE>. Otherwise please contact support at naomi-support@imperial.ac.uk and quote this code: <ERROR_CODE>. JSON parse error: Instantiation of [simple type, class org.imperial.mrc.hint.models.ModelOptions] value failed for JSON property options due to missing (therefore NULL) value for creator parameter options which is a non-nullable type; nested exception is com.fasterxml.jackson.module.kotlin.MissingKotlinParameterException: Instantiation of [simple type, class org.imperial.mrc.hint.models.ModelOptions] value failed for JSON property options due to missing (therefore NULL) value for creator parameter options which is a non-nullable type\n at [Source: (org.springframework.util.StreamUtils$NonClosingInputStream); line: 1, column: 60] (through reference chain: org.imperial.mrc.hint.models.ModelOptions[\"options\"])",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "client": "A",
+      "name": "empty version",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "iso3": "MWI",
+            "options": {
+              "calibrate_method": "logistic",
+              "spectrum_artnum_calibration_level": "national",
+              "spectrum_artnum_calibration_strat": "sex_age_coarse",
+              "spectrum_aware_calibration_level": "none",
+              "spectrum_aware_calibration_strat": "sex_age_coarse",
+              "spectrum_infections_calibration_level": "national",
+              "spectrum_infections_calibration_strat": "sex_age_coarse",
+              "spectrum_plhiv_calibration_level": "national",
+              "spectrum_plhiv_calibration_strat": "sex_age_coarse"
+            },
+            "version": {}
+          },
+          "method": "POST",
+          "path": "/calibrate/submit/<TASK:fit>",
+          "status": 400,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "json": {
+            "iso3": "MWI",
+            "options": {
+              "calibrate_method": "logistic",
+              "spectrum_artnum_calibration_level": "national",
+              "spectrum_artnum_calibration_strat": "sex_age_coarse",
+              "spectrum_aware_calibration_level": "none",
+              "spectrum_aware_calibration_strat": "sex_age_coarse",
+              "spectrum_infections_calibration_level": "national",
+              "spectrum_infections_calibration_strat": "sex_age_coarse",
+              "spectrum_plhiv_calibration_level": "national",
+              "spectrum_plhiv_calibration_strat": "sex_age_coarse"
+            },
+            "version": {}
+          }
+        },
+        "method": "POST",
+        "path": "/calibrate/submit/<TASK:fit>"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "scenario": "auth/test_register_redirect_has_signup_hint",
+  "steps": [
+    {
+      "client": "A",
+      "name": "GET /register",
+      "request": {
+        "method": "GET",
+        "path": "/register"
+      },
+      "response": {
+        "body": {
+          "empty": true
+        },
+        "headers": {
+          "location": "https://<IDP_HOST>/authorize?response_type=code&client_id=fakeId&state=<STATE>&scope=openid+profile+email+access:adr&audience=naomi&redirect_uri=<APP>/callback/oauth2Client&screen_hint=signup"
+        },
+        "status": 303
+      },
+      "session_cookie": "set"
+    }
+  ]
+}

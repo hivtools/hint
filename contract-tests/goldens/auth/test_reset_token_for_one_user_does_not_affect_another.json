@@ -1,0 +1,96 @@
+{
+  "scenario": "auth/test_reset_token_for_one_user_does_not_affect_another",
+  "steps": [
+    {
+      "client": "A",
+      "name": "request link naomi-support@imperial.ac.uk",
+      "request": {
+        "body": {
+          "form": {
+            "email": "naomi-support@imperial.ac.uk"
+          }
+        },
+        "method": "POST",
+        "path": "/password/request-reset-link"
+      },
+      "response": {
+        "body": {
+          "text": "{\"data\":true,\"errors\":[],\"status\":\"success\"}"
+        },
+        "headers": {
+          "content-type": "text/plain"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "reset support user",
+      "request": {
+        "body": {
+          "form": {
+            "password": "supportpw",
+            "token": "<JWT:1>"
+          }
+        },
+        "method": "POST",
+        "path": "/password/reset-password"
+      },
+      "response": {
+        "body": {
+          "text": "{\"data\":true,\"errors\":[],\"status\":\"success\"}"
+        },
+        "headers": {
+          "content-type": "text/plain"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "test user unaffected",
+      "request": {
+        "body": {
+          "form": {
+            "password": "password",
+            "username": "test.user@example.com"
+          }
+        },
+        "method": "POST",
+        "path": "/callback/formClient"
+      },
+      "response": {
+        "body": {
+          "empty": true
+        },
+        "headers": {
+          "location": "/"
+        },
+        "status": 303
+      }
+    },
+    {
+      "client": "B",
+      "name": "support user with new password",
+      "request": {
+        "body": {
+          "form": {
+            "password": "supportpw",
+            "username": "naomi-support@imperial.ac.uk"
+          }
+        },
+        "method": "POST",
+        "path": "/callback/formClient"
+      },
+      "response": {
+        "body": {
+          "empty": true
+        },
+        "headers": {
+          "location": "/"
+        },
+        "status": 303
+      }
+    }
+  ]
+}

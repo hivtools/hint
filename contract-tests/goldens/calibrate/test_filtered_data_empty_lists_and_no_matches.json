@@ -1,0 +1,436 @@
+{
+  "scenario": "calibrate/test_filtered_data_empty_lists_and_no_matches",
+  "steps": [
+    {
+      "client": "A",
+      "name": "login test.user@example.com",
+      "request": {
+        "body": {
+          "form": {
+            "password": "password",
+            "username": "test.user@example.com"
+          }
+        },
+        "method": "POST",
+        "path": "/callback/formClient"
+      },
+      "response": {
+        "body": {
+          "empty": true
+        },
+        "headers": {
+          "location": "/"
+        },
+        "status": 303
+      }
+    },
+    {
+      "client": "A",
+      "name": "open /",
+      "request": {
+        "method": "GET",
+        "path": "/"
+      },
+      "response": {
+        "body": {
+          "html": true,
+          "title": "Naomi"
+        },
+        "headers": {
+          "content-type": "text/html"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "empty list for indicator",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "GET",
+          "path": "/calibrate/result/path/<TASK:calibrate>",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "json": {
+            "age_group": null,
+            "area_id": null,
+            "area_level": null,
+            "calendar_quarter": null,
+            "indicator": [],
+            "sex": null
+          }
+        },
+        "method": "POST",
+        "path": "/calibrate/result/filteredData/<TASK:calibrate>"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": [],
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "empty list for calendar_quarter",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "GET",
+          "path": "/calibrate/result/path/<TASK:calibrate>",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "json": {
+            "age_group": null,
+            "area_id": null,
+            "area_level": null,
+            "calendar_quarter": [],
+            "indicator": null,
+            "sex": null
+          }
+        },
+        "method": "POST",
+        "path": "/calibrate/result/filteredData/<TASK:calibrate>"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": [],
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "empty list for age_group",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "GET",
+          "path": "/calibrate/result/path/<TASK:calibrate>",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "json": {
+            "age_group": [],
+            "area_id": null,
+            "area_level": null,
+            "calendar_quarter": null,
+            "indicator": null,
+            "sex": null
+          }
+        },
+        "method": "POST",
+        "path": "/calibrate/result/filteredData/<TASK:calibrate>"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": [],
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "empty list for sex",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "GET",
+          "path": "/calibrate/result/path/<TASK:calibrate>",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "json": {
+            "age_group": null,
+            "area_id": null,
+            "area_level": null,
+            "calendar_quarter": null,
+            "indicator": null,
+            "sex": []
+          }
+        },
+        "method": "POST",
+        "path": "/calibrate/result/filteredData/<TASK:calibrate>"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": [],
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "empty list for area_id",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "GET",
+          "path": "/calibrate/result/path/<TASK:calibrate>",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "json": {
+            "age_group": null,
+            "area_id": [],
+            "area_level": null,
+            "calendar_quarter": null,
+            "indicator": null,
+            "sex": null
+          }
+        },
+        "method": "POST",
+        "path": "/calibrate/result/filteredData/<TASK:calibrate>"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": [],
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "empty list for area_level",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "GET",
+          "path": "/calibrate/result/path/<TASK:calibrate>",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "json": {
+            "age_group": null,
+            "area_id": null,
+            "area_level": [],
+            "calendar_quarter": null,
+            "indicator": null,
+            "sex": null
+          }
+        },
+        "method": "POST",
+        "path": "/calibrate/result/filteredData/<TASK:calibrate>"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": [],
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "unknown indicator",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "GET",
+          "path": "/calibrate/result/path/<TASK:calibrate>",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "json": {
+            "age_group": null,
+            "area_id": null,
+            "area_level": null,
+            "calendar_quarter": null,
+            "indicator": [
+              "not_an_indicator"
+            ],
+            "sex": null
+          }
+        },
+        "method": "POST",
+        "path": "/calibrate/result/filteredData/<TASK:calibrate>"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": [],
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "unknown area",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "GET",
+          "path": "/calibrate/result/path/<TASK:calibrate>",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "json": {
+            "age_group": null,
+            "area_id": [
+              "NOWHERE"
+            ],
+            "area_level": null,
+            "calendar_quarter": null,
+            "indicator": [
+              "prevalence"
+            ],
+            "sex": null
+          }
+        },
+        "method": "POST",
+        "path": "/calibrate/result/filteredData/<TASK:calibrate>"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": [],
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "no rows match",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "GET",
+          "path": "/calibrate/result/path/<TASK:calibrate>",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "json": {
+            "age_group": null,
+            "area_id": null,
+            "area_level": [
+              "99"
+            ],
+            "calendar_quarter": null,
+            "indicator": [
+              "prevalence"
+            ],
+            "sex": [
+              "female"
+            ]
+          }
+        },
+        "method": "POST",
+        "path": "/calibrate/result/filteredData/<TASK:calibrate>"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": [],
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    }
+  ]
+}

@@ -1,0 +1,100 @@
+{
+  "scenario": "auth/test_logout_destroys_session_and_redirects_to_login",
+  "steps": [
+    {
+      "client": "A",
+      "name": "login test.user@example.com",
+      "request": {
+        "body": {
+          "form": {
+            "password": "password",
+            "username": "test.user@example.com"
+          }
+        },
+        "method": "POST",
+        "path": "/callback/formClient"
+      },
+      "response": {
+        "body": {
+          "empty": true
+        },
+        "headers": {
+          "location": "/"
+        },
+        "status": 303
+      }
+    },
+    {
+      "client": "A",
+      "name": "open /",
+      "request": {
+        "method": "GET",
+        "path": "/"
+      },
+      "response": {
+        "body": {
+          "html": true,
+          "title": "Naomi"
+        },
+        "headers": {
+          "content-type": "text/html"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "logout",
+      "request": {
+        "method": "GET",
+        "path": "/logout"
+      },
+      "response": {
+        "body": {
+          "empty": true
+        },
+        "headers": {
+          "location": "/login"
+        },
+        "status": 302
+      }
+    },
+    {
+      "client": "A",
+      "name": "after logout the user is a guest",
+      "request": {
+        "method": "GET",
+        "path": "/projects/"
+      },
+      "response": {
+        "body": {
+          "empty": true
+        },
+        "status": 401
+      }
+    },
+    {
+      "client": "A",
+      "name": "secured prefix after logout",
+      "request": {
+        "method": "GET",
+        "path": "/project/current"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "error": "Unauthorized",
+            "path": "/project/current",
+            "status": 401,
+            "timestamp": "<EPOCH_MS>"
+          }
+        },
+        "headers": {
+          "content-type": "application/json",
+          "www-authenticate": "Bearer realm=\"pac4j\""
+        },
+        "status": 401
+      }
+    }
+  ]
+}

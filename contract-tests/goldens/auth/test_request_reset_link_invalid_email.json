@@ -1,0 +1,127 @@
+{
+  "scenario": "auth/test_request_reset_link_invalid_email",
+  "steps": [
+    {
+      "client": "A",
+      "name": "no @ sign",
+      "request": {
+        "body": {
+          "form": {
+            "email": "not-an-email"
+          }
+        },
+        "method": "POST",
+        "path": "/password/request-reset-link"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "Please provide a valid email address.",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "client": "A",
+      "name": "empty email",
+      "request": {
+        "body": {
+          "form": {
+            "email": ""
+          }
+        },
+        "method": "POST",
+        "path": "/password/request-reset-link"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "Please provide a valid email address.",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "client": "A",
+      "name": "missing parameter",
+      "request": {
+        "method": "POST",
+        "path": "/password/request-reset-link"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "An unexpected error occurred. If you see this message while you are using Naomi at a workshop, please contact your workshop technical support and show them this code: <ERROR_CODE>. Otherwise please contact support at naomi-support@imperial.ac.uk and quote this code: <ERROR_CODE>. Required request parameter 'email' for method parameter type String is not present",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "client": "A",
+      "name": "french",
+      "request": {
+        "body": {
+          "form": {
+            "email": "x"
+          }
+        },
+        "headers": {
+          "accept-language": "fr"
+        },
+        "method": "POST",
+        "path": "/password/request-reset-link"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "Veuillez fournir une adresse e-mail valide.",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    }
+  ]
+}

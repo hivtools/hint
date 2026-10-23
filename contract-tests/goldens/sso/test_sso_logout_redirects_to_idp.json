@@ -1,0 +1,92 @@
+{
+  "scenario": "sso/test_sso_logout_redirects_to_idp",
+  "steps": [
+    {
+      "client": "A",
+      "name": "start sso login",
+      "request": {
+        "method": "GET",
+        "path": "/oauth2"
+      },
+      "response": {
+        "body": {
+          "empty": true
+        },
+        "headers": {
+          "location": "https://<IDP_HOST>/authorize?response_type=code&client_id=fakeId&state=<STATE>&scope=openid+profile+email+access:adr&audience=naomi&redirect_uri=<APP>/callback/oauth2Client"
+        },
+        "status": 303
+      },
+      "session_cookie": "set"
+    },
+    {
+      "client": "A",
+      "name": "GET /callback/oauth2Client",
+      "outbound": [
+        {
+          "form": {
+            "code": "the-code",
+            "grant_type": "authorization_code",
+            "redirect_uri": "<APP>/callback/oauth2Client/oauth2Client"
+          },
+          "method": "POST",
+          "path": "/oauth/token",
+          "to": "idp"
+        },
+        {
+          "method": "GET",
+          "path": "/userinfo",
+          "to": "idp"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/callback/oauth2Client",
+        "query": {
+          "code": "the-code",
+          "state": "<STATE>"
+        }
+      },
+      "response": {
+        "body": {
+          "empty": true
+        },
+        "headers": {
+          "location": "/"
+        },
+        "status": 302
+      }
+    },
+    {
+      "client": "A",
+      "name": "logout of an sso session",
+      "request": {
+        "method": "GET",
+        "path": "/logout"
+      },
+      "response": {
+        "body": {
+          "empty": true
+        },
+        "headers": {
+          "location": "https://<IDP_HOST>/v2/logout?client_id=fakeId&returnTo=<APP>/login"
+        },
+        "status": 302
+      }
+    },
+    {
+      "client": "A",
+      "name": "logged out",
+      "request": {
+        "method": "GET",
+        "path": "/projects/"
+      },
+      "response": {
+        "body": {
+          "empty": true
+        },
+        "status": 401
+      }
+    }
+  ]
+}

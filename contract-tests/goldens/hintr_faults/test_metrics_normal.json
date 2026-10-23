@@ -1,0 +1,34 @@
+{
+  "scenario": "hintr_faults/test_metrics_normal",
+  "steps": [
+    {
+      "client": "A",
+      "name": "normal metrics",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "GET",
+          "path": "/hintr/worker/status",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/metrics"
+      },
+      "response": {
+        "body": {
+          "ignored": true,
+          "non_empty": true
+        },
+        "headers": {
+          "content-type": "text/plain"
+        },
+        "status": 200
+      }
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "scenario": "pages_and_session/test_login_page_does_not_escape_username",
+  "steps": [
+    {
+      "client": "A",
+      "name": "GET /login",
+      "request": {
+        "method": "GET",
+        "path": "/login",
+        "query": {
+          "username": "\"><b>x</b>"
+        }
+      },
+      "response": {
+        "body": {
+          "contains": [
+            "value=\"\"><b>x</b>\""
+          ],
+          "html": true,
+          "title": "Login"
+        },
+        "headers": {
+          "content-type": "text/html"
+        },
+        "status": 200
+      }
+    }
+  ]
+}

@@ -1,0 +1,366 @@
+{
+  "scenario": "projects/test_list_projects_hides_deleted_versions_and_projects",
+  "steps": [
+    {
+      "client": "A",
+      "name": "login test.user@example.com",
+      "request": {
+        "body": {
+          "form": {
+            "password": "password",
+            "username": "test.user@example.com"
+          }
+        },
+        "method": "POST",
+        "path": "/callback/formClient"
+      },
+      "response": {
+        "body": {
+          "empty": true
+        },
+        "headers": {
+          "location": "/"
+        },
+        "status": 303
+      }
+    },
+    {
+      "client": "A",
+      "name": "open /",
+      "request": {
+        "method": "GET",
+        "path": "/"
+      },
+      "response": {
+        "body": {
+          "html": true,
+          "title": "Naomi"
+        },
+        "headers": {
+          "content-type": "text/html"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "create project keep",
+      "request": {
+        "body": {
+          "form": {
+            "name": "keep",
+            "note": "a note"
+          }
+        },
+        "method": "POST",
+        "path": "/project/"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {
+              "id": "<PROJECT:1>",
+              "name": "keep",
+              "note": null,
+              "sharedBy": "",
+              "uploaded": null,
+              "versions": [
+                {
+                  "created": "<TIMESTAMP>",
+                  "id": "<UUID:1>",
+                  "note": null,
+                  "updated": "<TIMESTAMP>",
+                  "versionNumber": 1
+                }
+              ]
+            },
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "create project gone",
+      "request": {
+        "body": {
+          "form": {
+            "name": "gone",
+            "note": "a note"
+          }
+        },
+        "method": "POST",
+        "path": "/project/"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {
+              "id": "<PROJECT:2>",
+              "name": "gone",
+              "note": null,
+              "sharedBy": "",
+              "uploaded": null,
+              "versions": [
+                {
+                  "created": "<TIMESTAMP>",
+                  "id": "<UUID:2>",
+                  "note": null,
+                  "updated": "<TIMESTAMP>",
+                  "versionNumber": 1
+                }
+              ]
+            },
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "delete second project",
+      "request": {
+        "method": "DELETE",
+        "path": "/project/<PROJECT:2>"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": true,
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "deleted project not listed",
+      "request": {
+        "method": "GET",
+        "path": "/projects/"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": [
+              {
+                "id": "<PROJECT:1>",
+                "name": "keep",
+                "note": "a note",
+                "sharedBy": null,
+                "uploaded": null,
+                "versions": [
+                  {
+                    "created": "<TIMESTAMP>",
+                    "id": "<UUID:1>",
+                    "note": null,
+                    "updated": "<TIMESTAMP>",
+                    "versionNumber": 1
+                  }
+                ]
+              }
+            ],
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "new version",
+      "request": {
+        "method": "POST",
+        "path": "/project/<PROJECT:1>/version/",
+        "query": {
+          "parent": "<UUID:1>"
+        }
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {
+              "created": "<TIMESTAMP>",
+              "id": "<UUID:3>",
+              "note": null,
+              "updated": "<TIMESTAMP>",
+              "versionNumber": 2
+            },
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "two versions",
+      "request": {
+        "method": "GET",
+        "path": "/projects/"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": [
+              {
+                "id": "<PROJECT:1>",
+                "name": "keep",
+                "note": "a note",
+                "sharedBy": null,
+                "uploaded": null,
+                "versions": [
+                  {
+                    "created": "<TIMESTAMP>",
+                    "id": "<UUID:3>",
+                    "note": null,
+                    "updated": "<TIMESTAMP>",
+                    "versionNumber": 2
+                  },
+                  {
+                    "created": "<TIMESTAMP>",
+                    "id": "<UUID:1>",
+                    "note": null,
+                    "updated": "<TIMESTAMP>",
+                    "versionNumber": 1
+                  }
+                ]
+              }
+            ],
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "delete one version",
+      "request": {
+        "method": "DELETE",
+        "path": "/project/<PROJECT:1>/version/<UUID:3>"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": true,
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "one version left",
+      "request": {
+        "method": "GET",
+        "path": "/projects/"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": [
+              {
+                "id": "<PROJECT:1>",
+                "name": "keep",
+                "note": "a note",
+                "sharedBy": null,
+                "uploaded": null,
+                "versions": [
+                  {
+                    "created": "<TIMESTAMP>",
+                    "id": "<UUID:1>",
+                    "note": null,
+                    "updated": "<TIMESTAMP>",
+                    "versionNumber": 1
+                  }
+                ]
+              }
+            ],
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "name": "db:project_version",
+      "rows": [
+        {
+          "deleted": false,
+          "has_state": false,
+          "id": "<UUID:4>",
+          "note": null,
+          "project_id": null,
+          "state": null,
+          "version_number": 1
+        },
+        {
+          "deleted": false,
+          "has_state": false,
+          "id": "<UUID:1>",
+          "note": null,
+          "project_id": "<PROJECT:1>",
+          "state": null,
+          "version_number": 1
+        },
+        {
+          "deleted": true,
+          "has_state": false,
+          "id": "<UUID:3>",
+          "note": null,
+          "project_id": "<PROJECT:1>",
+          "state": null,
+          "version_number": 2
+        },
+        {
+          "deleted": true,
+          "has_state": false,
+          "id": "<UUID:2>",
+          "note": null,
+          "project_id": "<PROJECT:2>",
+          "state": null,
+          "version_number": 1
+        }
+      ],
+      "table": "project_version",
+      "type": "db"
+    }
+  ]
+}

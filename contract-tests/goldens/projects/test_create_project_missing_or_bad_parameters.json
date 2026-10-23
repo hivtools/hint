@@ -1,0 +1,214 @@
+{
+  "scenario": "projects/test_create_project_missing_or_bad_parameters",
+  "steps": [
+    {
+      "client": "A",
+      "name": "login test.user@example.com",
+      "request": {
+        "body": {
+          "form": {
+            "password": "password",
+            "username": "test.user@example.com"
+          }
+        },
+        "method": "POST",
+        "path": "/callback/formClient"
+      },
+      "response": {
+        "body": {
+          "empty": true
+        },
+        "headers": {
+          "location": "/"
+        },
+        "status": 303
+      }
+    },
+    {
+      "client": "A",
+      "name": "open /",
+      "request": {
+        "method": "GET",
+        "path": "/"
+      },
+      "response": {
+        "body": {
+          "html": true,
+          "title": "Naomi"
+        },
+        "headers": {
+          "content-type": "text/html"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "no name",
+      "request": {
+        "method": "POST",
+        "path": "/project/"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "An unexpected error occurred. If you see this message while you are using Naomi at a workshop, please contact your workshop technical support and show them this code: <ERROR_CODE>. Otherwise please contact support at naomi-support@imperial.ac.uk and quote this code: <ERROR_CODE>. Required request parameter 'name' for method parameter type String is not present",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "client": "A",
+      "name": "isUploaded not a boolean",
+      "request": {
+        "body": {
+          "form": {
+            "isUploaded": "maybe",
+            "name": "x"
+          }
+        },
+        "method": "POST",
+        "path": "/project/"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "An unexpected error occurred. If you see this message while you are using Naomi at a workshop, please contact your workshop technical support and show them this code: <ERROR_CODE>. Otherwise please contact support at naomi-support@imperial.ac.uk and quote this code: <ERROR_CODE>. Failed to convert value of type 'java.lang.String' to required type 'java.lang.Boolean'; nested exception is java.lang.IllegalArgumentException: Invalid boolean value [maybe]",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "client": "A",
+      "name": "json body is not accepted as parameters",
+      "request": {
+        "body": {
+          "json": {
+            "name": "json body"
+          }
+        },
+        "method": "POST",
+        "path": "/project/"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "An unexpected error occurred. If you see this message while you are using Naomi at a workshop, please contact your workshop technical support and show them this code: <ERROR_CODE>. Otherwise please contact support at naomi-support@imperial.ac.uk and quote this code: <ERROR_CODE>. Required request parameter 'name' for method parameter type String is not present",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "client": "A",
+      "name": "empty name is accepted",
+      "request": {
+        "body": {
+          "form": {
+            "name": ""
+          }
+        },
+        "method": "POST",
+        "path": "/project/"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {
+              "id": "<PROJECT:1>",
+              "name": "",
+              "note": null,
+              "sharedBy": "",
+              "uploaded": null,
+              "versions": [
+                {
+                  "created": "<TIMESTAMP>",
+                  "id": "<UUID:1>",
+                  "note": null,
+                  "updated": "<TIMESTAMP>",
+                  "versionNumber": 1
+                }
+              ]
+            },
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "GET /projects/",
+      "request": {
+        "method": "GET",
+        "path": "/projects/"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": [
+              {
+                "id": "<PROJECT:1>",
+                "name": "",
+                "note": null,
+                "sharedBy": null,
+                "uploaded": null,
+                "versions": [
+                  {
+                    "created": "<TIMESTAMP>",
+                    "id": "<UUID:1>",
+                    "note": null,
+                    "updated": "<TIMESTAMP>",
+                    "versionNumber": 1
+                  }
+                ]
+              }
+            ],
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    }
+  ]
+}
