@@ -1,0 +1,33 @@
+{
+  "scenario": "pages_and_session/test_hintr_version_for_guest",
+  "steps": [
+    {
+      "client": "A",
+      "name": "GET /meta/hintr/version",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "GET",
+          "path": "/hintr/version",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/meta/hintr/version"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    }
+  ]
+}

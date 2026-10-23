@@ -1,0 +1,34 @@
+{
+  "scenario": "auth/test_request_reset_link_email_is_case_insensitive",
+  "steps": [
+    {
+      "client": "A",
+      "name": "request link TEST.USER@EXAMPLE.COM",
+      "request": {
+        "body": {
+          "form": {
+            "email": "TEST.USER@EXAMPLE.COM"
+          }
+        },
+        "method": "POST",
+        "path": "/password/request-reset-link"
+      },
+      "response": {
+        "body": {
+          "text": "{\"data\":true,\"errors\":[],\"status\":\"success\"}"
+        },
+        "headers": {
+          "content-type": "text/plain"
+        },
+        "status": 200
+      }
+    },
+    {
+      "emails": [
+        "Hello,\n\nThis is an automated email from Naomi. We have received a request to reset the password for the account with\nthis email address (TEST.USER@EXAMPLE.COM).\n\nTo change your password on Naomi please browse to:\n\n<APP>/password/reset-password/?token=<JWT:1>\n\nThis link will expire in 24 hours. If you don't get a chance to use it within that time, you can request a new one.\n\nIf you did not request a password change, or you no longer want to change your password, please ignore this email.\n\nHave a great day!"
+      ],
+      "name": "email sent",
+      "type": "emails"
+    }
+  ]
+}

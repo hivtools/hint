@@ -1,0 +1,214 @@
+{
+  "scenario": "adr_push/test_push_output_updates_when_hash_differs_and_skips_when_same",
+  "steps": [
+    {
+      "client": "A",
+      "name": "login test.user@example.com",
+      "request": {
+        "body": {
+          "form": {
+            "password": "password",
+            "username": "test.user@example.com"
+          }
+        },
+        "method": "POST",
+        "path": "/callback/formClient"
+      },
+      "response": {
+        "body": {
+          "empty": true
+        },
+        "headers": {
+          "location": "/"
+        },
+        "status": 303
+      }
+    },
+    {
+      "client": "A",
+      "name": "open /",
+      "request": {
+        "method": "GET",
+        "path": "/"
+      },
+      "response": {
+        "body": {
+          "html": true,
+          "title": "Naomi"
+        },
+        "headers": {
+          "content-type": "text/html"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "fetch the file to learn its md5",
+      "outbound": [
+        {
+          "method": "HEAD",
+          "path": "/download/result/<TASK:download-summary>",
+          "status": 200,
+          "to": "hintr"
+        },
+        {
+          "method": "GET",
+          "path": "/download/result/<TASK:download-summary>",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/download/result/<TASK:download-summary>"
+      },
+      "response": {
+        "body": {
+          "binary": {
+            "magic": "html",
+            "non_empty": true
+          }
+        },
+        "headers": {
+          "content-disposition": "attachment; filename=\"MWI_summary-report_<TIMESTAMP>.html\"",
+          "content-type": "application/octet-stream"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "stored hash differs: resource_patch",
+      "outbound": [
+        {
+          "method": "HEAD",
+          "path": "/download/result/<TASK:download-summary>",
+          "status": 200,
+          "to": "hintr"
+        },
+        {
+          "method": "GET",
+          "path": "/download/result/<TASK:download-summary>",
+          "status": 200,
+          "to": "hintr"
+        },
+        {
+          "headers": {
+            "authorization": "<UUID:1>"
+          },
+          "method": "GET",
+          "path": "/api/3/action/resource_show",
+          "query": {
+            "id": "res-1"
+          },
+          "to": "adr"
+        },
+        {
+          "headers": {
+            "authorization": "<UUID:1>"
+          },
+          "method": "POST",
+          "multipart": {
+            "fields": {
+              "description": "d",
+              "hash": "<MD5>",
+              "id": "res-1",
+              "name": "Report",
+              "resource_type": "inputs-unaids-naomi-report"
+            },
+            "files": {
+              "upload": {
+                "filename": "report.html",
+                "md5": "<MD5>",
+                "size": "<SIZE>"
+              }
+            }
+          },
+          "path": "/api/3/action/resource_patch",
+          "to": "adr"
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "path": "/adr/datasets/ds1/resource/inputs-unaids-naomi-report/<TASK:download-summary>",
+        "query": {
+          "description": "d",
+          "resourceFileName": "report.html",
+          "resourceId": "res-1",
+          "resourceName": "Report"
+        }
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {
+              "hash": null,
+              "id": "res-1",
+              "name": "Report",
+              "resource_type": "inputs-unaids-naomi-report"
+            },
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "stored hash identical: upload skipped",
+      "outbound": [
+        {
+          "method": "HEAD",
+          "path": "/download/result/<TASK:download-summary>",
+          "status": 200,
+          "to": "hintr"
+        },
+        {
+          "method": "GET",
+          "path": "/download/result/<TASK:download-summary>",
+          "status": 200,
+          "to": "hintr"
+        },
+        {
+          "headers": {
+            "authorization": "<UUID:1>"
+          },
+          "method": "GET",
+          "path": "/api/3/action/resource_show",
+          "query": {
+            "id": "res-1"
+          },
+          "to": "adr"
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "path": "/adr/datasets/ds1/resource/inputs-unaids-naomi-report/<TASK:download-summary>",
+        "query": {
+          "description": "d",
+          "resourceFileName": "report.html",
+          "resourceId": "res-1",
+          "resourceName": "Report"
+        }
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": true,
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    }
+  ]
+}

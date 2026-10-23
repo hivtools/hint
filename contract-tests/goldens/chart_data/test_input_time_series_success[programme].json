@@ -1,0 +1,258 @@
+{
+  "scenario": "chart_data/test_input_time_series_success[programme]",
+  "steps": [
+    {
+      "client": "A",
+      "name": "login test.user@example.com",
+      "request": {
+        "body": {
+          "form": {
+            "password": "password",
+            "username": "test.user@example.com"
+          }
+        },
+        "method": "POST",
+        "path": "/callback/formClient"
+      },
+      "response": {
+        "body": {
+          "empty": true
+        },
+        "headers": {
+          "location": "/"
+        },
+        "status": 303
+      }
+    },
+    {
+      "client": "A",
+      "name": "open /",
+      "request": {
+        "method": "GET",
+        "path": "/"
+      },
+      "response": {
+        "body": {
+          "html": true,
+          "title": "Naomi"
+        },
+        "headers": {
+          "content-type": "text/html"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "upload programme",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "file": {
+              "filename": "programme.csv",
+              "fromADR": false,
+              "hash": "A900936E6908D6CECA92A099980667F3.csv",
+              "path": "<UPLOADS>/A900936E6908D6CECA92A099980667F3.csv",
+              "resource_url": null
+            },
+            "shape": "<UPLOADS>/EBE533976BFAF0CABCA2C2E1B611B9C7.geojson",
+            "type": "programme"
+          },
+          "method": "POST",
+          "path": "/validate/survey-and-programme",
+          "query": "strict=true",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "multipart": {
+            "file": {
+              "filename": "programme.csv",
+              "fixture": "programme.csv",
+              "sha256": "afb6c88a2bb60f786fb1ea6fb8ee8eed9738a133903b62414485e2baeeac0bed",
+              "size": 51582
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/disease/programme/"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "GET /chart-data/input-time-series/programme",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "data": {
+              "pjnz": {
+                "filename": "Malawi2024.PJNZ",
+                "fromADR": false,
+                "hash": "46E4A725064B0E287F573A8F11389895.PJNZ",
+                "path": "<UPLOADS>/46E4A725064B0E287F573A8F11389895.PJNZ",
+                "resource_url": null
+              },
+              "programme": {
+                "filename": "programme.csv",
+                "fromADR": false,
+                "hash": "A900936E6908D6CECA92A099980667F3.csv",
+                "path": "<UPLOADS>/A900936E6908D6CECA92A099980667F3.csv",
+                "resource_url": null
+              },
+              "shape": {
+                "filename": "malawi.geojson",
+                "fromADR": false,
+                "hash": "EBE533976BFAF0CABCA2C2E1B611B9C7.geojson",
+                "path": "<UPLOADS>/EBE533976BFAF0CABCA2C2E1B611B9C7.geojson",
+                "resource_url": null
+              }
+            }
+          },
+          "method": "POST",
+          "path": "/chart-data/input-time-series/programme",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/chart-data/input-time-series/programme"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "type is case insensitive",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "data": {
+              "pjnz": {
+                "filename": "Malawi2024.PJNZ",
+                "fromADR": false,
+                "hash": "46E4A725064B0E287F573A8F11389895.PJNZ",
+                "path": "<UPLOADS>/46E4A725064B0E287F573A8F11389895.PJNZ",
+                "resource_url": null
+              },
+              "programme": {
+                "filename": "programme.csv",
+                "fromADR": false,
+                "hash": "A900936E6908D6CECA92A099980667F3.csv",
+                "path": "<UPLOADS>/A900936E6908D6CECA92A099980667F3.csv",
+                "resource_url": null
+              },
+              "shape": {
+                "filename": "malawi.geojson",
+                "fromADR": false,
+                "hash": "EBE533976BFAF0CABCA2C2E1B611B9C7.geojson",
+                "path": "<UPLOADS>/EBE533976BFAF0CABCA2C2E1B611B9C7.geojson",
+                "resource_url": null
+              }
+            }
+          },
+          "method": "POST",
+          "path": "/chart-data/input-time-series/programme",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/chart-data/input-time-series/PROGRAMME"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "in french",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "fr"
+          },
+          "json": {
+            "data": {
+              "pjnz": {
+                "filename": "Malawi2024.PJNZ",
+                "fromADR": false,
+                "hash": "46E4A725064B0E287F573A8F11389895.PJNZ",
+                "path": "<UPLOADS>/46E4A725064B0E287F573A8F11389895.PJNZ",
+                "resource_url": null
+              },
+              "programme": {
+                "filename": "programme.csv",
+                "fromADR": false,
+                "hash": "A900936E6908D6CECA92A099980667F3.csv",
+                "path": "<UPLOADS>/A900936E6908D6CECA92A099980667F3.csv",
+                "resource_url": null
+              },
+              "shape": {
+                "filename": "malawi.geojson",
+                "fromADR": false,
+                "hash": "EBE533976BFAF0CABCA2C2E1B611B9C7.geojson",
+                "path": "<UPLOADS>/EBE533976BFAF0CABCA2C2E1B611B9C7.geojson",
+                "resource_url": null
+              }
+            }
+          },
+          "method": "POST",
+          "path": "/chart-data/input-time-series/programme",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "headers": {
+          "accept-language": "fr"
+        },
+        "method": "GET",
+        "path": "/chart-data/input-time-series/programme"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    }
+  ]
+}

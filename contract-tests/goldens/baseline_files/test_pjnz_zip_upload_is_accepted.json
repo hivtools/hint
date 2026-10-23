@@ -1,0 +1,105 @@
+{
+  "scenario": "baseline_files/test_pjnz_zip_upload_is_accepted",
+  "steps": [
+    {
+      "client": "A",
+      "name": "login test.user@example.com",
+      "request": {
+        "body": {
+          "form": {
+            "password": "password",
+            "username": "test.user@example.com"
+          }
+        },
+        "method": "POST",
+        "path": "/callback/formClient"
+      },
+      "response": {
+        "body": {
+          "empty": true
+        },
+        "headers": {
+          "location": "/"
+        },
+        "status": 303
+      }
+    },
+    {
+      "client": "A",
+      "name": "open /",
+      "request": {
+        "method": "GET",
+        "path": "/"
+      },
+      "response": {
+        "body": {
+          "html": true,
+          "title": "Naomi"
+        },
+        "headers": {
+          "content-type": "text/html"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "upload pjnz",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "file": {
+              "filename": "Botswana2018.zip",
+              "fromADR": false,
+              "hash": "E66ECF0E9BE8BE814547EA7574700DD3.zip",
+              "path": "<UPLOADS>/E66ECF0E9BE8BE814547EA7574700DD3.zip",
+              "resource_url": null
+            },
+            "type": "pjnz"
+          },
+          "method": "POST",
+          "path": "/validate/baseline-individual",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "multipart": {
+            "file": {
+              "filename": "Botswana2018.zip",
+              "fixture": "Botswana2018.zip",
+              "sha256": "aa2cf45985160a3b8ac88b560dea922ceeff33bc8f25f78932a6b12ec45e0093",
+              "size": 945973
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/baseline/pjnz/"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "files": [
+        {
+          "name": "E66ECF0E9BE8BE814547EA7574700DD3.zip",
+          "name_matches_md5": true,
+          "size": 945973
+        }
+      ],
+      "name": "uploads",
+      "type": "uploads"
+    }
+  ]
+}

@@ -1,0 +1,152 @@
+{
+  "scenario": "adr_push/test_push_input_file[pjnz]",
+  "steps": [
+    {
+      "client": "A",
+      "name": "login test.user@example.com",
+      "request": {
+        "body": {
+          "form": {
+            "password": "password",
+            "username": "test.user@example.com"
+          }
+        },
+        "method": "POST",
+        "path": "/callback/formClient"
+      },
+      "response": {
+        "body": {
+          "empty": true
+        },
+        "headers": {
+          "location": "/"
+        },
+        "status": 303
+      }
+    },
+    {
+      "client": "A",
+      "name": "open /",
+      "request": {
+        "method": "GET",
+        "path": "/"
+      },
+      "response": {
+        "body": {
+          "html": true,
+          "title": "Naomi"
+        },
+        "headers": {
+          "content-type": "text/html"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "hash differs: resource_patch",
+      "outbound": [
+        {
+          "headers": {
+            "authorization": "<UUID:1>"
+          },
+          "method": "GET",
+          "path": "/api/3/action/resource_show",
+          "query": {
+            "id": "res-in"
+          },
+          "to": "adr"
+        },
+        {
+          "headers": {
+            "authorization": "<UUID:1>"
+          },
+          "method": "POST",
+          "multipart": {
+            "fields": {
+              "hash": "46E4A725064B0E287F573A8F11389895",
+              "id": "res-in",
+              "name": "My pjnz",
+              "resource_type": "inputs-unaids-spectrum-file"
+            },
+            "files": {
+              "upload": {
+                "filename": "Malawi2024.PJNZ",
+                "md5": "46e4a725064b0e287f573a8f11389895",
+                "size": 1721376
+              }
+            }
+          },
+          "path": "/api/3/action/resource_patch",
+          "to": "adr"
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "path": "/adr/datasets/ds1/resource/inputs-unaids-spectrum-file/ignored-download-id",
+        "query": {
+          "resourceFileName": "ignored.name",
+          "resourceId": "res-in",
+          "resourceName": "My pjnz"
+        }
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {
+              "hash": "46E4A725064B0E287F573A8F11389895",
+              "id": "res-in",
+              "name": "My pjnz",
+              "resource_type": "inputs-unaids-spectrum-file"
+            },
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "hash identical: skipped",
+      "outbound": [
+        {
+          "headers": {
+            "authorization": "<UUID:1>"
+          },
+          "method": "GET",
+          "path": "/api/3/action/resource_show",
+          "query": {
+            "id": "res-in"
+          },
+          "to": "adr"
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "path": "/adr/datasets/ds1/resource/inputs-unaids-spectrum-file/ignored-download-id",
+        "query": {
+          "resourceFileName": "ignored.name",
+          "resourceId": "res-in",
+          "resourceName": "My pjnz"
+        }
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": true,
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    }
+  ]
+}

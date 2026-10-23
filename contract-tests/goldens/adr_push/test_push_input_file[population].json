@@ -1,0 +1,152 @@
+{
+  "scenario": "adr_push/test_push_input_file[population]",
+  "steps": [
+    {
+      "client": "A",
+      "name": "login test.user@example.com",
+      "request": {
+        "body": {
+          "form": {
+            "password": "password",
+            "username": "test.user@example.com"
+          }
+        },
+        "method": "POST",
+        "path": "/callback/formClient"
+      },
+      "response": {
+        "body": {
+          "empty": true
+        },
+        "headers": {
+          "location": "/"
+        },
+        "status": 303
+      }
+    },
+    {
+      "client": "A",
+      "name": "open /",
+      "request": {
+        "method": "GET",
+        "path": "/"
+      },
+      "response": {
+        "body": {
+          "html": true,
+          "title": "Naomi"
+        },
+        "headers": {
+          "content-type": "text/html"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "hash differs: resource_patch",
+      "outbound": [
+        {
+          "headers": {
+            "authorization": "<UUID:1>"
+          },
+          "method": "GET",
+          "path": "/api/3/action/resource_show",
+          "query": {
+            "id": "res-in"
+          },
+          "to": "adr"
+        },
+        {
+          "headers": {
+            "authorization": "<UUID:1>"
+          },
+          "method": "POST",
+          "multipart": {
+            "fields": {
+              "hash": "C11BDC2B37E6BC924E6D5B6B96B1ECC3",
+              "id": "res-in",
+              "name": "My population",
+              "resource_type": "inputs-unaids-population"
+            },
+            "files": {
+              "upload": {
+                "filename": "population.csv",
+                "md5": "c11bdc2b37e6bc924e6d5b6b96b1ecc3",
+                "size": 1994432
+              }
+            }
+          },
+          "path": "/api/3/action/resource_patch",
+          "to": "adr"
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "path": "/adr/datasets/ds1/resource/inputs-unaids-population/ignored-download-id",
+        "query": {
+          "resourceFileName": "ignored.name",
+          "resourceId": "res-in",
+          "resourceName": "My population"
+        }
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {
+              "hash": "C11BDC2B37E6BC924E6D5B6B96B1ECC3",
+              "id": "res-in",
+              "name": "My population",
+              "resource_type": "inputs-unaids-population"
+            },
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "hash identical: skipped",
+      "outbound": [
+        {
+          "headers": {
+            "authorization": "<UUID:1>"
+          },
+          "method": "GET",
+          "path": "/api/3/action/resource_show",
+          "query": {
+            "id": "res-in"
+          },
+          "to": "adr"
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "path": "/adr/datasets/ds1/resource/inputs-unaids-population/ignored-download-id",
+        "query": {
+          "resourceFileName": "ignored.name",
+          "resourceId": "res-in",
+          "resourceName": "My population"
+        }
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": true,
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    }
+  ]
+}

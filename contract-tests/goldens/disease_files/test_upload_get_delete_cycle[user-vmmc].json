@@ -1,0 +1,295 @@
+{
+  "scenario": "disease_files/test_upload_get_delete_cycle[user-vmmc]",
+  "steps": [
+    {
+      "client": "A",
+      "name": "login test.user@example.com",
+      "request": {
+        "body": {
+          "form": {
+            "password": "password",
+            "username": "test.user@example.com"
+          }
+        },
+        "method": "POST",
+        "path": "/callback/formClient"
+      },
+      "response": {
+        "body": {
+          "empty": true
+        },
+        "headers": {
+          "location": "/"
+        },
+        "status": 303
+      }
+    },
+    {
+      "client": "A",
+      "name": "open /",
+      "request": {
+        "method": "GET",
+        "path": "/"
+      },
+      "response": {
+        "body": {
+          "html": true,
+          "title": "Naomi"
+        },
+        "headers": {
+          "content-type": "text/html"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "get before upload is null",
+      "request": {
+        "method": "GET",
+        "path": "/disease/vmmc/"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": null,
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "upload vmmc",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "file": {
+              "filename": "vmmc.xlsx",
+              "fromADR": false,
+              "hash": "B7C376E240D6E17D5D3EAFBF4539B771.xlsx",
+              "path": "<UPLOADS>/B7C376E240D6E17D5D3EAFBF4539B771.xlsx",
+              "resource_url": null
+            },
+            "shape": "<UPLOADS>/EBE533976BFAF0CABCA2C2E1B611B9C7.geojson",
+            "type": "vmmc"
+          },
+          "method": "POST",
+          "path": "/validate/survey-and-programme",
+          "query": "strict=true",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "multipart": {
+            "file": {
+              "filename": "vmmc.xlsx",
+              "fixture": "vmmc.xlsx",
+              "sha256": "ae53e705f7b743fb13fccddecee6f075678a49c63df17c8808c86cba937c0aee",
+              "size": 413163
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/disease/vmmc/"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "get after upload re-validates",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "file": {
+              "filename": "vmmc.xlsx",
+              "fromADR": false,
+              "hash": "B7C376E240D6E17D5D3EAFBF4539B771.xlsx",
+              "path": "<UPLOADS>/B7C376E240D6E17D5D3EAFBF4539B771.xlsx",
+              "resource_url": null
+            },
+            "shape": "<UPLOADS>/EBE533976BFAF0CABCA2C2E1B611B9C7.geojson",
+            "type": "vmmc"
+          },
+          "method": "POST",
+          "path": "/validate/survey-and-programme",
+          "query": "strict=true",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/disease/vmmc/"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "name": "db:version_file",
+      "rows": [
+        {
+          "filename": "Malawi2024.PJNZ",
+          "from_adr": false,
+          "hash": "46E4A725064B0E287F573A8F11389895.PJNZ",
+          "resource_url": null,
+          "type": "pjnz",
+          "version": "<UUID:1>"
+        },
+        {
+          "filename": "malawi.geojson",
+          "from_adr": false,
+          "hash": "EBE533976BFAF0CABCA2C2E1B611B9C7.geojson",
+          "resource_url": null,
+          "type": "shape",
+          "version": "<UUID:1>"
+        },
+        {
+          "filename": "vmmc.xlsx",
+          "from_adr": false,
+          "hash": "B7C376E240D6E17D5D3EAFBF4539B771.xlsx",
+          "resource_url": null,
+          "type": "vmmc",
+          "version": "<UUID:1>"
+        }
+      ],
+      "table": "version_file",
+      "type": "db"
+    },
+    {
+      "files": [
+        {
+          "name": "46E4A725064B0E287F573A8F11389895.PJNZ",
+          "name_matches_md5": true,
+          "size": 1721376
+        },
+        {
+          "name": "B7C376E240D6E17D5D3EAFBF4539B771.xlsx",
+          "name_matches_md5": true,
+          "size": 413163
+        },
+        {
+          "name": "EBE533976BFAF0CABCA2C2E1B611B9C7.geojson",
+          "name_matches_md5": true,
+          "size": 1045993
+        }
+      ],
+      "name": "uploads",
+      "type": "uploads"
+    },
+    {
+      "client": "A",
+      "name": "delete",
+      "request": {
+        "method": "DELETE",
+        "path": "/disease/vmmc/"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": true,
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "get after delete is null",
+      "request": {
+        "method": "GET",
+        "path": "/disease/vmmc/"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": null,
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "delete again",
+      "request": {
+        "method": "DELETE",
+        "path": "/disease/vmmc/"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": true,
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "name": "db:version_file",
+      "rows": [
+        {
+          "filename": "Malawi2024.PJNZ",
+          "from_adr": false,
+          "hash": "46E4A725064B0E287F573A8F11389895.PJNZ",
+          "resource_url": null,
+          "type": "pjnz",
+          "version": "<UUID:1>"
+        },
+        {
+          "filename": "malawi.geojson",
+          "from_adr": false,
+          "hash": "EBE533976BFAF0CABCA2C2E1B611B9C7.geojson",
+          "resource_url": null,
+          "type": "shape",
+          "version": "<UUID:1>"
+        }
+      ],
+      "table": "version_file",
+      "type": "db"
+    }
+  ]
+}

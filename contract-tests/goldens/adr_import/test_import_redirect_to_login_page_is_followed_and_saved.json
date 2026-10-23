@@ -1,0 +1,144 @@
+{
+  "scenario": "adr_import/test_import_redirect_to_login_page_is_followed_and_saved",
+  "steps": [
+    {
+      "client": "A",
+      "name": "login test.user@example.com",
+      "request": {
+        "body": {
+          "form": {
+            "password": "password",
+            "username": "test.user@example.com"
+          }
+        },
+        "method": "POST",
+        "path": "/callback/formClient"
+      },
+      "response": {
+        "body": {
+          "empty": true
+        },
+        "headers": {
+          "location": "/"
+        },
+        "status": 303
+      }
+    },
+    {
+      "client": "A",
+      "name": "open /",
+      "request": {
+        "method": "GET",
+        "path": "/"
+      },
+      "response": {
+        "body": {
+          "html": true,
+          "title": "Naomi"
+        },
+        "headers": {
+          "content-type": "text/html"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "redirected download",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "file": {
+              "filename": "Malawi2024.PJNZ",
+              "fromADR": true,
+              "hash": "BC6F79FC9ABEFDDA50BE1DE96AB212C1.PJNZ",
+              "path": "<UPLOADS>/BC6F79FC9ABEFDDA50BE1DE96AB212C1.PJNZ",
+              "resource_url": "<ADR>/dataset/ds1/resource/res1/download/Malawi2024.PJNZ?activity_id=activity-newest"
+            },
+            "type": "pjnz"
+          },
+          "method": "POST",
+          "path": "/validate/baseline-individual",
+          "status": 400,
+          "to": "hintr"
+        },
+        {
+          "headers": {
+            "authorization": "<UUID:1>"
+          },
+          "method": "GET",
+          "path": "/dataset/ds1/resource/res1/download/Malawi2024.PJNZ",
+          "to": "adr"
+        },
+        {
+          "headers": {
+            "authorization": "<UUID:1>"
+          },
+          "method": "GET",
+          "path": "/login-page",
+          "to": "adr"
+        },
+        {
+          "headers": {
+            "authorization": "<UUID:1>"
+          },
+          "method": "GET",
+          "path": "/api/3/action/package_activity_list",
+          "query": {
+            "id": "ds1"
+          },
+          "to": "adr"
+        }
+      ],
+      "request": {
+        "body": {
+          "json": {
+            "datasetId": "ds1",
+            "resourceId": "res1",
+            "url": "<ADR>/dataset/ds1/resource/res1/download/Malawi2024.PJNZ"
+          }
+        },
+        "method": "POST",
+        "path": "/adr/pjnz"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "name": "db:version_file",
+      "rows": [
+        {
+          "filename": "Malawi2024.PJNZ",
+          "from_adr": true,
+          "hash": "BC6F79FC9ABEFDDA50BE1DE96AB212C1.PJNZ",
+          "resource_url": "<ADR>/dataset/ds1/resource/res1/download/Malawi2024.PJNZ?activity_id=activity-newest",
+          "type": "pjnz",
+          "version": "<UUID:2>"
+        }
+      ],
+      "table": "version_file",
+      "type": "db"
+    },
+    {
+      "files": [
+        {
+          "name": "BC6F79FC9ABEFDDA50BE1DE96AB212C1.PJNZ",
+          "name_matches_md5": true,
+          "size": 33
+        }
+      ],
+      "name": "uploads",
+      "type": "uploads"
+    }
+  ]
+}

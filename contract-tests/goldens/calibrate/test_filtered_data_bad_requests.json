@@ -1,0 +1,449 @@
+{
+  "scenario": "calibrate/test_filtered_data_bad_requests",
+  "steps": [
+    {
+      "client": "A",
+      "name": "login test.user@example.com",
+      "request": {
+        "body": {
+          "form": {
+            "password": "password",
+            "username": "test.user@example.com"
+          }
+        },
+        "method": "POST",
+        "path": "/callback/formClient"
+      },
+      "response": {
+        "body": {
+          "empty": true
+        },
+        "headers": {
+          "location": "/"
+        },
+        "status": 303
+      }
+    },
+    {
+      "client": "A",
+      "name": "open /",
+      "request": {
+        "method": "GET",
+        "path": "/"
+      },
+      "response": {
+        "body": {
+          "html": true,
+          "title": "Naomi"
+        },
+        "headers": {
+          "content-type": "text/html"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "no body",
+      "request": {
+        "method": "POST",
+        "path": "/calibrate/result/filteredData/<TASK:calibrate>"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "An unexpected error occurred. If you see this message while you are using Naomi at a workshop, please contact your workshop technical support and show them this code: <ERROR_CODE>. Otherwise please contact support at naomi-support@imperial.ac.uk and quote this code: <ERROR_CODE>. Required request body is missing: public org.springframework.http.ResponseEntity<java.lang.String> org.imperial.mrc.hint.controllers.CalibrateController.filteredCalibrateResultData(java.lang.String,org.imperial.mrc.hint.models.FilterQuery)",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "client": "A",
+      "name": "missing keys",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "GET",
+          "path": "/calibrate/result/path/<TASK:calibrate>",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "json": {
+            "indicator": [
+              "prevalence"
+            ]
+          }
+        },
+        "method": "POST",
+        "path": "/calibrate/result/filteredData/<TASK:calibrate>"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "$large_json": {
+              "numbers": {
+                "count": 102465,
+                "max": 4.0,
+                "min": 0.0,
+                "sum": 72672.00480713324,
+                "sum_abs": 72672.00480713324
+              },
+              "shape": {
+                "data": {
+                  "$first": {
+                    "age_group": "string",
+                    "area_id": "string",
+                    "area_level": "number",
+                    "calendar_quarter": "string",
+                    "indicator": "string",
+                    "lower": "number",
+                    "mean": "number",
+                    "mode": "number",
+                    "sex": "string",
+                    "upper": "number"
+                  },
+                  "$len": 20493
+                },
+                "errors": {
+                  "$len": 0
+                },
+                "status": "string"
+              },
+              "skeleton_sha256": "6f27f4522b8548b4d350571c44273cf98cd8e700ddc1124d3561e04f50a6d56c"
+            }
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "non numeric area level",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "GET",
+          "path": "/calibrate/result/path/<TASK:calibrate>",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "json": {
+            "age_group": null,
+            "area_id": null,
+            "area_level": [
+              "x"
+            ],
+            "calendar_quarter": null,
+            "indicator": null,
+            "sex": null
+          }
+        },
+        "method": "POST",
+        "path": "/calibrate/result/filteredData/<TASK:calibrate>"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "An unexpected error occurred. If you see this message while you are using Naomi at a workshop, please contact your workshop technical support and show them this code: <ERROR_CODE>. Otherwise please contact support at naomi-support@imperial.ac.uk and quote this code: <ERROR_CODE>.",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 500
+      }
+    },
+    {
+      "client": "A",
+      "name": "numeric area level",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "GET",
+          "path": "/calibrate/result/path/<TASK:calibrate>",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "json": {
+            "age_group": null,
+            "area_id": null,
+            "area_level": [
+              0
+            ],
+            "calendar_quarter": null,
+            "indicator": null,
+            "sex": null
+          }
+        },
+        "method": "POST",
+        "path": "/calibrate/result/filteredData/<TASK:calibrate>"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "$large_json": {
+              "numbers": {
+                "count": 25380,
+                "max": 21577142.0,
+                "min": 0.0,
+                "sum": 4306957197.002488,
+                "sum_abs": 4306957197.002488
+              },
+              "shape": {
+                "data": {
+                  "$first": {
+                    "age_group": "string",
+                    "area_id": "string",
+                    "area_level": "number",
+                    "calendar_quarter": "string",
+                    "indicator": "string",
+                    "lower": "number",
+                    "mean": "number",
+                    "mode": "number",
+                    "sex": "string",
+                    "upper": "number"
+                  },
+                  "$len": 5076
+                },
+                "errors": {
+                  "$len": 0
+                },
+                "status": "string"
+              },
+              "skeleton_sha256": "20900891144a40c776995e08d30a75160ebafca63efd3e98bbd85e9348412a89"
+            }
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "string not list",
+      "request": {
+        "body": {
+          "json": {
+            "age_group": null,
+            "area_id": null,
+            "area_level": null,
+            "calendar_quarter": null,
+            "indicator": "prevalence",
+            "sex": null
+          }
+        },
+        "method": "POST",
+        "path": "/calibrate/result/filteredData/<TASK:calibrate>"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "An unexpected error occurred. If you see this message while you are using Naomi at a workshop, please contact your workshop technical support and show them this code: <ERROR_CODE>. Otherwise please contact support at naomi-support@imperial.ac.uk and quote this code: <ERROR_CODE>. JSON parse error: Cannot construct instance of `java.util.ArrayList` (although at least one Creator exists): no String-argument constructor/factory method to deserialize from String value ('prevalence'); nested exception is com.fasterxml.jackson.databind.exc.MismatchedInputException: Cannot construct instance of `java.util.ArrayList` (although at least one Creator exists): no String-argument constructor/factory method to deserialize from String value ('prevalence')\n at [Source: (org.springframework.util.StreamUtils$NonClosingInputStream); line: 1, column: 14] (through reference chain: org.imperial.mrc.hint.models.FilterQuery[\"indicator\"])",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "client": "A",
+      "name": "malformed",
+      "request": {
+        "body": {
+          "raw": {
+            "content_type": "application/json",
+            "sha256": "861530244386f85ca5487174905849edcc832c2442eacf9d340b35582763a641",
+            "size": 3
+          }
+        },
+        "method": "POST",
+        "path": "/calibrate/result/filteredData/<TASK:calibrate>"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "An unexpected error occurred. If you see this message while you are using Naomi at a workshop, please contact your workshop technical support and show them this code: <ERROR_CODE>. Otherwise please contact support at naomi-support@imperial.ac.uk and quote this code: <ERROR_CODE>. JSON parse error: Unexpected character ('n' (code 110)): was expecting double-quote to start field name; nested exception is com.fasterxml.jackson.core.JsonParseException: Unexpected character ('n' (code 110)): was expecting double-quote to start field name\n at [Source: (org.springframework.util.StreamUtils$NonClosingInputStream); line: 1, column: 3]",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "client": "A",
+      "name": "unknown id",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "GET",
+          "path": "/calibrate/result/path/nonsense",
+          "status": 400,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "json": {
+            "age_group": null,
+            "area_id": null,
+            "area_level": null,
+            "calendar_quarter": null,
+            "indicator": null,
+            "sex": null
+          }
+        },
+        "method": "POST",
+        "path": "/calibrate/result/filteredData/nonsense"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "An unexpected error occurred. If you see this message while you are using Naomi at a workshop, please contact your workshop technical support and show them this code: <ERROR_CODE>. Otherwise please contact support at naomi-support@imperial.ac.uk and quote this code: <ERROR_CODE>.",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 500
+      }
+    },
+    {
+      "client": "A",
+      "name": "failed calibration id",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "GET",
+          "path": "/calibrate/result/path/<TASK:calibrate-error>",
+          "status": 400,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "json": {
+            "age_group": null,
+            "area_id": null,
+            "area_level": null,
+            "calendar_quarter": null,
+            "indicator": null,
+            "sex": null
+          }
+        },
+        "method": "POST",
+        "path": "/calibrate/result/filteredData/<TASK:calibrate-error>"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "An unexpected error occurred. If you see this message while you are using Naomi at a workshop, please contact your workshop technical support and show them this code: <ERROR_CODE>. Otherwise please contact support at naomi-support@imperial.ac.uk and quote this code: <ERROR_CODE>.",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 500
+      }
+    },
+    {
+      "client": "A",
+      "name": "wrong method",
+      "request": {
+        "method": "GET",
+        "path": "/calibrate/result/filteredData/<TASK:calibrate>"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "An unexpected error occurred. If you see this message while you are using Naomi at a workshop, please contact your workshop technical support and show them this code: <ERROR_CODE>. Otherwise please contact support at naomi-support@imperial.ac.uk and quote this code: <ERROR_CODE>. Request method 'GET' not supported",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 405
+      }
+    }
+  ]
+}

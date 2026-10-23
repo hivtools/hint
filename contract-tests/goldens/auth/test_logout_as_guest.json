@@ -1,0 +1,22 @@
+{
+  "scenario": "auth/test_logout_as_guest",
+  "steps": [
+    {
+      "client": "A",
+      "name": "GET /logout",
+      "request": {
+        "method": "GET",
+        "path": "/logout"
+      },
+      "response": {
+        "body": {
+          "empty": true
+        },
+        "headers": {
+          "location": "/login"
+        },
+        "status": 302
+      }
+    }
+  ]
+}

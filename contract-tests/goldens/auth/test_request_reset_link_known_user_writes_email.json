@@ -1,0 +1,44 @@
+{
+  "scenario": "auth/test_request_reset_link_known_user_writes_email",
+  "steps": [
+    {
+      "client": "A",
+      "name": "request link test.user@example.com",
+      "request": {
+        "body": {
+          "form": {
+            "email": "test.user@example.com"
+          }
+        },
+        "method": "POST",
+        "path": "/password/request-reset-link"
+      },
+      "response": {
+        "body": {
+          "text": "{\"data\":true,\"errors\":[],\"status\":\"success\"}"
+        },
+        "headers": {
+          "content-type": "text/plain"
+        },
+        "status": 200
+      }
+    },
+    {
+      "emails": [
+        "Hello,\n\nThis is an automated email from Naomi. We have received a request to reset the password for the account with\nthis email address (test.user@example.com).\n\nTo change your password on Naomi please browse to:\n\n<APP>/password/reset-password/?token=<JWT:1>\n\nThis link will expire in 24 hours. If you don't get a chance to use it within that time, you can request a new one.\n\nIf you did not request a password change, or you no longer want to change your password, please ignore this email.\n\nHave a great day!"
+      ],
+      "name": "reset email",
+      "type": "emails"
+    },
+    {
+      "name": "db:onetime_token",
+      "rows": [
+        {
+          "tokens": 1
+        }
+      ],
+      "table": "onetime_token",
+      "type": "db"
+    }
+  ]
+}

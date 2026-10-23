@@ -1,0 +1,294 @@
+{
+  "scenario": "adr_import/test_rehydrate_from_adr",
+  "steps": [
+    {
+      "client": "A",
+      "name": "login test.user@example.com",
+      "request": {
+        "body": {
+          "form": {
+            "password": "password",
+            "username": "test.user@example.com"
+          }
+        },
+        "method": "POST",
+        "path": "/callback/formClient"
+      },
+      "response": {
+        "body": {
+          "empty": true
+        },
+        "headers": {
+          "location": "/"
+        },
+        "status": 303
+      }
+    },
+    {
+      "client": "A",
+      "name": "open /",
+      "request": {
+        "method": "GET",
+        "path": "/"
+      },
+      "response": {
+        "body": {
+          "html": true,
+          "title": "Naomi"
+        },
+        "headers": {
+          "content-type": "text/html"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "rehydrate from adr",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "GET",
+          "path": "/task/<TASK:fit>/exists",
+          "status": 200,
+          "to": "hintr"
+        },
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "GET",
+          "path": "/task/<TASK:calibrate>/exists",
+          "status": 200,
+          "to": "hintr"
+        },
+        {
+          "headers": {
+            "authorization": "<UUID:1>"
+          },
+          "method": "GET",
+          "path": "/dataset/ds1/resource/res1/download/out.zip",
+          "to": "adr"
+        }
+      ],
+      "request": {
+        "body": {
+          "json": {
+            "datasetId": "ds1",
+            "resourceId": "res1",
+            "url": "<ADR>/dataset/ds1/resource/res1/download/out.zip"
+          }
+        },
+        "method": "POST",
+        "path": "/rehydrate/adr"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {
+              "notes": "adr notes",
+              "state": {
+                "calibrate": {
+                  "id": "<TASK:calibrate>",
+                  "options": {}
+                },
+                "datasets": {},
+                "model_fit": {
+                  "id": "<TASK:fit>",
+                  "options": {}
+                },
+                "version": {
+                  "hintr": "1.2.23",
+                  "naomi": "2.10.23",
+                  "rrq": "0.7.23",
+                  "traduire": "0.1.1"
+                }
+              }
+            },
+            "errors": null,
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "unknown calibrate id inside the zip",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "GET",
+          "path": "/task/<TASK:fit>/exists",
+          "status": 200,
+          "to": "hintr"
+        },
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "GET",
+          "path": "/task/nonsense/exists",
+          "status": 200,
+          "to": "hintr"
+        },
+        {
+          "headers": {
+            "authorization": "<UUID:1>"
+          },
+          "method": "GET",
+          "path": "/dataset/ds1/resource/res1/download/bad.zip",
+          "to": "adr"
+        }
+      ],
+      "request": {
+        "body": {
+          "json": {
+            "datasetId": "ds1",
+            "resourceId": "res1",
+            "url": "<ADR>/dataset/ds1/resource/res1/download/bad.zip"
+          }
+        },
+        "method": "POST",
+        "path": "/rehydrate/adr"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "Unable to load output zip, model calibrate not generated on the web app. Please contact a system admin.",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "client": "A",
+      "name": "zip not made by the app",
+      "outbound": [
+        {
+          "headers": {
+            "authorization": "<UUID:1>"
+          },
+          "method": "GET",
+          "path": "/dataset/ds1/resource/res1/download/other.zip",
+          "to": "adr"
+        }
+      ],
+      "request": {
+        "body": {
+          "json": {
+            "datasetId": "ds1",
+            "resourceId": "res1",
+            "url": "<ADR>/dataset/ds1/resource/res1/download/other.zip"
+          }
+        },
+        "method": "POST",
+        "path": "/rehydrate/adr"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "Cannot load model outputs. This fit was not generated on the Naomi web application. Please contact support.",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "client": "A",
+      "name": "download 404",
+      "outbound": [
+        {
+          "headers": {
+            "authorization": "<UUID:1>"
+          },
+          "method": "GET",
+          "path": "/dataset/ds1/resource/res1/download/out.zip",
+          "to": "adr"
+        }
+      ],
+      "request": {
+        "body": {
+          "json": {
+            "datasetId": "ds1",
+            "resourceId": "res1",
+            "url": "<ADR>/dataset/ds1/resource/res1/download/out.zip"
+          }
+        },
+        "method": "POST",
+        "path": "/rehydrate/adr"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "Unable to load resource, check resource in ADR <ADR>/dataset/ds1/resource/res1/download/out.zip.",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 404
+      }
+    },
+    {
+      "client": "A",
+      "name": "no body",
+      "request": {
+        "method": "POST",
+        "path": "/rehydrate/adr"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "An unexpected error occurred. If you see this message while you are using Naomi at a workshop, please contact your workshop technical support and show them this code: <ERROR_CODE>. Otherwise please contact support at naomi-support@imperial.ac.uk and quote this code: <ERROR_CODE>. Required request body is missing: public org.springframework.http.ResponseEntity<org.imperial.mrc.hint.clients.HintrApiResponse<org.imperial.mrc.hint.service.RehydratedProject>> org.imperial.mrc.hint.controllers.RehydrateController.submitAdrRehydrate(org.imperial.mrc.hint.models.AdrResource)",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    }
+  ]
+}

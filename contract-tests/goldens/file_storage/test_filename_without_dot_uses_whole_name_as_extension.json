@@ -1,0 +1,327 @@
+{
+  "scenario": "file_storage/test_filename_without_dot_uses_whole_name_as_extension",
+  "steps": [
+    {
+      "client": "A",
+      "name": "login test.user@example.com",
+      "request": {
+        "body": {
+          "form": {
+            "password": "password",
+            "username": "test.user@example.com"
+          }
+        },
+        "method": "POST",
+        "path": "/callback/formClient"
+      },
+      "response": {
+        "body": {
+          "empty": true
+        },
+        "headers": {
+          "location": "/"
+        },
+        "status": 303
+      }
+    },
+    {
+      "client": "A",
+      "name": "open /",
+      "request": {
+        "method": "GET",
+        "path": "/"
+      },
+      "response": {
+        "body": {
+          "html": true,
+          "title": "Naomi"
+        },
+        "headers": {
+          "content-type": "text/html"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "no dot",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "file": {
+              "filename": "README",
+              "fromADR": false,
+              "hash": "900150983CD24FB0D6963F7D28E17F72.README",
+              "path": "<UPLOADS>/900150983CD24FB0D6963F7D28E17F72.README",
+              "resource_url": null
+            },
+            "type": "pjnz"
+          },
+          "method": "POST",
+          "path": "/validate/baseline-individual",
+          "status": 400,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "multipart": {
+            "file": {
+              "filename": "README",
+              "sha256": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
+              "size": 3
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/baseline/pjnz/"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "client": "A",
+      "name": "two dots",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "file": {
+              "filename": "archive.tar.gz",
+              "fromADR": false,
+              "hash": "900150983CD24FB0D6963F7D28E17F72.gz",
+              "path": "<UPLOADS>/900150983CD24FB0D6963F7D28E17F72.gz",
+              "resource_url": null
+            },
+            "type": "pjnz"
+          },
+          "method": "POST",
+          "path": "/validate/baseline-individual",
+          "status": 400,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "multipart": {
+            "file": {
+              "filename": "archive.tar.gz",
+              "sha256": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
+              "size": 3
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/baseline/pjnz/"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "client": "A",
+      "name": "trailing dot",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "file": {
+              "filename": "trailing.",
+              "fromADR": false,
+              "hash": "900150983CD24FB0D6963F7D28E17F72.",
+              "path": "<UPLOADS>/900150983CD24FB0D6963F7D28E17F72.",
+              "resource_url": null
+            },
+            "type": "pjnz"
+          },
+          "method": "POST",
+          "path": "/validate/baseline-individual",
+          "status": 400,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "multipart": {
+            "file": {
+              "filename": "trailing.",
+              "sha256": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
+              "size": 3
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/baseline/pjnz/"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "client": "A",
+      "name": "upper case extension",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "file": {
+              "filename": "UPPER.CSV",
+              "fromADR": false,
+              "hash": "900150983CD24FB0D6963F7D28E17F72.CSV",
+              "path": "<UPLOADS>/900150983CD24FB0D6963F7D28E17F72.CSV",
+              "resource_url": null
+            },
+            "type": "pjnz"
+          },
+          "method": "POST",
+          "path": "/validate/baseline-individual",
+          "status": 400,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "multipart": {
+            "file": {
+              "filename": "UPPER.CSV",
+              "sha256": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
+              "size": 3
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/baseline/pjnz/"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "client": "A",
+      "name": "unicode and space in name",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "file": {
+              "filename": "café ☃.pjnz",
+              "fromADR": false,
+              "hash": "E2FC714C4727EE9395F324CD2E7F331F.pjnz",
+              "path": "<UPLOADS>/E2FC714C4727EE9395F324CD2E7F331F.pjnz",
+              "resource_url": null
+            },
+            "type": "pjnz"
+          },
+          "method": "POST",
+          "path": "/validate/baseline-individual",
+          "status": 400,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "multipart": {
+            "file": {
+              "filename": "café ☃.pjnz",
+              "sha256": "88d4266fd4e6338d13b845fcf289579d209c897823b9217da3e161936f031589",
+              "size": 4
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/baseline/pjnz/"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "files": [
+        {
+          "name": "900150983CD24FB0D6963F7D28E17F72.",
+          "name_matches_md5": true,
+          "size": 3
+        },
+        {
+          "name": "900150983CD24FB0D6963F7D28E17F72.CSV",
+          "name_matches_md5": true,
+          "size": 3
+        },
+        {
+          "name": "900150983CD24FB0D6963F7D28E17F72.README",
+          "name_matches_md5": true,
+          "size": 3
+        },
+        {
+          "name": "900150983CD24FB0D6963F7D28E17F72.gz",
+          "name_matches_md5": true,
+          "size": 3
+        },
+        {
+          "name": "E2FC714C4727EE9395F324CD2E7F331F.pjnz",
+          "name_matches_md5": true,
+          "size": 4
+        }
+      ],
+      "name": "uploads",
+      "type": "uploads"
+    },
+    {
+      "name": "db:version_file",
+      "rows": [
+        {
+          "filename": "café ☃.pjnz",
+          "from_adr": false,
+          "hash": "E2FC714C4727EE9395F324CD2E7F331F.pjnz",
+          "resource_url": null,
+          "type": "pjnz",
+          "version": "<UUID:1>"
+        }
+      ],
+      "table": "version_file",
+      "type": "db"
+    }
+  ]
+}

@@ -1,0 +1,271 @@
+{
+  "scenario": "hintr_faults/test_hintr_error_json_with_various_status_codes",
+  "steps": [
+    {
+      "client": "A",
+      "name": "hintr answers 400 with a hint-style error body",
+      "outbound": [
+        {
+          "fault": "status",
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "GET",
+          "path": "/hintr/version",
+          "status": null,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/meta/hintr/version"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": null,
+            "errors": [
+              {
+                "detail": "hintr exploded",
+                "error": "SERVER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "client": "A",
+      "name": "hintr answers 401 with a hint-style error body",
+      "outbound": [
+        {
+          "fault": "status",
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "GET",
+          "path": "/hintr/version",
+          "status": null,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/meta/hintr/version"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": null,
+            "errors": [
+              {
+                "detail": "hintr exploded",
+                "error": "SERVER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 401
+      }
+    },
+    {
+      "client": "A",
+      "name": "hintr answers 403 with a hint-style error body",
+      "outbound": [
+        {
+          "fault": "status",
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "GET",
+          "path": "/hintr/version",
+          "status": null,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/meta/hintr/version"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": null,
+            "errors": [
+              {
+                "detail": "hintr exploded",
+                "error": "SERVER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 403
+      }
+    },
+    {
+      "client": "A",
+      "name": "hintr answers 404 with a hint-style error body",
+      "outbound": [
+        {
+          "fault": "status",
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "GET",
+          "path": "/hintr/version",
+          "status": null,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/meta/hintr/version"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": null,
+            "errors": [
+              {
+                "detail": "hintr exploded",
+                "error": "SERVER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 404
+      }
+    },
+    {
+      "client": "A",
+      "name": "hintr answers 409 with a hint-style error body",
+      "outbound": [
+        {
+          "fault": "status",
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "GET",
+          "path": "/hintr/version",
+          "status": null,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/meta/hintr/version"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": null,
+            "errors": [
+              {
+                "detail": "hintr exploded",
+                "error": "SERVER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 500
+      }
+    },
+    {
+      "client": "A",
+      "name": "hintr answers 500 with a hint-style error body",
+      "outbound": [
+        {
+          "fault": "status",
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "GET",
+          "path": "/hintr/version",
+          "status": null,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/meta/hintr/version"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": null,
+            "errors": [
+              {
+                "detail": "hintr exploded",
+                "error": "SERVER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 500
+      }
+    },
+    {
+      "client": "A",
+      "name": "hintr answers 503 with a hint-style error body",
+      "outbound": [
+        {
+          "fault": "status",
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "GET",
+          "path": "/hintr/version",
+          "status": null,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/meta/hintr/version"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": null,
+            "errors": [
+              {
+                "detail": "hintr exploded",
+                "error": "SERVER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 500
+      }
+    }
+  ]
+}

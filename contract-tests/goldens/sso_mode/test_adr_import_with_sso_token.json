@@ -1,0 +1,142 @@
+{
+  "scenario": "sso_mode/test_adr_import_with_sso_token",
+  "steps": [
+    {
+      "client": "S",
+      "name": "start sso login",
+      "request": {
+        "method": "GET",
+        "path": "/oauth2"
+      },
+      "response": {
+        "body": {
+          "empty": true
+        },
+        "headers": {
+          "location": "https://<IDP_HOST>/authorize?response_type=code&client_id=fakeId&state=<STATE>&scope=openid+profile+email+access:adr&audience=naomi&redirect_uri=<APP>/callback/oauth2Client"
+        },
+        "status": 303
+      }
+    },
+    {
+      "client": "S",
+      "name": "sso callback",
+      "outbound": [
+        {
+          "form": {
+            "code": "c",
+            "grant_type": "authorization_code",
+            "redirect_uri": "<APP>/callback/oauth2Client/oauth2Client"
+          },
+          "method": "POST",
+          "path": "/oauth/token",
+          "to": "idp"
+        },
+        {
+          "method": "GET",
+          "path": "/userinfo",
+          "to": "idp"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/callback/oauth2Client",
+        "query": {
+          "code": "c",
+          "state": "<STATE>"
+        }
+      },
+      "response": {
+        "body": {
+          "empty": true
+        },
+        "headers": {
+          "location": "/"
+        },
+        "status": 302
+      }
+    },
+    {
+      "client": "S",
+      "name": "open /",
+      "request": {
+        "method": "GET",
+        "path": "/"
+      },
+      "response": {
+        "body": {
+          "html": true,
+          "title": "Naomi"
+        },
+        "headers": {
+          "content-type": "text/html"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "S",
+      "name": "import pjnz",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "file": {
+              "filename": "Malawi2024.PJNZ",
+              "fromADR": true,
+              "hash": "46E4A725064B0E287F573A8F11389895.PJNZ",
+              "path": "<UPLOADS>/46E4A725064B0E287F573A8F11389895.PJNZ",
+              "resource_url": "<ADR>/dataset/d1/resource/r1/download/Malawi2024.PJNZ?activity_id=act-1"
+            },
+            "type": "pjnz"
+          },
+          "method": "POST",
+          "path": "/validate/baseline-individual",
+          "status": 200,
+          "to": "hintr"
+        },
+        {
+          "headers": {
+            "authorization": "Bearer stub-access-token"
+          },
+          "method": "GET",
+          "path": "/dataset/d1/resource/r1/download/Malawi2024.PJNZ",
+          "to": "adr-sso"
+        },
+        {
+          "headers": {
+            "authorization": "Bearer stub-access-token"
+          },
+          "method": "GET",
+          "path": "/api/3/action/package_activity_list",
+          "query": {
+            "id": "d1"
+          },
+          "to": "adr-sso"
+        }
+      ],
+      "request": {
+        "body": {
+          "json": {
+            "datasetId": "d1",
+            "resourceId": "r1",
+            "url": "<ADR_SSO>/dataset/d1/resource/r1/download/Malawi2024.PJNZ"
+          }
+        },
+        "method": "POST",
+        "path": "/adr/pjnz"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    }
+  ]
+}

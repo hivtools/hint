@@ -1,0 +1,506 @@
+{
+  "scenario": "calibrate/test_calibrate_with_invalid_options_fails",
+  "steps": [
+    {
+      "client": "A",
+      "name": "login test.user@example.com",
+      "request": {
+        "body": {
+          "form": {
+            "password": "password",
+            "username": "test.user@example.com"
+          }
+        },
+        "method": "POST",
+        "path": "/callback/formClient"
+      },
+      "response": {
+        "body": {
+          "empty": true
+        },
+        "headers": {
+          "location": "/"
+        },
+        "status": 303
+      }
+    },
+    {
+      "client": "A",
+      "name": "open /",
+      "request": {
+        "method": "GET",
+        "path": "/"
+      },
+      "response": {
+        "body": {
+          "html": true,
+          "title": "Naomi"
+        },
+        "headers": {
+          "content-type": "text/html"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "bad method",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "iso3": "MWI",
+            "options": {
+              "calibrate_method": "bogus",
+              "spectrum_artnum_calibration_level": "national",
+              "spectrum_artnum_calibration_strat": "sex_age_coarse",
+              "spectrum_aware_calibration_level": "none",
+              "spectrum_aware_calibration_strat": "sex_age_coarse",
+              "spectrum_infections_calibration_level": "national",
+              "spectrum_infections_calibration_strat": "sex_age_coarse",
+              "spectrum_plhiv_calibration_level": "national",
+              "spectrum_plhiv_calibration_strat": "sex_age_coarse"
+            },
+            "version": {
+              "hintr": "1.2.23",
+              "naomi": "2.10.23",
+              "rrq": "0.7.23",
+              "traduire": "0.1.1"
+            }
+          },
+          "method": "POST",
+          "path": "/calibrate/submit/<TASK:fit>",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "json": {
+            "iso3": "MWI",
+            "options": {
+              "calibrate_method": "bogus",
+              "spectrum_artnum_calibration_level": "national",
+              "spectrum_artnum_calibration_strat": "sex_age_coarse",
+              "spectrum_aware_calibration_level": "none",
+              "spectrum_aware_calibration_strat": "sex_age_coarse",
+              "spectrum_infections_calibration_level": "national",
+              "spectrum_infections_calibration_strat": "sex_age_coarse",
+              "spectrum_plhiv_calibration_level": "national",
+              "spectrum_plhiv_calibration_strat": "sex_age_coarse"
+            },
+            "version": {
+              "hintr": "1.2.23",
+              "naomi": "2.10.23",
+              "rrq": "0.7.23",
+              "traduire": "0.1.1"
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/calibrate/submit/<TASK:fit>"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "bad method: status",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "GET",
+          "path": "/calibrate/status/<TASK:bad-method>",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "poll": {
+        "until": "data.done == true"
+      },
+      "request": {
+        "method": "GET",
+        "path": "/calibrate/status/<TASK:bad-method>"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "bad method: result",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "GET",
+          "path": "/calibrate/result/metadata/<TASK:bad-method>",
+          "status": 400,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/calibrate/result/metadata/<TASK:bad-method>"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "client": "A",
+      "name": "bad method: result in french",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "fr"
+          },
+          "method": "GET",
+          "path": "/calibrate/result/metadata/<TASK:bad-method>",
+          "status": 400,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "headers": {
+          "accept-language": "fr"
+        },
+        "method": "GET",
+        "path": "/calibrate/result/metadata/<TASK:bad-method>"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "client": "A",
+      "name": "bad level",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "iso3": "MWI",
+            "options": {
+              "calibrate_method": "logistic",
+              "spectrum_artnum_calibration_level": "national",
+              "spectrum_artnum_calibration_strat": "sex_age_coarse",
+              "spectrum_aware_calibration_level": "none",
+              "spectrum_aware_calibration_strat": "sex_age_coarse",
+              "spectrum_infections_calibration_level": "national",
+              "spectrum_infections_calibration_strat": "sex_age_coarse",
+              "spectrum_plhiv_calibration_level": "galaxy",
+              "spectrum_plhiv_calibration_strat": "sex_age_coarse"
+            },
+            "version": {
+              "hintr": "1.2.23",
+              "naomi": "2.10.23",
+              "rrq": "0.7.23",
+              "traduire": "0.1.1"
+            }
+          },
+          "method": "POST",
+          "path": "/calibrate/submit/<TASK:fit>",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "json": {
+            "iso3": "MWI",
+            "options": {
+              "calibrate_method": "logistic",
+              "spectrum_artnum_calibration_level": "national",
+              "spectrum_artnum_calibration_strat": "sex_age_coarse",
+              "spectrum_aware_calibration_level": "none",
+              "spectrum_aware_calibration_strat": "sex_age_coarse",
+              "spectrum_infections_calibration_level": "national",
+              "spectrum_infections_calibration_strat": "sex_age_coarse",
+              "spectrum_plhiv_calibration_level": "galaxy",
+              "spectrum_plhiv_calibration_strat": "sex_age_coarse"
+            },
+            "version": {
+              "hintr": "1.2.23",
+              "naomi": "2.10.23",
+              "rrq": "0.7.23",
+              "traduire": "0.1.1"
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/calibrate/submit/<TASK:fit>"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "bad level: status",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "GET",
+          "path": "/calibrate/status/<TASK:bad-level>",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "poll": {
+        "until": "data.done == true"
+      },
+      "request": {
+        "method": "GET",
+        "path": "/calibrate/status/<TASK:bad-level>"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "bad level: result",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "GET",
+          "path": "/calibrate/result/metadata/<TASK:bad-level>",
+          "status": 400,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/calibrate/result/metadata/<TASK:bad-level>"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "client": "A",
+      "name": "bad level: result in french",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "fr"
+          },
+          "method": "GET",
+          "path": "/calibrate/result/metadata/<TASK:bad-level>",
+          "status": 400,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "headers": {
+          "accept-language": "fr"
+        },
+        "method": "GET",
+        "path": "/calibrate/result/metadata/<TASK:bad-level>"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "client": "A",
+      "name": "missing options",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "iso3": "MWI",
+            "options": {},
+            "version": {
+              "hintr": "1.2.23",
+              "naomi": "2.10.23",
+              "rrq": "0.7.23",
+              "traduire": "0.1.1"
+            }
+          },
+          "method": "POST",
+          "path": "/calibrate/submit/<TASK:fit>",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "json": {
+            "iso3": "MWI",
+            "options": {},
+            "version": {
+              "hintr": "1.2.23",
+              "naomi": "2.10.23",
+              "rrq": "0.7.23",
+              "traduire": "0.1.1"
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/calibrate/submit/<TASK:fit>"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "missing options: status",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "GET",
+          "path": "/calibrate/status/<TASK:missing-options>",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "poll": {
+        "until": "data.done == true"
+      },
+      "request": {
+        "method": "GET",
+        "path": "/calibrate/status/<TASK:missing-options>"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "missing options: result",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "GET",
+          "path": "/calibrate/result/metadata/<TASK:missing-options>",
+          "status": 400,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/calibrate/result/metadata/<TASK:missing-options>"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "client": "A",
+      "name": "missing options: result in french",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "fr"
+          },
+          "method": "GET",
+          "path": "/calibrate/result/metadata/<TASK:missing-options>",
+          "status": 400,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "headers": {
+          "accept-language": "fr"
+        },
+        "method": "GET",
+        "path": "/calibrate/result/metadata/<TASK:missing-options>"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    }
+  ]
+}

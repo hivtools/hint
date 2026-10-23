@@ -1,0 +1,185 @@
+{
+  "scenario": "calibrate/test_filtered_data_combined_and_everything",
+  "steps": [
+    {
+      "client": "A",
+      "name": "login test.user@example.com",
+      "request": {
+        "body": {
+          "form": {
+            "password": "password",
+            "username": "test.user@example.com"
+          }
+        },
+        "method": "POST",
+        "path": "/callback/formClient"
+      },
+      "response": {
+        "body": {
+          "empty": true
+        },
+        "headers": {
+          "location": "/"
+        },
+        "status": 303
+      }
+    },
+    {
+      "client": "A",
+      "name": "open /",
+      "request": {
+        "method": "GET",
+        "path": "/"
+      },
+      "response": {
+        "body": {
+          "html": true,
+          "title": "Naomi"
+        },
+        "headers": {
+          "content-type": "text/html"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "all six filters",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "GET",
+          "path": "/calibrate/result/path/<TASK:calibrate>",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "json": {
+            "age_group": [
+              "Y015_049"
+            ],
+            "area_id": [
+              "MWI"
+            ],
+            "area_level": [
+              "0"
+            ],
+            "calendar_quarter": [
+              "CY2020Q3"
+            ],
+            "indicator": [
+              "prevalence"
+            ],
+            "sex": [
+              "both"
+            ]
+          }
+        },
+        "method": "POST",
+        "path": "/calibrate/result/filteredData/<TASK:calibrate>"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": [
+              {
+                "age_group": "Y015_049",
+                "area_id": "MWI",
+                "area_level": 0,
+                "calendar_quarter": "CY2020Q3",
+                "indicator": "prevalence",
+                "lower": 0.08251167,
+                "mean": 0.08496694,
+                "mode": 0.08465529,
+                "sex": "both",
+                "upper": 0.08746342
+              }
+            ],
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "indicator only: every area level, quarter, age and sex",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "GET",
+          "path": "/calibrate/result/path/<TASK:calibrate>",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "json": {
+            "age_group": null,
+            "area_id": null,
+            "area_level": null,
+            "calendar_quarter": null,
+            "indicator": [
+              "prevalence"
+            ],
+            "sex": null
+          }
+        },
+        "method": "POST",
+        "path": "/calibrate/result/filteredData/<TASK:calibrate>"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "$large_json": {
+              "numbers": {
+                "count": 102465,
+                "max": 4.0,
+                "min": 0.0,
+                "sum": 72672.00480713324,
+                "sum_abs": 72672.00480713324
+              },
+              "shape": {
+                "data": {
+                  "$first": {
+                    "age_group": "string",
+                    "area_id": "string",
+                    "area_level": "number",
+                    "calendar_quarter": "string",
+                    "indicator": "string",
+                    "lower": "number",
+                    "mean": "number",
+                    "mode": "number",
+                    "sex": "string",
+                    "upper": "number"
+                  },
+                  "$len": 20493
+                },
+                "errors": {
+                  "$len": 0
+                },
+                "status": "string"
+              },
+              "skeleton_sha256": "6f27f4522b8548b4d350571c44273cf98cd8e700ddc1124d3561e04f50a6d56c"
+            }
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    }
+  ]
+}

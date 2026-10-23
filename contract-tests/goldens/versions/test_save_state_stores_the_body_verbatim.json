@@ -1,0 +1,192 @@
+{
+  "scenario": "versions/test_save_state_stores_the_body_verbatim",
+  "steps": [
+    {
+      "client": "A",
+      "name": "login test.user@example.com",
+      "request": {
+        "body": {
+          "form": {
+            "password": "password",
+            "username": "test.user@example.com"
+          }
+        },
+        "method": "POST",
+        "path": "/callback/formClient"
+      },
+      "response": {
+        "body": {
+          "empty": true
+        },
+        "headers": {
+          "location": "/"
+        },
+        "status": 303
+      }
+    },
+    {
+      "client": "A",
+      "name": "open /",
+      "request": {
+        "method": "GET",
+        "path": "/"
+      },
+      "response": {
+        "body": {
+          "html": true,
+          "title": "Naomi"
+        },
+        "headers": {
+          "content-type": "text/html"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "create project P",
+      "request": {
+        "body": {
+          "form": {
+            "name": "P",
+            "note": "pnote"
+          }
+        },
+        "method": "POST",
+        "path": "/project/"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {
+              "id": "<PROJECT:1>",
+              "name": "P",
+              "note": null,
+              "sharedBy": "",
+              "uploaded": null,
+              "versions": [
+                {
+                  "created": "<TIMESTAMP>",
+                  "id": "<UUID:1>",
+                  "note": null,
+                  "updated": "<TIMESTAMP>",
+                  "versionNumber": 1
+                }
+              ]
+            },
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "plain text",
+      "request": {
+        "body": {
+          "raw": {
+            "content_type": "text/plain",
+            "sha256": "58ede1be629f6e0d1397ba4de6e396658ccefd5c83e7828ffb42270958fbc72e",
+            "size": 13
+          }
+        },
+        "method": "POST",
+        "path": "/project/<PROJECT:1>/version/<UUID:1>/state"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": true,
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "returned as is",
+      "request": {
+        "method": "GET",
+        "path": "/project/<PROJECT:1>/version/<UUID:1>"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {
+              "files": {},
+              "state": "not even json"
+            },
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "unicode and number formatting",
+      "request": {
+        "body": {
+          "raw": {
+            "content_type": "application/json",
+            "sha256": "b1d6b6c4878b48f2ac44a04ff4c32ffc03bc17001e91ffb9f690d828dff66d7e",
+            "size": 35
+          }
+        },
+        "method": "POST",
+        "path": "/project/<PROJECT:1>/version/<UUID:1>/state"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": true,
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "verbatim",
+      "request": {
+        "method": "GET",
+        "path": "/project/<PROJECT:1>/version/<UUID:1>"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {
+              "files": {},
+              "state": "{\"unicode\": \"café ☃\", \"n\": 1.50}"
+            },
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    }
+  ]
+}

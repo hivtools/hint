@@ -1,0 +1,32 @@
+{
+  "scenario": "auth/test_request_reset_link_unknown_user_gives_same_answer_and_no_email",
+  "steps": [
+    {
+      "client": "A",
+      "name": "request link unknown.person@example.com",
+      "request": {
+        "body": {
+          "form": {
+            "email": "unknown.person@example.com"
+          }
+        },
+        "method": "POST",
+        "path": "/password/request-reset-link"
+      },
+      "response": {
+        "body": {
+          "text": "{\"data\":true,\"errors\":[],\"status\":\"success\"}"
+        },
+        "headers": {
+          "content-type": "text/plain"
+        },
+        "status": 200
+      }
+    },
+    {
+      "emails": [],
+      "name": "no email for unknown user",
+      "type": "emails"
+    }
+  ]
+}

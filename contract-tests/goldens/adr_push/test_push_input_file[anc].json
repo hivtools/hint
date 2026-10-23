@@ -1,0 +1,152 @@
+{
+  "scenario": "adr_push/test_push_input_file[anc]",
+  "steps": [
+    {
+      "client": "A",
+      "name": "login test.user@example.com",
+      "request": {
+        "body": {
+          "form": {
+            "password": "password",
+            "username": "test.user@example.com"
+          }
+        },
+        "method": "POST",
+        "path": "/callback/formClient"
+      },
+      "response": {
+        "body": {
+          "empty": true
+        },
+        "headers": {
+          "location": "/"
+        },
+        "status": 303
+      }
+    },
+    {
+      "client": "A",
+      "name": "open /",
+      "request": {
+        "method": "GET",
+        "path": "/"
+      },
+      "response": {
+        "body": {
+          "html": true,
+          "title": "Naomi"
+        },
+        "headers": {
+          "content-type": "text/html"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "hash differs: resource_patch",
+      "outbound": [
+        {
+          "headers": {
+            "authorization": "<UUID:1>"
+          },
+          "method": "GET",
+          "path": "/api/3/action/resource_show",
+          "query": {
+            "id": "res-in"
+          },
+          "to": "adr"
+        },
+        {
+          "headers": {
+            "authorization": "<UUID:1>"
+          },
+          "method": "POST",
+          "multipart": {
+            "fields": {
+              "hash": "212FBB9D1AE1077EF9497BD8EA83298F",
+              "id": "res-in",
+              "name": "My anc",
+              "resource_type": "inputs-unaids-anc"
+            },
+            "files": {
+              "upload": {
+                "filename": "anc.csv",
+                "md5": "212fbb9d1ae1077ef9497bd8ea83298f",
+                "size": 28895
+              }
+            }
+          },
+          "path": "/api/3/action/resource_patch",
+          "to": "adr"
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "path": "/adr/datasets/ds1/resource/inputs-unaids-anc/ignored-download-id",
+        "query": {
+          "resourceFileName": "ignored.name",
+          "resourceId": "res-in",
+          "resourceName": "My anc"
+        }
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {
+              "hash": "212FBB9D1AE1077EF9497BD8EA83298F",
+              "id": "res-in",
+              "name": "My anc",
+              "resource_type": "inputs-unaids-anc"
+            },
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "hash identical: skipped",
+      "outbound": [
+        {
+          "headers": {
+            "authorization": "<UUID:1>"
+          },
+          "method": "GET",
+          "path": "/api/3/action/resource_show",
+          "query": {
+            "id": "res-in"
+          },
+          "to": "adr"
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "path": "/adr/datasets/ds1/resource/inputs-unaids-anc/ignored-download-id",
+        "query": {
+          "resourceFileName": "ignored.name",
+          "resourceId": "res-in",
+          "resourceName": "My anc"
+        }
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": true,
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    }
+  ]
+}

@@ -1,0 +1,149 @@
+{
+  "scenario": "disease_files/test_anc_positive_greater_than_total_accepted",
+  "steps": [
+    {
+      "client": "A",
+      "name": "login test.user@example.com",
+      "request": {
+        "body": {
+          "form": {
+            "password": "password",
+            "username": "test.user@example.com"
+          }
+        },
+        "method": "POST",
+        "path": "/callback/formClient"
+      },
+      "response": {
+        "body": {
+          "empty": true
+        },
+        "headers": {
+          "location": "/"
+        },
+        "status": 303
+      }
+    },
+    {
+      "client": "A",
+      "name": "open /",
+      "request": {
+        "method": "GET",
+        "path": "/"
+      },
+      "response": {
+        "body": {
+          "html": true,
+          "title": "Naomi"
+        },
+        "headers": {
+          "content-type": "text/html"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "strict",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "file": {
+              "filename": "anc-pos-greater-than-total.csv",
+              "fromADR": false,
+              "hash": "FDF5CA4B19F682EC83283DA6A68D3548.csv",
+              "path": "<UPLOADS>/FDF5CA4B19F682EC83283DA6A68D3548.csv",
+              "resource_url": null
+            },
+            "shape": "<UPLOADS>/EBE533976BFAF0CABCA2C2E1B611B9C7.geojson",
+            "type": "anc"
+          },
+          "method": "POST",
+          "path": "/validate/survey-and-programme",
+          "query": "strict=true",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "multipart": {
+            "file": {
+              "filename": "anc-pos-greater-than-total.csv",
+              "fixture": "anc-pos-greater-than-total.csv",
+              "sha256": "7e7d3db1d727fa9298d8595a02afb5d521f5ad58b75afeec7531e1a4718ce085",
+              "size": 13155
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/disease/anc/"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "lax",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "file": {
+              "filename": "anc-pos-greater-than-total.csv",
+              "fromADR": false,
+              "hash": "FDF5CA4B19F682EC83283DA6A68D3548.csv",
+              "path": "<UPLOADS>/FDF5CA4B19F682EC83283DA6A68D3548.csv",
+              "resource_url": null
+            },
+            "shape": "<UPLOADS>/EBE533976BFAF0CABCA2C2E1B611B9C7.geojson",
+            "type": "anc"
+          },
+          "method": "POST",
+          "path": "/validate/survey-and-programme",
+          "query": "strict=false",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "multipart": {
+            "file": {
+              "filename": "anc-pos-greater-than-total.csv",
+              "fixture": "anc-pos-greater-than-total.csv",
+              "sha256": "7e7d3db1d727fa9298d8595a02afb5d521f5ad58b75afeec7531e1a4718ce085",
+              "size": 13155
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/disease/anc/",
+        "query": {
+          "strict": "false"
+        }
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    }
+  ]
+}

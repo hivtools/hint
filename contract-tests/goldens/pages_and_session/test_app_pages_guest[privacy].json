@@ -1,0 +1,29 @@
+{
+  "scenario": "pages_and_session/test_app_pages_guest[privacy]",
+  "steps": [
+    {
+      "client": "A",
+      "name": "guest GET /privacy",
+      "request": {
+        "method": "GET",
+        "path": "/privacy"
+      },
+      "response": {
+        "body": {
+          "contains": [
+            "var currentUser = \"guest\"",
+            "data-user=\"guest\"",
+            "data-title=\"Naomi\""
+          ],
+          "html": true,
+          "title": "Naomi"
+        },
+        "headers": {
+          "content-type": "text/html"
+        },
+        "status": 200
+      },
+      "session_cookie": "set"
+    }
+  ]
+}

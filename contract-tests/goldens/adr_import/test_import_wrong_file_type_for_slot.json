@@ -1,0 +1,136 @@
+{
+  "scenario": "adr_import/test_import_wrong_file_type_for_slot",
+  "steps": [
+    {
+      "client": "A",
+      "name": "login test.user@example.com",
+      "request": {
+        "body": {
+          "form": {
+            "password": "password",
+            "username": "test.user@example.com"
+          }
+        },
+        "method": "POST",
+        "path": "/callback/formClient"
+      },
+      "response": {
+        "body": {
+          "empty": true
+        },
+        "headers": {
+          "location": "/"
+        },
+        "status": 303
+      }
+    },
+    {
+      "client": "A",
+      "name": "open /",
+      "request": {
+        "method": "GET",
+        "path": "/"
+      },
+      "response": {
+        "body": {
+          "html": true,
+          "title": "Naomi"
+        },
+        "headers": {
+          "content-type": "text/html"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "geojson imported as pjnz",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "file": {
+              "filename": "shape.geojson",
+              "fromADR": true,
+              "hash": "EBE533976BFAF0CABCA2C2E1B611B9C7.geojson",
+              "path": "<UPLOADS>/EBE533976BFAF0CABCA2C2E1B611B9C7.geojson",
+              "resource_url": "<ADR>/dataset/ds1/resource/res1/download/shape.geojson?activity_id=activity-newest"
+            },
+            "type": "pjnz"
+          },
+          "method": "POST",
+          "path": "/validate/baseline-individual",
+          "status": 400,
+          "to": "hintr"
+        },
+        {
+          "headers": {
+            "authorization": "<UUID:1>"
+          },
+          "method": "GET",
+          "path": "/dataset/ds1/resource/res1/download/shape.geojson",
+          "to": "adr"
+        },
+        {
+          "headers": {
+            "authorization": "<UUID:1>"
+          },
+          "method": "GET",
+          "path": "/api/3/action/package_activity_list",
+          "query": {
+            "id": "ds1"
+          },
+          "to": "adr"
+        }
+      ],
+      "request": {
+        "body": {
+          "json": {
+            "datasetId": "ds1",
+            "resourceId": "res1",
+            "url": "<ADR>/dataset/ds1/resource/res1/download/shape.geojson"
+          }
+        },
+        "method": "POST",
+        "path": "/adr/pjnz"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "name": "db:version_file",
+      "rows": [
+        {
+          "filename": "shape.geojson",
+          "from_adr": true,
+          "hash": "EBE533976BFAF0CABCA2C2E1B611B9C7.geojson",
+          "resource_url": "<ADR>/dataset/ds1/resource/res1/download/shape.geojson?activity_id=activity-newest",
+          "type": "pjnz",
+          "version": "<UUID:2>"
+        }
+      ],
+      "table": "version_file",
+      "type": "db"
+    },
+    {
+      "files": [
+        {
+          "name": "EBE533976BFAF0CABCA2C2E1B611B9C7.geojson",
+          "name_matches_md5": true,
+          "size": 1045993
+        }
+      ],
+      "name": "uploads",
+      "type": "uploads"
+    }
+  ]
+}

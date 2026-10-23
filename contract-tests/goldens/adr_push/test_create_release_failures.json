@@ -1,0 +1,328 @@
+{
+  "scenario": "adr_push/test_create_release_failures",
+  "steps": [
+    {
+      "client": "A",
+      "name": "login test.user@example.com",
+      "request": {
+        "body": {
+          "form": {
+            "password": "password",
+            "username": "test.user@example.com"
+          }
+        },
+        "method": "POST",
+        "path": "/callback/formClient"
+      },
+      "response": {
+        "body": {
+          "empty": true
+        },
+        "headers": {
+          "location": "/"
+        },
+        "status": 303
+      }
+    },
+    {
+      "client": "A",
+      "name": "open /",
+      "request": {
+        "method": "GET",
+        "path": "/"
+      },
+      "response": {
+        "body": {
+          "html": true,
+          "title": "Naomi"
+        },
+        "headers": {
+          "content-type": "text/html"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "listing releases fails",
+      "outbound": [
+        {
+          "headers": {
+            "authorization": "<UUID:1>"
+          },
+          "method": "GET",
+          "path": "/api/3/action/dataset_version_list",
+          "query": {
+            "dataset_id": "ds1"
+          },
+          "to": "adr"
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "path": "/adr/datasets/ds1/releases",
+        "query": {
+          "name": "v1"
+        }
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "list failed",
+                "error": "ADR_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 500
+      }
+    },
+    {
+      "client": "A",
+      "name": "deleting the duplicate fails",
+      "outbound": [
+        {
+          "headers": {
+            "authorization": "<UUID:1>"
+          },
+          "method": "GET",
+          "path": "/api/3/action/dataset_version_list",
+          "query": {
+            "dataset_id": "ds1"
+          },
+          "to": "adr"
+        },
+        {
+          "form": {
+            "version_id": "old-1"
+          },
+          "headers": {
+            "authorization": "<UUID:1>"
+          },
+          "method": "POST",
+          "path": "/api/3/action/version_delete",
+          "to": "adr"
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "path": "/adr/datasets/ds1/releases",
+        "query": {
+          "name": "v1"
+        }
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "delete failed",
+                "error": "ADR_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 500
+      }
+    },
+    {
+      "client": "A",
+      "name": "creating fails",
+      "outbound": [
+        {
+          "headers": {
+            "authorization": "<UUID:1>"
+          },
+          "method": "GET",
+          "path": "/api/3/action/dataset_version_list",
+          "query": {
+            "dataset_id": "ds1"
+          },
+          "to": "adr"
+        },
+        {
+          "form": {
+            "version_id": "old-1"
+          },
+          "headers": {
+            "authorization": "<UUID:1>"
+          },
+          "method": "POST",
+          "path": "/api/3/action/version_delete",
+          "to": "adr"
+        },
+        {
+          "form": {
+            "dataset_id": "ds1",
+            "name": "v1"
+          },
+          "headers": {
+            "authorization": "<UUID:1>"
+          },
+          "method": "POST",
+          "path": "/api/3/action/dataset_version_create",
+          "to": "adr"
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "path": "/adr/datasets/ds1/releases",
+        "query": {
+          "name": "v1"
+        }
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "create failed",
+                "error": "ADR_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 500
+      }
+    },
+    {
+      "client": "A",
+      "name": "garbage create response",
+      "outbound": [
+        {
+          "headers": {
+            "authorization": "<UUID:1>"
+          },
+          "method": "GET",
+          "path": "/api/3/action/dataset_version_list",
+          "query": {
+            "dataset_id": "ds1"
+          },
+          "to": "adr"
+        },
+        {
+          "form": {
+            "dataset_id": "ds1",
+            "name": "v9"
+          },
+          "headers": {
+            "authorization": "<UUID:1>"
+          },
+          "method": "POST",
+          "path": "/api/3/action/dataset_version_create",
+          "to": "adr"
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "path": "/adr/datasets/ds1/releases",
+        "query": {
+          "name": "v9"
+        }
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "Could not parse response.",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 500
+      }
+    },
+    {
+      "client": "A",
+      "name": "401 on listing",
+      "outbound": [
+        {
+          "headers": {
+            "authorization": "<UUID:1>"
+          },
+          "method": "GET",
+          "path": "/api/3/action/dataset_version_list",
+          "query": {
+            "dataset_id": "ds1"
+          },
+          "to": "adr"
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "path": "/adr/datasets/ds1/releases",
+        "query": {
+          "name": "v9"
+        }
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "auth",
+                "error": "ADR_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 500
+      }
+    },
+    {
+      "client": "A",
+      "name": "name missing",
+      "request": {
+        "method": "POST",
+        "path": "/adr/datasets/ds1/releases"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "An unexpected error occurred. If you see this message while you are using Naomi at a workshop, please contact your workshop technical support and show them this code: <ERROR_CODE>. Otherwise please contact support at naomi-support@imperial.ac.uk and quote this code: <ERROR_CODE>. Required request parameter 'name' for method parameter type String is not present",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    }
+  ]
+}

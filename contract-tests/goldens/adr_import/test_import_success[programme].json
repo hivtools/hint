@@ -1,0 +1,204 @@
+{
+  "scenario": "adr_import/test_import_success[programme]",
+  "steps": [
+    {
+      "client": "A",
+      "name": "login test.user@example.com",
+      "request": {
+        "body": {
+          "form": {
+            "password": "password",
+            "username": "test.user@example.com"
+          }
+        },
+        "method": "POST",
+        "path": "/callback/formClient"
+      },
+      "response": {
+        "body": {
+          "empty": true
+        },
+        "headers": {
+          "location": "/"
+        },
+        "status": 303
+      }
+    },
+    {
+      "client": "A",
+      "name": "open /",
+      "request": {
+        "method": "GET",
+        "path": "/"
+      },
+      "response": {
+        "body": {
+          "html": true,
+          "title": "Naomi"
+        },
+        "headers": {
+          "content-type": "text/html"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "import programme",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "file": {
+              "filename": "programme.csv",
+              "fromADR": true,
+              "hash": "A900936E6908D6CECA92A099980667F3.csv",
+              "path": "<UPLOADS>/A900936E6908D6CECA92A099980667F3.csv",
+              "resource_url": "<ADR>/dataset/ds1/resource/res1/download/programme.csv?activity_id=activity-newest"
+            },
+            "shape": "<UPLOADS>/EBE533976BFAF0CABCA2C2E1B611B9C7.geojson",
+            "type": "programme"
+          },
+          "method": "POST",
+          "path": "/validate/survey-and-programme",
+          "query": "strict=true",
+          "status": 200,
+          "to": "hintr"
+        },
+        {
+          "headers": {
+            "authorization": "<UUID:1>"
+          },
+          "method": "GET",
+          "path": "/dataset/ds1/resource/res1/download/programme.csv",
+          "to": "adr"
+        },
+        {
+          "headers": {
+            "authorization": "<UUID:1>"
+          },
+          "method": "GET",
+          "path": "/api/3/action/package_activity_list",
+          "query": {
+            "id": "ds1"
+          },
+          "to": "adr"
+        }
+      ],
+      "request": {
+        "body": {
+          "json": {
+            "datasetId": "ds1",
+            "resourceId": "res1",
+            "url": "<ADR>/dataset/ds1/resource/res1/download/programme.csv"
+          }
+        },
+        "method": "POST",
+        "path": "/adr/programme"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "GET re-validates the imported file",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "file": {
+              "filename": "programme.csv",
+              "fromADR": true,
+              "hash": "A900936E6908D6CECA92A099980667F3.csv",
+              "path": "<UPLOADS>/A900936E6908D6CECA92A099980667F3.csv",
+              "resource_url": "<ADR>/dataset/ds1/resource/res1/download/programme.csv?activity_id=activity-newest"
+            },
+            "shape": "<UPLOADS>/EBE533976BFAF0CABCA2C2E1B611B9C7.geojson",
+            "type": "programme"
+          },
+          "method": "POST",
+          "path": "/validate/survey-and-programme",
+          "query": "strict=true",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/disease/programme/"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "name": "db:version_file",
+      "rows": [
+        {
+          "filename": "Malawi2024.PJNZ",
+          "from_adr": false,
+          "hash": "46E4A725064B0E287F573A8F11389895.PJNZ",
+          "resource_url": null,
+          "type": "pjnz",
+          "version": "<UUID:2>"
+        },
+        {
+          "filename": "programme.csv",
+          "from_adr": true,
+          "hash": "A900936E6908D6CECA92A099980667F3.csv",
+          "resource_url": "<ADR>/dataset/ds1/resource/res1/download/programme.csv?activity_id=activity-newest",
+          "type": "programme",
+          "version": "<UUID:2>"
+        },
+        {
+          "filename": "malawi.geojson",
+          "from_adr": false,
+          "hash": "EBE533976BFAF0CABCA2C2E1B611B9C7.geojson",
+          "resource_url": null,
+          "type": "shape",
+          "version": "<UUID:2>"
+        }
+      ],
+      "table": "version_file",
+      "type": "db"
+    },
+    {
+      "files": [
+        {
+          "name": "46E4A725064B0E287F573A8F11389895.PJNZ",
+          "name_matches_md5": true,
+          "size": 1721376
+        },
+        {
+          "name": "A900936E6908D6CECA92A099980667F3.csv",
+          "name_matches_md5": true,
+          "size": 51582
+        },
+        {
+          "name": "EBE533976BFAF0CABCA2C2E1B611B9C7.geojson",
+          "name_matches_md5": true,
+          "size": 1045993
+        }
+      ],
+      "name": "uploads",
+      "type": "uploads"
+    }
+  ]
+}

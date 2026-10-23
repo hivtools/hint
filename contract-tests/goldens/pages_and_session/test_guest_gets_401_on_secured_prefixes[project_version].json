@@ -1,0 +1,28 @@
+{
+  "scenario": "pages_and_session/test_guest_gets_401_on_secured_prefixes[project_version]",
+  "steps": [
+    {
+      "client": "A",
+      "name": "guest GET /project/1/version/abc",
+      "request": {
+        "method": "GET",
+        "path": "/project/1/version/abc"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "error": "Unauthorized",
+            "path": "/project/1/version/abc",
+            "status": 401,
+            "timestamp": "<EPOCH_MS>"
+          }
+        },
+        "headers": {
+          "content-type": "application/json",
+          "www-authenticate": "Bearer realm=\"pac4j\""
+        },
+        "status": 401
+      }
+    }
+  ]
+}

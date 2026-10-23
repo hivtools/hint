@@ -1,0 +1,53 @@
+{
+  "scenario": "hintr_faults/test_hintr_connection_dropped",
+  "steps": [
+    {
+      "client": "A",
+      "name": "connection closed without a response",
+      "outbound": [
+        {
+          "fault": "close",
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "GET",
+          "path": "/hintr/version",
+          "status": null,
+          "to": "hintr"
+        },
+        {
+          "fault": "close",
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "GET",
+          "path": "/hintr/version",
+          "status": null,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/meta/hintr/version"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "No response returned. The request may have timed out.",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 500
+      }
+    }
+  ]
+}

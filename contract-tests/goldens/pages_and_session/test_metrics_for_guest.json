@@ -1,0 +1,34 @@
+{
+  "scenario": "pages_and_session/test_metrics_for_guest",
+  "steps": [
+    {
+      "client": "A",
+      "name": "GET /metrics",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "GET",
+          "path": "/hintr/worker/status",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/metrics"
+      },
+      "response": {
+        "body": {
+          "ignored": true,
+          "non_empty": true
+        },
+        "headers": {
+          "content-type": "text/plain"
+        },
+        "status": 200
+      }
+    }
+  ]
+}

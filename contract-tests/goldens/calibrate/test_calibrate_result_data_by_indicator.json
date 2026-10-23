@@ -1,0 +1,272 @@
+{
+  "scenario": "calibrate/test_calibrate_result_data_by_indicator",
+  "steps": [
+    {
+      "client": "A",
+      "name": "login test.user@example.com",
+      "request": {
+        "body": {
+          "form": {
+            "password": "password",
+            "username": "test.user@example.com"
+          }
+        },
+        "method": "POST",
+        "path": "/callback/formClient"
+      },
+      "response": {
+        "body": {
+          "empty": true
+        },
+        "headers": {
+          "location": "/"
+        },
+        "status": 303
+      }
+    },
+    {
+      "client": "A",
+      "name": "open /",
+      "request": {
+        "method": "GET",
+        "path": "/"
+      },
+      "response": {
+        "body": {
+          "html": true,
+          "title": "Naomi"
+        },
+        "headers": {
+          "content-type": "text/html"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "one indicator",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "GET",
+          "path": "/calibrate/result/path/<TASK:calibrate>",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/calibrate/result/data/<TASK:calibrate>/prevalence"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "$large_json": {
+              "numbers": {
+                "count": 102465,
+                "max": 4.0,
+                "min": 0.0,
+                "sum": 72671.9951,
+                "sum_abs": 72671.9951
+              },
+              "shape": {
+                "data": {
+                  "$first": {
+                    "age_group": "string",
+                    "area_id": "string",
+                    "area_level": "number",
+                    "calendar_quarter": "string",
+                    "indicator": "string",
+                    "lower": "number",
+                    "mean": "number",
+                    "mode": "number",
+                    "sex": "string",
+                    "upper": "number"
+                  },
+                  "$len": 20493
+                },
+                "errors": {
+                  "$len": 0
+                },
+                "status": "string"
+              },
+              "skeleton_sha256": "11b2699cf4baaaba31b0e72c30e9e5eb5bcd2dd6444cd96ab6ff54d22f0efed7"
+            }
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "all indicators",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "GET",
+          "path": "/calibrate/result/path/<TASK:calibrate>",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/calibrate/result/data/<TASK:calibrate>/all"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "$large_json": {
+              "numbers": {
+                "count": 1751220,
+                "max": 21577142.0,
+                "min": -1373.4146,
+                "sum": 21538007344.0321,
+                "sum_abs": 21538359959.2805
+              },
+              "shape": {
+                "data": {
+                  "$first": {
+                    "age_group": "string",
+                    "area_id": "string",
+                    "area_level": "number",
+                    "calendar_quarter": "string",
+                    "indicator": "string",
+                    "lower": "number",
+                    "mean": "number",
+                    "mode": "number",
+                    "sex": "string",
+                    "upper": "number"
+                  },
+                  "$len": 350244
+                },
+                "errors": {
+                  "$len": 0
+                },
+                "status": "string"
+              },
+              "skeleton_sha256": "f483a98a4ef1e3e983adbc1eec1de5e76d8d68cf9779d98ebe321001fd78ff8d"
+            }
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "unknown indicator gives empty list",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "GET",
+          "path": "/calibrate/result/path/<TASK:calibrate>",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/calibrate/result/data/<TASK:calibrate>/not_an_indicator"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": [],
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "unknown id",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "GET",
+          "path": "/calibrate/result/path/nonsense",
+          "status": 400,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/calibrate/result/data/nonsense/all"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "An unexpected error occurred. If you see this message while you are using Naomi at a workshop, please contact your workshop technical support and show them this code: <ERROR_CODE>. Otherwise please contact support at naomi-support@imperial.ac.uk and quote this code: <ERROR_CODE>.",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 500
+      }
+    },
+    {
+      "client": "A",
+      "name": "failed calibration",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "GET",
+          "path": "/calibrate/result/path/<TASK:calibrate-error>",
+          "status": 400,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/calibrate/result/data/<TASK:calibrate-error>/all"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "An unexpected error occurred. If you see this message while you are using Naomi at a workshop, please contact your workshop technical support and show them this code: <ERROR_CODE>. Otherwise please contact support at naomi-support@imperial.ac.uk and quote this code: <ERROR_CODE>.",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 500
+      }
+    }
+  ]
+}

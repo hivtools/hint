@@ -1,0 +1,92 @@
+{
+  "scenario": "pages_and_session/test_sso_flag_and_schemas_for_guest",
+  "steps": [
+    {
+      "client": "A",
+      "name": "GET /sso",
+      "request": {
+        "method": "GET",
+        "path": "/sso"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": false,
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "GET /adr/schemas",
+      "request": {
+        "method": "GET",
+        "path": "/adr/schemas"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {
+              "anc": "inputs-unaids-anc",
+              "baseUrl": "<ADR>/",
+              "outputComparison": "inputs-unaids-naomi-comparison-report",
+              "outputSummary": "inputs-unaids-naomi-report",
+              "outputZip": "inputs-unaids-naomi-output-zip",
+              "pjnz": "inputs-unaids-spectrum-file",
+              "population": "inputs-unaids-population",
+              "programme": "inputs-unaids-art",
+              "shape": "inputs-unaids-geographic",
+              "survey": "inputs-unaids-survey",
+              "vmmc": "inputs-unaids-vmmc-coverage-outputs"
+            },
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "adr schemas trailing slash",
+      "request": {
+        "method": "GET",
+        "path": "/adr/schemas/"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {
+              "anc": "inputs-unaids-anc",
+              "baseUrl": "<ADR>/",
+              "outputComparison": "inputs-unaids-naomi-comparison-report",
+              "outputSummary": "inputs-unaids-naomi-report",
+              "outputZip": "inputs-unaids-naomi-output-zip",
+              "pjnz": "inputs-unaids-spectrum-file",
+              "population": "inputs-unaids-population",
+              "programme": "inputs-unaids-art",
+              "shape": "inputs-unaids-geographic",
+              "survey": "inputs-unaids-survey",
+              "vmmc": "inputs-unaids-vmmc-coverage-outputs"
+            },
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    }
+  ]
+}

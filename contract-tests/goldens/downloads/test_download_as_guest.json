@@ -1,0 +1,104 @@
+{
+  "scenario": "downloads/test_download_as_guest",
+  "steps": [
+    {
+      "client": "G",
+      "name": "guest status",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "GET",
+          "path": "/download/status/<TASK:download-summary>",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/download/status/<TASK:download-summary>"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "G",
+      "name": "guest result",
+      "outbound": [
+        {
+          "method": "HEAD",
+          "path": "/download/result/<TASK:download-summary>",
+          "status": 200,
+          "to": "hintr"
+        },
+        {
+          "method": "GET",
+          "path": "/download/result/<TASK:download-summary>",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/download/result/<TASK:download-summary>"
+      },
+      "response": {
+        "body": {
+          "binary": {
+            "magic": "html",
+            "non_empty": true
+          }
+        },
+        "headers": {
+          "content-disposition": "attachment; filename=\"MWI_summary-report_<TIMESTAMP>.html\"",
+          "content-type": "application/octet-stream"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "G",
+      "name": "guest submit",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "iso3": "MWI"
+          },
+          "method": "POST",
+          "path": "/download/submit/summary/<TASK:calibrate>",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "json": {
+            "iso3": "MWI"
+          }
+        },
+        "method": "POST",
+        "path": "/download/submit/summary/<TASK:calibrate>"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    }
+  ]
+}

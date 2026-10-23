@@ -1,0 +1,158 @@
+{
+  "scenario": "sso/test_sso_login_existing_user_is_not_duplicated",
+  "steps": [
+    {
+      "client": "A",
+      "name": "start sso login",
+      "request": {
+        "method": "GET",
+        "path": "/oauth2"
+      },
+      "response": {
+        "body": {
+          "empty": true
+        },
+        "headers": {
+          "location": "https://<IDP_HOST>/authorize?response_type=code&client_id=fakeId&state=<STATE>&scope=openid+profile+email+access:adr&audience=naomi&redirect_uri=<APP>/callback/oauth2Client"
+        },
+        "status": 303
+      },
+      "session_cookie": "set"
+    },
+    {
+      "client": "A",
+      "name": "GET /callback/oauth2Client",
+      "outbound": [
+        {
+          "form": {
+            "code": "the-code",
+            "grant_type": "authorization_code",
+            "redirect_uri": "<APP>/callback/oauth2Client/oauth2Client"
+          },
+          "method": "POST",
+          "path": "/oauth/token",
+          "to": "idp"
+        },
+        {
+          "method": "GET",
+          "path": "/userinfo",
+          "to": "idp"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/callback/oauth2Client",
+        "query": {
+          "code": "the-code",
+          "state": "<STATE>"
+        }
+      },
+      "response": {
+        "body": {
+          "empty": true
+        },
+        "headers": {
+          "location": "/"
+        },
+        "status": 302
+      }
+    },
+    {
+      "client": "A",
+      "name": "logged in as the existing user",
+      "request": {
+        "method": "GET",
+        "path": "/"
+      },
+      "response": {
+        "body": {
+          "contains": [
+            "currentUser = \"test.user@example.com\""
+          ],
+          "html": true,
+          "title": "Naomi"
+        },
+        "headers": {
+          "content-type": "text/html"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "create project via sso",
+      "request": {
+        "body": {
+          "form": {
+            "name": "via sso",
+            "note": "a note"
+          }
+        },
+        "method": "POST",
+        "path": "/project/"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {
+              "id": "<PROJECT:1>",
+              "name": "via sso",
+              "note": null,
+              "sharedBy": "",
+              "uploaded": null,
+              "versions": [
+                {
+                  "created": "<TIMESTAMP>",
+                  "id": "<UUID:1>",
+                  "note": null,
+                  "updated": "<TIMESTAMP>",
+                  "versionNumber": 1
+                }
+              ]
+            },
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "name": "db:users",
+      "rows": [
+        {
+          "id": "guest",
+          "username": "guest"
+        },
+        {
+          "id": "naomi-support@imperial.ac.uk",
+          "username": "naomi-support@imperial.ac.uk"
+        },
+        {
+          "id": "test.user@example.com",
+          "username": "test.user@example.com"
+        }
+      ],
+      "table": "users",
+      "type": "db"
+    },
+    {
+      "name": "db:project",
+      "rows": [
+        {
+          "id": "<PROJECT:1>",
+          "is_uploaded": null,
+          "name": "via sso",
+          "note": "a note",
+          "shared_by": null,
+          "user_id": "test.user@example.com"
+        }
+      ],
+      "table": "project",
+      "type": "db"
+    }
+  ]
+}

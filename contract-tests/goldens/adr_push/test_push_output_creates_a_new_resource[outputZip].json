@@ -1,0 +1,116 @@
+{
+  "scenario": "adr_push/test_push_output_creates_a_new_resource[outputZip]",
+  "steps": [
+    {
+      "client": "A",
+      "name": "login test.user@example.com",
+      "request": {
+        "body": {
+          "form": {
+            "password": "password",
+            "username": "test.user@example.com"
+          }
+        },
+        "method": "POST",
+        "path": "/callback/formClient"
+      },
+      "response": {
+        "body": {
+          "empty": true
+        },
+        "headers": {
+          "location": "/"
+        },
+        "status": 303
+      }
+    },
+    {
+      "client": "A",
+      "name": "open /",
+      "request": {
+        "method": "GET",
+        "path": "/"
+      },
+      "response": {
+        "body": {
+          "html": true,
+          "title": "Naomi"
+        },
+        "headers": {
+          "content-type": "text/html"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "no resourceId: resource_create",
+      "outbound": [
+        {
+          "method": "HEAD",
+          "path": "/download/result/<TASK:download-spectrum>",
+          "status": 200,
+          "to": "hintr"
+        },
+        {
+          "method": "GET",
+          "path": "/download/result/<TASK:download-spectrum>",
+          "status": 200,
+          "to": "hintr"
+        },
+        {
+          "headers": {
+            "authorization": "<UUID:1>"
+          },
+          "method": "POST",
+          "multipart": {
+            "fields": {
+              "description": "desc text",
+              "hash": "<MD5>",
+              "name": "My output",
+              "package_id": "ds1",
+              "resource_type": "inputs-unaids-naomi-output-zip",
+              "restricted": "{\"allowed_organizations\":\"unaids\",\"allowed_users\":\"\",\"level\":\"restricted\"}"
+            },
+            "files": {
+              "upload": {
+                "filename": "naomi-output.zip",
+                "md5": "<MD5>",
+                "size": "<SIZE>"
+              }
+            }
+          },
+          "path": "/api/3/action/resource_create",
+          "to": "adr"
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "path": "/adr/datasets/ds1/resource/inputs-unaids-naomi-output-zip/<TASK:download-spectrum>",
+        "query": {
+          "description": "desc text",
+          "resourceFileName": "naomi-output.zip",
+          "resourceName": "My output"
+        }
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {
+              "hash": null,
+              "id": "new-resource-id",
+              "name": "My output",
+              "resource_type": "inputs-unaids-naomi-output-zip"
+            },
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    }
+  ]
+}

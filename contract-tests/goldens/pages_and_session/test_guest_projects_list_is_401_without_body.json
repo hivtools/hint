@@ -1,0 +1,19 @@
+{
+  "scenario": "pages_and_session/test_guest_projects_list_is_401_without_body",
+  "steps": [
+    {
+      "client": "A",
+      "name": "GET /projects/",
+      "request": {
+        "method": "GET",
+        "path": "/projects/"
+      },
+      "response": {
+        "body": {
+          "empty": true
+        },
+        "status": 401
+      }
+    }
+  ]
+}

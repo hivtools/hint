@@ -1,0 +1,52 @@
+{
+  "scenario": "auth/test_login_with_redirect_to_goes_to_requested_url",
+  "steps": [
+    {
+      "client": "A",
+      "name": "GET /login",
+      "request": {
+        "method": "GET",
+        "path": "/login",
+        "query": {
+          "redirectTo": "/projects"
+        }
+      },
+      "response": {
+        "body": {
+          "contains": [
+            "/projects"
+          ],
+          "html": true,
+          "title": "Login"
+        },
+        "headers": {
+          "content-type": "text/html"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "login test.user@example.com",
+      "request": {
+        "body": {
+          "form": {
+            "password": "password",
+            "username": "test.user@example.com"
+          }
+        },
+        "method": "POST",
+        "path": "/callback/formClient"
+      },
+      "response": {
+        "body": {
+          "empty": true
+        },
+        "headers": {
+          "location": "/projects"
+        },
+        "status": 303
+      }
+    }
+  ]
+}

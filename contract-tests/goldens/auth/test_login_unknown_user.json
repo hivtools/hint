@@ -1,0 +1,28 @@
+{
+  "scenario": "auth/test_login_unknown_user",
+  "steps": [
+    {
+      "client": "A",
+      "name": "login nobody@example.com",
+      "request": {
+        "body": {
+          "form": {
+            "password": "password",
+            "username": "nobody@example.com"
+          }
+        },
+        "method": "POST",
+        "path": "/callback/formClient"
+      },
+      "response": {
+        "body": {
+          "empty": true
+        },
+        "headers": {
+          "location": "/login?username=nobody%40example.com&error=AccountNotFoundException"
+        },
+        "status": 303
+      }
+    }
+  ]
+}

@@ -1,0 +1,105 @@
+{
+  "scenario": "misc_edges/test_head_and_options_requests",
+  "steps": [
+    {
+      "client": "A",
+      "name": "HEAD /sso",
+      "request": {
+        "method": "HEAD",
+        "path": "/sso"
+      },
+      "response": {
+        "body": {
+          "empty": true
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "OPTIONS /sso",
+      "request": {
+        "method": "OPTIONS",
+        "path": "/sso"
+      },
+      "response": {
+        "body": {
+          "empty": true
+        },
+        "headers": {
+          "allow": "GET,HEAD,OPTIONS"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "OPTIONS /project/ (secured prefix)",
+      "request": {
+        "method": "OPTIONS",
+        "path": "/project/"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "error": "Unauthorized",
+            "path": "/project/",
+            "status": 401,
+            "timestamp": "<EPOCH_MS>"
+          }
+        },
+        "headers": {
+          "content-type": "application/json",
+          "www-authenticate": "Bearer realm=\"pac4j\""
+        },
+        "status": 401
+      }
+    },
+    {
+      "client": "A",
+      "name": "HEAD /",
+      "request": {
+        "method": "HEAD",
+        "path": "/"
+      },
+      "response": {
+        "body": {
+          "empty": true
+        },
+        "headers": {
+          "content-type": "text/html"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "PATCH /sso",
+      "request": {
+        "method": "PATCH",
+        "path": "/sso"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "An unexpected error occurred. If you see this message while you are using Naomi at a workshop, please contact your workshop technical support and show them this code: <ERROR_CODE>. Otherwise please contact support at naomi-support@imperial.ac.uk and quote this code: <ERROR_CODE>. Request method 'PATCH' not supported",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 405
+      }
+    }
+  ]
+}

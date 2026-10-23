@@ -1,0 +1,2377 @@
+{
+  "scenario": "_pipeline/model_pipeline",
+  "steps": [
+    {
+      "client": "A",
+      "name": "login test.user@example.com",
+      "request": {
+        "body": {
+          "form": {
+            "password": "password",
+            "username": "test.user@example.com"
+          }
+        },
+        "method": "POST",
+        "path": "/callback/formClient"
+      },
+      "response": {
+        "body": {
+          "empty": true
+        },
+        "headers": {
+          "location": "/"
+        },
+        "status": 303
+      }
+    },
+    {
+      "client": "A",
+      "name": "open /",
+      "request": {
+        "method": "GET",
+        "path": "/"
+      },
+      "response": {
+        "body": {
+          "html": true,
+          "title": "Naomi"
+        },
+        "headers": {
+          "content-type": "text/html"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "upload shape",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "file": {
+              "filename": "malawi.geojson",
+              "fromADR": false,
+              "hash": "EBE533976BFAF0CABCA2C2E1B611B9C7.geojson",
+              "path": "<UPLOADS>/EBE533976BFAF0CABCA2C2E1B611B9C7.geojson",
+              "resource_url": null
+            },
+            "type": "shape"
+          },
+          "method": "POST",
+          "path": "/validate/baseline-individual",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "multipart": {
+            "file": {
+              "filename": "malawi.geojson",
+              "fixture": "malawi.geojson",
+              "sha256": "fb9a189da2337c0b568998b3ab668ebf9e433e6ec26135cae95c20bf9bd5a953",
+              "size": 1045993
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/baseline/shape/"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "upload pjnz",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "file": {
+              "filename": "Malawi2024.PJNZ",
+              "fromADR": false,
+              "hash": "46E4A725064B0E287F573A8F11389895.PJNZ",
+              "path": "<UPLOADS>/46E4A725064B0E287F573A8F11389895.PJNZ",
+              "resource_url": null
+            },
+            "type": "pjnz"
+          },
+          "method": "POST",
+          "path": "/validate/baseline-individual",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "multipart": {
+            "file": {
+              "filename": "Malawi2024.PJNZ",
+              "fixture": "Malawi2024.PJNZ",
+              "sha256": "49d688e8fe81c4d4dd49a081791e756bcdbbd1542587812bceea354bda02d3c1",
+              "size": 1721376
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/baseline/pjnz/"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "upload population",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "file": {
+              "filename": "population.csv",
+              "fromADR": false,
+              "hash": "C11BDC2B37E6BC924E6D5B6B96B1ECC3.csv",
+              "path": "<UPLOADS>/C11BDC2B37E6BC924E6D5B6B96B1ECC3.csv",
+              "resource_url": null
+            },
+            "type": "population"
+          },
+          "method": "POST",
+          "path": "/validate/baseline-individual",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "multipart": {
+            "file": {
+              "filename": "population.csv",
+              "fixture": "population.csv",
+              "sha256": "a792982c149e4b4e9ae83c23d0492112c2a2cf00af6cd479c737284bd2ce1ec6",
+              "size": 1994432
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/baseline/population/"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "upload survey",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "file": {
+              "filename": "survey.csv",
+              "fromADR": false,
+              "hash": "2D229A4507FECFE5471C2CC90431CB3C.csv",
+              "path": "<UPLOADS>/2D229A4507FECFE5471C2CC90431CB3C.csv",
+              "resource_url": null
+            },
+            "shape": "<UPLOADS>/EBE533976BFAF0CABCA2C2E1B611B9C7.geojson",
+            "type": "survey"
+          },
+          "method": "POST",
+          "path": "/validate/survey-and-programme",
+          "query": "strict=true",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "multipart": {
+            "file": {
+              "filename": "survey.csv",
+              "fixture": "survey.csv",
+              "sha256": "eb42de2efa19dfd6a51217433f48341a0680e739b8ebfcfe2914739231f3bafe",
+              "size": 5549429
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/disease/survey/"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "model options",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "shape": {
+              "filename": "malawi.geojson",
+              "fromADR": false,
+              "hash": "EBE533976BFAF0CABCA2C2E1B611B9C7.geojson",
+              "path": "<UPLOADS>/EBE533976BFAF0CABCA2C2E1B611B9C7.geojson",
+              "resource_url": null
+            },
+            "survey": {
+              "filename": "survey.csv",
+              "fromADR": false,
+              "hash": "2D229A4507FECFE5471C2CC90431CB3C.csv",
+              "path": "<UPLOADS>/2D229A4507FECFE5471C2CC90431CB3C.csv",
+              "resource_url": null
+            }
+          },
+          "method": "POST",
+          "path": "/model/options",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/model/options/"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "validate model options",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "data": {
+              "pjnz": {
+                "filename": "Malawi2024.PJNZ",
+                "fromADR": false,
+                "hash": "46E4A725064B0E287F573A8F11389895.PJNZ",
+                "path": "<UPLOADS>/46E4A725064B0E287F573A8F11389895.PJNZ",
+                "resource_url": null
+              },
+              "population": {
+                "filename": "population.csv",
+                "fromADR": false,
+                "hash": "C11BDC2B37E6BC924E6D5B6B96B1ECC3.csv",
+                "path": "<UPLOADS>/C11BDC2B37E6BC924E6D5B6B96B1ECC3.csv",
+                "resource_url": null
+              },
+              "shape": {
+                "filename": "malawi.geojson",
+                "fromADR": false,
+                "hash": "EBE533976BFAF0CABCA2C2E1B611B9C7.geojson",
+                "path": "<UPLOADS>/EBE533976BFAF0CABCA2C2E1B611B9C7.geojson",
+                "resource_url": null
+              },
+              "survey": {
+                "filename": "survey.csv",
+                "fromADR": false,
+                "hash": "2D229A4507FECFE5471C2CC90431CB3C.csv",
+                "path": "<UPLOADS>/2D229A4507FECFE5471C2CC90431CB3C.csv",
+                "resource_url": null
+              }
+            },
+            "options": {
+              "anc_art_coverage_year1": "2023",
+              "anc_clients_year2": 2023,
+              "anc_clients_year2_num_months": "9",
+              "anc_prevalence_year1": "2023",
+              "anc_prevalence_year2": "2023",
+              "area_level": "4",
+              "area_scope": "MWI",
+              "artattend": "false",
+              "artattend_log_gamma_offset": -4,
+              "artattend_t2": "true",
+              "calendar_quarter_t1": "CY2020Q3",
+              "calendar_quarter_t2": "CY2023Q4",
+              "calendar_quarter_t3": "CY2024Q3",
+              "calendar_quarter_t4": "CY2025Q3",
+              "calendar_quarter_t5": "CY2026Q3",
+              "deff_artcov": 1,
+              "deff_prev": 1,
+              "deff_recent": 1,
+              "include_art_t1": "false",
+              "include_art_t2": "false",
+              "max_iterations": 250,
+              "no_of_samples": 1000,
+              "output_aware_plhiv": "true",
+              "permissive": "false",
+              "rng_seed": 28,
+              "survey_art_coverage": "DEMO2020PHIA",
+              "survey_prevalence": "DEMO2020PHIA",
+              "survey_recently_infected": "DEMO2020PHIA"
+            }
+          },
+          "method": "POST",
+          "path": "/validate/options",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "json": {
+            "iso3": null,
+            "options": {
+              "anc_art_coverage_year1": "2023",
+              "anc_clients_year2": 2023,
+              "anc_clients_year2_num_months": "9",
+              "anc_prevalence_year1": "2023",
+              "anc_prevalence_year2": "2023",
+              "area_level": "4",
+              "area_scope": "MWI",
+              "artattend": "false",
+              "artattend_log_gamma_offset": -4,
+              "artattend_t2": "true",
+              "calendar_quarter_t1": "CY2020Q3",
+              "calendar_quarter_t2": "CY2023Q4",
+              "calendar_quarter_t3": "CY2024Q3",
+              "calendar_quarter_t4": "CY2025Q3",
+              "calendar_quarter_t5": "CY2026Q3",
+              "deff_artcov": 1,
+              "deff_prev": 1,
+              "deff_recent": 1,
+              "include_art_t1": "false",
+              "include_art_t2": "false",
+              "max_iterations": 250,
+              "no_of_samples": 1000,
+              "output_aware_plhiv": "true",
+              "permissive": "false",
+              "rng_seed": 28,
+              "survey_art_coverage": "DEMO2020PHIA",
+              "survey_prevalence": "DEMO2020PHIA",
+              "survey_recently_infected": "DEMO2020PHIA"
+            },
+            "version": {}
+          }
+        },
+        "method": "POST",
+        "path": "/model/validate/options/"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "run model",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "data": {
+              "pjnz": {
+                "filename": "Malawi2024.PJNZ",
+                "fromADR": false,
+                "hash": "46E4A725064B0E287F573A8F11389895.PJNZ",
+                "path": "<UPLOADS>/46E4A725064B0E287F573A8F11389895.PJNZ",
+                "resource_url": null
+              },
+              "population": {
+                "filename": "population.csv",
+                "fromADR": false,
+                "hash": "C11BDC2B37E6BC924E6D5B6B96B1ECC3.csv",
+                "path": "<UPLOADS>/C11BDC2B37E6BC924E6D5B6B96B1ECC3.csv",
+                "resource_url": null
+              },
+              "shape": {
+                "filename": "malawi.geojson",
+                "fromADR": false,
+                "hash": "EBE533976BFAF0CABCA2C2E1B611B9C7.geojson",
+                "path": "<UPLOADS>/EBE533976BFAF0CABCA2C2E1B611B9C7.geojson",
+                "resource_url": null
+              },
+              "survey": {
+                "filename": "survey.csv",
+                "fromADR": false,
+                "hash": "2D229A4507FECFE5471C2CC90431CB3C.csv",
+                "path": "<UPLOADS>/2D229A4507FECFE5471C2CC90431CB3C.csv",
+                "resource_url": null
+              }
+            },
+            "iso3": "MWI",
+            "options": {
+              "anc_art_coverage_year1": "2023",
+              "anc_clients_year2": 2023,
+              "anc_clients_year2_num_months": "9",
+              "anc_prevalence_year1": "2023",
+              "anc_prevalence_year2": "2023",
+              "area_level": "4",
+              "area_scope": "MWI",
+              "artattend": "false",
+              "artattend_log_gamma_offset": -4,
+              "artattend_t2": "true",
+              "calendar_quarter_t1": "CY2020Q3",
+              "calendar_quarter_t2": "CY2023Q4",
+              "calendar_quarter_t3": "CY2024Q3",
+              "calendar_quarter_t4": "CY2025Q3",
+              "calendar_quarter_t5": "CY2026Q3",
+              "deff_artcov": 1,
+              "deff_prev": 1,
+              "deff_recent": 1,
+              "include_art_t1": "false",
+              "include_art_t2": "false",
+              "max_iterations": 250,
+              "no_of_samples": 1000,
+              "output_aware_plhiv": "true",
+              "permissive": "false",
+              "rng_seed": 28,
+              "survey_art_coverage": "DEMO2020PHIA",
+              "survey_prevalence": "DEMO2020PHIA",
+              "survey_recently_infected": "DEMO2020PHIA"
+            },
+            "version": {
+              "hintr": "1.2.23",
+              "naomi": "2.10.23",
+              "rrq": "0.7.23",
+              "traduire": "0.1.1"
+            }
+          },
+          "method": "POST",
+          "path": "/model/submit",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "json": {
+            "iso3": "MWI",
+            "options": {
+              "anc_art_coverage_year1": "2023",
+              "anc_clients_year2": 2023,
+              "anc_clients_year2_num_months": "9",
+              "anc_prevalence_year1": "2023",
+              "anc_prevalence_year2": "2023",
+              "area_level": "4",
+              "area_scope": "MWI",
+              "artattend": "false",
+              "artattend_log_gamma_offset": -4,
+              "artattend_t2": "true",
+              "calendar_quarter_t1": "CY2020Q3",
+              "calendar_quarter_t2": "CY2023Q4",
+              "calendar_quarter_t3": "CY2024Q3",
+              "calendar_quarter_t4": "CY2025Q3",
+              "calendar_quarter_t5": "CY2026Q3",
+              "deff_artcov": 1,
+              "deff_prev": 1,
+              "deff_recent": 1,
+              "include_art_t1": "false",
+              "include_art_t2": "false",
+              "max_iterations": 250,
+              "no_of_samples": 1000,
+              "output_aware_plhiv": "true",
+              "permissive": "false",
+              "rng_seed": 28,
+              "survey_art_coverage": "DEMO2020PHIA",
+              "survey_prevalence": "DEMO2020PHIA",
+              "survey_recently_infected": "DEMO2020PHIA"
+            },
+            "version": {
+              "hintr": "1.2.23",
+              "naomi": "2.10.23",
+              "rrq": "0.7.23",
+              "traduire": "0.1.1"
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/model/run/"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "run model that errors",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "data": {
+              "pjnz": {
+                "filename": "Malawi2024.PJNZ",
+                "fromADR": false,
+                "hash": "46E4A725064B0E287F573A8F11389895.PJNZ",
+                "path": "<UPLOADS>/46E4A725064B0E287F573A8F11389895.PJNZ",
+                "resource_url": null
+              },
+              "population": {
+                "filename": "population.csv",
+                "fromADR": false,
+                "hash": "C11BDC2B37E6BC924E6D5B6B96B1ECC3.csv",
+                "path": "<UPLOADS>/C11BDC2B37E6BC924E6D5B6B96B1ECC3.csv",
+                "resource_url": null
+              },
+              "shape": {
+                "filename": "malawi.geojson",
+                "fromADR": false,
+                "hash": "EBE533976BFAF0CABCA2C2E1B611B9C7.geojson",
+                "path": "<UPLOADS>/EBE533976BFAF0CABCA2C2E1B611B9C7.geojson",
+                "resource_url": null
+              },
+              "survey": {
+                "filename": "survey.csv",
+                "fromADR": false,
+                "hash": "2D229A4507FECFE5471C2CC90431CB3C.csv",
+                "path": "<UPLOADS>/2D229A4507FECFE5471C2CC90431CB3C.csv",
+                "resource_url": null
+              }
+            },
+            "iso3": "MWI",
+            "options": {
+              "anc_art_coverage_year1": "2023",
+              "anc_clients_year2": 2023,
+              "anc_clients_year2_num_months": "9",
+              "anc_prevalence_year1": "2023",
+              "anc_prevalence_year2": "2023",
+              "area_level": "4",
+              "area_scope": "MWI",
+              "artattend": "false",
+              "artattend_log_gamma_offset": -4,
+              "artattend_t2": "true",
+              "calendar_quarter_t1": "CY2020Q3",
+              "calendar_quarter_t2": "CY2023Q4",
+              "calendar_quarter_t3": "CY2024Q3",
+              "calendar_quarter_t4": "CY2025Q3",
+              "calendar_quarter_t5": "CY2026Q3",
+              "deff_artcov": 1,
+              "deff_prev": 1,
+              "deff_recent": 1,
+              "include_art_t1": "false",
+              "include_art_t2": "false",
+              "max_iterations": 250,
+              "mock_model_trigger_error": "true",
+              "no_of_samples": 1000,
+              "output_aware_plhiv": "true",
+              "permissive": "false",
+              "rng_seed": 28,
+              "survey_art_coverage": "DEMO2020PHIA",
+              "survey_prevalence": "DEMO2020PHIA",
+              "survey_recently_infected": "DEMO2020PHIA"
+            },
+            "version": {
+              "hintr": "1.2.23",
+              "naomi": "2.10.23",
+              "rrq": "0.7.23",
+              "traduire": "0.1.1"
+            }
+          },
+          "method": "POST",
+          "path": "/model/submit",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "json": {
+            "iso3": "MWI",
+            "options": {
+              "anc_art_coverage_year1": "2023",
+              "anc_clients_year2": 2023,
+              "anc_clients_year2_num_months": "9",
+              "anc_prevalence_year1": "2023",
+              "anc_prevalence_year2": "2023",
+              "area_level": "4",
+              "area_scope": "MWI",
+              "artattend": "false",
+              "artattend_log_gamma_offset": -4,
+              "artattend_t2": "true",
+              "calendar_quarter_t1": "CY2020Q3",
+              "calendar_quarter_t2": "CY2023Q4",
+              "calendar_quarter_t3": "CY2024Q3",
+              "calendar_quarter_t4": "CY2025Q3",
+              "calendar_quarter_t5": "CY2026Q3",
+              "deff_artcov": 1,
+              "deff_prev": 1,
+              "deff_recent": 1,
+              "include_art_t1": "false",
+              "include_art_t2": "false",
+              "max_iterations": 250,
+              "mock_model_trigger_error": "true",
+              "no_of_samples": 1000,
+              "output_aware_plhiv": "true",
+              "permissive": "false",
+              "rng_seed": 28,
+              "survey_art_coverage": "DEMO2020PHIA",
+              "survey_prevalence": "DEMO2020PHIA",
+              "survey_recently_infected": "DEMO2020PHIA"
+            },
+            "version": {
+              "hintr": "1.2.23",
+              "naomi": "2.10.23",
+              "rrq": "0.7.23",
+              "traduire": "0.1.1"
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/model/run/"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "fit finished",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "GET",
+          "path": "/model/status/<TASK:fit>",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "poll": {
+        "until": "data.done == true"
+      },
+      "request": {
+        "method": "GET",
+        "path": "/model/status/<TASK:fit>"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "fit result",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "GET",
+          "path": "/model/result/<TASK:fit>",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/model/result/<TASK:fit>"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "errored fit finished",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "GET",
+          "path": "/model/status/<TASK:fit-error>",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "poll": {
+        "until": "data.done == true"
+      },
+      "request": {
+        "method": "GET",
+        "path": "/model/status/<TASK:fit-error>"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "errored fit result",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "GET",
+          "path": "/model/result/<TASK:fit-error>",
+          "status": 400,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/model/result/<TASK:fit-error>"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "client": "A",
+      "name": "calibrate",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "iso3": "MWI",
+            "options": {
+              "calibrate_method": "logistic",
+              "spectrum_artnum_calibration_level": "national",
+              "spectrum_artnum_calibration_strat": "sex_age_coarse",
+              "spectrum_aware_calibration_level": "none",
+              "spectrum_aware_calibration_strat": "sex_age_coarse",
+              "spectrum_infections_calibration_level": "national",
+              "spectrum_infections_calibration_strat": "sex_age_coarse",
+              "spectrum_plhiv_calibration_level": "national",
+              "spectrum_plhiv_calibration_strat": "sex_age_coarse"
+            },
+            "version": {
+              "hintr": "1.2.23",
+              "naomi": "2.10.23",
+              "rrq": "0.7.23",
+              "traduire": "0.1.1"
+            }
+          },
+          "method": "POST",
+          "path": "/calibrate/submit/<TASK:fit>",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "json": {
+            "iso3": "MWI",
+            "options": {
+              "calibrate_method": "logistic",
+              "spectrum_artnum_calibration_level": "national",
+              "spectrum_artnum_calibration_strat": "sex_age_coarse",
+              "spectrum_aware_calibration_level": "none",
+              "spectrum_aware_calibration_strat": "sex_age_coarse",
+              "spectrum_infections_calibration_level": "national",
+              "spectrum_infections_calibration_strat": "sex_age_coarse",
+              "spectrum_plhiv_calibration_level": "national",
+              "spectrum_plhiv_calibration_strat": "sex_age_coarse"
+            },
+            "version": {
+              "hintr": "1.2.23",
+              "naomi": "2.10.23",
+              "rrq": "0.7.23",
+              "traduire": "0.1.1"
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/calibrate/submit/<TASK:fit>"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "calibrate with invalid method",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "iso3": "MWI",
+            "options": {
+              "calibrate_method": "bogus",
+              "spectrum_artnum_calibration_level": "national",
+              "spectrum_artnum_calibration_strat": "sex_age_coarse",
+              "spectrum_aware_calibration_level": "none",
+              "spectrum_aware_calibration_strat": "sex_age_coarse",
+              "spectrum_infections_calibration_level": "national",
+              "spectrum_infections_calibration_strat": "sex_age_coarse",
+              "spectrum_plhiv_calibration_level": "national",
+              "spectrum_plhiv_calibration_strat": "sex_age_coarse"
+            },
+            "version": {
+              "hintr": "1.2.23",
+              "naomi": "2.10.23",
+              "rrq": "0.7.23",
+              "traduire": "0.1.1"
+            }
+          },
+          "method": "POST",
+          "path": "/calibrate/submit/<TASK:fit>",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "json": {
+            "iso3": "MWI",
+            "options": {
+              "calibrate_method": "bogus",
+              "spectrum_artnum_calibration_level": "national",
+              "spectrum_artnum_calibration_strat": "sex_age_coarse",
+              "spectrum_aware_calibration_level": "none",
+              "spectrum_aware_calibration_strat": "sex_age_coarse",
+              "spectrum_infections_calibration_level": "national",
+              "spectrum_infections_calibration_strat": "sex_age_coarse",
+              "spectrum_plhiv_calibration_level": "national",
+              "spectrum_plhiv_calibration_strat": "sex_age_coarse"
+            },
+            "version": {
+              "hintr": "1.2.23",
+              "naomi": "2.10.23",
+              "rrq": "0.7.23",
+              "traduire": "0.1.1"
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/calibrate/submit/<TASK:fit>"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "calibrate finished",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "GET",
+          "path": "/calibrate/status/<TASK:calibrate>",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "poll": {
+        "until": "data.done == true"
+      },
+      "request": {
+        "method": "GET",
+        "path": "/calibrate/status/<TASK:calibrate>"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "bad calibrate finished",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "GET",
+          "path": "/calibrate/status/<TASK:calibrate-error>",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "poll": {
+        "until": "data.done == true"
+      },
+      "request": {
+        "method": "GET",
+        "path": "/calibrate/status/<TASK:calibrate-error>"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "calibrate metadata",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "GET",
+          "path": "/calibrate/result/metadata/<TASK:calibrate>",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/calibrate/result/metadata/<TASK:calibrate>"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "upload programme",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "file": {
+              "filename": "programme.csv",
+              "fromADR": false,
+              "hash": "A900936E6908D6CECA92A099980667F3.csv",
+              "path": "<UPLOADS>/A900936E6908D6CECA92A099980667F3.csv",
+              "resource_url": null
+            },
+            "shape": "<UPLOADS>/EBE533976BFAF0CABCA2C2E1B611B9C7.geojson",
+            "type": "programme"
+          },
+          "method": "POST",
+          "path": "/validate/survey-and-programme",
+          "query": "strict=true",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "multipart": {
+            "file": {
+              "filename": "programme.csv",
+              "fixture": "programme.csv",
+              "sha256": "afb6c88a2bb60f786fb1ea6fb8ee8eed9738a133903b62414485e2baeeac0bed",
+              "size": 51582
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/disease/programme/"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "upload anc",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "file": {
+              "filename": "anc.csv",
+              "fromADR": false,
+              "hash": "212FBB9D1AE1077EF9497BD8EA83298F.csv",
+              "path": "<UPLOADS>/212FBB9D1AE1077EF9497BD8EA83298F.csv",
+              "resource_url": null
+            },
+            "shape": "<UPLOADS>/EBE533976BFAF0CABCA2C2E1B611B9C7.geojson",
+            "type": "anc"
+          },
+          "method": "POST",
+          "path": "/validate/survey-and-programme",
+          "query": "strict=true",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "multipart": {
+            "file": {
+              "filename": "anc.csv",
+              "fixture": "anc.csv",
+              "sha256": "6c9f65bad5653d754a713c737fde3ca4186f7e51d9bddb43eec47dc669fdc90a",
+              "size": 28895
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/disease/anc/"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "upload vmmc",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "file": {
+              "filename": "vmmc.xlsx",
+              "fromADR": false,
+              "hash": "B7C376E240D6E17D5D3EAFBF4539B771.xlsx",
+              "path": "<UPLOADS>/B7C376E240D6E17D5D3EAFBF4539B771.xlsx",
+              "resource_url": null
+            },
+            "shape": "<UPLOADS>/EBE533976BFAF0CABCA2C2E1B611B9C7.geojson",
+            "type": "vmmc"
+          },
+          "method": "POST",
+          "path": "/validate/survey-and-programme",
+          "query": "strict=true",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "multipart": {
+            "file": {
+              "filename": "vmmc.xlsx",
+              "fixture": "vmmc.xlsx",
+              "sha256": "ae53e705f7b743fb13fccddecee6f075678a49c63df17c8808c86cba937c0aee",
+              "size": 413163
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/disease/vmmc/"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "submit download spectrum",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "iso3": "MWI",
+            "notes": {
+              "project_notes": {
+                "name": "projectName",
+                "note": "test notes",
+                "updated": "2022/05/17 12:34:21"
+              },
+              "version_notes": [
+                {
+                  "name": "projectName",
+                  "note": "test notes",
+                  "updated": "2022/05/17 12:34:21"
+                },
+                {
+                  "name": "projectName",
+                  "note": "test notes",
+                  "updated": "2022/05/17 12:34:21"
+                }
+              ]
+            },
+            "state": {
+              "calibrate": {
+                "id": "<TASK:calibrate>",
+                "options": {
+                  "": ""
+                }
+              },
+              "datasets": {
+                "anc": {
+                  "filename": "anc",
+                  "path": "uploads/anc"
+                },
+                "pjnz": {
+                  "filename": "pjnz",
+                  "path": "uploads/pjnz"
+                },
+                "population": {
+                  "filename": "population",
+                  "path": "uploads/population"
+                },
+                "programme": {
+                  "filename": "programme",
+                  "path": "uploads/programme"
+                },
+                "shape": {
+                  "filename": "shape",
+                  "path": "uploads/shape"
+                },
+                "survey": {
+                  "filename": "survey",
+                  "path": "uploads/survey"
+                }
+              },
+              "model_fit": {
+                "id": "<TASK:fit>",
+                "options": {
+                  "": ""
+                }
+              },
+              "version": {
+                "hintr": "1",
+                "naomi": "1",
+                "rrq": "1"
+              }
+            },
+            "vmmc": {
+              "filename": "vmmc.xlsx",
+              "fromADR": false,
+              "hash": "B7C376E240D6E17D5D3EAFBF4539B771.xlsx",
+              "path": "<UPLOADS>/B7C376E240D6E17D5D3EAFBF4539B771.xlsx",
+              "resource_url": null
+            }
+          },
+          "method": "POST",
+          "path": "/download/submit/spectrum/<TASK:calibrate>",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "json": {
+            "iso3": "MWI",
+            "notes": {
+              "project_notes": {
+                "name": "projectName",
+                "note": "test notes",
+                "updated": "2022/05/17 12:34:21"
+              },
+              "version_notes": [
+                {
+                  "name": "projectName",
+                  "note": "test notes",
+                  "updated": "2022/05/17 12:34:21"
+                },
+                {
+                  "name": "projectName",
+                  "note": "test notes",
+                  "updated": "2022/05/17 12:34:21"
+                }
+              ]
+            },
+            "state": {
+              "calibrate": {
+                "id": "<TASK:calibrate>",
+                "options": {
+                  "": ""
+                }
+              },
+              "datasets": {
+                "anc": {
+                  "filename": "anc",
+                  "path": "uploads/anc"
+                },
+                "pjnz": {
+                  "filename": "pjnz",
+                  "path": "uploads/pjnz"
+                },
+                "population": {
+                  "filename": "population",
+                  "path": "uploads/population"
+                },
+                "programme": {
+                  "filename": "programme",
+                  "path": "uploads/programme"
+                },
+                "shape": {
+                  "filename": "shape",
+                  "path": "uploads/shape"
+                },
+                "survey": {
+                  "filename": "survey",
+                  "path": "uploads/survey"
+                }
+              },
+              "model_fit": {
+                "id": "<TASK:fit>",
+                "options": {
+                  "": ""
+                }
+              },
+              "version": {
+                "hintr": "1",
+                "naomi": "1",
+                "rrq": "1"
+              }
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/download/submit/spectrum/<TASK:calibrate>"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "submit download coarse-output",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "iso3": "MWI",
+            "notes": {
+              "project_notes": {
+                "name": "projectName",
+                "note": "test notes",
+                "updated": "2022/05/17 12:34:21"
+              },
+              "version_notes": [
+                {
+                  "name": "projectName",
+                  "note": "test notes",
+                  "updated": "2022/05/17 12:34:21"
+                },
+                {
+                  "name": "projectName",
+                  "note": "test notes",
+                  "updated": "2022/05/17 12:34:21"
+                }
+              ]
+            },
+            "state": {
+              "calibrate": {
+                "id": "<TASK:calibrate>",
+                "options": {
+                  "": ""
+                }
+              },
+              "datasets": {
+                "anc": {
+                  "filename": "anc",
+                  "path": "uploads/anc"
+                },
+                "pjnz": {
+                  "filename": "pjnz",
+                  "path": "uploads/pjnz"
+                },
+                "population": {
+                  "filename": "population",
+                  "path": "uploads/population"
+                },
+                "programme": {
+                  "filename": "programme",
+                  "path": "uploads/programme"
+                },
+                "shape": {
+                  "filename": "shape",
+                  "path": "uploads/shape"
+                },
+                "survey": {
+                  "filename": "survey",
+                  "path": "uploads/survey"
+                }
+              },
+              "model_fit": {
+                "id": "<TASK:fit>",
+                "options": {
+                  "": ""
+                }
+              },
+              "version": {
+                "hintr": "1",
+                "naomi": "1",
+                "rrq": "1"
+              }
+            }
+          },
+          "method": "POST",
+          "path": "/download/submit/coarse-output/<TASK:calibrate>",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "json": {
+            "iso3": "MWI",
+            "notes": {
+              "project_notes": {
+                "name": "projectName",
+                "note": "test notes",
+                "updated": "2022/05/17 12:34:21"
+              },
+              "version_notes": [
+                {
+                  "name": "projectName",
+                  "note": "test notes",
+                  "updated": "2022/05/17 12:34:21"
+                },
+                {
+                  "name": "projectName",
+                  "note": "test notes",
+                  "updated": "2022/05/17 12:34:21"
+                }
+              ]
+            },
+            "state": {
+              "calibrate": {
+                "id": "<TASK:calibrate>",
+                "options": {
+                  "": ""
+                }
+              },
+              "datasets": {
+                "anc": {
+                  "filename": "anc",
+                  "path": "uploads/anc"
+                },
+                "pjnz": {
+                  "filename": "pjnz",
+                  "path": "uploads/pjnz"
+                },
+                "population": {
+                  "filename": "population",
+                  "path": "uploads/population"
+                },
+                "programme": {
+                  "filename": "programme",
+                  "path": "uploads/programme"
+                },
+                "shape": {
+                  "filename": "shape",
+                  "path": "uploads/shape"
+                },
+                "survey": {
+                  "filename": "survey",
+                  "path": "uploads/survey"
+                }
+              },
+              "model_fit": {
+                "id": "<TASK:fit>",
+                "options": {
+                  "": ""
+                }
+              },
+              "version": {
+                "hintr": "1",
+                "naomi": "1",
+                "rrq": "1"
+              }
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/download/submit/coarse-output/<TASK:calibrate>"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "submit download summary",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "iso3": "MWI",
+            "notes": {
+              "project_notes": {
+                "name": "projectName",
+                "note": "test notes",
+                "updated": "2022/05/17 12:34:21"
+              },
+              "version_notes": [
+                {
+                  "name": "projectName",
+                  "note": "test notes",
+                  "updated": "2022/05/17 12:34:21"
+                },
+                {
+                  "name": "projectName",
+                  "note": "test notes",
+                  "updated": "2022/05/17 12:34:21"
+                }
+              ]
+            },
+            "state": {
+              "calibrate": {
+                "id": "<TASK:calibrate>",
+                "options": {
+                  "": ""
+                }
+              },
+              "datasets": {
+                "anc": {
+                  "filename": "anc",
+                  "path": "uploads/anc"
+                },
+                "pjnz": {
+                  "filename": "pjnz",
+                  "path": "uploads/pjnz"
+                },
+                "population": {
+                  "filename": "population",
+                  "path": "uploads/population"
+                },
+                "programme": {
+                  "filename": "programme",
+                  "path": "uploads/programme"
+                },
+                "shape": {
+                  "filename": "shape",
+                  "path": "uploads/shape"
+                },
+                "survey": {
+                  "filename": "survey",
+                  "path": "uploads/survey"
+                }
+              },
+              "model_fit": {
+                "id": "<TASK:fit>",
+                "options": {
+                  "": ""
+                }
+              },
+              "version": {
+                "hintr": "1",
+                "naomi": "1",
+                "rrq": "1"
+              }
+            }
+          },
+          "method": "POST",
+          "path": "/download/submit/summary/<TASK:calibrate>",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "json": {
+            "iso3": "MWI",
+            "notes": {
+              "project_notes": {
+                "name": "projectName",
+                "note": "test notes",
+                "updated": "2022/05/17 12:34:21"
+              },
+              "version_notes": [
+                {
+                  "name": "projectName",
+                  "note": "test notes",
+                  "updated": "2022/05/17 12:34:21"
+                },
+                {
+                  "name": "projectName",
+                  "note": "test notes",
+                  "updated": "2022/05/17 12:34:21"
+                }
+              ]
+            },
+            "state": {
+              "calibrate": {
+                "id": "<TASK:calibrate>",
+                "options": {
+                  "": ""
+                }
+              },
+              "datasets": {
+                "anc": {
+                  "filename": "anc",
+                  "path": "uploads/anc"
+                },
+                "pjnz": {
+                  "filename": "pjnz",
+                  "path": "uploads/pjnz"
+                },
+                "population": {
+                  "filename": "population",
+                  "path": "uploads/population"
+                },
+                "programme": {
+                  "filename": "programme",
+                  "path": "uploads/programme"
+                },
+                "shape": {
+                  "filename": "shape",
+                  "path": "uploads/shape"
+                },
+                "survey": {
+                  "filename": "survey",
+                  "path": "uploads/survey"
+                }
+              },
+              "model_fit": {
+                "id": "<TASK:fit>",
+                "options": {
+                  "": ""
+                }
+              },
+              "version": {
+                "hintr": "1",
+                "naomi": "1",
+                "rrq": "1"
+              }
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/download/submit/summary/<TASK:calibrate>"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "submit download comparison",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "iso3": "MWI",
+            "notes": {
+              "project_notes": {
+                "name": "projectName",
+                "note": "test notes",
+                "updated": "2022/05/17 12:34:21"
+              },
+              "version_notes": [
+                {
+                  "name": "projectName",
+                  "note": "test notes",
+                  "updated": "2022/05/17 12:34:21"
+                },
+                {
+                  "name": "projectName",
+                  "note": "test notes",
+                  "updated": "2022/05/17 12:34:21"
+                }
+              ]
+            },
+            "state": {
+              "calibrate": {
+                "id": "<TASK:calibrate>",
+                "options": {
+                  "": ""
+                }
+              },
+              "datasets": {
+                "anc": {
+                  "filename": "anc",
+                  "path": "uploads/anc"
+                },
+                "pjnz": {
+                  "filename": "pjnz",
+                  "path": "uploads/pjnz"
+                },
+                "population": {
+                  "filename": "population",
+                  "path": "uploads/population"
+                },
+                "programme": {
+                  "filename": "programme",
+                  "path": "uploads/programme"
+                },
+                "shape": {
+                  "filename": "shape",
+                  "path": "uploads/shape"
+                },
+                "survey": {
+                  "filename": "survey",
+                  "path": "uploads/survey"
+                }
+              },
+              "model_fit": {
+                "id": "<TASK:fit>",
+                "options": {
+                  "": ""
+                }
+              },
+              "version": {
+                "hintr": "1",
+                "naomi": "1",
+                "rrq": "1"
+              }
+            }
+          },
+          "method": "POST",
+          "path": "/download/submit/comparison/<TASK:calibrate>",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "json": {
+            "iso3": "MWI",
+            "notes": {
+              "project_notes": {
+                "name": "projectName",
+                "note": "test notes",
+                "updated": "2022/05/17 12:34:21"
+              },
+              "version_notes": [
+                {
+                  "name": "projectName",
+                  "note": "test notes",
+                  "updated": "2022/05/17 12:34:21"
+                },
+                {
+                  "name": "projectName",
+                  "note": "test notes",
+                  "updated": "2022/05/17 12:34:21"
+                }
+              ]
+            },
+            "state": {
+              "calibrate": {
+                "id": "<TASK:calibrate>",
+                "options": {
+                  "": ""
+                }
+              },
+              "datasets": {
+                "anc": {
+                  "filename": "anc",
+                  "path": "uploads/anc"
+                },
+                "pjnz": {
+                  "filename": "pjnz",
+                  "path": "uploads/pjnz"
+                },
+                "population": {
+                  "filename": "population",
+                  "path": "uploads/population"
+                },
+                "programme": {
+                  "filename": "programme",
+                  "path": "uploads/programme"
+                },
+                "shape": {
+                  "filename": "shape",
+                  "path": "uploads/shape"
+                },
+                "survey": {
+                  "filename": "survey",
+                  "path": "uploads/survey"
+                }
+              },
+              "model_fit": {
+                "id": "<TASK:fit>",
+                "options": {
+                  "": ""
+                }
+              },
+              "version": {
+                "hintr": "1",
+                "naomi": "1",
+                "rrq": "1"
+              }
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/download/submit/comparison/<TASK:calibrate>"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "submit download agyw",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "iso3": "MWI",
+            "notes": {
+              "project_notes": {
+                "name": "projectName",
+                "note": "test notes",
+                "updated": "2022/05/17 12:34:21"
+              },
+              "version_notes": [
+                {
+                  "name": "projectName",
+                  "note": "test notes",
+                  "updated": "2022/05/17 12:34:21"
+                },
+                {
+                  "name": "projectName",
+                  "note": "test notes",
+                  "updated": "2022/05/17 12:34:21"
+                }
+              ]
+            },
+            "pjnz": {
+              "filename": "Malawi2024.PJNZ",
+              "fromADR": false,
+              "hash": "46E4A725064B0E287F573A8F11389895.PJNZ",
+              "path": "<UPLOADS>/46E4A725064B0E287F573A8F11389895.PJNZ",
+              "resource_url": null
+            },
+            "state": {
+              "calibrate": {
+                "id": "<TASK:calibrate>",
+                "options": {
+                  "": ""
+                }
+              },
+              "datasets": {
+                "anc": {
+                  "filename": "anc",
+                  "path": "uploads/anc"
+                },
+                "pjnz": {
+                  "filename": "pjnz",
+                  "path": "uploads/pjnz"
+                },
+                "population": {
+                  "filename": "population",
+                  "path": "uploads/population"
+                },
+                "programme": {
+                  "filename": "programme",
+                  "path": "uploads/programme"
+                },
+                "shape": {
+                  "filename": "shape",
+                  "path": "uploads/shape"
+                },
+                "survey": {
+                  "filename": "survey",
+                  "path": "uploads/survey"
+                }
+              },
+              "model_fit": {
+                "id": "<TASK:fit>",
+                "options": {
+                  "": ""
+                }
+              },
+              "version": {
+                "hintr": "1",
+                "naomi": "1",
+                "rrq": "1"
+              }
+            }
+          },
+          "method": "POST",
+          "path": "/download/submit/agyw/<TASK:calibrate>",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "json": {
+            "iso3": "MWI",
+            "notes": {
+              "project_notes": {
+                "name": "projectName",
+                "note": "test notes",
+                "updated": "2022/05/17 12:34:21"
+              },
+              "version_notes": [
+                {
+                  "name": "projectName",
+                  "note": "test notes",
+                  "updated": "2022/05/17 12:34:21"
+                },
+                {
+                  "name": "projectName",
+                  "note": "test notes",
+                  "updated": "2022/05/17 12:34:21"
+                }
+              ]
+            },
+            "state": {
+              "calibrate": {
+                "id": "<TASK:calibrate>",
+                "options": {
+                  "": ""
+                }
+              },
+              "datasets": {
+                "anc": {
+                  "filename": "anc",
+                  "path": "uploads/anc"
+                },
+                "pjnz": {
+                  "filename": "pjnz",
+                  "path": "uploads/pjnz"
+                },
+                "population": {
+                  "filename": "population",
+                  "path": "uploads/population"
+                },
+                "programme": {
+                  "filename": "programme",
+                  "path": "uploads/programme"
+                },
+                "shape": {
+                  "filename": "shape",
+                  "path": "uploads/shape"
+                },
+                "survey": {
+                  "filename": "survey",
+                  "path": "uploads/survey"
+                }
+              },
+              "model_fit": {
+                "id": "<TASK:fit>",
+                "options": {
+                  "": ""
+                }
+              },
+              "version": {
+                "hintr": "1",
+                "naomi": "1",
+                "rrq": "1"
+              }
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/download/submit/agyw/<TASK:calibrate>"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "submit download datapack",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "iso3": "MWI",
+            "notes": {
+              "project_notes": {
+                "name": "projectName",
+                "note": "test notes",
+                "updated": "2022/05/17 12:34:21"
+              },
+              "version_notes": [
+                {
+                  "name": "projectName",
+                  "note": "test notes",
+                  "updated": "2022/05/17 12:34:21"
+                },
+                {
+                  "name": "projectName",
+                  "note": "test notes",
+                  "updated": "2022/05/17 12:34:21"
+                }
+              ]
+            },
+            "state": {
+              "calibrate": {
+                "id": "<TASK:calibrate>",
+                "options": {
+                  "": ""
+                }
+              },
+              "datasets": {
+                "anc": {
+                  "filename": "anc",
+                  "path": "uploads/anc"
+                },
+                "pjnz": {
+                  "filename": "pjnz",
+                  "path": "uploads/pjnz"
+                },
+                "population": {
+                  "filename": "population",
+                  "path": "uploads/population"
+                },
+                "programme": {
+                  "filename": "programme",
+                  "path": "uploads/programme"
+                },
+                "shape": {
+                  "filename": "shape",
+                  "path": "uploads/shape"
+                },
+                "survey": {
+                  "filename": "survey",
+                  "path": "uploads/survey"
+                }
+              },
+              "model_fit": {
+                "id": "<TASK:fit>",
+                "options": {
+                  "": ""
+                }
+              },
+              "version": {
+                "hintr": "1",
+                "naomi": "1",
+                "rrq": "1"
+              }
+            },
+            "vmmc": {
+              "filename": "vmmc.xlsx",
+              "fromADR": false,
+              "hash": "B7C376E240D6E17D5D3EAFBF4539B771.xlsx",
+              "path": "<UPLOADS>/B7C376E240D6E17D5D3EAFBF4539B771.xlsx",
+              "resource_url": null
+            }
+          },
+          "method": "POST",
+          "path": "/download/submit/datapack/<TASK:calibrate>",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "json": {
+            "iso3": "MWI",
+            "notes": {
+              "project_notes": {
+                "name": "projectName",
+                "note": "test notes",
+                "updated": "2022/05/17 12:34:21"
+              },
+              "version_notes": [
+                {
+                  "name": "projectName",
+                  "note": "test notes",
+                  "updated": "2022/05/17 12:34:21"
+                },
+                {
+                  "name": "projectName",
+                  "note": "test notes",
+                  "updated": "2022/05/17 12:34:21"
+                }
+              ]
+            },
+            "state": {
+              "calibrate": {
+                "id": "<TASK:calibrate>",
+                "options": {
+                  "": ""
+                }
+              },
+              "datasets": {
+                "anc": {
+                  "filename": "anc",
+                  "path": "uploads/anc"
+                },
+                "pjnz": {
+                  "filename": "pjnz",
+                  "path": "uploads/pjnz"
+                },
+                "population": {
+                  "filename": "population",
+                  "path": "uploads/population"
+                },
+                "programme": {
+                  "filename": "programme",
+                  "path": "uploads/programme"
+                },
+                "shape": {
+                  "filename": "shape",
+                  "path": "uploads/shape"
+                },
+                "survey": {
+                  "filename": "survey",
+                  "path": "uploads/survey"
+                }
+              },
+              "model_fit": {
+                "id": "<TASK:fit>",
+                "options": {
+                  "": ""
+                }
+              },
+              "version": {
+                "hintr": "1",
+                "naomi": "1",
+                "rrq": "1"
+              }
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/download/submit/datapack/<TASK:calibrate>"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "download spectrum finished",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "GET",
+          "path": "/download/status/<TASK:download-spectrum>",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "poll": {
+        "until": "data.done == true"
+      },
+      "request": {
+        "method": "GET",
+        "path": "/download/status/<TASK:download-spectrum>"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "download coarse-output finished",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "GET",
+          "path": "/download/status/<TASK:download-coarse-output>",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "poll": {
+        "until": "data.done == true"
+      },
+      "request": {
+        "method": "GET",
+        "path": "/download/status/<TASK:download-coarse-output>"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "download summary finished",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "GET",
+          "path": "/download/status/<TASK:download-summary>",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "poll": {
+        "until": "data.done == true"
+      },
+      "request": {
+        "method": "GET",
+        "path": "/download/status/<TASK:download-summary>"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "download comparison finished",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "GET",
+          "path": "/download/status/<TASK:download-comparison>",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "poll": {
+        "until": "data.done == true"
+      },
+      "request": {
+        "method": "GET",
+        "path": "/download/status/<TASK:download-comparison>"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "download agyw finished",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "GET",
+          "path": "/download/status/<TASK:download-agyw>",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "poll": {
+        "until": "data.done == true"
+      },
+      "request": {
+        "method": "GET",
+        "path": "/download/status/<TASK:download-agyw>"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "download datapack finished",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "GET",
+          "path": "/download/status/<TASK:download-datapack>",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "poll": {
+        "until": "data.done == true"
+      },
+      "request": {
+        "method": "GET",
+        "path": "/download/status/<TASK:download-datapack>"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    }
+  ]
+}
