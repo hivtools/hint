@@ -1,0 +1,61 @@
+name: hint-py
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "hint-py/**"
+      - ".pre-commit-config.yaml"
+      - ".github/workflows/hint-py.yml"
+      - ".github/actions/setup-python-env/**"
+  pull_request:
+    paths:
+      - "hint-py/**"
+      - ".pre-commit-config.yaml"
+      - ".github/workflows/hint-py.yml"
+      - ".github/actions/setup-python-env/**"
+
+defaults:
+  run:
+    shell: bash
+    working-directory: hint-py
+
+jobs:
+  # Lint, format and type check. None of this depends on the OS, so it only runs once.
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/cache@v5
+        with:
+          path: ~/.cache/pre-commit
+          key: pre-commit-${{ hashFiles('.pre-commit-config.yaml') }}
+
+      - uses: ./.github/actions/setup-python-env
+
+      - run: make check
+
+  # Developers use Linux and Windows (and possibly macOS), so the tests run on all three.
+  test:
+    name: test (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: ./.github/actions/setup-python-env
+
+      - run: uv run pytest --cov --cov-report=xml
+
+      - name: Upload coverage to Codecov
+        if: matrix.os == 'ubuntu-latest'
+        uses: codecov/codecov-action@v5
+        with:
+          files: hint-py/coverage.xml
+          flags: hint-py
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}

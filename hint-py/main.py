@@ -1,17 +1,19 @@
-from typing import Annotated
+import tomllib
+from pathlib import Path
 
-from fastapi import Depends, FastAPI
+from fastapi import FastAPI
 
-from identity import User, current_user
+from routers import items
+
+# pyproject.toml is the one place the version is set. The project is not installed as a package, so there is no
+# package metadata to read it from.
+VERSION = tomllib.loads((Path(__file__).parent / "pyproject.toml").read_text())["project"]["version"]
 
 app = FastAPI()
 
-
-@app.get("/items/whoami")
-async def whoami(user: Annotated[User, Depends(current_user)]):
-    return {"user": user.id, "version_id": user.version_id, "is_guest": user.is_guest}
+app.include_router(items.router)
 
 
-@app.get("/items/{item_id}")
-async def read_item(item_id: int, user: Annotated[User, Depends(current_user)]):
-    return {"item_id": item_id}
+@app.get("/version")
+async def version():
+    return {"version": VERSION}

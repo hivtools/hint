@@ -6,7 +6,7 @@ nginx sits in front of both apps. Everything goes to Kotlin (`src/app`) unless i
 ## Moving an endpoint to Python
 
 1. Implement it in `hint-py`. Take the user from `Depends(current_user)` (or `logged_in_user` for endpoints that
-   Kotlin protects with `SecurePaths`), see `hint-py/identity.py`.
+   Kotlin protects with `SecurePaths`), see `hint-py/dependencies.py`.
 2. Add a location to `nginx.conf.template` (the most specific prefix wins):
 
    ```nginx
