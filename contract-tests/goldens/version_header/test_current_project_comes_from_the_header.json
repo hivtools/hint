@@ -1,0 +1,223 @@
+{
+  "scenario": "version_header/test_current_project_comes_from_the_header",
+  "steps": [
+    {
+      "client": "A",
+      "name": "login test.user@example.com",
+      "request": {
+        "body": {
+          "form": {
+            "password": "password",
+            "username": "test.user@example.com"
+          }
+        },
+        "method": "POST",
+        "path": "/callback/formClient"
+      },
+      "response": {
+        "body": {
+          "empty": true
+        },
+        "headers": {
+          "location": "/"
+        },
+        "status": 303
+      }
+    },
+    {
+      "client": "A",
+      "name": "open /",
+      "request": {
+        "method": "GET",
+        "path": "/"
+      },
+      "response": {
+        "body": {
+          "html": true,
+          "title": "Naomi"
+        },
+        "headers": {
+          "content-type": "text/html"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "create project first",
+      "request": {
+        "body": {
+          "json": {
+            "name": "first",
+            "note": "a note"
+          }
+        },
+        "method": "POST",
+        "path": "/project"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {
+              "id": "<PROJECT:1>",
+              "name": "first",
+              "note": null,
+              "sharedBy": "",
+              "uploaded": null,
+              "versions": [
+                {
+                  "created": "<TIMESTAMP>",
+                  "id": "<UUID:1>",
+                  "note": null,
+                  "updated": "<TIMESTAMP>",
+                  "versionNumber": 1
+                }
+              ]
+            },
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "create project second",
+      "request": {
+        "body": {
+          "json": {
+            "name": "second",
+            "note": "a note"
+          }
+        },
+        "method": "POST",
+        "path": "/project"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {
+              "id": "<PROJECT:2>",
+              "name": "second",
+              "note": null,
+              "sharedBy": "",
+              "uploaded": null,
+              "versions": [
+                {
+                  "created": "<TIMESTAMP>",
+                  "id": "<UUID:2>",
+                  "note": null,
+                  "updated": "<TIMESTAMP>",
+                  "versionNumber": 1
+                }
+              ]
+            },
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "the header names the first project",
+      "request": {
+        "headers": {
+          "x-version-id": "<UUID:1>"
+        },
+        "method": "GET",
+        "path": "/project/current"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {
+              "project": {
+                "id": "<PROJECT:1>",
+                "name": "first",
+                "note": "a note",
+                "sharedBy": null,
+                "uploaded": null,
+                "versions": [
+                  {
+                    "created": "<TIMESTAMP>",
+                    "id": "<UUID:1>",
+                    "note": null,
+                    "updated": "<TIMESTAMP>",
+                    "versionNumber": 1
+                  }
+                ]
+              },
+              "version": {
+                "created": "<TIMESTAMP>",
+                "id": "<UUID:1>",
+                "note": null,
+                "updated": "<TIMESTAMP>",
+                "versionNumber": 1
+              }
+            },
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "the tab's own version is the second project",
+      "request": {
+        "method": "GET",
+        "path": "/project/current"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {
+              "project": {
+                "id": "<PROJECT:1>",
+                "name": "first",
+                "note": "a note",
+                "sharedBy": null,
+                "uploaded": null,
+                "versions": [
+                  {
+                    "created": "<TIMESTAMP>",
+                    "id": "<UUID:1>",
+                    "note": null,
+                    "updated": "<TIMESTAMP>",
+                    "versionNumber": 1
+                  }
+                ]
+              },
+              "version": {
+                "created": "<TIMESTAMP>",
+                "id": "<UUID:1>",
+                "note": null,
+                "updated": "<TIMESTAMP>",
+                "versionNumber": 1
+              }
+            },
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    }
+  ]
+}

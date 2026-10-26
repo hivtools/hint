@@ -12,7 +12,6 @@ import org.springframework.boot.test.web.client.exchange
 import org.springframework.boot.test.web.client.getForEntity
 import org.springframework.boot.test.web.client.postForEntity
 import org.springframework.http.*
-import org.springframework.util.LinkedMultiValueMap
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
@@ -85,12 +84,7 @@ class ProjectTests : VersionFileTests()
             val versions = data["versions"] as ArrayNode
             val versionId = versions[0]["id"].asText()
 
-            val map = LinkedMultiValueMap<String, String>()
-            map.add("note", "test version note")
-            map.add("parent", versionId)
-            val headers = HttpHeaders()
-            headers.contentType = MediaType.APPLICATION_FORM_URLENCODED
-            val httpEntity = HttpEntity(map, headers)
+            val httpEntity = jsonEntity(mapOf("note" to "test version note", "parent" to versionId))
 
             val newVersionResult = testRestTemplate.postForEntity<String>("/project/${projectId}/version/", httpEntity)
 
@@ -150,12 +144,7 @@ class ProjectTests : VersionFileTests()
             val versions = data["versions"] as ArrayNode
             val versionId = versions[0]["id"].asText()
 
-            val map = LinkedMultiValueMap<String, String>()
-            map.add("name", "newProject")
-            map.add("note", "test promote project note")
-            val headers = HttpHeaders()
-            headers.contentType = MediaType.APPLICATION_FORM_URLENCODED
-            val httpEntity = HttpEntity(map, headers)
+            val httpEntity = jsonEntity(mapOf("name" to "newProject", "note" to "test promote project note"))
 
             val promoteProjectResult = testRestTemplate.postForEntity<String>("/project/$projectId/version/$versionId/promote", httpEntity)
 
@@ -390,13 +379,7 @@ class ProjectTests : VersionFileTests()
             val versions = data["versions"] as ArrayNode
             val versionId = versions[0]["id"].asText()
 
-            val map = LinkedMultiValueMap<String, String>()
-            map.add("note", "test note for v2")
-            map.add("parent", versionId)
-
-            val headers = HttpHeaders()
-            headers.contentType = MediaType.APPLICATION_FORM_URLENCODED
-            val httpEntity = HttpEntity(map, headers)
+            val httpEntity = jsonEntity(mapOf("note" to "test note for v2", "parent" to versionId))
 
             val versionResult = testRestTemplate.postForEntity<String>("/project/${projectId}/version/", httpEntity)
             assertThat(versionResult.statusCode).isEqualTo(HttpStatus.OK)
@@ -535,12 +518,7 @@ class ProjectTests : VersionFileTests()
             var data = getResponseData(result) as ArrayNode
             assertThat(data.count()).isEqualTo(1)
 
-            val map = LinkedMultiValueMap<String, String>()
-            map.add("name", "renamedProject")
-            map.add("note", "new project notes")
-            val headers = HttpHeaders()
-            headers.contentType = MediaType.APPLICATION_FORM_URLENCODED
-            val httpEntity = HttpEntity(map, headers)
+            val httpEntity = jsonEntity(mapOf("name" to "renamedProject", "note" to "new project notes"))
 
             testRestTemplate.postForEntity<String>("/project/$projectId/rename", httpEntity)
 
@@ -649,11 +627,7 @@ class ProjectTests : VersionFileTests()
             getUpdateVersionStateResult(projectId, versionId, testState)
 
 
-            val map = LinkedMultiValueMap<String, String>()
-            map.add("name", "newProject")
-            val headers = HttpHeaders()
-            headers.contentType = MediaType.APPLICATION_FORM_URLENCODED
-            val httpEntity = HttpEntity(map, headers)
+            val httpEntity = jsonEntity(mapOf("name" to "newProject"))
 
             testRestTemplate.postForEntity<String>("/project/$projectId/version/$versionId/promote", httpEntity)
 
@@ -793,22 +767,18 @@ class ProjectTests : VersionFileTests()
 
     private fun createProject(): ResponseEntity<String>
     {
-        val map = LinkedMultiValueMap<String, String>()
-        map.add("name", "testProject")
-        map.add("note", "notes")
-        val headers = HttpHeaders()
-        headers.contentType = MediaType.APPLICATION_FORM_URLENCODED
-        val httpEntity = HttpEntity(map, headers)
+        val httpEntity = jsonEntity(mapOf("name" to "testProject", "note" to "notes"))
         return testRestTemplate.postForEntity("/project/", httpEntity)
     }
 
     private fun getCloneProjectEntity(emails: List<String>): HttpEntity<Any>
     {
-        val map = LinkedMultiValueMap<String, String>()
-        map.add("emails", emails.joinToString(","))
-        val headers = HttpHeaders()
-        headers.contentType = MediaType.APPLICATION_FORM_URLENCODED
-        return HttpEntity(map, headers)
+        return jsonEntity(mapOf("emails" to emails))
+    }
+
+    private fun jsonEntity(body: Map<String, Any?>, language: String? = null): HttpEntity<Any>
+    {
+        return HttpEntity(body, getStandardHeaders(language))
     }
 
     private fun getUpdateVersionStateResult(projectId: Int, versionId: String, state: String,
@@ -823,33 +793,22 @@ class ProjectTests : VersionFileTests()
 
     private fun saveProjectNote(projectId: Int): ResponseEntity<String>
     {
-        val headers = HttpHeaders()
-        val map = LinkedMultiValueMap<String, String>()
-        map.add("note", "test note")
-
-        val httpEntity = HttpEntity(map, headers)
+        val httpEntity = jsonEntity(mapOf("note" to "test note"))
         val url = "/project/$projectId/note"
         return testRestTemplate.postForEntity(url, httpEntity)
     }
 
     private fun saveVersionNote(projectId: Int, versionId: String): ResponseEntity<String>
     {
-        val headers = HttpHeaders()
-        headers.contentType = MediaType.APPLICATION_FORM_URLENCODED
-
-        val map = LinkedMultiValueMap<String, String>()
-        map.add("note", "test note")
-
-        val httpEntity = HttpEntity(map, headers)
+        val httpEntity = jsonEntity(mapOf("note" to "test note"))
         val url = "/project/$projectId/version/$versionId/note"
         return testRestTemplate.postForEntity(url, httpEntity)
     }
 
     private fun getNewVersionResult(projectId: Int, versionId: String, language: String? = null): ResponseEntity<String>
     {
-        val headers = getStandardHeaders(language)
-        val httpEntity = HttpEntity(null, headers)
-        val url = "/project/$projectId/version/?parent=$versionId"
+        val httpEntity = jsonEntity(mapOf("parent" to versionId), language)
+        val url = "/project/$projectId/version"
         return testRestTemplate.postForEntity(url, httpEntity)
     }
 

@@ -47,13 +47,13 @@
       "name": "create project support's own",
       "request": {
         "body": {
-          "form": {
+          "json": {
             "name": "support's own",
             "note": "a note"
           }
         },
         "method": "POST",
-        "path": "/project/"
+        "path": "/project"
       },
       "response": {
         "body": {

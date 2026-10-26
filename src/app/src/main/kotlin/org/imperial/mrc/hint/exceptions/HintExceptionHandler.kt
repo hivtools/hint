@@ -74,7 +74,7 @@ class HintExceptionHandler(private val errorCodeGenerator: ErrorCodeGenerator,
     fun handleHintException(error: HintException, request: HttpServletRequest): ResponseEntity<Any>
     {
         logger.error(request, error)
-        return translatedError(error.key, error.httpStatus, request)
+        return translatedError(error.key, error.httpStatus, request, error.errorCode)
     }
 
     @ExceptionHandler(AdrException::class)
@@ -119,7 +119,12 @@ class HintExceptionHandler(private val errorCodeGenerator: ErrorCodeGenerator,
         return ErrorDetail(status, message, defaultError).toResponseEntity()
     }
 
-    private fun translatedError(key: String, status: HttpStatus, request: HttpServletRequest): ResponseEntity<Any>
+    private fun translatedError(
+        key: String,
+        status: HttpStatus,
+        request: HttpServletRequest,
+        errorCode: String = defaultError
+    ): ResponseEntity<Any>
     {
         val resourceBundle = getBundle(request)
         val message = if (resourceBundle.containsKey(key))
@@ -130,7 +135,7 @@ class HintExceptionHandler(private val errorCodeGenerator: ErrorCodeGenerator,
         {
             key
         }
-        return ErrorDetail(status, message).toResponseEntity()
+        return ErrorDetail(status, message, errorCode).toResponseEntity()
     }
 
     private fun unexpectedError(

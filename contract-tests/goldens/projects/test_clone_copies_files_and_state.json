@@ -88,13 +88,13 @@
       "name": "create project with files",
       "request": {
         "body": {
-          "form": {
+          "json": {
             "name": "with files",
             "note": "a note"
           }
         },
         "method": "POST",
-        "path": "/project/"
+        "path": "/project"
       },
       "response": {
         "body": {
@@ -206,8 +206,10 @@
       "name": "POST /project/<PROJECT:1>/clone",
       "request": {
         "body": {
-          "form": {
-            "emails": "naomi-support@imperial.ac.uk"
+          "json": {
+            "emails": [
+              "naomi-support@imperial.ac.uk"
+            ]
           }
         },
         "method": "POST",

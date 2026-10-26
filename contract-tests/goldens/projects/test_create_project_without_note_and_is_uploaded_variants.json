@@ -47,12 +47,12 @@
       "name": "create project no note",
       "request": {
         "body": {
-          "form": {
+          "json": {
             "name": "no note"
           }
         },
         "method": "POST",
-        "path": "/project/"
+        "path": "/project"
       },
       "response": {
         "body": {
@@ -88,14 +88,14 @@
       "name": "isUploaded=true",
       "request": {
         "body": {
-          "form": {
-            "isUploaded": "true",
+          "json": {
+            "isUploaded": true,
             "name": "uploaded",
             "note": "n"
           }
         },
         "method": "POST",
-        "path": "/project/"
+        "path": "/project"
       },
       "response": {
         "body": {
@@ -131,13 +131,13 @@
       "name": "isUploaded=false",
       "request": {
         "body": {
-          "form": {
-            "isUploaded": "false",
+          "json": {
+            "isUploaded": false,
             "name": "not uploaded"
           }
         },
         "method": "POST",
-        "path": "/project/"
+        "path": "/project"
       },
       "response": {
         "body": {

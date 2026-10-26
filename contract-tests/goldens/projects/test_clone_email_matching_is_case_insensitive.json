@@ -88,13 +88,13 @@
       "name": "create project shared",
       "request": {
         "body": {
-          "form": {
+          "json": {
             "name": "shared",
             "note": "a note"
           }
         },
         "method": "POST",
-        "path": "/project/"
+        "path": "/project"
       },
       "response": {
         "body": {
@@ -130,8 +130,10 @@
       "name": "POST /project/<PROJECT:1>/clone",
       "request": {
         "body": {
-          "form": {
-            "emails": "NAOMI-SUPPORT@IMPERIAL.AC.UK"
+          "json": {
+            "emails": [
+              "NAOMI-SUPPORT@IMPERIAL.AC.UK"
+            ]
           }
         },
         "method": "POST",

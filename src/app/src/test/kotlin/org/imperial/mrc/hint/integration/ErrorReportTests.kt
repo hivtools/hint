@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import org.assertj.core.api.Assertions
+import org.imperial.mrc.hint.helpers.getJsonEntity
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.web.client.getForEntity
@@ -12,7 +13,6 @@ import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
-import org.springframework.util.LinkedMultiValueMap
 
 class ErrorReportTests: SecureIntegrationTests()
 {
@@ -26,12 +26,7 @@ class ErrorReportTests: SecureIntegrationTests()
 
     private fun createProject(): ResponseEntity<String>
     {
-        val map = LinkedMultiValueMap<String, String>()
-        map.add("name", "testProject")
-        map.add("note", "notes")
-        val headers = HttpHeaders()
-        headers.contentType = MediaType.APPLICATION_FORM_URLENCODED
-        val httpEntity = HttpEntity(map, headers)
+        val httpEntity = getJsonEntity(mapOf("name" to "testProject", "note" to "notes"))
         return testRestTemplate.postForEntity("/project/", httpEntity)
     }
 

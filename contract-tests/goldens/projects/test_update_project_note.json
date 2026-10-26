@@ -47,13 +47,13 @@
       "name": "create project p",
       "request": {
         "body": {
-          "form": {
+          "json": {
             "name": "p",
             "note": "one"
           }
         },
         "method": "POST",
-        "path": "/project/"
+        "path": "/project"
       },
       "response": {
         "body": {
@@ -89,7 +89,7 @@
       "name": "update note",
       "request": {
         "body": {
-          "form": {
+          "json": {
             "note": "two"
           }
         },
@@ -115,7 +115,7 @@
       "name": "empty note",
       "request": {
         "body": {
-          "form": {
+          "json": {
             "note": ""
           }
         },

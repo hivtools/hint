@@ -47,13 +47,13 @@
       "name": "create project mine",
       "request": {
         "body": {
-          "form": {
+          "json": {
             "name": "mine",
             "note": "a note"
           }
         },
         "method": "POST",
-        "path": "/project/"
+        "path": "/project"
       },
       "response": {
         "body": {

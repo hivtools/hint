@@ -47,13 +47,13 @@
       "name": "create project p",
       "request": {
         "body": {
-          "form": {
+          "json": {
             "name": "p",
             "note": "a note"
           }
         },
         "method": "POST",
-        "path": "/project/"
+        "path": "/project"
       },
       "response": {
         "body": {
@@ -88,11 +88,13 @@
       "client": "A",
       "name": "version 2",
       "request": {
+        "body": {
+          "json": {
+            "parent": "<UUID:1>"
+          }
+        },
         "method": "POST",
-        "path": "/project/<PROJECT:1>/version/",
-        "query": {
-          "parent": "<UUID:1>"
-        }
+        "path": "/project/<PROJECT:1>/version"
       },
       "response": {
         "body": {
@@ -118,11 +120,13 @@
       "client": "A",
       "name": "version 3",
       "request": {
+        "body": {
+          "json": {
+            "parent": "<UUID:1>"
+          }
+        },
         "method": "POST",
-        "path": "/project/<PROJECT:1>/version/",
-        "query": {
-          "parent": "<UUID:1>"
-        }
+        "path": "/project/<PROJECT:1>/version"
       },
       "response": {
         "body": {
@@ -148,11 +152,13 @@
       "client": "A",
       "name": "version 4",
       "request": {
+        "body": {
+          "json": {
+            "parent": "<UUID:1>"
+          }
+        },
         "method": "POST",
-        "path": "/project/<PROJECT:1>/version/",
-        "query": {
-          "parent": "<UUID:1>"
-        }
+        "path": "/project/<PROJECT:1>/version"
       },
       "response": {
         "body": {
@@ -178,11 +184,13 @@
       "client": "A",
       "name": "version 5",
       "request": {
+        "body": {
+          "json": {
+            "parent": "<UUID:1>"
+          }
+        },
         "method": "POST",
-        "path": "/project/<PROJECT:1>/version/",
-        "query": {
-          "parent": "<UUID:1>"
-        }
+        "path": "/project/<PROJECT:1>/version"
       },
       "response": {
         "body": {
@@ -208,11 +216,13 @@
       "client": "A",
       "name": "version 6",
       "request": {
+        "body": {
+          "json": {
+            "parent": "<UUID:1>"
+          }
+        },
         "method": "POST",
-        "path": "/project/<PROJECT:1>/version/",
-        "query": {
-          "parent": "<UUID:1>"
-        }
+        "path": "/project/<PROJECT:1>/version"
       },
       "response": {
         "body": {
@@ -238,11 +248,13 @@
       "client": "A",
       "name": "version 7",
       "request": {
+        "body": {
+          "json": {
+            "parent": "<UUID:1>"
+          }
+        },
         "method": "POST",
-        "path": "/project/<PROJECT:1>/version/",
-        "query": {
-          "parent": "<UUID:1>"
-        }
+        "path": "/project/<PROJECT:1>/version"
       },
       "response": {
         "body": {
@@ -268,11 +280,13 @@
       "client": "A",
       "name": "version 8",
       "request": {
+        "body": {
+          "json": {
+            "parent": "<UUID:1>"
+          }
+        },
         "method": "POST",
-        "path": "/project/<PROJECT:1>/version/",
-        "query": {
-          "parent": "<UUID:1>"
-        }
+        "path": "/project/<PROJECT:1>/version"
       },
       "response": {
         "body": {
@@ -298,11 +312,13 @@
       "client": "A",
       "name": "version 9",
       "request": {
+        "body": {
+          "json": {
+            "parent": "<UUID:1>"
+          }
+        },
         "method": "POST",
-        "path": "/project/<PROJECT:1>/version/",
-        "query": {
-          "parent": "<UUID:1>"
-        }
+        "path": "/project/<PROJECT:1>/version"
       },
       "response": {
         "body": {
@@ -328,11 +344,13 @@
       "client": "A",
       "name": "version 10",
       "request": {
+        "body": {
+          "json": {
+            "parent": "<UUID:1>"
+          }
+        },
         "method": "POST",
-        "path": "/project/<PROJECT:1>/version/",
-        "query": {
-          "parent": "<UUID:1>"
-        }
+        "path": "/project/<PROJECT:1>/version"
       },
       "response": {
         "body": {
@@ -358,11 +376,13 @@
       "client": "A",
       "name": "version 11",
       "request": {
+        "body": {
+          "json": {
+            "parent": "<UUID:1>"
+          }
+        },
         "method": "POST",
-        "path": "/project/<PROJECT:1>/version/",
-        "query": {
-          "parent": "<UUID:1>"
-        }
+        "path": "/project/<PROJECT:1>/version"
       },
       "response": {
         "body": {
@@ -388,11 +408,13 @@
       "client": "A",
       "name": "version 12",
       "request": {
+        "body": {
+          "json": {
+            "parent": "<UUID:1>"
+          }
+        },
         "method": "POST",
-        "path": "/project/<PROJECT:1>/version/",
-        "query": {
-          "parent": "<UUID:1>"
-        }
+        "path": "/project/<PROJECT:1>/version"
       },
       "response": {
         "body": {
@@ -418,11 +440,13 @@
       "client": "A",
       "name": "version 13",
       "request": {
+        "body": {
+          "json": {
+            "parent": "<UUID:1>"
+          }
+        },
         "method": "POST",
-        "path": "/project/<PROJECT:1>/version/",
-        "query": {
-          "parent": "<UUID:1>"
-        }
+        "path": "/project/<PROJECT:1>/version"
       },
       "response": {
         "body": {

@@ -13,6 +13,7 @@ import {initialLoadState, LoadState} from "./store/load/state";
 import {load} from "./store/load/load";
 import {initialModelOutputState, modelOutput, ModelOutputState} from "./store/modelOutput/modelOutput";
 import {localStorageManager} from "./localStorageManager";
+import {sessionStorageManager} from "./sessionStorageManager";
 import {actions} from "./store/root/actions";
 import {mutations, RootMutation} from "./store/root/mutations";
 import {getters} from "./store/root/getters";
@@ -89,7 +90,7 @@ const persistState = (store: Store<RootState>): void => {
         // loaded project state. If a project load has been initiated, block any further
         // mutations from happening. This will be reset when the browser refreshes.
         if (!state.projects.loadingProject) {
-            localStorageManager.saveState(state);
+            sessionStorageManager.saveState(state);
 
             const {dispatch} = store;
             const type = stripNamespace(mutation.type);
@@ -181,7 +182,8 @@ export const emptyState = (): RootState => {
     }
 };
 
-const existingState = localStorageManager.getState();
+localStorageManager.removeLegacyState();
+const existingState = sessionStorageManager.getState();
 
 export const storeOptions: StoreOptions<RootState> = {
     state: {...emptyState(), ...existingState},

@@ -47,13 +47,13 @@
       "name": "create project P",
       "request": {
         "body": {
-          "form": {
+          "json": {
             "name": "P",
             "note": "pnote"
           }
         },
         "method": "POST",
-        "path": "/project/"
+        "path": "/project"
       },
       "response": {
         "body": {
@@ -117,13 +117,13 @@
       "name": "create project other",
       "request": {
         "body": {
-          "form": {
+          "json": {
             "name": "other",
             "note": "a note"
           }
         },
         "method": "POST",
-        "path": "/project/"
+        "path": "/project"
       },
       "response": {
         "body": {
@@ -368,8 +368,29 @@
         "body": {
           "json": {
             "data": {
-              "project": null,
-              "version": null
+              "project": {
+                "id": "<PROJECT:3>",
+                "name": "Harness project",
+                "note": null,
+                "sharedBy": null,
+                "uploaded": null,
+                "versions": [
+                  {
+                    "created": "<TIMESTAMP>",
+                    "id": "<UUID:3>",
+                    "note": null,
+                    "updated": "<TIMESTAMP>",
+                    "versionNumber": 1
+                  }
+                ]
+              },
+              "version": {
+                "created": "<TIMESTAMP>",
+                "id": "<UUID:3>",
+                "note": null,
+                "updated": "<TIMESTAMP>",
+                "versionNumber": 1
+              }
             },
             "errors": [],
             "status": "success"

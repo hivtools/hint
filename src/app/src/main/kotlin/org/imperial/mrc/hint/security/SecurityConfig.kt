@@ -1,6 +1,8 @@
 package org.imperial.mrc.hint.security
 
 import org.imperial.mrc.hint.db.UserRepository
+import org.imperial.mrc.hint.db.VersionRepository
+import org.imperial.mrc.hint.exceptions.InvalidVersionException
 import org.imperial.mrc.hint.logic.DbProfileServiceUserLogic.Companion.GUEST_USER
 import org.imperial.mrc.hint.security.github.GitHubAuthenticator
 import org.pac4j.core.config.Config
@@ -46,12 +48,15 @@ class Pac4jConfig
 class Session(
     private val webContext: WebContext,
     private val pac4jConfig: Config,
-    private val sessionStore: SessionStore)
+    private val sessionStore: SessionStore,
+    private val versionRepository: VersionRepository)
 {
 
     companion object
     {
+        const val VERSION_ID_HEADER = "X-Version-Id"
         private const val VERSION_ID = "version_id"
+        private const val GUEST_VERSION_IDS = "guest_version_ids"
         private const val ACCESS_TOKEN = "access_token"
     }
 
@@ -92,7 +97,27 @@ class Session(
         pac4jConfig.sessionStore.set(webContext, Pac4jConstants.REQUESTED_URL, url)
     }
 
+    /**
+     * The version this request works on. The X-Version-Id header names it, and the user must be allowed to use it.
+     * Without the header, the version stored in the session is used. That fallback is temporary, for browser tabs
+     * that were loaded before the header existed.
+     */
     fun getVersionId(): String
+    {
+        val requested = getRequestedVersionId() ?: return getSessionVersionId()
+        if (!canUseVersion(requested))
+        {
+            throw InvalidVersionException()
+        }
+        return requested
+    }
+
+    fun getRequestedVersionId(): String?
+    {
+        return webContext.getRequestHeader(VERSION_ID_HEADER).orElse(null)?.takeIf { it.isNotBlank() }
+    }
+
+    fun getSessionVersionId(): String
     {
         //Generate a new id if none exists
         var versionId = pac4jConfig.sessionStore.get(webContext, VERSION_ID).orElse(null)
@@ -103,6 +128,30 @@ class Session(
             setVersionId(versionId)
         }
         return versionId.toString()
+    }
+
+    private fun canUseVersion(versionId: String): Boolean
+    {
+        val userId = getUserProfile().id
+        return if (userId == GUEST_USER)
+        {
+            getGuestVersionIds().contains(versionId)
+        }
+        else
+        {
+            versionRepository.versionExists(versionId, userId)
+        }
+    }
+
+    fun addGuestVersionId(versionId: String)
+    {
+        sessionStore.set(webContext, GUEST_VERSION_IDS, ArrayList(getGuestVersionIds() + versionId))
+    }
+
+    private fun getGuestVersionIds(): List<String>
+    {
+        @Suppress("UNCHECKED_CAST")
+        return sessionStore.get(webContext, GUEST_VERSION_IDS).orElse(null) as List<String>? ?: listOf()
     }
 
     fun setVersionId(value: String?)

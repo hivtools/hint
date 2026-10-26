@@ -75,11 +75,11 @@ def test_original_filename_is_kept_in_the_response_and_db(scn):
 
 
 def test_same_file_is_shared_between_versions_and_survives_delete(scn):
-    a = login_and_open(scn)
+    a = login_and_open(scn, project=False)
     p = create_project(a, "p").data
     v1 = p["versions"][0]["id"]
     upload(a, "pjnz")
-    v2 = a.post(f"/project/{p['id']}/version/", params={"parent": v1}, name="v2 copies file refs").data["id"]
+    v2 = a.post(f"/project/{p['id']}/version", json={"parent": v1}, name="v2 copies file refs").data["id"]
     a.delete("/baseline/pjnz/", name="remove from v2")
     scn.db_rows("version_file")
     scn.db_rows("file")

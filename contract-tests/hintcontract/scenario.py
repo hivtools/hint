@@ -24,7 +24,7 @@ from .env import Env
 from .http import Client, Response
 from .normalize import Normalizer
 
-REQUEST_HEADERS = {"accept-language", "accept", "authorization", "accept-encoding"}
+REQUEST_HEADERS = {"accept-language", "accept", "authorization", "accept-encoding", "x-version-id"}
 RESPONSE_HEADERS = {"content-type", "location", "content-disposition", "content-encoding", "www-authenticate",
                     "allow"}
 
@@ -306,11 +306,26 @@ class Scenario:
         return out
 
 
+VERSION_HEADER = "X-Version-Id"
+
+
 class RecordedClient:
+    """One browser tab.
+
+    Like the Vue app it keeps the id of the project version it has open (`version_id`) and sends it in X-Version-Id with
+    every request. The header is not written to the goldens (like the cookie, it is part of the tab, not of the step).
+    A step records the header only when a test passes it itself, e.g. to try a version that is not the user's.
+    The id changes where the Vue app changes it: a project or version is created or opened, the current version is
+    deleted, the guest tab is given a version.
+    """
+
     def __init__(self, scn: Scenario, name: str, raw: Client):
         self.scn = scn
         self.name = name
         self.raw = raw
+        self.version_id: str | None = None
+        self.project_id: int | None = None
+        self.use_version_header = True      # False: a tab from before the header existed (temporary session fallback)
 
     # -- convenience verbs ------------------------------------------------------------------------------------
     def get(self, path, **kw): return self.request("GET", path, **kw)
@@ -349,8 +364,9 @@ class RecordedClient:
         if scn._quiet == 0 and (scn.proxy or scn.stub) and _prepared is None:
             scn.drain_outbound()
         if _prepared is None:
-            resp = self.raw.send(method, path, params=params, headers=hdrs, json=json, data=form, files=multipart,
-                                 content=raw_body)
+            resp = self.raw.send(method, path, params=params, headers=self._with_version(hdrs), json=json, data=form,
+                                 files=multipart, content=raw_body)
+            self._track_version(method, path, resp)
         else:
             resp = _prepared
         if bind_task and resp.status == 200:
@@ -391,7 +407,8 @@ class RecordedClient:
         deadline = time.time() + timeout
         n = 0
         while True:
-            resp = self.raw.send(method, path, headers=kw.get("headers"), params=kw.get("params"))
+            resp = self.raw.send(method, path, headers=self._with_version(dict(kw.get("headers") or {})),
+                                 params=kw.get("params"))
             n += 1
             if until(resp):
                 break
@@ -402,6 +419,51 @@ class RecordedClient:
         if self.scn.proxy or self.scn.stub:
             self.scn.drain_outbound()
         return self.request(method, path, _prepared=None, _poll={"until": until_desc}, **kw)
+
+    # -- the tab's version ---------------------------------------------------------------------------------------------
+    def _with_version(self, hdrs: dict) -> dict:
+        if self.use_version_header and self.version_id and not any(k.lower() == VERSION_HEADER.lower() for k in hdrs):
+            return {**hdrs, VERSION_HEADER: self.version_id}
+        return hdrs
+
+    def _track_version(self, method: str, path: str, resp: Response):
+        """Do what the Vue app does with the version it has open (see store/projects and store/root mutations)."""
+        parts = path.strip("/").split("/")
+        try:
+            data = resp.json().get("data") if resp.status == 200 and resp.content[:1] == b"{" else None
+        except ValueError:
+            data = None
+        if method == "POST" and parts == ["project"] and data:                       # SetProject
+            self._open(data["id"], data["versions"][0]["id"])
+        elif method == "POST" and len(parts) == 3 and parts[:1] == ["project"] and parts[2] == "version" and data:
+            self._open(int(parts[1]), data["id"])                                      # VersionCreated
+        elif method == "POST" and parts == ["guest", "version"] and data:            # the guest tab's own version
+            self._open(None, data["id"])
+        elif method == "GET" and parts == ["project", "current"] and data:           # SetCurrentProject
+            if data.get("version"):
+                self._open(data["project"]["id"], data["version"]["id"])
+            else:
+                self._open(None, None)
+        elif method == "GET" and len(parts) == 4 and parts[:1] == ["project"] and parts[2] == "version" and data:
+            self._open(int(parts[1]), parts[3])                                        # loadVersion saves it first
+        elif method == "DELETE" and resp.status == 200 and len(parts) == 4 and parts[:1] == ["project"] \
+                and parts[3] == self.version_id:
+            self._open(None, None)                                                     # ClearCurrentVersion
+        elif method == "DELETE" and resp.status == 200 and len(parts) == 2 and parts[:1] == ["project"] \
+                and parts[1] == str(self.project_id):
+            self._open(None, None)
+
+    def _open(self, project_id: int | None, version_id: str | None):
+        self.project_id = project_id
+        self.version_id = version_id
+
+    def start_project(self, name: str = "Project 1", **kw) -> Response:
+        """What a logged in user does first: create a project, which gives the tab its version."""
+        return self.post("/project", json={"name": name}, name=kw.pop("name_", f"create project {name}"), **kw)
+
+    def start_guest_version(self, **kw) -> Response:
+        """What a guest tab does when the app starts."""
+        return self.post("/guest/version", name=kw.pop("name", "guest version"), **kw)
 
     # -- helpers -----------------------------------------------------------------------------------------------------
     @staticmethod
@@ -443,6 +505,8 @@ class RecordedClient:
         rh = {k.lower(): v for k, v in hdrs.items() if k.lower() in REQUEST_HEADERS}
         if "authorization" in rh:
             rh["authorization"] = re.sub(r"^(Bearer|Basic) .*", r"\1 <TOKEN>", rh["authorization"])
+        if "x-version-id" in rh:
+            rh["x-version-id"] = norm.string(rh["x-version-id"])
         if rh:
             req["headers"] = rh
         body: dict[str, Any] | None = None

@@ -1,0 +1,176 @@
+{
+  "scenario": "version_header/test_a_guest_tab_is_given_its_own_version",
+  "steps": [
+    {
+      "client": "A",
+      "name": "open /",
+      "request": {
+        "method": "GET",
+        "path": "/"
+      },
+      "response": {
+        "body": {
+          "html": true,
+          "title": "Naomi"
+        },
+        "headers": {
+          "content-type": "text/html"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "the guest tab asks for a version",
+      "request": {
+        "method": "POST",
+        "path": "/guest/version"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {
+              "created": "<TIMESTAMP>",
+              "id": "<UUID:1>",
+              "note": null,
+              "updated": "<TIMESTAMP>",
+              "versionNumber": 1
+            },
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "upload pjnz",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "file": {
+              "filename": "Malawi2024.PJNZ",
+              "fromADR": false,
+              "hash": "46E4A725064B0E287F573A8F11389895.PJNZ",
+              "path": "<UPLOADS>/46E4A725064B0E287F573A8F11389895.PJNZ",
+              "resource_url": null
+            },
+            "type": "pjnz"
+          },
+          "method": "POST",
+          "path": "/validate/baseline-individual",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "multipart": {
+            "file": {
+              "filename": "Malawi2024.PJNZ",
+              "fixture": "Malawi2024.PJNZ",
+              "sha256": "49d688e8fe81c4d4dd49a081791e756bcdbbd1542587812bceea354bda02d3c1",
+              "size": 1721376
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/baseline/pjnz/"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "the guest tab has its file",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "file": {
+              "filename": "Malawi2024.PJNZ",
+              "fromADR": false,
+              "hash": "46E4A725064B0E287F573A8F11389895.PJNZ",
+              "path": "<UPLOADS>/46E4A725064B0E287F573A8F11389895.PJNZ",
+              "resource_url": null
+            },
+            "type": "pjnz"
+          },
+          "method": "POST",
+          "path": "/validate/baseline-individual",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/baseline/pjnz/"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "name": "db:project_version",
+      "rows": [
+        {
+          "deleted": false,
+          "has_state": false,
+          "id": "<UUID:2>",
+          "note": null,
+          "project_id": null,
+          "state": null,
+          "version_number": 1
+        },
+        {
+          "deleted": false,
+          "has_state": false,
+          "id": "<UUID:1>",
+          "note": null,
+          "project_id": null,
+          "state": null,
+          "version_number": 1
+        }
+      ],
+      "table": "project_version",
+      "type": "db"
+    },
+    {
+      "name": "db:version_file",
+      "rows": [
+        {
+          "filename": "Malawi2024.PJNZ",
+          "from_adr": false,
+          "hash": "46E4A725064B0E287F573A8F11389895.PJNZ",
+          "resource_url": null,
+          "type": "pjnz",
+          "version": "<UUID:1>"
+        }
+      ],
+      "table": "version_file",
+      "type": "db"
+    }
+  ]
+}

@@ -1,0 +1,151 @@
+{
+  "scenario": "version_header/test_a_guest_cannot_use_the_version_of_a_logged_in_user",
+  "steps": [
+    {
+      "client": "U",
+      "name": "login test.user@example.com",
+      "request": {
+        "body": {
+          "form": {
+            "password": "password",
+            "username": "test.user@example.com"
+          }
+        },
+        "method": "POST",
+        "path": "/callback/formClient"
+      },
+      "response": {
+        "body": {
+          "empty": true
+        },
+        "headers": {
+          "location": "/"
+        },
+        "status": 303
+      }
+    },
+    {
+      "client": "U",
+      "name": "open /",
+      "request": {
+        "method": "GET",
+        "path": "/"
+      },
+      "response": {
+        "body": {
+          "html": true,
+          "title": "Naomi"
+        },
+        "headers": {
+          "content-type": "text/html"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "U",
+      "name": "create project U's project",
+      "request": {
+        "body": {
+          "json": {
+            "name": "U's project",
+            "note": "a note"
+          }
+        },
+        "method": "POST",
+        "path": "/project"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {
+              "id": "<PROJECT:1>",
+              "name": "U's project",
+              "note": null,
+              "sharedBy": "",
+              "uploaded": null,
+              "versions": [
+                {
+                  "created": "<TIMESTAMP>",
+                  "id": "<UUID:1>",
+                  "note": null,
+                  "updated": "<TIMESTAMP>",
+                  "versionNumber": 1
+                }
+              ]
+            },
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "G",
+      "name": "open /",
+      "request": {
+        "method": "GET",
+        "path": "/"
+      },
+      "response": {
+        "body": {
+          "html": true,
+          "title": "Naomi"
+        },
+        "headers": {
+          "content-type": "text/html"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "G",
+      "name": "guest uses a project's version",
+      "request": {
+        "body": {
+          "multipart": {
+            "file": {
+              "filename": "Malawi2024.PJNZ",
+              "fixture": "Malawi2024.PJNZ",
+              "sha256": "49d688e8fe81c4d4dd49a081791e756bcdbbd1542587812bceea354bda02d3c1",
+              "size": 1721376
+            }
+          }
+        },
+        "headers": {
+          "x-version-id": "<UUID:1>"
+        },
+        "method": "POST",
+        "path": "/baseline/pjnz/"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "The version cannot be used by this user.",
+                "error": "INVALID_VERSION"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 403
+      }
+    },
+    {
+      "name": "db:version_file",
+      "rows": [],
+      "table": "version_file",
+      "type": "db"
+    }
+  ]
+}

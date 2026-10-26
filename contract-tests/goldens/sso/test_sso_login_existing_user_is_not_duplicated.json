@@ -83,13 +83,13 @@
       "name": "create project via sso",
       "request": {
         "body": {
-          "form": {
+          "json": {
             "name": "via sso",
             "note": "a note"
           }
         },
         "method": "POST",
-        "path": "/project/"
+        "path": "/project"
       },
       "response": {
         "body": {

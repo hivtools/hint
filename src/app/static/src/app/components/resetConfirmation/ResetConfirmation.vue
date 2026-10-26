@@ -110,7 +110,7 @@
                     this.continueEditing();
                 } else {
                     this.waitingForVersion = true;
-                    this.newVersion(encodeURIComponent(this.versionNote));
+                    this.newVersion(this.versionNote);
                 }
             },
             newVersion: mapActionByName("projects", "newVersion")

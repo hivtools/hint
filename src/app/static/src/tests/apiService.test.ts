@@ -2,6 +2,7 @@ import {api} from "../app/apiService";
 import {mockAxios, mockDownloadFailure, mockError, mockFailure, mockRootState, mockSuccess} from "./mocks";
 import {freezer} from '../app/utils';
 import {Mock} from "vitest";
+import {sessionStorageManager} from "../app/sessionStorageManager";
 
 const rootState = mockRootState();
 
@@ -11,6 +12,7 @@ describe("ApiService", () => {
         console.log = vi.fn();
         console.warn = vi.fn();
         mockAxios.reset();
+        sessionStorage.clear();
     });
 
     afterEach(() => {
@@ -125,6 +127,64 @@ describe("ApiService", () => {
 
         expect(committedType).toBe("TEST_TYPE");
         expect(committedPayload).toStrictEqual({error: "OTHER_ERROR", detail: null});
+    });
+
+    it("sends the version the tab is working on with every kind of request", async () => {
+        sessionStorageManager.saveVersionId("tab-version");
+        mockAxios.onGet("/thing").reply(200, mockSuccess(true));
+        mockAxios.onPost("/thing").reply(200, mockSuccess(true));
+        mockAxios.onDelete("/thing").reply(200, mockSuccess(true));
+
+        await api({commit: vi.fn(), rootState} as any).ignoreSuccess().ignoreErrors().get("/thing");
+        await api({commit: vi.fn(), rootState} as any).ignoreSuccess().ignoreErrors().postAndReturn("/thing", {a: 1});
+        await api({commit: vi.fn(), rootState} as any).ignoreSuccess().ignoreErrors().delete("/thing");
+
+        expect(mockAxios.history.get[0].headers!["X-Version-Id"]).toBe("tab-version");
+        expect(mockAxios.history.post[0].headers!["X-Version-Id"]).toBe("tab-version");
+        expect(mockAxios.history.delete[0].headers!["X-Version-Id"]).toBe("tab-version");
+        expect(mockAxios.history.delete[0].headers!["Accept-Language"]).toBe("en");
+    });
+
+    it("sends no version header if the tab has no version", async () => {
+        mockAxios.onGet("/thing").reply(200, mockSuccess(true));
+
+        await api({commit: vi.fn(), rootState} as any).ignoreSuccess().ignoreErrors().get("/thing");
+
+        expect(Object.keys(mockAxios.history.get[0].headers!)).not.toContain("X-Version-Id");
+    });
+
+    it("forgets the tab and starts again when the server says the version cannot be used", async () => {
+        sessionStorageManager.saveVersionId("tab-version");
+        sessionStorageManager.savePartialState({});
+        delete (window as any).location
+        window.location = {...window.location, assign: vi.fn()};
+        const commit = vi.fn();
+        mockAxios.onPost("/baseline/pjnz/").reply(403, {
+            status: "failure", data: {},
+            errors: [{error: "INVALID_VERSION", detail: "The version cannot be used by this user."}]
+        });
+
+        await api({commit, rootState} as any).ignoreSuccess().postAndReturn("/baseline/pjnz/", {});
+
+        expect(window.location.assign).toHaveBeenCalledWith("/");
+        expect(sessionStorageManager.getVersionId()).toBe(null);
+        expect(sessionStorageManager.getState()).toBe(null);
+        // no error is shown, as the page is about to reload
+        expect(commit).not.toHaveBeenCalled();
+    });
+
+    it("does not treat other 403 responses as a version error", async () => {
+        sessionStorageManager.saveVersionId("tab-version");
+        delete (window as any).location
+        window.location = {...window.location, assign: vi.fn()};
+        const commit = vi.fn();
+        mockAxios.onGet("/thing").reply(403, mockFailure("not allowed"));
+
+        await api({commit, rootState} as any).ignoreSuccess().withError("TestError" as any).get("/thing");
+
+        expect(window.location.assign).not.toHaveBeenCalled();
+        expect(sessionStorageManager.getVersionId()).toBe("tab-version");
+        expect(commit.mock.calls[0][0].type).toBe("TestError");
     });
 
     it("can redirect to login when 401 response is received", async () => {

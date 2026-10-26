@@ -6,7 +6,9 @@
 #                                                 stubs the tests use. Browse to http://127.0.0.1:8080
 #   scripts/dev.sh down                           stop and remove everything `up` started (containers, volumes)
 #   scripts/dev.sh restart-app                    rebuild and restart the Kotlin app after a code change
-#   scripts/dev.sh logs                           follow the Kotlin and docker logs
+#   scripts/dev.sh logs [name]                    follow the logs. Without a name: the Kotlin app, the stubs and all the
+#                                                 containers. With one: kotlin (or app), kotlin-sso, stubs, or a
+#                                                 container (db, redis, hintr, python, proxy, ...)
 #   scripts/dev.sh deps                           only postgres, redis and hintr (run Kotlin yourself, e.g. in the IDE)
 #   scripts/dev.sh test [pytest args]             run the contract tests (starts the stack first if needed)
 #                                                 e.g. test --record, test -k projects, test -x, test --run-slow
@@ -209,6 +211,31 @@ do_restart_app() {
   wait_http "the Kotlin app" "http://127.0.0.1:$(app_port)/sso" 180
 }
 
+# ---- logs. Background tails ignore Ctrl+C, so they are stopped when the script ends
+do_logs() { # $1 = nothing, kotlin (app), kotlin-sso, stubs, or the name of a container
+  trap 'kill $(jobs -p) 2>/dev/null || true' EXIT
+  case "${1:-}" in
+    "")
+      for f in app stubs; do
+        if [ -f "$STATE/$f.log" ]; then tail -n 20 -F "$STATE/$f.log" & fi
+      done
+      compose --profile proxy logs -f
+      ;;
+    kotlin|app)  tail -n 50 -F "$STATE/app.log" ;;
+    kotlin-sso)  tail -n 50 -F "$STATE/app-sso.log" ;;
+    stubs)       tail -n 50 -F "$STATE/stubs.log" ;;
+    *)
+      local services
+      services=$(compose --profile proxy config --services)
+      if ! grep -qx "$1" <<<"$services"; then
+        echo "unknown log '$1'. Use kotlin, kotlin-sso, stubs or one of: $(echo $services | tr '\n' ' ')" >&2
+        exit 2
+      fi
+      compose --profile proxy logs -f --tail 50 "$1"
+      ;;
+  esac
+}
+
 # ---- the tests
 ensure_sso_app() {
   start_app app-sso "$SSO_PORT" "http://127.0.0.1:$SSO_PORT" true
@@ -266,10 +293,7 @@ case "${1:-}" in
     do_restart_app
     ;;
   logs)
-    for f in app stubs; do
-      if [ -f "$STATE/$f.log" ]; then tail -n 20 -F "$STATE/$f.log" & fi
-    done
-    compose --profile proxy logs -f
+    do_logs "${2:-}"
     ;;
   deps)
     mkdir -p "$APP_DIR/$UPLOADS_NAME" "$APP_DIR/$RESULTS_NAME"

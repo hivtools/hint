@@ -47,13 +47,13 @@
       "name": "create project P",
       "request": {
         "body": {
-          "form": {
+          "json": {
             "name": "P",
             "note": "pnote"
           }
         },
         "method": "POST",
-        "path": "/project/"
+        "path": "/project"
       },
       "response": {
         "body": {
@@ -317,7 +317,7 @@
           "hash": "46E4A725064B0E287F573A8F11389895.PJNZ",
           "resource_url": null,
           "type": "pjnz",
-          "version": "<UUID:2>"
+          "version": "<UUID:1>"
         },
         {
           "filename": "Malawi2024.PJNZ",
@@ -325,7 +325,7 @@
           "hash": "46E4A725064B0E287F573A8F11389895.PJNZ",
           "resource_url": null,
           "type": "pjnz",
-          "version": "<UUID:1>"
+          "version": "<UUID:2>"
         }
       ],
       "table": "version_file",
