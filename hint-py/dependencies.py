@@ -4,6 +4,7 @@ Authentication still lives in the Kotlin app. The nginx proxy in front of both a
 passes the answer on in headers (see proxy/snippets/python.conf), so this API only ever reads headers. When login and
 sessions move to Python, only `current_user` needs to change.
 """
+
 from dataclasses import dataclass
 from typing import Annotated
 
