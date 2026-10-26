@@ -47,13 +47,13 @@
       "name": "create project p",
       "request": {
         "body": {
-          "form": {
+          "json": {
             "name": "p",
             "note": "a note"
           }
         },
         "method": "POST",
-        "path": "/project/"
+        "path": "/project"
       },
       "response": {
         "body": {
@@ -88,11 +88,13 @@
       "client": "A",
       "name": "second version",
       "request": {
+        "body": {
+          "json": {
+            "parent": "<UUID:1>"
+          }
+        },
         "method": "POST",
-        "path": "/project/<PROJECT:1>/version/",
-        "query": {
-          "parent": "<UUID:1>"
-        }
+        "path": "/project/<PROJECT:1>/version"
       },
       "response": {
         "body": {

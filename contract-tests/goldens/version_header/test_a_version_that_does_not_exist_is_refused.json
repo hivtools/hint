@@ -1,0 +1,180 @@
+{
+  "scenario": "version_header/test_a_version_that_does_not_exist_is_refused",
+  "steps": [
+    {
+      "client": "A",
+      "name": "login test.user@example.com",
+      "request": {
+        "body": {
+          "form": {
+            "password": "password",
+            "username": "test.user@example.com"
+          }
+        },
+        "method": "POST",
+        "path": "/callback/formClient"
+      },
+      "response": {
+        "body": {
+          "empty": true
+        },
+        "headers": {
+          "location": "/"
+        },
+        "status": 303
+      }
+    },
+    {
+      "client": "A",
+      "name": "open /",
+      "request": {
+        "method": "GET",
+        "path": "/"
+      },
+      "response": {
+        "body": {
+          "html": true,
+          "title": "Naomi"
+        },
+        "headers": {
+          "content-type": "text/html"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "upload",
+      "request": {
+        "body": {
+          "multipart": {
+            "file": {
+              "filename": "Malawi2024.PJNZ",
+              "fixture": "Malawi2024.PJNZ",
+              "sha256": "49d688e8fe81c4d4dd49a081791e756bcdbbd1542587812bceea354bda02d3c1",
+              "size": 1721376
+            }
+          }
+        },
+        "headers": {
+          "x-version-id": "nonexistent"
+        },
+        "method": "POST",
+        "path": "/baseline/pjnz/"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "The version cannot be used by this user.",
+                "error": "INVALID_VERSION"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 403
+      }
+    },
+    {
+      "client": "A",
+      "name": "read",
+      "request": {
+        "headers": {
+          "x-version-id": "nonexistent"
+        },
+        "method": "GET",
+        "path": "/baseline/pjnz/"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "The version cannot be used by this user.",
+                "error": "INVALID_VERSION"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 403
+      }
+    },
+    {
+      "client": "A",
+      "name": "read in fr",
+      "request": {
+        "headers": {
+          "accept-language": "fr",
+          "x-version-id": "nonexistent"
+        },
+        "method": "GET",
+        "path": "/baseline/pjnz/"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "Cet utilisateur ne peut pas utiliser cette version.",
+                "error": "INVALID_VERSION"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 403
+      }
+    },
+    {
+      "client": "A",
+      "name": "read in pt",
+      "request": {
+        "headers": {
+          "accept-language": "pt",
+          "x-version-id": "nonexistent"
+        },
+        "method": "GET",
+        "path": "/baseline/pjnz/"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "Este utilizador não pode usar esta versão.",
+                "error": "INVALID_VERSION"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 403
+      }
+    },
+    {
+      "name": "db:version_file",
+      "rows": [],
+      "table": "version_file",
+      "type": "db"
+    }
+  ]
+}

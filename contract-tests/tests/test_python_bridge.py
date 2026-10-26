@@ -39,29 +39,20 @@ def test_python_sees_the_logged_in_user(client):
     assert body["is_guest"] is False
 
 
-def test_session_cookie_from_first_visit_reaches_the_browser_and_keeps_version_id(client):
+def test_whoami_does_not_start_a_kotlin_session(client):
     first = client.send("GET", "/items/whoami", send_cookies=False)
-    assert any(c.startswith("JSESSIONID=") for c in first.set_cookie)
-    client.cookies["JSESSIONID"] = next(c.split(";")[0].split("=", 1)[1] for c in first.set_cookie
-                                        if c.startswith("JSESSIONID="))
-    again = client.send("GET", "/items/whoami").json()
-    assert again["version_id"] == first.json()["version_id"]
+    assert not any(c.startswith("JSESSIONID=") for c in first.set_cookie)
 
 
-@pytest.mark.needs_db
-def test_python_shares_the_session_version_id_with_kotlin(client, db):
-    login(client)
-    from_python = client.send("GET", "/items/whoami").json()["version_id"]
-    # Kotlin keeps the same id in the session, so a Kotlin page load creates the version row for it
-    client.send("GET", "/")
-    assert [r["id"] for r in db.execute("select id from project_version where id = %s", (from_python,))] == [from_python]
+def test_python_reads_the_version_the_tab_sends(client):
+    r = client.send("GET", "/items/whoami", headers={"X-Version-Id": "some-version"}, send_cookies=False)
+    assert r.json()["version_id"] == "some-version"
+    assert client.send("GET", "/items/whoami", send_cookies=False).json()["version_id"] is None
 
 
 def test_client_cannot_spoof_the_identity_headers(client):
-    r = client.send("GET", "/items/whoami", headers={"X-Hint-User": "admin", "X-Hint-Version-Id": "forged"},
-                    send_cookies=False)
+    r = client.send("GET", "/items/whoami", headers={"X-Hint-User": "admin"}, send_cookies=False)
     assert r.json()["user"] == "guest"
-    assert r.json()["version_id"] != "forged"
 
 
 def test_internal_endpoints_are_not_public(client):

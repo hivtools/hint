@@ -24,24 +24,24 @@ def report(email=TEST_USER, project_id=None, **kw):
 
 
 def test_report_with_project_clones_it_to_support_user(scn):
-    a = login_and_open(scn)
+    a = login_and_open(scn, project=False)
     p = create_project(a, "South 2 Worldpop").data
     r = a.post("/error-report", json=report(project_id=p["id"]), name="report with project")
     assert r.status == 200
-    support = login_and_open(scn, "S", user=SUPPORT_USER)
+    support = login_and_open(scn, "S", user=SUPPORT_USER, project=False)
     support.get("/projects/", name="support user received a copy")
     scn.db_rows("project")
     scn.db_rows("project_version")
 
 
 def test_report_without_project_id(scn):
-    a = login_and_open(scn)
+    a = login_and_open(scn, project=False)
     a.post("/error-report", json=report(project_id=None), name="no project")
     scn.db_rows("project")
 
 
 def test_report_by_the_support_user_does_not_clone(scn):
-    s = login_and_open(scn, "S", user=SUPPORT_USER)
+    s = login_and_open(scn, "S", user=SUPPORT_USER, project=False)
     p = create_project(s, "support's own").data
     s.post("/error-report", json=report(email=SUPPORT_USER, project_id=p["id"]), name="support user reports")
     s.get("/projects/", name="still one project")
@@ -56,7 +56,7 @@ def test_report_as_guest(scn):
 
 def test_report_email_comes_from_the_body_not_the_session(scn):
     """The cloned project is the session user's, the 'is support' check uses the email in the body."""
-    a = login_and_open(scn)
+    a = login_and_open(scn, project=False)
     p = create_project(a, "mine").data
     a.post("/error-report", json=report(email=SUPPORT_USER, project_id=p["id"]), name="body claims to be the support user")
     scn.db_rows("project")
@@ -65,8 +65,8 @@ def test_report_email_comes_from_the_body_not_the_session(scn):
 
 
 def test_report_for_unknown_or_foreign_project(scn):
-    a = login_and_open(scn, "A")
-    b = login_and_open(scn, "B", user=SUPPORT_USER)
+    a = login_and_open(scn, "A", project=False)
+    b = login_and_open(scn, "B", user=SUPPORT_USER, project=False)
     p = create_project(b, "bees").data
     a.post("/error-report", json=report(project_id=999), name="unknown project id")
     a.post("/error-report", json=report(project_id=p["id"]), name="someone else's project id")
@@ -75,7 +75,7 @@ def test_report_for_unknown_or_foreign_project(scn):
 
 @pytest.mark.needs_db
 def test_report_when_support_user_does_not_exist(scn):
-    a = login_and_open(scn)
+    a = login_and_open(scn, project=False)
     p = create_project(a, "p").data
     if scn.db:
         scn.db.execute("delete from users where id = %s", (SUPPORT_USER,))
@@ -84,7 +84,7 @@ def test_report_when_support_user_does_not_exist(scn):
 
 
 def test_report_when_notification_fails(scn):
-    a = login_and_open(scn)
+    a = login_and_open(scn, project=False)
     p = create_project(a, "p").data
     for label, action in {
         "flow answers 500": {"type": "status", "status": 500, "json": {"statusCode": 500, "description": "Internal Server Error"}},
@@ -99,7 +99,7 @@ def test_report_when_notification_fails(scn):
 
 
 def test_report_bad_requests(scn):
-    a = login_and_open(scn)
+    a = login_and_open(scn, project=False)
     a.post("/error-report", name="no body")
     a.post("/error-report", json={}, name="empty object")
     a.post("/error-report", json={"email": TEST_USER}, name="most fields missing")

@@ -17,6 +17,7 @@ markers = [
     "quirk: records current (possibly surprising) behaviour of the Kotlin app as-is",
     "slow: takes more than ~30s (opt in with --run-slow)",
     "sso: needs the SUT started in SSO mode (oauth2_login_method=true), see README",
+    "legacy_session: the temporary fallback, a request without X-Version-Id uses the version in the session (the port does not need it)",
     "needs_db: observes Postgres side effects (needs --db-url)",
     "needs_uploads: observes the uploads directory (needs --uploads-dir)",
     "faulting: uses the fault-injection proxy",

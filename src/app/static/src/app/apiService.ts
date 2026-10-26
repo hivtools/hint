@@ -5,6 +5,7 @@ import {freezer, isHINTResponse, readStream} from "./utils";
 import {Error, Response} from "./generated";
 import i18next from "i18next";
 import {GenericResponse, TranslatableState} from "./types";
+import {sessionStorageManager} from "./sessionStorageManager";
 
 declare let appUrl: string;
 
@@ -34,6 +35,10 @@ export class APIService<S extends string, E extends string> implements API<S, E>
     constructor(context: APIContext) {
         this._commit = context.commit;
         this._headers = {"Accept-Language": context.rootState.language};
+        const versionId = sessionStorageManager.getVersionId();
+        if (versionId) {
+            this._headers["X-Version-Id"] = versionId;
+        }
     }
 
     // appUrl will be set as a jest global during testing
@@ -111,6 +116,9 @@ export class APIService<S extends string, E extends string> implements API<S, E>
 
     private _handleError = (e: AxiosError) => {
         console.log(e.response && e.response.data || e);
+        if (this._handleInvalidVersionError(e)) {
+            return
+        }
         if (this._ignoreErrors) {
             return
         }
@@ -159,6 +167,17 @@ export class APIService<S extends string, E extends string> implements API<S, E>
         } else {
             this._handleCommitError(response)
         }
+    }
+
+    // The tab's version is not one the user can use, e.g. a guest whose session has ended. Start again with nothing open
+    private _handleInvalidVersionError = (e: AxiosError): boolean => {
+        const errors = e.response && e.response.status == 403 && (e.response.data as any)?.errors;
+        if (errors && errors.length > 0 && errors[0].error == "INVALID_VERSION") {
+            sessionStorageManager.clear();
+            window.location.assign("/");
+            return true;
+        }
+        return false;
     }
 
     private _handle401Error = (e: AxiosError) => {
@@ -211,7 +230,7 @@ export class APIService<S extends string, E extends string> implements API<S, E>
 
     async delete(url: string) {
         const fullUrl = this._buildFullUrl(url);
-        return this._handleAxiosResponse(axios.delete(fullUrl));
+        return this._handleAxiosResponse(axios.delete(fullUrl, {headers: this._headers}));
     }
 
 }

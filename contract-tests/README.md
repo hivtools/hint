@@ -99,6 +99,15 @@ is set where the golden says `session_cookie: set`, and that sessions are isolat
 * **Scenario** (`hintcontract/scenario.py`): a pytest test using the `scn` fixture. `scn.client("A")` / `scn.client("B")`
   are independent clients with their own cookie jar (cookies are handled by hand: the Kotlin session cookie is
   `Secure` over plain http and its name is implementation specific). Every request becomes a *step*.
+* **Tabs and versions** (`RecordedClient`): a client is one browser tab. Like the Vue app it keeps the id of the project
+  version it has open and sends it as `X-Version-Id` with every request. The id changes where the Vue app changes it: a
+  project or version is created or opened, the current version is deleted, a guest tab is given a version
+  (`POST /guest/version`). The header is not written to the goldens (it is ambient, like the cookie). A step records
+  it only when the test passes it itself, e.g. to try a version that is not the user's. `login_and_open` also starts a
+  project quietly, as a real tab always has one before it works on files (`project=False` when the test is about
+  projects), and `guest_open` asks for the guest version. `tests/test_version_header.py` is about the header itself.
+  Tests marked `legacy_session` use the temporary fallback (a request with no header uses the version stored in the
+  session): the port does not need them, run `pytest -m "not legacy_session"` for the port.
 * **Reset between scenarios** (`prepare()`): truncate all data tables with `restart identity cascade`, restore the seeded
   `users` rows from `.dev/users_seed.json`, empty the uploads and emails dirs, reset proxy/stub state and faults.
   Project ids are therefore deterministic and tests are order independent. (The expensive mock-model pipeline is the one

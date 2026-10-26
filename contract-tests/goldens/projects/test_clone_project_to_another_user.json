@@ -88,13 +88,13 @@
       "name": "create project shared",
       "request": {
         "body": {
-          "form": {
+          "json": {
             "name": "shared",
             "note": "note"
           }
         },
         "method": "POST",
-        "path": "/project/"
+        "path": "/project"
       },
       "response": {
         "body": {
@@ -129,12 +129,14 @@
       "client": "A",
       "name": "v2",
       "request": {
+        "body": {
+          "json": {
+            "note": "v2",
+            "parent": "<UUID:1>"
+          }
+        },
         "method": "POST",
-        "path": "/project/<PROJECT:1>/version/",
-        "query": {
-          "note": "v2",
-          "parent": "<UUID:1>"
-        }
+        "path": "/project/<PROJECT:1>/version"
       },
       "response": {
         "body": {
@@ -161,8 +163,10 @@
       "name": "clone to B",
       "request": {
         "body": {
-          "form": {
-            "emails": "naomi-support@imperial.ac.uk"
+          "json": {
+            "emails": [
+              "naomi-support@imperial.ac.uk"
+            ]
           }
         },
         "method": "POST",

@@ -19,10 +19,10 @@ def client():
 
 
 def test_guest_is_rejected(client):
-    r = client.get("/private", headers={"X-Hint-User": "guest", "X-Hint-Version-Id": "v1"})
+    r = client.get("/private", headers={"X-Hint-User": "guest"})
     assert r.status_code == 401
 
 
 def test_logged_in_user_is_allowed(client):
-    r = client.get("/private", headers={"X-Hint-User": "a@b.com", "X-Hint-Version-Id": "v1"})
+    r = client.get("/private", headers={"X-Hint-User": "a@b.com"})
     assert r.json() == {"user": "a@b.com"}

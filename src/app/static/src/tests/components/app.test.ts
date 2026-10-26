@@ -1,7 +1,7 @@
-import {mount, shallowMount} from '@vue/test-utils';
+import {flushPromises, mount, shallowMount} from '@vue/test-utils';
 import Vuex, {Store} from 'vuex';
 import {ReadyState, RootState, storeOptions} from "../../app/root";
-import {localStorageManager} from "../../app/localStorageManager";
+import {sessionStorageManager} from "../../app/sessionStorageManager";
 import {prefixNamespace} from "../../app/utils";
 import {BaselineMutation} from "../../app/store/baseline/mutations";
 import {SurveyAndProgramMutation} from "../../app/store/surveyAndProgram/mutations";
@@ -28,7 +28,8 @@ const adrActions = {
 };
 
 const projectsActions = {
-    getCurrentProject: vi.fn()
+    getCurrentProject: vi.fn(),
+    ensureGuestVersion: vi.fn()
 };
 
 storeOptions.modules!!.baseline!!.actions = baselineActions;
@@ -97,6 +98,31 @@ describe("App", () => {
         expect(projectsActions.getCurrentProject).toHaveBeenCalled();
     });
 
+    it("makes sure a guest tab has a version before loading input data", async () => {
+        const calls: string[] = [];
+        let finishGuestVersion = () => {};
+        projectsActions.ensureGuestVersion.mockImplementationOnce(() => {
+            calls.push("ensureGuestVersion");
+            return new Promise<void>((resolve) => finishGuestVersion = resolve);
+        });
+        baselineActions.getBaselineData.mockImplementationOnce(() => {
+            calls.push("getBaselineData");
+        });
+
+        const store = getStore();
+        mount(Hint, {
+            global: {
+                plugins: [store]
+            }
+        });
+        await nextTick();
+        expect(calls).toStrictEqual(["ensureGuestVersion"]);
+
+        finishGuestVersion();
+        await flushPromises();
+        expect(calls).toStrictEqual(["ensureGuestVersion", "getBaselineData"]);
+    });
+
     it("gets language from state", () => {
         const store = getStore();
         const rendered = shallowMount(Hint, {
@@ -127,22 +153,22 @@ describe("App", () => {
         expect(document.documentElement.lang).toBe("pt");
     });
 
-    it("updates local storage on every mutation", () => {
+    it("updates session storage on every mutation", () => {
         const store = getStore();
-        const spy = vi.spyOn(localStorageManager, "saveState");
+        const spy = vi.spyOn(sessionStorageManager, "saveState");
         store.commit(prefixNamespace("baseline", BaselineMutation.PopulationUploadError), {payload: "test"});
 
         expect(spy).toHaveBeenCalled();
     });
 
-    it("updates language in local storage on every mutation", () => {
+    it("updates language in session storage on every mutation", () => {
         const store = getStore();
-        const spy = vi.spyOn(localStorageManager, "saveState");
+        const spy = vi.spyOn(sessionStorageManager, "saveState");
         store.commit(LanguageMutation.ChangeLanguage, {payload: Language.pt});
 
         expect(spy).toHaveBeenCalled();
         expect(spy.mock.calls[0][0]?.language).toBe("pt");
-        expect(localStorageManager.getState()?.language).toEqual("pt")
+        expect(sessionStorageManager.getState()?.language).toEqual("pt")
     });
 
     it("resets model options if baseline selected dataset is updated and state is ready", () => {

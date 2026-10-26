@@ -51,8 +51,11 @@ type Computed = {
         ...mapActions({loadModelCalibrate: 'modelCalibrate/getResult'}),
         ...mapActions({getADRSchemas: 'adr/getSchemas'}),
         ...mapActions({getCurrentProject: 'projects/getCurrentProject'}),
+        ...mapActions({ensureGuestVersion: 'projects/ensureGuestVersion'}),
         },
-        beforeMount: function () {
+        beforeMount: async function () {
+            // Everything that follows needs the version this tab works on. Only a guest has to wait to be given one.
+            await this.ensureGuestVersion();
             this.loadBaseline();
         },
         watch: {

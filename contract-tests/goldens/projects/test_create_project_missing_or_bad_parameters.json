@@ -44,10 +44,10 @@
     },
     {
       "client": "A",
-      "name": "no name",
+      "name": "no body",
       "request": {
         "method": "POST",
-        "path": "/project/"
+        "path": "/project"
       },
       "response": {
         "body": {
@@ -55,7 +55,36 @@
             "data": {},
             "errors": [
               {
-                "detail": "An unexpected error occurred. If you see this message while you are using Naomi at a workshop, please contact your workshop technical support and show them this code: <ERROR_CODE>. Otherwise please contact support at naomi-support@imperial.ac.uk and quote this code: <ERROR_CODE>. Required request parameter 'name' for method parameter type String is not present",
+                "detail": "An unexpected error occurred. If you see this message while you are using Naomi at a workshop, please contact your workshop technical support and show them this code: <ERROR_CODE>. Otherwise please contact support at naomi-support@imperial.ac.uk and quote this code: <ERROR_CODE>. Required request body is missing: public org.springframework.http.ResponseEntity<java.lang.String> org.imperial.mrc.hint.controllers.ProjectsController.newProject(org.imperial.mrc.hint.models.NewProjectRequest)",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "client": "A",
+      "name": "no name",
+      "request": {
+        "body": {
+          "json": {}
+        },
+        "method": "POST",
+        "path": "/project"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "An unexpected error occurred. If you see this message while you are using Naomi at a workshop, please contact your workshop technical support and show them this code: <ERROR_CODE>. Otherwise please contact support at naomi-support@imperial.ac.uk and quote this code: <ERROR_CODE>. JSON parse error: Instantiation of [simple type, class org.imperial.mrc.hint.models.NewProjectRequest] value failed for JSON property name due to missing (therefore NULL) value for creator parameter name which is a non-nullable type; nested exception is com.fasterxml.jackson.module.kotlin.MissingKotlinParameterException: Instantiation of [simple type, class org.imperial.mrc.hint.models.NewProjectRequest] value failed for JSON property name due to missing (therefore NULL) value for creator parameter name which is a non-nullable type\n at [Source: (org.springframework.util.StreamUtils$NonClosingInputStream); line: 1, column: 2] (through reference chain: org.imperial.mrc.hint.models.NewProjectRequest[\"name\"])",
                 "error": "OTHER_ERROR"
               }
             ],
@@ -73,13 +102,13 @@
       "name": "isUploaded not a boolean",
       "request": {
         "body": {
-          "form": {
+          "json": {
             "isUploaded": "maybe",
             "name": "x"
           }
         },
         "method": "POST",
-        "path": "/project/"
+        "path": "/project"
       },
       "response": {
         "body": {
@@ -87,7 +116,7 @@
             "data": {},
             "errors": [
               {
-                "detail": "An unexpected error occurred. If you see this message while you are using Naomi at a workshop, please contact your workshop technical support and show them this code: <ERROR_CODE>. Otherwise please contact support at naomi-support@imperial.ac.uk and quote this code: <ERROR_CODE>. Failed to convert value of type 'java.lang.String' to required type 'java.lang.Boolean'; nested exception is java.lang.IllegalArgumentException: Invalid boolean value [maybe]",
+                "detail": "An unexpected error occurred. If you see this message while you are using Naomi at a workshop, please contact your workshop technical support and show them this code: <ERROR_CODE>. Otherwise please contact support at naomi-support@imperial.ac.uk and quote this code: <ERROR_CODE>. JSON parse error: Cannot deserialize value of type `java.lang.Boolean` from String \"maybe\": only \"true\" or \"false\" recognized; nested exception is com.fasterxml.jackson.databind.exc.InvalidFormatException: Cannot deserialize value of type `java.lang.Boolean` from String \"maybe\": only \"true\" or \"false\" recognized\n at [Source: (org.springframework.util.StreamUtils$NonClosingInputStream); line: 1, column: 26] (through reference chain: org.imperial.mrc.hint.models.NewProjectRequest[\"isUploaded\"])",
                 "error": "OTHER_ERROR"
               }
             ],
@@ -102,15 +131,13 @@
     },
     {
       "client": "A",
-      "name": "json body is not accepted as parameters",
+      "name": "parameters in the query string are ignored",
       "request": {
-        "body": {
-          "json": {
-            "name": "json body"
-          }
-        },
         "method": "POST",
-        "path": "/project/"
+        "path": "/project",
+        "query": {
+          "name": "from query"
+        }
       },
       "response": {
         "body": {
@@ -118,7 +145,7 @@
             "data": {},
             "errors": [
               {
-                "detail": "An unexpected error occurred. If you see this message while you are using Naomi at a workshop, please contact your workshop technical support and show them this code: <ERROR_CODE>. Otherwise please contact support at naomi-support@imperial.ac.uk and quote this code: <ERROR_CODE>. Required request parameter 'name' for method parameter type String is not present",
+                "detail": "An unexpected error occurred. If you see this message while you are using Naomi at a workshop, please contact your workshop technical support and show them this code: <ERROR_CODE>. Otherwise please contact support at naomi-support@imperial.ac.uk and quote this code: <ERROR_CODE>. Required request body is missing: public org.springframework.http.ResponseEntity<java.lang.String> org.imperial.mrc.hint.controllers.ProjectsController.newProject(org.imperial.mrc.hint.models.NewProjectRequest)",
                 "error": "OTHER_ERROR"
               }
             ],
@@ -129,6 +156,37 @@
           "content-type": "application/json"
         },
         "status": 400
+      }
+    },
+    {
+      "client": "A",
+      "name": "form body is not accepted",
+      "request": {
+        "body": {
+          "form": {
+            "name": "form body"
+          }
+        },
+        "method": "POST",
+        "path": "/project"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "An unexpected error occurred. If you see this message while you are using Naomi at a workshop, please contact your workshop technical support and show them this code: <ERROR_CODE>. Otherwise please contact support at naomi-support@imperial.ac.uk and quote this code: <ERROR_CODE>. Content type 'application/x-www-form-urlencoded;charset=UTF-8' not supported",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 415
       }
     },
     {
@@ -136,12 +194,12 @@
       "name": "empty name is accepted",
       "request": {
         "body": {
-          "form": {
+          "json": {
             "name": ""
           }
         },
         "method": "POST",
-        "path": "/project/"
+        "path": "/project"
       },
       "response": {
         "body": {

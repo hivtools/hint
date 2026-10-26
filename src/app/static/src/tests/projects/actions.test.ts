@@ -4,13 +4,14 @@ import {ProjectsMutations} from "../../app/store/projects/mutations";
 import {RootMutation} from "../../app/store/root/mutations";
 import {ErrorsMutation} from "../../app/store/errors/mutations";
 import {Project} from "../../app/types";
-import {serialiseState} from "../../app/localStorageManager";
+import {serialiseState, sessionStorageManager} from "../../app/sessionStorageManager";
 import {Mock} from "vitest";
 import {flushPromises} from "@vue/test-utils";
 
 describe("Projects actions", () => {
     beforeEach(() => {
         mockAxios.reset();
+        sessionStorage.clear();
         // stop apiService logging to console
         console.log = vi.fn();
         console.info = vi.fn();
@@ -42,7 +43,8 @@ describe("Projects actions", () => {
         mockAxios.onPost(`/project/123/clone`)
             .reply(200, mockSuccess(null));
 
-        await actions.cloneProject({rootState, commit} as any, {projectId: 123, emails: []});
+        await actions.cloneProject({rootState, commit} as any, {projectId: 123, emails: ["a@b.com", "c@d.com"]});
+        expect(JSON.parse(mockAxios.history.post[0].data)).toEqual({emails: ["a@b.com", "c@d.com"]});
         expect(commit.mock.calls[1][0]).toEqual({
             type: ProjectsMutations.CloningProject,
             payload: null
@@ -86,7 +88,7 @@ describe("Projects actions", () => {
     });
 
     it("createProject posts to new project endpoint and sets error on unsuccessful response", async () => {
-        mockAxios.onPost(`/project/`)
+        mockAxios.onPost(`/project`)
             .reply(500, mockFailure("TestError"));
 
         const commit = vi.fn();
@@ -109,7 +111,7 @@ describe("Projects actions", () => {
     });
 
     it("createProject posts to new project endpoint and resets project with root on successful response", async () => {
-        mockAxios.onPost(`/project/`)
+        mockAxios.onPost(`/project`)
             .reply(200, mockSuccess("TestProject"));
 
         const commit = vi.fn();
@@ -125,7 +127,7 @@ describe("Projects actions", () => {
         expect(commit.mock.calls[3][0]).toStrictEqual({type: ProjectsMutations.SetLoading, payload: true});
 
         const posted = mockAxios.history.post[0].data;
-        expect(posted).toEqual("name=newProject");
+        expect(JSON.parse(posted)).toEqual({name: "newProject"});
         expect(commit.mock.calls[4][0]).toStrictEqual({type: RootMutation.SetProject, payload: "TestProject"});
         expect(commit.mock.calls[4][1]).toStrictEqual({root: true});
     });
@@ -155,9 +157,11 @@ describe("Projects actions", () => {
         const commit = vi.fn();
         const state = mockProjectsState();
         const rootGetters = {isGuest: false}
+        sessionStorageManager.saveVersionId("version-id");
 
         actions.getCurrentProject({commit, state, rootState, rootGetters} as any);
         await flushPromises();
+        expect(mockAxios.history.get[0].headers!["X-Version-Id"]).toBe("version-id");
         expect(commit.mock.calls[0][0]).toStrictEqual({type: ProjectsMutations.SetLoading, payload: true});
         expect(commit.mock.calls[1][0]).toStrictEqual({
             type: ProjectsMutations.SetCurrentProject,
@@ -167,9 +171,9 @@ describe("Projects actions", () => {
     });
 
     it("if current version, createProject uploads current version before post to new project endpoint", async () => {
-        mockAxios.onPost(`/project/`)
+        mockAxios.onPost(`/project`)
             .reply(200, mockSuccess("TestProject"));
-        mockAxios.onPost("/project/1/version/version-id/state/")
+        mockAxios.onPost("/project/1/version/version-id/state")
             .reply(200, mockSuccess("ok"));
 
         const commit = vi.fn();
@@ -188,8 +192,8 @@ describe("Projects actions", () => {
         await flushPromises();
         expect(dispatch).toHaveBeenCalledTimes(1)
         expect(mockAxios.history.post.length).toBe(2);
-        expect(mockAxios.history.post[0].url).toBe("/project/1/version/version-id/state/");
-        expect(mockAxios.history.post[1].url).toBe("/project/");
+        expect(mockAxios.history.post[0].url).toBe("/project/1/version/version-id/state");
+        expect(mockAxios.history.post[1].url).toBe("/project");
     });
 
     it("gets projects and sets error on unsuccessful response", async () => {
@@ -216,6 +220,7 @@ describe("Projects actions", () => {
         const commit = vi.fn();
         const state = mockProjectsState();
         const rootGetters = {isGuest: false}
+        sessionStorageManager.saveVersionId("version-id");
 
         actions.getCurrentProject({commit, state, rootState, rootGetters} as any);
         await flushPromises();
@@ -226,6 +231,77 @@ describe("Projects actions", () => {
             payload: expectedError
         });
         expect(commit.mock.calls[2][0]).toStrictEqual({type: ProjectsMutations.SetLoading, payload: false});
+    });
+
+    it("gets no current project, without asking the server, if the tab has no version open", async () => {
+        const commit = vi.fn();
+        const state = mockProjectsState();
+        const rootGetters = {isGuest: false}
+
+        await actions.getCurrentProject({commit, state, rootState, rootGetters} as any);
+
+        expect(mockAxios.history.get.length).toBe(0);
+        expect(commit.mock.calls[0][0]).toStrictEqual({type: ProjectsMutations.SetLoading, payload: true});
+        expect(commit.mock.calls[1][0]).toStrictEqual({
+            type: ProjectsMutations.SetCurrentProject,
+            payload: {project: null, version: null}
+        });
+        expect(commit.mock.calls[2][0]).toStrictEqual({type: ProjectsMutations.SetLoading, payload: false});
+    });
+
+    it("does not get current project for a guest", async () => {
+        const commit = vi.fn();
+        const rootGetters = {isGuest: true}
+        sessionStorageManager.saveVersionId("version-id");
+
+        await actions.getCurrentProject({commit, state: mockProjectsState(), rootState, rootGetters} as any);
+
+        expect(mockAxios.history.get.length).toBe(0);
+        expect(commit.mock.calls.length).toBe(0);
+    });
+
+    it("ensureGuestVersion asks the server for a version for a guest tab and keeps it in the tab", async () => {
+        mockAxios.onPost("/guest/version")
+            .reply(200, mockSuccess({id: "guest-version", created: "", updated: "", versionNumber: 1}));
+        const rootGetters = {isGuest: true}
+
+        await actions.ensureGuestVersion({commit: vi.fn(), rootState, rootGetters} as any);
+
+        expect(mockAxios.history.post.length).toBe(1);
+        expect(sessionStorageManager.getVersionId()).toBe("guest-version");
+    });
+
+    it("ensureGuestVersion does nothing if the guest tab already has a version", async () => {
+        sessionStorageManager.saveVersionId("existing-version");
+        const rootGetters = {isGuest: true}
+
+        await actions.ensureGuestVersion({commit: vi.fn(), rootState, rootGetters} as any);
+
+        expect(mockAxios.history.post.length).toBe(0);
+        expect(sessionStorageManager.getVersionId()).toBe("existing-version");
+    });
+
+    it("ensureGuestVersion does nothing for a logged in user", async () => {
+        const rootGetters = {isGuest: false}
+
+        await actions.ensureGuestVersion({commit: vi.fn(), rootState, rootGetters} as any);
+
+        expect(mockAxios.history.post.length).toBe(0);
+        expect(sessionStorageManager.getVersionId()).toBe(null);
+    });
+
+    it("ensureGuestVersion commits an error and leaves the tab without a version if the server refuses", async () => {
+        mockAxios.onPost("/guest/version").reply(500, mockFailure("TestError"));
+        const commit = vi.fn();
+        const rootGetters = {isGuest: true}
+
+        await actions.ensureGuestVersion({commit, rootState, rootGetters} as any);
+
+        expect(commit.mock.calls[0][0]).toStrictEqual({
+            type: `errors/${ErrorsMutation.ErrorAdded}`,
+            payload: {error: "OTHER_ERROR", detail: "TestError"}
+        });
+        expect(sessionStorageManager.getVersionId()).toBe(null);
     });
 
     it("queueVersionStateUpload does nothing if no current version", async () => {
@@ -276,7 +352,7 @@ describe("Projects actions", () => {
             projects: state
         });
 
-        const url = "/project/1/version/version-id/state/";
+        const url = "/project/1/version/version-id/state";
         mockAxios.onPost(url)
             .reply(200, mockSuccess("OK"));
 
@@ -332,7 +408,7 @@ describe("Projects actions", () => {
             projects: state
         });
 
-        const url = "/project/1/version/version-id/state/";
+        const url = "/project/1/version/version-id/state";
         mockAxios.onPost(url)
             .reply(500, mockFailure("ERR"));
 
@@ -359,13 +435,13 @@ describe("Projects actions", () => {
             projects: state
         });
 
-        const stateUrl = "/project/1/version/version-id/state/";
+        const stateUrl = "/project/1/version/version-id/state";
         mockAxios.onPost(stateUrl)
             .reply(200, mockSuccess("OK"));
 
         const newVersion = {id: "new-version-id", note: "newVersionNote", created: "new time", updated: "new time"};
-        const url = "project/1/version/?parent=version-id&note=newVersionNote";
-        mockAxios.onPost(url)
+        const url = "project/1/version";
+        mockAxios.onPost(url, {parent: "version-id", note: "newVersionNote"})
             .reply(200, mockSuccess(newVersion));
 
         await actions.newVersion({commit, state, rootState} as any, "newVersionNote");
@@ -406,12 +482,12 @@ describe("Projects actions", () => {
             projects: state
         });
 
-        const stateUrl = "/project/1/version/version-id/state/";
+        const stateUrl = "/project/1/version/version-id/state";
         mockAxios.onPost(stateUrl)
             .reply(200, mockSuccess("OK"));
 
-        const url = "project/1/version/?parent=version-id&note=versionNote";
-        mockAxios.onPost(url)
+        const url = "project/1/version";
+        mockAxios.onPost(url, {parent: "version-id", note: "versionNote"})
             .reply(500, mockFailure("TEST ERROR"));
 
         await actions.newVersion({commit, state, rootState} as any, "versionNote");
@@ -451,6 +527,8 @@ describe("Projects actions", () => {
         expect(dispatch.mock.calls[0][0]).toBe("load/loadFromVersion");
         expect(dispatch.mock.calls[0][1]).toStrictEqual(mockVersionDetails);
         expect(dispatch.mock.calls[0][2]).toStrictEqual({root: true});
+        // the files are attached to the version in the X-Version-Id header, so the tab must already be on it
+        expect(sessionStorageManager.getVersionId()).toBe("testVersion");
     });
 
     it("loadVersion commits error if cannot fetch version details", async () => {
@@ -468,6 +546,7 @@ describe("Projects actions", () => {
             type: ProjectsMutations.ProjectError,
             payload: expectedError
         });
+        expect(sessionStorageManager.getVersionId()).toBe(null);
     });
 
     it("deleteProject dispatches getProjects action", async () => {
@@ -557,7 +636,7 @@ describe("Projects actions", () => {
         });
 
         const stateUrl = "/project/1/version/testVersion/promote";
-        mockAxios.onPost(stateUrl, "name=newProject")
+        mockAxios.onPost(stateUrl, {name: "newProject", note: "test"})
             .reply(200, mockSuccess("OK"));
 
         const versionPayload = {
@@ -568,9 +647,9 @@ describe("Projects actions", () => {
         actions.promoteVersion({commit, state, rootState, dispatch} as any, versionPayload);
         await flushPromises();
         const posted = mockAxios.history.post[0].data;
-        expect(posted).toEqual("name=newProject&note=test");
+        expect(JSON.parse(posted)).toEqual({name: "newProject", note: "test"});
 
-        expect(commit.mock.calls.length).toBe(1);
+        expect(commit.mock.calls.length).toBe(0);
         expect(dispatch.mock.calls[0][0]).toBe("getProjects");
     });
 
@@ -602,7 +681,7 @@ describe("Projects actions", () => {
         const state = mockProjectsState()
 
         const stateUrl = "/project/1/version/version-id/note";
-        mockAxios.onPost(stateUrl, "note=edit%20version%20note")
+        mockAxios.onPost(stateUrl, {note: "edit version note"})
             .reply(200, mockSuccess(testProjects));
 
         const versionPayload = {
@@ -613,7 +692,7 @@ describe("Projects actions", () => {
         actions.updateVersionNote({commit, dispatch, state, rootState} as any, versionPayload);
         await flushPromises();
         const posted = mockAxios.history.post[0].data;
-        expect(posted).toEqual("note=edit%20version%20note");
+        expect(JSON.parse(posted)).toEqual({note: "edit version note"});
         expect(dispatch.mock.calls[0][0]).toBe("getProjects");
         expect(dispatch.mock.calls.length).toBe(1);
     });
@@ -625,7 +704,7 @@ describe("Projects actions", () => {
         const state = mockProjectsState();
 
         const stateUrl = "project/1/note";
-        mockAxios.onPost(stateUrl, "note=test%20project%20note")
+        mockAxios.onPost(stateUrl, {note: "test project note"})
             .reply(200, mockSuccess(testProjects));
 
         const projectPayload = {
@@ -635,7 +714,7 @@ describe("Projects actions", () => {
         actions.updateProjectNote({commit, dispatch, state, rootState} as any, projectPayload);
         await flushPromises();
         const posted = mockAxios.history.post[0].data;
-        expect(posted).toEqual("note=test%20project%20note");
+        expect(JSON.parse(posted)).toEqual({note: "test project note"});
         expect(dispatch.mock.calls[0][0]).toBe("getProjects");
         expect(dispatch.mock.calls.length).toBe(1);
     });
@@ -646,7 +725,7 @@ describe("Projects actions", () => {
         const state = mockProjectsState({error: "TEST ERROR" as any});
 
         const stateUrl = "project/1/note";
-        mockAxios.onPost(stateUrl, "note=test%20project%20note")
+        mockAxios.onPost(stateUrl, {note: "test project note"})
             .reply(500, mockFailure("TestError"));
 
         const projectPayload = {
@@ -668,7 +747,7 @@ describe("Projects actions", () => {
         const state = mockProjectsState({error: "TEST ERROR" as any});
 
         const stateUrl = "/project/1/version/version-id/note";
-        mockAxios.onPost(stateUrl, "note=test%20version%20note")
+        mockAxios.onPost(stateUrl, {note: "test version note"})
             .reply(500, mockFailure("TestError"));
 
         const versionPayload = {
@@ -705,7 +784,7 @@ describe("Projects actions", () => {
         await actions.renameProject({commit, state, rootState, dispatch} as any, projectPayload);
 
         const posted = mockAxios.history.post[0].data;
-        expect(posted).toEqual("name=renamedProject&note=test%20notes");
+        expect(JSON.parse(posted)).toEqual({name: "renamedProject", note: "test notes"});
         expect(commit.mock.calls.length).toBe(0);
         expect(dispatch.mock.calls[0][0]).toBe("getCurrentProject");
         expect(dispatch.mock.calls[1][0]).toBe("getProjects");
@@ -721,7 +800,7 @@ describe("Projects actions", () => {
         });
 
         const stateUrl = "/project/1/rename";
-        mockAxios.onPost(stateUrl, "name=renamedProject")
+        mockAxios.onPost(stateUrl, {name: "renamedProject"})
             .reply(200, mockSuccess("OK"));
 
         const projectPayload = {
@@ -731,7 +810,7 @@ describe("Projects actions", () => {
         actions.renameProject({commit, state, rootState, dispatch} as any, projectPayload);
         await flushPromises();
         const posted = mockAxios.history.post[0].data;
-        expect(posted).toEqual("name=renamedProject");
+        expect(JSON.parse(posted)).toEqual({name: "renamedProject"});
         expect(dispatch.mock.calls[0][0]).toBe("getProjects");
         expect(dispatch.mock.calls.length).toBe(1);
     });

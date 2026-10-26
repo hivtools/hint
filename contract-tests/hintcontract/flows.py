@@ -43,8 +43,12 @@ GUEST = "guest"
 
 
 def login_and_open(scn: Scenario, name: str = "A", user: str = TEST_USER, password: str = "password",
-                   quiet: bool = False) -> RecordedClient:
-    """Fresh client, logged in as `user`, with the app opened (so the session's version row exists)."""
+                   quiet: bool = False, project: bool = True) -> RecordedClient:
+    """Fresh client, logged in as `user`, with the app opened.
+
+    With `project` (the default) the tab also has a project open, as a real one always has before it works on files:
+    the project is created quietly and its version is the one the tab sends in X-Version-Id. Pass `project=False` when
+    the test is about projects and needs the user to have none."""
     c = scn.client(name)
     if quiet:
         with scn.quiet():
@@ -53,16 +57,22 @@ def login_and_open(scn: Scenario, name: str = "A", user: str = TEST_USER, passwo
     else:
         c.login(user, password)
         c.open_app()
+    if project:
+        with scn.quiet():
+            c.start_project("Harness project")
     return c
 
 
 def guest_open(scn: Scenario, name: str = "A", quiet: bool = False) -> RecordedClient:
+    """Fresh guest tab with the app opened, and the version the server gives a guest tab when the app starts."""
     c = scn.client(name)
     if quiet:
         with scn.quiet():
             c.open_app()
     else:
         c.open_app()
+    with scn.quiet():
+        c.start_guest_version()
     return c
 
 
@@ -83,10 +93,10 @@ def upload_all(c: RecordedClient):
 
 
 def create_project(c: RecordedClient, name="Project 1", note: str | None = "a note", **kw):
-    form = {"name": name}
+    body = {"name": name}
     if note is not None:
-        form["note"] = note
-    return c.post("/project/", form=form, name=kw.pop("name_", f"create project {name}"), **kw)
+        body["note"] = note
+    return c.post("/project", json=body, name=kw.pop("name_", f"create project {name}"), **kw)
 
 
 def make_zip(members: dict[str, str | bytes]) -> bytes:

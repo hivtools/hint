@@ -88,13 +88,13 @@
       "name": "create project p",
       "request": {
         "body": {
-          "form": {
+          "json": {
             "name": "p",
             "note": "a note"
           }
         },
         "method": "POST",
-        "path": "/project/"
+        "path": "/project"
       },
       "response": {
         "body": {

@@ -24,18 +24,18 @@
       "name": "guest create",
       "request": {
         "body": {
-          "form": {
+          "json": {
             "name": "p"
           }
         },
         "method": "POST",
-        "path": "/project/"
+        "path": "/project"
       },
       "response": {
         "body": {
           "json": {
             "error": "Unauthorized",
-            "path": "/project/",
+            "path": "/project",
             "status": 401,
             "timestamp": "<EPOCH_MS>"
           }
@@ -52,7 +52,7 @@
       "name": "guest rename",
       "request": {
         "body": {
-          "form": {
+          "json": {
             "name": "p"
           }
         },
@@ -80,7 +80,7 @@
       "name": "guest note",
       "request": {
         "body": {
-          "form": {
+          "json": {
             "note": "p"
           }
         },
@@ -108,8 +108,10 @@
       "name": "guest clone",
       "request": {
         "body": {
-          "form": {
-            "emails": "naomi-support@imperial.ac.uk"
+          "json": {
+            "emails": [
+              "naomi-support@imperial.ac.uk"
+            ]
           }
         },
         "method": "POST",
@@ -158,17 +160,19 @@
       "client": "A",
       "name": "guest new version",
       "request": {
+        "body": {
+          "json": {
+            "parent": "x"
+          }
+        },
         "method": "POST",
-        "path": "/project/1/version/",
-        "query": {
-          "parent": "x"
-        }
+        "path": "/project/1/version"
       },
       "response": {
         "body": {
           "json": {
             "error": "Unauthorized",
-            "path": "/project/1/version/",
+            "path": "/project/1/version",
             "status": 401,
             "timestamp": "<EPOCH_MS>"
           }
@@ -215,7 +219,7 @@
       "name": "guest promote",
       "request": {
         "body": {
-          "form": {
+          "json": {
             "name": "p"
           }
         },
@@ -243,7 +247,7 @@
       "name": "guest version note",
       "request": {
         "body": {
-          "form": {
+          "json": {
             "note": "p"
           }
         },

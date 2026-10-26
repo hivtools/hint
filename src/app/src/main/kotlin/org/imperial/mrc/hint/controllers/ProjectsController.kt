@@ -20,12 +20,11 @@ class ProjectsController(private val session: Session,
                          private val logger: GenericLogger
 )
 {
-    @PostMapping("/project/")
+    @PostMapping("/project")
     @ResponseBody
-    fun newProject(@RequestParam("name") name: String,
-                   @RequestParam("note") note: String?,
-                   @RequestParam("isUploaded") isUploaded: Boolean?): ResponseEntity<String>
+    fun newProject(@RequestBody body: NewProjectRequest): ResponseEntity<String>
     {
+        val (name, note, isUploaded) = body
         val projectId = projectRepository.saveNewProject(userId(), name, note = note, isUploaded = isUploaded)
 
         //Generate new version id and set it as the session variable, and save new version to db
@@ -41,21 +40,20 @@ class ProjectsController(private val session: Session,
     @PostMapping("/project/{projectId}/clone")
     @ResponseBody
     fun cloneProjectToUser(@PathVariable("projectId") projectId: Int,
-                           @RequestParam("emails") emails: List<String>): ResponseEntity<String>
+                           @RequestBody body: CloneProjectRequest): ResponseEntity<String>
     {
 
-        projectService.cloneProjectToUser(projectId, emails)
+        projectService.cloneProjectToUser(projectId, body.emails)
         return SuccessResponse(null).asResponseEntity()
     }
 
-    @PostMapping("/project/{projectId}/version/")
+    @PostMapping("/project/{projectId}/version")
     fun newVersion(@PathVariable("projectId") projectId: Int,
-                   @RequestParam("parent") parentVersionId: String,
-                   @RequestParam("note") note: String?): ResponseEntity<String>
+                   @RequestBody body: NewVersionRequest): ResponseEntity<String>
     {
         val newVersionId = session.generateVersionId()
         session.setVersionId(newVersionId)
-        versionRepository.copyVersion(parentVersionId, newVersionId, projectId, userId(), note)
+        versionRepository.copyVersion(body.parent, newVersionId, projectId, userId(), body.note)
         val newVersion = versionRepository.getVersion(newVersionId)
         return SuccessResponse(newVersion).asResponseEntity();
     }
@@ -75,15 +73,14 @@ class ProjectsController(private val session: Session,
     fun promoteVersion(
         @PathVariable("projectId") projectId: Int,
         @PathVariable("versionId") versionId: String,
-        @RequestParam("name") name: String,
-        @RequestParam("note") note: String?): ResponseEntity<String>
+        @RequestBody body: PromoteVersionRequest): ResponseEntity<String>
     {
-        val newProjectId = projectRepository.saveNewProject(userId(), name)
+        val newProjectId = projectRepository.saveNewProject(userId(), body.name)
         val newVersionId = session.generateVersionId()
-        versionRepository.promoteVersion(versionId, newVersionId, newProjectId, userId(), note)
+        versionRepository.promoteVersion(versionId, newVersionId, newProjectId, userId(), body.note)
 
         val version = versionRepository.getVersion(newVersionId)
-        val project = Project(newProjectId, name, listOf(version))
+        val project = Project(newProjectId, body.name, listOf(version))
         return SuccessResponse(project).asResponseEntity()
     }
 
@@ -91,9 +88,9 @@ class ProjectsController(private val session: Session,
     @ResponseBody
     fun updateProjectNote(
             @PathVariable("projectId") projectId: Int,
-            @RequestParam("note") note: String): ResponseEntity<String>
+            @RequestBody body: NoteRequest): ResponseEntity<String>
     {
-        projectRepository.updateProjectNote(projectId, userId(), note)
+        projectRepository.updateProjectNote(projectId, userId(), body.note)
         logger.info("updated project notes", request, userId())
         return EmptySuccessResponse.asResponseEntity()
     }
@@ -103,9 +100,9 @@ class ProjectsController(private val session: Session,
     fun updateVersionNote(
             @PathVariable("versionId") versionId: String,
             @PathVariable("projectId") projectId: Int,
-            @RequestParam("note") note: String): ResponseEntity<String>
+            @RequestBody body: NoteRequest): ResponseEntity<String>
     {
-        versionRepository.updateVersionNote(versionId, projectId, userId(), note)
+        versionRepository.updateVersionNote(versionId, projectId, userId(), body.note)
         return EmptySuccessResponse.asResponseEntity()
     }
 
@@ -136,7 +133,7 @@ class ProjectsController(private val session: Session,
                       @PathVariable("versionId") versionId: String): ResponseEntity<String>
     {
         versionRepository.deleteVersion(versionId, projectId, userId())
-        if (session.getVersionId() == versionId){
+        if (session.getSessionVersionId() == versionId){
             session.setVersionId(null)
         }
         return EmptySuccessResponse.asResponseEntity()
@@ -147,7 +144,7 @@ class ProjectsController(private val session: Session,
     fun deleteProject(@PathVariable("projectId") projectId: Int): ResponseEntity<String>
     {
         projectRepository.deleteProject(projectId, userId())
-        val currentProject = projectRepository.getProjectFromVersionId(session.getVersionId(), userId())
+        val currentProject = projectRepository.getProjectFromVersionId(session.getSessionVersionId(), userId())
         if (currentProject.id == projectId){
             session.setVersionId(null)
         }
@@ -158,7 +155,7 @@ class ProjectsController(private val session: Session,
     @ResponseBody
     fun getCurrentProject(): ResponseEntity<String>
     {
-        val versionId = session.getVersionId()
+        val versionId = session.getRequestedVersionId() ?: session.getSessionVersionId()
         val currentProject = if (versionRepository.versionExists(versionId, userId()))
         {
             val version = versionRepository.getVersion(versionId)
@@ -177,10 +174,9 @@ class ProjectsController(private val session: Session,
     @ResponseBody
     fun renameProject(
         @PathVariable("projectId") projectId: Int,
-        @RequestParam("name") name: String,
-        @RequestParam("note") note: String?): ResponseEntity<String>
+        @RequestBody body: RenameProjectRequest): ResponseEntity<String>
     {
-        projectRepository.renameProject(projectId, userId(), name, note)
+        projectRepository.renameProject(projectId, userId(), body.name, body.note)
         return EmptySuccessResponse.asResponseEntity()
     }
 

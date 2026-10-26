@@ -47,13 +47,13 @@
       "name": "create project P",
       "request": {
         "body": {
-          "form": {
+          "json": {
             "name": "P",
             "note": "pnote"
           }
         },
         "method": "POST",
-        "path": "/project/"
+        "path": "/project"
       },
       "response": {
         "body": {
@@ -117,7 +117,7 @@
       "name": "promote without note",
       "request": {
         "body": {
-          "form": {
+          "json": {
             "name": "promoted"
           }
         },
@@ -157,6 +157,9 @@
       "client": "A",
       "name": "promote without name",
       "request": {
+        "body": {
+          "json": {}
+        },
         "method": "POST",
         "path": "/project/<PROJECT:1>/version/<UUID:1>/promote"
       },
@@ -166,7 +169,7 @@
             "data": {},
             "errors": [
               {
-                "detail": "An unexpected error occurred. If you see this message while you are using Naomi at a workshop, please contact your workshop technical support and show them this code: <ERROR_CODE>. Otherwise please contact support at naomi-support@imperial.ac.uk and quote this code: <ERROR_CODE>. Required request parameter 'name' for method parameter type String is not present",
+                "detail": "An unexpected error occurred. If you see this message while you are using Naomi at a workshop, please contact your workshop technical support and show them this code: <ERROR_CODE>. Otherwise please contact support at naomi-support@imperial.ac.uk and quote this code: <ERROR_CODE>. JSON parse error: Instantiation of [simple type, class org.imperial.mrc.hint.models.PromoteVersionRequest] value failed for JSON property name due to missing (therefore NULL) value for creator parameter name which is a non-nullable type; nested exception is com.fasterxml.jackson.module.kotlin.MissingKotlinParameterException: Instantiation of [simple type, class org.imperial.mrc.hint.models.PromoteVersionRequest] value failed for JSON property name due to missing (therefore NULL) value for creator parameter name which is a non-nullable type\n at [Source: (org.springframework.util.StreamUtils$NonClosingInputStream); line: 1, column: 2] (through reference chain: org.imperial.mrc.hint.models.PromoteVersionRequest[\"name\"])",
                 "error": "OTHER_ERROR"
               }
             ],
