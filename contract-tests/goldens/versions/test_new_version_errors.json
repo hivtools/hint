@@ -47,13 +47,13 @@
       "name": "create project P",
       "request": {
         "body": {
-          "form": {
+          "json": {
             "name": "P",
             "note": "pnote"
           }
         },
         "method": "POST",
-        "path": "/project/"
+        "path": "/project"
       },
       "response": {
         "body": {
@@ -117,13 +117,13 @@
       "name": "create project other project",
       "request": {
         "body": {
-          "form": {
+          "json": {
             "name": "other project",
             "note": "a note"
           }
         },
         "method": "POST",
-        "path": "/project/"
+        "path": "/project"
       },
       "response": {
         "body": {
@@ -158,8 +158,11 @@
       "client": "A",
       "name": "parent missing",
       "request": {
+        "body": {
+          "json": {}
+        },
         "method": "POST",
-        "path": "/project/<PROJECT:1>/version/"
+        "path": "/project/<PROJECT:1>/version"
       },
       "response": {
         "body": {
@@ -167,7 +170,33 @@
             "data": {},
             "errors": [
               {
-                "detail": "An unexpected error occurred. If you see this message while you are using Naomi at a workshop, please contact your workshop technical support and show them this code: <ERROR_CODE>. Otherwise please contact support at naomi-support@imperial.ac.uk and quote this code: <ERROR_CODE>. Required request parameter 'parent' for method parameter type String is not present",
+                "detail": "An unexpected error occurred. If you see this message while you are using Naomi at a workshop, please contact your workshop technical support and show them this code: <ERROR_CODE>. Otherwise please contact support at naomi-support@imperial.ac.uk and quote this code: <ERROR_CODE>. JSON parse error: Instantiation of [simple type, class org.imperial.mrc.hint.models.NewVersionRequest] value failed for JSON property parent due to missing (therefore NULL) value for creator parameter parent which is a non-nullable type; nested exception is com.fasterxml.jackson.module.kotlin.MissingKotlinParameterException: Instantiation of [simple type, class org.imperial.mrc.hint.models.NewVersionRequest] value failed for JSON property parent due to missing (therefore NULL) value for creator parameter parent which is a non-nullable type\n at [Source: (org.springframework.util.StreamUtils$NonClosingInputStream); line: 1, column: 2] (through reference chain: org.imperial.mrc.hint.models.NewVersionRequest[\"parent\"])",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "client": "A",
+      "name": "no body",
+      "request": {
+        "method": "POST",
+        "path": "/project/<PROJECT:1>/version"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "An unexpected error occurred. If you see this message while you are using Naomi at a workshop, please contact your workshop technical support and show them this code: <ERROR_CODE>. Otherwise please contact support at naomi-support@imperial.ac.uk and quote this code: <ERROR_CODE>. Required request body is missing: public org.springframework.http.ResponseEntity<java.lang.String> org.imperial.mrc.hint.controllers.ProjectsController.newVersion(int,org.imperial.mrc.hint.models.NewVersionRequest)",
                 "error": "OTHER_ERROR"
               }
             ],
@@ -184,11 +213,13 @@
       "client": "A",
       "name": "unknown parent",
       "request": {
+        "body": {
+          "json": {
+            "parent": "nonexistent"
+          }
+        },
         "method": "POST",
-        "path": "/project/<PROJECT:1>/version/",
-        "query": {
-          "parent": "nonexistent"
-        }
+        "path": "/project/<PROJECT:1>/version"
       },
       "response": {
         "body": {
@@ -213,11 +244,13 @@
       "client": "A",
       "name": "parent belongs to another project",
       "request": {
+        "body": {
+          "json": {
+            "parent": "<UUID:1>"
+          }
+        },
         "method": "POST",
-        "path": "/project/<PROJECT:2>/version/",
-        "query": {
-          "parent": "<UUID:1>"
-        }
+        "path": "/project/<PROJECT:2>/version"
       },
       "response": {
         "body": {
@@ -242,11 +275,13 @@
       "client": "A",
       "name": "unknown project",
       "request": {
+        "body": {
+          "json": {
+            "parent": "<UUID:1>"
+          }
+        },
         "method": "POST",
-        "path": "/project/999/version/",
-        "query": {
-          "parent": "<UUID:1>"
-        }
+        "path": "/project/999/version"
       },
       "response": {
         "body": {
@@ -271,14 +306,16 @@
       "client": "A",
       "name": "unknown parent in fr",
       "request": {
+        "body": {
+          "json": {
+            "parent": "nonexistent"
+          }
+        },
         "headers": {
           "accept-language": "fr"
         },
         "method": "POST",
-        "path": "/project/<PROJECT:1>/version/",
-        "query": {
-          "parent": "nonexistent"
-        }
+        "path": "/project/<PROJECT:1>/version"
       },
       "response": {
         "body": {
@@ -303,14 +340,16 @@
       "client": "A",
       "name": "unknown parent in pt",
       "request": {
+        "body": {
+          "json": {
+            "parent": "nonexistent"
+          }
+        },
         "headers": {
           "accept-language": "pt"
         },
         "method": "POST",
-        "path": "/project/<PROJECT:1>/version/",
-        "query": {
-          "parent": "nonexistent"
-        }
+        "path": "/project/<PROJECT:1>/version"
       },
       "response": {
         "body": {

@@ -88,13 +88,13 @@
       "name": "create project shared",
       "request": {
         "body": {
-          "form": {
+          "json": {
             "name": "shared",
             "note": "a note"
           }
         },
         "method": "POST",
-        "path": "/project/"
+        "path": "/project"
       },
       "response": {
         "body": {
@@ -127,10 +127,10 @@
     },
     {
       "client": "A",
-      "name": "repeated parameter",
+      "name": "a list of emails",
       "request": {
         "body": {
-          "form": {
+          "json": {
             "emails": [
               "naomi-support@imperial.ac.uk",
               "test.user@example.com"
@@ -156,10 +156,10 @@
     },
     {
       "client": "A",
-      "name": "comma separated",
+      "name": "comma separated string",
       "request": {
         "body": {
-          "form": {
+          "json": {
             "emails": "naomi-support@imperial.ac.uk,test.user@example.com"
           }
         },
@@ -169,15 +169,20 @@
       "response": {
         "body": {
           "json": {
-            "data": null,
-            "errors": [],
-            "status": "success"
+            "data": {},
+            "errors": [
+              {
+                "detail": "An unexpected error occurred. If you see this message while you are using Naomi at a workshop, please contact your workshop technical support and show them this code: <ERROR_CODE>. Otherwise please contact support at naomi-support@imperial.ac.uk and quote this code: <ERROR_CODE>. JSON parse error: Cannot construct instance of `java.util.ArrayList` (although at least one Creator exists): no String-argument constructor/factory method to deserialize from String value ('naomi-support@imperial.ac.uk,test.user@example.com'); nested exception is com.fasterxml.jackson.databind.exc.MismatchedInputException: Cannot construct instance of `java.util.ArrayList` (although at least one Creator exists): no String-argument constructor/factory method to deserialize from String value ('naomi-support@imperial.ac.uk,test.user@example.com')\n at [Source: (org.springframework.util.StreamUtils$NonClosingInputStream); line: 1, column: 11] (through reference chain: org.imperial.mrc.hint.models.CloneProjectRequest[\"emails\"])",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
           }
         },
         "headers": {
           "content-type": "application/json"
         },
-        "status": 200
+        "status": 400
       }
     },
     {
@@ -222,22 +227,6 @@
                     "versionNumber": 1
                   }
                 ]
-              },
-              {
-                "id": "<PROJECT:3>",
-                "name": "shared",
-                "note": null,
-                "sharedBy": "test.user@example.com",
-                "uploaded": false,
-                "versions": [
-                  {
-                    "created": "<TIMESTAMP>",
-                    "id": "<UUID:3>",
-                    "note": null,
-                    "updated": "<TIMESTAMP>",
-                    "versionNumber": 1
-                  }
-                ]
               }
             ],
             "errors": [],
@@ -262,7 +251,7 @@
           "json": {
             "data": [
               {
-                "id": "<PROJECT:4>",
+                "id": "<PROJECT:3>",
                 "name": "shared",
                 "note": null,
                 "sharedBy": "test.user@example.com",
@@ -270,23 +259,7 @@
                 "versions": [
                   {
                     "created": "<TIMESTAMP>",
-                    "id": "<UUID:4>",
-                    "note": null,
-                    "updated": "<TIMESTAMP>",
-                    "versionNumber": 1
-                  }
-                ]
-              },
-              {
-                "id": "<PROJECT:5>",
-                "name": "shared",
-                "note": null,
-                "sharedBy": "test.user@example.com",
-                "uploaded": false,
-                "versions": [
-                  {
-                    "created": "<TIMESTAMP>",
-                    "id": "<UUID:5>",
+                    "id": "<UUID:3>",
                     "note": null,
                     "updated": "<TIMESTAMP>",
                     "versionNumber": 1
@@ -316,7 +289,7 @@
           "user_id": "test.user@example.com"
         },
         {
-          "id": "<PROJECT:4>",
+          "id": "<PROJECT:3>",
           "is_uploaded": false,
           "name": "shared",
           "note": null,
@@ -325,22 +298,6 @@
         },
         {
           "id": "<PROJECT:2>",
-          "is_uploaded": false,
-          "name": "shared",
-          "note": null,
-          "shared_by": "test.user@example.com",
-          "user_id": "test.user@example.com"
-        },
-        {
-          "id": "<PROJECT:5>",
-          "is_uploaded": false,
-          "name": "shared",
-          "note": null,
-          "shared_by": "test.user@example.com",
-          "user_id": "naomi-support@imperial.ac.uk"
-        },
-        {
-          "id": "<PROJECT:3>",
           "is_uploaded": false,
           "name": "shared",
           "note": null,

@@ -88,13 +88,13 @@
       "name": "create project p",
       "request": {
         "body": {
-          "form": {
+          "json": {
             "name": "p",
             "note": "one"
           }
         },
         "method": "POST",
-        "path": "/project/"
+        "path": "/project"
       },
       "response": {
         "body": {
@@ -130,7 +130,7 @@
       "name": "unknown project",
       "request": {
         "body": {
-          "form": {
+          "json": {
             "note": "x"
           }
         },
@@ -161,7 +161,7 @@
       "name": "other user's project",
       "request": {
         "body": {
-          "form": {
+          "json": {
             "note": "x"
           }
         },
@@ -191,6 +191,9 @@
       "client": "A",
       "name": "missing note",
       "request": {
+        "body": {
+          "json": {}
+        },
         "method": "POST",
         "path": "/project/<PROJECT:1>/note"
       },
@@ -200,7 +203,7 @@
             "data": {},
             "errors": [
               {
-                "detail": "An unexpected error occurred. If you see this message while you are using Naomi at a workshop, please contact your workshop technical support and show them this code: <ERROR_CODE>. Otherwise please contact support at naomi-support@imperial.ac.uk and quote this code: <ERROR_CODE>. Required request parameter 'note' for method parameter type String is not present",
+                "detail": "An unexpected error occurred. If you see this message while you are using Naomi at a workshop, please contact your workshop technical support and show them this code: <ERROR_CODE>. Otherwise please contact support at naomi-support@imperial.ac.uk and quote this code: <ERROR_CODE>. JSON parse error: Instantiation of [simple type, class org.imperial.mrc.hint.models.NoteRequest] value failed for JSON property note due to missing (therefore NULL) value for creator parameter note which is a non-nullable type; nested exception is com.fasterxml.jackson.module.kotlin.MissingKotlinParameterException: Instantiation of [simple type, class org.imperial.mrc.hint.models.NoteRequest] value failed for JSON property note due to missing (therefore NULL) value for creator parameter note which is a non-nullable type\n at [Source: (org.springframework.util.StreamUtils$NonClosingInputStream); line: 1, column: 2] (through reference chain: org.imperial.mrc.hint.models.NoteRequest[\"note\"])",
                 "error": "OTHER_ERROR"
               }
             ],

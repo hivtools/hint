@@ -9,13 +9,13 @@ import org.springframework.http.HttpStatus
 class InternalTests : SecureIntegrationTests()
 {
     @Test
-    fun `whoami returns guest user and a version id when not logged in`()
+    fun `whoami returns guest user when not logged in`()
     {
         val result = testRestTemplate.getForEntity<String>("/internal/whoami")
 
         assertThat(result.statusCode).isEqualTo(HttpStatus.NO_CONTENT)
         assertThat(result.headers["X-Hint-User"]).containsExactly(GUEST_USER)
-        assertThat(result.headers["X-Hint-Version-Id"]).hasSize(1)
+        assertThat(result.headers["X-Hint-Version-Id"]).isNull()
     }
 
     @Test

@@ -47,13 +47,13 @@
       "name": "create project first",
       "request": {
         "body": {
-          "form": {
+          "json": {
             "name": "first",
             "note": "a note"
           }
         },
         "method": "POST",
-        "path": "/project/"
+        "path": "/project"
       },
       "response": {
         "body": {
@@ -89,13 +89,13 @@
       "name": "create project second",
       "request": {
         "body": {
-          "form": {
+          "json": {
             "name": "second",
             "note": "a note"
           }
         },
         "method": "POST",
-        "path": "/project/"
+        "path": "/project"
       },
       "response": {
         "body": {
@@ -131,13 +131,13 @@
       "name": "create project third",
       "request": {
         "body": {
-          "form": {
+          "json": {
             "name": "third",
             "note": "a note"
           }
         },
         "method": "POST",
-        "path": "/project/"
+        "path": "/project"
       },
       "response": {
         "body": {
@@ -243,7 +243,7 @@
       "name": "touch first project",
       "request": {
         "body": {
-          "form": {
+          "json": {
             "note": "touch"
           }
         },
@@ -339,7 +339,7 @@
       "name": "project note does not touch versions",
       "request": {
         "body": {
-          "form": {
+          "json": {
             "note": "project note only"
           }
         },

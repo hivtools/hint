@@ -88,13 +88,13 @@
       "name": "create project first",
       "request": {
         "body": {
-          "form": {
+          "json": {
             "name": "first",
             "note": "a note"
           }
         },
         "method": "POST",
-        "path": "/project/"
+        "path": "/project"
       },
       "response": {
         "body": {
@@ -130,13 +130,13 @@
       "name": "create project second",
       "request": {
         "body": {
-          "form": {
+          "json": {
             "name": "second",
             "note": "a note"
           }
         },
         "method": "POST",
-        "path": "/project/"
+        "path": "/project"
       },
       "response": {
         "body": {
@@ -172,13 +172,13 @@
       "name": "create project bees",
       "request": {
         "body": {
-          "form": {
+          "json": {
             "name": "bees",
             "note": "a note"
           }
         },
         "method": "POST",
-        "path": "/project/"
+        "path": "/project"
       },
       "response": {
         "body": {

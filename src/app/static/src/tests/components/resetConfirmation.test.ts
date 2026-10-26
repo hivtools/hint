@@ -252,7 +252,7 @@ describe("Reset confirmation modal", () => {
         expect(mockContinueEdit.mock.calls.length).toBe(0);
         expect((rendered.vm as any).waitingForVersion).toBe(true);
         expect(mockNewVersion.mock.calls.length).toBe(1);
-        expect(mockNewVersion.mock.calls[0][1]).toBe("new%20Value");
+        expect(mockNewVersion.mock.calls[0][1]).toBe("new Value");
     });
 
     it("continue button sets waitingForVersion to true and invokes newVersion action for logged in user", async () => {
@@ -297,7 +297,7 @@ describe("Reset confirmation modal", () => {
             }
         });
 
-        rendered.vm.$store.commit("projects/VersionCreated", {id: "newVersionId"});
+        rendered.vm.$store.commit("projects/VersionCreated", {payload: {id: "newVersionId"}});
         await nextTick();
 
         expect((rendered.vm as any).waitingForVersion).toBe(false);
@@ -342,7 +342,7 @@ describe("Reset confirmation modal", () => {
             }
         });
 
-        rendered.vm.$store.commit("projects/VersionCreated", {id: "newVersionId"});
+        rendered.vm.$store.commit("projects/VersionCreated", {payload: {id: "newVersionId"}});
         await nextTick();
 
         expect((rendered.vm as any).waitingForVersion).toBe(false);

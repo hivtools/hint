@@ -20,16 +20,18 @@ Authentication and sessions stay in Kotlin until login moves. For each request t
 
 ```
 browser --cookie--> nginx --(auth_request, cookie)--> Kotlin GET /internal/whoami
-                      |                                   returns 204 + X-Hint-User, X-Hint-Version-Id
+                      |                                   returns 204 + X-Hint-User
                       +--(no cookie, X-Hint-* headers)--> Python
 ```
 
 - nginx overwrites any `X-Hint-*` headers sent by the client, so they cannot be forged, as long as Python is only
   reachable through nginx (in docker-compose it is not published to the host).
 - `/internal/` (Kotlin) and `/_whoami` (nginx) are not reachable from outside.
-- A first time visitor gets their `JSESSIONID` from the whoami call, and nginx passes the `Set-Cookie` on.
-- Kotlin keeps the session `version_id`, so both apps agree on it. Anything Python needs to *change* in the session
-  would need another `/internal/` endpoint, add those as they come up.
+- whoami does not start a Kotlin session. A visitor gets their `JSESSIONID` from the first Kotlin page or endpoint they
+  use, and nginx passes any `Set-Cookie` from whoami on.
+- The version a request works on is not part of the identity. The browser tab sends it in `X-Version-Id` on every
+  request, nginx passes it on, and each app checks that the user may use it. Python does not need the Kotlin session
+  for it. Anything else Python needs to *change* in the Kotlin session would need another `/internal/` endpoint.
 - When login and sessions move to Python, only `current_user` changes and `/internal/whoami` and `auth_request` go.
 
 ## Running it

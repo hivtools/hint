@@ -47,13 +47,13 @@
       "name": "create project My project",
       "request": {
         "body": {
-          "form": {
+          "json": {
             "name": "My project",
             "note": "my note"
           }
         },
         "method": "POST",
-        "path": "/project/"
+        "path": "/project"
       },
       "response": {
         "body": {

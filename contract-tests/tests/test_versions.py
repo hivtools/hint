@@ -11,7 +11,7 @@ STATE = json.dumps({"datasets": {}, "model_fit": {"id": "abc"}, "step": 3})
 
 
 def setup_project(scn, with_state=True, with_file=False):
-    a = login_and_open(scn, "A")
+    a = login_and_open(scn, "A", project=False)
     p = create_project(a, "P", "pnote").data
     v1 = p["versions"][0]["id"]
     if with_file:
@@ -25,7 +25,7 @@ def setup_project(scn, with_state=True, with_file=False):
 # ------------------------------------------------------------------------------------------------ new version
 def test_new_version_copies_files_and_state(scn):
     a, p, v1 = setup_project(scn, with_file=True)
-    r = a.post(f"/project/{p['id']}/version/", params={"parent": v1, "note": "second"}, name="new version")
+    r = a.post(f"/project/{p['id']}/version", json={"parent": v1, "note": "second"}, name="new version")
     assert r.status == 200
     a.get("/baseline/pjnz/", name="new session version has the file")
     a.get("/project/current", name="current is v2")
@@ -38,40 +38,53 @@ def test_new_version_copies_files_and_state(scn):
 def test_new_version_without_note_and_numbering(scn):
     a, p, v1 = setup_project(scn)
     for i in range(3):
-        a.post(f"/project/{p['id']}/version/", params={"parent": v1}, name=f"version {i + 2}")
+        a.post(f"/project/{p['id']}/version", json={"parent": v1}, name=f"version {i + 2}")
     a.get("/projects/", name="versions numbered 1..4, newest first")
 
 
-def test_new_version_note_may_come_from_form_body(scn):
+def test_new_version_ignores_parameters_in_the_query_string(scn):
     a, p, v1 = setup_project(scn)
-    a.post(f"/project/{p['id']}/version/", params={"parent": v1}, form={"note": "from form"}, name="note in body")
+    a.post(f"/project/{p['id']}/version", params={"parent": v1, "note": "from query"}, name="query string only")
+    a.post(f"/project/{p['id']}/version", params={"note": "from query"}, json={"parent": v1}, name="note in the query")
+    a.post(f"/project/{p['id']}/version", form={"parent": v1}, name="form body is not accepted")
 
 
 def test_new_version_errors(scn):
     a, p, v1 = setup_project(scn)
     other = create_project(a, "other project").data
-    a.post(f"/project/{p['id']}/version/", name="parent missing")
-    a.post(f"/project/{p['id']}/version/", params={"parent": "nonexistent"}, name="unknown parent")
-    a.post(f"/project/{other['id']}/version/", params={"parent": v1}, name="parent belongs to another project")
-    a.post("/project/999/version/", params={"parent": v1}, name="unknown project")
+    a.post(f"/project/{p['id']}/version", json={}, name="parent missing")
+    a.post(f"/project/{p['id']}/version", name="no body")
+    a.post(f"/project/{p['id']}/version", json={"parent": "nonexistent"}, name="unknown parent")
+    a.post(f"/project/{other['id']}/version", json={"parent": v1}, name="parent belongs to another project")
+    a.post("/project/999/version", json={"parent": v1}, name="unknown project")
     for lang in ("fr", "pt"):
-        a.post(f"/project/{p['id']}/version/", params={"parent": "nonexistent"}, headers={"Accept-Language": lang},
+        a.post(f"/project/{p['id']}/version", json={"parent": "nonexistent"}, headers={"Accept-Language": lang},
                name=f"unknown parent in {lang}")
 
 
 def test_new_version_of_someone_elses_project(scn):
     a, p, v1 = setup_project(scn)
     b = login_and_open(scn, "B", user=SUPPORT_USER)
-    b.post(f"/project/{p['id']}/version/", params={"parent": v1}, name="B copies A's version")
+    b.post(f"/project/{p['id']}/version", json={"parent": v1}, name="B copies A's version")
     a.get("/projects/", name="A's project unchanged")
 
 
-@pytest.mark.quirk
-def test_failed_new_version_leaves_session_pointing_at_a_nonexistent_version(scn):
-    """quirk: the session version id is switched BEFORE the copy; when the copy fails the session is broken
-    (current project null, uploads fail with 500) until another version is opened."""
+def test_failed_new_version_leaves_the_tab_on_its_version(scn):
     a, p, v1 = setup_project(scn)
-    a.post(f"/project/{p['id']}/version/", params={"parent": "nonexistent"}, name="failing copy")
+    a.post(f"/project/{p['id']}/version", json={"parent": "nonexistent"}, name="failing copy")
+    a.get("/project/current", name="the tab is still on the first version")
+    upload(a, "pjnz", name="uploads still work")
+
+
+@pytest.mark.quirk
+@pytest.mark.legacy_session
+def test_failed_new_version_leaves_session_pointing_at_a_nonexistent_version(scn):
+    """quirk (temporary session fallback, a tab that sends no X-Version-Id): the session version id is switched BEFORE
+    the copy; when the copy fails the session is broken (current project null, uploads fail with 500) until another
+    version is opened."""
+    a, p, v1 = setup_project(scn)
+    a.use_version_header = False
+    a.post(f"/project/{p['id']}/version", json={"parent": "nonexistent"}, name="failing copy")
     a.get("/project/current", name="current project is null")
     upload(a, "pjnz", name="upload now fails")
     a.open_app(name="opening the app does not repair the session version")
@@ -86,8 +99,8 @@ def test_save_and_load_state(scn):
                name="save state")
     assert r.status == 200
     a.get(f"/project/{p['id']}/version/{v1}", name="state is returned as a string")
-    a.post(f"/project/{p['id']}/version/{v1}/state/", content_type="application/json", raw_body=b'{"a": 2}',
-           name="trailing slash variant")
+    a.post(f"/project/{p['id']}/version/{v1}/state", content_type="application/json", raw_body=b'{"a": 2}',
+           name="save state again")
     a.get(f"/project/{p['id']}/version/{v1}", name="state overwritten")
     scn.db_rows("project_version")
 
@@ -121,7 +134,7 @@ def test_save_state_errors(scn):
 # ------------------------------------------------------------------------------------------------ open version
 def test_open_version_returns_state_and_files_and_switches_session(scn):
     a, p, v1 = setup_project(scn, with_file=True)
-    v2 = a.post(f"/project/{p['id']}/version/", params={"parent": v1}, name="v2").data["id"]
+    v2 = a.post(f"/project/{p['id']}/version", json={"parent": v1}, name="v2").data["id"]
     a.delete("/baseline/pjnz/", name="remove file from v2 (the current session version)")
     a.get("/baseline/pjnz/", name="v2 has no file")
     r = a.get(f"/project/{p['id']}/version/{v1}", name="open v1")
@@ -155,7 +168,7 @@ def test_open_version_without_saved_state_is_a_500(scn):
 def test_open_soft_deleted_version_still_works(scn):
     """quirk: GET version does not look at the deleted flag."""
     a, p, v1 = setup_project(scn)
-    v2 = a.post(f"/project/{p['id']}/version/", params={"parent": v1}).data["id"]
+    v2 = a.post(f"/project/{p['id']}/version", json={"parent": v1}).data["id"]
     a.delete(f"/project/{p['id']}/version/{v2}", name="delete v2")
     a.get(f"/project/{p['id']}/version/{v2}", name="open the deleted version")
 
@@ -173,8 +186,8 @@ def test_session_files_flow_after_opening_a_version(scn):
 # ------------------------------------------------------------------------------------------------ note
 def test_update_version_note(scn):
     a, p, v1 = setup_project(scn)
-    a.post(f"/project/{p['id']}/version/{v1}/note", form={"note": "new version note"}, name="set note")
-    a.post(f"/project/{p['id']}/version/{v1}/note", form={"note": ""}, name="empty note")
+    a.post(f"/project/{p['id']}/version/{v1}/note", json={"note": "new version note"}, name="set note")
+    a.post(f"/project/{p['id']}/version/{v1}/note", json={"note": ""}, name="empty note")
     a.get("/projects/")
     scn.db_rows("project_version")
 
@@ -182,19 +195,19 @@ def test_update_version_note(scn):
 def test_update_version_note_errors(scn):
     a, p, v1 = setup_project(scn)
     other = create_project(a, "other").data
-    a.post(f"/project/{p['id']}/version/nonexistent/note", form={"note": "x"}, name="unknown version")
-    a.post(f"/project/{other['id']}/version/{v1}/note", form={"note": "x"}, name="wrong project")
-    a.post(f"/project/{p['id']}/version/{v1}/note", name="missing note")
+    a.post(f"/project/{p['id']}/version/nonexistent/note", json={"note": "x"}, name="unknown version")
+    a.post(f"/project/{other['id']}/version/{v1}/note", json={"note": "x"}, name="wrong project")
+    a.post(f"/project/{p['id']}/version/{v1}/note", json={}, name="missing note")
     b = login_and_open(scn, "B", user=SUPPORT_USER)
-    b.post(f"/project/{p['id']}/version/{v1}/note", form={"note": "x"}, name="other user")
-    a.post(f"/project/{p['id']}/version/nonexistent/note", form={"note": "x"}, headers={"Accept-Language": "fr"},
+    b.post(f"/project/{p['id']}/version/{v1}/note", json={"note": "x"}, name="other user")
+    a.post(f"/project/{p['id']}/version/nonexistent/note", json={"note": "x"}, headers={"Accept-Language": "fr"},
            name="unknown version in french")
 
 
 # ------------------------------------------------------------------------------------------------ delete
 def test_delete_version(scn):
     a, p, v1 = setup_project(scn)
-    v2 = a.post(f"/project/{p['id']}/version/", params={"parent": v1}, name="v2").data["id"]
+    v2 = a.post(f"/project/{p['id']}/version", json={"parent": v1}, name="v2").data["id"]
     a.delete(f"/project/{p['id']}/version/{v1}", name="delete a non-current version")
     a.get("/project/current", name="session version unchanged")
     a.delete(f"/project/{p['id']}/version/{v2}", name="delete the current version")
@@ -219,7 +232,7 @@ def test_delete_version_errors(scn):
 # ------------------------------------------------------------------------------------------------ promote
 def test_promote_version_creates_a_new_project(scn):
     a, p, v1 = setup_project(scn, with_file=True)
-    r = a.post(f"/project/{p['id']}/version/{v1}/promote", form={"name": "promoted", "note": "version note"},
+    r = a.post(f"/project/{p['id']}/version/{v1}/promote", json={"name": "promoted", "note": "version note"},
                name="promote")
     assert r.status == 200
     a.get("/projects/", name="two projects")
@@ -231,8 +244,8 @@ def test_promote_version_creates_a_new_project(scn):
 
 def test_promote_version_without_note(scn):
     a, p, v1 = setup_project(scn)
-    a.post(f"/project/{p['id']}/version/{v1}/promote", form={"name": "promoted"}, name="promote without note")
-    a.post(f"/project/{p['id']}/version/{v1}/promote", name="promote without name")
+    a.post(f"/project/{p['id']}/version/{v1}/promote", json={"name": "promoted"}, name="promote without note")
+    a.post(f"/project/{p['id']}/version/{v1}/promote", json={}, name="promote without name")
 
 
 @pytest.mark.quirk
@@ -241,8 +254,8 @@ def test_promote_does_not_check_version_or_ownership(scn):
     another user's version can be copied into your own project."""
     a, p, v1 = setup_project(scn, with_file=True)
     b = login_and_open(scn, "B", user=SUPPORT_USER)
-    b.post(f"/project/{p['id']}/version/{v1}/promote", form={"name": "stolen copy"}, name="B promotes A's version")
-    b.post("/project/999/version/nonexistent/promote", form={"name": "from nothing"}, name="unknown version")
+    b.post(f"/project/{p['id']}/version/{v1}/promote", json={"name": "stolen copy"}, name="B promotes A's version")
+    b.post("/project/999/version/nonexistent/promote", json={"name": "from nothing"}, name="unknown version")
     b.get("/projects/", name="B has two projects")
     scn.db_rows("version_file")
     scn.db_rows("project_version")

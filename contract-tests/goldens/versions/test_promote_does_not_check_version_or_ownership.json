@@ -47,13 +47,13 @@
       "name": "create project P",
       "request": {
         "body": {
-          "form": {
+          "json": {
             "name": "P",
             "note": "pnote"
           }
         },
         "method": "POST",
-        "path": "/project/"
+        "path": "/project"
       },
       "response": {
         "body": {
@@ -206,7 +206,7 @@
       "name": "B promotes A's version",
       "request": {
         "body": {
-          "form": {
+          "json": {
             "name": "stolen copy"
           }
         },
@@ -247,7 +247,7 @@
       "name": "unknown version",
       "request": {
         "body": {
-          "form": {
+          "json": {
             "name": "from nothing"
           }
         },
@@ -325,6 +325,22 @@
                     "versionNumber": 1
                   }
                 ]
+              },
+              {
+                "id": "<PROJECT:4>",
+                "name": "Harness project",
+                "note": null,
+                "sharedBy": null,
+                "uploaded": null,
+                "versions": [
+                  {
+                    "created": "<TIMESTAMP>",
+                    "id": "<UUID:4>",
+                    "note": null,
+                    "updated": "<TIMESTAMP>",
+                    "versionNumber": 1
+                  }
+                ]
               }
             ],
             "errors": [],
@@ -366,7 +382,7 @@
         {
           "deleted": false,
           "has_state": false,
-          "id": "<UUID:4>",
+          "id": "<UUID:5>",
           "note": null,
           "project_id": null,
           "state": null,
@@ -375,7 +391,7 @@
         {
           "deleted": false,
           "has_state": false,
-          "id": "<UUID:5>",
+          "id": "<UUID:6>",
           "note": null,
           "project_id": null,
           "state": null,
@@ -394,6 +410,15 @@
             },
             "step": 3
           },
+          "version_number": 1
+        },
+        {
+          "deleted": false,
+          "has_state": false,
+          "id": "<UUID:4>",
+          "note": null,
+          "project_id": "<PROJECT:4>",
+          "state": null,
           "version_number": 1
         },
         {

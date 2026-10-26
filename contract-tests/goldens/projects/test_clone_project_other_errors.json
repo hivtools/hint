@@ -88,13 +88,13 @@
       "name": "create project mine",
       "request": {
         "body": {
-          "form": {
+          "json": {
             "name": "mine",
             "note": "a note"
           }
         },
         "method": "POST",
-        "path": "/project/"
+        "path": "/project"
       },
       "response": {
         "body": {
@@ -127,8 +127,11 @@
     },
     {
       "client": "A",
-      "name": "no emails parameter",
+      "name": "no emails",
       "request": {
+        "body": {
+          "json": {}
+        },
         "method": "POST",
         "path": "/project/<PROJECT:1>/clone"
       },
@@ -138,7 +141,7 @@
             "data": {},
             "errors": [
               {
-                "detail": "An unexpected error occurred. If you see this message while you are using Naomi at a workshop, please contact your workshop technical support and show them this code: <ERROR_CODE>. Otherwise please contact support at naomi-support@imperial.ac.uk and quote this code: <ERROR_CODE>. Required request parameter 'emails' for method parameter type List is not present",
+                "detail": "An unexpected error occurred. If you see this message while you are using Naomi at a workshop, please contact your workshop technical support and show them this code: <ERROR_CODE>. Otherwise please contact support at naomi-support@imperial.ac.uk and quote this code: <ERROR_CODE>. JSON parse error: Instantiation of [simple type, class org.imperial.mrc.hint.models.CloneProjectRequest] value failed for JSON property emails due to missing (therefore NULL) value for creator parameter emails which is a non-nullable type; nested exception is com.fasterxml.jackson.module.kotlin.MissingKotlinParameterException: Instantiation of [simple type, class org.imperial.mrc.hint.models.CloneProjectRequest] value failed for JSON property emails due to missing (therefore NULL) value for creator parameter emails which is a non-nullable type\n at [Source: (org.springframework.util.StreamUtils$NonClosingInputStream); line: 1, column: 2] (through reference chain: org.imperial.mrc.hint.models.CloneProjectRequest[\"emails\"])",
                 "error": "OTHER_ERROR"
               }
             ],
@@ -156,8 +159,10 @@
       "name": "email without @",
       "request": {
         "body": {
-          "form": {
-            "emails": "not-an-email"
+          "json": {
+            "emails": [
+              "not-an-email"
+            ]
           }
         },
         "method": "POST",
@@ -187,8 +192,10 @@
       "name": "unknown project",
       "request": {
         "body": {
-          "form": {
-            "emails": "naomi-support@imperial.ac.uk"
+          "json": {
+            "emails": [
+              "naomi-support@imperial.ac.uk"
+            ]
           }
         },
         "method": "POST",
@@ -218,8 +225,10 @@
       "name": "cloning someone else's project",
       "request": {
         "body": {
-          "form": {
-            "emails": "test.user@example.com"
+          "json": {
+            "emails": [
+              "test.user@example.com"
+            ]
           }
         },
         "method": "POST",
@@ -246,11 +255,44 @@
     },
     {
       "client": "A",
-      "name": "empty emails",
+      "name": "empty email",
       "request": {
         "body": {
-          "form": {
-            "emails": ""
+          "json": {
+            "emails": [
+              ""
+            ]
+          }
+        },
+        "method": "POST",
+        "path": "/project/<PROJECT:1>/clone"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "Please provide a valid email address.",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "client": "A",
+      "name": "empty list",
+      "request": {
+        "body": {
+          "json": {
+            "emails": []
           }
         },
         "method": "POST",

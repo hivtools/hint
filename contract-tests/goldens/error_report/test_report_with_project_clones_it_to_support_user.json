@@ -47,13 +47,13 @@
       "name": "create project South 2 Worldpop",
       "request": {
         "body": {
-          "form": {
+          "json": {
             "name": "South 2 Worldpop",
             "note": "a note"
           }
         },
         "method": "POST",
-        "path": "/project/"
+        "path": "/project"
       },
       "response": {
         "body": {
