@@ -120,7 +120,7 @@ def test_rehydrate_bad_requests(scn, pipeline):
 
 def test_rehydrate_does_not_touch_the_session(scn, pipeline):
     pipeline.bind(scn)
-    a = login_and_open(scn)
+    a = login_and_open(scn, project=False)
     ds = uploaded_datasets(a)
     a.post("/rehydrate/zip", files={"file": zip_upload(state(pipeline, ds))}, name="valid zip")
     scn.db_rows("project")

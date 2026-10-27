@@ -76,7 +76,7 @@
       "name": "projectDoesNotExist",
       "request": {
         "body": {
-          "form": {
+          "json": {
             "name": "x"
           }
         },

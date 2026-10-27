@@ -12,19 +12,18 @@ import org.springframework.http.HttpStatus
 class InternalControllerTests
 {
     @Test
-    fun `whoami returns user and version id as headers`()
+    fun `whoami returns only the user as a header`()
     {
         val profile = CommonProfile().apply { id = "test.user@example.com" }
         val mockSession = mock<Session> {
             on { getUserProfile() } doReturn profile
-            on { getVersionId() } doReturn "version1"
         }
 
         val result = InternalController(mockSession).whoami()
 
         assertThat(result.statusCode).isEqualTo(HttpStatus.NO_CONTENT)
         assertThat(result.headers["X-Hint-User"]).containsExactly("test.user@example.com")
-        assertThat(result.headers["X-Hint-Version-Id"]).containsExactly("version1")
+        assertThat(result.headers["X-Hint-Version-Id"]).isNull()
         assertThat(result.body).isNull()
     }
 }

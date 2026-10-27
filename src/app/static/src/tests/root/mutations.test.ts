@@ -28,6 +28,7 @@ import {initialErrorsState} from "../../app/store/errors/errors";
 import {LanguageMutation} from "../../app/store/language/mutations";
 import {Language} from "../../app/store/translations/locales";
 import {router} from "../../app/router";
+import {sessionStorageManager} from "../../app/sessionStorageManager";
 import {initialModelCalibrateState} from "../../app/store/modelCalibrate/modelCalibrate";
 import {initialDownloadResultsState} from "../../app/store/downloadResults/downloadResults";
 import {outputPlotNames} from "../../app/store/plotSelections/plotSelections";
@@ -221,6 +222,8 @@ describe("Root mutations", () => {
 
         expect(state.projects.currentProject).toBe(version);
         expect(state.projects.currentVersion).toBe(version.versions[0]);
+        // the new project's version is the one this tab sends from now on
+        expect(sessionStorageManager.getVersionId()).toBe("newVersion");
 
         expect(state.language).toBe(Language.fr);
 

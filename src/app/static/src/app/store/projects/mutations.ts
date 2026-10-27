@@ -3,6 +3,7 @@ import {ProjectsState} from "./projects";
 import {CurrentProject, DatasetResource, PayloadWithType, Project, Version} from "../../types";
 import {Error} from "../../generated";
 import {router} from "../../router";
+import {sessionStorageManager} from "../../sessionStorageManager";
 
 export enum ProjectsMutations {
     SetLoading = "SetLoading",
@@ -61,6 +62,7 @@ export const mutations: MutationTree<ProjectsState> = {
         const version = action.payload;
         state.currentProject!.versions.push(version);
         state.currentVersion = version;
+        sessionStorageManager.saveVersionId(version.id);
     },
     [ProjectsMutations.VersionUploadSuccess](state: ProjectsState) {
         state.versionTime = new Date(Date.now());
@@ -68,10 +70,12 @@ export const mutations: MutationTree<ProjectsState> = {
     [ProjectsMutations.ClearCurrentVersion](state: ProjectsState) {
         state.currentProject = null;
         state.currentVersion = null;
+        sessionStorageManager.saveVersionId(null);
     },
     [ProjectsMutations.SetCurrentProject](state: ProjectsState, action: PayloadWithType<CurrentProject>) {
         state.currentProject = action.payload.project;
         state.currentVersion = action.payload.version;
+        sessionStorageManager.saveVersionId(action.payload.version ? action.payload.version.id : null);
         // The action which invokes this mutation, fetching current project, is only invoked for logged in users
         // so it is safe to redirect to /projects here if no current project
         if ((state.currentProject == null) && (router.currentRoute.value.path == "/")) {

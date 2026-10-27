@@ -37,16 +37,16 @@
     },
     {
       "client": "A",
-      "name": "OPTIONS /project/ (secured prefix)",
+      "name": "OPTIONS /project (secured prefix)",
       "request": {
         "method": "OPTIONS",
-        "path": "/project/"
+        "path": "/project"
       },
       "response": {
         "body": {
           "json": {
             "error": "Unauthorized",
-            "path": "/project/",
+            "path": "/project",
             "status": 401,
             "timestamp": "<EPOCH_MS>"
           }

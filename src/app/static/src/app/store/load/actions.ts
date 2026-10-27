@@ -7,7 +7,7 @@ import {
     flatMapControlSections,
 } from "../../utils";
 import {DatasetResource, Dict, LocalSessionFile, VersionDetails} from "../../types";
-import {localStorageManager} from "../../localStorageManager";
+import {sessionStorageManager} from "../../sessionStorageManager";
 import {router} from "../../router";
 import {initialStepperState} from "../stepper/stepper";
 import {DynamicFormData} from "@reside-ic/vue-next-dynamic-form";
@@ -44,8 +44,8 @@ export const actions: ActionTree<LoadState, RootState> & LoadActions = {
     },
 
     async updateStoreState(context, savedState) {
-        //File hashes have now been set for session in backend, so we save the state from the file we're loading into local
-        //storage then reload the page, to follow exactly the same fetch and reload procedure as session page refresh
+        //File hashes have now been set for the version in backend, so we save the state from the file we're loading into
+        //session storage then reload the page, to follow exactly the same fetch and reload procedure as page refresh
         //NB load state is not included in the saved state, so we will default back to NotLoading on page reload.
 
         const compatibleState = migrateState(savedState);
@@ -55,7 +55,7 @@ export const actions: ActionTree<LoadState, RootState> & LoadActions = {
         // completed in between the new project state being saved and the reload completing it can break the
         // state. So we commit a mutation to SetLoadingProject which will block any further mutations being committed
         commit({type: `projects/${ProjectsMutations.SetLoadingProject}`, payload: true}, {root:true});
-        localStorageManager.savePartialState(compatibleState);
+        sessionStorageManager.savePartialState(compatibleState);
         location.reload();
     },
 

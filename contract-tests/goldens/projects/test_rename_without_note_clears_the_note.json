@@ -47,13 +47,13 @@
       "name": "create project old",
       "request": {
         "body": {
-          "form": {
+          "json": {
             "name": "old",
             "note": "keep me?"
           }
         },
         "method": "POST",
-        "path": "/project/"
+        "path": "/project"
       },
       "response": {
         "body": {
@@ -89,7 +89,7 @@
       "name": "POST /project/<PROJECT:1>/rename",
       "request": {
         "body": {
-          "form": {
+          "json": {
             "name": "renamed"
           }
         },
