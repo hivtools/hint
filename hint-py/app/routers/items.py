@@ -2,7 +2,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends
 
-from dependencies import User, current_user, requested_version_id
+from app.dependencies import User, current_user, requested_version_id
 
 router = APIRouter(prefix="/items", tags=["items"])
 

@@ -4,7 +4,7 @@ import pytest
 from fastapi import Depends, FastAPI
 from fastapi.testclient import TestClient
 
-from dependencies import User, logged_in_user
+from app.dependencies import User, logged_in_user
 
 
 @pytest.fixture

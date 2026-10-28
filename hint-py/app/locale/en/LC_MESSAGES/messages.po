@@ -1,0 +1,92 @@
+# Messages shown to users by the API. The ids are the keys the Kotlin app uses.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: hint-py 0.1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-27 16:34+0000\n"
+"Language: en\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#. Placeholders: {app_title}, {code} (to quote to support), {support_email}.
+msgid "unexpectedError"
+msgstr ""
+"An unexpected error occurred. If you see this message while you are using {app_title} at a workshop, please contact "
+"your workshop technical support and show them this code: {code}. Otherwise please contact support at {support_email} "
+"and quote this code: {code}."
+
+msgid "loadFailed"
+msgstr "Unable to load files for session. Specified files do not exist on the server."
+
+msgid "userExists"
+msgstr "User already exists."
+
+msgid "invalidEmail"
+msgstr "Please provide a valid email address."
+
+msgid "projectDoesNotExist"
+msgstr "Project does not exist."
+
+msgid "versionDoesNotExist"
+msgstr "Version does not exist."
+
+msgid "invalidVersion"
+msgstr "The version cannot be used by this user."
+
+msgid "guestsOnly"
+msgstr "Only guests can create a guest version."
+
+msgid "userDoesNotExist"
+msgstr "User does not exist."
+
+msgid "missingShapeFile"
+msgstr "You must upload a shape file before uploading survey or programme data."
+
+msgid "missingPjnzFile"
+msgstr "You must upload a Spectrum file before uploading survey or programme data."
+
+msgid "invalidToken"
+msgstr "Token is not valid."
+
+msgid "invalidPasswordLength"
+msgstr "Password must be at least 6 characters long."
+
+msgid "unknownInputTimeSeriesType"
+msgstr "Unknown input time series type."
+
+msgid "noPermissionToAccessResource"
+msgstr "You do not have permission to load this resource from ADR. Contact dataset admin for permission."
+
+#. Placeholders: {resource}.
+msgid "adrResourceError"
+msgstr "Unable to load resource, check resource in ADR {resource}."
+
+msgid "adrFetchingDatasetsError"
+msgstr "There was an error fetching datasets from ADR."
+
+msgid "adrFetchingDatasetsNoAccountError"
+msgstr ""
+"Cannot fetch datasets from the ADR as you do not yet have an account. Please login to the ADR with your Auth0 "
+"credentials and then return here and try again."
+
+msgid "unknownReviewInputFileType"
+msgstr "Unknown review input plot file type."
+
+msgid "missingCalibrateData"
+msgstr "No calibration output found for this project, please report an issue or re-calibrate the model"
+
+msgid "failedZipRehydrate"
+msgstr "Cannot load model outputs. This fit was not generated on the Naomi web application. Please contact support."
+
+msgid "rehydrateMissingInputFile"
+msgstr "Unable to load output zip, input files not found. Please contact a system admin."
+
+msgid "rehydrateModelFitIdUnknown"
+msgstr "Unable to load output zip, model fit not generated on the web app. Please contact a system admin."
+
+msgid "rehydrateCalibrateIdUnknown"
+msgstr "Unable to load output zip, model calibrate not generated on the web app. Please contact a system admin."
