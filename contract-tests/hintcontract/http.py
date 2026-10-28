@@ -77,9 +77,9 @@ class Client:
         hdrs = dict(headers or {})
         if send_cookies and self.cookies:
             hdrs["Cookie"] = "; ".join(f"{k}={v}" for k, v in self.cookies.items())
-        t0 = time.time()
+        t0 = time.perf_counter()
         target = url or (self.base_url + path)
         resp = self._http.request(method, target, params=params, headers=hdrs, json=json, data=data, files=files,
                                   content=content)
         raw_cookies = self._absorb_cookies(resp)
-        return Response(resp.status_code, resp.headers, resp.content, time.time() - t0, raw_cookies)
+        return Response(resp.status_code, resp.headers, resp.content, time.perf_counter() - t0, raw_cookies)
