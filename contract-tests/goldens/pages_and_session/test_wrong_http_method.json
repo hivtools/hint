@@ -55,10 +55,10 @@
     },
     {
       "client": "A",
-      "name": "GET on POST-only /model/run/",
+      "name": "GET on POST-only /model/run",
       "request": {
         "method": "GET",
-        "path": "/model/run/"
+        "path": "/model/run"
       },
       "response": {
         "body": {
@@ -81,10 +81,10 @@
     },
     {
       "client": "A",
-      "name": "POST on GET-only /baseline/validate/",
+      "name": "POST on GET-only /baseline/validate",
       "request": {
         "method": "POST",
-        "path": "/baseline/validate/"
+        "path": "/baseline/validate"
       },
       "response": {
         "body": {
@@ -107,10 +107,10 @@
     },
     {
       "client": "A",
-      "name": "PUT /baseline/pjnz/",
+      "name": "PUT /baseline/pjnz",
       "request": {
         "method": "PUT",
-        "path": "/baseline/pjnz/"
+        "path": "/baseline/pjnz"
       },
       "response": {
         "body": {

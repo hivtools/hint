@@ -137,7 +137,7 @@
           }
         },
         "method": "POST",
-        "path": "/model/run/"
+        "path": "/model/run"
       },
       "response": {
         "body": {

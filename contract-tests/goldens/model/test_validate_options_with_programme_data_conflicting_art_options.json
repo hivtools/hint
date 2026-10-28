@@ -44,7 +44,7 @@
     },
     {
       "client": "A",
-      "name": "POST /model/validate/options/",
+      "name": "POST /model/validate/options",
       "outbound": [
         {
           "headers": {
@@ -170,7 +170,7 @@
           }
         },
         "method": "POST",
-        "path": "/model/validate/options/"
+        "path": "/model/validate/options"
       },
       "response": {
         "body": {

@@ -40,16 +40,16 @@ def run_pipeline(scn: Scenario) -> Pipeline:
     p = Pipeline()
     a = login_and_open(scn, "A")
     upload_minimal(a)
-    opts = a.get("/model/options/", name="model options")
+    opts = a.get("/model/options", name="model options")
     p.version = opts.json()["version"]
-    a.post("/model/validate/options/", json={"options": MODEL_OPTIONS, "version": {}, "iso3": None},
+    a.post("/model/validate/options", json={"options": MODEL_OPTIONS, "version": {}, "iso3": None},
            name="validate model options")
-    r = a.post("/model/run/", json={"options": MODEL_OPTIONS, "version": p.version, "iso3": "MWI"}, name="run model",
+    r = a.post("/model/run", json={"options": MODEL_OPTIONS, "version": p.version, "iso3": "MWI"}, name="run model",
                bind_task="fit")
     p.fit_id = r.data["id"]
     # also a failing fit (the mock model's deterministic error trigger)
     bad = dict(MODEL_OPTIONS, mock_model_trigger_error="true")
-    r = a.post("/model/run/", json={"options": bad, "version": p.version, "iso3": "MWI"}, name="run model that errors",
+    r = a.post("/model/run", json={"options": bad, "version": p.version, "iso3": "MWI"}, name="run model that errors",
                bind_task="fit-error")
     p.error_fit_id = r.data["id"]
     a.poll(f"/model/status/{p.fit_id}", done, "data.done == true", name="fit finished")

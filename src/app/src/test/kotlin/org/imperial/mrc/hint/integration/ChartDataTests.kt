@@ -16,16 +16,16 @@ class ChartDataTests : SecureIntegrationTests()
         authorize()
         testRestTemplate.getForEntity<String>("/")
         val shapePostEntity = getTestEntity("malawi.geojson")
-        testRestTemplate.postForEntity<String>("/baseline/shape/", shapePostEntity)
+        testRestTemplate.postForEntity<String>("/baseline/shape", shapePostEntity)
         val pjnzPostEntity = getTestEntity("Malawi2024.PJNZ")
-        testRestTemplate.postForEntity<String>("/baseline/pjnz/", pjnzPostEntity)
+        testRestTemplate.postForEntity<String>("/baseline/pjnz", pjnzPostEntity)
     }
 
     @Test
     fun `can get input time series chart data for anc`()
     {
         val ancPostEntity = getTestEntity("anc.csv")
-        testRestTemplate.postForEntity<String>("/disease/anc/", ancPostEntity)
+        testRestTemplate.postForEntity<String>("/disease/anc", ancPostEntity)
 
         val responseEntity = testRestTemplate.getForEntity<String>("/chart-data/input-time-series/anc")
         assertSuccess(responseEntity, "InputTimeSeriesResponse")
@@ -38,7 +38,7 @@ class ChartDataTests : SecureIntegrationTests()
     fun `can get input time series chart data for programme`()
     {
         val programmePostEntity = getTestEntity("programme.csv")
-        testRestTemplate.postForEntity<String>("/disease/programme/", programmePostEntity)
+        testRestTemplate.postForEntity<String>("/disease/programme", programmePostEntity)
 
         val responseEntity = testRestTemplate.getForEntity<String>("/chart-data/input-time-series/programme")
         assertSuccess(responseEntity, "InputTimeSeriesResponse")
@@ -58,7 +58,7 @@ class ChartDataTests : SecureIntegrationTests()
     fun `can get input comparison chart data`()
     {
         val programmePostEntity = getTestEntity("programme.csv")
-        testRestTemplate.postForEntity<String>("/disease/programme/", programmePostEntity)
+        testRestTemplate.postForEntity<String>("/disease/programme", programmePostEntity)
 
         val responseEntity = testRestTemplate.getForEntity<String>("/chart-data/input-comparison")
         assertSuccess(responseEntity, "InputComparisonResponse")
@@ -68,7 +68,7 @@ class ChartDataTests : SecureIntegrationTests()
     fun `can get input comparison chart data with only anc`()
     {
         val ancPostEntity = getTestEntity("anc.csv")
-        testRestTemplate.postForEntity<String>("/disease/anc/", ancPostEntity)
+        testRestTemplate.postForEntity<String>("/disease/anc", ancPostEntity)
 
         val responseEntity = testRestTemplate.getForEntity<String>("/chart-data/input-comparison")
         assertSuccess(responseEntity, "InputComparisonResponse")
@@ -78,7 +78,7 @@ class ChartDataTests : SecureIntegrationTests()
     fun `can get input comparison chart data with only programme`()
     {
         val programmePostEntity = getTestEntity("programme.csv")
-        testRestTemplate.postForEntity<String>("/disease/programme/", programmePostEntity)
+        testRestTemplate.postForEntity<String>("/disease/programme", programmePostEntity)
 
         val responseEntity = testRestTemplate.getForEntity<String>("/chart-data/input-comparison")
         assertSuccess(responseEntity, "InputComparisonResponse")
@@ -95,7 +95,7 @@ class ChartDataTests : SecureIntegrationTests()
     fun `can get input population metadata`()
     {
         val populationPostEntity = getTestEntity("population.csv")
-        testRestTemplate.postForEntity<String>("/baseline/population/", populationPostEntity)
+        testRestTemplate.postForEntity<String>("/baseline/population", populationPostEntity)
 
         val responseEntity = testRestTemplate.getForEntity<String>("/chart-data/input-population")
         assertSuccess(responseEntity, "InputPopulationMetadataResponse")

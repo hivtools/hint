@@ -33,37 +33,37 @@ Every endpoint of the Kotlin app, in the order of the [endpoint index](endpoint-
 | POST | `/project/{projectId}/version/{versionId}/note` | Updates a version's note | [x] | |
 | GET | `/project/{projectId}/version/{versionId}` | Loads a saved version and sets it as the session's files | [x] | |
 | DELETE | `/project/{projectId}/version/{versionId}` | Deletes a version (soft delete) | [x] | |
-| POST | `/session/files/` | Sets the session's files from a map of file type to hash | [ ] | |
-| POST | `/baseline/pjnz/` | Uploads and validates the PJNZ (Spectrum) file | [ ] | |
-| GET | `/baseline/pjnz/` | Returns the current PJNZ file, validated again | [ ] | |
-| DELETE | `/baseline/pjnz/` | Removes the PJNZ file from the session | [ ] | |
-| POST | `/baseline/shape/` | Uploads and validates the shape (boundaries) file | [ ] | |
-| GET | `/baseline/shape/` | Returns the current shape file, validated again | [ ] | |
-| DELETE | `/baseline/shape/` | Removes the shape file from the session | [ ] | |
-| POST | `/baseline/population/` | Uploads and validates the population file | [ ] | |
-| GET | `/baseline/population/` | Returns the current population file, validated again | [ ] | |
-| DELETE | `/baseline/population/` | Removes the population file from the session | [ ] | |
-| GET | `/baseline/validate/` | Validates the baseline files together | [ ] | |
-| POST | `/disease/survey/` | Uploads and validates the survey file | [ ] | |
-| GET | `/disease/survey/` | Returns the current survey file, validated again | [ ] | |
-| DELETE | `/disease/survey/` | Removes the survey file from the session | [ ] | |
-| POST | `/disease/programme/` | Uploads and validates the ART programme file | [ ] | |
-| GET | `/disease/programme/` | Returns the current programme file, validated again | [ ] | |
-| DELETE | `/disease/programme/` | Removes the programme file from the session | [ ] | |
-| POST | `/disease/anc/` | Uploads and validates the ANC file | [ ] | |
-| GET | `/disease/anc/` | Returns the current ANC file, validated again | [ ] | |
-| DELETE | `/disease/anc/` | Removes the ANC file from the session | [ ] | |
-| POST | `/disease/vmmc/` | Uploads and validates the VMMC file | [ ] | |
-| GET | `/disease/vmmc/` | Returns the current VMMC file, validated again | [ ] | |
-| DELETE | `/disease/vmmc/` | Removes the VMMC file from the session | [ ] | |
+| POST | `/session/files` | Sets the session's files from a map of file type to hash | [ ] | |
+| POST | `/baseline/pjnz` | Uploads and validates the PJNZ (Spectrum) file | [ ] | |
+| GET | `/baseline/pjnz` | Returns the current PJNZ file, validated again | [ ] | |
+| DELETE | `/baseline/pjnz` | Removes the PJNZ file from the session | [ ] | |
+| POST | `/baseline/shape` | Uploads and validates the shape (boundaries) file | [ ] | |
+| GET | `/baseline/shape` | Returns the current shape file, validated again | [ ] | |
+| DELETE | `/baseline/shape` | Removes the shape file from the session | [ ] | |
+| POST | `/baseline/population` | Uploads and validates the population file | [ ] | |
+| GET | `/baseline/population` | Returns the current population file, validated again | [ ] | |
+| DELETE | `/baseline/population` | Removes the population file from the session | [ ] | |
+| GET | `/baseline/validate` | Validates the baseline files together | [ ] | |
+| POST | `/disease/survey` | Uploads and validates the survey file | [ ] | |
+| GET | `/disease/survey` | Returns the current survey file, validated again | [ ] | |
+| DELETE | `/disease/survey` | Removes the survey file from the session | [ ] | |
+| POST | `/disease/programme` | Uploads and validates the ART programme file | [ ] | |
+| GET | `/disease/programme` | Returns the current programme file, validated again | [ ] | |
+| DELETE | `/disease/programme` | Removes the programme file from the session | [ ] | |
+| POST | `/disease/anc` | Uploads and validates the ANC file | [ ] | |
+| GET | `/disease/anc` | Returns the current ANC file, validated again | [ ] | |
+| DELETE | `/disease/anc` | Removes the ANC file from the session | [ ] | |
+| POST | `/disease/vmmc` | Uploads and validates the VMMC file | [ ] | |
+| GET | `/disease/vmmc` | Returns the current VMMC file, validated again | [ ] | |
+| DELETE | `/disease/vmmc` | Removes the VMMC file from the session | [ ] | |
 | GET | `/chart-data/input-time-series/{type}` | Chart data for the input time series of one data type | [ ] | |
 | GET | `/chart-data/input-comparison` | Chart data comparing the inputs | [ ] | |
 | GET | `/chart-data/input-population` | Chart data for the population input | [ ] | |
 | POST | `/meta/review-inputs/{iso3}` | Metadata (plot settings) for the review inputs page | [ ] | |
 | GET | `/meta/hintr/version` | hintr, naomi and hint versions (version menu) | [ ] | |
-| GET | `/model/options/` | Model options form definition for the uploaded files | [ ] | |
-| POST | `/model/validate/options/` | Validates the chosen model options | [ ] | |
-| POST | `/model/run/` | Queues a model fit | [ ] | |
+| GET | `/model/options` | Model options form definition for the uploaded files | [ ] | |
+| POST | `/model/validate/options` | Validates the chosen model options | [ ] | |
+| POST | `/model/run` | Queues a model fit | [ ] | |
 | GET | `/model/status/{id}` | Status and progress of a model fit | [ ] | |
 | GET | `/model/result/{id}` | Result of a model fit | [ ] | |
 | POST | `/model/cancel/{id}` | Cancels a model fit | [ ] | |

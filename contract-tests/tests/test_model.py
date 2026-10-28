@@ -21,28 +21,28 @@ def ready_session(scn, user=True, extra=()):
 @pytest.mark.parametrize("user", ["guest", "user"])
 def test_model_options_success(scn, user):
     a = ready_session(scn, user == "user")
-    r = a.get("/model/options/")
+    r = a.get("/model/options")
     assert r.status == 200 and "version" in r.json()
 
 
 def test_model_options_with_programme_and_anc_data(scn):
     a = ready_session(scn, extra=("programme", "anc"))
-    a.get("/model/options/", name="options with programme and anc")
+    a.get("/model/options", name="options with programme and anc")
 
 
 def test_model_options_translated(scn):
     a = ready_session(scn)
     for lang in ("fr", "pt"):
-        a.get("/model/options/", headers={"Accept-Language": lang}, name=f"options in {lang}")
+        a.get("/model/options", headers={"Accept-Language": lang}, name=f"options in {lang}")
 
 
 def test_model_options_missing_files(scn):
     a = login_and_open(scn)
-    a.get("/model/options/", name="no files at all")
+    a.get("/model/options", name="no files at all")
     upload(a, "shape")
-    a.get("/model/options/", name="shape only")
+    a.get("/model/options", name="shape only")
     upload(a, "survey", name="survey without pjnz (strict) fails but is stored")
-    a.get("/model/options/", name="shape + a stored survey")
+    a.get("/model/options", name="shape + a stored survey")
 
 
 def test_model_options_ignores_population_and_pjnz(scn):
@@ -51,57 +51,57 @@ def test_model_options_ignores_population_and_pjnz(scn):
         upload(a, "shape")
         upload(a, "pjnz")
         upload(a, "survey")
-    a.get("/model/options/", name="shape+survey is enough")
+    a.get("/model/options", name="shape+survey is enough")
 
 
 # ----------------------------------------------------------------------------------------------- validate options
 def test_validate_options_valid(scn):
     a = ready_session(scn)
-    r = a.post("/model/validate/options/", json={"options": MODEL_OPTIONS, "version": {}, "iso3": None})
+    r = a.post("/model/validate/options", json={"options": MODEL_OPTIONS, "version": {}, "iso3": None})
     assert r.status == 200
 
 
 def test_validate_options_invalid(scn):
     a = ready_session(scn)
-    a.post("/model/validate/options/", json={"options": {}, "version": {}, "iso3": None}, name="no options")
-    a.post("/model/validate/options/", json={"options": {"area_level": "bogus"}, "version": {}, "iso3": None},
+    a.post("/model/validate/options", json={"options": {}, "version": {}, "iso3": None}, name="no options")
+    a.post("/model/validate/options", json={"options": {"area_level": "bogus"}, "version": {}, "iso3": None},
            name="bogus value, other options missing")
     bad = dict(MODEL_OPTIONS, area_level="99")
-    a.post("/model/validate/options/", json={"options": bad, "version": {}, "iso3": None}, name="area level 99")
+    a.post("/model/validate/options", json={"options": bad, "version": {}, "iso3": None}, name="area level 99")
     bad = dict(MODEL_OPTIONS, calendar_quarter_t1="CY2030Q9")
-    a.post("/model/validate/options/", json={"options": bad, "version": {}, "iso3": None}, name="bad quarter")
+    a.post("/model/validate/options", json={"options": bad, "version": {}, "iso3": None}, name="bad quarter")
     extra = dict(MODEL_OPTIONS, not_a_real_option="x")
-    a.post("/model/validate/options/", json={"options": extra, "version": {}, "iso3": None}, name="unknown option")
+    a.post("/model/validate/options", json={"options": extra, "version": {}, "iso3": None}, name="unknown option")
     for lang in ("fr", "pt"):
-        a.post("/model/validate/options/", json={"options": {}, "version": {}, "iso3": None},
+        a.post("/model/validate/options", json={"options": {}, "version": {}, "iso3": None},
                headers={"Accept-Language": lang}, name=f"missing options in {lang}")
 
 
 def test_validate_options_with_programme_data_conflicting_art_options(scn):
     a = ready_session(scn, extra=("programme", "anc"))
-    a.post("/model/validate/options/", json={"options": MODEL_OPTIONS, "version": {}, "iso3": None})
+    a.post("/model/validate/options", json={"options": MODEL_OPTIONS, "version": {}, "iso3": None})
 
 
 def test_validate_options_without_files(scn):
     a = login_and_open(scn)
-    a.post("/model/validate/options/", json={"options": MODEL_OPTIONS, "version": {}, "iso3": None})
+    a.post("/model/validate/options", json={"options": MODEL_OPTIONS, "version": {}, "iso3": None})
 
 
 def test_validate_options_bad_requests(scn):
     a = ready_session(scn)
-    a.post("/model/validate/options/", name="no body")
-    a.post("/model/validate/options/", json={"foo": 1}, name="wrong fields")
-    a.post("/model/validate/options/", json={"options": "text", "version": {}, "iso3": None}, name="options not an object")
-    a.post("/model/validate/options/", content_type="application/json", raw_body=b"{nope", name="malformed json")
-    a.post("/model/validate/options/", json={"options": {}}, name="version missing")
-    a.get("/model/validate/options/", name="wrong method")
+    a.post("/model/validate/options", name="no body")
+    a.post("/model/validate/options", json={"foo": 1}, name="wrong fields")
+    a.post("/model/validate/options", json={"options": "text", "version": {}, "iso3": None}, name="options not an object")
+    a.post("/model/validate/options", content_type="application/json", raw_body=b"{nope", name="malformed json")
+    a.post("/model/validate/options", json={"options": {}}, name="version missing")
+    a.get("/model/validate/options", name="wrong method")
 
 
 # ----------------------------------------------------------------------------------------------- run
 def test_run_status_result_cycle(scn):
     a = ready_session(scn)
-    opts = a.get("/model/options/", name="options").json()
-    r = a.post("/model/run/", json={"options": MODEL_OPTIONS, "version": opts["version"], "iso3": "MWI"},
+    opts = a.get("/model/options", name="options").json()
+    r = a.post("/model/run", json={"options": MODEL_OPTIONS, "version": opts["version"], "iso3": "MWI"},
                name="run", bind_task="run")
     a.poll(f"/model/status/{r.data['id']}", done, "data.done == true", name="status until done")
     a.get(f"/model/result/{r.data['id']}", name="result")
@@ -111,9 +111,9 @@ def test_run_status_result_cycle(scn):
 def test_run_that_fails_deterministically(scn):
     """mock_model_trigger_error=true makes the mock model stop immediately."""
     a = ready_session(scn)
-    opts = a.get("/model/options/", name="options").json()
+    opts = a.get("/model/options", name="options").json()
     bad = dict(MODEL_OPTIONS, mock_model_trigger_error="true")
-    r = a.post("/model/run/", json={"options": bad, "version": opts["version"], "iso3": "MWI"}, name="run", bind_task="err")
+    r = a.post("/model/run", json={"options": bad, "version": opts["version"], "iso3": "MWI"}, name="run", bind_task="err")
     a.poll(f"/model/status/{r.data['id']}", done, "data.done == true", name="status")
     a.get(f"/model/result/{r.data['id']}", name="result is the model error")
     a.get(f"/model/result/{r.data['id']}", headers={"Accept-Language": "fr"}, name="result in french")
@@ -122,8 +122,8 @@ def test_run_that_fails_deterministically(scn):
 
 def test_mock_model_accepts_garbage_options(scn):
     a = ready_session(scn)
-    opts = a.get("/model/options/", name="options").json()
-    r = a.post("/model/run/", json={"options": {"area_level": "bogus"}, "version": opts["version"], "iso3": "MWI"},
+    opts = a.get("/model/options", name="options").json()
+    r = a.post("/model/run", json={"options": {"area_level": "bogus"}, "version": opts["version"], "iso3": "MWI"},
                name="garbage options", bind_task="garbage")
     a.poll(f"/model/status/{r.data['id']}", done, "data.done == true", name="status")
     a.get(f"/model/result/{r.data['id']}", name="result")
@@ -131,7 +131,7 @@ def test_mock_model_accepts_garbage_options(scn):
 
 def test_run_without_input_files(scn):
     a = login_and_open(scn)
-    r = a.post("/model/run/", json={"options": MODEL_OPTIONS, "version": {"hintr": "1", "naomi": "1", "rrq": "1"},
+    r = a.post("/model/run", json={"options": MODEL_OPTIONS, "version": {"hintr": "1", "naomi": "1", "rrq": "1"},
                                     "iso3": "MWI"}, name="run with no files", bind_task="nofiles")
     if r.status == 200:
         a.poll(f"/model/status/{r.data['id']}", done, "data.done == true", name="status")
@@ -141,13 +141,13 @@ def test_run_without_input_files(scn):
 def test_run_bad_requests(scn):
     a = ready_session(scn)
     ver = {"hintr": "1", "naomi": "1", "rrq": "1"}
-    a.post("/model/run/", json={"options": MODEL_OPTIONS, "version": {}, "iso3": "MWI"}, name="empty version")
-    a.post("/model/run/", json={"options": MODEL_OPTIONS, "version": ver}, name="no iso3")
-    a.post("/model/run/", json={"options": MODEL_OPTIONS, "version": ver, "iso3": 5}, name="iso3 not a string")
-    a.post("/model/run/", name="no body")
-    a.post("/model/run/", json={}, name="empty object")
-    a.post("/model/run/", content_type="application/json", raw_body=b"[1,2]", name="array")
-    a.post("/model/run/", json={"options": MODEL_OPTIONS, "version": {}, "iso3": "MWI"},
+    a.post("/model/run", json={"options": MODEL_OPTIONS, "version": {}, "iso3": "MWI"}, name="empty version")
+    a.post("/model/run", json={"options": MODEL_OPTIONS, "version": ver}, name="no iso3")
+    a.post("/model/run", json={"options": MODEL_OPTIONS, "version": ver, "iso3": 5}, name="iso3 not a string")
+    a.post("/model/run", name="no body")
+    a.post("/model/run", json={}, name="empty object")
+    a.post("/model/run", content_type="application/json", raw_body=b"[1,2]", name="array")
+    a.post("/model/run", json={"options": MODEL_OPTIONS, "version": {}, "iso3": "MWI"},
            headers={"Accept-Language": "fr"}, name="empty version in french")
 
 
@@ -188,8 +188,8 @@ def test_task_ids_are_a_single_namespace(scn, pipeline):
 
 def test_cancel_running_model(scn):
     a = ready_session(scn)
-    opts = a.get("/model/options/", name="options").json()
-    r = a.post("/model/run/", json={"options": MODEL_OPTIONS, "version": opts["version"], "iso3": "MWI"},
+    opts = a.get("/model/options", name="options").json()
+    r = a.post("/model/run", json={"options": MODEL_OPTIONS, "version": opts["version"], "iso3": "MWI"},
                name="run", bind_task="to-cancel")
     # wait until the worker has really started (progress appears), then cancel
     a.poll(f"/model/status/{r.data['id']}", lambda x: x.json()["data"]["status"] == "RUNNING" and x.json()["data"]["progress"],

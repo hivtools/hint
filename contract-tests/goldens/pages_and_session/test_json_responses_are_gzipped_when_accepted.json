@@ -58,7 +58,7 @@
           "accept-encoding": "gzip"
         },
         "method": "POST",
-        "path": "/baseline/shape/"
+        "path": "/baseline/shape"
       },
       "response": {
         "body": {

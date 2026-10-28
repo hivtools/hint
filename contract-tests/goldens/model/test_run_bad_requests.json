@@ -158,7 +158,7 @@
           }
         },
         "method": "POST",
-        "path": "/model/run/"
+        "path": "/model/run"
       },
       "response": {
         "body": {
@@ -293,7 +293,7 @@
           }
         },
         "method": "POST",
-        "path": "/model/run/"
+        "path": "/model/run"
       },
       "response": {
         "body": {
@@ -429,7 +429,7 @@
           }
         },
         "method": "POST",
-        "path": "/model/run/"
+        "path": "/model/run"
       },
       "response": {
         "body": {
@@ -446,7 +446,7 @@
       "name": "no body",
       "request": {
         "method": "POST",
-        "path": "/model/run/"
+        "path": "/model/run"
       },
       "response": {
         "body": {
@@ -475,7 +475,7 @@
           "json": {}
         },
         "method": "POST",
-        "path": "/model/run/"
+        "path": "/model/run"
       },
       "response": {
         "body": {
@@ -508,7 +508,7 @@
           }
         },
         "method": "POST",
-        "path": "/model/run/"
+        "path": "/model/run"
       },
       "response": {
         "body": {
@@ -648,7 +648,7 @@
           "accept-language": "fr"
         },
         "method": "POST",
-        "path": "/model/run/"
+        "path": "/model/run"
       },
       "response": {
         "body": {

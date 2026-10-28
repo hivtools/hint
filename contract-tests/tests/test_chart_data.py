@@ -36,7 +36,7 @@ def test_input_time_series_errors(scn):
 
 def test_input_time_series_needs_shape_and_pjnz(scn):
     a = login_and_open(scn)
-    a.post("/disease/anc/", files={"file": "anc.csv"}, params={"strict": "false"}, name="anc without shape (rejected, stored)")
+    a.post("/disease/anc", files={"file": "anc.csv"}, params={"strict": "false"}, name="anc without shape (rejected, stored)")
     a.get("/chart-data/input-time-series/anc", name="anc chart without shape")
     upload(a, "shape")
     upload(a, "programme", name="programme without pjnz, strict (rejected, stored)")
@@ -56,7 +56,7 @@ def test_input_comparison(scn):
     a.get("/chart-data/input-comparison", name="anc only")
     upload(a, "programme")
     a.get("/chart-data/input-comparison", name="anc and programme")
-    a.delete("/disease/anc/", name="remove anc")
+    a.delete("/disease/anc", name="remove anc")
     a.get("/chart-data/input-comparison", name="programme only")
     a.get("/chart-data/input-comparison", headers={"Accept-Language": "pt"}, name="in portuguese")
 

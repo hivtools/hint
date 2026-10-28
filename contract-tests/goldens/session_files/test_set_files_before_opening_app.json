@@ -9,7 +9,7 @@
           "json": {}
         },
         "method": "POST",
-        "path": "/session/files/"
+        "path": "/session/files"
       },
       "response": {
         "body": {
@@ -39,7 +39,7 @@
           }
         },
         "method": "POST",
-        "path": "/session/files/"
+        "path": "/session/files"
       },
       "response": {
         "body": {

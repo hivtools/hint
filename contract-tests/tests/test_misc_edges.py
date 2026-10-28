@@ -50,8 +50,8 @@ def test_projects_are_listed_most_recently_updated_first(scn):
 def test_filename_with_path_components(scn):
     a = login_and_open(scn)
     data = (scn.env.fixtures_dir / "Malawi2024.PJNZ").read_bytes()
-    a.post("/baseline/pjnz/", files={"file": Upload("C:\\Users\\me\\Malawi2024.PJNZ", data)}, name="windows path as filename")
-    a.post("/baseline/pjnz/", files={"file": Upload("some/dir/Malawi2024.PJNZ", data)}, name="unix path as filename")
+    a.post("/baseline/pjnz", files={"file": Upload("C:\\Users\\me\\Malawi2024.PJNZ", data)}, name="windows path as filename")
+    a.post("/baseline/pjnz", files={"file": Upload("some/dir/Malawi2024.PJNZ", data)}, name="unix path as filename")
     scn.db_rows("version_file")
     scn.uploads()
 
@@ -59,7 +59,7 @@ def test_filename_with_path_components(scn):
 def test_multipart_part_content_type_and_extra_parts_are_ignored(scn):
     a = login_and_open(scn)
     data = (scn.env.fixtures_dir / "Malawi2024.PJNZ").read_bytes()
-    a.post("/baseline/pjnz/", files={"file": Upload("a.PJNZ", data, "text/plain")}, form={"extra": "ignored"},
+    a.post("/baseline/pjnz", files={"file": Upload("a.PJNZ", data, "text/plain")}, form={"extra": "ignored"},
            name="declared text/plain plus an extra form field")
 
 

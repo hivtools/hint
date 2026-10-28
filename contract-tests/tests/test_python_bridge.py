@@ -50,9 +50,41 @@ def test_python_reads_the_version_the_tab_sends(client):
     assert client.send("GET", "/items/whoami", send_cookies=False).json()["version_id"] is None
 
 
+def new_guest_version(c: Client) -> str:
+    r = c.send("POST", "/guest/version")
+    assert r.status == 200
+    return r.json()["data"]["id"]
+
+
+def test_python_sees_the_versions_kotlin_gave_to_a_guest(client):
+    client.send("GET", "/")  # the first Kotlin page starts the session
+    assert client.send("GET", "/items/whoami").json()["guest_version_ids"] == []
+    first = new_guest_version(client)
+    second = new_guest_version(client)
+    assert client.send("GET", "/items/whoami").json()["guest_version_ids"] == sorted([first, second])
+
+
+def test_guest_versions_belong_to_one_session(client):
+    client.send("GET", "/")
+    new_guest_version(client)
+    other = Client(client.base_url)
+    try:
+        other.send("GET", "/")
+        assert other.send("GET", "/items/whoami").json()["guest_version_ids"] == []
+    finally:
+        other.close()
+
+
+def test_python_sees_no_guest_versions_for_a_logged_in_user(client):
+    login(client)
+    assert client.send("GET", "/items/whoami").json()["guest_version_ids"] == []
+
+
 def test_client_cannot_spoof_the_identity_headers(client):
     r = client.send("GET", "/items/whoami", headers={"X-Hint-User": "admin"}, send_cookies=False)
     assert r.json()["user"] == "guest"
+    r = client.send("GET", "/items/whoami", headers={"X-Hint-Guest-Versions": "forged"}, send_cookies=False)
+    assert r.json()["guest_version_ids"] == []
 
 
 def test_internal_endpoints_are_not_public(client):

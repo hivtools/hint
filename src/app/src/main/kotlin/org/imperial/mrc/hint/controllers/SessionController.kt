@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*
 class SessionController(private val fileManager: FileManager)
 {
 
-    @PostMapping("/files/")
+    @PostMapping("/files")
     @ResponseBody
     fun postFiles(@RequestBody files: Map<String, VersionFile?>): ResponseEntity<String>
     {

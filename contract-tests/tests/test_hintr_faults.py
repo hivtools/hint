@@ -82,9 +82,9 @@ def test_hintr_failure_on_upload_validation_keeps_the_upload(scn):
     a = login_and_open(scn)
     inject(scn, {"type": "status", "status": 503, "body": "down", "content_type": "text/plain"},
            path=r"^/validate/baseline-individual$")
-    a.post("/baseline/pjnz/", files={"file": "Malawi2024.PJNZ"}, name="validation fails because hintr is down")
+    a.post("/baseline/pjnz", files={"file": "Malawi2024.PJNZ"}, name="validation fails because hintr is down")
     scn.set_faults("hintr", [])
-    a.get("/baseline/pjnz/", name="the file was stored and validates once hintr is back")
+    a.get("/baseline/pjnz", name="the file was stored and validates once hintr is back")
     scn.db_rows("version_file")
     scn.uploads()
 
@@ -95,10 +95,10 @@ def test_hintr_down_for_each_validation_endpoint(scn):
         upload(a, "shape")
         upload(a, "pjnz")
     inject(scn, {"type": "close"}, path=".*")
-    a.post("/baseline/population/", files={"file": "population.csv"}, name="population upload")
-    a.get("/baseline/validate/", name="combined validation")
-    a.post("/disease/anc/", files={"file": "anc.csv"}, name="anc upload")
-    a.get("/model/options/", name="model options")
+    a.post("/baseline/population", files={"file": "population.csv"}, name="population upload")
+    a.get("/baseline/validate", name="combined validation")
+    a.post("/disease/anc", files={"file": "anc.csv"}, name="anc upload")
+    a.get("/model/options", name="model options")
     a.get("/chart-data/input-population", name="chart data")
     a.post("/meta/review-inputs/MWI", json={"types": ["shape"]}, name="review inputs")
     a.get("/calibrate/options/MWI", name="calibrate options")
@@ -109,7 +109,7 @@ def test_hintr_down_for_each_validation_endpoint(scn):
     a.get("/download/status/x", name="download status")
     a.get("/meta/adr/x", name="adr metadata")
     a.get("/metrics", name="metrics")
-    a.get("/baseline/pjnz/", name="GET re-validation")
+    a.get("/baseline/pjnz", name="GET re-validation")
 
 
 def test_download_result_when_hintr_fails(scn, pipeline):
