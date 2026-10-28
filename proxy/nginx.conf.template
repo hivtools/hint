@@ -33,6 +33,12 @@ server {
 
     # ---- Migrated to Python ----
     location /items/ { include snippets/python.conf; }
+    # Projects and their versions. /projects (no slash) is the page, which Kotlin serves
+    location = /project { include snippets/python.conf; }
+    location /project/ { include snippets/python.conf; }
+    location /projects/ { include snippets/python.conf; }
+    # Without this nginx redirects /projects to /projects/
+    location = /projects { include snippets/kotlin.conf; }
 
     # ---- Identity bridge ----
     # Only reachable from auth_request, never directly. The Cookie and Authorization headers of the original request
