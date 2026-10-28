@@ -17,7 +17,7 @@ from typing import Any, Callable
 
 import httpx
 
-from . import bodies
+from . import bodies, timings
 from .compare import diff, sort_lists_at
 from .controls import ControlApi, Db
 from .env import Env
@@ -397,6 +397,8 @@ class RecordedClient:
         if step_extra:
             step.update(step_extra)
         scn.add_step(step)
+        if _prepared is None:
+            timings.record(scn.name, method, step["request"]["path"], resp.status, resp.elapsed)
         resp.step = step  # type: ignore[attr-defined]
         return resp
 
