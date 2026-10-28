@@ -14,7 +14,7 @@ test: ## Run the tests with coverage
 
 .PHONY: run
 run: ## Run the API locally with auto reload
-	@uv run fastapi dev main.py
+	@uv run fastapi dev app/main.py
 
 .PHONY: help
 help:

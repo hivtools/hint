@@ -10,4 +10,4 @@ RUN uv sync --frozen --no-dev --no-install-project
 COPY . .
 EXPOSE 8000
 # No --reload here, docker-compose.yml adds it for development
-CMD ["uv", "run", "--frozen", "--no-dev", "fastapi", "run", "main.py", "--port", "8000"]
+CMD ["uv", "run", "--frozen", "--no-dev", "fastapi", "run", "app/main.py", "--port", "8000"]

@@ -4,29 +4,36 @@ version = "0.1.0"
 description = "Backend API for naomi/hint web app"
 requires-python = ">=3.14"
 dependencies = [
+    "asyncpg>=0.32.0",
+    "babel>=2.18.0",
     "fastapi[standard]>=0.157.0",
     "opentelemetry-distro>=0.66b1",
     "opentelemetry-exporter-otlp>=1.45.1",
     "opentelemetry-instrumentation-fastapi>=0.66b1",
+    "pydantic-settings>=2.16.1",
+    "sqlalchemy[asyncio]>=2.1.6",
 ]
 
 [dependency-groups]
 dev = [
+    "aiosqlite>=0.22.1",
     "httpx>=0.28.1",
     "pre-commit>=4.5.1",
     "pytest>=9.1.1",
+    "pytest-asyncio>=1.4.1",
     "pytest-cov",
     "ruff",
     "ty",
 ]
 
 [tool.pytest.ini_options]
-# Put the project root on sys.path so `from main import app` and `from dependencies import ...` resolve
+# Put the project root on sys.path so `from app.main import app` resolves
 pythonpath = ["."]
 testpaths = ["tests"]
+asyncio_mode = "auto"
 
 [tool.coverage.run]
-source = ["."]
+source = ["app"]
 omit = ["tests/*", ".venv/*"]
 
 [tool.ruff]
@@ -71,9 +78,9 @@ ignore = [
 ]
 
 [tool.ruff.lint.isort]
-# Our own top level modules. Listed explicitly because the editor runs ruff from the repo root, where `src` is not
-# enough for it to see these as first party. Add new top level modules/packages (services, db, ...) here.
-known-first-party = ["dependencies", "main", "routers"]
+# Our own top level packages. Listed explicitly because the editor runs ruff from the repo root, where `src` is not
+# enough for it to see these as first party. Everything lives under `app`, so this should not need to change.
+known-first-party = ["app"]
 
 [tool.ruff.lint.per-file-ignores]
-"tests/*" = ["S101"] # assert is how pytest tests work
+"tests/*" = ["S101", "S105"] # assert is how pytest tests work, and the passwords in them are made up

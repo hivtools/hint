@@ -1,7 +1,7 @@
 # hint-py
 
 Python (FastAPI) backend for hint. It is being built up alongside the Kotlin app, which still handles authentication:
-the nginx proxy passes the user's identity to this API in headers (see `dependencies.py`).
+the nginx proxy passes the user's identity to this API in headers (see `app/dependencies.py`).
 
 ### Prerequisites
 
@@ -11,10 +11,19 @@ the nginx proxy passes the user's identity to this API in headers (see `dependen
 ## Layout
 
 ```
-main.py        creates the FastAPI app and includes the routers
-dependencies.py shared FastAPI dependencies, e.g. who is making the request
-routers/       one module per group of endpoints
-tests/         pytest tests
+app/main.py          creates the FastAPI app and includes the routers
+app/dependencies.py  shared FastAPI dependencies, e.g. who is making the request
+app/config.py        settings, read from HINT_* environment variables
+app/db/              engine and session (database.py), SQLAlchemy tables (models.py), and the queries, one repository per
+                     group of tables. The schema is owned by the Kotlin migrations
+app/schemas.py       request and response models
+app/errors.py        errors in the format the Vue app expects, with translated messages
+app/messages.py      looks up translations in app/locale/ (gettext .po files, one per language, read with Babel)
+app/services/        logic that spans repositories
+app/routers/         one module per group of endpoints
+tests/api/           endpoint tests, through the whole app on an in memory test database
+tests/db/            repository and session tests
+tests/               everything else (config, errors, messages, dependencies), shared fixtures in conftest.py
 ```
 
 ## First time setup
