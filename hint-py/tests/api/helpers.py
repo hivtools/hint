@@ -9,7 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncEngine
 
 from app import schemas
 from app.db.database import create_db_session_factory
-from app.db.models import ProjectVersion
+from app.db.models import File, ProjectVersion
 from app.db.version_repository import VersionRepository
 from app.main import app
 
@@ -46,6 +46,9 @@ async def save_state(client: httpx.AsyncClient, project: dict, version_id: str |
 
 async def add_file(engine: AsyncEngine, version_id: str, file_type: str = "pjnz"):
     async with create_db_session_factory(engine)() as db_session, db_session.begin():
+        if await db_session.get(File, "abc123") is None:
+            db_session.add(File(hash="abc123"))
+            await db_session.flush()
         await VersionRepository(db_session).set_files_for_version(
             version_id,
             {
