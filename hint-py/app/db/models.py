@@ -1,8 +1,8 @@
 """The tables this API reads and writes.
 
 The schema is owned by the Kotlin app's migrations (see src/databaseInterface), so these only describe it, they must
-never be used to create or change it outside of tests. Foreign keys to tables that are not modelled here (`users`,
-`file`) are left out, the database still enforces them.
+never be used to create or change it outside of tests. Foreign keys to `users`, which is not modelled in full, are left
+out, the database still enforces them.
 """
 
 from datetime import datetime
@@ -41,6 +41,14 @@ class User(Base):
     username: Mapped[str | None]
 
 
+class File(Base):
+    """A file that has been uploaded, by the hash of its content."""
+
+    __tablename__ = "file"
+
+    hash: Mapped[str] = mapped_column(primary_key=True)
+
+
 class Project(Base):
     __tablename__ = "project"
 
@@ -70,7 +78,7 @@ class VersionFile(Base):
     __tablename__ = "version_file"
 
     version: Mapped[str] = mapped_column(ForeignKey("project_version.id"), primary_key=True)
-    hash: Mapped[str] = mapped_column(primary_key=True)
+    hash: Mapped[str] = mapped_column(ForeignKey("file.hash"), primary_key=True)
     type: Mapped[str] = mapped_column(primary_key=True)
     filename: Mapped[str]
     from_adr: Mapped[bool] = mapped_column(server_default=false())

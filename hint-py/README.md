@@ -49,6 +49,20 @@ This creates the virtual environment and installs the git hooks:
 Add a dependency with `uv add <package>` (or `uv add --dev <package>` for dev tools) and commit the changed
 `pyproject.toml` and `uv.lock`.
 
+### Tests on Postgres
+
+By default the tests use an in memory SQLite database, so they need nothing installed. The same tests can run on a real
+Postgres, which checks what SQLite cannot (the real schema, the trigger that sets `updated`, foreign keys):
+
+```
+docker compose up -d --wait db db-migrate db-users      # from the repository root
+HINT_TEST_DB_URL=postgresql+asyncpg://hintuser:changeme@localhost:5432/hint uv run pytest
+```
+
+The database is emptied before every test. The tests refuse to run if it has projects in it, unless
+`HINT_TEST_DB_RESET=1` is set. The contract tests in `contract-tests/` cover every endpoint end to end on Postgres
+as well.
+
 ## CI
 
 `.github/workflows/hint-py.yml` runs on changes under `hint-py/`:

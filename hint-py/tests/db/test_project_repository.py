@@ -6,9 +6,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.db.models import ProjectVersion
 from app.db.project_repository import ProjectRepository
 from app.errors import ProjectDoesNotExistError
+from tests.support import OTHER_USER, USER
 
-USER = "test.user@example.com"
-OTHER_USER = "other@example.com"
 NOW = datetime(2026, 1, 1, 12, 0, 0)
 
 
@@ -41,12 +40,12 @@ async def add_version(
 
 
 async def test_save_new_project_returns_its_id_and_stores_everything(repo, session):
-    project_id = await repo.save_new_project(USER, "p1", shared_by="sharer", note="a note", is_uploaded=True)
+    project_id = await repo.save_new_project(USER, "p1", shared_by=OTHER_USER, note="a note", is_uploaded=True)
     await add_version(session, project_id, "v1")
 
     project = await repo.get_project(project_id, USER)
     assert project.name == "p1"
-    assert project.shared_by == "sharer"
+    assert project.shared_by == OTHER_USER
     assert project.note == "a note"
     assert project.is_uploaded is True
 
