@@ -17,7 +17,7 @@ JWT_RE = re.compile(r"eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]*")
 TS_RE = re.compile(r"\d{4}-\d\d-\d\d[T ]\d\d:\d\d:\d\d(?:[.,]\d+)?(?:Z|[+-]\d\d:?\d\d)?")
 TS_DASH_RE = re.compile(r"\d{4}-\d\d-\d\dT\d\d-\d\d-\d\d(?:[.,]\d+)?Z?")      # Instant used as a file name
 COMPACT_TS_RE = re.compile(r"(?<!\d)20\d{6}-\d{4,6}(?!\d)")                      # hintr iso_time_str(): 20261021-1423
-ERROR_CODE_RE = re.compile(r"\bu[a-z]{2}-[a-z]{3}-[a-z]{3}\b")                   # hint "unexpected error" code
+ERROR_CODE_RE = re.compile(r"\bu(?:[a-z]{2}-[a-z]{3}-[a-z]{3}|[0-9a-f]{8})\b")      # hint "unexpected error" code (Kotlin, Python)
 ERROR_KEY_RE = re.compile(r"\b[a-z]{5}-[a-z]{5}-[a-z]{5}\b")                     # hintr error "key"
 ELAPSED_RE = re.compile(r"[\d.]+ ?m?s elapsed")
 STATE_RE = re.compile(r"([?&]state=)[^&\s\"]+")

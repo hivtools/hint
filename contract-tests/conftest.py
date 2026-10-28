@@ -45,6 +45,8 @@ def pytest_addoption(parser):
     g.addoption("--idp-host", default=_default("HINT_IDP_HOST", "localhost:8884"),
                 help="oauth2_client_url configured in the SUT")
     g.addoption("--goldens-dir", default=str(ROOT / "goldens"))
+    g.addoption("--timings-file", default=_default("HINT_TIMINGS_FILE"),
+                help="write how long every request took to this JSON file, see hintcontract/timings.py")
     g.addoption("--record", action="store_true", default=False,
                 help="write golden files from the running SUT instead of comparing")
     g.addoption("--run-slow", action="store_true", default=False, help="also run tests marked slow")
@@ -154,6 +156,10 @@ def pytest_sessionfinish(session, exitstatus):
     import json
     config = session.config
     env: Env = config._hint_env
+    timings_file = config.getoption("--timings-file")
+    if timings_file:
+        from hintcontract import timings
+        timings.write(Path(timings_file), config.getoption("--base-url"))
     live = getattr(config, "_hintr_versions", None)
     if env.record and live and not _is_partial_run(config):
         (env.goldens_dir / META_FILE).write_text(json.dumps(live, indent=2, sort_keys=True) + "\n")
