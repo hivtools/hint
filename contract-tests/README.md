@@ -36,7 +36,8 @@ at the start if it holds projects, uploaded files, ADR keys or extra users, unle
 `PORT_OFFSET=10000 scripts/dev.sh test`.
 
 In this stack Kotlin talks to the stubs (ADR, the SSO identity provider and the error-report flow), not to the real
-services. `REAL_ADR=1 scripts/dev.sh up` keeps the real ADR for manual work; the tests then refuse to run.
+services. The ADR is the exception for manual work: `scripts/dev.sh up` keeps the real ADR (`REAL_ADR=0` for the stub),
+and `scripts/dev.sh test` switches the running app to the stub first.
 
 With the proxy in front (the default) the whole suite runs through nginx, and `tests/test_python_bridge.py` additionally
 checks the identity bridge to the Python API (skipped with `up --no-proxy`). See `../proxy/README.md`.
