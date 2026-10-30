@@ -42,6 +42,13 @@ class VersionDoesNotExistError(HintError):
         super().__init__("versionDoesNotExist", 400)
 
 
+class InvalidVersionError(HintError):
+    """The user may not use the version in the X-Version-Id header (or sent none). The Vue app starts again on this code."""
+
+    def __init__(self):
+        super().__init__("invalidVersion", 403, "INVALID_VERSION")
+
+
 class UserDoesNotExistError(HintError):
     def __init__(self):
         super().__init__("userDoesNotExist", 400)

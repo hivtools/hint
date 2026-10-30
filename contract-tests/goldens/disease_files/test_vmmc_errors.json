@@ -80,7 +80,7 @@
           }
         },
         "method": "POST",
-        "path": "/disease/vmmc/"
+        "path": "/disease/vmmc"
       },
       "response": {
         "body": {
@@ -130,7 +130,7 @@
           }
         },
         "method": "POST",
-        "path": "/disease/vmmc/"
+        "path": "/disease/vmmc"
       },
       "response": {
         "body": {
@@ -180,7 +180,7 @@
           }
         },
         "method": "POST",
-        "path": "/disease/vmmc/"
+        "path": "/disease/vmmc"
       },
       "response": {
         "body": {
@@ -229,7 +229,7 @@
           }
         },
         "method": "POST",
-        "path": "/disease/vmmc/"
+        "path": "/disease/vmmc"
       },
       "response": {
         "body": {
@@ -278,7 +278,7 @@
           }
         },
         "method": "POST",
-        "path": "/disease/vmmc/"
+        "path": "/disease/vmmc"
       },
       "response": {
         "body": {

@@ -14,7 +14,12 @@ async def whoami(
     user: Annotated[User, Depends(current_user)],
     version_id: Annotated[str | None, Depends(requested_version_id)],
 ):
-    return {"user": user.id, "version_id": version_id, "is_guest": user.is_guest}
+    return {
+        "user": user.id,
+        "version_id": version_id,
+        "is_guest": user.is_guest,
+        "guest_version_ids": sorted(user.guest_version_ids),
+    }
 
 
 @router.get("/{item_id}")

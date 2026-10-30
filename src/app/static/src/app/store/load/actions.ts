@@ -122,7 +122,7 @@ async function getFilesAndLoad(context: ActionContext<LoadState, RootState>,
     await api<LoadActionTypes, LoadErrorActionTypes>(context)
         .withSuccess("UpdatingState")
         .withError("LoadFailed")
-        .postAndReturn<Dict<LocalSessionFile>>("/session/files/", files)
+        .postAndReturn<Dict<LocalSessionFile>>("/session/files", files)
         .then((response) => {
             if (response && response.data) {
                 if (state.loadingState != LoadingState.LoadFailed) {

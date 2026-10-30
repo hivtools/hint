@@ -53,7 +53,7 @@ abstract class SecureIntegrationTests : CleanDatabaseTests()
     protected fun getModelRunEntity(modelEntity: Map<String, Any>): HttpEntity<String>
     {
         uploadMinimalFiles()
-        val optionsResponseEntity = testRestTemplate.getForEntity<String>("/model/options/")
+        val optionsResponseEntity = testRestTemplate.getForEntity<String>("/model/options")
         val versionJson = parser.readTree(optionsResponseEntity.body!!)["version"]
         val version = parser.treeToValue<Map<String, String>>(versionJson)
 
@@ -88,23 +88,23 @@ abstract class SecureIntegrationTests : CleanDatabaseTests()
 
     protected fun uploadMinimalFiles()
     {
-        testRestTemplate.postForEntity<String>("/baseline/shape/",
+        testRestTemplate.postForEntity<String>("/baseline/shape",
                 getTestEntity("malawi.geojson"))
 
-        testRestTemplate.postForEntity<String>("/baseline/pjnz/",
+        testRestTemplate.postForEntity<String>("/baseline/pjnz",
                 getTestEntity("Malawi2024.PJNZ"))
 
-        testRestTemplate.postForEntity<String>("/baseline/population/",
+        testRestTemplate.postForEntity<String>("/baseline/population",
                 getTestEntity("population.csv"))
 
-        testRestTemplate.postForEntity<String>("/disease/survey/",
+        testRestTemplate.postForEntity<String>("/disease/survey",
                 getTestEntity("survey.csv"))
     }
 
     protected fun waitForModelRunResult(): String
     {
         val entity = getModelRunEntity(getMockModelOptions())
-        val runResult = testRestTemplate.postForEntity<String>("/model/run/", entity)
+        val runResult = testRestTemplate.postForEntity<String>("/model/run", entity)
         val id = ObjectMapper().readValue<JsonNode>(runResult.body!!)["data"]["id"].textValue()
 
         do

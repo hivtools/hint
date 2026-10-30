@@ -29,13 +29,13 @@ class SessionTests : SecureIntegrationTests()
     {
 
         val postFileEntity = getTestEntity("Botswana2018.PJNZ")
-        val uploadResult = testRestTemplate.postForEntity<String>("/baseline/pjnz/", postFileEntity)
+        val uploadResult = testRestTemplate.postForEntity<String>("/baseline/pjnz", postFileEntity)
         val hash = getResponseData(uploadResult)["hash"].textValue()
 
         val files = mapOf("pjnz" to VersionFile(hash, "file1", false))
         val postEntity = getJsonEntity(files)
 
-        val responseEntity = testRestTemplate.postForEntity<String>("/session/files/", postEntity)
+        val responseEntity = testRestTemplate.postForEntity<String>("/session/files", postEntity)
         assertSuccess(responseEntity, null)
 
         val data = getResponseData(responseEntity)
@@ -49,7 +49,7 @@ class SessionTests : SecureIntegrationTests()
         val files = mapOf("pjnz" to VersionFile("badhash", "file1", false))
         val postEntity = getJsonEntity(files)
 
-        val responseEntity = testRestTemplate.postForEntity<String>("/session/files/", postEntity)
+        val responseEntity = testRestTemplate.postForEntity<String>("/session/files", postEntity)
         assertError(responseEntity, HttpStatus.BAD_REQUEST, "OTHER_ERROR")
     }
 }

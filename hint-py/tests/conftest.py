@@ -9,6 +9,7 @@ from sqlalchemy.pool import NullPool, StaticPool
 
 from app.db.database import create_db_session_factory
 from app.db.models import Base, User
+from tests.hintr import FakeHintr
 from tests.support import OTHER_USER, USER
 
 # Set this to run the tests on a real Postgres instead of in memory SQLite, for example
@@ -64,3 +65,11 @@ async def engine() -> AsyncIterator[AsyncEngine]:
 async def session(engine: AsyncEngine) -> AsyncIterator[AsyncSession]:
     async with create_db_session_factory(engine)() as db_session:
         yield db_session
+
+
+@pytest_asyncio.fixture
+async def hintr() -> AsyncIterator[FakeHintr]:
+    """hintr, which records the calls it gets and answers as the test says (see tests/hintr.py)."""
+    fake = FakeHintr()
+    yield fake
+    await fake.http.aclose()

@@ -132,7 +132,7 @@
       ],
       "request": {
         "method": "GET",
-        "path": "/baseline/population/"
+        "path": "/baseline/population"
       },
       "response": {
         "body": {

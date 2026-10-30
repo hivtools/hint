@@ -55,7 +55,7 @@
           }
         },
         "method": "POST",
-        "path": "/baseline/pjnz/"
+        "path": "/baseline/pjnz"
       },
       "response": {
         "body": {
@@ -81,7 +81,7 @@
           }
         },
         "method": "POST",
-        "path": "/session/files/"
+        "path": "/session/files"
       },
       "response": {
         "body": {
@@ -106,7 +106,7 @@
     },
     {
       "client": "A",
-      "name": "GET /baseline/pjnz/",
+      "name": "GET /baseline/pjnz",
       "outbound": [
         {
           "headers": {
@@ -130,7 +130,7 @@
       ],
       "request": {
         "method": "GET",
-        "path": "/baseline/pjnz/"
+        "path": "/baseline/pjnz"
       },
       "response": {
         "body": {

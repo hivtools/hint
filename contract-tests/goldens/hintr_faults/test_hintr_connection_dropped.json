@@ -14,16 +14,6 @@
           "path": "/hintr/version",
           "status": null,
           "to": "hintr"
-        },
-        {
-          "fault": "close",
-          "headers": {
-            "accept-language": "en"
-          },
-          "method": "GET",
-          "path": "/hintr/version",
-          "status": null,
-          "to": "hintr"
         }
       ],
       "request": {

@@ -1,6 +1,6 @@
 import re
 
-import httpx
+import httpx2
 import pytest
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
@@ -37,8 +37,8 @@ async def client():
     async def body(body: Body):
         return body
 
-    transport = httpx.ASGITransport(app=app, raise_app_exceptions=False)
-    async with httpx.AsyncClient(transport=transport, base_url="http://test") as client:
+    transport = httpx2.ASGITransport(app=app, raise_app_exceptions=False)
+    async with httpx2.AsyncClient(transport=transport, base_url="http://test") as client:
         yield client
 
 

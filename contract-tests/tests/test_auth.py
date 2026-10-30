@@ -78,7 +78,7 @@ def test_guest_session_files_survive_login(scn):
     a.open_app()
     upload(a, "pjnz")
     a.login()
-    a.get("/baseline/pjnz/", name="file visible after login")
+    a.get("/baseline/pjnz", name="file visible after login")
     a.get("/project/current", name="version is not in a project")
 
 

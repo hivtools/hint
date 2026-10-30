@@ -39,6 +39,19 @@ server {
     location /projects/ { include snippets/python.conf; }
     # Without this nginx redirects /projects to /projects/
     location = /projects { include snippets/kotlin.conf; }
+    # Calls that only pass on to hintr and need no files and no version
+    location = /metrics { include snippets/python.conf; }
+    location = /meta/hintr/version { include snippets/python.conf; }
+    location /meta/adr/ { include snippets/python.conf; }
+    location /model/status/ { include snippets/python.conf; }
+    location /model/result/ { include snippets/python.conf; }
+    location /model/cancel/ { include snippets/python.conf; }
+    location /model/comparison/plot/ { include snippets/python.conf; }
+    location /calibrate/options/ { include snippets/python.conf; }
+    location /calibrate/status/ { include snippets/python.conf; }
+    location /calibrate/result/metadata/ { include snippets/python.conf; }
+    location /calibrate/plot/ { include snippets/python.conf; }
+    location /download/status/ { include snippets/python.conf; }
 
     # ---- Identity bridge ----
     # Only reachable from auth_request, never directly. The Cookie and Authorization headers of the original request

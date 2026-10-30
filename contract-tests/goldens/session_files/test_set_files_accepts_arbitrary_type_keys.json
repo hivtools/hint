@@ -78,7 +78,7 @@
           }
         },
         "method": "POST",
-        "path": "/baseline/pjnz/"
+        "path": "/baseline/pjnz"
       },
       "response": {
         "body": {
@@ -126,7 +126,7 @@
           }
         },
         "method": "POST",
-        "path": "/baseline/shape/"
+        "path": "/baseline/shape"
       },
       "response": {
         "body": {
@@ -157,7 +157,7 @@
           }
         },
         "method": "POST",
-        "path": "/session/files/"
+        "path": "/session/files"
       },
       "response": {
         "body": {
@@ -214,7 +214,7 @@
       "name": "pjnz slot now empty",
       "request": {
         "method": "GET",
-        "path": "/baseline/pjnz/"
+        "path": "/baseline/pjnz"
       },
       "response": {
         "body": {

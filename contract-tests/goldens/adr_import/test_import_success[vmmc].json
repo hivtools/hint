@@ -136,7 +136,7 @@
       ],
       "request": {
         "method": "GET",
-        "path": "/disease/vmmc/"
+        "path": "/disease/vmmc"
       },
       "response": {
         "body": {

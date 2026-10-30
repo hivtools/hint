@@ -21,7 +21,7 @@
     },
     {
       "client": "A",
-      "name": "GET /model/options/",
+      "name": "GET /model/options",
       "outbound": [
         {
           "headers": {
@@ -51,7 +51,7 @@
       ],
       "request": {
         "method": "GET",
-        "path": "/model/options/"
+        "path": "/model/options"
       },
       "response": {
         "body": {

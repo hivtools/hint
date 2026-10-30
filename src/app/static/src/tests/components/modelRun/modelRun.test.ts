@@ -65,7 +65,7 @@ describe("Model run component", () => {
     const mockStatus = mockModelStatusResponse();
 
     beforeEach(() => {
-        mockAxios.onPost(`/model/run/`)
+        mockAxios.onPost(`/model/run`)
             .reply(200, mockSuccess({id: "1234"}));
 
         mockAxios.onGet(`/model/status/1234`)

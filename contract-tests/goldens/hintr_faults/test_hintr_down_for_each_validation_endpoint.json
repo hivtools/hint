@@ -79,7 +79,7 @@
           }
         },
         "method": "POST",
-        "path": "/baseline/population/"
+        "path": "/baseline/population"
       },
       "response": {
         "body": {
@@ -122,7 +122,7 @@
       ],
       "request": {
         "method": "GET",
-        "path": "/baseline/validate/"
+        "path": "/baseline/validate"
       },
       "response": {
         "body": {
@@ -182,7 +182,7 @@
           }
         },
         "method": "POST",
-        "path": "/disease/anc/"
+        "path": "/disease/anc"
       },
       "response": {
         "body": {
@@ -236,7 +236,7 @@
       ],
       "request": {
         "method": "GET",
-        "path": "/model/options/"
+        "path": "/model/options"
       },
       "response": {
         "body": {
@@ -412,16 +412,6 @@
           "path": "/model/status/x",
           "status": null,
           "to": "hintr"
-        },
-        {
-          "fault": "close",
-          "headers": {
-            "accept-language": "en"
-          },
-          "method": "GET",
-          "path": "/model/status/x",
-          "status": null,
-          "to": "hintr"
         }
       ],
       "request": {
@@ -451,16 +441,6 @@
       "client": "A",
       "name": "result",
       "outbound": [
-        {
-          "fault": "close",
-          "headers": {
-            "accept-language": "en"
-          },
-          "method": "GET",
-          "path": "/model/result/x",
-          "status": null,
-          "to": "hintr"
-        },
         {
           "fault": "close",
           "headers": {
@@ -546,16 +526,6 @@
           "path": "/calibrate/status/x",
           "status": null,
           "to": "hintr"
-        },
-        {
-          "fault": "close",
-          "headers": {
-            "accept-language": "en"
-          },
-          "method": "GET",
-          "path": "/calibrate/status/x",
-          "status": null,
-          "to": "hintr"
         }
       ],
       "request": {
@@ -585,16 +555,6 @@
       "client": "A",
       "name": "download status",
       "outbound": [
-        {
-          "fault": "close",
-          "headers": {
-            "accept-language": "en"
-          },
-          "method": "GET",
-          "path": "/download/status/x",
-          "status": null,
-          "to": "hintr"
-        },
         {
           "fault": "close",
           "headers": {
@@ -642,16 +602,6 @@
           "path": "/meta/adr/x",
           "status": null,
           "to": "hintr"
-        },
-        {
-          "fault": "close",
-          "headers": {
-            "accept-language": "en"
-          },
-          "method": "GET",
-          "path": "/meta/adr/x",
-          "status": null,
-          "to": "hintr"
         }
       ],
       "request": {
@@ -681,16 +631,6 @@
       "client": "A",
       "name": "metrics",
       "outbound": [
-        {
-          "fault": "close",
-          "headers": {
-            "accept-language": "en"
-          },
-          "method": "GET",
-          "path": "/hintr/worker/status",
-          "status": null,
-          "to": "hintr"
-        },
         {
           "fault": "close",
           "headers": {
@@ -743,7 +683,7 @@
       ],
       "request": {
         "method": "GET",
-        "path": "/baseline/pjnz/"
+        "path": "/baseline/pjnz"
       },
       "response": {
         "body": {
