@@ -17,16 +17,25 @@
 #
 # Notes
 #   * Kotlin talks to the stubs (ADR, SSO identity provider, error-report flow) and, through the recording proxy, to
-#     hintr. REAL_ADR=1 scripts/dev.sh up keeps the real ADR from config.properties instead (the tests then refuse to run).
+#     hintr. The ADR is the exception: `up` keeps the real ADR from config.properties (REAL_ADR=0 for the stub), while
+#     `test` uses the stub. Each restarts the Kotlin app if it is running with the other one.
 #   * The tests empty the database between scenarios. They stop if it holds projects, files or ADR keys unless you pass
 #     --reset-db.
 #   * PORT_OFFSET=10000 scripts/dev.sh up starts a second, independent stack (ports and folders shifted by the offset).
 #   * up pulls the latest images (hintr included). NO_PULL=1 skips that.
-set -euo pipefail
+set -eEuo pipefail
+# say where it stopped: several steps hide their output
+trap 'echo "dev.sh: failed (exit $?) at line $LINENO: $BASH_COMMAND" >&2' ERR
+
+# Windows (Git Bash): paths are kept as C:/... so that java, python and docker understand them too, and the venv and
+# the classpath follow Windows conventions
+case "$(uname -s)" in MINGW*|MSYS*|CYGWIN*) WINDOWS=1 ;; *) WINDOWS=0 ;; esac
+if [ "$WINDOWS" = 1 ]; then CP_SEP=";"; VENV_PY=.venv/Scripts/python.exe; else CP_SEP=":"; VENV_PY=.venv/bin/python; fi
 
 HERE=$(realpath "$(dirname "$0")")
 # resolved (no "scripts/.."): paths under $ROOT are handed to docker and to java
 ROOT=$(realpath "$HERE/..")
+if [ "$WINDOWS" = 1 ]; then ROOT=$(cygpath -m "$ROOT"); fi
 CT=$ROOT/contract-tests
 APP_DIR=$ROOT/src/app            # the Kotlin app runs here: it finds static/public relative to it
 
@@ -45,6 +54,8 @@ SSO_PORT=${SSO_PORT:-$((8085 + PORT_OFFSET))}                 # second Kotlin in
 FAULT_PORT=${FAULT_PORT:-$((8882 + PORT_OFFSET))}             # recording/faulting proxy in front of hintr (hintr_url)
 STUB_PORT=${STUB_PORT:-$((8883 + PORT_OFFSET))}               # stub ADR (/adr/, /adr-sso/) and error-report (/flow)
 IDP_PORT=${IDP_PORT:-$((8884 + PORT_OFFSET))}                 # stub OAuth2 identity provider (TLS)
+# WriteToDiskEmailManager writes to /tmp/hint_emails, which on Windows is on the drive the app runs from
+if [ "$WINDOWS" = 1 ]; then EMAILS_DIR=${APP_DIR:0:2}/tmp/hint_emails; else EMAILS_DIR=/tmp/hint_emails; fi
 HINTR_VERSION=$(<"$ROOT/src/config/hintr_version")
 export HINTR_VERSION
 
@@ -75,11 +86,12 @@ ensure_python_env() {
 
 ensure_certificate() {
   [ -f "$STATE/idp.pem" ] && return 0
-  openssl req -x509 -newkey rsa:2048 -nodes -keyout "$STATE/idp.key" -out "$STATE/idp.crt" -days 3650 \
+  # MSYS_NO_PATHCONV: Git Bash would otherwise turn "/CN=localhost" into a Windows path
+  MSYS_NO_PATHCONV=1 openssl req -x509 -newkey rsa:2048 -nodes -keyout "$STATE/idp.key" -out "$STATE/idp.crt" -days 3650 \
     -subj "/CN=localhost" -addext "subjectAltName=DNS:localhost,IP:127.0.0.1" >/dev/null 2>&1
   cat "$STATE/idp.key" "$STATE/idp.crt" > "$STATE/idp.pem"
   local java_home_dir
-  java_home_dir=$(java -XshowSettings:properties -version 2>&1 | awk -F' = ' '/java.home/ {print $2}')
+  java_home_dir=$(java -XshowSettings:properties -version 2>&1 | awk -F' = ' '/java.home/ {print $2}' | tr -d '\r')
   cp "$java_home_dir/lib/security/cacerts" "$STATE/truststore.jks"; chmod u+w "$STATE/truststore.jks"
   keytool -importcert -noprompt -alias hintcontract -file "$STATE/idp.crt" -keystore "$STATE/truststore.jks" \
     -storepass changeit >/dev/null
@@ -88,7 +100,7 @@ ensure_certificate() {
 ensure_stubs() {
   if alive "$STATE/stubs.pid"; then return 0; fi
   for p in "$FAULT_PORT" "$STUB_PORT" "$IDP_PORT"; do need_port "$p" "the stubs and the recording proxy"; done
-  ( cd "$CT" && exec nohup .venv/bin/python -m hintcontract.stubs.server --proxy-port "$FAULT_PORT" \
+  ( cd "$CT" && exec nohup "$VENV_PY" -m hintcontract.stubs.server --proxy-port "$FAULT_PORT" \
       --upstream "http://127.0.0.1:$HINTR_PORT" --stub-port "$STUB_PORT" --idp-port "$IDP_PORT" \
       --idp-cert "$STATE/idp.pem" --fixtures-dir "$CT/fixtures" ) > "$STATE/stubs.log" 2>&1 < /dev/null &
   echo $! > "$STATE/stubs.pid"
@@ -100,7 +112,7 @@ ensure_stubs() {
 # each instance gets a directory with a full config.properties, put FIRST on the classpath.
 write_config() { # $1 = dir, $2 = application_url, $3 = oauth2_login_method
   mkdir -p "$1"
-  python3 - "$APP_DIR/src/main/resources/config.properties" "$1/config.properties" <<PY
+  uv run python - "$APP_DIR/src/main/resources/config.properties" "$1/config.properties" <<PY
 import sys
 src, dst = sys.argv[1:3]
 over = {
@@ -125,6 +137,7 @@ PY
 resolve_classpath() { # compiles the app if needed
   if [ ! -f "$APP_DIR/static/public/index.ftl" ]; then
     echo "building the frontend (first run)"
+    if [ ! -d "$APP_DIR/static/node_modules" ]; then (cd "$APP_DIR/static" && npm ci); fi
     (cd "$ROOT/src" && ./gradlew -q app:compileFrontEnd app:copyAssets)
   fi
   echo "resolving the app classpath with gradle (compiles the app if needed)"
@@ -139,7 +152,7 @@ start_app() { # $1 = name (app | app-sso), $2 = port, $3 = application_url, $4 =
   mkdir -p "$APP_DIR/$UPLOADS_NAME" "$APP_DIR/$RESULTS_NAME"
   ( cd "$APP_DIR" && exec nohup java -Dspring.profiles.active=dev -Dserver.port="$2" \
       -Djavax.net.ssl.trustStore="$STATE/truststore.jks" -Djavax.net.ssl.trustStorePassword=changeit \
-      -cp "$STATE/conf-$1:$(cat "$STATE/classpath.txt")" org.imperial.mrc.hint.AppStartKt ) \
+      -cp "$STATE/conf-$1$CP_SEP$(cat "$STATE/classpath.txt")" org.imperial.mrc.hint.AppStartKt ) \
       > "$STATE/$1.log" 2>&1 < /dev/null &
   echo $! > "$STATE/$1.pid"
 }
@@ -160,6 +173,11 @@ do_up() { # $1 = pull | nopull, then --no-proxy, --rebuild
   mkdir -p "$STATE" "$APP_DIR/$UPLOADS_NAME" "$APP_DIR/$RESULTS_NAME"
   if [ -z "$mode" ]; then mode=$(cat "$STATE/mode" 2>/dev/null || echo proxy); fi
   echo "$mode" > "$STATE/mode"
+  if [ "$(cat "$STATE/real_adr" 2>/dev/null || echo 0)" != "${REAL_ADR:-0}" ] && alive "$STATE/app.pid"; then
+    echo "restarting the Kotlin app with the $([ "${REAL_ADR:-0}" = 1 ] && echo real ADR || echo ADR stub)"
+    stop_proc app; stop_proc app-sso
+    sleep 3
+  fi
   if [ "${REAL_ADR:-0}" = 1 ]; then echo 1 > "$STATE/real_adr"; else rm -f "$STATE/real_adr"; fi
 
   if [ "$pull" = pull ] && [ "${NO_PULL:-0}" != 1 ]; then compose pull -q --ignore-buildable; fi
@@ -176,7 +194,7 @@ do_up() { # $1 = pull | nopull, then --no-proxy, --rebuild
 
   # users the database starts with: the tests put them back after emptying the database
   if [ ! -f "$STATE/users_seed.json" ]; then
-    (cd "$CT" && .venv/bin/python -c "
+    (cd "$CT" && "$VENV_PY" -c "
 from pathlib import Path
 from hintcontract.env import Env
 from hintcontract.controls import Db
@@ -199,7 +217,7 @@ do_down() {
   else
     rm -f "$STATE/users_seed.json" "$STATE/mode" "$STATE/real_adr"
     rm -rf "$STATE/conf-app" "$STATE/conf-app-sso"
-    rm -rf /tmp/hint_emails
+    rm -rf "$EMAILS_DIR"
   fi
 }
 
@@ -245,7 +263,7 @@ ensure_sso_app() {
 run_pytest() (
   unset VIRTUAL_ENV
   if [ -f "$STATE/real_adr" ]; then
-    echo "the stack was started with REAL_ADR=1, so the tests cannot use the ADR stub. Run: scripts/dev.sh down && scripts/dev.sh up" >&2
+    echo "the tests need the ADR stub: run them without REAL_ADR=1" >&2
     exit 1
   fi
   export HINT_BASE_URL=http://127.0.0.1:$PROXY_PORT
@@ -257,7 +275,7 @@ run_pytest() (
   export HINT_ADR_SSO_URL=http://127.0.0.1:$STUB_PORT/adr-sso/
   export HINT_IDP_HOST=localhost:$IDP_PORT
   export HINT_SSO_BASE_URL=http://127.0.0.1:$SSO_PORT
-  export HINT_EMAILS_DIR=/tmp/hint_emails
+  export HINT_EMAILS_DIR=$EMAILS_DIR
   export HINT_UPLOADS_DIR=$APP_DIR/$UPLOADS_NAME
   export HINT_RESULTS_DIR=$APP_DIR/$RESULTS_NAME
   export HINT_HINTR_UPLOADS_PREFIX=$UPLOADS_NAME
@@ -283,6 +301,7 @@ do_determinism() {
 case "${1:-}" in
   up)
     shift
+    REAL_ADR=${REAL_ADR:-1}
     do_up pull "$@"
     ;;
   down)
@@ -290,6 +309,8 @@ case "${1:-}" in
     echo "stack removed"
     ;;
   restart-app)
+    # keep the ADR the app was started with
+    REAL_ADR=${REAL_ADR:-$(cat "$STATE/real_adr" 2>/dev/null || echo 0)}
     do_restart_app
     ;;
   logs)
@@ -303,12 +324,14 @@ case "${1:-}" in
     ;;
   test)
     shift
+    REAL_ADR=${REAL_ADR:-0}
     do_up nopull
     ensure_sso_app
     run_pytest "$@"
     ;;
   test-determinism)
     shift
+    REAL_ADR=${REAL_ADR:-0}
     do_up nopull
     ensure_sso_app
     do_determinism "$@"

@@ -82,9 +82,11 @@ services:
     # Not published to the host: the only way in is through the proxy, which sets the identity headers it trusts
     expose:
       - "8000"
+    environment:
+      HINT_DB_HOST: db
     volumes:
       - ./hint-py:/app
-    command: ["uv", "run", "--frozen", "--no-dev", "fastapi", "dev", "main.py", "--host", "0.0.0.0", "--port", "8000"]
+    command: ["uv", "run", "--frozen", "--no-dev", "fastapi", "dev", "app/main.py", "--host", "0.0.0.0", "--port", "8000"]
     healthcheck:
       test: ["CMD", "python", "-c", "import socket; socket.create_connection(('127.0.0.1', 8000), 2)"]
       interval: 1s

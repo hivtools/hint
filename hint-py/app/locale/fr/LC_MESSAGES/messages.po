@@ -1,0 +1,102 @@
+# Messages shown to users by the API. The ids are the keys the Kotlin app uses.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: hint-py 0.1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-27 16:34+0000\n"
+"Language: fr\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#. Placeholders: {app_title}, {code} (to quote to support), {support_email}.
+msgid "unexpectedError"
+msgstr ""
+"Une erreur inattendue s'est produite. Si vous voyez ce message pendant que vous utilisez {app_title} dans un atelier,"
+" veuillez contacter le support technique de votre atelier et leur indiquer ce code : {code}. Sinon, veuillez "
+"contacter le support à {support_email} et citer ce code : {code}"
+
+msgid "loadFailed"
+msgstr "Impossible de charger des fichiers pour la session. Les fichiers indiqués n'existent pas sur le serveur."
+
+msgid "userExists"
+msgstr "L'utilisateur existe déjà."
+
+msgid "invalidEmail"
+msgstr "Veuillez fournir une adresse e-mail valide."
+
+msgid "projectDoesNotExist"
+msgstr "Le projet n'existe pas."
+
+msgid "versionDoesNotExist"
+msgstr "La version n'existe pas."
+
+msgid "invalidVersion"
+msgstr "Cet utilisateur ne peut pas utiliser cette version."
+
+msgid "guestsOnly"
+msgstr "Seuls les invités peuvent créer une version d'invité."
+
+msgid "userDoesNotExist"
+msgstr "L'utilisateur n'existe pas."
+
+msgid "missingShapeFile"
+msgstr "Vous devez télécharger un fichier de formes avant de télécharger des données d’enquête ou de programme."
+
+msgid "missingPjnzFile"
+msgstr "Vous devez télécharger un fichier Spectrum avant de télécharger des données d’enquête ou de programme."
+
+msgid "invalidToken"
+msgstr "Le jeton n'est pas valide."
+
+msgid "invalidPasswordLength"
+msgstr "Veuillez entrer un nouveau mot de passe d'au moins 6 caractères."
+
+msgid "unknownInputTimeSeriesType"
+msgstr "Type de série temporelle d'entrée inconnu"
+
+msgid "noPermissionToAccessResource"
+msgstr ""
+"Vous n'êtes pas autorisé à charger cette ressource à partir d'ADR. Contacter l'administrateur de l'ensemble de "
+"données pour obtenir l'autorisation"
+
+#. Placeholders: {resource}.
+msgid "adrResourceError"
+msgstr "Impossible de charger la ressource, vérifiez la ressource dans ADR {resource}."
+
+msgid "adrFetchingDatasetsError"
+msgstr "Une erreur s'est produite lors de la récupération des ensembles de données à partir d'ADR"
+
+msgid "adrFetchingDatasetsNoAccountError"
+msgstr ""
+"Impossible de récupérer les ensembles de données de l'ADR car vous n'avez pas encore de compte. Veuillez vous "
+"connecter à l'ADR avec vos informations d'identification Auth0, puis revenir ici et réessayer."
+
+msgid "unknownReviewInputFileType"
+msgstr "Type de fichier de tracé d'entrée de révision inconnu."
+
+msgid "missingCalibrateData"
+msgstr "Aucune sortie de calibration n'a été trouvée pour ce projet, veuillez signaler un problème ou recalibrer le modèle."
+
+msgid "failedZipRehydrate"
+msgstr ""
+"Impossible de charger les résultats du modèle. Cet ajustement n'a pas été généré sur l'application web Naomi. "
+"Veuillez contacter le support."
+
+msgid "rehydrateMissingInputFile"
+msgstr ""
+"Impossible de charger le fichier zip de sortie, les fichiers d'entrée n'ont pas été trouvés. Veuillez contacter un "
+"administrateur système."
+
+msgid "rehydrateModelFitIdUnknown"
+msgstr ""
+"Impossible de charger le zip de sortie, l'ajustement du modèle n'a pas été généré sur l'application web. Veuillez "
+"contacter un administrateur système."
+
+msgid "rehydrateCalibrateIdUnknown"
+msgstr ""
+"Impossible de charger le fichier zip de sortie, le calibrage du modèle n'a pas été généré sur l'application web. "
+"Veuillez contacter un administrateur système."

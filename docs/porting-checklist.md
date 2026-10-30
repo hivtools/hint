@@ -20,19 +20,19 @@ Every endpoint of the Kotlin app, in the order of the [endpoint index](endpoint-
 | POST | `/password/reset-password` | Sets a new password using a reset token | [ ] | |
 | GET | `/user/{email}/exists` | Whether a user with this email exists | [ ] | |
 | GET | `/metrics` | Plain text hintr worker counts (busy, idle, ...) for monitoring | [ ] | |
-| GET | `/projects/` | Lists the user's projects and their versions | [ ] | |
+| GET | `/projects/` | Lists the user's projects and their versions | [x] | |
 | GET | `/project/current` | The project and version of the session's current version id (both null if there is none) | [ ] | |
-| POST | `/project/` | Creates a project | [ ] | |
-| POST | `/project/{projectId}/rename` | Renames a project | [ ] | |
-| POST | `/project/{projectId}/note` | Updates a project's note | [ ] | |
-| POST | `/project/{projectId}/clone` | Copies a project to another user | [ ] | |
-| DELETE | `/project/{projectId}` | Deletes a project (soft delete) | [ ] | |
-| POST | `/project/{projectId}/version/` | Creates a new version of a project | [ ] | |
-| POST | `/project/{projectId}/version/{versionId}/state` | Autosaves the version's state | [ ] | |
-| POST | `/project/{projectId}/version/{versionId}/promote` | Promotes a version to a new project | [ ] | |
-| POST | `/project/{projectId}/version/{versionId}/note` | Updates a version's note | [ ] | |
-| GET | `/project/{projectId}/version/{versionId}` | Loads a saved version and sets it as the session's files | [ ] | |
-| DELETE | `/project/{projectId}/version/{versionId}` | Deletes a version (soft delete) | [ ] | |
+| POST | `/project/` | Creates a project | [x] | |
+| POST | `/project/{projectId}/rename` | Renames a project | [x] | |
+| POST | `/project/{projectId}/note` | Updates a project's note | [x] | |
+| POST | `/project/{projectId}/clone` | Copies a project to another user | [x] | |
+| DELETE | `/project/{projectId}` | Deletes a project (soft delete) | [x] | |
+| POST | `/project/{projectId}/version/` | Creates a new version of a project | [x] | |
+| POST | `/project/{projectId}/version/{versionId}/state` | Autosaves the version's state | [x] | |
+| POST | `/project/{projectId}/version/{versionId}/promote` | Promotes a version to a new project | [x] | |
+| POST | `/project/{projectId}/version/{versionId}/note` | Updates a version's note | [x] | |
+| GET | `/project/{projectId}/version/{versionId}` | Loads a saved version and sets it as the session's files | [x] | |
+| DELETE | `/project/{projectId}/version/{versionId}` | Deletes a version (soft delete) | [x] | |
 | POST | `/session/files/` | Sets the session's files from a map of file type to hash | [ ] | |
 | POST | `/baseline/pjnz/` | Uploads and validates the PJNZ (Spectrum) file | [ ] | |
 | GET | `/baseline/pjnz/` | Returns the current PJNZ file, validated again | [ ] | |
