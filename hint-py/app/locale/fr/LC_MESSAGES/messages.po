@@ -60,8 +60,8 @@ msgstr "Type de série temporelle d'entrée inconnu"
 
 msgid "noPermissionToAccessResource"
 msgstr ""
-"Vous n''êtes pas autorisé à charger cette ressource à partir d''ADR. Contacter l''administrateur de l''ensemble de "
-"données pour obtenir l''autorisation"
+"Vous n'êtes pas autorisé à charger cette ressource à partir d'ADR. Contacter l'administrateur de l'ensemble de "
+"données pour obtenir l'autorisation"
 
 #. Placeholders: {resource}.
 msgid "adrResourceError"
