@@ -19,7 +19,7 @@ Every endpoint of the Kotlin app, in the order of the [endpoint index](endpoint-
 | GET | `/password/reset-password` | Serves the reset password page for a token | [ ] | |
 | POST | `/password/reset-password` | Sets a new password using a reset token | [ ] | |
 | GET | `/user/{email}/exists` | Whether a user with this email exists | [ ] | |
-| GET | `/metrics` | Plain text hintr worker counts (busy, idle, ...) for monitoring | [ ] | |
+| GET | `/metrics` | Plain text hintr worker counts (busy, idle, ...) for monitoring | [x] | |
 | GET | `/projects/` | Lists the user's projects and their versions | [x] | |
 | GET | `/project/current` | The project and version of the session's current version id (both null if there is none) | [ ] | |
 | POST | `/project/` | Creates a project | [x] | |
@@ -60,24 +60,24 @@ Every endpoint of the Kotlin app, in the order of the [endpoint index](endpoint-
 | GET | `/chart-data/input-comparison` | Chart data comparing the inputs | [ ] | |
 | GET | `/chart-data/input-population` | Chart data for the population input | [ ] | |
 | POST | `/meta/review-inputs/{iso3}` | Metadata (plot settings) for the review inputs page | [ ] | |
-| GET | `/meta/hintr/version` | hintr, naomi and hint versions (version menu) | [ ] | |
+| GET | `/meta/hintr/version` | hintr, naomi and hint versions (version menu) | [x] | |
 | GET | `/model/options` | Model options form definition for the uploaded files | [ ] | |
 | POST | `/model/validate/options` | Validates the chosen model options | [ ] | |
 | POST | `/model/run` | Queues a model fit | [ ] | |
-| GET | `/model/status/{id}` | Status and progress of a model fit | [ ] | |
-| GET | `/model/result/{id}` | Result of a model fit | [ ] | |
-| POST | `/model/cancel/{id}` | Cancels a model fit | [ ] | |
-| GET | `/model/comparison/plot/{id}` | Comparison plot data for a model fit | [ ] | |
+| GET | `/model/status/{id}` | Status and progress of a model fit | [x] | |
+| GET | `/model/result/{id}` | Result of a model fit | [x] | |
+| POST | `/model/cancel/{id}` | Cancels a model fit | [x] | |
+| GET | `/model/comparison/plot/{id}` | Comparison plot data for a model fit | [x] | |
 | GET | `/model/debug/{id}` | Downloads the debug zip for a task (needs a GitHub token) | [ ] | |
-| GET | `/calibrate/options/{iso3}` | Calibration options form definition | [ ] | |
+| GET | `/calibrate/options/{iso3}` | Calibration options form definition | [x] | |
 | POST | `/calibrate/submit/{id}` | Queues a calibration of a model fit | [ ] | |
-| GET | `/calibrate/status/{id}` | Status and progress of a calibration | [ ] | |
-| GET | `/calibrate/result/metadata/{id}` | Metadata for the calibrated results | [ ] | |
-| GET | `/calibrate/plot/{id}` | Calibration plot data | [ ] | |
+| GET | `/calibrate/status/{id}` | Status and progress of a calibration | [x] | |
+| GET | `/calibrate/result/metadata/{id}` | Metadata for the calibrated results | [x] | |
+| GET | `/calibrate/plot/{id}` | Calibration plot data | [x] | |
 | POST | `/calibrate/result/filteredData/{id}` | Calibrated results filtered by the selected options, read from the results database | [ ] | |
 | GET | `/calibrate/result/data/{id}/{indicator}` | Calibrated results for one indicator | [ ] | |
 | POST | `/download/submit/{type}/{id}` | Queues a download of an output file (spectrum, coarse output, summary, comparison, ...) | [ ] | |
-| GET | `/download/status/{id}` | Status of a download | [ ] | |
+| GET | `/download/status/{id}` | Status of a download | [x] | |
 | GET | `/download/result/{id}` | Downloads the finished output file | [ ] | |
 | POST | `/rehydrate/zip` | Loads a project from an uploaded output zip | [ ] | |
 | POST | `/rehydrate/adr` | Loads a project from an output zip on ADR | [ ] | |
@@ -97,7 +97,7 @@ Every endpoint of the Kotlin app, in the order of the [endpoint index](endpoint-
 | POST | `/adr/anc` | Imports the ANC file from ADR | [ ] | |
 | POST | `/adr/vmmc` | Imports the VMMC file from ADR | [ ] | |
 | POST | `/adr/output` | Imports an output zip from ADR | [ ] | |
-| GET | `/meta/adr/{id}` | Upload metadata for a task, used when pushing to ADR | [ ] | |
+| GET | `/meta/adr/{id}` | Upload metadata for a task, used when pushing to ADR | [x] | |
 | POST | `/adr/datasets/{id}/releases` | Creates a release of an ADR dataset | [ ] | |
 | POST | `/adr/datasets/{id}/resource/{resourceType}/{downloadId}` | Pushes an input or output file to ADR | [ ] | |
 | POST | `/error-report` | Sends an error report to Teams and copies the project to the support user | [ ] | |

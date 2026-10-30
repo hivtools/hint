@@ -64,7 +64,7 @@
             "data": {},
             "errors": [
               {
-                "detail": "Failed to get response from ADR, try again later.",
+                "detail": "Could not parse response.",
                 "error": "OTHER_ERROR"
               }
             ],
@@ -74,7 +74,7 @@
         "headers": {
           "content-type": "application/json"
         },
-        "status": 502
+        "status": 500
       }
     },
     {
@@ -102,7 +102,7 @@
             "data": {},
             "errors": [
               {
-                "detail": "ADR request timed out",
+                "detail": "Could not parse response.",
                 "error": "OTHER_ERROR"
               }
             ],
@@ -112,7 +112,7 @@
         "headers": {
           "content-type": "application/json"
         },
-        "status": 504
+        "status": 500
       }
     },
     {
@@ -392,7 +392,7 @@
             "data": {},
             "errors": [
               {
-                "detail": "",
+                "detail": "{\"message\": \"oops\"}",
                 "error": "OTHER_ERROR"
               }
             ],

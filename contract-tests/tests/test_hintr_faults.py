@@ -31,8 +31,9 @@ def test_hintr_error_json_with_various_status_codes(scn):
 
 @pytest.mark.quirk
 def test_hintr_non_json_error_bodies(scn):
-    """quirk: 502/504 pages from hintr are reported with ADR wording ('Failed to get response from ADR'), and an
-    unparseable body gives 'Could not parse response.' (500)."""
+    """quirk: any body that is not JSON, including the HTML 502/504 pages of a gateway, gives 'Could not parse
+    response.' (500). The Kotlin app used to answer 502/504 pages with ADR wording ('Failed to get response from ADR'),
+    because hintr and ADR answers share one converter there. The Python API does not, and this was recorded again."""
     a = scn.client("A")
     cases = {
         "plain text 503": {"type": "status", "status": 503, "body": "Service Unavailable", "content_type": "text/plain"},
