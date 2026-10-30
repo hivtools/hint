@@ -112,7 +112,7 @@ ensure_stubs() {
 # each instance gets a directory with a full config.properties, put FIRST on the classpath.
 write_config() { # $1 = dir, $2 = application_url, $3 = oauth2_login_method
   mkdir -p "$1"
-  python3 - "$APP_DIR/src/main/resources/config.properties" "$1/config.properties" <<PY
+  python - "$APP_DIR/src/main/resources/config.properties" "$1/config.properties" <<PY
 import sys
 src, dst = sys.argv[1:3]
 over = {
