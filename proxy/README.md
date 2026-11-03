@@ -20,7 +20,7 @@ Authentication and sessions stay in Kotlin until login moves. For each request t
 
 ```
 browser --cookie--> nginx --(auth_request, cookie)--> Kotlin GET /internal/whoami
-                      |                                   returns 204 + X-Hint-User
+                      |                                   returns 204 + X-Hint-User (+ X-Hint-Guest-Versions)
                       +--(no cookie, X-Hint-* headers)--> Python
 ```
 
@@ -30,8 +30,13 @@ browser --cookie--> nginx --(auth_request, cookie)--> Kotlin GET /internal/whoam
 - whoami does not start a Kotlin session. A visitor gets their `JSESSIONID` from the first Kotlin page or endpoint they
   use, and nginx passes any `Set-Cookie` from whoami on.
 - The version a request works on is not part of the identity. The browser tab sends it in `X-Version-Id` on every
-  request, nginx passes it on, and each app checks that the user may use it. Python does not need the Kotlin session
-  for it. Anything else Python needs to *change* in the Kotlin session would need another `/internal/` endpoint.
+  request, nginx passes it on, and each app checks that the user may use it (in Python, the `current_version_id`
+  dependency). A logged in user may use a version of one of their projects, which Python checks in Postgres. A guest has
+  no projects: the versions Kotlin gave them (`POST /guest/version`) are in the Kotlin session, so whoami passes them to
+  Python in `X-Hint-Guest-Versions` (comma separated, only for guests who have some). Anything else Python needs to
+  *change* in the Kotlin session would need another `/internal/` endpoint.
+- The guest versions grow by 37 bytes for each tab a guest opens, and the auth_request response headers must fit in one
+  nginx buffer, so the `/_whoami` location sets `proxy_buffer_size 32k` (about 800 versions).
 - When login and sessions move to Python, only `current_user` changes and `/internal/whoami` and `auth_request` go.
 
 ## Running it
