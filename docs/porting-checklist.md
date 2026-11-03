@@ -56,27 +56,27 @@ Every endpoint of the Kotlin app, in the order of the [endpoint index](endpoint-
 | POST | `/disease/vmmc` | Uploads and validates the VMMC file | [ ] | |
 | GET | `/disease/vmmc` | Returns the current VMMC file, validated again | [ ] | |
 | DELETE | `/disease/vmmc` | Removes the VMMC file from the session | [ ] | |
-| GET | `/chart-data/input-time-series/{type}` | Chart data for the input time series of one data type | [ ] | |
-| GET | `/chart-data/input-comparison` | Chart data comparing the inputs | [ ] | |
-| GET | `/chart-data/input-population` | Chart data for the population input | [ ] | |
-| POST | `/meta/review-inputs/{iso3}` | Metadata (plot settings) for the review inputs page | [ ] | |
+| GET | `/chart-data/input-time-series/{type}` | Chart data for the input time series of one data type | [x] | [D4](#differences-from-kotlin) |
+| GET | `/chart-data/input-comparison` | Chart data comparing the inputs | [x] | [D4](#differences-from-kotlin) |
+| GET | `/chart-data/input-population` | Chart data for the population input | [x] | [D4](#differences-from-kotlin) |
+| POST | `/meta/review-inputs/{iso3}` | Metadata (plot settings) for the review inputs page | [x] | [D3](#differences-from-kotlin), [D4](#differences-from-kotlin), [D6](#differences-from-kotlin). `types` that is not a list is 400 (Kotlin: 500) |
 | GET | `/meta/hintr/version` | hintr, naomi and hint versions (version menu) | [x] | [D5](#differences-from-kotlin) |
-| GET | `/model/options` | Model options form definition for the uploaded files | [ ] | |
-| POST | `/model/validate/options` | Validates the chosen model options | [ ] | |
-| POST | `/model/run` | Queues a model fit | [ ] | |
+| GET | `/model/options` | Model options form definition for the uploaded files | [x] | [D4](#differences-from-kotlin) |
+| POST | `/model/validate/options` | Validates the chosen model options | [x] | [D3](#differences-from-kotlin), [D4](#differences-from-kotlin), [D6](#differences-from-kotlin) |
+| POST | `/model/run` | Queues a model fit | [x] | [D3](#differences-from-kotlin), [D4](#differences-from-kotlin), [D6](#differences-from-kotlin) |
 | GET | `/model/status/{id}` | Status and progress of a model fit | [x] | [D5](#differences-from-kotlin). An empty id (`/model/status/`) is 404 `Not Found` (Kotlin: unexpected error) |
 | GET | `/model/result/{id}` | Result of a model fit | [x] | [D5](#differences-from-kotlin) |
 | POST | `/model/cancel/{id}` | Cancels a model fit | [x] | [D5](#differences-from-kotlin) |
 | GET | `/model/comparison/plot/{id}` | Comparison plot data for a model fit | [x] | [D5](#differences-from-kotlin) |
 | GET | `/model/debug/{id}` | Downloads the debug zip for a task (needs a GitHub token) | [ ] | |
 | GET | `/calibrate/options/{iso3}` | Calibration options form definition | [x] | [D5](#differences-from-kotlin) |
-| POST | `/calibrate/submit/{id}` | Queues a calibration of a model fit | [ ] | |
+| POST | `/calibrate/submit/{id}` | Queues a calibration of a model fit | [x] | [D3](#differences-from-kotlin), [D6](#differences-from-kotlin) |
 | GET | `/calibrate/status/{id}` | Status and progress of a calibration | [x] | [D5](#differences-from-kotlin) |
 | GET | `/calibrate/result/metadata/{id}` | Metadata for the calibrated results | [x] | [D5](#differences-from-kotlin) |
 | GET | `/calibrate/plot/{id}` | Calibration plot data | [x] | [D5](#differences-from-kotlin) |
 | POST | `/calibrate/result/filteredData/{id}` | Calibrated results filtered by the selected options, read from the results database | [ ] | |
 | GET | `/calibrate/result/data/{id}/{indicator}` | Calibrated results for one indicator | [ ] | |
-| POST | `/download/submit/{type}/{id}` | Queues a download of an output file (spectrum, coarse output, summary, comparison, ...) | [ ] | |
+| POST | `/download/submit/{type}/{id}` | Queues a download of an output file (spectrum, coarse output, summary, comparison, ...) | [x] | [D3](#differences-from-kotlin), [D4](#differences-from-kotlin), [D6](#differences-from-kotlin). A type that needs no file (summary, comparison, ...) works without a version, as in Kotlin |
 | GET | `/download/status/{id}` | Status of a download | [x] | [D5](#differences-from-kotlin) |
 | GET | `/download/result/{id}` | Downloads the finished output file | [ ] | |
 | POST | `/rehydrate/zip` | Loads a project from an uploaded output zip | [ ] | |
@@ -112,3 +112,4 @@ The goldens in `contract-tests/goldens` are recorded from the Kotlin app only (`
 - **D3. Text of the "unexpected error" message.** The user-facing part is the same. Kotlin appends the Spring or Jackson reason (for example `Required request body is missing: public org.springframework...`), Python only logs the reason. Tests: the `*_errors` and "no body" / "missing ..." steps in `projects/` and `versions/`.
 - **D4. No version in the session.** Python takes the version from `X-Version-Id` and keeps nothing in the Kotlin session. Deleting a project from a session with no current project succeeds (Kotlin: 400). After a failed new version the session still points at a version that exists, so the next upload works (Kotlin: 500). `/project/current` without the header is `null` (Kotlin: the session's version). Tests: `projects/test_delete_project_fails_with_400_when_session_has_no_current_project_but_still_deletes`, `versions/test_failed_new_version_leaves_session_pointing_at_a_nonexistent_version`, `version_header/test_without_the_header_the_version_in_the_session_is_used`.
 - **D5. hintr failures (the passthrough endpoints).** (a) A body that is not JSON, such as the HTML 502 or 504 page of a gateway, gives `Could not parse response.` (500). Kotlin gives ADR wording, `Failed to get response from ADR, try again later.` (502) or `ADR request timed out` (504), because hintr and ADR answers share one converter there. (b) A JSON error with no `status` field gives the JSON text as the message. Kotlin gives an empty message. (c) Python calls hintr once when the connection is dropped, Kotlin twice. Tests: `hintr_faults/test_hintr_non_json_error_bodies`, `test_hintr_connection_dropped`, `test_hintr_down_for_each_validation_endpoint`, `model/test_status_result_of_unknown_ids`.
+- **D6. Requests with a body that is not valid, and wrong methods.** For a POST that takes a JSON body, a body that is missing or has the wrong fields is 400 in both. A field of the wrong type is 400 in Python where Kotlin gives 500 (`meta/review-inputs` with `types` as a string). A wrong method, such as GET on a POST only path, is 405 `Method Not Allowed` with an `Allow` header in Python, where Kotlin gives its "unexpected error" text and no `Allow`. Tests: `chart_data/test_review_inputs_metadata_errors` ("types not a list"), `model/test_validate_options_bad_requests` ("wrong method").
