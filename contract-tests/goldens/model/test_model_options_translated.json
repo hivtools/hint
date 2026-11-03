@@ -77,7 +77,7 @@
           "accept-language": "fr"
         },
         "method": "GET",
-        "path": "/model/options/"
+        "path": "/model/options"
       },
       "response": {
         "body": {
@@ -124,7 +124,7 @@
           "accept-language": "pt"
         },
         "method": "GET",
-        "path": "/model/options/"
+        "path": "/model/options"
       },
       "response": {
         "body": {

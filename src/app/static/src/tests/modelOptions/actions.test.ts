@@ -17,7 +17,7 @@ describe("model run options actions", () => {
     });
 
     it("fetches and commits model run options and version", async () => {
-        mockAxios.onGet("/model/options/").reply(200, mockSuccess("TEST", "v1"));
+        mockAxios.onGet("/model/options").reply(200, mockSuccess("TEST", "v1"));
         const commit = vi.fn();
         await actions.fetchModelRunOptions({commit, rootState} as any);
 
@@ -34,7 +34,7 @@ describe("model run options actions", () => {
     });
 
     it("can commits model run options when model failed", async () => {
-        mockAxios.onGet("/model/options/").reply(400, mockFailure("Failure"));
+        mockAxios.onGet("/model/options").reply(400, mockFailure("Failure"));
         const commit = vi.fn();
         await actions.fetchModelRunOptions({commit, rootState} as any);
 
@@ -46,7 +46,7 @@ describe("model run options actions", () => {
 
 
     it("fetches validation options", async () => {
-        mockAxios.onPost("/model/validate/options/").reply(200, mockSuccess("TEST", "v1"));
+        mockAxios.onPost("/model/validate/options").reply(200, mockSuccess("TEST", "v1"));
         const commit = vi.fn();
         const payload = vi.fn();
         await actions.validateModelOptions({commit, rootState} as any, payload as any);

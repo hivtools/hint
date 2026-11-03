@@ -40,7 +40,7 @@ class ModelRunTests : SecureIntegrationTests()
     fun `can get model run options`()
     {
         uploadMinimalFiles()
-        val responseEntity = testRestTemplate.getForEntity<String>("/model/options/")
+        val responseEntity = testRestTemplate.getForEntity<String>("/model/options")
         assertSuccess(responseEntity, "ModelRunOptions")
     }
 
@@ -48,7 +48,7 @@ class ModelRunTests : SecureIntegrationTests()
     fun `can run model`()
     {
         val entity = getModelRunEntity(getMockModelOptions())
-        val responseEntity = testRestTemplate.postForEntity<String>("/model/run/", entity)
+        val responseEntity = testRestTemplate.postForEntity<String>("/model/run", entity)
         assertSuccess(responseEntity, "ModelSubmitResponse")
     }
 
@@ -57,7 +57,7 @@ class ModelRunTests : SecureIntegrationTests()
     fun `can validate model options`()
     {
         val entity = getValidationOptions()
-        val responseEntity = testRestTemplate.postForEntity<String>("/model/validate/options/", entity)
+        val responseEntity = testRestTemplate.postForEntity<String>("/model/validate/options", entity)
         Assertions.assertThat(responseEntity.statusCode).isEqualTo(HttpStatus.OK)
         assertSuccess(responseEntity, "ModelOptionsValidate")
     }
@@ -67,7 +67,7 @@ class ModelRunTests : SecureIntegrationTests()
     {
 
         val entity = getModelRunEntity(getMockModelOptions())
-        val runResponseEntity = testRestTemplate.postForEntity<String>("/model/run/", entity)
+        val runResponseEntity = testRestTemplate.postForEntity<String>("/model/run", entity)
         val bodyJSON = ObjectMapper().readTree(runResponseEntity.body)
         val modelRunId = bodyJSON["data"]["id"].asText()
 

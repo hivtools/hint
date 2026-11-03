@@ -78,7 +78,7 @@
           }
         },
         "method": "POST",
-        "path": "/baseline/shape/"
+        "path": "/baseline/shape"
       },
       "response": {
         "body": {
@@ -126,7 +126,7 @@
           }
         },
         "method": "POST",
-        "path": "/baseline/pjnz/"
+        "path": "/baseline/pjnz"
       },
       "response": {
         "body": {
@@ -174,7 +174,7 @@
           }
         },
         "method": "POST",
-        "path": "/baseline/population/"
+        "path": "/baseline/population"
       },
       "response": {
         "body": {
@@ -224,7 +224,7 @@
           }
         },
         "method": "POST",
-        "path": "/disease/survey/"
+        "path": "/disease/survey"
       },
       "response": {
         "body": {
@@ -268,7 +268,7 @@
       ],
       "request": {
         "method": "GET",
-        "path": "/model/options/"
+        "path": "/model/options"
       },
       "response": {
         "body": {
@@ -394,7 +394,7 @@
           }
         },
         "method": "POST",
-        "path": "/model/validate/options/"
+        "path": "/model/validate/options"
       },
       "response": {
         "body": {
@@ -532,7 +532,7 @@
           }
         },
         "method": "POST",
-        "path": "/model/run/"
+        "path": "/model/run"
       },
       "response": {
         "body": {
@@ -672,7 +672,7 @@
           }
         },
         "method": "POST",
-        "path": "/model/run/"
+        "path": "/model/run"
       },
       "response": {
         "body": {
@@ -1070,7 +1070,7 @@
           }
         },
         "method": "POST",
-        "path": "/disease/programme/"
+        "path": "/disease/programme"
       },
       "response": {
         "body": {
@@ -1120,7 +1120,7 @@
           }
         },
         "method": "POST",
-        "path": "/disease/anc/"
+        "path": "/disease/anc"
       },
       "response": {
         "body": {
@@ -1170,7 +1170,7 @@
           }
         },
         "method": "POST",
-        "path": "/disease/vmmc/"
+        "path": "/disease/vmmc"
       },
       "response": {
         "body": {

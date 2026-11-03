@@ -132,7 +132,7 @@
       ],
       "request": {
         "method": "GET",
-        "path": "/baseline/shape/"
+        "path": "/baseline/shape"
       },
       "response": {
         "body": {

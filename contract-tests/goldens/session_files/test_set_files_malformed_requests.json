@@ -78,7 +78,7 @@
           }
         },
         "method": "POST",
-        "path": "/baseline/pjnz/"
+        "path": "/baseline/pjnz"
       },
       "response": {
         "body": {
@@ -126,7 +126,7 @@
           }
         },
         "method": "POST",
-        "path": "/baseline/shape/"
+        "path": "/baseline/shape"
       },
       "response": {
         "body": {
@@ -143,7 +143,7 @@
       "name": "no body",
       "request": {
         "method": "POST",
-        "path": "/session/files/"
+        "path": "/session/files"
       },
       "response": {
         "body": {
@@ -176,7 +176,7 @@
           }
         },
         "method": "POST",
-        "path": "/session/files/"
+        "path": "/session/files"
       },
       "response": {
         "body": {
@@ -208,7 +208,7 @@
           ]
         },
         "method": "POST",
-        "path": "/session/files/"
+        "path": "/session/files"
       },
       "response": {
         "body": {
@@ -241,7 +241,7 @@
           }
         },
         "method": "POST",
-        "path": "/session/files/"
+        "path": "/session/files"
       },
       "response": {
         "body": {
@@ -272,7 +272,7 @@
           }
         },
         "method": "POST",
-        "path": "/session/files/"
+        "path": "/session/files"
       },
       "response": {
         "body": {
@@ -308,7 +308,7 @@
           }
         },
         "method": "POST",
-        "path": "/session/files/"
+        "path": "/session/files"
       },
       "response": {
         "body": {
@@ -339,7 +339,7 @@
           }
         },
         "method": "POST",
-        "path": "/session/files/"
+        "path": "/session/files"
       },
       "response": {
         "body": {
@@ -362,53 +362,31 @@
     },
     {
       "client": "A",
-      "name": "no trailing slash",
+      "name": "trailing slash",
       "request": {
         "body": {
           "json": {}
         },
         "method": "POST",
-        "path": "/session/files"
+        "path": "/session/files/"
       },
       "response": {
         "body": {
           "json": {
             "data": {},
-            "errors": [
-              {
-                "detail": "An unexpected error occurred. If you see this message while you are using Naomi at a workshop, please contact your workshop technical support and show them this code: <ERROR_CODE>. Otherwise please contact support at naomi-support@imperial.ac.uk and quote this code: <ERROR_CODE>. No handler found for POST /session/files",
-                "error": "OTHER_ERROR"
-              }
-            ],
-            "status": "failure"
+            "errors": [],
+            "status": "success"
           }
         },
         "headers": {
           "content-type": "application/json"
         },
-        "status": 404
+        "status": 200
       }
     },
     {
       "name": "db:version_file",
-      "rows": [
-        {
-          "filename": "Malawi2024.PJNZ",
-          "from_adr": false,
-          "hash": "46E4A725064B0E287F573A8F11389895.PJNZ",
-          "resource_url": null,
-          "type": "pjnz",
-          "version": "<UUID:1>"
-        },
-        {
-          "filename": "malawi.geojson",
-          "from_adr": false,
-          "hash": "EBE533976BFAF0CABCA2C2E1B611B9C7.geojson",
-          "resource_url": null,
-          "type": "shape",
-          "version": "<UUID:1>"
-        }
-      ],
+      "rows": [],
       "table": "version_file",
       "type": "db"
     }

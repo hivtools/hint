@@ -178,7 +178,7 @@ describe("Baseline actions", () => {
 
     it("sets country and iso3 after PJNZ file upload and validates", async () => {
 
-        mockAxios.onPost(`/baseline/pjnz/`)
+        mockAxios.onPost(`/baseline/pjnz`)
             .reply(200, mockSuccess({data: {country: "Malawi", iso3: "MWI"}}));
 
         const commit = vi.fn();
@@ -221,7 +221,7 @@ describe("Baseline actions", () => {
     }
 
     it("upload PJNZ does not validate if error occurs", async () => {
-        mockAxios.onPost(`/baseline/pjnz/`)
+        mockAxios.onPost(`/baseline/pjnz`)
             .reply(400, mockFailure("test error"));
 
         const commit = vi.fn();
@@ -252,7 +252,7 @@ describe("Baseline actions", () => {
         expect(commit.mock.calls[5][0]).toStrictEqual({type: "PJNZErroredFile", payload: "some-file.txt"});
     });
 
-    testUploadErrorCommitted("/baseline/pjnz/",
+    testUploadErrorCommitted("/baseline/pjnz",
         BaselineMutation.PJNZUploadError,
         BaselineMutation.PJNZUpdated,
         BaselineMutation.PJNZErroredFile,
@@ -264,7 +264,7 @@ describe("Baseline actions", () => {
     it("commits response and validates after shape file upload", async () => {
 
         const mockShape = mockShapeResponse();
-        mockAxios.onPost(`/baseline/shape/`)
+        mockAxios.onPost(`/baseline/shape`)
             .reply(200, mockSuccess(mockShape));
 
         const commit = vi.fn();
@@ -311,7 +311,7 @@ describe("Baseline actions", () => {
     });
 
     testUploadErrorCommitted(
-        "/baseline/shape/",
+        "/baseline/shape",
         "ShapeUploadError",
         "ShapeUpdated",
         "ShapeErroredFile",
@@ -345,7 +345,7 @@ describe("Baseline actions", () => {
     it("commits response and validates after population file upload", async () => {
 
         const mockPop = mockPopulationResponse();
-        mockAxios.onPost(`/baseline/population/`)
+        mockAxios.onPost(`/baseline/population`)
             .reply(200, mockSuccess(mockPop));
 
         const commit = vi.fn();
@@ -416,7 +416,7 @@ describe("Baseline actions", () => {
 
 
     testUploadErrorCommitted(
-        "/baseline/population/",
+        "/baseline/population",
         "PopulationUploadError",
         "PopulationUpdated",
         "PopulationErroredFile",
@@ -428,13 +428,13 @@ describe("Baseline actions", () => {
 
         const mockShape = mockShapeResponse();
         const mockPopulation = mockPopulationResponse();
-        mockAxios.onGet(`/baseline/pjnz/`)
+        mockAxios.onGet(`/baseline/pjnz`)
             .reply(200, mockSuccess({data: {country: "Malawi", iso3: "Malawi"}, filename: "test.pjnz"}));
 
-        mockAxios.onGet(`/baseline/shape/`)
+        mockAxios.onGet(`/baseline/shape`)
             .reply(200, mockSuccess(mockShape));
 
-        mockAxios.onGet(`/baseline/population/`)
+        mockAxios.onGet(`/baseline/population`)
             .reply(200, mockSuccess(mockPopulation));
 
         const state = {iso3: "Malawi"}
@@ -459,7 +459,7 @@ describe("Baseline actions", () => {
 
     it("commits response on validate", async () => {
         const mockValidateResponse = mockValidateBaselineResponse();
-        mockAxios.onGet(`/baseline/validate/`)
+        mockAxios.onGet(`/baseline/validate`)
             .reply(200, mockSuccess(mockValidateResponse));
 
         const commit = vi.fn();
@@ -479,7 +479,7 @@ describe("Baseline actions", () => {
     });
 
     it("commits response on validate error", async () => {
-        mockAxios.onGet(`/baseline/validate/`)
+        mockAxios.onGet(`/baseline/validate`)
             .reply(400, mockFailure("Baseline is inconsistent"));
 
         const commit = vi.fn();
@@ -500,13 +500,13 @@ describe("Baseline actions", () => {
 
     it("fails silently and marks state ready if getting baseline data fails", async () => {
 
-        mockAxios.onGet(`/baseline/pjnz/`)
+        mockAxios.onGet(`/baseline/pjnz`)
             .reply(500);
 
-        mockAxios.onGet(`/baseline/shape/`)
+        mockAxios.onGet(`/baseline/shape`)
             .reply(500);
 
-        mockAxios.onGet(`/baseline/population/`)
+        mockAxios.onGet(`/baseline/population`)
             .reply(500);
 
         const commit = vi.fn();
@@ -520,7 +520,7 @@ describe("Baseline actions", () => {
 
     it("deletes pjnz and dispatches validation actions", async () => {
 
-        mockAxios.onDelete("/baseline/pjnz/")
+        mockAxios.onDelete("/baseline/pjnz")
             .reply(200, mockSuccess(true));
 
         const commit = vi.fn();
@@ -534,7 +534,7 @@ describe("Baseline actions", () => {
 
     it("deletes shape and dispatches validation actions", async () => {
 
-        mockAxios.onDelete("/baseline/shape/")
+        mockAxios.onDelete("/baseline/shape")
             .reply(200, mockSuccess(true));
 
         const commit = vi.fn();
@@ -548,7 +548,7 @@ describe("Baseline actions", () => {
 
     it("deletes population and dispatches validation actions", async () => {
 
-        mockAxios.onDelete("/baseline/population/")
+        mockAxios.onDelete("/baseline/population")
             .reply(200, mockSuccess(true));
 
         const commit = vi.fn();
@@ -559,11 +559,11 @@ describe("Baseline actions", () => {
     });
 
     it("deletes all", async () => {
-        mockAxios.onDelete("/baseline/pjnz/")
+        mockAxios.onDelete("/baseline/pjnz")
             .reply(200, mockSuccess(true));
-        mockAxios.onDelete("/baseline/shape/")
+        mockAxios.onDelete("/baseline/shape")
             .reply(200, mockSuccess(true));
-        mockAxios.onDelete("/baseline/population/")
+        mockAxios.onDelete("/baseline/population")
             .reply(200, mockSuccess(true));
 
         const commit = vi.fn();

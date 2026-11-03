@@ -80,7 +80,7 @@
           }
         },
         "method": "POST",
-        "path": "/disease/programme/"
+        "path": "/disease/programme"
       },
       "response": {
         "body": {

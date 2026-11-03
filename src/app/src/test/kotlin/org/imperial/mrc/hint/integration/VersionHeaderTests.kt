@@ -42,7 +42,7 @@ class VersionHeaderTests : SecureIntegrationTests()
         {
             headers.set("X-Version-Id", versionId)
         }
-        return testRestTemplate.postForEntity<String>("/baseline/pjnz/", HttpEntity(entity.body, headers))
+        return testRestTemplate.postForEntity<String>("/baseline/pjnz", HttpEntity(entity.body, headers))
     }
 
     private fun versionOfFiles(): List<String>

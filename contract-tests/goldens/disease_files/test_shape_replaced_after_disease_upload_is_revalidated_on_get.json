@@ -80,7 +80,7 @@
           }
         },
         "method": "POST",
-        "path": "/disease/programme/"
+        "path": "/disease/programme"
       },
       "response": {
         "body": {
@@ -128,7 +128,7 @@
           }
         },
         "method": "POST",
-        "path": "/baseline/shape/"
+        "path": "/baseline/shape"
       },
       "response": {
         "body": {
@@ -168,7 +168,7 @@
       ],
       "request": {
         "method": "GET",
-        "path": "/disease/programme/"
+        "path": "/disease/programme"
       },
       "response": {
         "body": {
@@ -216,7 +216,7 @@
           }
         },
         "method": "POST",
-        "path": "/baseline/shape/"
+        "path": "/baseline/shape"
       },
       "response": {
         "body": {
@@ -256,7 +256,7 @@
       ],
       "request": {
         "method": "GET",
-        "path": "/disease/programme/"
+        "path": "/disease/programme"
       },
       "response": {
         "body": {

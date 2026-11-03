@@ -43,7 +43,7 @@ describe("Model run actions", () => {
 
     it("passes model options, version and iso3 from state", async () => {
 
-        mockAxios.onPost(`/model/run/`)
+        mockAxios.onPost(`/model/run`)
             .reply(200, mockSuccess({id: "12345"}));
 
         const commit = vi.fn();
@@ -66,7 +66,7 @@ describe("Model run actions", () => {
 
     it("commits run id after triggering a model run", async () => {
 
-        mockAxios.onPost(`/model/run/`)
+        mockAxios.onPost(`/model/run`)
             .reply(200, mockSuccess({id: "12345"}));
 
         const state = {
@@ -86,7 +86,7 @@ describe("Model run actions", () => {
     });
 
     it("if already polling, stops before triggering a new model run", async () => {
-        mockAxios.onPost(`/model/run/`)
+        mockAxios.onPost(`/model/run`)
             .reply(200, mockSuccess({id: "12345"}));
 
         const state = {

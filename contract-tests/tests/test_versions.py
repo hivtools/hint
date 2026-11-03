@@ -27,7 +27,7 @@ def test_new_version_copies_files_and_state(scn):
     a, p, v1 = setup_project(scn, with_file=True)
     r = a.post(f"/project/{p['id']}/version", json={"parent": v1, "note": "second"}, name="new version")
     assert r.status == 200
-    a.get("/baseline/pjnz/", name="new session version has the file")
+    a.get("/baseline/pjnz", name="new session version has the file")
     a.get("/project/current", name="current is v2")
     v2 = r.data["id"]
     a.get(f"/project/{p['id']}/version/{v2}", name="state copied")
@@ -135,11 +135,11 @@ def test_save_state_errors(scn):
 def test_open_version_returns_state_and_files_and_switches_session(scn):
     a, p, v1 = setup_project(scn, with_file=True)
     v2 = a.post(f"/project/{p['id']}/version", json={"parent": v1}, name="v2").data["id"]
-    a.delete("/baseline/pjnz/", name="remove file from v2 (the current session version)")
-    a.get("/baseline/pjnz/", name="v2 has no file")
+    a.delete("/baseline/pjnz", name="remove file from v2 (the current session version)")
+    a.get("/baseline/pjnz", name="v2 has no file")
     r = a.get(f"/project/{p['id']}/version/{v1}", name="open v1")
     assert r.status == 200
-    a.get("/baseline/pjnz/", name="session now shows v1's file")
+    a.get("/baseline/pjnz", name="session now shows v1's file")
     a.get("/project/current", name="current is v1")
 
 
@@ -178,8 +178,8 @@ def test_session_files_flow_after_opening_a_version(scn):
     a, p, v1 = setup_project(scn, with_file=True)
     details = a.get(f"/project/{p['id']}/version/{v1}", name="open").data
     b = login_and_open(scn, "B")
-    b.post("/session/files/", json=details["files"], name="post the files to a fresh session")
-    b.get("/baseline/pjnz/", name="fresh session now has the file")
+    b.post("/session/files", json=details["files"], name="post the files to a fresh session")
+    b.get("/baseline/pjnz", name="fresh session now has the file")
     scn.db_rows("version_file")
 
 
