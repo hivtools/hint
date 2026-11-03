@@ -14,6 +14,7 @@ from urllib.parse import quote
 import httpx2
 from fastapi import Depends, Header, Request
 from fastapi.responses import JSONResponse, Response
+from pydantic_core import to_jsonable_python
 
 from app.config import Settings
 from app.schemas import success
@@ -88,12 +89,23 @@ class HintrClient:
         self._http = http
         self._language = language
 
-    async def forward(self, method: str, path: str, params: Mapping[str, str] | None = None) -> Response:
+    async def forward(
+        self, method: str, path: str, params: Mapping[str, str] | None = None, json: object = None
+    ) -> Response:
         """Call hintr and return its answer. The {names} in the path are filled in from `params`, made safe first: a
-        value from the URL cannot add path parts or a query string to the call."""
+        value from the URL cannot add path parts or a query string to the call.
+
+        `json` is sent as the body, and without it there is no body.
+        """
         path = path.format_map({name: quote(value, safe="") for name, value in (params or {}).items()})
         try:
-            r = await self._http.request(method, path, headers={"Accept-Language": self._language})
+            r = await self._http.request(
+                method,
+                path,
+                headers={"Accept-Language": self._language},
+                # Models (the files, the options) are written as hintr reads them
+                json=None if json is None else to_jsonable_python(json, by_alias=True),
+            )
         except httpx2.RequestError:
             logger.exception("No response from hintr for %s %s", method, path)
             return _failure(500, NO_RESPONSE)
