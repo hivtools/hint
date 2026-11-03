@@ -19,7 +19,7 @@ Every endpoint of the Kotlin app, in the order of the [endpoint index](endpoint-
 | GET | `/password/reset-password` | Serves the reset password page for a token | [ ] | |
 | POST | `/password/reset-password` | Sets a new password using a reset token | [ ] | |
 | GET | `/user/{email}/exists` | Whether a user with this email exists | [ ] | |
-| GET | `/metrics` | Plain text hintr worker counts (busy, idle, ...) for monitoring | [ ] | |
+| GET | `/metrics` | Plain text hintr worker counts (busy, idle, ...) for monitoring | [ ] | Not going to be ported for now: nothing uses it any more. Kotlin still serves it |
 | GET | `/projects/` | Lists the user's projects and their versions | [x] | [D1](#differences-from-kotlin): for a guest Kotlin answers 401 with an empty body |
 | GET | `/project/current` | The project and version of the session's current version id (both null if there is none) | [x] | [D1](#differences-from-kotlin), [D4](#differences-from-kotlin). Version comes from `X-Version-Id`, not the session. Versions of the project come back in a different order after a delete (`versions/test_delete_version`) |
 | POST | `/project/` | Creates a project | [x] | [D1](#differences-from-kotlin), [D3](#differences-from-kotlin) |
@@ -60,24 +60,24 @@ Every endpoint of the Kotlin app, in the order of the [endpoint index](endpoint-
 | GET | `/chart-data/input-comparison` | Chart data comparing the inputs | [ ] | |
 | GET | `/chart-data/input-population` | Chart data for the population input | [ ] | |
 | POST | `/meta/review-inputs/{iso3}` | Metadata (plot settings) for the review inputs page | [ ] | |
-| GET | `/meta/hintr/version` | hintr, naomi and hint versions (version menu) | [ ] | |
+| GET | `/meta/hintr/version` | hintr, naomi and hint versions (version menu) | [x] | [D5](#differences-from-kotlin) |
 | GET | `/model/options` | Model options form definition for the uploaded files | [ ] | |
 | POST | `/model/validate/options` | Validates the chosen model options | [ ] | |
 | POST | `/model/run` | Queues a model fit | [ ] | |
-| GET | `/model/status/{id}` | Status and progress of a model fit | [ ] | |
-| GET | `/model/result/{id}` | Result of a model fit | [ ] | |
-| POST | `/model/cancel/{id}` | Cancels a model fit | [ ] | |
-| GET | `/model/comparison/plot/{id}` | Comparison plot data for a model fit | [ ] | |
+| GET | `/model/status/{id}` | Status and progress of a model fit | [x] | [D5](#differences-from-kotlin). An empty id (`/model/status/`) is 404 `Not Found` (Kotlin: unexpected error) |
+| GET | `/model/result/{id}` | Result of a model fit | [x] | [D5](#differences-from-kotlin) |
+| POST | `/model/cancel/{id}` | Cancels a model fit | [x] | [D5](#differences-from-kotlin) |
+| GET | `/model/comparison/plot/{id}` | Comparison plot data for a model fit | [x] | [D5](#differences-from-kotlin) |
 | GET | `/model/debug/{id}` | Downloads the debug zip for a task (needs a GitHub token) | [ ] | |
-| GET | `/calibrate/options/{iso3}` | Calibration options form definition | [ ] | |
+| GET | `/calibrate/options/{iso3}` | Calibration options form definition | [x] | [D5](#differences-from-kotlin) |
 | POST | `/calibrate/submit/{id}` | Queues a calibration of a model fit | [ ] | |
-| GET | `/calibrate/status/{id}` | Status and progress of a calibration | [ ] | |
-| GET | `/calibrate/result/metadata/{id}` | Metadata for the calibrated results | [ ] | |
-| GET | `/calibrate/plot/{id}` | Calibration plot data | [ ] | |
+| GET | `/calibrate/status/{id}` | Status and progress of a calibration | [x] | [D5](#differences-from-kotlin) |
+| GET | `/calibrate/result/metadata/{id}` | Metadata for the calibrated results | [x] | [D5](#differences-from-kotlin) |
+| GET | `/calibrate/plot/{id}` | Calibration plot data | [x] | [D5](#differences-from-kotlin) |
 | POST | `/calibrate/result/filteredData/{id}` | Calibrated results filtered by the selected options, read from the results database | [ ] | |
 | GET | `/calibrate/result/data/{id}/{indicator}` | Calibrated results for one indicator | [ ] | |
 | POST | `/download/submit/{type}/{id}` | Queues a download of an output file (spectrum, coarse output, summary, comparison, ...) | [ ] | |
-| GET | `/download/status/{id}` | Status of a download | [ ] | |
+| GET | `/download/status/{id}` | Status of a download | [x] | [D5](#differences-from-kotlin) |
 | GET | `/download/result/{id}` | Downloads the finished output file | [ ] | |
 | POST | `/rehydrate/zip` | Loads a project from an uploaded output zip | [ ] | |
 | POST | `/rehydrate/adr` | Loads a project from an output zip on ADR | [ ] | |
@@ -97,7 +97,7 @@ Every endpoint of the Kotlin app, in the order of the [endpoint index](endpoint-
 | POST | `/adr/anc` | Imports the ANC file from ADR | [ ] | |
 | POST | `/adr/vmmc` | Imports the VMMC file from ADR | [ ] | |
 | POST | `/adr/output` | Imports an output zip from ADR | [ ] | |
-| GET | `/meta/adr/{id}` | Upload metadata for a task, used when pushing to ADR | [ ] | |
+| GET | `/meta/adr/{id}` | Upload metadata for a task, used when pushing to ADR | [x] | [D5](#differences-from-kotlin) |
 | POST | `/adr/datasets/{id}/releases` | Creates a release of an ADR dataset | [ ] | |
 | POST | `/adr/datasets/{id}/resource/{resourceType}/{downloadId}` | Pushes an input or output file to ADR | [ ] | |
 | POST | `/error-report` | Sends an error report to Teams and copies the project to the support user | [ ] | |
@@ -111,3 +111,4 @@ The goldens in `contract-tests/goldens` are recorded from the Kotlin app only (`
 - **D2. `Accept-Language` negotiation.** Python maps `pt-BR` to Portuguese and `fr;q=0.5` to French. Kotlin answers English for both. Tests: `misc_edges/test_accept_language_variants_for_hint_errors[pt-BR]` and `[q-value]`.
 - **D3. Text of the "unexpected error" message.** The user-facing part is the same. Kotlin appends the Spring or Jackson reason (for example `Required request body is missing: public org.springframework...`), Python only logs the reason. Tests: the `*_errors` and "no body" / "missing ..." steps in `projects/` and `versions/`.
 - **D4. No version in the session.** Python takes the version from `X-Version-Id` and keeps nothing in the Kotlin session. Deleting a project from a session with no current project succeeds (Kotlin: 400). After a failed new version the session still points at a version that exists, so the next upload works (Kotlin: 500). `/project/current` without the header is `null` (Kotlin: the session's version). Tests: `projects/test_delete_project_fails_with_400_when_session_has_no_current_project_but_still_deletes`, `versions/test_failed_new_version_leaves_session_pointing_at_a_nonexistent_version`, `version_header/test_without_the_header_the_version_in_the_session_is_used`.
+- **D5. hintr failures (the passthrough endpoints).** (a) A body that is not JSON, such as the HTML 502 or 504 page of a gateway, gives `Could not parse response.` (500). Kotlin gives ADR wording, `Failed to get response from ADR, try again later.` (502) or `ADR request timed out` (504), because hintr and ADR answers share one converter there. (b) A JSON error with no `status` field gives the JSON text as the message. Kotlin gives an empty message. (c) Python calls hintr once when the connection is dropped, Kotlin twice. Tests: `hintr_faults/test_hintr_non_json_error_bodies`, `test_hintr_connection_dropped`, `test_hintr_down_for_each_validation_endpoint`, `model/test_status_result_of_unknown_ids`.

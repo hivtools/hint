@@ -3,7 +3,7 @@
 import json
 from datetime import datetime
 
-import httpx
+import httpx2
 from sqlalchemy import update
 from sqlalchemy.ext.asyncio import AsyncEngine
 
@@ -16,7 +16,7 @@ from app.main import app
 STATE = json.dumps({"datasets": {}, "model_fit": {"id": "abc"}, "step": 3})
 
 
-def make_client(user: str, version_id: str | None = None) -> httpx.AsyncClient:
+def make_client(user: str, version_id: str | None = None) -> httpx2.AsyncClient:
     """A client of the app, who the proxy has identified as `user` (and working on `version_id`, if given).
 
     Unhandled errors in the app are answered with a 500, as a real client would see, rather than raised in the test.
@@ -24,17 +24,17 @@ def make_client(user: str, version_id: str | None = None) -> httpx.AsyncClient:
     headers = {"X-Hint-User": user}
     if version_id:
         headers["X-Version-Id"] = version_id
-    transport = httpx.ASGITransport(app=app, raise_app_exceptions=False)
-    return httpx.AsyncClient(transport=transport, base_url="http://test", headers=headers)
+    transport = httpx2.ASGITransport(app=app, raise_app_exceptions=False)
+    return httpx2.AsyncClient(transport=transport, base_url="http://test", headers=headers)
 
 
-async def create_project(client: httpx.AsyncClient, name: str = "p", note: str | None = None) -> dict:
+async def create_project(client: httpx2.AsyncClient, name: str = "p", note: str | None = None) -> dict:
     r = await client.post("/project", json={"name": name, "note": note})
     assert r.status_code == 200
     return r.json()["data"]
 
 
-async def save_state(client: httpx.AsyncClient, project: dict, version_id: str | None = None, state: str = STATE):
+async def save_state(client: httpx2.AsyncClient, project: dict, version_id: str | None = None, state: str = STATE):
     version_id = version_id or project["versions"][0]["id"]
     r = await client.post(
         f"/project/{project['id']}/version/{version_id}/state",
@@ -65,6 +65,6 @@ async def set_updated(engine: AsyncEngine, version_id: str, updated: datetime):
         await conn.execute(update(ProjectVersion).where(ProjectVersion.id == version_id).values(updated=updated))
 
 
-def assert_failure(r: httpx.Response, status: int, detail: str):
+def assert_failure(r: httpx2.Response, status: int, detail: str):
     assert r.status_code == status
     assert r.json() == {"data": {}, "errors": [{"error": "OTHER_ERROR", "detail": detail}], "status": "failure"}
