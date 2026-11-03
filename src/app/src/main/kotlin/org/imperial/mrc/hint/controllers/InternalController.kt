@@ -11,7 +11,9 @@ import org.springframework.web.bind.annotation.RestController
  *
  * While endpoints are migrated to the Python API, the proxy makes an auth_request to /internal/whoami for each request
  * it routes to Python, forwarding the browser's cookies. The user in the response header is passed on to Python. The
- * version the request works on is not part of the identity: the browser sends it in X-Version-Id.
+ * version the request works on is not part of the identity: the browser sends it in X-Version-Id. Python checks that
+ * the user may use it, and for a guest that means knowing which versions this session was given, so those are passed
+ * on too.
  */
 @RestController
 @RequestMapping("/internal")
@@ -20,13 +22,19 @@ class InternalController(private val session: Session)
     @GetMapping("/whoami")
     fun whoami(): ResponseEntity<Void>
     {
-        return ResponseEntity.noContent()
+        val response = ResponseEntity.noContent()
                 .header(USER_HEADER, session.getUserProfile().id)
-                .build()
+        val guestVersionIds = if (session.userIsGuest()) session.getGuestVersionIds() else listOf()
+        if (guestVersionIds.isNotEmpty())
+        {
+            response.header(GUEST_VERSIONS_HEADER, guestVersionIds.joinToString(","))
+        }
+        return response.build()
     }
 
     companion object
     {
         const val USER_HEADER = "X-Hint-User"
+        const val GUEST_VERSIONS_HEADER = "X-Hint-Guest-Versions"
     }
 }
