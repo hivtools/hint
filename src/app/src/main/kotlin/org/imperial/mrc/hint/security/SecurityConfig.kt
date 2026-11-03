@@ -148,7 +148,7 @@ class Session(
         sessionStore.set(webContext, GUEST_VERSION_IDS, ArrayList(getGuestVersionIds() + versionId))
     }
 
-    private fun getGuestVersionIds(): List<String>
+    fun getGuestVersionIds(): List<String>
     {
         @Suppress("UNCHECKED_CAST")
         return sessionStore.get(webContext, GUEST_VERSION_IDS).orElse(null) as List<String>? ?: listOf()
