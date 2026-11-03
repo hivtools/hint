@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncEngine
 
 from app.db.database import create_db_session_factory
 from app.main import app
-from tests.api.helpers import make_client
+from tests.api.helpers import create_project, make_client
 from tests.hintr import FakeHintr
 from tests.support import OTHER_USER, USER
 
@@ -16,6 +16,19 @@ async def api(engine: AsyncEngine) -> AsyncIterator[httpx2.AsyncClient]:
     """The app (on the test database) as USER."""
     app.state.db_session_factory = create_db_session_factory(engine)
     async with make_client(USER) as client:
+        yield client
+
+
+@pytest_asyncio.fixture
+async def version_id(api: httpx2.AsyncClient) -> str:
+    """A version of a project of USER."""
+    return (await create_project(api))["versions"][0]["id"]
+
+
+@pytest_asyncio.fixture
+async def on_a_version(version_id: str) -> AsyncIterator[httpx2.AsyncClient]:
+    """USER, working on `version_id`."""
+    async with make_client(USER, version_id) as client:
         yield client
 
 

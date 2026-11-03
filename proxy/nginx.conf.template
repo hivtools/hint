@@ -51,6 +51,14 @@ server {
     location /calibrate/result/metadata/ { include snippets/python.conf; }
     location /calibrate/plot/ { include snippets/python.conf; }
     location /download/status/ { include snippets/python.conf; }
+    # Calls that add the files of the version to the call
+    location /chart-data/ { include snippets/python.conf; }
+    location /meta/review-inputs/ { include snippets/python.conf; }
+    location = /model/options { include snippets/python.conf; }
+    location = /model/validate/options { include snippets/python.conf; }
+    location = /model/run { include snippets/python.conf; }
+    location /calibrate/submit/ { include snippets/python.conf; }
+    location /download/submit/ { include snippets/python.conf; }
 
     # ---- Identity bridge ----
     # Only reachable from auth_request, never directly. The Cookie and Authorization headers of the original request

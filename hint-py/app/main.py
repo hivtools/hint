@@ -9,7 +9,7 @@ from app.clients.hintr_client import create_hintr_http_client
 from app.config import get_settings
 from app.db.database import create_db_session_factory, create_engine
 from app.errors import register_error_handlers
-from app.routers import hintr_forwards, items, projects
+from app.routers import downloads, hintr_forwards, items, model, projects, review_inputs
 
 # pyproject.toml is the one place the version is set. The project is not installed as a package, so there is no
 # package metadata to read it from.
@@ -32,6 +32,9 @@ register_error_handlers(app)
 app.include_router(items.router)
 app.include_router(projects.router)
 app.include_router(hintr_forwards.router)
+app.include_router(review_inputs.router)
+app.include_router(model.router)
+app.include_router(downloads.router)
 
 
 @app.get("/version")

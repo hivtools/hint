@@ -57,17 +57,13 @@ def requested_version_id(x_version_id: Annotated[str | None, Header()] = None) -
     return x_version_id or None
 
 
-async def current_version_id(
-    user: Annotated[User, Depends(current_user)],
-    version_id: Annotated[str | None, Depends(requested_version_id)],
-    versions: Annotated[VersionRepository, Depends(get_version_repository)],
-) -> str:
-    """The project version this request works on, after checking that the user may use it.
+async def usable_version_id(user: User, version_id: str | None, versions: VersionRepository) -> str:
+    """The version id, if this user may use that version. Anything else, including no version id at all, is a 403 with
+    the error code INVALID_VERSION, and the Vue app then clears the tab's state and starts again from the Projects page.
 
     A logged in user may use a version of one of their projects. A guest has no projects, so they may use the versions
-    the server gave to them (`POST /guest/version`). Anything else, including no header at all, is a 403 with the error
-    code INVALID_VERSION, and the Vue app then clears the tab's state and starts again from the Projects page. This is
-    checked on every request: a version id is hard to guess, but that is not what keeps users out of each other's files.
+    the server gave to them (`POST /guest/version`). This is checked on every request: a version id is hard to guess,
+    but that is not what keeps users out of each other's files.
     """
     if not version_id:
         raise InvalidVersionError()
@@ -78,6 +74,15 @@ async def current_version_id(
     if not allowed:
         raise InvalidVersionError()
     return version_id
+
+
+async def current_version_id(
+    user: Annotated[User, Depends(current_user)],
+    version_id: Annotated[str | None, Depends(requested_version_id)],
+    versions: Annotated[VersionRepository, Depends(get_version_repository)],
+) -> str:
+    """The project version this request works on, after checking that the user may use it (see `usable_version_id`)."""
+    return await usable_version_id(user, version_id, versions)
 
 
 def logged_in_user(user: Annotated[User, Depends(current_user)]) -> User:
