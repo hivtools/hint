@@ -45,7 +45,7 @@ def test_missing_shape_and_pjnz(scn, kind):
     a.post(PATHS[kind], files={"file": DISEASE[kind][1]}, params={"strict": "false"}, name="shape only, lax")
     a.get(PATHS[kind], name="GET strict reports missing pjnz")
     a.get(PATHS[kind], params={"strict": "false"}, name="GET lax works")
-    a.delete("/baseline/shape/", name="remove shape")
+    a.delete("/baseline/shape", name="remove shape")
     upload(a, "pjnz", name="upload pjnz")
     a.post(PATHS[kind], files={"file": DISEASE[kind][1]}, name="pjnz only, strict")
     a.get(PATHS[kind], params={"strict": "false"}, name="GET lax with pjnz only")
@@ -158,7 +158,7 @@ def test_replacing_a_file_with_a_valid_one(scn):
 def test_shape_replaced_after_disease_upload_is_revalidated_on_get(scn):
     a = with_baseline(scn)
     upload(a, "programme")
-    a.post("/baseline/shape/", files={"file": "malawi_missing_regions.geojson"}, name="replace shape by an invalid one")
+    a.post("/baseline/shape", files={"file": "malawi_missing_regions.geojson"}, name="replace shape by an invalid one")
     a.get(PATHS["programme"], name="programme GET now fails because the shape is invalid")
     upload(a, "shape", name="restore shape")
     a.get(PATHS["programme"], name="programme GET works again")

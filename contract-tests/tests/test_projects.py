@@ -190,7 +190,7 @@ def test_delete_current_project_resets_session_version(scn):
     p = create_project(a, "p").data
     a.delete(f"/project/{p['id']}", name="delete the current project")
     a.get("/project/current", name="no current project")
-    a.get("/baseline/pjnz/", name="session still usable")
+    a.get("/baseline/pjnz", name="session still usable")
     a.open_app(name="open app again")
     upload(a, "pjnz")
     scn.db_rows("project_version")

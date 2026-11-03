@@ -19,7 +19,7 @@ export const actions: ActionTree<ModelOptionsState, RootState> & ModelOptionsAct
         const response = await api<ModelOptionsMutation, ModelOptionsMutation>(context)
             .withSuccess(ModelOptionsMutation.ModelOptionsFetched)
             .withError(ModelOptionsMutation.ModelOptionsError)
-            .get<DynamicFormMeta>("/model/options/");
+            .get<DynamicFormMeta>("/model/options");
 
         if (response) {
             commit({type: ModelOptionsMutation.SetModelOptionsVersion, payload: response.version});
@@ -35,7 +35,7 @@ export const actions: ActionTree<ModelOptionsState, RootState> & ModelOptionsAct
         await api<ModelOptionsMutation, ModelOptionsMutation>(context)
             .withSuccess(ModelOptionsMutation.Validate)
             .withError(ModelOptionsMutation.HasValidationError)
-            .postAndReturn<ModelOptionsValidate>("/model/validate/options/", {options, version})
+            .postAndReturn<ModelOptionsValidate>("/model/validate/options", {options, version})
             
         commit(ModelOptionsMutation.Validated);
     }

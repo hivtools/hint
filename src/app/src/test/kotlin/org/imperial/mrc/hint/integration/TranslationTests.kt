@@ -21,7 +21,7 @@ class TranslationTests : SecureIntegrationTests()
         headers.set("Accept-Language", "fr")
         val postEntity = HttpEntity(getTestEntity("malawi.geojson").body, headers)
 
-        val responseEntity = testRestTemplate.exchange<String>("/baseline/pjnz/", HttpMethod.POST, postEntity)
+        val responseEntity = testRestTemplate.exchange<String>("/baseline/pjnz", HttpMethod.POST, postEntity)
 
         assertError(responseEntity,
                 HttpStatus.BAD_REQUEST,

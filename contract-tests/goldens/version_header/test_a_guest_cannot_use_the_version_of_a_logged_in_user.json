@@ -120,7 +120,7 @@
           "x-version-id": "<UUID:1>"
         },
         "method": "POST",
-        "path": "/baseline/pjnz/"
+        "path": "/baseline/pjnz"
       },
       "response": {
         "body": {

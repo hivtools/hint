@@ -57,7 +57,7 @@
           }
         },
         "method": "POST",
-        "path": "/disease/anc/",
+        "path": "/disease/anc",
         "query": {
           "strict": "false"
         }
@@ -156,7 +156,7 @@
           }
         },
         "method": "POST",
-        "path": "/baseline/shape/"
+        "path": "/baseline/shape"
       },
       "response": {
         "body": {
@@ -183,7 +183,7 @@
           }
         },
         "method": "POST",
-        "path": "/disease/programme/"
+        "path": "/disease/programme"
       },
       "response": {
         "body": {

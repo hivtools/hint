@@ -47,7 +47,7 @@
       "name": "no body",
       "request": {
         "method": "POST",
-        "path": "/model/validate/options/"
+        "path": "/model/validate/options"
       },
       "response": {
         "body": {
@@ -78,7 +78,7 @@
           }
         },
         "method": "POST",
-        "path": "/model/validate/options/"
+        "path": "/model/validate/options"
       },
       "response": {
         "body": {
@@ -111,7 +111,7 @@
           }
         },
         "method": "POST",
-        "path": "/model/validate/options/"
+        "path": "/model/validate/options"
       },
       "response": {
         "body": {
@@ -144,7 +144,7 @@
           }
         },
         "method": "POST",
-        "path": "/model/validate/options/"
+        "path": "/model/validate/options"
       },
       "response": {
         "body": {
@@ -175,7 +175,7 @@
           }
         },
         "method": "POST",
-        "path": "/model/validate/options/"
+        "path": "/model/validate/options"
       },
       "response": {
         "body": {
@@ -201,7 +201,7 @@
       "name": "wrong method",
       "request": {
         "method": "GET",
-        "path": "/model/validate/options/"
+        "path": "/model/validate/options"
       },
       "response": {
         "body": {

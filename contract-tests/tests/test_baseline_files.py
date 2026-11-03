@@ -6,7 +6,7 @@ import pytest
 from hintcontract.flows import login_and_open, guest_open, upload
 from hintcontract.scenario import Upload
 
-KINDS = {"pjnz": "/baseline/pjnz/", "shape": "/baseline/shape/", "population": "/baseline/population/"}
+KINDS = {"pjnz": "/baseline/pjnz", "shape": "/baseline/shape", "population": "/baseline/population"}
 GOOD = {"pjnz": "Malawi2024.PJNZ", "shape": "malawi.geojson", "population": "population.csv"}
 
 
@@ -37,7 +37,7 @@ def test_pjnz_zip_upload_is_accepted(scn):
 def test_pjnz_other_country_and_lowercase_extension(scn):
     a = login_and_open(scn)
     upload(a, "pjnz", "Botswana2018.PJNZ")
-    a.post("/baseline/pjnz/", files={"file": Upload("renamed.pjnz", open(scn.env.fixtures_dir / "Malawi2024.PJNZ", "rb").read())},
+    a.post("/baseline/pjnz", files={"file": Upload("renamed.pjnz", open(scn.env.fixtures_dir / "Malawi2024.PJNZ", "rb").read())},
            name="lowercase extension")
     scn.uploads()
 
@@ -55,7 +55,7 @@ def test_pjnz_errors(scn):
         "only an extension": Upload(".PJNZ", b"abc"),
     }
     for label, spec in cases.items():
-        a.post("/baseline/pjnz/", files={"file": spec}, name=f"pjnz: {label}")
+        a.post("/baseline/pjnz", files={"file": spec}, name=f"pjnz: {label}")
     scn.uploads()
 
 
@@ -72,7 +72,7 @@ def test_shape_errors(scn):
         "no extension": Upload("shapefile", b"{}"),
     }
     for label, spec in cases.items():
-        a.post("/baseline/shape/", files={"file": spec}, name=f"shape: {label}")
+        a.post("/baseline/shape", files={"file": spec}, name=f"shape: {label}")
 
 
 def test_population_errors(scn):
@@ -89,7 +89,7 @@ def test_population_errors(scn):
         "binary garbage": Upload("garbage.csv", bytes(range(256))),
     }
     for label, spec in cases.items():
-        a.post("/baseline/population/", files={"file": spec}, name=f"population: {label}")
+        a.post("/baseline/population", files={"file": spec}, name=f"population: {label}")
 
 
 @pytest.mark.quirk
@@ -109,23 +109,23 @@ def test_failed_validation_still_replaces_the_stored_file(scn, kind):
 
 def test_upload_request_errors(scn):
     a = login_and_open(scn)
-    a.post("/baseline/pjnz/", files={"other": Upload("a.PJNZ", b"abc")}, name="wrong part name")
-    a.post("/baseline/pjnz/", files={"file": Upload("", b"abc")}, name="empty filename")
-    a.post("/baseline/pjnz/", name="no body")
-    a.post("/baseline/pjnz/", form={"file": "text"}, name="file sent as a plain form field")
-    a.post("/baseline/pjnz/", json={"file": "x"}, name="json body")
+    a.post("/baseline/pjnz", files={"other": Upload("a.PJNZ", b"abc")}, name="wrong part name")
+    a.post("/baseline/pjnz", files={"file": Upload("", b"abc")}, name="empty filename")
+    a.post("/baseline/pjnz", name="no body")
+    a.post("/baseline/pjnz", form={"file": "text"}, name="file sent as a plain form field")
+    a.post("/baseline/pjnz", json={"file": "x"}, name="json body")
     a.get("/baseline/pjnz/upload", name="unknown sub route")
-    a.post("/baseline/pjnz", files={"file": "Malawi2024.PJNZ"}, name="no trailing slash")
-    a.post("/baseline/pjnz/", files={"file": Upload("a.PJNZ", b"abc")}, headers={"Accept-Language": "fr"},
+    a.post("/baseline/pjnz/", files={"file": "Malawi2024.PJNZ"}, name="trailing slash")
+    a.post("/baseline/pjnz", files={"file": Upload("a.PJNZ", b"abc")}, headers={"Accept-Language": "fr"},
            name="french error text")
-    a.post("/baseline/pjnz/", files={"file": Upload("a.PJNZ", b"abc")}, headers={"Accept-Language": "pt"},
+    a.post("/baseline/pjnz", files={"file": Upload("a.PJNZ", b"abc")}, headers={"Accept-Language": "pt"},
            name="portuguese error text")
 
 
 def test_hintr_error_messages_follow_accept_language(scn):
     a = login_and_open(scn)
     for lang in ("en", "fr", "pt", "de", "fr-FR,fr;q=0.9"):
-        a.post("/baseline/pjnz/", files={"file": "malawi.geojson"}, headers={"Accept-Language": lang},
+        a.post("/baseline/pjnz", files={"file": "malawi.geojson"}, headers={"Accept-Language": lang},
                name=f"geojson as pjnz, Accept-Language {lang}")
 
 
@@ -134,7 +134,7 @@ def test_upload_before_opening_app_fails_because_version_row_missing(scn):
     """quirk: a brand new session has no project_version row until GET / (or similar) creates it."""
     a = scn.client("A")
     a.login()
-    a.post("/baseline/pjnz/", files={"file": "Malawi2024.PJNZ"}, name="upload without opening the app")
+    a.post("/baseline/pjnz", files={"file": "Malawi2024.PJNZ"}, name="upload without opening the app")
     scn.db_rows("file")
     scn.uploads()
 
@@ -142,27 +142,27 @@ def test_upload_before_opening_app_fails_because_version_row_missing(scn):
 # ---------------------------------------------------------------------------------------------------- combined
 def test_baseline_combined_validation(scn):
     a = login_and_open(scn)
-    a.get("/baseline/validate/", name="nothing uploaded")
+    a.get("/baseline/validate", name="nothing uploaded")
     upload(a, "pjnz")
-    a.get("/baseline/validate/", name="only pjnz")
+    a.get("/baseline/validate", name="only pjnz")
     upload(a, "shape")
-    a.get("/baseline/validate/", name="pjnz + shape")
+    a.get("/baseline/validate", name="pjnz + shape")
     upload(a, "population")
-    a.get("/baseline/validate/", name="all three, consistent")
+    a.get("/baseline/validate", name="all three, consistent")
 
 
 def test_baseline_combined_inconsistent_countries(scn):
     a = login_and_open(scn)
     upload(a, "pjnz", "Botswana2018.PJNZ")
     upload(a, "shape")
-    a.get("/baseline/validate/", name="botswana pjnz + malawi shape")
-    a.get("/baseline/validate/", headers={"Accept-Language": "fr"}, name="same in french")
+    a.get("/baseline/validate", name="botswana pjnz + malawi shape")
+    a.get("/baseline/validate", headers={"Accept-Language": "fr"}, name="same in french")
     upload(a, "population")
-    a.get("/baseline/validate/", name="plus population")
+    a.get("/baseline/validate", name="plus population")
 
 
 def test_baseline_combined_with_an_invalid_file_attached(scn):
     a = login_and_open(scn)
     upload(a, "pjnz")
-    a.post("/baseline/shape/", files={"file": Upload("bad.geojson", b"{not json")}, name="invalid shape")
-    a.get("/baseline/validate/", name="combined validation reports the invalid shape")
+    a.post("/baseline/shape", files={"file": Upload("bad.geojson", b"{not json")}, name="invalid shape")
+    a.get("/baseline/validate", name="combined validation reports the invalid shape")

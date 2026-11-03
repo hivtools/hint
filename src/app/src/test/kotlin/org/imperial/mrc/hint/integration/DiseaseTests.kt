@@ -19,9 +19,9 @@ class DiseaseTests : VersionFileTests()
     {
         authorize()
         testRestTemplate.getForEntity<String>("/")
-        testRestTemplate.postForEntity<String>("/baseline/pjnz/",
+        testRestTemplate.postForEntity<String>("/baseline/pjnz",
                 getTestEntity("Malawi2024.PJNZ"))
-        testRestTemplate.postForEntity<String>("/baseline/shape/",
+        testRestTemplate.postForEntity<String>("/baseline/shape",
                 getTestEntity("malawi.geojson"))
     }
 
@@ -29,7 +29,7 @@ class DiseaseTests : VersionFileTests()
     fun `can upload survey file`()
     {
         val postEntity = getTestEntity("survey.csv")
-        val entity = testRestTemplate.postForEntity<String>("/disease/survey/", postEntity)
+        val entity = testRestTemplate.postForEntity<String>("/disease/survey", postEntity)
         assertSuccess(entity, "ValidateInputResponse")
 
         val data = getResponseData(entity)
@@ -40,7 +40,7 @@ class DiseaseTests : VersionFileTests()
     fun `can upload program file`()
     {
         val postEntity = getTestEntity("programme.csv")
-        val entity = testRestTemplate.postForEntity<String>("/disease/programme/", postEntity)
+        val entity = testRestTemplate.postForEntity<String>("/disease/programme", postEntity)
         assertSuccess(entity, "ValidateInputResponse")
 
         val data = getResponseData(entity)
@@ -51,7 +51,7 @@ class DiseaseTests : VersionFileTests()
     fun `can upload ANC file`()
     {
         val postEntity = getTestEntity("anc.csv")
-        val entity = testRestTemplate.postForEntity<String>("/disease/anc/", postEntity)
+        val entity = testRestTemplate.postForEntity<String>("/disease/anc", postEntity)
         assertSuccess(entity, "ValidateInputResponse")
 
         val data = getResponseData(entity)
@@ -62,7 +62,7 @@ class DiseaseTests : VersionFileTests()
     fun `can upload VMMC file`()
     {
         val postEntity = getTestEntity("vmmc.xlsx")
-        val entity = testRestTemplate.postForEntity<String>("/disease/vmmc/", postEntity)
+        val entity = testRestTemplate.postForEntity<String>("/disease/vmmc", postEntity)
         assertSuccess(entity, "ValidateInputResponse")
 
         val data = getResponseData(entity)
@@ -73,8 +73,8 @@ class DiseaseTests : VersionFileTests()
     fun `can get survey data`()
     {
         val postEntity = getTestEntity("survey.csv")
-        testRestTemplate.postForEntity<String>("/disease/survey/", postEntity)
-        val responseEntity = testRestTemplate.getForEntity<String>("/disease/survey/")
+        testRestTemplate.postForEntity<String>("/disease/survey", postEntity)
+        val responseEntity = testRestTemplate.getForEntity<String>("/disease/survey")
         assertSuccess(responseEntity, "ValidateInputResponse")
     }
 
@@ -82,8 +82,8 @@ class DiseaseTests : VersionFileTests()
     fun `can get programme data`()
     {
         val postEntity = getTestEntity("programme.csv")
-        testRestTemplate.postForEntity<String>("/disease/programme/", postEntity)
-        val responseEntity = testRestTemplate.getForEntity<String>("/disease/programme/")
+        testRestTemplate.postForEntity<String>("/disease/programme", postEntity)
+        val responseEntity = testRestTemplate.getForEntity<String>("/disease/programme")
         assertSuccess(responseEntity, "ValidateInputResponse")
     }
 
@@ -91,8 +91,8 @@ class DiseaseTests : VersionFileTests()
     fun `can get ANC data`()
     {
         val postEntity = getTestEntity("anc.csv")
-        testRestTemplate.postForEntity<String>("/disease/anc/", postEntity)
-        val responseEntity = testRestTemplate.getForEntity<String>("/disease/anc/")
+        testRestTemplate.postForEntity<String>("/disease/anc", postEntity)
+        val responseEntity = testRestTemplate.getForEntity<String>("/disease/anc")
         assertSuccess(responseEntity, "ValidateInputResponse")
     }
 
@@ -101,37 +101,37 @@ class DiseaseTests : VersionFileTests()
     fun `can upload and retrieve data without strict validation`()
     {
         val postEntity = getTestEntity("anc-pos-greater-than-total.csv")
-        val strictValidationUploadResponse = testRestTemplate.postForEntity<String>("/disease/anc/", postEntity)
+        val strictValidationUploadResponse = testRestTemplate.postForEntity<String>("/disease/anc", postEntity)
         assertError(strictValidationUploadResponse, HttpStatus.BAD_REQUEST, "INVALID_FILE")
 
-        val laxValidationUploadResponse = testRestTemplate.postForEntity<String>("/disease/anc/?strict=false", postEntity)
+        val laxValidationUploadResponse = testRestTemplate.postForEntity<String>("/disease/anc?strict=false", postEntity)
         assertSuccess(laxValidationUploadResponse, "ValidateInputResponse")
 
-        val strictValidationGetResponse = testRestTemplate.getForEntity<String>("/disease/anc/")
+        val strictValidationGetResponse = testRestTemplate.getForEntity<String>("/disease/anc")
         assertError(strictValidationGetResponse, HttpStatus.BAD_REQUEST, "INVALID_FILE")
 
-        val laxValidationGetResponse = testRestTemplate.getForEntity<String>("/disease/anc/?strict=false")
+        val laxValidationGetResponse = testRestTemplate.getForEntity<String>("/disease/anc?strict=false")
         assertSuccess(laxValidationGetResponse, "ValidateInputResponse")
     }
 
     @Test
     fun `can delete survey data`()
     {
-        val responseEntity = testRestTemplate.exchange<String>("/disease/survey/", HttpMethod.DELETE)
+        val responseEntity = testRestTemplate.exchange<String>("/disease/survey", HttpMethod.DELETE)
         assertSuccess(responseEntity, null)
     }
 
     @Test
     fun `can delete programme data`()
     {
-        val responseEntity = testRestTemplate.exchange<String>("/disease/programme/", HttpMethod.DELETE)
+        val responseEntity = testRestTemplate.exchange<String>("/disease/programme", HttpMethod.DELETE)
         assertSuccess(responseEntity, null)
     }
 
     @Test
     fun `can delete ANC data`()
     {
-        val responseEntity = testRestTemplate.exchange<String>("/disease/anc/", HttpMethod.DELETE)
+        val responseEntity = testRestTemplate.exchange<String>("/disease/anc", HttpMethod.DELETE)
         assertSuccess(responseEntity, null)
     }
 }

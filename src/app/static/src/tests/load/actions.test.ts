@@ -50,7 +50,7 @@ describe("Load actions", () => {
     });
 
     it("loadVersion sets files and updates store state", async () => {
-        mockAxios.onPost(`/session/files/`)
+        mockAxios.onPost(`/session/files`)
             .reply(200, mockSuccess({}));
         const commit = vi.fn();
         const dispatch = vi.fn();
@@ -66,7 +66,7 @@ describe("Load actions", () => {
         expect(commit.mock.calls[0][0]).toStrictEqual({type: "SettingFiles", payload: null});
         expect(commit.mock.calls[1][0]).toStrictEqual({type: "UpdatingState", payload: {}});
 
-        expect(mockAxios.history.post[0].url).toBe("/session/files/");
+        expect(mockAxios.history.post[0].url).toBe("/session/files");
         expect(mockAxios.history.post[0].data).toBe("files");
 
         expect(dispatch.mock.calls[0][0]).toBe("updateStoreState");
@@ -108,7 +108,7 @@ describe("Load actions", () => {
     });
 
     it("loadVersion pushes home route if not already there", async () => {
-        mockAxios.onPost(`/session/files/`)
+        mockAxios.onPost(`/session/files`)
             .reply(200, mockSuccess({}));
         const commit = vi.fn();
         const dispatch = vi.fn();
@@ -380,7 +380,7 @@ describe("Load actions", () => {
         mockAxios.onPost(`/rehydrate/zip`)
             .reply(200, mockSuccess(rehydrateResponse));
 
-        mockAxios.onPost(`/session/files/`)
+        mockAxios.onPost(`/session/files`)
             .reply(200, mockSuccess({}));
 
         const file = new File(["TEST"], "testFile.zip")
@@ -395,7 +395,7 @@ describe("Load actions", () => {
         await flushPromises();
         expect(mockAxios.history.post.length).toBe(2)
         expect(mockAxios.history.post[0]["url"]).toBe("/rehydrate/zip")
-        expect(mockAxios.history.post[1]["url"]).toBe("/session/files/")
+        expect(mockAxios.history.post[1]["url"]).toBe("/session/files")
         expect(JSON.parse(mockAxios.history.post[1]["data"])).toStrictEqual(sessionFilesPayload)
 
         expect(commit.mock.calls.length).toBe(3)
@@ -453,7 +453,7 @@ describe("Load actions", () => {
         mockAxios.onPost(`/rehydrate/adr`)
             .reply(200, mockSuccess(rehydrateResponse));
 
-        mockAxios.onPost(`/session/files/`)
+        mockAxios.onPost(`/session/files`)
             .reply(200, mockSuccess({}));
 
         const resource = mockDatasetResource();
@@ -466,7 +466,7 @@ describe("Load actions", () => {
         await flushPromises();
         expect(mockAxios.history.post.length).toBe(2)
         expect(mockAxios.history.post[0]["url"]).toBe("/rehydrate/adr")
-        expect(mockAxios.history.post[1]["url"]).toBe("/session/files/")
+        expect(mockAxios.history.post[1]["url"]).toBe("/session/files")
         expect(JSON.parse(mockAxios.history.post[1]["data"])).toStrictEqual(sessionFilesPayload)
 
         expect(commit.mock.calls.length).toBe(3)
@@ -524,7 +524,7 @@ describe("Load actions", () => {
         mockAxios.onPost(`/rehydrate/zip`)
             .reply(200, mockSuccess(rehydrateResponse));
 
-        mockAxios.onPost(`session/files/`)
+        mockAxios.onPost(`session/files`)
             .reply(200, mockSuccess({}));
 
         const file = new File(["TEST"], "testFile.zip")
