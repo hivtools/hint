@@ -434,8 +434,8 @@ class _Server(ThreadingHTTPServer):
     allow_reuse_address = True
 
 
-def serve(handler, port, tls: str | None = None, name: str = ""):
-    srv = _Server(("127.0.0.1", port), handler)
+def serve(handler, port, tls: str | None = None, name: str = "", bind: str = "127.0.0.1"):
+    srv = _Server((bind, port), handler)
     if tls:
         ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
         ctx.load_cert_chain(tls)
@@ -448,6 +448,8 @@ def serve(handler, port, tls: str | None = None, name: str = ""):
 def main(argv=None):
     ap = argparse.ArgumentParser()
     ap.add_argument("--proxy-port", type=int, default=18882)
+    ap.add_argument("--proxy-bind", default="127.0.0.1",
+                    help="address the recording proxy listens on (0.0.0.0 when a container has to reach it)")
     ap.add_argument("--upstream", default="http://127.0.0.1:18881")
     ap.add_argument("--stub-port", type=int, default=18883)
     ap.add_argument("--idp-port", type=int, default=18884)
@@ -457,7 +459,7 @@ def main(argv=None):
     u = urllib.parse.urlsplit(args.upstream)
     UPSTREAM.update(host=u.hostname, port=u.port or 80)
     FIXTURES_DIR["path"] = Path(args.fixtures_dir)
-    serve(ProxyHandler, args.proxy_port, name="proxy")
+    serve(ProxyHandler, args.proxy_port, name="proxy", bind=args.proxy_bind)
     serve(StubHandler, args.stub_port, name="stub")
     if args.idp_cert:
         serve(idp_handler_factory(), args.idp_port, tls=args.idp_cert, name="idp")

@@ -1,6 +1,6 @@
 from typing import Annotated
 
-import httpx
+import httpx2
 import pytest
 from fastapi import Depends, FastAPI, HTTPException
 from sqlalchemy import event, text
@@ -50,7 +50,7 @@ async def count_projects(engine) -> int:
 
 async def test_changes_are_committed_before_the_response_is_sent(app_and_events):
     app, engine, events = app_and_events
-    async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
+    async with httpx2.AsyncClient(transport=httpx2.ASGITransport(app=app), base_url="http://test") as client:
         r = await client.post("/projects")
 
     assert r.status_code == 200
@@ -60,7 +60,7 @@ async def test_changes_are_committed_before_the_response_is_sent(app_and_events)
 
 async def test_changes_are_rolled_back_if_the_endpoint_fails(app_and_events):
     app, engine, events = app_and_events
-    async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
+    async with httpx2.AsyncClient(transport=httpx2.ASGITransport(app=app), base_url="http://test") as client:
         r = await client.post("/fails")
 
     assert r.status_code == 409

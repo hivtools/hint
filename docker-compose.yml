@@ -84,6 +84,11 @@ services:
       - "8000"
     environment:
       HINT_DB_HOST: db
+      # Through the recording and faulting proxy the contract tests put in front of hintr, like Kotlin's hintr_url.
+      # It runs on the host (see ensure_stubs in scripts/dev.sh).
+      HINT_HINTR_URL: http://host.docker.internal:${FAULT_PORT:-8882}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     volumes:
       - ./hint-py:/app
     command: ["uv", "run", "--frozen", "--no-dev", "fastapi", "dev", "app/main.py", "--host", "0.0.0.0", "--port", "8000"]
