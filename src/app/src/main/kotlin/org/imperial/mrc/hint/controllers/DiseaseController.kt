@@ -22,49 +22,49 @@ class DiseaseController(fileManager: FileManager,
         HintrController(fileManager, apiClient, session, versionRepository, request)
 {
 
-    @PostMapping("/survey/")
+    @PostMapping("/survey")
     @ResponseBody
     fun uploadSurvey(@RequestParam("file") file: MultipartFile): ResponseEntity<String>
     {
         return saveAndValidate(file, FileType.Survey)
     }
 
-    @PostMapping("/programme/")
+    @PostMapping("/programme")
     @ResponseBody
     fun uploadProgramme(@RequestParam("file") file: MultipartFile): ResponseEntity<String>
     {
         return saveAndValidate(file, FileType.Programme)
     }
 
-    @PostMapping("/anc/")
+    @PostMapping("/anc")
     @ResponseBody
     fun uploadANC(@RequestParam("file") file: MultipartFile): ResponseEntity<String>
     {
         return saveAndValidate(file, FileType.ANC)
     }
 
-    @GetMapping("/survey/")
+    @GetMapping("/survey")
     @ResponseBody
     fun getSurvey(): ResponseEntity<String>
     {
         return getAndValidate(FileType.Survey)
     }
 
-    @GetMapping("/programme/")
+    @GetMapping("/programme")
     @ResponseBody
     fun getProgramme(): ResponseEntity<String>
     {
         return getAndValidate(FileType.Programme)
     }
 
-    @GetMapping("/anc/")
+    @GetMapping("/anc")
     @ResponseBody
     fun getANC(): ResponseEntity<String>
     {
         return getAndValidate(FileType.ANC)
     }
 
-    @DeleteMapping("/survey/")
+    @DeleteMapping("/survey")
     @ResponseBody
     fun removeSurvey(): ResponseEntity<String>
     {
@@ -72,7 +72,7 @@ class DiseaseController(fileManager: FileManager,
         return EmptySuccessResponse.asResponseEntity()
     }
 
-    @DeleteMapping("/programme/")
+    @DeleteMapping("/programme")
     @ResponseBody
     fun removeProgramme(): ResponseEntity<String>
     {
@@ -80,7 +80,7 @@ class DiseaseController(fileManager: FileManager,
         return EmptySuccessResponse.asResponseEntity()
     }
 
-    @DeleteMapping("/anc/")
+    @DeleteMapping("/anc")
     @ResponseBody
     fun removeANC(): ResponseEntity<String>
     {

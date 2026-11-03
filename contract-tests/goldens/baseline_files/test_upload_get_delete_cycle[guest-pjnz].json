@@ -24,7 +24,7 @@
       "name": "get before upload is null",
       "request": {
         "method": "GET",
-        "path": "/baseline/pjnz/"
+        "path": "/baseline/pjnz"
       },
       "response": {
         "body": {
@@ -76,7 +76,7 @@
           }
         },
         "method": "POST",
-        "path": "/baseline/pjnz/"
+        "path": "/baseline/pjnz"
       },
       "response": {
         "body": {
@@ -114,7 +114,7 @@
       ],
       "request": {
         "method": "GET",
-        "path": "/baseline/pjnz/"
+        "path": "/baseline/pjnz"
       },
       "response": {
         "body": {
@@ -167,7 +167,7 @@
       "name": "delete",
       "request": {
         "method": "DELETE",
-        "path": "/baseline/pjnz/"
+        "path": "/baseline/pjnz"
       },
       "response": {
         "body": {
@@ -188,7 +188,7 @@
       "name": "get after delete is null",
       "request": {
         "method": "GET",
-        "path": "/baseline/pjnz/"
+        "path": "/baseline/pjnz"
       },
       "response": {
         "body": {
@@ -209,7 +209,7 @@
       "name": "delete again is still a success",
       "request": {
         "method": "DELETE",
-        "path": "/baseline/pjnz/"
+        "path": "/baseline/pjnz"
       },
       "response": {
         "body": {

@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*
 class ModelRunController(val fileManager: FileManager, val apiClient: HintrAPIClient)
 {
 
-    @PostMapping("/run/")
+    @PostMapping("/run")
     @ResponseBody
     fun run(@RequestBody modelRunOptions: ModelOptions): ResponseEntity<String>
     {
@@ -20,7 +20,7 @@ class ModelRunController(val fileManager: FileManager, val apiClient: HintrAPICl
         return apiClient.submit(allFiles, modelRunOptions)
     }
 
-    @PostMapping("/validate/options/")
+    @PostMapping("/validate/options")
     @ResponseBody
     fun validateModelOptions(@RequestBody modelRunOptions: ModelOptions): ResponseEntity<String>
     {
@@ -49,7 +49,7 @@ class ModelRunController(val fileManager: FileManager, val apiClient: HintrAPICl
         return apiClient.cancelModelRun(id)
     }
 
-    @GetMapping("/options/")
+    @GetMapping("/options")
     @ResponseBody
     fun options(): ResponseEntity<String>
     {

@@ -59,7 +59,7 @@
       ],
       "request": {
         "method": "GET",
-        "path": "/model/options/"
+        "path": "/model/options"
       },
       "response": {
         "body": {
@@ -107,7 +107,7 @@
           }
         },
         "method": "POST",
-        "path": "/baseline/shape/"
+        "path": "/baseline/shape"
       },
       "response": {
         "body": {
@@ -144,7 +144,7 @@
       ],
       "request": {
         "method": "GET",
-        "path": "/model/options/"
+        "path": "/model/options"
       },
       "response": {
         "body": {
@@ -171,7 +171,7 @@
           }
         },
         "method": "POST",
-        "path": "/disease/survey/"
+        "path": "/disease/survey"
       },
       "response": {
         "body": {
@@ -224,7 +224,7 @@
       ],
       "request": {
         "method": "GET",
-        "path": "/model/options/"
+        "path": "/model/options"
       },
       "response": {
         "body": {

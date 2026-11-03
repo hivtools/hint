@@ -63,7 +63,7 @@
       ],
       "request": {
         "method": "GET",
-        "path": "/baseline/validate/"
+        "path": "/baseline/validate"
       },
       "response": {
         "body": {
@@ -111,7 +111,7 @@
           }
         },
         "method": "POST",
-        "path": "/baseline/pjnz/"
+        "path": "/baseline/pjnz"
       },
       "response": {
         "body": {
@@ -144,7 +144,7 @@
       ],
       "request": {
         "method": "GET",
-        "path": "/baseline/validate/"
+        "path": "/baseline/validate"
       },
       "response": {
         "body": {
@@ -192,7 +192,7 @@
           }
         },
         "method": "POST",
-        "path": "/baseline/shape/"
+        "path": "/baseline/shape"
       },
       "response": {
         "body": {
@@ -225,7 +225,7 @@
       ],
       "request": {
         "method": "GET",
-        "path": "/baseline/validate/"
+        "path": "/baseline/validate"
       },
       "response": {
         "body": {
@@ -273,7 +273,7 @@
           }
         },
         "method": "POST",
-        "path": "/baseline/population/"
+        "path": "/baseline/population"
       },
       "response": {
         "body": {
@@ -306,7 +306,7 @@
       ],
       "request": {
         "method": "GET",
-        "path": "/baseline/validate/"
+        "path": "/baseline/validate"
       },
       "response": {
         "body": {

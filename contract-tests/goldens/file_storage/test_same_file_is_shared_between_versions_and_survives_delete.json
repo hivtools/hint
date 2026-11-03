@@ -120,7 +120,7 @@
           }
         },
         "method": "POST",
-        "path": "/baseline/pjnz/"
+        "path": "/baseline/pjnz"
       },
       "response": {
         "body": {
@@ -169,7 +169,7 @@
       "name": "remove from v2",
       "request": {
         "method": "DELETE",
-        "path": "/baseline/pjnz/"
+        "path": "/baseline/pjnz"
       },
       "response": {
         "body": {
@@ -280,7 +280,7 @@
       "name": "so the session (now v1) validates it",
       "request": {
         "method": "GET",
-        "path": "/baseline/pjnz/"
+        "path": "/baseline/pjnz"
       },
       "response": {
         "body": {

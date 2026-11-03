@@ -44,7 +44,7 @@ describe("Survey and programme actions", () => {
 
     it("sets data after surveys file upload", async () => {
 
-        mockAxios.onPost(`/disease/survey/?strict=true`)
+        mockAxios.onPost(`/disease/survey?strict=true`)
             .reply(200, mockSuccess({data: "SOME DATA", warnings: "TEST WARNINGS"}));
 
         const commit = vi.fn();
@@ -90,7 +90,7 @@ describe("Survey and programme actions", () => {
 
     it("sets error message after failed surveys upload", async () => {
 
-        mockAxios.onPost(`/disease/survey/?strict=true`)
+        mockAxios.onPost(`/disease/survey?strict=true`)
             .reply(500, mockFailure("error message"));
 
         const commit = vi.fn();
@@ -135,7 +135,7 @@ describe("Survey and programme actions", () => {
 
     it("sets data after programme file upload", async () => {
 
-        mockAxios.onPost(`/disease/programme/?strict=true`)
+        mockAxios.onPost(`/disease/programme?strict=true`)
             .reply(200, mockSuccess({data: "TEST", warnings: "TEST WARNINGS"}));
 
         const commit = vi.fn();
@@ -212,7 +212,7 @@ describe("Survey and programme actions", () => {
 
     it("sets error message after failed programme upload", async () => {
 
-        mockAxios.onPost(`/disease/programme/?strict=true`)
+        mockAxios.onPost(`/disease/programme?strict=true`)
             .reply(500, mockFailure("error message"));
 
         const commit = vi.fn();
@@ -267,7 +267,7 @@ describe("Survey and programme actions", () => {
 
     it("sets data after anc file upload", async () => {
 
-        mockAxios.onPost(`/disease/anc/?strict=true`)
+        mockAxios.onPost(`/disease/anc?strict=true`)
             .reply(200, mockSuccess({data: "TEST", warnings: "TEST WARNINGS"}));
 
         const commit = vi.fn();
@@ -324,7 +324,7 @@ describe("Survey and programme actions", () => {
 
     it("sets error message after failed anc upload", async () => {
 
-        mockAxios.onPost(`/disease/anc/?strict=true`)
+        mockAxios.onPost(`/disease/anc?strict=true`)
             .reply(500, mockFailure("error message"));
 
         const commit = vi.fn();
@@ -379,13 +379,13 @@ describe("Survey and programme actions", () => {
 
     it("gets data, commits it and marks state ready", async () => {
 
-        mockAxios.onGet(`/disease/survey/?strict=true`)
+        mockAxios.onGet(`/disease/survey?strict=true`)
             .reply(200, mockSuccess(mockSurveyResponse()));
 
-        mockAxios.onGet(`/disease/programme/?strict=true`)
+        mockAxios.onGet(`/disease/programme?strict=true`)
             .reply(200, mockSuccess(mockProgramResponse()));
 
-        mockAxios.onGet(`/disease/anc/?strict=true`)
+        mockAxios.onGet(`/disease/anc?strict=true`)
             .reply(200, mockSuccess(mockAncResponse()));
 
         const commit = vi.fn();
@@ -406,13 +406,13 @@ describe("Survey and programme actions", () => {
 
     it("it validates, commits and marks state ready", async () => {
 
-        mockAxios.onGet(`/disease/survey/?strict=true`)
+        mockAxios.onGet(`/disease/survey?strict=true`)
             .reply(200, mockSuccess(mockSurveyResponse()));
 
-        mockAxios.onGet(`/disease/programme/?strict=true`)
+        mockAxios.onGet(`/disease/programme?strict=true`)
             .reply(200, mockSuccess(mockProgramResponse()));
 
-        mockAxios.onGet(`/disease/anc/?strict=true`)
+        mockAxios.onGet(`/disease/anc?strict=true`)
             .reply(200, mockSuccess(mockAncResponse()));
 
         const commit = vi.fn();
@@ -433,13 +433,13 @@ describe("Survey and programme actions", () => {
 
     it("it runs validation, fails one and commits correctly", async () => {
 
-        mockAxios.onGet(`/disease/survey/?strict=true`)
+        mockAxios.onGet(`/disease/survey?strict=true`)
             .reply(500, mockFailure("Error message"));
 
-        mockAxios.onGet(`/disease/programme/?strict=true`)
+        mockAxios.onGet(`/disease/programme?strict=true`)
             .reply(200, mockSuccess(mockProgramResponse()));
 
-        mockAxios.onGet(`/disease/anc/?strict=true`)
+        mockAxios.onGet(`/disease/anc?strict=true`)
             .reply(200, mockSuccess(mockAncResponse()));
 
         const commit = vi.fn();
@@ -461,13 +461,13 @@ describe("Survey and programme actions", () => {
 
     it("it runs validation, fails all and commits correctly", async () => {
 
-        mockAxios.onGet(`/disease/survey/?strict=true`)
+        mockAxios.onGet(`/disease/survey?strict=true`)
             .reply(500, mockFailure("Failed"));
 
-        mockAxios.onGet(`/disease/programme/?strict=true`)
+        mockAxios.onGet(`/disease/programme?strict=true`)
             .reply(500, mockFailure("Failed"));
 
-        mockAxios.onGet(`/disease/anc/?strict=true`)
+        mockAxios.onGet(`/disease/anc?strict=true`)
             .reply(500, mockFailure("Failed"));
 
         const commit = vi.fn();
@@ -486,13 +486,13 @@ describe("Survey and programme actions", () => {
 
     it("fails silently and marks state ready if getting data fails", async () => {
 
-        mockAxios.onGet(`/disease/survey/?strict=true`)
+        mockAxios.onGet(`/disease/survey?strict=true`)
             .reply(500);
 
-        mockAxios.onGet(`/disease/anc/?strict=true`)
+        mockAxios.onGet(`/disease/anc?strict=true`)
             .reply(500);
 
-        mockAxios.onGet(`/disease/programme/?strict=true`)
+        mockAxios.onGet(`/disease/programme?strict=true`)
             .reply(500);
 
         const commit = vi.fn();
@@ -503,7 +503,7 @@ describe("Survey and programme actions", () => {
     });
 
     it("deletes survey", async () => {
-        mockAxios.onDelete("/disease/survey/")
+        mockAxios.onDelete("/disease/survey")
             .reply(200, mockSuccess(true));
 
         const commit = vi.fn();
@@ -520,7 +520,7 @@ describe("Survey and programme actions", () => {
     });
 
     it("deletes program", async () => {
-        mockAxios.onDelete("/disease/programme/")
+        mockAxios.onDelete("/disease/programme")
             .reply(200, mockSuccess(true));
 
         const commit = vi.fn();
@@ -545,7 +545,7 @@ describe("Survey and programme actions", () => {
     });
 
     it("deletes ANC and resets selected data type", async () => {
-        mockAxios.onDelete("/disease/anc/")
+        mockAxios.onDelete("/disease/anc")
             .reply(200, mockSuccess(true));
 
         const commit = vi.fn();
@@ -570,13 +570,13 @@ describe("Survey and programme actions", () => {
     });
 
     it("deletes all", async () => {
-        mockAxios.onDelete("/disease/anc/")
+        mockAxios.onDelete("/disease/anc")
             .reply(200, mockSuccess(true));
 
-        mockAxios.onDelete("/disease/survey/")
+        mockAxios.onDelete("/disease/survey")
             .reply(200, mockSuccess(true));
 
-        mockAxios.onDelete("/disease/programme/")
+        mockAxios.onDelete("/disease/programme")
             .reply(200, mockSuccess(true));
 
         const commit = vi.fn();

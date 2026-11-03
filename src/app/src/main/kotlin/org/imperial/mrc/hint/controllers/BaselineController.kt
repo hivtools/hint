@@ -22,21 +22,21 @@ class BaselineController(fileManager: FileManager,
         HintrController(fileManager, apiClient, session, versionRepository, request)
 {
 
-    @PostMapping("/pjnz/")
+    @PostMapping("/pjnz")
     @ResponseBody
     fun uploadPJNZ(@RequestParam("file") file: MultipartFile): ResponseEntity<String>
     {
         return saveAndValidate(file, FileType.PJNZ)
     }
 
-    @GetMapping("/pjnz/")
+    @GetMapping("/pjnz")
     @ResponseBody
     fun getPJNZ(): ResponseEntity<String>
     {
         return getAndValidate(FileType.PJNZ)
     }
 
-    @DeleteMapping("/pjnz/")
+    @DeleteMapping("/pjnz")
     @ResponseBody
     fun removePJNZ(): ResponseEntity<String>
     {
@@ -44,21 +44,21 @@ class BaselineController(fileManager: FileManager,
         return EmptySuccessResponse.asResponseEntity()
     }
 
-    @PostMapping("/shape/")
+    @PostMapping("/shape")
     @ResponseBody
     fun uploadShape(@RequestParam("file") file: MultipartFile): ResponseEntity<String>
     {
         return saveAndValidate(file, FileType.Shape)
     }
 
-    @GetMapping("/shape/")
+    @GetMapping("/shape")
     @ResponseBody
     fun getShape(): ResponseEntity<String>
     {
         return getAndValidate(FileType.Shape)
     }
 
-    @DeleteMapping("/shape/")
+    @DeleteMapping("/shape")
     @ResponseBody
     fun removeShape(): ResponseEntity<String>
     {
@@ -66,21 +66,21 @@ class BaselineController(fileManager: FileManager,
         return EmptySuccessResponse.asResponseEntity()
     }
 
-    @PostMapping("/population/")
+    @PostMapping("/population")
     @ResponseBody
     fun uploadPopulation(@RequestParam("file") file: MultipartFile): ResponseEntity<String>
     {
         return saveAndValidate(file, FileType.Population)
     }
 
-    @GetMapping("/population/")
+    @GetMapping("/population")
     @ResponseBody
     fun getPopulation(): ResponseEntity<String>
     {
         return getAndValidate(FileType.Population)
     }
 
-    @DeleteMapping("/population/")
+    @DeleteMapping("/population")
     @ResponseBody
     fun removePopulation(): ResponseEntity<String>
     {
@@ -88,7 +88,7 @@ class BaselineController(fileManager: FileManager,
         return EmptySuccessResponse.asResponseEntity()
     }
 
-    @GetMapping("/validate/")
+    @GetMapping("/validate")
     @ResponseBody
     fun validate(): ResponseEntity<String>
     {

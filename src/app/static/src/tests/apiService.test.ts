@@ -159,12 +159,12 @@ describe("ApiService", () => {
         delete (window as any).location
         window.location = {...window.location, assign: vi.fn()};
         const commit = vi.fn();
-        mockAxios.onPost("/baseline/pjnz/").reply(403, {
+        mockAxios.onPost("/baseline/pjnz").reply(403, {
             status: "failure", data: {},
             errors: [{error: "INVALID_VERSION", detail: "The version cannot be used by this user."}]
         });
 
-        await api({commit, rootState} as any).ignoreSuccess().postAndReturn("/baseline/pjnz/", {});
+        await api({commit, rootState} as any).ignoreSuccess().postAndReturn("/baseline/pjnz", {});
 
         expect(window.location.assign).toHaveBeenCalledWith("/");
         expect(sessionStorageManager.getVersionId()).toBe(null);

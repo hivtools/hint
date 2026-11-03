@@ -136,7 +136,7 @@
       ],
       "request": {
         "method": "GET",
-        "path": "/disease/survey/"
+        "path": "/disease/survey"
       },
       "response": {
         "body": {

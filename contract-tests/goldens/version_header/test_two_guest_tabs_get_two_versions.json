@@ -82,7 +82,7 @@
           }
         },
         "method": "POST",
-        "path": "/baseline/pjnz/"
+        "path": "/baseline/pjnz"
       },
       "response": {
         "body": {
@@ -130,7 +130,7 @@
           }
         },
         "method": "POST",
-        "path": "/baseline/shape/"
+        "path": "/baseline/shape"
       },
       "response": {
         "body": {
@@ -168,7 +168,7 @@
       ],
       "request": {
         "method": "GET",
-        "path": "/baseline/pjnz/"
+        "path": "/baseline/pjnz"
       },
       "response": {
         "body": {
@@ -185,7 +185,7 @@
       "name": "tab A has no shape file",
       "request": {
         "method": "GET",
-        "path": "/baseline/shape/"
+        "path": "/baseline/shape"
       },
       "response": {
         "body": {
@@ -227,7 +227,7 @@
       ],
       "request": {
         "method": "GET",
-        "path": "/baseline/shape/"
+        "path": "/baseline/shape"
       },
       "response": {
         "body": {
@@ -244,7 +244,7 @@
       "name": "tab B has no Spectrum file",
       "request": {
         "method": "GET",
-        "path": "/baseline/pjnz/"
+        "path": "/baseline/pjnz"
       },
       "response": {
         "body": {
