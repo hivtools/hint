@@ -19,6 +19,9 @@ class Settings(BaseSettings):
     db_user: str = "hintuser"
     db_password: SecretStr = SecretStr("changeme")
 
+    # The hintr API URL
+    hintr_url: str = "http://localhost:8888"
+
     # Shown in the message for unexpected errors (application_title and support_email in the Kotlin config.properties)
     application_title: str = "Naomi"
     support_email: str = "naomi-support@imperial.ac.uk"

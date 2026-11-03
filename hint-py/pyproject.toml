@@ -7,6 +7,7 @@ dependencies = [
     "asyncpg>=0.32.0",
     "babel>=2.18.0",
     "fastapi[standard]>=0.157.0",
+    "httpx2>=2.16.0",
     "opentelemetry-distro>=0.66b1",
     "opentelemetry-exporter-otlp>=1.45.1",
     "opentelemetry-instrumentation-fastapi>=0.66b1",
@@ -17,7 +18,6 @@ dependencies = [
 [dependency-groups]
 dev = [
     "aiosqlite>=0.22.1",
-    "httpx>=0.28.1",
     "pre-commit>=4.5.1",
     "pytest>=9.1.1",
     "pytest-asyncio>=1.4.1",

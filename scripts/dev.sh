@@ -51,7 +51,7 @@ export HINTR_PORT=${HINTR_PORT:-$((8888 + PORT_OFFSET))}
 export PROXY_PORT=${PROXY_PORT:-$((8080 + PORT_OFFSET))}      # the front door (Kotlin itself with --no-proxy)
 export KOTLIN_PORT=${KOTLIN_PORT:-$((8081 + PORT_OFFSET))}    # Kotlin when it sits behind the nginx proxy
 SSO_PORT=${SSO_PORT:-$((8085 + PORT_OFFSET))}                 # second Kotlin instance (oauth2_login_method=true), tests only
-FAULT_PORT=${FAULT_PORT:-$((8882 + PORT_OFFSET))}             # recording/faulting proxy in front of hintr (hintr_url)
+export FAULT_PORT=${FAULT_PORT:-$((8882 + PORT_OFFSET))}      # recording/faulting proxy in front of hintr (hintr_url)
 STUB_PORT=${STUB_PORT:-$((8883 + PORT_OFFSET))}               # stub ADR (/adr/, /adr-sso/) and error-report (/flow)
 IDP_PORT=${IDP_PORT:-$((8884 + PORT_OFFSET))}                 # stub OAuth2 identity provider (TLS)
 # WriteToDiskEmailManager writes to /tmp/hint_emails, which on Windows is on the drive the app runs from
@@ -100,7 +100,11 @@ ensure_certificate() {
 ensure_stubs() {
   if alive "$STATE/stubs.pid"; then return 0; fi
   for p in "$FAULT_PORT" "$STUB_PORT" "$IDP_PORT"; do need_port "$p" "the stubs and the recording proxy"; done
-  ( cd "$CT" && exec nohup "$VENV_PY" -m hintcontract.stubs.server --proxy-port "$FAULT_PORT" \
+  # The Python API runs in a container, so with the nginx proxy the recording proxy has to be reachable from there.
+  # Without it only this machine needs to reach it.
+  local bind=127.0.0.1
+  if [ "$(cat "$STATE/mode" 2>/dev/null)" = proxy ]; then bind=0.0.0.0; fi
+  ( cd "$CT" && exec nohup "$VENV_PY" -m hintcontract.stubs.server --proxy-port "$FAULT_PORT" --proxy-bind "$bind" \
       --upstream "http://127.0.0.1:$HINTR_PORT" --stub-port "$STUB_PORT" --idp-port "$IDP_PORT" \
       --idp-cert "$STATE/idp.pem" --fixtures-dir "$CT/fixtures" ) > "$STATE/stubs.log" 2>&1 < /dev/null &
   echo $! > "$STATE/stubs.pid"
