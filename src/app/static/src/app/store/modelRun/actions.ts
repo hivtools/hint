@@ -26,7 +26,7 @@ export const actions: ActionTree<ModelRunState, RootState> & ModelRunActions = {
         await api<ModelRunMutation, ModelRunMutation>(context)
             .withSuccess(ModelRunMutation.ModelRunStarted)
             .withError(ModelRunMutation.ModelRunError)
-            .postAndReturn<ModelSubmitResponse>("/model/run/", {options, version, iso3})
+            .postAndReturn<ModelSubmitResponse>("/model/run", {options, version, iso3})
     },
 
     poll(context, runId, interval = null) {

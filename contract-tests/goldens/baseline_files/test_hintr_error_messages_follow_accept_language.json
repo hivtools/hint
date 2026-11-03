@@ -81,7 +81,7 @@
           "accept-language": "en"
         },
         "method": "POST",
-        "path": "/baseline/pjnz/"
+        "path": "/baseline/pjnz"
       },
       "response": {
         "body": {
@@ -132,7 +132,7 @@
           "accept-language": "fr"
         },
         "method": "POST",
-        "path": "/baseline/pjnz/"
+        "path": "/baseline/pjnz"
       },
       "response": {
         "body": {
@@ -183,7 +183,7 @@
           "accept-language": "pt"
         },
         "method": "POST",
-        "path": "/baseline/pjnz/"
+        "path": "/baseline/pjnz"
       },
       "response": {
         "body": {
@@ -234,7 +234,7 @@
           "accept-language": "de"
         },
         "method": "POST",
-        "path": "/baseline/pjnz/"
+        "path": "/baseline/pjnz"
       },
       "response": {
         "body": {
@@ -285,7 +285,7 @@
           "accept-language": "fr-FR,fr;q=0.9"
         },
         "method": "POST",
-        "path": "/baseline/pjnz/"
+        "path": "/baseline/pjnz"
       },
       "response": {
         "body": {

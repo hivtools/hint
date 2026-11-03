@@ -80,7 +80,7 @@
           }
         },
         "method": "POST",
-        "path": "/disease/anc/"
+        "path": "/disease/anc"
       },
       "response": {
         "body": {

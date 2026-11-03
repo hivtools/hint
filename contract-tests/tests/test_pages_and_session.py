@@ -67,9 +67,9 @@ def test_wrong_http_method(scn):
     a = scn.client("A")
     a.delete("/", name="DELETE / ")
     a.post("/sso", name="POST /sso")
-    a.get("/model/run/", name="GET on POST-only /model/run/")
-    a.post("/baseline/validate/", name="POST on GET-only /baseline/validate/")
-    a.request("PUT", "/baseline/pjnz/", name="PUT /baseline/pjnz/")
+    a.get("/model/run", name="GET on POST-only /model/run")
+    a.post("/baseline/validate", name="POST on GET-only /baseline/validate")
+    a.request("PUT", "/baseline/pjnz", name="PUT /baseline/pjnz")
 
 
 def test_static_assets(scn):
@@ -89,7 +89,7 @@ def test_missing_static_asset_is_500_not_404(scn):
 def test_json_responses_are_gzipped_when_accepted(scn):
     a = scn.client("A")
     a.open_app()
-    r = a.post("/baseline/shape/", files={"file": "malawi.geojson"}, headers={"Accept-Encoding": "gzip"},
+    r = a.post("/baseline/shape", files={"file": "malawi.geojson"}, headers={"Accept-Encoding": "gzip"},
                name="upload shape accept gzip")
     assert r.headers.get("content-encoding") == "gzip"
     r = a.get("/public/css/app.css", headers={"Accept-Encoding": "gzip"}, name="css accept gzip", ignore_body=True)
@@ -108,20 +108,20 @@ def test_sessions_are_isolated_between_clients(scn):
     b.open_app(check_cookie=True)
     assert a.raw.cookies != b.raw.cookies
     upload(a, "pjnz")
-    a.get("/baseline/pjnz/", name="A sees its pjnz")
-    b.get("/baseline/pjnz/", name="B does not see A's pjnz")
+    a.get("/baseline/pjnz", name="A sees its pjnz")
+    b.get("/baseline/pjnz", name="B does not see A's pjnz")
 
 
 def test_session_persists_across_requests(scn):
     a = scn.client("A")
     a.open_app(check_cookie=True)
     upload(a, "pjnz")
-    a.get("/baseline/pjnz/", name="same cookie sees file")
+    a.get("/baseline/pjnz", name="same cookie sees file")
     saved = dict(a.raw.cookies)
     a.raw.clear_cookies()
-    a.get("/baseline/pjnz/", name="no cookie = new session = no file")
+    a.get("/baseline/pjnz", name="no cookie = new session = no file")
     a.raw.cookies.update(saved)
-    a.get("/baseline/pjnz/", name="old cookie restored = file again")
+    a.get("/baseline/pjnz", name="old cookie restored = file again")
 
 
 def test_sso_flag_and_schemas_for_guest(scn):

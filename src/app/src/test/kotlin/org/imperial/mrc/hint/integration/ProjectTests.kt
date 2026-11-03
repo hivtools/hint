@@ -413,7 +413,7 @@ class ProjectTests : VersionFileTests()
             val versions = createProjectData["versions"] as ArrayNode
             versionId = versions[0]["id"].asText()
             getUpdateVersionStateResult(projectId, versionId, "TEST STATE")
-            pjnzHash = setUpVersionFileAndGetHash("Botswana2018.PJNZ", "/baseline/pjnz/")
+            pjnzHash = setUpVersionFileAndGetHash("Botswana2018.PJNZ", "/baseline/pjnz")
         }
         val result = testRestTemplate.getForEntity<String>("/project/$projectId/version/$versionId")
         assertSecureWithSuccess(isAuthorized, result,null)

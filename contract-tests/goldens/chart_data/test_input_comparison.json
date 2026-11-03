@@ -124,7 +124,7 @@
           }
         },
         "method": "POST",
-        "path": "/disease/anc/"
+        "path": "/disease/anc"
       },
       "response": {
         "body": {
@@ -225,7 +225,7 @@
           }
         },
         "method": "POST",
-        "path": "/disease/programme/"
+        "path": "/disease/programme"
       },
       "response": {
         "body": {
@@ -300,7 +300,7 @@
       "name": "remove anc",
       "request": {
         "method": "DELETE",
-        "path": "/disease/anc/"
+        "path": "/disease/anc"
       },
       "response": {
         "body": {

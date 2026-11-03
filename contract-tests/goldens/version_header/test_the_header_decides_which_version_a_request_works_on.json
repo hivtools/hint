@@ -165,7 +165,7 @@
           "x-version-id": "<UUID:1>"
         },
         "method": "POST",
-        "path": "/baseline/pjnz/"
+        "path": "/baseline/pjnz"
       },
       "response": {
         "body": {
@@ -182,7 +182,7 @@
       "name": "the tab's own version has no file",
       "request": {
         "method": "GET",
-        "path": "/baseline/pjnz/"
+        "path": "/baseline/pjnz"
       },
       "response": {
         "body": {
@@ -227,7 +227,7 @@
           "x-version-id": "<UUID:1>"
         },
         "method": "GET",
-        "path": "/baseline/pjnz/"
+        "path": "/baseline/pjnz"
       },
       "response": {
         "body": {

@@ -120,7 +120,7 @@
           }
         },
         "method": "POST",
-        "path": "/baseline/pjnz/"
+        "path": "/baseline/pjnz"
       },
       "response": {
         "body": {
@@ -197,7 +197,7 @@
       "name": "remove file from v2 (the current session version)",
       "request": {
         "method": "DELETE",
-        "path": "/baseline/pjnz/"
+        "path": "/baseline/pjnz"
       },
       "response": {
         "body": {
@@ -218,7 +218,7 @@
       "name": "v2 has no file",
       "request": {
         "method": "GET",
-        "path": "/baseline/pjnz/"
+        "path": "/baseline/pjnz"
       },
       "response": {
         "body": {
@@ -291,7 +291,7 @@
       ],
       "request": {
         "method": "GET",
-        "path": "/baseline/pjnz/"
+        "path": "/baseline/pjnz"
       },
       "response": {
         "body": {

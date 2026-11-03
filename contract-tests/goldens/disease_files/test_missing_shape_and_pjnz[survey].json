@@ -57,7 +57,7 @@
           }
         },
         "method": "POST",
-        "path": "/disease/survey/"
+        "path": "/disease/survey"
       },
       "response": {
         "body": {
@@ -93,7 +93,7 @@
           }
         },
         "method": "POST",
-        "path": "/disease/survey/",
+        "path": "/disease/survey",
         "query": {
           "strict": "false"
         }
@@ -153,7 +153,7 @@
           }
         },
         "method": "POST",
-        "path": "/baseline/shape/"
+        "path": "/baseline/shape"
       },
       "response": {
         "body": {
@@ -180,7 +180,7 @@
           }
         },
         "method": "POST",
-        "path": "/disease/survey/"
+        "path": "/disease/survey"
       },
       "response": {
         "body": {
@@ -239,7 +239,7 @@
           }
         },
         "method": "POST",
-        "path": "/disease/survey/",
+        "path": "/disease/survey",
         "query": {
           "strict": "false"
         }
@@ -259,7 +259,7 @@
       "name": "GET strict reports missing pjnz",
       "request": {
         "method": "GET",
-        "path": "/disease/survey/"
+        "path": "/disease/survey"
       },
       "response": {
         "body": {
@@ -308,7 +308,7 @@
       ],
       "request": {
         "method": "GET",
-        "path": "/disease/survey/",
+        "path": "/disease/survey",
         "query": {
           "strict": "false"
         }
@@ -328,7 +328,7 @@
       "name": "remove shape",
       "request": {
         "method": "DELETE",
-        "path": "/baseline/shape/"
+        "path": "/baseline/shape"
       },
       "response": {
         "body": {
@@ -380,7 +380,7 @@
           }
         },
         "method": "POST",
-        "path": "/baseline/pjnz/"
+        "path": "/baseline/pjnz"
       },
       "response": {
         "body": {
@@ -407,7 +407,7 @@
           }
         },
         "method": "POST",
-        "path": "/disease/survey/"
+        "path": "/disease/survey"
       },
       "response": {
         "body": {
@@ -433,7 +433,7 @@
       "name": "GET lax with pjnz only",
       "request": {
         "method": "GET",
-        "path": "/disease/survey/",
+        "path": "/disease/survey",
         "query": {
           "strict": "false"
         }
@@ -475,7 +475,7 @@
           "accept-language": "fr"
         },
         "method": "POST",
-        "path": "/disease/survey/"
+        "path": "/disease/survey"
       },
       "response": {
         "body": {
@@ -514,7 +514,7 @@
           "accept-language": "pt"
         },
         "method": "POST",
-        "path": "/disease/survey/"
+        "path": "/disease/survey"
       },
       "response": {
         "body": {

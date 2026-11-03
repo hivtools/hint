@@ -98,7 +98,7 @@
           }
         },
         "method": "POST",
-        "path": "/model/validate/options/"
+        "path": "/model/validate/options"
       },
       "response": {
         "body": {
@@ -170,7 +170,7 @@
           }
         },
         "method": "POST",
-        "path": "/model/validate/options/"
+        "path": "/model/validate/options"
       },
       "response": {
         "body": {
@@ -296,7 +296,7 @@
           }
         },
         "method": "POST",
-        "path": "/model/validate/options/"
+        "path": "/model/validate/options"
       },
       "response": {
         "body": {
@@ -422,7 +422,7 @@
           }
         },
         "method": "POST",
-        "path": "/model/validate/options/"
+        "path": "/model/validate/options"
       },
       "response": {
         "body": {
@@ -550,7 +550,7 @@
           }
         },
         "method": "POST",
-        "path": "/model/validate/options/"
+        "path": "/model/validate/options"
       },
       "response": {
         "body": {
@@ -621,7 +621,7 @@
           "accept-language": "fr"
         },
         "method": "POST",
-        "path": "/model/validate/options/"
+        "path": "/model/validate/options"
       },
       "response": {
         "body": {
@@ -692,7 +692,7 @@
           "accept-language": "pt"
         },
         "method": "POST",
-        "path": "/model/validate/options/"
+        "path": "/model/validate/options"
       },
       "response": {
         "body": {

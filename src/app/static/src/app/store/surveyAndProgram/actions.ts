@@ -145,24 +145,24 @@ export const actions: ActionTree<SurveyAndProgramState, RootState> & SurveyAndPr
     },
 
     async uploadSurvey(context, formData) {
-        await uploadOrImportSurvey(context, {url: "/disease/survey/", payload: formData},
+        await uploadOrImportSurvey(context, {url: "/disease/survey", payload: formData},
             getFilenameFromUploadFormData(formData))
     },
 
     async uploadProgram(context, formData) {
-        await uploadOrImportProgram(context, {url: "/disease/programme/", payload: formData},
+        await uploadOrImportProgram(context, {url: "/disease/programme", payload: formData},
             getFilenameFromUploadFormData(formData));
     },
 
     async uploadANC(context, formData) {
-        await uploadOrImportANC(context, {url: "/disease/anc/", payload: formData},
+        await uploadOrImportANC(context, {url: "/disease/anc", payload: formData},
             getFilenameFromUploadFormData(formData))
     },
 
     async deleteSurvey(context) {
         const {commit} = context;
         await api<SurveyAndProgramMutation, SurveyAndProgramMutation>(context)
-            .delete("/disease/survey/")
+            .delete("/disease/survey")
             .then(() => {
                 commit({type: SurveyAndProgramMutation.SurveyUpdated, payload: null});
                 commit({type: SurveyAndProgramMutation.WarningsFetched, payload: {type: FileType.Survey, warnings: []}});
@@ -172,7 +172,7 @@ export const actions: ActionTree<SurveyAndProgramState, RootState> & SurveyAndPr
     async deleteProgram(context) {
         const {commit} = context;
         await api<SurveyAndProgramMutation, SurveyAndProgramMutation>(context)
-            .delete("/disease/programme/")
+            .delete("/disease/programme")
             .then(() => {
                 commit({type: SurveyAndProgramMutation.ProgramUpdated, payload: null});
                 commitClearReviewInputDataset(commit, DATASET_TYPE.ART)
@@ -183,7 +183,7 @@ export const actions: ActionTree<SurveyAndProgramState, RootState> & SurveyAndPr
     async deleteANC(context) {
         const {commit} = context;
         await api<SurveyAndProgramMutation, SurveyAndProgramMutation>(context)
-            .delete("/disease/anc/")
+            .delete("/disease/anc")
             .then(() => {
                 commit({type: SurveyAndProgramMutation.ANCUpdated, payload: null});
                 commitClearReviewInputDataset(commit, DATASET_TYPE.ANC)
@@ -206,7 +206,7 @@ export const actions: ActionTree<SurveyAndProgramState, RootState> & SurveyAndPr
                 api<SurveyAndProgramMutation, SurveyAndProgramMutation>(context)
                     .ignoreErrors()
                     .ignoreSuccess()
-                    .get<SurveyResponse>(getUrlWithQuery("/disease/survey/"))
+                    .get<SurveyResponse>(getUrlWithQuery("/disease/survey"))
                     .then(async(response) => {
                         if (response && response.data) {
                             await dispatch("setSurveyResponse", response.data)
@@ -215,7 +215,7 @@ export const actions: ActionTree<SurveyAndProgramState, RootState> & SurveyAndPr
                 api<SurveyAndProgramMutation, SurveyAndProgramMutation>(context)
                     .ignoreErrors()
                     .ignoreSuccess()
-                    .get<ProgrammeResponse>(getUrlWithQuery("/disease/programme/"))
+                    .get<ProgrammeResponse>(getUrlWithQuery("/disease/programme"))
                     .then(async (response) => {
                         if (response && response.data) {
                             await dispatch("setProgramResponse", response.data)
@@ -224,7 +224,7 @@ export const actions: ActionTree<SurveyAndProgramState, RootState> & SurveyAndPr
                 api<SurveyAndProgramMutation, SurveyAndProgramMutation>(context)
                     .ignoreErrors()
                     .ignoreSuccess()
-                    .get<AncResponse>(getUrlWithQuery("/disease/anc/"))
+                    .get<AncResponse>(getUrlWithQuery("/disease/anc"))
                     .then(async (response) => {
                         if (response && response.data) {
                             await dispatch("setAncResponse", response.data)
@@ -243,7 +243,7 @@ export const actions: ActionTree<SurveyAndProgramState, RootState> & SurveyAndPr
                 api<SurveyAndProgramMutation, SurveyAndProgramMutation>(context)
                     .withError(SurveyAndProgramMutation.SurveyError)
                     .ignoreSuccess()
-                    .get<SurveyResponse>(getUrlWithQuery("/disease/survey/"))
+                    .get<SurveyResponse>(getUrlWithQuery("/disease/survey"))
                     .then(async (response) => {
                         if (response && response.data) {
                             await dispatch("setSurveyResponse", response.data)
@@ -252,7 +252,7 @@ export const actions: ActionTree<SurveyAndProgramState, RootState> & SurveyAndPr
                 api<SurveyAndProgramMutation, SurveyAndProgramMutation>(context)
                     .withError(SurveyAndProgramMutation.ProgramError)
                     .ignoreSuccess()
-                    .get<ProgrammeResponse>(getUrlWithQuery("/disease/programme/"))
+                    .get<ProgrammeResponse>(getUrlWithQuery("/disease/programme"))
                     .then(async (response) => {
                         if (response && response.data) {
                             await dispatch("setProgramResponse", response.data)
@@ -261,7 +261,7 @@ export const actions: ActionTree<SurveyAndProgramState, RootState> & SurveyAndPr
                 api<SurveyAndProgramMutation, SurveyAndProgramMutation>(context)
                     .withError(SurveyAndProgramMutation.ANCError)
                     .ignoreSuccess()
-                    .get<AncResponse>(getUrlWithQuery("/disease/anc/"))
+                    .get<AncResponse>(getUrlWithQuery("/disease/anc"))
                     .then(async (response) => {
                         if (response && response.data) {
                             await dispatch("setAncResponse", response.data)

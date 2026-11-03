@@ -56,7 +56,7 @@
           }
         },
         "method": "POST",
-        "path": "/baseline/pjnz/"
+        "path": "/baseline/pjnz"
       },
       "response": {
         "body": {
@@ -91,7 +91,7 @@
           }
         },
         "method": "POST",
-        "path": "/baseline/pjnz/"
+        "path": "/baseline/pjnz"
       },
       "response": {
         "body": {
@@ -117,7 +117,7 @@
       "name": "no body",
       "request": {
         "method": "POST",
-        "path": "/baseline/pjnz/"
+        "path": "/baseline/pjnz"
       },
       "response": {
         "body": {
@@ -148,7 +148,7 @@
           }
         },
         "method": "POST",
-        "path": "/baseline/pjnz/"
+        "path": "/baseline/pjnz"
       },
       "response": {
         "body": {
@@ -179,7 +179,7 @@
           }
         },
         "method": "POST",
-        "path": "/baseline/pjnz/"
+        "path": "/baseline/pjnz"
       },
       "response": {
         "body": {
@@ -228,7 +228,28 @@
     },
     {
       "client": "A",
-      "name": "no trailing slash",
+      "name": "trailing slash",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "file": {
+              "filename": "Malawi2024.PJNZ",
+              "fromADR": false,
+              "hash": "46E4A725064B0E287F573A8F11389895.PJNZ",
+              "path": "<UPLOADS>/46E4A725064B0E287F573A8F11389895.PJNZ",
+              "resource_url": null
+            },
+            "type": "pjnz"
+          },
+          "method": "POST",
+          "path": "/validate/baseline-individual",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
       "request": {
         "body": {
           "multipart": {
@@ -241,25 +262,16 @@
           }
         },
         "method": "POST",
-        "path": "/baseline/pjnz"
+        "path": "/baseline/pjnz/"
       },
       "response": {
         "body": {
-          "json": {
-            "data": {},
-            "errors": [
-              {
-                "detail": "An unexpected error occurred. If you see this message while you are using Naomi at a workshop, please contact your workshop technical support and show them this code: <ERROR_CODE>. Otherwise please contact support at naomi-support@imperial.ac.uk and quote this code: <ERROR_CODE>. No handler found for POST /baseline/pjnz",
-                "error": "OTHER_ERROR"
-              }
-            ],
-            "status": "failure"
-          }
+          "same_as_upstream": "hintr"
         },
         "headers": {
           "content-type": "application/json"
         },
-        "status": 404
+        "status": 200
       }
     },
     {
@@ -300,7 +312,7 @@
           "accept-language": "fr"
         },
         "method": "POST",
-        "path": "/baseline/pjnz/"
+        "path": "/baseline/pjnz"
       },
       "response": {
         "body": {
@@ -350,7 +362,7 @@
           "accept-language": "pt"
         },
         "method": "POST",
-        "path": "/baseline/pjnz/"
+        "path": "/baseline/pjnz"
       },
       "response": {
         "body": {

@@ -51,9 +51,9 @@ def test_import_success(scn, slot):
     a = session_with_key(scn, needs)
     r = a.post(f"/adr/{slot}", json=body(scn, fixture), name=f"import {slot}")
     assert r.status == 200
-    a.get({"pjnz": "/baseline/pjnz/", "shape": "/baseline/shape/", "population": "/baseline/population/",
-           "survey": "/disease/survey/", "programme": "/disease/programme/", "anc": "/disease/anc/",
-           "vmmc": "/disease/vmmc/"}[slot], name="GET re-validates the imported file")
+    a.get({"pjnz": "/baseline/pjnz", "shape": "/baseline/shape", "population": "/baseline/population",
+           "survey": "/disease/survey", "programme": "/disease/programme", "anc": "/disease/anc",
+           "vmmc": "/disease/vmmc"}[slot], name="GET re-validates the imported file")
     scn.db_rows("version_file")
     scn.uploads()
 

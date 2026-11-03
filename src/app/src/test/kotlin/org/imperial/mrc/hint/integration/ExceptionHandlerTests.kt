@@ -143,7 +143,7 @@ class ExceptionHandlerTests : SecureIntegrationTests()
         headers.contentType = MediaType.MULTIPART_FORM_DATA
         val badPostEntity = HttpEntity(body, headers)
 
-        val entity = testRestTemplate.postForEntity<String>("/disease/survey/", badPostEntity)
+        val entity = testRestTemplate.postForEntity<String>("/disease/survey", badPostEntity)
 
         assertError(entity,
                 HttpStatus.BAD_REQUEST,

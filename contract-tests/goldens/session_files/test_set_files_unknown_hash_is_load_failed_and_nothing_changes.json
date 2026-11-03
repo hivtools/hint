@@ -78,7 +78,7 @@
           }
         },
         "method": "POST",
-        "path": "/baseline/pjnz/"
+        "path": "/baseline/pjnz"
       },
       "response": {
         "body": {
@@ -126,7 +126,7 @@
           }
         },
         "method": "POST",
-        "path": "/baseline/shape/"
+        "path": "/baseline/shape"
       },
       "response": {
         "body": {
@@ -152,7 +152,7 @@
           }
         },
         "method": "POST",
-        "path": "/session/files/"
+        "path": "/session/files"
       },
       "response": {
         "body": {
@@ -192,7 +192,7 @@
           }
         },
         "method": "POST",
-        "path": "/session/files/"
+        "path": "/session/files"
       },
       "response": {
         "body": {
@@ -230,7 +230,7 @@
           "accept-language": "fr"
         },
         "method": "POST",
-        "path": "/session/files/"
+        "path": "/session/files"
       },
       "response": {
         "body": {
@@ -268,7 +268,7 @@
           "accept-language": "pt"
         },
         "method": "POST",
-        "path": "/session/files/"
+        "path": "/session/files"
       },
       "response": {
         "body": {
@@ -315,7 +315,7 @@
       ],
       "request": {
         "method": "GET",
-        "path": "/baseline/pjnz/"
+        "path": "/baseline/pjnz"
       },
       "response": {
         "body": {
@@ -329,7 +329,7 @@
     },
     {
       "client": "A",
-      "name": "GET /baseline/shape/",
+      "name": "GET /baseline/shape",
       "outbound": [
         {
           "headers": {
@@ -353,7 +353,7 @@
       ],
       "request": {
         "method": "GET",
-        "path": "/baseline/shape/"
+        "path": "/baseline/shape"
       },
       "response": {
         "body": {

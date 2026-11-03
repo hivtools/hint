@@ -12,13 +12,13 @@ from .scenario import RecordedClient, Scenario, Upload
 TEST_USER = "test.user@example.com"
 SUPPORT_USER = "naomi-support@imperial.ac.uk"
 
-BASELINE = {"pjnz": ("/baseline/pjnz/", "Malawi2024.PJNZ"),
-            "shape": ("/baseline/shape/", "malawi.geojson"),
-            "population": ("/baseline/population/", "population.csv")}
-DISEASE = {"survey": ("/disease/survey/", "survey.csv"),
-           "programme": ("/disease/programme/", "programme.csv"),
-           "anc": ("/disease/anc/", "anc.csv"),
-           "vmmc": ("/disease/vmmc/", "vmmc.xlsx")}
+BASELINE = {"pjnz": ("/baseline/pjnz", "Malawi2024.PJNZ"),
+            "shape": ("/baseline/shape", "malawi.geojson"),
+            "population": ("/baseline/population", "population.csv")}
+DISEASE = {"survey": ("/disease/survey", "survey.csv"),
+           "programme": ("/disease/programme", "programme.csv"),
+           "anc": ("/disease/anc", "anc.csv"),
+           "vmmc": ("/disease/vmmc", "vmmc.xlsx")}
 ALL_UPLOADS = {**BASELINE, **DISEASE}
 
 MODEL_OPTIONS = {

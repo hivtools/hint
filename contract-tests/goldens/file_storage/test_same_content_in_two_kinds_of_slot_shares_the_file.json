@@ -78,7 +78,7 @@
           }
         },
         "method": "POST",
-        "path": "/baseline/shape/"
+        "path": "/baseline/shape"
       },
       "response": {
         "body": {
@@ -126,7 +126,7 @@
           }
         },
         "method": "POST",
-        "path": "/baseline/pjnz/"
+        "path": "/baseline/pjnz"
       },
       "response": {
         "body": {
@@ -175,7 +175,7 @@
           }
         },
         "method": "POST",
-        "path": "/disease/anc/"
+        "path": "/disease/anc"
       },
       "response": {
         "body": {
@@ -224,7 +224,7 @@
           }
         },
         "method": "POST",
-        "path": "/disease/programme/"
+        "path": "/disease/programme"
       },
       "response": {
         "body": {

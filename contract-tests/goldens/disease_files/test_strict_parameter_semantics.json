@@ -78,7 +78,7 @@
           }
         },
         "method": "POST",
-        "path": "/baseline/shape/"
+        "path": "/baseline/shape"
       },
       "response": {
         "body": {
@@ -126,7 +126,7 @@
           }
         },
         "method": "POST",
-        "path": "/baseline/pjnz/"
+        "path": "/baseline/pjnz"
       },
       "response": {
         "body": {
@@ -176,7 +176,7 @@
           }
         },
         "method": "POST",
-        "path": "/disease/anc/",
+        "path": "/disease/anc",
         "query": {
           "strict": "false"
         }
@@ -229,7 +229,7 @@
           }
         },
         "method": "POST",
-        "path": "/disease/anc/",
+        "path": "/disease/anc",
         "query": {
           "strict": "False"
         }
@@ -282,7 +282,7 @@
           }
         },
         "method": "POST",
-        "path": "/disease/anc/",
+        "path": "/disease/anc",
         "query": {
           "strict": "true"
         }
@@ -335,7 +335,7 @@
           }
         },
         "method": "POST",
-        "path": "/disease/anc/",
+        "path": "/disease/anc",
         "query": {
           "strict": "bogus"
         }
@@ -388,7 +388,7 @@
           }
         },
         "method": "POST",
-        "path": "/disease/anc/",
+        "path": "/disease/anc",
         "query": {
           "strict": ""
         }
@@ -431,7 +431,7 @@
       ],
       "request": {
         "method": "GET",
-        "path": "/disease/anc/",
+        "path": "/disease/anc",
         "query": {
           "strict": "bogus"
         }

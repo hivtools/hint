@@ -80,7 +80,7 @@
           }
         },
         "method": "POST",
-        "path": "/disease/anc/"
+        "path": "/disease/anc"
       },
       "response": {
         "body": {
@@ -130,7 +130,7 @@
           }
         },
         "method": "POST",
-        "path": "/disease/anc/"
+        "path": "/disease/anc"
       },
       "response": {
         "body": {
@@ -170,7 +170,7 @@
       ],
       "request": {
         "method": "GET",
-        "path": "/disease/anc/"
+        "path": "/disease/anc"
       },
       "response": {
         "body": {

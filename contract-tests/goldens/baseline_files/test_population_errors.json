@@ -78,7 +78,7 @@
           }
         },
         "method": "POST",
-        "path": "/baseline/population/"
+        "path": "/baseline/population"
       },
       "response": {
         "body": {
@@ -126,7 +126,7 @@
           }
         },
         "method": "POST",
-        "path": "/baseline/population/"
+        "path": "/baseline/population"
       },
       "response": {
         "body": {
@@ -174,7 +174,7 @@
           }
         },
         "method": "POST",
-        "path": "/baseline/population/"
+        "path": "/baseline/population"
       },
       "response": {
         "body": {
@@ -222,7 +222,7 @@
           }
         },
         "method": "POST",
-        "path": "/baseline/population/"
+        "path": "/baseline/population"
       },
       "response": {
         "body": {
@@ -270,7 +270,7 @@
           }
         },
         "method": "POST",
-        "path": "/baseline/population/"
+        "path": "/baseline/population"
       },
       "response": {
         "body": {
@@ -318,7 +318,7 @@
           }
         },
         "method": "POST",
-        "path": "/baseline/population/"
+        "path": "/baseline/population"
       },
       "response": {
         "body": {
@@ -365,7 +365,7 @@
           }
         },
         "method": "POST",
-        "path": "/baseline/population/"
+        "path": "/baseline/population"
       },
       "response": {
         "body": {
@@ -412,7 +412,7 @@
           }
         },
         "method": "POST",
-        "path": "/baseline/population/"
+        "path": "/baseline/population"
       },
       "response": {
         "body": {
@@ -459,7 +459,7 @@
           }
         },
         "method": "POST",
-        "path": "/baseline/population/"
+        "path": "/baseline/population"
       },
       "response": {
         "body": {

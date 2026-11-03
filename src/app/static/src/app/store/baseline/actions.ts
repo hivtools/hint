@@ -159,17 +159,17 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
     },
 
     async uploadPJNZ(context, formData) {
-        await uploadOrImportPJNZ(context, {url: "/baseline/pjnz/", payload: formData},
+        await uploadOrImportPJNZ(context, {url: "/baseline/pjnz", payload: formData},
             getFilenameFromUploadFormData(formData));
     },
 
     async uploadShape(context, formData) {
-        await uploadOrImportShape(context, {url: "/baseline/shape/", payload: formData},
+        await uploadOrImportShape(context, {url: "/baseline/shape", payload: formData},
             getFilenameFromUploadFormData(formData));
     },
 
     async uploadPopulation(context, formData) {
-        await uploadOrImportPopulation(context, {url: "/baseline/population/", payload: formData},
+        await uploadOrImportPopulation(context, {url: "/baseline/population", payload: formData},
             getFilenameFromUploadFormData(formData));
     },
 
@@ -177,7 +177,7 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
         const {commit, dispatch} = context;
         commitClearReviewInputDataset(commit, DATASET_TYPE.PJNZ);
         await api<BaselineMutation, BaselineMutation>(context)
-            .delete("/baseline/pjnz/")
+            .delete("/baseline/pjnz")
             .then((response) => {
                 if (response) {
                     commit({type: BaselineMutation.PJNZUpdated, payload: null});
@@ -190,7 +190,7 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
         const {commit, dispatch} = context;
         commitClearReviewInputDataset(commit, DATASET_TYPE.SHAPE);
         await api<BaselineMutation, BaselineMutation>(context)
-            .delete("/baseline/shape/")
+            .delete("/baseline/shape")
             .then((response) => {
                 if (response) {
                     commit({type: BaselineMutation.ShapeUpdated, payload: null});
@@ -202,7 +202,7 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
     async deletePopulation(context) {
         const {commit, dispatch} = context;
         await api<BaselineMutation, BaselineMutation>(context)
-            .delete("/baseline/population/")
+            .delete("/baseline/population")
             .then((response) => {
                 if (response) {
                     commit({type: BaselineMutation.PopulationUpdated, payload: null});
@@ -226,17 +226,17 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
                 .ignoreErrors()
                 .withSuccess(BaselineMutation.PJNZUpdated)
                 .freezeResponse()
-                .get<PjnzResponse>("/baseline/pjnz/"),
+                .get<PjnzResponse>("/baseline/pjnz"),
             api<BaselineMutation, BaselineMutation>(context)
                 .ignoreErrors()
                 .withSuccess(BaselineMutation.PopulationUpdated)
                 .freezeResponse()
-                .get<PjnzResponse>("/baseline/population/"),
+                .get<PjnzResponse>("/baseline/population"),
             api<BaselineMutation, BaselineMutation>(context)
                 .ignoreErrors()
                 .withSuccess(BaselineMutation.ShapeUpdated)
                 .freezeResponse()
-                .get<PjnzResponse>("/baseline/shape/")
+                .get<PjnzResponse>("/baseline/shape")
         ]);
 
         await dispatch('validate');
@@ -251,6 +251,6 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
             .withSuccess(BaselineMutation.Validated)
             .withError(BaselineMutation.BaselineError)
             .freezeResponse()
-            .get<ValidateBaselineResponse>("/baseline/validate/");
+            .get<ValidateBaselineResponse>("/baseline/validate");
     }
 };
