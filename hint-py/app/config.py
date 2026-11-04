@@ -22,9 +22,10 @@ class Settings(BaseSettings):
     # The hintr API URL
     hintr_url: str = "http://localhost:8888"
 
-    # Where hintr finds the uploaded files, as hint tells it: "<upload_dir>/<hash>" (upload_dir in the Kotlin
-    # config.properties). It is relative, hintr resolves it against its own inputs directory, and this API never opens
-    # the files itself.
+    # The folder of the uploaded files, as hint tells hintr about them: the path is "<upload_dir>/<hash>" (upload_dir in
+    # the Kotlin config.properties). hintr opens the path as it is, so a relative one is relative to hintr's working
+    # directory, which is "/" in its image: the share is mounted at "/uploads" in hintr, and this API never opens the
+    # files itself.
     upload_dir: str = "uploads"
 
     # Shown in the message for unexpected errors (application_title and support_email in the Kotlin config.properties)
