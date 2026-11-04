@@ -37,6 +37,7 @@ ENDPOINTS = {
     "model options": ("GET", "/model/options", None),
     "validate options": ("POST", "/model/validate/options", OPTIONS),
     "run": ("POST", "/model/run", OPTIONS),
+    "download": ("POST", "/download/submit/summary/t1", {"iso3": "MWI"}),
 }
 
 
@@ -150,10 +151,10 @@ async def test_the_refusal_of_a_time_series_type_is_translated(on_a_version):
     assert r.json()["errors"][0]["detail"] == "Type de série temporelle d'entrée inconnu"
 
 
-async def test_an_unknown_time_series_type_is_refused_without_a_version(api):
-    # Kotlin looks at the type first
+async def test_an_unknown_time_series_type_is_refused_with_no_version_first(api):
+    # The version is checked before anything else about the request
     r = await api.get("/chart-data/input-time-series/bogus")
-    assert r.status_code == 400
+    assert r.status_code == 403
 
 
 async def test_the_comparison_is_drawn_from_four_files_which_are_the_body_itself(
@@ -390,6 +391,7 @@ async def test_a_calibration_is_sent_with_the_options_and_no_files(on_a_version,
 
 
 async def test_a_calibration_needs_no_version(anonymous_client, hintr):
+    # It is of a fit that hintr already has, it does not use the version's files
     r = await anonymous_client.post("/calibrate/submit/fit1", json=OPTIONS)
     assert r.status_code == 200
 
@@ -458,14 +460,9 @@ async def test_a_download_with_no_payload_is_sent_with_no_body(on_a_version, hin
     assert sent_to_hintr(hintr) == [("POST", "/download/submit/summary/c1", None)]
 
 
-async def test_a_download_that_needs_no_file_needs_no_version(api, hintr):
-    r = await api.post("/download/submit/summary/c1", json=PAYLOAD)
-    assert r.status_code == 200
-    assert r.content == SUCCESS
-
-
-@pytest.mark.parametrize("download_type", ["agyw", "spectrum", "datapack"])
-async def test_a_download_that_needs_a_file_needs_a_version(api, hintr, download_type):
+@pytest.mark.parametrize("download_type", ["agyw", "spectrum", "datapack", "summary", "comparison", "coarse-output"])
+async def test_every_type_of_download_needs_a_version(api, hintr, download_type):
+    # Even the ones that add no file, so that all of the downloads are checked in the same way
     r = await api.post(f"/download/submit/{download_type}/c1", json=PAYLOAD)
     assert r.status_code == 403
     assert hintr.calls == []

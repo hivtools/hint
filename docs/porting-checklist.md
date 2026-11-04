@@ -76,7 +76,7 @@ Every endpoint of the Kotlin app, in the order of the [endpoint index](endpoint-
 | GET | `/calibrate/plot/{id}` | Calibration plot data | [x] | [D5](#differences-from-kotlin) |
 | POST | `/calibrate/result/filteredData/{id}` | Calibrated results filtered by the selected options, read from the results database | [ ] | |
 | GET | `/calibrate/result/data/{id}/{indicator}` | Calibrated results for one indicator | [ ] | |
-| POST | `/download/submit/{type}/{id}` | Queues a download of an output file (spectrum, coarse output, summary, comparison, ...) | [x] | [D3](#differences-from-kotlin), [D4](#differences-from-kotlin), [D6](#differences-from-kotlin). A type that needs no file (summary, comparison, ...) works without a version, as in Kotlin |
+| POST | `/download/submit/{type}/{id}` | Queues a download of an output file (spectrum, coarse output, summary, comparison, ...) | [x] | [D3](#differences-from-kotlin), [D4](#differences-from-kotlin), [D6](#differences-from-kotlin). The version is checked for every type, Kotlin only looks at it for the types that add a file (spectrum, datapack, agyw) |
 | GET | `/download/status/{id}` | Status of a download | [x] | [D5](#differences-from-kotlin) |
 | GET | `/download/result/{id}` | Downloads the finished output file | [ ] | |
 | POST | `/rehydrate/zip` | Loads a project from an uploaded output zip | [ ] | |
