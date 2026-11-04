@@ -18,3 +18,9 @@ def test_reads_hint_prefixed_environment_variables(monkeypatch):
 
 def test_password_is_not_shown_in_the_settings_repr():
     assert "changeme" not in repr(Settings())
+
+
+def test_hintr_url_defaults_to_a_local_hintr_and_can_be_set(monkeypatch):
+    assert Settings().hintr_url == "http://localhost:8888"
+    monkeypatch.setenv("HINT_HINTR_URL", "http://hintr:8888")
+    assert Settings().hintr_url == "http://hintr:8888"
