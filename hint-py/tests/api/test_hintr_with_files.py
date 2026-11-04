@@ -408,11 +408,11 @@ PAYLOAD = {"iso3": "MWI", "state": {"step": 3}, "notes": {"project_notes": {"not
 
 async def test_a_download_of_a_type_with_no_extra_file_is_sent_as_it_is(on_a_version, hintr, engine, version_id):
     await add_files(engine, version_id, "pjnz", "vmmc")
-    for download_type in ("summary", "comparison", "coarse-output", "coarse_output", "bogus"):
+    for download_type in ("summary", "comparison", "coarse-output", "coarse_output", "agyw", "bogus"):
         await on_a_version.post(f"/download/submit/{download_type}/c1", json=PAYLOAD)
     assert sent_to_hintr(hintr) == [
         ("POST", f"/download/submit/{t}/c1", PAYLOAD)
-        for t in ("summary", "comparison", "coarse-output", "coarse_output", "bogus")
+        for t in ("summary", "comparison", "coarse-output", "coarse_output", "agyw", "bogus")
     ]
 
 
@@ -436,22 +436,11 @@ async def test_a_spectrum_or_datapack_download_has_no_vmmc_when_there_is_none(
     assert sent_to_hintr(hintr) == [("POST", f"/download/submit/{download_type}/c1", PAYLOAD)]
 
 
-async def test_an_agyw_download_has_the_pjnz_file(on_a_version, hintr, engine, version_id):
-    await add_files(engine, version_id, "pjnz", "vmmc")
-    await on_a_version.post("/download/submit/agyw/c1", json=PAYLOAD)
-    assert sent_to_hintr(hintr) == [("POST", "/download/submit/agyw/c1", {**PAYLOAD, "pjnz": hintr_file("pjnz")})]
-
-
-async def test_an_agyw_download_has_null_for_the_pjnz_when_there_is_none(on_a_version, hintr):
-    await on_a_version.post("/download/submit/agyw/c1", json=PAYLOAD)
-    assert sent_to_hintr(hintr) == [("POST", "/download/submit/agyw/c1", {**PAYLOAD, "pjnz": None})]
-
-
-async def test_the_files_in_the_body_are_replaced_by_the_ones_of_the_version(on_a_version, hintr, engine, version_id):
+async def test_the_vmmc_file_in_the_body_is_replaced_by_the_one_of_the_version(on_a_version, hintr, engine, version_id):
     # The browser cannot choose which file hintr reads
-    await add_files(engine, version_id, "pjnz")
-    await on_a_version.post("/download/submit/agyw/c1", json={**PAYLOAD, "pjnz": {"path": "/etc/passwd"}})
-    assert sent_to_hintr(hintr)[0][2]["pjnz"] == hintr_file("pjnz")
+    await add_files(engine, version_id, "vmmc")
+    await on_a_version.post("/download/submit/spectrum/c1", json={**PAYLOAD, "vmmc": {"path": "/etc/passwd"}})
+    assert sent_to_hintr(hintr)[0][2]["vmmc"] == hintr_file("vmmc")
 
 
 @pytest.mark.parametrize("body", [None, {}])
@@ -460,7 +449,7 @@ async def test_a_download_with_no_payload_is_sent_with_no_body(on_a_version, hin
     assert sent_to_hintr(hintr) == [("POST", "/download/submit/summary/c1", None)]
 
 
-@pytest.mark.parametrize("download_type", ["agyw", "spectrum", "datapack", "summary", "comparison", "coarse-output"])
+@pytest.mark.parametrize("download_type", ["spectrum", "datapack", "summary", "comparison", "coarse-output"])
 async def test_every_type_of_download_needs_a_version(api, hintr, download_type):
     # Even the ones that add no file, so that all of the downloads are checked in the same way
     r = await api.post(f"/download/submit/{download_type}/c1", json=PAYLOAD)
