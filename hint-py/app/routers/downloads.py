@@ -28,7 +28,10 @@ async def submit_download(
     The version is checked for every type, though only some use its files."""
     payload = dict(body or {})
     if download_type in ("spectrum", "datapack"):
+        # Only ever the version's own file: one in the browser's body is dropped if the version has none
         vmmc = await files.get_file(FileType.VMMC)
-        if vmmc is not None:
+        if vmmc is None:
+            payload.pop("vmmc", None)
+        else:
             payload["vmmc"] = vmmc
     return await hintr.submit_download(download_type, task_id, payload)

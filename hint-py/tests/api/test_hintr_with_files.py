@@ -443,6 +443,11 @@ async def test_the_vmmc_file_in_the_body_is_replaced_by_the_one_of_the_version(o
     assert sent_to_hintr(hintr)[0][2]["vmmc"] == hintr_file("vmmc")
 
 
+async def test_the_vmmc_file_in_the_body_is_dropped_if_the_version_has_none(on_a_version, hintr):
+    await on_a_version.post("/download/submit/spectrum/c1", json={**PAYLOAD, "vmmc": {"path": "/etc/passwd"}})
+    assert sent_to_hintr(hintr) == [("POST", "/download/submit/spectrum/c1", PAYLOAD)]
+
+
 @pytest.mark.parametrize("body", [None, {}])
 async def test_a_download_with_no_payload_is_sent_with_no_body(on_a_version, hintr, body):
     await on_a_version.post("/download/submit/summary/c1", json=body)
