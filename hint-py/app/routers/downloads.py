@@ -23,7 +23,9 @@ async def submit_download(
     hintr: Hintr,
     body: Annotated[dict[str, Any] | None, Body()] = None,
 ) -> Response:
-    """The body is what the browser sends (the state, notes and iso3), to which hint adds a file for some types."""
+    """The body is what the browser sends (the state, notes and iso3), to which hint adds a file for some types.
+
+    The version is checked for every type, though only some use its files."""
     payload = dict(body or {})
     if download_type == "agyw":
         # Always added, as null if the version has no PJNZ file (hintr then answers with the error)
@@ -32,9 +34,4 @@ async def submit_download(
         vmmc = await files.get_one(FileType.VMMC)
         if vmmc is not None:
             payload["vmmc"] = vmmc
-    return await hintr.forward(
-        "POST",
-        "/download/submit/{download_type}/{task_id}",
-        {"download_type": download_type, "task_id": task_id},
-        payload or None,
-    )
+    return await hintr.submit_download(download_type, task_id, payload)
