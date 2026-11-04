@@ -19,7 +19,7 @@ class VersionFiles:
         self._versions = versions
         self._upload_dir = upload_dir
 
-    async def get(self, *types: FileType) -> dict[str, schemas.HintrFile]:
+    async def get_files(self, *types: FileType) -> dict[str, schemas.HintrFile]:
         """The version's files of these types, by type. A type the version has no file for is left out."""
         files = await self._versions.get_version_files(self._version_id)
         return {
@@ -34,8 +34,8 @@ class VersionFiles:
             if file_type in types
         }
 
-    async def get_one(self, file_type: FileType) -> schemas.HintrFile | None:
-        return (await self.get(file_type)).get(file_type)
+    async def get_file(self, file_type: FileType) -> schemas.HintrFile | None:
+        return (await self.get_files(file_type)).get(file_type)
 
 
 def get_version_files(
