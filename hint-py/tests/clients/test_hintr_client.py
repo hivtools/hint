@@ -9,6 +9,7 @@ import httpx2
 import pytest
 
 from app.clients.hintr_client import HintrClient
+from app.schemas import FileType, HintrFile, ModelOptions
 from tests.hintr import HINTR_FAILURE, SUCCESS, FakeHintr, failure, success
 
 
@@ -146,3 +147,74 @@ async def test_no_answer_from_hintr_is_a_500(client, hintr, error):
     r = await client.forward("GET", "/model/status/t1")
     assert r.status_code == 500
     assert body_of(r) == failure("No response returned. The request may have timed out.")
+
+
+# ---- The calls with a body: the shape of what hintr is sent. Which files each endpoint uses is tested with the endpoints.
+
+FILE = HintrFile(path="uploads/h1", hash="h1", filename="a.csv", from_adr=False, resource_url=None)
+FILE_JSON = {"path": "uploads/h1", "hash": "h1", "filename": "a.csv", "fromADR": False, "resource_url": None}
+OPTIONS = ModelOptions(options={"a": 1}, version={"hintr": "1"}, iso3="MWI")
+
+
+def sent(hintr: FakeHintr) -> tuple[str, str, object]:
+    (call,) = hintr.calls
+    return call.method, call.url.path, json.loads(call.content) if call.content else None
+
+
+async def test_the_options_form_is_asked_for_with_the_files_as_the_body(client, hintr):
+    await client.model_options({"shape": FILE})
+    assert sent(hintr) == ("POST", "/model/options", {"shape": FILE_JSON})
+
+
+async def test_the_options_are_validated_with_the_files_under_data(client, hintr):
+    await client.validate_model_options(OPTIONS, {"shape": FILE})
+    assert sent(hintr) == ("POST", "/validate/options", {"options": {"a": 1}, "data": {"shape": FILE_JSON}})
+
+
+async def test_a_model_is_run_with_the_options_version_and_iso3_and_the_files_under_data(client, hintr):
+    await client.run_model(OPTIONS, {"shape": FILE})
+    assert sent(hintr) == (
+        "POST",
+        "/model/submit",
+        {"options": {"a": 1}, "version": {"hintr": "1"}, "iso3": "MWI", "data": {"shape": FILE_JSON}},
+    )
+
+
+async def test_a_calibration_is_the_options_version_and_iso3(client, hintr):
+    await client.submit_calibration("fit1", OPTIONS)
+    assert sent(hintr) == (
+        "POST",
+        "/calibrate/submit/fit1",
+        {"options": {"a": 1}, "version": {"hintr": "1"}, "iso3": "MWI"},
+    )
+
+
+async def test_a_time_series_has_the_files_under_data(client, hintr):
+    await client.input_time_series(FileType.ANC, {"anc": FILE})
+    assert sent(hintr) == ("POST", "/chart-data/input-time-series/anc", {"data": {"anc": FILE_JSON}})
+
+
+@pytest.mark.parametrize(
+    ("call", "path"), [("input_comparison", "input-comparison"), ("input_population", "input-population")]
+)
+async def test_the_comparison_and_population_charts_have_the_files_as_the_body(client, hintr, call, path):
+    await getattr(client, call)({"shape": FILE})
+    assert sent(hintr) == ("POST", f"/chart-data/{path}", {"shape": FILE_JSON})
+
+
+async def test_the_review_input_metadata_has_the_files_under_data_with_null_for_a_missing_one(client, hintr):
+    await client.review_input_metadata("MWI", {"anc": None, "shape": FILE})
+    assert sent(hintr) == ("POST", "/review-input/metadata", {"data": {"anc": None, "shape": FILE_JSON}, "iso3": "MWI"})
+
+
+async def test_a_download_is_sent_as_the_payload_and_without_a_payload_as_no_body(client, hintr):
+    await client.submit_download("summary", "c1", {"iso3": "MWI", "pjnz": FILE})
+    await client.submit_download("summary", "c1", {})
+    assert [(c.url.path, c.content) for c in hintr.calls][1] == ("/download/submit/summary/c1", b"")
+    assert json.loads(hintr.calls[0].content) == {"iso3": "MWI", "pjnz": FILE_JSON}
+
+
+async def test_a_task_id_cannot_change_the_path_of_a_download_or_calibration(client, hintr):
+    await client.submit_download("a?b", "c#d", {})
+    await client.submit_calibration("e/f", OPTIONS)
+    assert [c.url.raw_path for c in hintr.calls] == [b"/download/submit/a%3Fb/c%23d", b"/calibrate/submit/e%2Ff"]
