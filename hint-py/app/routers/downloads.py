@@ -29,9 +29,9 @@ async def submit_download(
     payload = dict(body or {})
     if download_type == "agyw":
         # Always added, as null if the version has no PJNZ file (hintr then answers with the error)
-        payload["pjnz"] = await files.get_one(FileType.PJNZ)
+        payload["pjnz"] = await files.get_file(FileType.PJNZ)
     elif download_type in ("spectrum", "datapack"):
-        vmmc = await files.get_one(FileType.VMMC)
+        vmmc = await files.get_file(FileType.VMMC)
         if vmmc is not None:
             payload["vmmc"] = vmmc
     return await hintr.submit_download(download_type, task_id, payload)
