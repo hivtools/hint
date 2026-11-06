@@ -6,6 +6,7 @@ from app import schemas
 from app.db.database import DbSession
 from app.db.models import Project, ProjectVersion, VersionFile
 from app.errors import VersionDoesNotExistError
+from app.schemas import FileType
 
 
 class VersionRepository:
@@ -122,7 +123,7 @@ class VersionRepository:
         )
         await self._copy_files(parent_version_id, new_version_id)
 
-    async def get_version_files(self, version_id: str) -> dict[str, schemas.VersionFile]:
+    async def get_version_files(self, version_id: str) -> dict[FileType, schemas.VersionFile]:
         result = await self.db_session.execute(
             select(
                 VersionFile.hash,
@@ -133,13 +134,15 @@ class VersionRepository:
             ).where(VersionFile.version == version_id)
         )
         return {
-            row.type: schemas.VersionFile(
+            FileType(row.type): schemas.VersionFile(
                 hash=row.hash, filename=row.filename, from_adr=row.from_adr, resource_url=row.resource_url
             )
             for row in result
         }
 
-    async def set_files_for_version(self, version_id: str, files: Mapping[str, schemas.VersionFile | None]) -> None:
+    async def set_files_for_version(
+        self, version_id: str, files: Mapping[FileType, schemas.VersionFile | None]
+    ) -> None:
         """Replaces the version's files. Runs in the request's transaction, so it all happens or none of it does."""
         await self.db_session.execute(delete(VersionFile).where(VersionFile.version == version_id))
         rows = [
