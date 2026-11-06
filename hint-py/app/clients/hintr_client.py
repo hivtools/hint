@@ -22,7 +22,7 @@ from app.schemas import FileType, HintrFile, ModelOptions, success
 logger = logging.getLogger(__name__)
 
 # The files of a version, by type
-FilesByType = Mapping[str, HintrFile]
+FilesByType = Mapping[FileType, HintrFile]
 
 # How long to wait for a connection and an answer
 TIMEOUT_SECONDS = 120

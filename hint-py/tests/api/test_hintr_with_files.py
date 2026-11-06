@@ -13,6 +13,7 @@ from app import schemas
 from app.db.database import create_db_session_factory
 from app.db.models import File
 from app.db.version_repository import VersionRepository
+from app.schemas import FileType
 from tests.api.helpers import add_files, hintr_file, make_client
 from tests.hintr import HINTR_FAILURE, SUCCESS, failure
 from tests.support import OTHER_USER
@@ -189,7 +190,7 @@ async def test_a_file_from_adr_says_so_and_where_from(on_a_version, hintr, engin
         await VersionRepository(db_session).set_files_for_version(
             version_id,
             {
-                "population": schemas.VersionFile(
+                FileType.POPULATION: schemas.VersionFile(
                     hash="h1", filename="pop.csv", from_adr=True, resource_url="http://adr/x"
                 )
             },
