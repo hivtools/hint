@@ -1,6 +1,7 @@
 """What the API accepts and returns. Field names are camelCase in JSON because that is what the Vue app already uses."""
 
 from datetime import datetime
+from enum import StrEnum
 from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field
@@ -50,6 +51,18 @@ class CurrentProject(CamelModel):
     version: Version | None
 
 
+class FileType(StrEnum):
+    """The kinds of file a version has. The values are the names hint and hintr use."""
+
+    ANC = "anc"
+    PJNZ = "pjnz"
+    POPULATION = "population"
+    PROGRAMME = "programme"
+    SHAPE = "shape"
+    SURVEY = "survey"
+    VMMC = "vmmc"
+
+
 class VersionFile(CamelModel):
     hash: str
     filename: str
@@ -59,7 +72,7 @@ class VersionFile(CamelModel):
 
 class VersionDetails(CamelModel):
     state: str
-    files: dict[str, VersionFile]
+    files: dict[FileType, VersionFile]
 
 
 class NewProjectRequest(CamelModel):
@@ -89,3 +102,25 @@ class NoteRequest(CamelModel):
 class RenameProjectRequest(CamelModel):
     name: str
     note: str | None = None
+
+
+class HintrFile(BaseModel):
+    """A file as hintr is told about it (Kotlin: VersionFileWithPath). The names are the ones hintr reads, so a dump of
+    this model is what goes to hintr."""
+
+    path: str
+    hash: str
+    filename: str
+    from_adr: bool = Field(serialization_alias="fromADR")
+    resource_url: str | None
+
+
+class ModelOptions(BaseModel):
+    """The body of a request to run, validate or calibrate a model. What is in `options` is up to hintr."""
+
+    # A number where there should be text is text, as Jackson does (`"iso3": 5` is "5")
+    model_config = ConfigDict(coerce_numbers_to_str=True)
+
+    options: dict[str, Any]
+    version: dict[str, str]
+    iso3: str | None = None
