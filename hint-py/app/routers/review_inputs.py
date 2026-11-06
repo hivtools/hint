@@ -9,21 +9,11 @@ from fastapi.responses import Response
 from pydantic import BaseModel
 
 from app.clients.hintr_client import Hintr
-from app.errors import HintError
+from app.errors import UnknownInputTimeSeriesTypeError, UnknownReviewInputFileTypeError
 from app.schemas import FileType
 from app.services.version_files import Files
 
 router = APIRouter(tags=["hintr"])
-
-
-class UnknownInputTimeSeriesTypeError(HintError):
-    def __init__(self):
-        super().__init__("unknownInputTimeSeriesType", 400)
-
-
-class UnknownReviewInputFileTypeError(HintError):
-    def __init__(self):
-        super().__init__("unknownReviewInputFileType", 400)
 
 
 # The time series of each type is drawn with these other files too
@@ -34,6 +24,9 @@ TIME_SERIES_FILES = {
 
 # The types that the metadata of the review inputs can be asked for
 REVIEW_TYPES = {FileType.ANC, FileType.PROGRAMME, FileType.SURVEY, FileType.SHAPE}
+
+# The files required to generate input comparison data
+INPUT_COMPARISON_FILES = [FileType.SHAPE, FileType.PJNZ, FileType.ANC, FileType.PROGRAMME]
 
 
 @router.get("/chart-data/input-time-series/{series_type}")
@@ -49,9 +42,7 @@ async def input_time_series(series_type: str, files: Files, hintr: Hintr) -> Res
 
 @router.get("/chart-data/input-comparison")
 async def input_comparison(files: Files, hintr: Hintr) -> Response:
-    return await hintr.input_comparison(
-        await files.get_files(FileType.SHAPE, FileType.PJNZ, FileType.ANC, FileType.PROGRAMME)
-    )
+    return await hintr.input_comparison(await files.get_files(*INPUT_COMPARISON_FILES))
 
 
 @router.get("/chart-data/input-population")
