@@ -12,6 +12,7 @@ from app.db.database import create_db_session_factory
 from app.db.models import File, ProjectVersion
 from app.db.version_repository import VersionRepository
 from app.main import app
+from app.schemas import FileType
 
 STATE = json.dumps({"datasets": {}, "model_fit": {"id": "abc"}, "step": 3})
 
@@ -52,7 +53,7 @@ async def add_file(engine: AsyncEngine, version_id: str, file_type: str = "pjnz"
         await VersionRepository(db_session).set_files_for_version(
             version_id,
             {
-                file_type: schemas.VersionFile(
+                FileType(file_type): schemas.VersionFile(
                     hash="abc123", filename="spectrum.pjnz", from_adr=False, resource_url=None
                 )
             },
@@ -65,7 +66,7 @@ async def add_files(engine: AsyncEngine, version_id: str, *file_types: str):
         files = {}
         for file_type in file_types:
             db_session.add(File(hash=f"{file_type}123"))
-            files[file_type] = schemas.VersionFile(
+            files[FileType(file_type)] = schemas.VersionFile(
                 hash=f"{file_type}123", filename=f"{file_type}.{file_type}", from_adr=False, resource_url=None
             )
         await db_session.flush()

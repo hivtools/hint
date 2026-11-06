@@ -51,6 +51,18 @@ class CurrentProject(CamelModel):
     version: Version | None
 
 
+class FileType(StrEnum):
+    """The kinds of file a version has. The values are the names hint and hintr use."""
+
+    ANC = "anc"
+    PJNZ = "pjnz"
+    POPULATION = "population"
+    PROGRAMME = "programme"
+    SHAPE = "shape"
+    SURVEY = "survey"
+    VMMC = "vmmc"
+
+
 class VersionFile(CamelModel):
     hash: str
     filename: str
@@ -60,7 +72,7 @@ class VersionFile(CamelModel):
 
 class VersionDetails(CamelModel):
     state: str
-    files: dict[str, VersionFile]
+    files: dict[FileType, VersionFile]
 
 
 class NewProjectRequest(CamelModel):
@@ -90,18 +102,6 @@ class NoteRequest(CamelModel):
 class RenameProjectRequest(CamelModel):
     name: str
     note: str | None = None
-
-
-class FileType(StrEnum):
-    """The kinds of file a version has. The values are the names hint and hintr use."""
-
-    ANC = "anc"
-    PJNZ = "pjnz"
-    POPULATION = "population"
-    PROGRAMME = "programme"
-    SHAPE = "shape"
-    SURVEY = "survey"
-    VMMC = "vmmc"
 
 
 class HintrFile(BaseModel):
