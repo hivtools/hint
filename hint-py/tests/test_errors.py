@@ -1,3 +1,4 @@
+import logging
 import re
 
 import httpx2
@@ -105,11 +106,11 @@ async def test_unexpected_errors_are_logged_with_the_code_the_user_is_shown(clie
     r = await client.get("/boom")
 
     [code] = re.findall(r"u[0-9a-f]{8}", r.json()["errors"][0]["detail"])[:1]
-    [record] = [r for r in caplog.records if "Unexpected error" in r.getMessage()]
+    [record] = [r for r in caplog.records if r.getMessage() == "Unexpected error"]
     assert record.levelname == "ERROR"
-    assert code in record.getMessage()
-    assert "GET /boom gave 500" in record.getMessage()
-    assert "secret details" in record.getMessage()
+    assert record.code == code
+    assert (record.method, record.path, record.status) == ("GET", "/boom", 500)
+    assert "secret details" in record.reason
     assert record.exc_info is not None
 
 
@@ -124,13 +125,14 @@ async def test_invalid_requests_are_logged_without_the_values_sent(client, caplo
     r = await client.post("/body", **request_kwargs)
 
     assert r.status_code == status
-    [record] = [r for r in caplog.records if "Unexpected error" in r.getMessage()]
+    [record] = [r for r in caplog.records if r.getMessage() == "Unexpected error"]
     assert record.levelname == "ERROR"
-    assert reason in record.getMessage()
+    assert reason in record.reason
 
 
 async def test_hint_errors_and_http_errors_are_not_logged_as_unexpected(client, caplog):
     await client.get("/missing-project")
     await client.get("/teapot")
 
-    assert caplog.records == []
+    # (httpx logs the requests of the test client at INFO)
+    assert [r for r in caplog.records if r.levelno >= logging.WARNING] == []

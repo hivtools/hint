@@ -123,8 +123,9 @@ async def test_results_that_are_not_in_the_folder_are_a_translated_error(anonymo
 
     assert r.status_code == 400
     assert r.json()["errors"][0]["detail"].startswith("No calibration output found for this project")
-    assert str(Path("t1", "gone.duckdb")) in caplog.text
-    assert "task t1" in caplog.text
+    [missing] = [r for r in caplog.records if r.getMessage().startswith("Result file missing")]
+    assert missing.path.endswith(str(Path("t1", "gone.duckdb")))  # as the operating system writes it
+    assert missing.task == "t1"
 
     r = await anonymous_client.post(URL, json=NO_FILTER, headers={"Accept-Language": "fr"})
     assert r.json()["errors"][0]["detail"].startswith("Aucune sortie de calibration")

@@ -92,17 +92,41 @@ services:
       # Where this container sees the results hintr writes. The path hintr gives for a result is relative to its own
       # results folder, so this is mounted at the same place as in hintr
       HINT_RESULTS_DIR: /${RESULTS_NAME:-results}
+      # What the logs look like: "console" is one line for each message, "json" one object for each (for machines).
+      # (Run by hand in a terminal, the API picks one itself: see HINT_LOG_FORMAT in hint-py/README.md.)
+      HINT_LOG_FORMAT: ${HINT_LOG_FORMAT:-console}
+      # OTEL=1 starts the API with opentelemetry-instrument, which sends its logs and traces to the `otel` service below
+      OTEL_LAUNCHER: ${OTEL:+opentelemetry-instrument}
+      OTEL_SERVICE_NAME: hint-py
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel:18889
+      OTEL_PYTHON_LOGGING_AUTO_INSTRUMENTATION_ENABLED: "true"
     extra_hosts:
       - "host.docker.internal:host-gateway"
     volumes:
       - ./hint-py:/app
       # Only read, never written
       - ./src/app/${RESULTS_NAME:-results}:/${RESULTS_NAME:-results}:ro
-    command: ["uv", "run", "--frozen", "--no-dev", "fastapi", "dev", "app/main.py", "--host", "0.0.0.0", "--port", "8000"]
+    # sh, so that OTEL_LAUNCHER (empty unless OTEL=1) can go in front of fastapi
+    command: ["sh", "-c", "exec uv run --frozen --no-dev $${OTEL_LAUNCHER} fastapi dev app/main.py --host 0.0.0.0 --port 8000"]
     healthcheck:
       test: ["CMD", "python", "-c", "import socket; socket.create_connection(('127.0.0.1', 8000), 2)"]
       interval: 1s
       retries: 60
+
+  # Somewhere to see the logs and traces of the Python API (OpenTelemetry), with nothing to set up. Not started unless
+  # asked for. scripts/dev.sh asks for it (and for the API to send to it) unless you run it with OTEL=0. By hand:
+  # `OTEL=1 docker compose --profile proxy --profile otel up -d`, or `make otel-up` in hint-py (to use with
+  # `make run-otel`). Then browse to http://localhost:18888. It keeps what it gets in memory only, and has no login, so
+  # it only listens on this machine.
+  otel:
+    profiles: [otel]
+    image: mcr.microsoft.com/dotnet/aspire-dashboard:latest
+    ports:
+      - "127.0.0.1:${OTEL_UI_PORT:-18888}:18888"   # the web page
+      - "127.0.0.1:${OTEL_PORT:-4317}:18889"       # where an API on this machine sends (OTLP over gRPC)
+    environment:
+      DASHBOARD__FRONTEND__AUTHMODE: Unsecured
+      DASHBOARD__OTLP__AUTHMODE: Unsecured
 
   # The front door, on the port Kotlin normally uses (application_url is http://localhost:8080) so that redirects
   # and cookies keep working. Kotlin has to be moved aside to KOTLIN_PORT.

@@ -4,10 +4,14 @@ The defaults match the development database (docker-compose.yml) and the Kotlin 
 """
 
 from functools import lru_cache
+from typing import Literal
 
-from pydantic import SecretStr
+from pydantic import SecretStr, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from sqlalchemy import URL
+
+LogLevel = Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
+LogFormat = Literal["auto", "console", "json"]
 
 
 class Settings(BaseSettings):
@@ -33,9 +37,21 @@ class Settings(BaseSettings):
     # only if the path here is set to where this API sees it.
     results_dir: str = "results"
 
+    # The lowest level that is logged, in any case. It applies to what this API logs and to what the libraries it uses
+    # log (uvicorn, httpx, SQLAlchemy...).
+    log_level: LogLevel = "INFO"
+    # What the logs look like on stderr: "console" (one line for each message, for people), "json" (one object for each
+    # message, for machines), or "auto": "console" in a terminal and "json" if not (a container, a pipe, a file).
+    log_format: LogFormat = "auto"
+
     # Shown in the message for unexpected errors (application_title and support_email in the Kotlin config.properties)
     application_title: str = "Naomi"
     support_email: str = "naomi-support@imperial.ac.uk"
+
+    @field_validator("log_level", mode="before")
+    @classmethod
+    def _upper_case_log_level(cls, value: object) -> object:
+        return value.upper() if isinstance(value, str) else value
 
     @property
     def database_url(self) -> URL:
