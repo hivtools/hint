@@ -7,8 +7,10 @@ import json
 
 import httpx2
 import pytest
+from pydantic import ValidationError
 
 from app.clients.hintr_client import HintrClient
+from app.errors import HintrFailedError
 from app.schemas import FileType, HintrFile, ModelOptions
 from tests.hintr import HINTR_FAILURE, SUCCESS, FakeHintr, failure, success
 
@@ -218,3 +220,66 @@ async def test_a_task_id_cannot_change_the_path_of_a_download_or_calibration(cli
     await client.submit_download("a?b", "c#d", {})
     await client.submit_calibration("e/f", OPTIONS)
     assert [c.url.raw_path for c in hintr.calls] == [b"/download/submit/a%3Fb/c%23d", b"/calibrate/submit/e%2Ff"]
+
+
+async def test_the_path_of_the_results_of_a_calibration_is_the_one_hintr_gives(client, hintr):
+    hintr.answer(200, json=success({"path": "t1/plot_data.duckdb"}))
+
+    assert await client.calibrate_result_path("t1") == "t1/plot_data.duckdb"
+    assert [(c.method, c.url.path, c.content) for c in hintr.calls] == [("GET", "/calibrate/result/path/t1", b"")]
+
+
+async def test_where_a_download_is_comes_with_what_names_it(client, hintr):
+    metadata = {"id": "t1", "areas": "MWI", "type": "spectrum", "file_label": "naomi-output", "file_extension": ".zip"}
+    hintr.answer(200, json=success({"path": "t1/out.zip", "metadata": metadata}))
+
+    result = await client.download_result("t1")
+
+    assert result.path == "t1/out.zip"
+    assert (result.metadata.areas, result.metadata.file_label, result.metadata.file_extension) == (
+        "MWI",
+        "naomi-output",
+        ".zip",
+    )
+    assert [(c.method, c.url.path, c.content) for c in hintr.calls] == [("GET", "/download/result/path/t1", b"")]
+
+
+async def test_what_is_not_a_download_to_hintr_is_not_one_here(client, hintr):
+    hintr.answer(200, json=success({"path": "t1/out.zip"}))
+    with pytest.raises(ValidationError):
+        await client.download_result("t1")
+
+
+@pytest.mark.parametrize("call", ["calibrate_result_path", "download_result"])
+@pytest.mark.parametrize("status", [400, 404, 500])
+async def test_a_failure_of_hintr_is_raised_with_hintrs_own_answer(client, hintr, call, status):
+    hintr.answer(status, json=HINTR_FAILURE)
+
+    with pytest.raises(HintrFailedError) as raised:
+        await getattr(client, call)("t1")
+
+    assert raised.value.response.status_code == (status if status <= 404 else 500)
+    assert body_of(raised.value.response) == HINTR_FAILURE
+
+
+@pytest.mark.parametrize("call", ["calibrate_result_path", "download_result"])
+async def test_no_answer_from_hintr_is_raised_as_a_failure(client, hintr, call):
+    hintr.fail_to_connect(httpx2.ConnectError("refused"))
+
+    with pytest.raises(HintrFailedError) as raised:
+        await getattr(client, call)("t1")
+
+    assert raised.value.response.status_code == 500
+    assert body_of(raised.value.response) == failure("No response returned. The request may have timed out.")
+
+
+async def test_a_task_id_cannot_change_the_path_of_a_result(client, hintr):
+    hintr.answer(
+        200, json=success({"path": "p", "metadata": {"areas": "a", "file_label": "b", "file_extension": ".c"}})
+    )
+    await client.calibrate_result_path("a?b#c")
+    await client.download_result("d/e")
+    assert [c.url.raw_path for c in hintr.calls] == [
+        b"/calibrate/result/path/a%3Fb%23c",
+        b"/download/result/path/d%2Fe",
+    ]

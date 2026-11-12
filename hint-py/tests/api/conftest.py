@@ -1,9 +1,12 @@
-from collections.abc import AsyncIterator
+from collections.abc import AsyncIterator, Iterator
+from pathlib import Path
 
 import httpx2
+import pytest
 import pytest_asyncio
 from sqlalchemy.ext.asyncio import AsyncEngine
 
+from app.config import Settings, get_settings
 from app.db.database import create_db_session_factory
 from app.main import app
 from tests.api.helpers import create_project, make_client
@@ -52,3 +55,13 @@ async def hintr(hintr: FakeHintr) -> FakeHintr:
     """The same hintr, now the one that the app calls."""
     app.state.hintr_http = hintr.http
     return hintr
+
+
+@pytest.fixture
+def results_dir(tmp_path: Path) -> Iterator[Path]:
+    """An empty folder that the app reads hintr's results from, as it would the share they are written to."""
+    folder = tmp_path / "results"
+    folder.mkdir()
+    app.dependency_overrides[get_settings] = lambda: Settings(results_dir=str(folder))
+    yield folder
+    del app.dependency_overrides[get_settings]

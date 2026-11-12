@@ -115,6 +115,34 @@ class HintrFile(BaseModel):
     resource_url: str | None
 
 
+class FilterQuery(BaseModel):
+    """Which rows of the results of a calibration to send (Kotlin: FilterQuery). A field that is null, or missing, does
+    not filter. A field that is an empty list matches nothing."""
+
+    indicator: list[str] | None = None
+    calendar_quarter: list[str] | None = None
+    age_group: list[str] | None = None
+    sex: list[str] | None = None
+    area_id: list[str] | None = None
+    # Sent as text by the Vue app (a number is accepted too)
+    area_level: list[int] | None = None
+
+
+class DownloadMetadata(BaseModel):
+    """What hintr says about a download, of which only what names the file is used."""
+
+    areas: str
+    file_label: str
+    file_extension: str
+
+
+class DownloadResult(BaseModel):
+    """Where hintr has the file of a download."""
+
+    path: str  # relative to the results folder
+    metadata: DownloadMetadata
+
+
 class ModelOptions(BaseModel):
     """The body of a request to run, validate or calibrate a model. What is in `options` is up to hintr."""
 
