@@ -125,6 +125,30 @@ def test_the_colour_text_that_uvicorn_adds_to_a_record_is_not_a_field(capsys, ot
     assert not hasattr(otel.records[0], "color_message")
 
 
+def test_the_query_string_of_a_request_is_not_in_the_access_log(capsys, otel):
+    configure()
+
+    logging.getLogger("uvicorn.access").info(
+        '%s - "%s %s HTTP/%s" %d', "127.0.0.1:1234", "GET", "/download/result/abc?token=SECRET&email=a@b.c", "1.1", 400
+    )
+
+    [line] = lines(capsys)
+    assert '"GET /download/result/abc HTTP/1.1" 400' in line
+    assert "SECRET" not in line
+    assert "a@b.c" not in otel.records[0].getMessage()
+
+
+def test_an_access_log_record_of_another_shape_is_left_alone(capsys):
+    configure()
+
+    logging.getLogger("uvicorn.access").info("not a request line")
+    logging.getLogger("uvicorn.access").info("%s?%s", "a", "b")
+
+    first, second = lines(capsys)
+    assert "not a request line" in first
+    assert "a?b" in second
+
+
 # ---- What this API logs (structlog)
 
 

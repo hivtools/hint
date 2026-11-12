@@ -12,7 +12,7 @@ from sqlalchemy.pool import NullPool, StaticPool
 from app.config import Settings
 from app.db.database import create_db_session_factory
 from app.db.models import Base, User
-from app.logging_setup import UVICORN_LOGGERS, LogHandler, configure_logging
+from app.logging_setup import RESERVED_FIELDS, UVICORN_LOGGERS, LogHandler, configure_logging
 from tests.hintr import FakeHintr
 from tests.support import OTHER_USER, USER
 
@@ -108,3 +108,32 @@ def isolated_logging() -> Iterator[None]:
         logging.getLogger(name).propagate = propagate
         logging.getLogger(name).setLevel(uvicorn_level)
     structlog.reset_defaults()
+
+
+class _Records(logging.Handler):
+    def __init__(self):
+        super().__init__(level=logging.DEBUG)
+        self.records: list[logging.LogRecord] = []
+
+    def emit(self, record: logging.LogRecord) -> None:
+        self.records.append(record)
+
+
+@pytest.fixture(autouse=True)
+def no_personal_data_in_logs(isolated_logging: None) -> Iterator[None]:
+    """Fail any test that logs the email of one of the test users.
+
+    The users are who the tests make requests as (`USER`, `OTHER_USER`). A user is an email address, so what is logged
+    about a request must not have it: not in the message, in a field, in a traceback or in a library's message (for
+    example SQL parameters). This checks every test, including the ones that are about something else.
+    """
+    records = _Records()
+    logging.getLogger().addHandler(records)
+    yield
+    logging.getLogger().removeHandler(records)
+    formatter = logging.Formatter()
+    for record in records.records:
+        fields = {name: value for name, value in record.__dict__.items() if name not in RESERVED_FIELDS}
+        shown = f"{formatter.format(record)} {fields}"
+        for user in (USER, OTHER_USER):
+            assert user not in shown, f"{record.name} logged a user's email: {shown[:300]}"

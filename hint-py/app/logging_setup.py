@@ -83,6 +83,20 @@ def _drop_color_message(record: logging.LogRecord) -> bool:
     return True
 
 
+def _drop_query_string(record: logging.LogRecord) -> bool:
+    """Remove the query string from the request line in the access log of uvicorn.
+
+    The line has the whole path of the request: `GET /download/result/abc?token=...`. A query string can have anything
+    in it (a token, an email), and the access log is not the place for it. This is a filter on the logger, so it runs
+    before any handler sees the record.
+    """
+    args = record.args
+    # uvicorn logs: client address, method, path with query string, HTTP version, status
+    if isinstance(args, tuple) and len(args) == 5 and isinstance(args[2], str):
+        record.args = (*args[:2], args[2].partition("?")[0], *args[3:])
+    return True
+
+
 def _renderers(log_format: str) -> list[Processor]:
     """The last steps for each message: from the fields to the text for stderr."""
     terminal = _is_terminal()
@@ -164,3 +178,4 @@ def configure_logging(settings: Settings) -> None:
         uvicorn_logger.propagate = True
         uvicorn_logger.setLevel(level)
         uvicorn_logger.addFilter(_drop_color_message)  # (adding the same filter again does nothing)
+    logging.getLogger("uvicorn.access").addFilter(_drop_query_string)
