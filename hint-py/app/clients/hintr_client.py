@@ -8,17 +8,21 @@ import json
 import logging
 from collections.abc import Mapping
 from http import HTTPStatus
-from typing import Annotated
+from typing import Annotated, Any
 from urllib.parse import quote
 
 import httpx2
 from fastapi import Depends, Header, Request
 from fastapi.responses import JSONResponse, Response
+from pydantic_core import to_jsonable_python
 
 from app.config import Settings
-from app.schemas import success
+from app.schemas import FileType, HintrFile, ModelOptions, success
 
 logger = logging.getLogger(__name__)
+
+# The files of a version, by type
+FilesByType = Mapping[FileType, HintrFile]
 
 # How long to wait for a connection and an answer
 TIMEOUT_SECONDS = 120
@@ -88,16 +92,67 @@ class HintrClient:
         self._http = http
         self._language = language
 
-    async def forward(self, method: str, path: str, params: Mapping[str, str] | None = None) -> Response:
+    async def forward(
+        self, method: str, path: str, params: Mapping[str, str] | None = None, json: object = None
+    ) -> Response:
         """Call hintr and return its answer. The {names} in the path are filled in from `params`, made safe first: a
-        value from the URL cannot add path parts or a query string to the call."""
+        value from the URL cannot add path parts or a query string to the call.
+
+        `json` is sent as the body, and without it there is no body.
+        """
         path = path.format_map({name: quote(value, safe="") for name, value in (params or {}).items()})
         try:
-            r = await self._http.request(method, path, headers={"Accept-Language": self._language})
+            r = await self._http.request(
+                method,
+                path,
+                headers={"Accept-Language": self._language},
+                # Models (the files, the options) are written as hintr reads them
+                json=None if json is None else to_jsonable_python(json, by_alias=True),
+            )
         except httpx2.RequestError:
             logger.exception("No response from hintr for %s %s", method, path)
             return _failure(500, NO_RESPONSE)
         return _hint_response(r.status_code, r.content)
+
+    # The calls that have a body. The files are the ones hint looked up for the version, hintr reads them from the
+    # uploads folder. Each of hintr's calls has its own shape: the files are the whole body, or under "data", or in
+    # the body of the browser's request.
+
+    async def model_options(self, files: FilesByType) -> Response:
+        return await self.forward("POST", "/model/options", json=files)
+
+    async def validate_model_options(self, options: ModelOptions, files: FilesByType) -> Response:
+        return await self.forward("POST", "/validate/options", json={"options": options.options, "data": files})
+
+    async def run_model(self, options: ModelOptions, files: FilesByType) -> Response:
+        return await self.forward("POST", "/model/submit", json={**options.model_dump(), "data": files})
+
+    async def submit_calibration(self, run_id: str, options: ModelOptions) -> Response:
+        return await self.forward("POST", "/calibrate/submit/{run_id}", {"run_id": run_id}, options)
+
+    async def input_time_series(self, file_type: FileType, files: FilesByType) -> Response:
+        return await self.forward(
+            "POST", "/chart-data/input-time-series/{file_type}", {"file_type": file_type}, {"data": files}
+        )
+
+    async def input_comparison(self, files: FilesByType) -> Response:
+        return await self.forward("POST", "/chart-data/input-comparison", json=files)
+
+    async def input_population(self, files: FilesByType) -> Response:
+        return await self.forward("POST", "/chart-data/input-population", json=files)
+
+    async def review_input_metadata(self, iso3: str, files: Mapping[str, HintrFile | None]) -> Response:
+        """The files are by the name of the type, and null where the version has no file of that type."""
+        return await self.forward("POST", "/review-input/metadata", json={"data": files, "iso3": iso3})
+
+    async def submit_download(self, download_type: str, task_id: str, payload: Mapping[str, Any]) -> Response:
+        """An empty payload is sent as no body at all."""
+        return await self.forward(
+            "POST",
+            "/download/submit/{download_type}/{task_id}",
+            {"download_type": download_type, "task_id": task_id},
+            payload or None,
+        )
 
 
 def get_hintr_client(request: Request, accept_language: Annotated[str | None, Header()] = None) -> HintrClient:

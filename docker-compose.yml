@@ -87,6 +87,8 @@ services:
       # Through the recording and faulting proxy the contract tests put in front of hintr, like Kotlin's hintr_url.
       # It runs on the host (see ensure_stubs in scripts/dev.sh).
       HINT_HINTR_URL: http://host.docker.internal:${FAULT_PORT:-8882}
+      # What hint tells hintr the uploaded files are called, as in Kotlin's upload_dir
+      HINT_UPLOAD_DIR: ${UPLOADS_NAME:-uploads}
     extra_hosts:
       - "host.docker.internal:host-gateway"
     volumes:

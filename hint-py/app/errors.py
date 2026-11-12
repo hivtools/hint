@@ -75,6 +75,16 @@ class EmptyBodyError(BadRequestError):
         super().__init__("The request body is empty")
 
 
+class UnknownInputTimeSeriesTypeError(HintError):
+    def __init__(self):
+        super().__init__("unknownInputTimeSeriesType", 400)
+
+
+class UnknownReviewInputFileTypeError(HintError):
+    def __init__(self):
+        super().__init__("unknownReviewInputFileType", 400)
+
+
 def unexpected_error(request: Request, status_code: int, reason: str, exc_info: BaseException | None = None):
     """The response for something that should not happen, and an error in the log with the same code.
 

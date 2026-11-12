@@ -12,6 +12,7 @@ from app.db.database import create_db_session_factory
 from app.db.models import File, ProjectVersion
 from app.db.version_repository import VersionRepository
 from app.main import app
+from app.schemas import FileType
 
 STATE = json.dumps({"datasets": {}, "model_fit": {"id": "abc"}, "step": 3})
 
@@ -52,11 +53,35 @@ async def add_file(engine: AsyncEngine, version_id: str, file_type: str = "pjnz"
         await VersionRepository(db_session).set_files_for_version(
             version_id,
             {
-                file_type: schemas.VersionFile(
+                FileType(file_type): schemas.VersionFile(
                     hash="abc123", filename="spectrum.pjnz", from_adr=False, resource_url=None
                 )
             },
         )
+
+
+async def add_files(engine: AsyncEngine, version_id: str, *file_types: str):
+    """Gives the version a file of each type, named after it (a `pjnz` file is `pjnz.pjnz` with the hash `pjnz123`)."""
+    async with create_db_session_factory(engine)() as db_session, db_session.begin():
+        files = {}
+        for file_type in file_types:
+            db_session.add(File(hash=f"{file_type}123"))
+            files[FileType(file_type)] = schemas.VersionFile(
+                hash=f"{file_type}123", filename=f"{file_type}.{file_type}", from_adr=False, resource_url=None
+            )
+        await db_session.flush()
+        await VersionRepository(db_session).set_files_for_version(version_id, files)
+
+
+def hintr_file(file_type: str) -> dict:
+    """What hintr is told about a file that `add_files` gave a version."""
+    return {
+        "path": f"uploads/{file_type}123",
+        "hash": f"{file_type}123",
+        "filename": f"{file_type}.{file_type}",
+        "fromADR": False,
+        "resource_url": None,
+    }
 
 
 async def set_updated(engine: AsyncEngine, version_id: str, updated: datetime):
