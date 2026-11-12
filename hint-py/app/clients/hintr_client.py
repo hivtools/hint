@@ -17,7 +17,8 @@ from fastapi.responses import JSONResponse, Response
 from pydantic_core import to_jsonable_python
 
 from app.config import Settings
-from app.schemas import FileType, HintrFile, ModelOptions, success
+from app.errors import HintrFailedError
+from app.schemas import DownloadResult, FileType, HintrFile, ModelOptions, success
 
 logger = logging.getLogger(__name__)
 
@@ -144,6 +145,25 @@ class HintrClient:
     async def review_input_metadata(self, iso3: str, files: Mapping[str, HintrFile | None]) -> Response:
         """The files are by the name of the type, and null where the version has no file of that type."""
         return await self.forward("POST", "/review-input/metadata", json={"data": files, "iso3": iso3})
+
+    # The calls that hint needs the answer of, not only to pass it on. If hintr does not succeed, `HintrFailedError` is
+    # raised, and its answer is what the browser gets.
+
+    async def _data(self, method: str, path: str, params: Mapping[str, str]) -> Any:
+        response = await self.forward(method, path, params)
+        if response.status_code >= 400:
+            raise HintrFailedError(response)
+        return json.loads(bytes(response.body))["data"]
+
+    async def calibrate_result_path(self, task_id: str) -> str:
+        """Where the results database of a calibration is, relative to the results folder."""
+        data = await self._data("GET", "/calibrate/result/path/{task_id}", {"task_id": task_id})
+        return data["path"]
+
+    async def download_result(self, task_id: str) -> DownloadResult:
+        """Where the file of a download is, and what to call it."""
+        data = await self._data("GET", "/download/result/path/{task_id}", {"task_id": task_id})
+        return DownloadResult.model_validate(data)
 
     async def submit_download(self, download_type: str, task_id: str, payload: Mapping[str, Any]) -> Response:
         """An empty payload is sent as no body at all."""
