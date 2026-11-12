@@ -68,6 +68,10 @@ server {
         include snippets/proxy-common.conf;
         # A guest's versions are in a header of the answer (37 bytes each), which has to fit in this one buffer
         proxy_buffer_size 32k;
+        # nginx refuses to start with a buffer this big and the default buffers: the busy size must be at least the big
+        # buffer, and less than all the buffers together minus one
+        proxy_buffers 8 8k;
+        proxy_busy_buffers_size 32k;
         proxy_pass_request_body off;
         proxy_set_header Content-Length "";
         proxy_set_header X-Original-URI $request_uri;
