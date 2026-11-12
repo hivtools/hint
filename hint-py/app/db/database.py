@@ -8,8 +8,10 @@ from app.config import Settings
 
 
 def create_engine(settings: Settings) -> AsyncEngine:
-    # Does not connect yet, the first query does
-    return create_async_engine(settings.database_url)
+    # Does not connect yet, the first query does.
+    # hide_parameters: the message of a database error has the values that the statement was run with (for example the
+    # email of a user), and the message goes to the log. With this it says that they are hidden.
+    return create_async_engine(settings.database_url, hide_parameters=True)
 
 
 def create_db_session_factory(engine: AsyncEngine) -> async_sessionmaker[AsyncSession]:

@@ -77,7 +77,7 @@ async def update_project_note(
     project_id: int, body: schemas.NoteRequest, user: LoggedInUser, projects: Projects
 ) -> SuccessResponse[bool]:
     await projects.update_project_note(project_id, user.id, body.note)
-    log.info("Updated project notes", project=project_id, user=user.id)
+    log.info("Updated project notes", project=project_id)
     return empty_success()
 
 
