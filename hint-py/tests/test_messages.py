@@ -47,10 +47,11 @@ def test_message_fills_in_placeholders():
 def test_message_that_is_not_in_the_catalogs_is_its_key_and_is_logged(caplog):
     assert t("noSuchMessage", "fr") == "noSuchMessage"
 
-    assert [(r.levelname, r.getMessage()) for r in caplog.records] == [
-        ("WARNING", "Message 'noSuchMessage' is not translated to fr, using English"),
-        ("ERROR", "Message 'noSuchMessage' has no English text, showing the key"),
+    assert [(r.levelname, r.getMessage(), r.key) for r in caplog.records] == [
+        ("WARNING", "Message is not translated, using English", "noSuchMessage"),
+        ("ERROR", "Message has no English text, showing the key", "noSuchMessage"),
     ]
+    assert caplog.records[0].language == "fr"
 
 
 def test_message_that_is_not_translated_is_shown_in_english_and_logged(caplog, monkeypatch):
@@ -58,8 +59,8 @@ def test_message_that_is_not_translated_is_shown_in_english_and_logged(caplog, m
 
     assert t("anyKey", "pt") == "en!"
 
-    assert [(r.levelname, r.getMessage()) for r in caplog.records] == [
-        ("WARNING", "Message 'anyKey' is not translated to pt, using English")
+    assert [(r.levelname, r.getMessage(), r.key, r.language) for r in caplog.records] == [
+        ("WARNING", "Message is not translated, using English", "anyKey", "pt")
     ]
 
 
@@ -76,7 +77,8 @@ def test_message_that_cannot_be_filled_in_is_shown_as_it_is_and_logged(caplog):
     assert "{code}" in text
     [record] = caplog.records
     assert record.levelname == "ERROR"
-    assert "cannot be filled in" in record.getMessage()
+    assert record.getMessage() == "Message cannot be filled in"
+    assert (record.key, record.language, record.arguments) == ("unexpectedError", "en", ["app_title"])
 
 
 def read(language: str | None):

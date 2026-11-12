@@ -8,14 +8,14 @@ To add or change a message, edit the .pot template and run
 `app/locale/<language>/LC_MESSAGES/messages.po`.
 """
 
-import logging
 from functools import lru_cache
 from pathlib import Path
 
+import structlog
 from babel.messages import Catalog
 from babel.messages.pofile import read_po
 
-logger = logging.getLogger(__name__)
+log = structlog.get_logger()
 
 LOCALE_DIR = Path(__file__).parent / "locale"
 DEFAULT_LANGUAGE = "en"
@@ -51,13 +51,13 @@ def t(key: str, language: str, **arguments: str) -> str:
     """
     text = _translation(key, language)
     if text is None and language != DEFAULT_LANGUAGE:
-        logger.warning("Message %r is not translated to %s, using English", key, language)
+        log.warning("Message is not translated, using English", key=key, language=language)
         text = _translation(key, DEFAULT_LANGUAGE)
     if text is None:
-        logger.error("Message %r has no English text, showing the key", key)
+        log.error("Message has no English text, showing the key", key=key)
         return key
     try:
         return text.format(**arguments)
     except KeyError, IndexError, ValueError:
-        logger.exception("Message %r (%s) cannot be filled in with %s", key, language, sorted(arguments))
+        log.exception("Message cannot be filled in", key=key, language=language, arguments=sorted(arguments))
         return text

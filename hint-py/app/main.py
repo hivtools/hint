@@ -9,6 +9,7 @@ from app.clients.hintr_client import create_hintr_http_client
 from app.config import get_settings
 from app.db.database import create_db_session_factory, create_engine
 from app.errors import register_error_handlers
+from app.logging_setup import configure_logging
 from app.routers import calibrate_results, downloads, hintr_forwards, items, model, projects, review_inputs
 
 # pyproject.toml is the one place the version is set. The project is not installed as a package, so there is no
@@ -18,6 +19,7 @@ VERSION = tomllib.loads((Path(__file__).parent.parent / "pyproject.toml").read_t
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None]:
+    configure_logging(get_settings())
     engine = create_engine(get_settings())
     app.state.db_session_factory = create_db_session_factory(engine)
     app.state.hintr_http = create_hintr_http_client(get_settings())

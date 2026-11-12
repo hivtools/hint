@@ -1,9 +1,10 @@
 """The files that hintr has written to the results folder."""
 
-import logging
 from pathlib import Path
 
-logger = logging.getLogger(__name__)
+import structlog
+
+log = structlog.get_logger()
 
 
 def find_result_file(results_dir: str, relative_path: str, task_id: str) -> Path | None:
@@ -19,5 +20,5 @@ def find_result_file(results_dir: str, relative_path: str, task_id: str) -> Path
     path = (root / relative_path).resolve()
     if path.is_relative_to(root) and path.is_file():
         return path
-    logger.error("Result file missing where it should exist: %s (task %s, results folder %s)", path, task_id, root)
+    log.error("Result file missing where it should exist", path=str(path), task=task_id, results_dir=str(root))
     return None

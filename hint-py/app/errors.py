@@ -4,9 +4,9 @@
 user should see; anything else that goes wrong is reported as an "unexpected error" with a code to quote to support.
 """
 
-import logging
 import secrets
 
+import structlog
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse, Response
@@ -15,9 +15,9 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 from app.config import get_settings
 from app.messages import negotiate_language, t
 
-DEFAULT_ERROR = "OTHER_ERROR"
+log = structlog.get_logger()
 
-logger = logging.getLogger(__name__)
+DEFAULT_ERROR = "OTHER_ERROR"
 
 
 class HintError(Exception):
@@ -112,13 +112,13 @@ def unexpected_error(request: Request, status_code: int, reason: str, exc_info: 
     The user is shown the code to give to support, who find the details (the reason) in the log.
     """
     code = f"u{secrets.token_hex(4)}"
-    logger.error(
-        "Unexpected error %s: %s %s gave %s: %s",
-        code,
-        request.method,
-        request.url.path,
-        status_code,
-        reason,
+    log.error(
+        "Unexpected error",
+        code=code,
+        method=request.method,
+        path=request.url.path,
+        status=status_code,
+        reason=reason,
         exc_info=exc_info,
     )
     settings = get_settings()
