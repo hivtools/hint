@@ -6,6 +6,7 @@ How the rows are chosen and written is tested in tests/db/test_calibrate_data_re
 
 import json
 import logging
+from pathlib import Path
 
 import pytest
 
@@ -122,7 +123,7 @@ async def test_results_that_are_not_in_the_folder_are_a_translated_error(anonymo
 
     assert r.status_code == 400
     assert r.json()["errors"][0]["detail"].startswith("No calibration output found for this project")
-    assert "t1/gone.duckdb" in caplog.text
+    assert str(Path("t1", "gone.duckdb")) in caplog.text
     assert "task t1" in caplog.text
 
     r = await anonymous_client.post(URL, json=NO_FILTER, headers={"Accept-Language": "fr"})
