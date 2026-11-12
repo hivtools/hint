@@ -89,10 +89,15 @@ services:
       HINT_HINTR_URL: http://host.docker.internal:${FAULT_PORT:-8882}
       # What hint tells hintr the uploaded files are called, as in Kotlin's upload_dir
       HINT_UPLOAD_DIR: ${UPLOADS_NAME:-uploads}
+      # Where this container sees the results hintr writes. The path hintr gives for a result is relative to its own
+      # results folder, so this is mounted at the same place as in hintr
+      HINT_RESULTS_DIR: /${RESULTS_NAME:-results}
     extra_hosts:
       - "host.docker.internal:host-gateway"
     volumes:
       - ./hint-py:/app
+      # Only read, never written
+      - ./src/app/${RESULTS_NAME:-results}:/${RESULTS_NAME:-results}:ro
     command: ["uv", "run", "--frozen", "--no-dev", "fastapi", "dev", "app/main.py", "--host", "0.0.0.0", "--port", "8000"]
     healthcheck:
       test: ["CMD", "python", "-c", "import socket; socket.create_connection(('127.0.0.1', 8000), 2)"]
