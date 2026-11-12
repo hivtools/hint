@@ -5,13 +5,13 @@ format is made to look like it (see `_hint_response`).
 """
 
 import json
-import logging
 from collections.abc import Mapping
 from http import HTTPStatus
 from typing import Annotated, Any
 from urllib.parse import quote
 
 import httpx2
+import structlog
 from fastapi import Depends, Header, Request
 from fastapi.responses import JSONResponse, Response
 from pydantic_core import to_jsonable_python
@@ -20,7 +20,7 @@ from app.config import Settings
 from app.errors import HintrFailedError
 from app.schemas import DownloadResult, FileType, HintrFile, ModelOptions, success
 
-logger = logging.getLogger(__name__)
+log = structlog.get_logger()
 
 # The files of a version, by type
 FilesByType = Mapping[FileType, HintrFile]
@@ -70,7 +70,7 @@ def _hint_response(hintr_status: int, body: bytes) -> Response:
     status = _hint_status(hintr_status)
     is_json, parsed = _parse_json(body)
     if not is_json:
-        logger.error("hintr answered %s with something that is not JSON: %r", hintr_status, body[:200])
+        log.error("hintr answered with something that is not JSON", status=hintr_status, body=repr(body[:200]))
         return _failure(500, UNPARSEABLE)
 
     if isinstance(parsed, dict) and "status" in parsed:
@@ -79,7 +79,7 @@ def _hint_response(hintr_status: int, body: bytes) -> Response:
         return JSONResponse(content=success(parsed).model_dump(), status_code=status)
     # The text of a string, and the JSON of anything else
     message = parsed if isinstance(parsed, str) else json.dumps(parsed)
-    logger.error(message)
+    log.error("hintr failed", status=hintr_status, message=message)
     return _failure(status, message)
 
 
@@ -111,7 +111,7 @@ class HintrClient:
                 json=None if json is None else to_jsonable_python(json, by_alias=True),
             )
         except httpx2.RequestError:
-            logger.exception("No response from hintr for %s %s", method, path)
+            log.exception("No response from hintr", method=method, path=path)
             return _failure(500, NO_RESPONSE)
         return _hint_response(r.status_code, r.content)
 

@@ -9,6 +9,8 @@
 #   scripts/dev.sh logs [name]                    follow the logs. Without a name: the Kotlin app, the stubs and all the
 #                                                 containers. With one: kotlin (or app), kotlin-sso, stubs, or a
 #                                                 container (db, redis, hintr, python, proxy, ...)
+#                                                 The logs and traces of the Python API go to a local OpenTelemetry
+#                                                 dashboard, http://127.0.0.1:18888 (OTEL=0 scripts/dev.sh up: no dashboard)
 #   scripts/dev.sh deps                           only postgres, redis and hintr (run Kotlin yourself, e.g. in the IDE)
 #   scripts/dev.sh test [pytest args]             run the contract tests (starts the stack first if needed)
 #                                                 e.g. test --record, test -k projects, test -x, test --run-slow
@@ -59,7 +61,18 @@ if [ "$WINDOWS" = 1 ]; then EMAILS_DIR=${APP_DIR:0:2}/tmp/hint_emails; else EMAI
 HINTR_VERSION=$(<"$ROOT/src/config/hintr_version")
 export HINTR_VERSION
 
-compose() { docker compose -p "$PROJECT" -f "$ROOT/docker-compose.yml" "$@"; }
+# The Python API sends its logs and traces to a local OpenTelemetry dashboard (the `otel` service in docker-compose.yml),
+# which runs with the Python API. OTEL=0 turns this off.
+if [ "${OTEL:-1}" = 1 ]; then export OTEL=1; else unset OTEL; fi
+export OTEL_UI_PORT=${OTEL_UI_PORT:-$((18888 + PORT_OFFSET))}
+export OTEL_PORT=${OTEL_PORT:-$((4317 + PORT_OFFSET))}
+# Only with the proxy: that is the mode that runs the Python API (see `up --no-proxy`)
+otel_on() { [ "${OTEL:-}" = 1 ] && [ "$(cat "$STATE/mode" 2>/dev/null || echo proxy)" = proxy ]; }
+compose() {
+  local profile=()
+  if otel_on; then profile=(--profile otel); fi
+  docker compose -p "$PROJECT" -f "$ROOT/docker-compose.yml" ${profile[@]+"${profile[@]}"} "$@"
+}
 
 # ---- small helpers
 alive()     { [ -f "$1" ] && kill -0 "$(cat "$1")" 2>/dev/null; }
@@ -208,6 +221,7 @@ Db(e).snapshot_seed_users()")
   fi
   echo "Ready: http://127.0.0.1:$PROXY_PORT  (Kotlin :$(app_port), hintr :$HINTR_PORT, postgres :$DB_PORT;" \
        "test user test.user@example.com / password)"
+  if otel_on; then echo "OpenTelemetry dashboard (logs and traces of the Python API): http://127.0.0.1:$OTEL_UI_PORT"; fi
 }
 
 do_down() {
