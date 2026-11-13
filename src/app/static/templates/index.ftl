@@ -6,7 +6,9 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <!-- inject:css -->
     <link href="/public/css/app.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
+    <#-- Must match the katex version in package.json/package-lock.json. An unpinned URL serves the latest
+         CSS, which does not match the markup produced by the locked katex JS and breaks equation layout -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
     <!-- endinject -->
     <script defer src="/public/js/app.js"></script>
     <script defer src="/public/js/node_modules_leaflet_dist_images_marker-icon_png.chunk.js"></script>
