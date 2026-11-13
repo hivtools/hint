@@ -29,7 +29,6 @@ enum class FileType
     Programme,
     Shape,
     Survey,
-    Vmmc,
     OutputZip;
 
     override fun toString(): String

@@ -86,17 +86,6 @@
                                  accept="csv,.csv"
                                  name="anc">
                     </manage-file>
-                    <manage-file label="VMMC"
-                                 :required="false"
-                                 :valid="vmmc.valid"
-                                 :fromADR="vmmc.fromADR"
-                                 :error="vmmc.error"
-                                 :upload="uploadVmmc"
-                                 :delete-file="deleteVmmc"
-                                 :existingFileName="vmmc.existingFileName"
-                                 accept="xlsx,.xlsx"
-                                 name="vmmc">
-                    </manage-file>
                 </form>
                 <div v-if="validating" id="upload-inputs-validating">
                     <loading-spinner size="xs"></loading-spinner>
@@ -167,12 +156,6 @@
                     fromADR: !!surveyAndProgram.survey?.fromADR,
                     error: surveyAndProgram.surveyError,
                     existingFileName: (surveyAndProgram.survey && surveyAndProgram.survey.filename) || surveyAndProgram.surveyErroredFile
-                }),
-                vmmc: ({surveyAndProgram}: {surveyAndProgram: SurveyAndProgramState}) => ({
-                    valid: surveyAndProgram.vmmc != null,
-                    fromADR: !!surveyAndProgram.vmmc?.fromADR,
-                    error: surveyAndProgram.vmmcError,
-                    existingFileName: (surveyAndProgram.vmmc && surveyAndProgram.vmmc.filename) || surveyAndProgram.vmmcErroredFile
                 })
             }),
         },
@@ -187,11 +170,9 @@
                 uploadSurvey: 'surveyAndProgram/uploadSurvey',
                 uploadProgram: 'surveyAndProgram/uploadProgram',
                 uploadANC: 'surveyAndProgram/uploadANC',
-                uploadVmmc: 'surveyAndProgram/uploadVmmc',
                 deleteSurvey: 'surveyAndProgram/deleteSurvey',
                 deleteProgram: 'surveyAndProgram/deleteProgram',
                 deleteANC: 'surveyAndProgram/deleteANC',
-                deleteVmmc: 'surveyAndProgram/deleteVmmc',
                 preparingRehydrate: 'load/preparingRehydrate',
             }),
             loadZip() {

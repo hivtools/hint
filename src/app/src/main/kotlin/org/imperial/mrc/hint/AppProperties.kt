@@ -17,7 +17,6 @@ interface AppProperties
     val adrPopSchema: String
     val adrShapeSchema: String
     val adrSurveySchema: String
-    val adrVmmcSchema: String
     val adrOutputZipSchema: String
     val adrOutputSummarySchema: String
     val adrOutputComparisonSchema: String
@@ -69,7 +68,6 @@ class ConfiguredAppProperties(
     final override val adrPopSchema = propString("adr_pop_schema")
     final override val adrShapeSchema = propString("adr_shape_schema")
     final override val adrSurveySchema = propString("adr_survey_schema")
-    final override val adrVmmcSchema = propString("adr_vmmc_schema")
     final override val adrOutputZipSchema = propString("adr_output_zip_schema")
     final override val adrOutputSummarySchema = propString("adr_output_summary_schema")
     final override val adrOutputComparisonSchema = propString("adr_output_comparison_schema")
@@ -112,7 +110,6 @@ class ConfiguredAppProperties(
             "population" to adrPopSchema,
             "shape" to adrShapeSchema,
             "survey" to adrSurveySchema,
-            "vmmc" to adrVmmcSchema,
             "outputZip" to adrOutputZipSchema,
             "outputSummary" to adrOutputSummarySchema,
             "outputComparison" to adrOutputComparisonSchema)

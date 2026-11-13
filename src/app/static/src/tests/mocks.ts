@@ -23,7 +23,6 @@ import {
     ShapeResponse,
     SurveyResponse,
     ValidateBaselineResponse,
-    VmmcResponse,
     Warning,
     InputComparisonMetadata,
     InputComparisonData,
@@ -530,18 +529,6 @@ export const mockAncResponse = (props: Partial<AncResponse> = {}): AncResponse =
     }
 };
 
-export const mockVmmcResponse = (props: Partial<VmmcResponse> = {}): VmmcResponse => {
-    return {
-        type: "vmmc",
-        filename: "test.xlsx",
-        hash: "1234.xlsx",
-        data: null,
-        filters: null,
-        warnings: [],
-        ...props
-    }
-};
-
 export const mockPopulationResponse = (props: Partial<PopulationResponse> = {}): PopulationResponse => {
     return {
         data: [],
@@ -744,8 +731,7 @@ export const mockDataset = (props: Partial<Dataset> = {}): Dataset => {
             pop: null,
             survey: null,
             shape: null,
-            anc: null,
-            vmmc: null
+            anc: null
         },
         organization: {
           id: "456"
