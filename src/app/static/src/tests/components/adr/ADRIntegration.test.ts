@@ -39,8 +39,7 @@ describe("adr integration", () => {
                 lastModified: "2020-11-03",
                 metadataModified: "2020-11-04"
             }),
-            anc: null,
-            vmmc: null
+            anc: null
         }
     }
 

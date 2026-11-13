@@ -291,8 +291,7 @@ export const datasetFromMetadata = (fullMetaData: any, schemas: ADRSchemas, rele
             pop: findResource(fullMetaData, schemas.population),
             survey: findResource(fullMetaData, schemas.survey),
             program: findResource(fullMetaData, schemas.programme),
-            anc: findResource(fullMetaData, schemas.anc),
-            vmmc: findResource(fullMetaData, schemas.vmmc)
+            anc: findResource(fullMetaData, schemas.anc)
         },
         organization: {
             id: fullMetaData.organization.id
@@ -411,8 +410,7 @@ export const inputResourceTypes = {
     shape: "inputs-unaids-geographic",
     survey: "inputs-unaids-survey",
     program: "inputs-unaids-art",
-    anc: "inputs-unaids-anc",
-    vmmc: "inputs-unaids-vmmc-coverage-outputs"
+    anc: "inputs-unaids-anc"
 }
 
 export const resourceTypes = {

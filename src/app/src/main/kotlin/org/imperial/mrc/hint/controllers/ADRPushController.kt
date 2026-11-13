@@ -83,8 +83,7 @@ class ADRPushController(private val adrService: ADRService,
             appProperties.adrPopSchema,
             appProperties.adrSurveySchema,
             appProperties.adrARTSchema,
-            appProperties.adrANCSchema,
-            appProperties.adrVmmcSchema ->
+            appProperties.adrANCSchema ->
                 pushInputFileToADR(id, resourceType, resourceId, resourceName)
             else -> ErrorDetail(HttpStatus.BAD_REQUEST, "Invalid resourceType").toResponseEntity()
 
@@ -154,7 +153,6 @@ class ADRPushController(private val adrService: ADRService,
             appProperties.adrSurveySchema -> FileType.Survey
             appProperties.adrARTSchema -> FileType.Programme
             appProperties.adrANCSchema -> FileType.ANC
-            appProperties.adrVmmcSchema -> FileType.Vmmc
             else -> throw IllegalArgumentException("$resourceType is not an input resource type")
         }
 

@@ -2,7 +2,7 @@ import {Module} from 'vuex';
 import {actions} from './actions';
 import {mutations} from './mutations';
 import {ReadyState, WarningsState} from "../../root";
-import {AncResponse, ProgrammeResponse, SurveyResponse, VmmcResponse, Error, Warning} from "../../generated";
+import {AncResponse, ProgrammeResponse, SurveyResponse, Error, Warning} from "../../generated";
 import {getters} from "./getters";
 import {RootState} from "../../root";
 
@@ -10,8 +10,7 @@ export enum FileType {
     ANC = "anc",
     Programme = "programme",
     Survey = "survey",
-    Shape = "shape",
-    Vmmc = "vmmc"
+    Shape = "shape"
 }
 
 export interface SAPWarnings {
@@ -29,9 +28,6 @@ export interface SurveyAndProgramState extends ReadyState, WarningsState {
     anc: AncResponse | null
     ancError: Error | null
     ancErroredFile: string | null
-    vmmc: VmmcResponse | null
-    vmmcError: Error | null
-    vmmcErroredFile: string | null
     sapWarnings: SAPWarnings[]
 }
 
@@ -46,9 +42,6 @@ export const initialSurveyAndProgramState = (): SurveyAndProgramState => {
         anc: null,
         ancError: null,
         ancErroredFile: null,
-        vmmc: null,
-        vmmcError: null,
-        vmmcErroredFile: null,
         ready: false,
         warnings: [],
         sapWarnings: []

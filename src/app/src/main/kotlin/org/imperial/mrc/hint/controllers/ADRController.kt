@@ -219,12 +219,6 @@ class ADRController(private val encryption: Encryption,
         return saveAndValidate(data, FileType.ANC)
     }
 
-    @PostMapping("/vmmc")
-    fun importVmmc(@RequestBody data: AdrResource): ResponseEntity<String>
-    {
-        return saveAndValidate(data, FileType.Vmmc)
-    }
-
     @PostMapping("/output")
     fun importOutputZip(@RequestBody data: AdrResource): ResponseEntity<String>
     {

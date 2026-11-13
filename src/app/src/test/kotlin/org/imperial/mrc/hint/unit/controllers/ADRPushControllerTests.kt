@@ -60,7 +60,6 @@ class ADRPushControllerTests
         on { adrPopSchema } doReturn "adr-pop"
         on { adrShapeSchema } doReturn "adr-shape"
         on { adrSurveySchema } doReturn "adr-survey"
-        on { adrVmmcSchema } doReturn "adr-vmmc"
         on { adrOutputZipSchema } doReturn "adr-output-zip"
         on { adrOutputSummarySchema } doReturn "adr-output-summary"
         on { adrOutputComparisonSchema } doReturn "adr-output-comparison"
@@ -72,7 +71,6 @@ class ADRPushControllerTests
             "population" to "adr-pop",
             "shape" to "adr-shape",
             "survey" to "adr-survey",
-            "vmmc" to "adr-vmmc",
             "outputZip" to "adr-output-zip",
             "outputSummary" to "adr-output-summary",
             "outputComparison" to "adr-output-comparison")
