@@ -1,6 +1,6 @@
-import logging
 from typing import Annotated
 
+import structlog
 from fastapi import Depends
 
 from app import schemas
@@ -10,7 +10,7 @@ from app.db.version_repository import VersionRepository, get_version_repository
 from app.errors import UserDoesNotExistError
 from app.ids import new_version_id
 
-logger = logging.getLogger(__name__)
+log = structlog.get_logger()
 
 
 class ProjectService:
@@ -40,7 +40,8 @@ class ProjectService:
 
     async def clone_project_to_user(self, user_id: str, project_id: int, emails: list[str]) -> None:
         """Gives each of the users a copy of the project (and all its versions), marked as shared by user_id."""
-        logger.info("Cloning project %s to users %s", project_id, emails)
+        # How many, not who: a user is an email address, which does not go in the log
+        log.info("Cloning project", project=project_id, users=len(emails))
         target_user_ids = []
         for email in emails:
             target = await self.users.find_user_id(email)

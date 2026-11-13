@@ -105,9 +105,10 @@ async def test_a_file_that_is_not_in_the_folder_is_an_unexpected_error(anonymous
 
     assert r.status_code == 500
     assert r.json()["errors"][0]["detail"].startswith("An unexpected error occurred")
-    # What is missing is in the log, with the code that the user is given
-    [missing] = [m for m in caplog.messages if "Result file missing" in m]
-    assert str(Path("t1", "summary.html")) in missing
+    # What is missing is in the log. The path is as the operating system writes it (backslashes on Windows).
+    [missing] = [r for r in caplog.records if r.getMessage().startswith("Result file missing")]
+    assert missing.path.endswith(str(Path("t1", "summary.html")))
+    assert missing.task == "t1"
 
 
 async def test_a_path_that_leads_out_of_the_results_folder_is_not_sent(anonymous_client, download, hintr, tmp_path):

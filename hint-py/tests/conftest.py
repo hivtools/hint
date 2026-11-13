@@ -1,14 +1,18 @@
+import logging
 import os
-from collections.abc import AsyncIterator
+from collections.abc import AsyncIterator, Iterator
 
 import pytest
 import pytest_asyncio
+import structlog
 from sqlalchemy import insert, text
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, create_async_engine
 from sqlalchemy.pool import NullPool, StaticPool
 
+from app.config import Settings
 from app.db.database import create_db_session_factory
 from app.db.models import Base, User
+from app.logging_setup import RESERVED_FIELDS, UVICORN_LOGGERS, LogHandler, configure_logging
 from tests.hintr import FakeHintr
 from tests.support import OTHER_USER, USER
 
@@ -73,3 +77,63 @@ async def hintr() -> AsyncIterator[FakeHintr]:
     fake = FakeHintr()
     yield fake
     await fake.http.aclose()
+
+
+@pytest.fixture(autouse=True)
+def isolated_logging() -> Iterator[None]:
+    """Set up the logging before each test, and put it back after the test.
+
+    `autouse` means that every test uses this fixture without asking for it.
+
+    Why set it up: if `configure_logging` has not run, structlog prints to the screen and `logging` does not get the
+    messages. `caplog` (pytest's tool to read the log messages of a test) reads from `logging`, so it would see nothing.
+    Pytest also shows what is on stderr when a test fails.
+
+    Why put it back: `configure_logging` changes the root logger, the uvicorn loggers and the structlog settings.
+    These are global. If a test changed them and did not put them back, the next tests would see the change.
+    """
+    root = logging.getLogger()
+    level = root.level
+    uvicorn = {
+        name: (list(logging.getLogger(name).handlers), logging.getLogger(name).propagate, logging.getLogger(name).level)
+        for name in UVICORN_LOGGERS
+    }
+    configure_logging(Settings(log_level="INFO", log_format="console"))
+    yield
+    for handler in [h for h in root.handlers if isinstance(h, LogHandler)]:
+        root.removeHandler(handler)
+    root.setLevel(level)
+    for name, (handlers, propagate, uvicorn_level) in uvicorn.items():
+        logging.getLogger(name).handlers[:] = handlers
+        logging.getLogger(name).propagate = propagate
+        logging.getLogger(name).setLevel(uvicorn_level)
+    structlog.reset_defaults()
+
+
+class _Records(logging.Handler):
+    def __init__(self):
+        super().__init__(level=logging.DEBUG)
+        self.records: list[logging.LogRecord] = []
+
+    def emit(self, record: logging.LogRecord) -> None:
+        self.records.append(record)
+
+
+@pytest.fixture(autouse=True)
+def no_personal_data_in_logs(isolated_logging: None) -> Iterator[None]:
+    """Fail any test that logs the email of one of the test users.
+
+    The users are who the tests make requests as (`USER`, `OTHER_USER`). A user is an email address, so what is logged
+    about a request must not have it: not in the message, in a field, in a traceback or in a library's message (for
+    example SQL parameters). This checks every test, including the ones that are about something else.
+    """
+    records = _Records()
+    logging.getLogger().addHandler(records)
+    yield
+    logging.getLogger().removeHandler(records)
+    formatter = logging.Formatter()
+    for record in records.records:
+        fields = {name: value for name, value in record.__dict__.items() if name not in RESERVED_FIELDS}
+        shown = f"{formatter.format(record)} {fields}"
+        for user in (USER, OTHER_USER):
+            assert user not in shown, f"{record.name} logged a user's email: {shown[:300]}"

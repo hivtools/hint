@@ -5,9 +5,9 @@ it in the X-Version-Id header (see `requested_version_id`) and keeps track of it
 set or clear the session's version just return.
 """
 
-import logging
 from typing import Annotated
 
+import structlog
 from fastapi import APIRouter, Depends, Request
 
 from app import schemas
@@ -19,7 +19,7 @@ from app.ids import new_version_id
 from app.schemas import SuccessResponse, empty_success, success
 from app.services.project_service import ProjectService, get_project_service
 
-logger = logging.getLogger(__name__)
+log = structlog.get_logger()
 
 router = APIRouter()
 
@@ -77,7 +77,7 @@ async def update_project_note(
     project_id: int, body: schemas.NoteRequest, user: LoggedInUser, projects: Projects
 ) -> SuccessResponse[bool]:
     await projects.update_project_note(project_id, user.id, body.note)
-    logger.info("updated project notes (project %s, user %s)", project_id, user.id)
+    log.info("Updated project notes", project=project_id)
     return empty_success()
 
 
