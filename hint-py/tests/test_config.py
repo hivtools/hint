@@ -24,3 +24,9 @@ def test_hintr_url_defaults_to_a_local_hintr_and_can_be_set(monkeypatch):
     assert Settings().hintr_url == "http://localhost:8888"
     monkeypatch.setenv("HINT_HINTR_URL", "http://hintr:8888")
     assert Settings().hintr_url == "http://hintr:8888"
+
+
+def test_results_dir_defaults_to_the_folder_hintr_writes_to_and_can_be_set(monkeypatch):
+    assert Settings().results_dir == "results"
+    monkeypatch.setenv("HINT_RESULTS_DIR", "/mnt/results")
+    assert Settings().results_dir == "/mnt/results"

@@ -9,7 +9,7 @@ import secrets
 
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, Response
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from app.config import get_settings
@@ -57,6 +57,27 @@ class UserDoesNotExistError(HintError):
 class InvalidEmailError(HintError):
     def __init__(self):
         super().__init__("invalidEmail", 400)
+
+
+class MissingCalibrateDataError(HintError):
+    """hintr has a calibration, but its results database is not in the results folder."""
+
+    def __init__(self):
+        super().__init__("missingCalibrateData", 400)
+
+
+class MissingResultFileError(Exception):
+    """hintr has a download, but its file is not in the results folder. Not for the user to act on, so it is reported as
+    an unexpected error, and what is missing is in the log."""
+
+
+class HintrFailedError(Exception):
+    """A call to hintr that this API needed the answer of did not succeed. The response is hintr's own failure, as it
+    is sent to the browser for any call that is passed on."""
+
+    def __init__(self, response: Response):
+        super().__init__(f"hintr answered {response.status_code}")
+        self.response = response
 
 
 class BadRequestError(Exception):
@@ -124,6 +145,10 @@ def register_error_handlers(app: FastAPI) -> None:
     async def hint_error(request: Request, exc: HintError) -> JSONResponse:
         language = negotiate_language(request.headers.get("accept-language"))
         return _failure(exc.status_code, t(exc.key, language), exc.code)
+
+    @app.exception_handler(HintrFailedError)
+    async def hintr_failed(request: Request, exc: HintrFailedError) -> Response:
+        return exc.response
 
     @app.exception_handler(RequestValidationError)
     async def invalid_request(request: Request, exc: RequestValidationError) -> JSONResponse:
