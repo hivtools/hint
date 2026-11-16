@@ -46,6 +46,10 @@ msgstr "L'utilisateur n'existe pas."
 msgid "missingShapeFile"
 msgstr "Vous devez télécharger un fichier de formes avant de télécharger des données d’enquête ou de programme."
 
+#. Placeholders: {max_size} (such as "200 MB").
+msgid "fileTooLarge"
+msgstr "Le fichier est trop volumineux. Les fichiers peuvent faire jusqu'à {max_size}."
+
 msgid "invalidToken"
 msgstr "Le jeton n'est pas valide."
 

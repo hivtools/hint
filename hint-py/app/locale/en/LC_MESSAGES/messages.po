@@ -46,6 +46,10 @@ msgstr "User does not exist."
 msgid "missingShapeFile"
 msgstr "You must upload a shape file before uploading survey or programme data."
 
+#. Placeholders: {max_size} (such as "200 MB").
+msgid "fileTooLarge"
+msgstr "The file is too large. Files can be up to {max_size}."
+
 msgid "invalidToken"
 msgstr "Token is not valid."
 

@@ -21,11 +21,15 @@ DEFAULT_ERROR = "OTHER_ERROR"
 
 
 class HintError(Exception):
-    def __init__(self, key: str, status_code: int = 500, code: str = DEFAULT_ERROR):
+    def __init__(
+        self, key: str, status_code: int = 500, code: str = DEFAULT_ERROR, arguments: dict[str, str] | None = None
+    ):
         super().__init__(f"HintError with key {key}")
         self.key = key
         self.status_code = status_code
         self.code = code
+        # What fills in the {placeholders} of the message
+        self.arguments = arguments or {}
 
 
 class ProjectDoesNotExistError(HintError):
@@ -59,6 +63,13 @@ class LoadFailedError(HintError):
 class MissingShapeFileError(HintError):
     def __init__(self):
         super().__init__("missingShapeFile", 400)
+
+
+class FileTooLargeError(HintError):
+    """An uploaded file is bigger than the limit for its kind of file (`max_pjnz_upload_bytes` and the others)."""
+
+    def __init__(self, max_bytes: int):
+        super().__init__("fileTooLarge", 413, "FILE_TOO_LARGE", {"max_size": f"{max_bytes // (1024 * 1024)} MB"})
 
 
 class UserDoesNotExistError(HintError):
@@ -132,7 +143,7 @@ def hint_error_response(exc: HintError, accept_language: str | None) -> JSONResp
     """Returns the response for an error. Use it when an endpoint must answer with the error and not raise it.
 
     A raised error rolls back the database changes of the request. An answer does not."""
-    return _failure(exc.status_code, t(exc.key, negotiate_language(accept_language)), exc.code)
+    return _failure(exc.status_code, t(exc.key, negotiate_language(accept_language), **exc.arguments), exc.code)
 
 
 def unexpected_error(request: Request, status_code: int, reason: str, exc_info: BaseException | None = None):
