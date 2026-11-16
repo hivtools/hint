@@ -50,6 +50,10 @@ msgstr "You must upload a shape file before uploading survey or programme data."
 msgid "fileTooLarge"
 msgstr "The file is too large. Files can be up to {max_size}."
 
+#. Placeholders: {expected} (such as "PJNZ, zip"), {got}.
+msgid "invalidFileExtension"
+msgstr "File must be of type {expected}, got type {got}."
+
 msgid "invalidToken"
 msgstr "Token is not valid."
 

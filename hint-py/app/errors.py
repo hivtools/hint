@@ -72,6 +72,15 @@ class FileTooLargeError(HintError):
         super().__init__("fileTooLarge", 413, "FILE_TOO_LARGE", {"max_size": f"{max_bytes // (1024 * 1024)} MB"})
 
 
+class InvalidFileExtensionError(HintError):
+    """The extension of an uploaded file is not one that its type of file has (hintr would refuse it too)."""
+
+    def __init__(self, expected: list[str], got: str):
+        super().__init__(
+            "invalidFileExtension", 400, "INVALID_FILE_EXTENSION", {"expected": ", ".join(expected), "got": got}
+        )
+
+
 class UserDoesNotExistError(HintError):
     def __init__(self):
         super().__init__("userDoesNotExist", 400)

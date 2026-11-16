@@ -135,6 +135,97 @@ async def test_the_upload_dir_is_where_the_files_are_written_and_where_hintr_is_
     assert sent_to_hintr(hintr)[0][2]["file"]["path"] == f"{folder}/{ABC}.PJNZ"
 
 
+# ---- The extension of the file
+
+WRONG = [
+    ("pjnz", "data.geojson", "PJNZ, zip", "geojson"),
+    ("pjnz", "data.csv", "PJNZ, zip", "csv"),
+    ("shape", "data.shp", "geojson", "shp"),
+    ("shape", "data.json", "geojson", "json"),
+    ("population", "data.xlsx", "csv", "xlsx"),
+    ("survey", "data.zip", "csv", "zip"),
+    ("programme", "data.geojson", "csv", "geojson"),
+    ("anc", "data.PJNZ", "csv", "PJNZ"),
+    ("pjnz", "README", "PJNZ, zip", "README"),
+    ("pjnz", "trailing.", "PJNZ, zip", ""),
+    ("pjnz", "data.csv_copy", "PJNZ, zip", ""),
+]
+
+
+@pytest.mark.parametrize(("file_type", "filename", "expected", "got"), WRONG)
+async def test_a_file_of_another_kind_is_refused_and_nothing_is_kept(
+    on_a_version, hintr, engine, version_id, uploads_dir, file_type, filename, expected, got
+):
+    await add_files(engine, version_id, "pjnz", "shape", "population", "survey", "programme", "anc")
+    before = await known_hashes(engine)
+    r = await on_a_version.post(URLS[file_type], **upload_of(CONTENT, filename))
+    assert r.status_code == 400
+    assert r.json() == {
+        "data": {},
+        "errors": [{"error": "INVALID_FILE_EXTENSION", "detail": f"File must be of type {expected}, got type {got}."}],
+        "status": "failure",
+    }
+    # Not written, hintr is not asked, and no new hash is known
+    assert files_in(uploads_dir) == []
+    assert hintr.calls == []
+    assert await known_hashes(engine) == before
+    # The file of that type that the version had is taken off, as the Vue app has taken it off the screen. Others stay
+    files = await version_files(engine, version_id)
+    assert file_type not in files
+    assert len(files) == 5
+
+
+@pytest.mark.parametrize("language", ["fr", "pt"])
+async def test_the_refusal_is_in_the_language_of_the_request(on_a_version, hintr, language):
+    r = await on_a_version.post(
+        "/baseline/shape", headers={"Accept-Language": language}, **upload_of(CONTENT, "data.shp")
+    )
+    detail = r.json()["errors"][0]["detail"]
+    assert (
+        detail
+        == {
+            "fr": "Le fichier doit être de type geojson, mais il est du type shp.",
+            "pt": "O ficheiro tem de ser do tipo geojson, foi obtido o tipo shp.",
+        }[language]
+    )
+
+
+@pytest.mark.parametrize(
+    ("file_type", "filename"),
+    [
+        ("pjnz", "data.PJNZ"),
+        ("pjnz", "data.pjnz"),
+        ("pjnz", "data.ZIP"),
+        ("shape", "data.GeoJSON"),
+        ("survey", "data.CSV"),
+        ("anc", "my file.csv"),
+    ],
+)
+async def test_the_extension_is_checked_without_regard_to_case(
+    on_a_version, hintr, engine, version_id, uploads_dir, file_type, filename
+):
+    if file_type in DISEASE:
+        await add_files(engine, version_id, "pjnz", "shape")
+    r = await on_a_version.post(URLS[file_type], **upload_of(CONTENT, filename))
+    assert r.status_code == 200
+    assert len(files_in(uploads_dir)) == 1
+
+
+async def test_a_refused_file_is_taken_off_even_if_the_version_had_none_and_it_is_the_only_effect(
+    on_a_version, engine, version_id, uploads_dir
+):
+    r = await on_a_version.post("/baseline/pjnz", **upload_of(CONTENT, "data.csv"))
+    assert r.status_code == 400
+    assert await version_files(engine, version_id) == {}
+
+
+async def test_a_refused_file_is_not_looked_at_for_the_shape_file(on_a_version, hintr):
+    """The extension comes first, as in hintr (the shape file is only looked for once the file is known to be one of its
+    type), so a csv for the PJNZ is refused as the wrong type and not as a missing shape file."""
+    r = await on_a_version.post("/disease/survey", **upload_of(CONTENT, "data.xlsx"))
+    assert "File must be of type csv" in r.json()["errors"][0]["detail"]
+
+
 # ---- The size limit
 
 
