@@ -8,6 +8,7 @@ import {ReviewInputMutation} from "../reviewInput/mutations";
 import type {UploadImportPayload} from "../../types";
 import type { RootState } from '../../root';
 import type {Feature} from "geojson";
+import {sessionStorageManager} from "../../sessionStorageManager";
 
 export interface SurveyAndProgramActions {
     importSurvey: (store: ActionContext<SurveyAndProgramState, RootState>, url: string) => void,
@@ -201,6 +202,11 @@ export const actions: ActionTree<SurveyAndProgramState, RootState> & SurveyAndPr
 
     async getSurveyAndProgramData(context) {
         const {commit, dispatch} = context;
+        if (!sessionStorageManager.getVersionId()) {
+            // As for the baseline files: a tab with no version open has none to ask for
+            commit({type: SurveyAndProgramMutation.Ready, payload: true});
+            return;
+        }
         await Promise.all(
             [
                 api<SurveyAndProgramMutation, SurveyAndProgramMutation>(context)

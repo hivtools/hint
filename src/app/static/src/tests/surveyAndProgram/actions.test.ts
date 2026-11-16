@@ -18,6 +18,7 @@ import {expectEqualsFrozen} from "../testHelpers";
 import {FileType} from "../../app/store/surveyAndProgram/surveyAndProgram";
 import {expectValidAdrImportPayload} from "../baseline/actions.test";
 import type {Mock} from "vitest";
+import {sessionStorageManager} from "../../app/sessionStorageManager";
 
 const rootState = mockRootState();
 const mockFormData = {
@@ -36,10 +37,23 @@ describe("Survey and programme actions", () => {
         // stop apiService logging to console
         console.log = vi.fn();
         mockAxios.reset();
+        // A tab that has a version open, as the data is asked for with it
+        sessionStorageManager.saveVersionId("version-1");
     });
 
     afterEach(() => {
         (console.log as Mock).mockClear();
+        sessionStorageManager.saveVersionId(null);
+    });
+
+    it("asks for no survey or programme data and marks the state ready when the tab has no version open", async () => {
+        sessionStorageManager.saveVersionId(null);
+        const commit = vi.fn();
+        await actions.getSurveyAndProgramData({commit, rootState, dispatch: vi.fn()} as any);
+
+        expect(mockAxios.history["get"].length).toBe(0);
+        expect(commit).toBeCalledTimes(1);
+        expect(commit.mock.calls[0][0]).toStrictEqual({type: SurveyAndProgramMutation.Ready, payload: true});
     });
 
     it("sets data after surveys file upload", async () => {
