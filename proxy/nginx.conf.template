@@ -59,9 +59,9 @@ server {
     location = /model/run { include snippets/python.conf; }
     location /calibrate/submit/ { include snippets/python.conf; }
     location /download/submit/ { include snippets/python.conf; }
-    # Uploading, validating and removing the input files, and setting them all. Each is listed, not the whole of
-    # /baseline/ or /disease/: `/disease/vmmc` is not ported (nothing uses it any more), and the exact paths leave a path
-    # with a trailing slash, which Kotlin accepts and FastAPI would redirect, to Kotlin
+    # Upload, validate and remove the input files, and set all the files. Each URL is listed. The proxy does not send all
+    # of /baseline/ and /disease/ to Python, for two reasons. `/disease/vmmc` is not ported, because nothing uses it now.
+    # A path with a trailing slash goes to Kotlin, which accepts it. FastAPI would redirect it.
     location = /baseline/pjnz { include snippets/python.conf; }
     location = /baseline/shape { include snippets/python.conf; }
     location = /baseline/population { include snippets/python.conf; }

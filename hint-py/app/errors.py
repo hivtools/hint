@@ -50,7 +50,7 @@ class InvalidVersionError(HintError):
 
 
 class LoadFailedError(HintError):
-    """The files to set for a version include one that was never uploaded."""
+    """One of the files to set for the version was never uploaded."""
 
     def __init__(self):
         super().__init__("loadFailed", 400)
@@ -115,7 +115,7 @@ class EmptyFileNameError(BadRequestError):
 
 class NullInFileNameError(BadRequestError):
     def __init__(self):
-        super().__init__("The name of the uploaded file has a null character in it")
+        super().__init__("The name of the uploaded file contains a null character")
 
 
 class UnknownInputTimeSeriesTypeError(HintError):
@@ -129,8 +129,9 @@ class UnknownReviewInputFileTypeError(HintError):
 
 
 def hint_error_response(exc: HintError, accept_language: str | None) -> JSONResponse:
-    """The response for an error, for an endpoint that has to answer with it rather than raise it. A raised error rolls back
-    the request's changes to the database, and an answer does not."""
+    """Returns the response for an error. Use it when an endpoint must answer with the error and not raise it.
+
+    A raised error rolls back the database changes of the request. An answer does not."""
     return _failure(exc.status_code, t(exc.key, negotiate_language(accept_language)), exc.code)
 
 
@@ -181,8 +182,8 @@ def register_error_handlers(app: FastAPI) -> None:
     async def invalid_request(request: Request, exc: RequestValidationError) -> JSONResponse:
         # Only where and why, not the values, which could be anything the user typed
         reason = "; ".join(f"{'.'.join(str(part) for part in e['loc'])}: {e['msg']}" for e in exc.errors())
-        # A body that is not JSON (a form, say) is "unsupported media type", as in Kotlin. A file upload is not, but
-        # an upload with no file in it is a bad request, as it is in Kotlin
+        # A body that is not JSON (a form, for example) is "unsupported media type", as in Kotlin. A file upload is the
+        # exception: it is multipart form data. An upload with no file in it is a bad request, as in Kotlin.
         content_type = request.headers.get("content-type", "")
         unsupported = content_type and "json" not in content_type and "multipart/form-data" not in content_type
         return unexpected_error(request, 415 if unsupported else 400, reason)

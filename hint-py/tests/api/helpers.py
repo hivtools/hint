@@ -96,7 +96,7 @@ def assert_failure(r: httpx2.Response, status: int, detail: str):
 
 
 async def version_files(engine: AsyncEngine, version_id: str) -> dict[str, tuple[str, str, bool, str | None]]:
-    """What the database has as the files of the version: (hash, filename, from_adr, resource_url) by type."""
+    """The files of the version in the database, by file type: (hash, filename, from_adr, resource_url)."""
     async with create_db_session_factory(engine)() as db_session:
         files = await VersionRepository(db_session).get_version_files(version_id)
     return {t.value: (f.hash, f.filename, f.from_adr, f.resource_url) for t, f in files.items()}

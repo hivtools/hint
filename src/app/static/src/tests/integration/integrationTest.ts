@@ -43,8 +43,8 @@ export const login = async (username = "test.user@example.com", password = "pass
 
 };
 
-// A browser tab sends the id of the version it has open with every request for files, and asks for none if it has no
-// version open. So a test of the actions for files needs a version open, as a tab would have
+// A browser tab sends the id of its open version with every request for files. A tab with no open version does not
+// request files. So a test of the file actions needs an open version, as a tab has.
 export const openVersion = async () => {
     const commit = vi.fn();
     await projectsActions.createProject(

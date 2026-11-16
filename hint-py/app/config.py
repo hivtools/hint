@@ -26,8 +26,8 @@ class Settings(BaseSettings):
     # The hintr API URL
     hintr_url: str = "http://localhost:8888"
 
-    # The folder of the uploaded files: this API writes them here, and tells hintr that they are at "<upload_dir>/<hash>".
-    # So the share has to be mounted at the same place in both containers, which is "/uploads".
+    # The folder of the uploaded files. This API writes the files here. It tells hintr that each file is at
+    # "<upload_dir>/<hash>". So the share must be at the same path in both containers. The path is "/uploads".
     upload_dir: str = "/uploads"
 
     # The folder hintr writes the results of tasks to. This API does open

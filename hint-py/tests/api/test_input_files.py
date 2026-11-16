@@ -1,7 +1,8 @@
-"""Uploading, validating and removing the input files of a version, and setting them all at once (app/routers/input_files.py).
+"""Tests of the endpoints that upload, validate and remove the input files of a version, and set all the files
+(app/routers/input_files.py).
 
-What is checked by hintr (whether a file is a good one) is hintr's to say, so hintr here answers what the test tells it to
-and the tests look at what it was asked.
+Only hintr can validate the content of a file. So in these tests hintr gives the answer that the test sets, and the
+tests check what the API asked hintr.
 """
 
 import hashlib
@@ -27,7 +28,7 @@ CONTENT = b"abc"
 ABC = "900150983CD24FB0D6963F7D28E17F72"
 
 
-# A file name that hintr accepts for each type, and the name the file is stored under
+# A file name that hintr accepts for each file type
 GOOD_NAMES = {**dict.fromkeys(URLS, "data.csv"), "pjnz": "data.PJNZ", "shape": "data.geojson"}
 
 
@@ -71,7 +72,7 @@ async def test_an_upload_is_stored_attached_to_the_version_and_validated(
     if file_type in DISEASE:
         await add_files(engine, version_id, "pjnz", "shape")
     r = await on_a_version.post(URLS[file_type], **upload_for(file_type))
-    # hintr's answer comes back as it is
+    # The API returns the answer of hintr without a change
     assert r.status_code == 200
     assert r.content == SUCCESS
     assert (uploads_dir / stored_as(file_type)).read_bytes() == CONTENT
@@ -133,7 +134,7 @@ async def test_an_upload_replaces_the_file_of_that_type_that_the_version_had(
     await on_a_version.post("/baseline/pjnz", **upload_of(b"one", "one.PJNZ"))
     await on_a_version.post("/baseline/pjnz", **upload_of(b"two", "two.PJNZ"))
     assert await version_files(engine, version_id) == {"pjnz": (f"{md5(b'two')}.PJNZ", "two.PJNZ", False, None)}
-    # The first file is still there, another version may use it
+    # The first file is still there, because another version can use it
     assert files_in(uploads_dir) == sorted([f"{md5(b'one')}.PJNZ", f"{md5(b'two')}.PJNZ"])
 
 
@@ -195,7 +196,7 @@ async def test_the_name_of_the_file_is_the_hash_and_the_text_after_the_last_dot_
 ):
     await on_a_version.post("/baseline/pjnz", **upload_of(CONTENT, filename))
     assert files_in(uploads_dir) == [name]
-    # What the user called it is kept as it was, to show them
+    # The version keeps the file name that the user gave, to show to the user
     assert (await version_files(engine, version_id))["pjnz"] == (name, filename, False, None)
     assert sent_to_hintr(hintr)[0][2]["file"] == uploaded_file(uploads_dir, name, filename)
 
@@ -203,8 +204,8 @@ async def test_the_name_of_the_file_is_the_hash_and_the_text_after_the_last_dot_
 async def test_a_file_that_hintr_does_not_accept_is_still_the_version_s_file(
     on_a_version, hintr, engine, version_id, uploads_dir
 ):
-    """As in the Kotlin app. The Vue app takes the file off the screen when it uploads another, whatever comes of it, so
-    keeping the one that was there would leave the screen and the server saying different things."""
+    """As in the Kotlin app. The Vue app removes the old file from the screen when the user uploads another file, even if
+    the upload fails. If the server kept the old file, the screen and the server would show different files."""
     await on_a_version.post("/baseline/pjnz", **upload_of(b"good", "good.PJNZ"))
     hintr.answer(400, json=HINTR_FAILURE)
     r = await on_a_version.post("/baseline/pjnz", **upload_of(b"bad", "bad.PJNZ"))
@@ -310,7 +311,7 @@ async def test_without_a_shape_file_an_upload_is_refused_but_kept(
     assert r.status_code == 400
     assert r.json() == failure("You must upload a shape file before uploading survey or programme data.")
     assert hintr.calls == []
-    # As in the Kotlin app: the file is the version's even so, so it is there when the shape file is
+    # As in the Kotlin app: the version keeps the file. The file is there when the user uploads the shape file.
     assert (await version_files(engine, version_id))[file_type][0] == stored_as(file_type)
 
 
@@ -532,7 +533,7 @@ async def test_what_is_sent_comes_back_with_the_resource_url_null_if_there_was_n
         "errors": [],
         "status": "success",
     }
-    # A null is no file, so the version has none of that type
+    # A null means no file, so the version has no file of that file type
     assert list(await version_files(engine, version_id)) == ["shape"]
 
 
@@ -582,8 +583,8 @@ async def test_the_message_for_a_hash_that_was_never_uploaded_is_in_the_language
 
 
 async def test_any_file_that_has_been_uploaded_may_be_used_whoever_uploaded_it(on_a_version, engine, api):
-    """As in the Kotlin app, which has no record of who uploaded what (see QUIRKS.md). Loading a project that was made
-    from the output of someone else's model needs this."""
+    """As in the Kotlin app, which does not record who uploaded each file (see QUIRKS.md). A user can load a project that
+    was made from the output of the model of another user. This needs the same rule."""
     other = (await create_project(api))["versions"][0]["id"]
     await add_files(engine, other, "pjnz")
     r = await on_a_version.post("/session/files", json={"pjnz": entry("pjnz123")})

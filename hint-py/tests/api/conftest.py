@@ -59,7 +59,7 @@ async def hintr(hintr: FakeHintr) -> FakeHintr:
 
 @pytest.fixture
 def settings_overrides() -> Iterator[dict]:
-    """The settings that the app uses in a test, besides the defaults. Fixtures add to it (see `results_dir`)."""
+    """The settings that the app uses in a test, in addition to the defaults. Fixtures add to this dict. See `results_dir`."""
     overrides: dict = {}
     app.dependency_overrides[get_settings] = lambda: Settings(**overrides)
     yield overrides
@@ -77,7 +77,7 @@ def results_dir(tmp_path: Path, settings_overrides: dict) -> Path:
 
 @pytest.fixture
 def uploads_dir(tmp_path: Path, settings_overrides: dict) -> Path:
-    """An empty folder that the app writes the uploaded files to, and tells hintr they are in."""
+    """An empty folder. The app writes the uploaded files here and tells hintr that the files are here."""
     folder = tmp_path / "uploads"
     folder.mkdir()
     settings_overrides["upload_dir"] = str(folder)

@@ -203,7 +203,7 @@ export const actions: ActionTree<SurveyAndProgramState, RootState> & SurveyAndPr
     async getSurveyAndProgramData(context) {
         const {commit, dispatch} = context;
         if (!sessionStorageManager.getVersionId()) {
-            // As for the baseline files: a tab with no version open has none to ask for
+            // As for the baseline files: a tab with no version open has no files to get
             commit({type: SurveyAndProgramMutation.Ready, payload: true});
             return;
         }

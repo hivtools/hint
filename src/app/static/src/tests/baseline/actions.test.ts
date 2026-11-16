@@ -155,7 +155,7 @@ describe("Baseline actions", () => {
         // stop apiService logging to console
         console.log = vi.fn();
         mockAxios.reset();
-        // A tab that has a version open, as the data is asked for with it
+        // A tab with an open version. The requests for data use the id of this version.
         sessionStorageManager.saveVersionId("version-1");
     });
 

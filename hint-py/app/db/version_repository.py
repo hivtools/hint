@@ -142,8 +142,10 @@ class VersionRepository:
         }
 
     async def save_new_hash(self, file_hash: str) -> None:
-        """Records that there is a file with this hash, unless it is recorded already. Two requests that upload the same
-        file at once both get here, so the database is left to ignore the second."""
+        """Records that a file with this hash exists. Does nothing if the hash is already recorded.
+
+        Two requests can upload the same file at the same time. Both requests reach this point, so the database ignores
+        the second insert."""
         insert_ignoring_conflict = (
             postgresql.insert if self.db_session.get_bind().dialect.name == "postgresql" else sqlite.insert
         )
@@ -175,7 +177,7 @@ class VersionRepository:
             )
 
     async def remove_version_file(self, version_id: str, file_type: FileType) -> None:
-        """The file itself stays where it is: other versions may use it."""
+        """Removes the file from the version. The file stays on the share, because other versions can use it."""
         await self.db_session.execute(
             delete(VersionFile).where(VersionFile.version == version_id, VersionFile.type == file_type)
         )
@@ -185,7 +187,8 @@ class VersionRepository:
     ) -> None:
         """Replaces the version's files. Runs in the request's transaction, so it all happens or none of it does.
 
-        A file that has not been uploaded (there is no such hash) is an error, as it would be a foreign key violation."""
+        A hash that no upload made is an error (`LoadFailedError`). Without this check, the database raises a foreign key
+        error."""
         hashes = {file.hash for file in files.values() if file is not None}
         if hashes:
             known = set(await self.db_session.scalars(select(File.hash).where(File.hash.in_(hashes))))
