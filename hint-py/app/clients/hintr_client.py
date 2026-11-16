@@ -25,6 +25,9 @@ log = structlog.get_logger()
 # The files of a version, by type
 FilesByType = Mapping[FileType, HintrFile]
 
+# The baseline file types. hintr validates them against each other.
+BASELINE_TYPES = (FileType.PJNZ, FileType.SHAPE, FileType.POPULATION)
+
 # How long to wait for a connection and an answer
 TIMEOUT_SECONDS = 120
 
@@ -145,12 +148,13 @@ class HintrClient:
     async def validate_baseline_individual(self, file_type: FileType, file: HintrFile) -> Response:
         return await self.forward("POST", "/validate/baseline-individual", json={"type": file_type, "file": file})
 
-    async def validate_baseline_combined(self, files: Mapping[FileType, HintrFile | None]) -> Response:
-        """hintr receives only the paths. A file that the version does not have is null."""
+    async def validate_baseline_combined(self, files: FilesByType) -> Response:
+        """hintr receives only the paths, with one entry for each baseline file type. A file that the version does not
+        have is null."""
         return await self.forward(
             "POST",
             "/validate/baseline-combined",
-            json={file_type: file.path if file else None for file_type, file in files.items()},
+            json={file_type: files[file_type].path if file_type in files else None for file_type in BASELINE_TYPES},
         )
 
     async def validate_survey_and_programme(self, file_type: FileType, file: HintrFile, shape_path: str) -> Response:

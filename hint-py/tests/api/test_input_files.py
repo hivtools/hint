@@ -557,14 +557,27 @@ async def test_an_empty_map_removes_all_the_files(on_a_version, engine, version_
     assert await version_files(engine, version_id) == {}
 
 
-@pytest.mark.parametrize("file_type", ["anc", "pjnz", "population", "programme", "shape", "survey", "vmmc"])
-async def test_every_type_a_version_may_have_is_accepted_including_the_vmmc_of_old_projects(
-    on_a_version, engine, version_id, file_type
-):
+@pytest.mark.parametrize("file_type", ["anc", "pjnz", "population", "programme", "shape", "survey"])
+async def test_every_type_a_version_may_have_is_accepted(on_a_version, engine, version_id, file_type):
     await add_files(engine, version_id, file_type)
     r = await on_a_version.post("/session/files", json={file_type: entry(f"{file_type}123")})
     assert r.status_code == 200
     assert list(await version_files(engine, version_id)) == [file_type]
+
+
+async def test_the_vmmc_file_of_an_old_project_is_ignored(on_a_version, engine, version_id):
+    await add_files(engine, version_id, "pjnz", "vmmc")
+    r = await on_a_version.post("/session/files", json={"pjnz": entry("pjnz123"), "vmmc": entry("vmmc123")})
+    assert r.status_code == 200
+    assert list(r.json()["data"]) == ["pjnz"]
+    assert list(await version_files(engine, version_id)) == ["pjnz"]
+
+
+async def test_the_hash_of_the_vmmc_file_of_an_old_project_is_not_checked(on_a_version, engine, version_id):
+    await add_files(engine, version_id, "pjnz")
+    r = await on_a_version.post("/session/files", json={"pjnz": entry("pjnz123"), "vmmc": entry("badhash")})
+    assert r.status_code == 200
+    assert list(await version_files(engine, version_id)) == ["pjnz"]
 
 
 async def test_a_hash_that_was_never_uploaded_is_refused_and_nothing_changes(on_a_version, engine, version_id):

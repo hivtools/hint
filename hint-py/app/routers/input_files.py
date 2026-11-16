@@ -9,7 +9,7 @@ Each file type has the same three calls:
 These calls do not need a logged-in user. Guests upload files too.
 
 This module has no VMMC file, because nothing uses it now. The Kotlin app serves `/disease/vmmc` until the front end
-stops calling it.
+stops calling it. `POST /session/files` ignores a VMMC file in an old project.
 """
 
 from typing import Annotated
@@ -18,7 +18,7 @@ from fastapi import APIRouter, File, Header, UploadFile
 from fastapi.responses import JSONResponse, Response
 
 from app import schemas
-from app.clients.hintr_client import Hintr
+from app.clients.hintr_client import BASELINE_TYPES, Hintr
 from app.errors import EmptyFileNameError, HintError, MissingShapeFileError, hint_error_response
 from app.schemas import FileType, SuccessResponse, empty_success, success
 from app.services.version_files import Files
@@ -29,9 +29,6 @@ router = APIRouter(tags=["input files"])
 BASELINE_FILES = {"pjnz": FileType.PJNZ, "shape": FileType.SHAPE, "population": FileType.POPULATION}
 DISEASE_FILES = {"survey": FileType.SURVEY, "programme": FileType.PROGRAMME, "anc": FileType.ANC}
 
-# The baseline file types. hintr validates them against each other.
-BASELINE_TYPES = list(BASELINE_FILES.values())
-
 # The files of a version: one file for each file type that has a file. A file type with no file is null.
 SessionFiles = dict[FileType, schemas.VersionFile | None]
 
@@ -41,7 +38,7 @@ async def _validate(file_type: FileType, file: schemas.HintrFile, files: Files, 
 
     hintr validates a baseline file alone.
     hintr validates the other files against the shape file. So the version must have a shape file before the user
-    uploads the other files. A PJNZ file is not needed (D10).
+    uploads the other files.
     """
     if file_type in BASELINE_TYPES:
         return await hintr.validate_baseline_individual(file_type, file)
@@ -64,9 +61,12 @@ def _add_routes(url: str, file_type: FileType) -> None:
         if not file.filename:
             raise EmptyFileNameError()
         saved = await files.save_upload(file_type, file.file, file.filename)
-        # The version keeps the new file even if the validation fails. Kotlin does the same. The Vue app also shows this:
-        # it removes the old file from the screen when an upload starts. A missing PJNZ or shape file is returned, not
-        # raised. A raised error rolls back the database, and then the version would lose the new file.
+        # We want the version to keep the new file even if the validation fails. If the validation
+        # fails because the shape file is missing this raises a `MissingShapeFileError`.
+        # A raised error makes the request DB transaction roll back, so the new file would
+        # be dropped from the version.
+        # So we need to catch the error here and return it as a normal response so the
+        # transaction commits, the file is kept on disk and the user sees the error.
         try:
             return await _validate(file_type, saved, files, hintr)
         except HintError as error:
@@ -85,14 +85,15 @@ def _add_routes(url: str, file_type: FileType) -> None:
         return empty_success()
 
 
-for _name, _file_type in {**BASELINE_FILES, **DISEASE_FILES}.items():
-    _add_routes(f"/{'baseline' if _file_type in BASELINE_TYPES else 'disease'}/{_name}", _file_type)
+for name, file_type in BASELINE_FILES.items():
+    _add_routes(f"/baseline/{name}", file_type)
+for name, file_type in DISEASE_FILES.items():
+    _add_routes(f"/disease/{name}", file_type)
 
 
 @router.get("/baseline/validate", summary="Validate the baseline files against each other")
 async def validate_baseline(files: Files, hintr: Hintr) -> Response:
-    found = await files.get_files(*BASELINE_TYPES)
-    return await hintr.validate_baseline_combined({file_type: found.get(file_type) for file_type in BASELINE_TYPES})
+    return await hintr.validate_baseline_combined(await files.get_files(*BASELINE_TYPES))
 
 
 @router.post("/session/files", summary="Set all the files of the version")
@@ -101,6 +102,8 @@ async def set_files(body: SessionFiles, files: Files) -> SuccessResponse[Session
 
     The files must be uploaded before. Anyone can have uploaded them. A file type that
     does not exist is a bad request. The Vue app sends back the files of a saved version,
-    so the VMMC file of an old project is a valid file type."""
-    await files.set_all(body)
-    return success(body)
+    so the VMMC file of an old project is a valid file type. It is ignored: nothing uses
+    VMMC files now, so the version does not get it, and the response does not have it."""
+    wanted = {file_type: file for file_type, file in body.items() if file_type != FileType.VMMC}
+    await files.set_all(wanted)
+    return success(wanted)
