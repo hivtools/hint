@@ -1,4 +1,4 @@
-"""The files of the version a request works on: what hintr is told about them, and the uploading, removing and setting of them."""
+"""The files of the version in a request. This module tells hintr about the files. It also uploads, removes and sets them."""
 
 from collections.abc import Mapping
 from typing import Annotated, BinaryIO
@@ -14,7 +14,8 @@ from app.services.upload_storage import UploadStorage
 
 
 class VersionFiles:
-    """Works on the files of the version in the request, which `current_version_id` has already checked the user may use."""
+    """Works on the files of the version in the request. `current_version_id` has already checked that the user can use
+    the version."""
 
     def __init__(self, version_id: str, versions: VersionRepository, upload_dir: str, storage: UploadStorage):
         self._version_id = version_id
@@ -32,7 +33,8 @@ class VersionFiles:
         )
 
     async def get_files(self, *types: FileType) -> dict[FileType, schemas.HintrFile]:
-        """The version's files of these types, by type. A type the version has no file for is left out."""
+        """Returns the files of the version for these file types, by file type. A file type with no file is not in the
+        result."""
         files = await self._versions.get_version_files(self._version_id)
         return {file_type: self._for_hintr(file) for file_type, file in files.items() if file_type in types}
 
@@ -40,10 +42,10 @@ class VersionFiles:
         return (await self.get_files(file_type)).get(file_type)
 
     async def save_upload(self, file_type: FileType, content: BinaryIO, filename: str) -> schemas.HintrFile:
-        """Makes an uploaded file the version's file of this type, in place of the one it had.
+        """Makes the uploaded file the version's file for this file type. It replaces the old file.
 
-        The file is written before anything is recorded about it, so a failure to write leaves no row that points at a
-        file that is not there. The file is not checked here: that is for hintr to do.
+        The file is written first and recorded after. If the write fails, no database row points at a missing file.
+        This method does not validate the file. hintr does that.
         """
         file_hash = await self._storage.save(content, filename)
         await self._versions.save_new_hash(file_hash)
@@ -55,7 +57,7 @@ class VersionFiles:
         await self._versions.remove_version_file(self._version_id, file_type)
 
     async def set_all(self, files: Mapping[FileType, schemas.VersionFile | None]) -> None:
-        """Replaces all of the version's files."""
+        """Replaces all the files of the version."""
         await self._versions.set_files_for_version(self._version_id, files)
 
 

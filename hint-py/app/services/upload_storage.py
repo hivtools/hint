@@ -1,7 +1,7 @@
-"""Writing the files that users upload to the uploads folder (the Azure Files share that hintr reads them from).
+"""Writes the uploaded files to the uploads folder. This folder is the Azure Files share, and hintr reads the files from it.
 
-A file is named by its content, `<MD5 of the content in upper case>.<extension>`, so uploading the same file again (by
-anyone) finds it already there, and the projects that were saved by the Kotlin app find their files.
+The name of a file is `<MD5 of the content in upper case>.<extension>`. If a user uploads the same file again, the file
+is already there. Projects that the Kotlin app saved find their files with the same names.
 """
 
 import asyncio
@@ -16,20 +16,22 @@ from app.errors import NullInFileNameError
 
 CHUNK_SIZE = 1024 * 1024
 
-# The read permissions of a normal file. hintr runs as another user, so a file that only this API can read is no use
+# The owner can read and write the file. All other users can read it. hintr runs as another user, so hintr must be able
+# to read the file.
 READABLE = 0o644
 
 
 def file_extension(filename: str) -> str:
-    """The text after the last dot of the name, which is the whole name if it has no dot (`README` is `HASH.README`:
-    names must stay as the Kotlin app made them). Only the last part of a path is looked at, as a name that came
-    with directories (`../../a`) must not make a file outside of the folder."""
+    """Returns the text after the last dot of the file name. If the name has no dot, the extension is the whole name.
+
+    For example, `README` becomes `HASH.README`. Files must keep the names that the Kotlin app gave them.
+    Only the last part of a path counts. A name with directories (`../../a`) must not make a file outside the folder."""
     name = filename.replace("\\", "/").rsplit("/", 1)[-1]
     return name.rsplit(".", 1)[-1]
 
 
 def _hash_and_size(source: BinaryIO) -> tuple[str, int]:
-    """Reads the whole file once, to hash it, and leaves it ready to be read again from the start."""
+    """Reads the whole file once to hash it. Then goes back to the start of the file, so that it can be read again."""
     md5 = hashlib.md5(usedforsecurity=False)
     size = 0
     while chunk := source.read(CHUNK_SIZE):
@@ -40,28 +42,29 @@ def _hash_and_size(source: BinaryIO) -> tuple[str, int]:
 
 
 def _is_stored(target: Path, size: int) -> bool:
-    # The size is checked because the Kotlin app wrote a file where it was named, so one that was cut short (a crash while
-    # writing) has the name of a whole one
+    # Check the size also. The Kotlin app wrote a file straight to its final name. If a crash stopped the write, the file
+    # has the final name but is too short.
     return target.is_file() and target.stat().st_size == size
 
 
 def _store(directory: Path, source: BinaryIO, filename: str) -> str:
     directory.mkdir(parents=True, exist_ok=True)
-    # The hash is worked out first, from the upload that this API has already received, so that a file that is stored
-    # already is not sent to the share again: the share is slower than the disk, and the time counts against the request
+    # Hash the file first. This API has already received the upload, so this step does not use the network. If the file is
+    # already on the share, we do not send it again. The share is slower than the local disk, and the write time counts
+    # against the request.
     digest, size = _hash_and_size(source)
     name = f"{digest}.{file_extension(filename)}"
     target = directory / name
     if _is_stored(target, size):
         return name
-    # The folder of the file, so that the last step is a rename and a reader never sees half a file
+    # Write to a temporary file in the same folder. The last step is then a rename, so no reader sees half a file.
     handle, temporary_name = tempfile.mkstemp(dir=directory, prefix=".upload-")
     temporary = Path(temporary_name)
     try:
         with os.fdopen(handle, "wb") as out:
             shutil.copyfileobj(source, out, CHUNK_SIZE)
         temporary.chmod(READABLE)
-        # Another request may have stored the same file while this one was writing: it is the same content
+        # Another request can store the same file while this request writes. The content is the same, so keep that file.
         if not _is_stored(target, size):
             temporary.replace(target)
     finally:
@@ -74,8 +77,9 @@ class UploadStorage:
         self._directory = Path(directory)
 
     async def save(self, source: BinaryIO, filename: str) -> str:
-        """Writes the file, unless it is there already, and returns its name (which is its hash). The source has to be one
-        that can be read again from the start (an upload is)."""
+        """Writes the file, unless it is already there. Returns the name of the file, which contains its hash.
+
+        The source must support `seek`, so that it can be read again from the start. An upload does."""
         if "\x00" in filename:
             raise NullInFileNameError()
         return await asyncio.to_thread(_store, self._directory, source, filename)

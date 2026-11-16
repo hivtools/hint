@@ -15,11 +15,11 @@ from app.services.upload_storage import UploadStorage, file_extension
         ("survey.csv", "csv"),
         ("archive.tar.gz", "gz"),
         ("UPPER.CSV", "CSV"),
-        # A name with no dot is its own extension: files must keep the names the Kotlin app gave them
+        # A name with no dot is its own extension. Files must keep the names that the Kotlin app gave them.
         ("README", "README"),
         ("trailing.", ""),
         (".PJNZ", "PJNZ"),
-        # A path is not a file name: only the last part counts
+        # A path is not a file name. Only the last part counts.
         ("../../etc/passwd", "passwd"),
         ("..\\..\\a.csv", "csv"),
         ("some/folder/data.csv", "csv"),
@@ -80,7 +80,7 @@ async def test_a_file_that_is_there_is_only_read_to_hash_it_and_not_copied(tmp_p
     first, second = Counting(b"abc" * 1000), Counting(b"abc" * 1000)
     await storage.save(first, "a.csv")
     await storage.save(second, "a.csv")
-    assert first.bytes_read == 6000  # once to hash it and once to write it
+    assert first.bytes_read == 6000  # once to hash it, and once to write it
     assert second.bytes_read == 3000  # once to hash it
 
 

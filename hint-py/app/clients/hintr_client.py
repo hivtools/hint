@@ -146,7 +146,7 @@ class HintrClient:
         return await self.forward("POST", "/validate/baseline-individual", json={"type": file_type, "file": file})
 
     async def validate_baseline_combined(self, files: Mapping[FileType, HintrFile | None]) -> Response:
-        """hintr is given the paths only, and null for a file that the version has not got."""
+        """hintr receives only the paths. A file that the version does not have is null."""
         return await self.forward(
             "POST",
             "/validate/baseline-combined",
@@ -154,7 +154,7 @@ class HintrClient:
         )
 
     async def validate_survey_and_programme(self, file_type: FileType, file: HintrFile, shape_path: str) -> Response:
-        """The survey, programme and ANC files are checked against the shape file."""
+        """Validates the survey, programme or ANC file against the shape file."""
         return await self.forward(
             "POST",
             "/validate/survey-and-programme",

@@ -223,8 +223,9 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
     async getBaselineData(context) {
         const {commit, dispatch} = context;
         if (!sessionStorageManager.getVersionId()) {
-            // A tab with no version open (a new tab, which starts on the projects page) has no files to ask for. The
-            // server refuses a request with no version (403 INVALID_VERSION), which would send the tab back to the start
+            // A tab with no version open has no files to get. A new tab is one: it starts on the projects page.
+            // The server refuses a request with no version (403 INVALID_VERSION). Then the front end sends the tab back
+            // to the start.
             commit({type: "Ready", payload: true});
             return;
         }
