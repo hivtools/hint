@@ -1,6 +1,6 @@
 import {actions} from "../../app/store/surveyAndProgram/actions";
 import {actions as baselineActions} from "../../app/store/baseline/actions"
-import {login, rootState} from "./integrationTest";
+import {closeVersion, login, openVersion, rootState} from "./integrationTest";
 import {getFormData} from "./helpers";
 import {SurveyAndProgramMutation} from "../../app/store/surveyAndProgram/mutations";
 
@@ -8,6 +8,7 @@ describe("Survey and programme actions", () => {
 
     beforeAll(async () => {
         await login();
+        await openVersion();
 
         const commit = vi.fn();
         const dispatch = vi.fn();
@@ -18,6 +19,8 @@ describe("Survey and programme actions", () => {
         const pjnzFormData = getFormData("Malawi2024.PJNZ");
         await baselineActions.uploadPJNZ({commit, state, dispatch, rootState} as any, pjnzFormData);
     });
+
+    afterAll(() => closeVersion());
 
     it("can upload survey", async () => {
 
