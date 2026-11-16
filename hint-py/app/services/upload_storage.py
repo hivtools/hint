@@ -80,6 +80,9 @@ class UploadStorage:
         """Writes the file, unless it is already there. Returns the name of the file, which contains its hash.
 
         The source must support `seek`, so that it can be read again from the start. An upload does."""
+        # The name comes from the user, and the extension of the name is part of the stored name. A null character is not
+        # allowed in a file name on Linux, and Python raises `ValueError` ("embedded null byte") for a path with one.
+        # Postgres also refuses it in text. Either way the request would end as a 500, so refuse it here with a 400.
         if "\x00" in filename:
             raise NullInFileNameError()
         return await asyncio.to_thread(_store, self._directory, source, filename)

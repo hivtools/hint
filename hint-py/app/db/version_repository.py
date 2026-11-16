@@ -1,4 +1,4 @@
-from collections.abc import Mapping
+from collections.abc import Collection, Mapping
 
 from sqlalchemy import Integer, String, delete, func, insert, literal, select, update
 from sqlalchemy.dialects import postgresql, sqlite
@@ -124,16 +124,20 @@ class VersionRepository:
         )
         await self._copy_files(parent_version_id, new_version_id)
 
-    async def get_version_files(self, version_id: str) -> dict[FileType, schemas.VersionFile]:
-        result = await self.db_session.execute(
-            select(
-                VersionFile.hash,
-                VersionFile.filename,
-                VersionFile.type,
-                VersionFile.from_adr,
-                VersionFile.resource_url,
-            ).where(VersionFile.version == version_id)
-        )
+    async def get_version_files(
+        self, version_id: str, types: Collection[FileType] | None = None
+    ) -> dict[FileType, schemas.VersionFile]:
+        """Returns the files of the version by file type, only for these file types if `types` is given."""
+        query = select(
+            VersionFile.hash,
+            VersionFile.filename,
+            VersionFile.type,
+            VersionFile.from_adr,
+            VersionFile.resource_url,
+        ).where(VersionFile.version == version_id)
+        if types is not None:
+            query = query.where(VersionFile.type.in_(types))
+        result = await self.db_session.execute(query)
         return {
             FileType(row.type): schemas.VersionFile(
                 hash=row.hash, filename=row.filename, from_adr=row.from_adr, resource_url=row.resource_url
@@ -146,10 +150,10 @@ class VersionRepository:
 
         Two requests can upload the same file at the same time. Both requests reach this point, so the database ignores
         the second insert."""
-        insert_ignoring_conflict = (
-            postgresql.insert if self.db_session.get_bind().dialect.name == "postgresql" else sqlite.insert
-        )
-        await self.db_session.execute(insert_ignoring_conflict(File).values(hash=file_hash).on_conflict_do_nothing())
+        # `on_conflict_do_nothing` is only on the insert of the dialect, not on SQLAlchemy's generic `insert`. Production
+        # uses Postgres and the tests use SQLite.
+        dialect_insert = postgresql.insert if self.db_session.get_bind().dialect.name == "postgresql" else sqlite.insert
+        await self.db_session.execute(dialect_insert(File).values(hash=file_hash).on_conflict_do_nothing())
 
     async def save_version_file(self, version_id: str, file_type: FileType, file: schemas.VersionFile) -> None:
         """Makes this file the version's file for its file type. It replaces the old file.

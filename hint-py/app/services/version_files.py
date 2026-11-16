@@ -35,8 +35,8 @@ class VersionFiles:
     async def get_files(self, *types: FileType) -> dict[FileType, schemas.HintrFile]:
         """Returns the files of the version for these file types, by file type. A file type with no file is not in the
         result."""
-        files = await self._versions.get_version_files(self._version_id)
-        return {file_type: self._for_hintr(file) for file_type, file in files.items() if file_type in types}
+        files = await self._versions.get_version_files(self._version_id, types)
+        return {file_type: self._for_hintr(file) for file_type, file in files.items()}
 
     async def get_file(self, file_type: FileType) -> schemas.HintrFile | None:
         return (await self.get_files(file_type)).get(file_type)
