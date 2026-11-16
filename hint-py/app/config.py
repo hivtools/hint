@@ -26,10 +26,9 @@ class Settings(BaseSettings):
     # The hintr API URL
     hintr_url: str = "http://localhost:8888"
 
-    # The folder of the uploaded files, as hint tells hintr about them: the path is "<upload_dir>/<hash>". hintr opens
-    # the path as it is, so a relative one is relative to hintr's working directory, which is "/" in its image: the
-    # share is mounted at "/uploads" in hintr, and this API never opens the uploaded files itself.
-    upload_dir: str = "uploads"
+    # The folder of the uploaded files: this API writes them here, and tells hintr that they are at "<upload_dir>/<hash>".
+    # So the share has to be mounted at the same place in both containers, which is "/uploads".
+    upload_dir: str = "/uploads"
 
     # The folder hintr writes the results of tasks to. This API does open
     # these: it reads the results database of a calibration and sends the files made by a download. hintr answers with

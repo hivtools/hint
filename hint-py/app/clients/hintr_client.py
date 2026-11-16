@@ -142,6 +142,25 @@ class HintrClient:
     async def input_population(self, files: FilesByType) -> Response:
         return await self.forward("POST", "/chart-data/input-population", json=files)
 
+    async def validate_baseline_individual(self, file_type: FileType, file: HintrFile) -> Response:
+        return await self.forward("POST", "/validate/baseline-individual", json={"type": file_type, "file": file})
+
+    async def validate_baseline_combined(self, files: Mapping[FileType, HintrFile | None]) -> Response:
+        """hintr is given the paths only, and null for a file that the version has not got."""
+        return await self.forward(
+            "POST",
+            "/validate/baseline-combined",
+            json={file_type: file.path if file else None for file_type, file in files.items()},
+        )
+
+    async def validate_survey_and_programme(self, file_type: FileType, file: HintrFile, shape_path: str) -> Response:
+        """The survey, programme and ANC files are checked against the shape file."""
+        return await self.forward(
+            "POST",
+            "/validate/survey-and-programme",
+            json={"type": file_type, "file": file, "shape": shape_path},
+        )
+
     async def review_input_metadata(self, iso3: str, files: Mapping[str, HintrFile | None]) -> Response:
         """The files are by the name of the type, and null where the version has no file of that type."""
         return await self.forward("POST", "/review-input/metadata", json={"data": files, "iso3": iso3})

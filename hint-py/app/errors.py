@@ -49,6 +49,18 @@ class InvalidVersionError(HintError):
         super().__init__("invalidVersion", 403, "INVALID_VERSION")
 
 
+class LoadFailedError(HintError):
+    """The files to set for a version include one that was never uploaded."""
+
+    def __init__(self):
+        super().__init__("loadFailed", 400)
+
+
+class MissingShapeFileError(HintError):
+    def __init__(self):
+        super().__init__("missingShapeFile", 400)
+
+
 class UserDoesNotExistError(HintError):
     def __init__(self):
         super().__init__("userDoesNotExist", 400)
@@ -96,6 +108,16 @@ class EmptyBodyError(BadRequestError):
         super().__init__("The request body is empty")
 
 
+class EmptyFileNameError(BadRequestError):
+    def __init__(self):
+        super().__init__("The uploaded file has no name")
+
+
+class NullInFileNameError(BadRequestError):
+    def __init__(self):
+        super().__init__("The name of the uploaded file has a null character in it")
+
+
 class UnknownInputTimeSeriesTypeError(HintError):
     def __init__(self):
         super().__init__("unknownInputTimeSeriesType", 400)
@@ -104,6 +126,12 @@ class UnknownInputTimeSeriesTypeError(HintError):
 class UnknownReviewInputFileTypeError(HintError):
     def __init__(self):
         super().__init__("unknownReviewInputFileType", 400)
+
+
+def hint_error_response(exc: HintError, accept_language: str | None) -> JSONResponse:
+    """The response for an error, for an endpoint that has to answer with it rather than raise it. A raised error rolls back
+    the request's changes to the database, and an answer does not."""
+    return _failure(exc.status_code, t(exc.key, negotiate_language(accept_language)), exc.code)
 
 
 def unexpected_error(request: Request, status_code: int, reason: str, exc_info: BaseException | None = None):
@@ -143,8 +171,7 @@ def register_error_handlers(app: FastAPI) -> None:
 
     @app.exception_handler(HintError)
     async def hint_error(request: Request, exc: HintError) -> JSONResponse:
-        language = negotiate_language(request.headers.get("accept-language"))
-        return _failure(exc.status_code, t(exc.key, language), exc.code)
+        return hint_error_response(exc, request.headers.get("accept-language"))
 
     @app.exception_handler(HintrFailedError)
     async def hintr_failed(request: Request, exc: HintrFailedError) -> Response:
@@ -154,9 +181,11 @@ def register_error_handlers(app: FastAPI) -> None:
     async def invalid_request(request: Request, exc: RequestValidationError) -> JSONResponse:
         # Only where and why, not the values, which could be anything the user typed
         reason = "; ".join(f"{'.'.join(str(part) for part in e['loc'])}: {e['msg']}" for e in exc.errors())
-        # A body that is not JSON (a form, say) is "unsupported media type", as in Kotlin
+        # A body that is not JSON (a form, say) is "unsupported media type", as in Kotlin. A file upload is not, but
+        # an upload with no file in it is a bad request, as it is in Kotlin
         content_type = request.headers.get("content-type", "")
-        return unexpected_error(request, 415 if content_type and "json" not in content_type else 400, reason)
+        unsupported = content_type and "json" not in content_type and "multipart/form-data" not in content_type
+        return unexpected_error(request, 415 if unsupported else 400, reason)
 
     @app.exception_handler(BadRequestError)
     async def bad_request(request: Request, exc: BadRequestError) -> JSONResponse:

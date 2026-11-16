@@ -59,6 +59,17 @@ server {
     location = /model/run { include snippets/python.conf; }
     location /calibrate/submit/ { include snippets/python.conf; }
     location /download/submit/ { include snippets/python.conf; }
+    # Uploading, validating and removing the input files, and setting them all. Each is listed, not the whole of
+    # /baseline/ or /disease/: `/disease/vmmc` is not ported (nothing uses it any more), and the exact paths leave a path
+    # with a trailing slash, which Kotlin accepts and FastAPI would redirect, to Kotlin
+    location = /baseline/pjnz { include snippets/python.conf; }
+    location = /baseline/shape { include snippets/python.conf; }
+    location = /baseline/population { include snippets/python.conf; }
+    location = /baseline/validate { include snippets/python.conf; }
+    location = /disease/survey { include snippets/python.conf; }
+    location = /disease/programme { include snippets/python.conf; }
+    location = /disease/anc { include snippets/python.conf; }
+    location = /session/files { include snippets/python.conf; }
     # Calls that read the results folder. `/calibrate/result/data/` is not ported, so it stays with Kotlin
     location /calibrate/result/filteredData/ { include snippets/python.conf; }
     location /download/result/ { include snippets/python.conf; }
