@@ -56,12 +56,41 @@ async def test_nothing_is_left_in_the_folder_but_the_file(tmp_path):
     assert [p.name for p in tmp_path.iterdir()] == [name]
 
 
+class Counting(io.BytesIO):
+    """Counts the bytes that are read from it."""
+
+    bytes_read = 0
+
+    def read(self, size: int | None = -1) -> bytes:
+        chunk = super().read(size)
+        self.bytes_read += len(chunk)
+        return chunk
+
+
 async def test_a_file_that_is_there_is_not_written_again(tmp_path):
     storage = UploadStorage(str(tmp_path))
     name = await storage.save(io.BytesIO(b"abc"), "a.csv")
     before = (tmp_path / name).stat().st_mtime_ns
     await storage.save(io.BytesIO(b"abc"), "a.csv")
     assert (tmp_path / name).stat().st_mtime_ns == before
+
+
+async def test_a_file_that_is_there_is_only_read_to_hash_it_and_not_copied(tmp_path):
+    storage = UploadStorage(str(tmp_path))
+    first, second = Counting(b"abc" * 1000), Counting(b"abc" * 1000)
+    await storage.save(first, "a.csv")
+    await storage.save(second, "a.csv")
+    assert first.bytes_read == 6000  # once to hash it and once to write it
+    assert second.bytes_read == 3000  # once to hash it
+
+
+async def test_a_file_that_was_cut_short_is_written_again(tmp_path):
+    storage = UploadStorage(str(tmp_path))
+    name = await storage.save(io.BytesIO(b"abcdef"), "a.csv")
+    (tmp_path / name).write_bytes(b"abc")
+    await storage.save(io.BytesIO(b"abcdef"), "a.csv")
+    assert (tmp_path / name).read_bytes() == b"abcdef"
+    assert [p.name for p in tmp_path.iterdir()] == [name]
 
 
 async def test_a_file_that_has_gone_is_written_again(tmp_path):
