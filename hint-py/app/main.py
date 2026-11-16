@@ -10,7 +10,7 @@ from app.config import get_settings
 from app.db.database import create_db_session_factory, create_engine
 from app.errors import register_error_handlers
 from app.logging_setup import configure_logging
-from app.routers import calibrate_results, downloads, hintr_forwards, items, model, projects, review_inputs
+from app.routers import calibrate_results, downloads, hintr_forwards, input_files, items, model, projects, review_inputs
 
 # pyproject.toml is the one place the version is set. The project is not installed as a package, so there is no
 # package metadata to read it from.
@@ -33,6 +33,7 @@ register_error_handlers(app)
 
 app.include_router(items.router)
 app.include_router(projects.router)
+app.include_router(input_files.router)
 app.include_router(hintr_forwards.router)
 app.include_router(review_inputs.router)
 app.include_router(model.router)
