@@ -12,6 +12,7 @@ This module has no VMMC file, because nothing uses it now. The Kotlin app serves
 stops calling it. `POST /session/files` ignores a VMMC file in an old project.
 """
 
+import re
 from typing import Annotated
 
 from fastapi import APIRouter, File, Header, UploadFile
@@ -19,8 +20,15 @@ from fastapi.responses import JSONResponse, Response
 
 from app import schemas
 from app.clients.hintr_client import BASELINE_TYPES, Hintr
-from app.errors import EmptyFileNameError, HintError, MissingShapeFileError, hint_error_response
+from app.errors import (
+    EmptyFileNameError,
+    HintError,
+    InvalidFileExtensionError,
+    MissingShapeFileError,
+    hint_error_response,
+)
 from app.schemas import FileType, SuccessResponse, empty_success, success
+from app.services.upload_storage import file_extension
 from app.services.version_files import Files
 
 router = APIRouter(tags=["input files"])
@@ -28,6 +36,17 @@ router = APIRouter(tags=["input files"])
 # The URL name of each file type, as in Kotlin. The baseline files and the disease files have different URL prefixes.
 BASELINE_FILES = {"pjnz": FileType.PJNZ, "shape": FileType.SHAPE, "population": FileType.POPULATION}
 DISEASE_FILES = {"survey": FileType.SURVEY, "programme": FileType.PROGRAMME, "anc": FileType.ANC}
+
+# What hintr accepts as the extension of each type of file (it says "File must be of type ..." for any other). The check is
+# made here as well so that a file of another kind is not written to the share.
+ALLOWED_EXTENSIONS = {
+    FileType.PJNZ: ["PJNZ", "zip"],
+    FileType.SHAPE: ["geojson"],
+    FileType.POPULATION: ["csv"],
+    FileType.SURVEY: ["csv"],
+    FileType.PROGRAMME: ["csv"],
+    FileType.ANC: ["csv"],
+}
 
 # The setting that has the size limit of each type of file
 LIMIT_SETTINGS = {
@@ -61,6 +80,17 @@ async def _validate(file_type: FileType, file: schemas.HintrFile, files: Files, 
     return await hintr.validate_survey_and_programme(file_type, file, shape.path)
 
 
+def _wrong_extension(file_type: FileType, filename: str) -> InvalidFileExtensionError | None:
+    """The error for a file of another kind than the type, or None if the extension is a good one. It is what hintr sees in
+    the name of the stored file, which is the text after the last dot (and only letters and digits, as R's
+    `tools::file_ext` has it)."""
+    extension = file_extension(filename)
+    allowed = ALLOWED_EXTENSIONS[file_type]
+    if extension.lower() in (a.lower() for a in allowed):
+        return None
+    return InvalidFileExtensionError(allowed, extension if re.fullmatch("[A-Za-z0-9]+", extension) else "")
+
+
 def _add_routes(url: str, file_type: FileType) -> None:
     name = file_type.value
     UPLOAD_LIMITS[url] = LIMIT_SETTINGS[file_type]
@@ -74,6 +104,12 @@ def _add_routes(url: str, file_type: FileType) -> None:
     ) -> Response:
         if not file.filename:
             raise EmptyFileNameError()
+        refused = _wrong_extension(file_type, file.filename)
+        if refused is not None:
+            # Nothing is written. The version's file of this type is taken off, as the Vue app has already taken it off the
+            # screen (it does that when an upload starts), and this is an answer and not a raised error so that it stays so
+            await files.remove(file_type)
+            return hint_error_response(refused, accept_language)
         saved = await files.save_upload(file_type, file.file, file.filename)
         # We want the version to keep the new file even if the validation fails. If the validation
         # fails because the shape file is missing this raises a `MissingShapeFileError`.

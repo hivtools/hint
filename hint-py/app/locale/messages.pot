@@ -45,6 +45,10 @@ msgstr ""
 msgid "fileTooLarge"
 msgstr ""
 
+#. Placeholders: {expected} (such as "PJNZ, zip"), {got}.
+msgid "invalidFileExtension"
+msgstr ""
+
 msgid "invalidToken"
 msgstr ""
 

@@ -50,6 +50,10 @@ msgstr "Vous devez télécharger un fichier de formes avant de télécharger des
 msgid "fileTooLarge"
 msgstr "Le fichier est trop volumineux. Les fichiers peuvent faire jusqu'à {max_size}."
 
+#. Placeholders: {expected} (such as "PJNZ, zip"), {got}.
+msgid "invalidFileExtension"
+msgstr "Le fichier doit être de type {expected}, mais il est du type {got}."
+
 msgid "invalidToken"
 msgstr "Le jeton n'est pas valide."
 
