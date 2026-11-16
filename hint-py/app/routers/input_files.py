@@ -29,6 +29,19 @@ router = APIRouter(tags=["input files"])
 BASELINE_FILES = {"pjnz": FileType.PJNZ, "shape": FileType.SHAPE, "population": FileType.POPULATION}
 DISEASE_FILES = {"survey": FileType.SURVEY, "programme": FileType.PROGRAMME, "anc": FileType.ANC}
 
+# The setting that has the size limit of each type of file
+LIMIT_SETTINGS = {
+    FileType.PJNZ: "max_pjnz_upload_bytes",
+    FileType.SHAPE: "max_shape_upload_bytes",
+    FileType.POPULATION: "max_population_upload_bytes",
+    FileType.SURVEY: "max_survey_upload_bytes",
+    FileType.PROGRAMME: "max_programme_upload_bytes",
+    FileType.ANC: "max_anc_upload_bytes",
+}
+
+# The paths that upload a file, and the setting that has the size limit of each (see `app.upload_limit`)
+UPLOAD_LIMITS: dict[str, str] = {}
+
 # The files of a version: one file for each file type that has a file. A file type with no file is null.
 SessionFiles = dict[FileType, schemas.VersionFile | None]
 
@@ -50,6 +63,7 @@ async def _validate(file_type: FileType, file: schemas.HintrFile, files: Files, 
 
 def _add_routes(url: str, file_type: FileType) -> None:
     name = file_type.value
+    UPLOAD_LIMITS[url] = LIMIT_SETTINGS[file_type]
 
     @router.post(url, name=f"upload_{name}", summary=f"Upload the {name} file and validate it", response_model=None)
     async def upload(
