@@ -9,7 +9,8 @@ export default mergeConfig(
             exclude: ["**/adr-dataset.itest.ts"],
             coverage: { reportsDirectory: "./coverage/integration/" },
             testTimeout: 6000,
-            setupFiles: ["./src/tests/setup.integration.ts"]
+            setupFiles: ["./src/tests/setup.integration.ts"],
+            globalSetup: ["./src/tests/integration/globalSetup.ts"]
         }
     })
 );
