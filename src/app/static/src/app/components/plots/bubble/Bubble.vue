@@ -1,6 +1,6 @@
 <template>
     <div>
-        <l-map ref="map" style="height: 800px; width: 100%" @ready="onMapReady" @vue:updated="updateBounds">
+        <l-map ref="map" style="height: 800px; width: 100%" @ready="updateBounds" @vue:updated="updateBounds">
             <l-geo-json v-for="feature in currentFeatures"
                         ref="featureRefs"
                         :key="feature.properties!.area_id"
@@ -30,7 +30,7 @@
 </template>
 
 <script setup lang="ts">
-import {type Ref, computed, onBeforeUnmount, onMounted, ref, watch} from "vue";
+import {type Ref, computed, onMounted, ref, watch} from "vue";
 import {useStore} from "vuex";
 import type {RootState} from "../../../root";
 import { LMap, LGeoJson, LTileLayer } from "@vue-leaflet/vue-leaflet";
@@ -107,32 +107,6 @@ const baseMapVisible = ref(true);
 
 const map = ref<typeof LMap | null>(null);
 const featureRefs = ref<typeof LGeoJson[]>([]);
-
-// TEMPORARY, remove when the e2e failure of the bubble plot (map zoomed out to the world) is understood.
-// Playwright traces keep the console, so a failing CI run shows what happened, in order.
-// Step 3 of the bisect: no calls of the map's getSize() or getZoom(), because the first version with them stopped the
-// failures (step 2 without them failed again). This reads Leaflet's own fields directly. Reading a field does not
-// measure the page, so it should not change what the map does.
-const debugLog = (event: string) => {
-    const leafletMap = map.value?.leafletObject;
-    console.log("[bubble-debug] " + JSON.stringify({
-        t: Math.round(performance.now()),
-        event,
-        cachedSize: leafletMap?._size ? [leafletMap._size.x, leafletMap._size.y] : null,
-        sizeChanged: leafletMap?._sizeChanged,
-        zoom: leafletMap?._zoom,
-        animatingZoom: leafletMap?._animatingZoom,
-        features: currentFeatures.value.length,
-        withBubbles: featuresWithBubbles.value.length,
-        featureData: Object.keys(featureData.value).length,
-        plotData: plotData.value.length,
-        refs: featureRefs.value.length,
-        refsWithLayer: featureRefs.value.filter(r => !!r?.leafletObject).length,
-        mapReady: !!leafletMap,
-        sizeIndicator: sizeIndicator.value,
-        colourIndicator: colourIndicator.value
-    }));
-};
 
 const updateMap = () => {
     updateFeatures();
@@ -223,56 +197,42 @@ const featuresWithBubbles = computed(() => {
     return currentFeatures.value.filter(feature => showBubble(feature));
 });
 
+// Fits the map to the areas that have bubbles.
+// fitBounds works out the zoom from the size of the map. Leaflet keeps the size it measured at its last resize. If
+// the map had no width at that moment, the zoom is the lowest one, the whole world, and the map stays there. This
+// happened in the end to end tests: the cached size was 0 x 800 when the output plot updated, and then 825 x 800 again
+// a moment later. So measure the map again before fitting. If it still has no size, wait: Leaflet fires "resize"
+// when it gets one, and then we fit.
+const fitToBubbles = () => {
+    const leafletMap = map.value?.leafletObject;
+    if (!leafletMap) {
+        return;
+    }
+    leafletMap.invalidateSize({pan: false});
+    const size = leafletMap.getSize();
+    if (size.x === 0 || size.y === 0) {
+        // Leaflet ignores a listener that is already registered, so waiting twice adds one listener
+        leafletMap.once("resize", fitToBubbles);
+        return;
+    }
+    buildBubbles();
+    if (featuresWithBubbles.value.length > 0) {
+        leafletMap.fitBounds(featuresWithBubbles.value.map(feature => {
+            const featureRef = getFeatureFromAreaId(feature.properties!.area_id)
+            return featureRef?.leafletObject.getBounds()
+        }));
+        if (circles.value.length > 0) {
+            circles.value.forEach(circle => circle.addTo(leafletMap))
+        }
+    }
+};
+
 // Update bounds can be called multiple times by v-node-updated, but
 // I can't find an appropriate thing to watch to trigger this only once
 // so debounce it instead. If the bound update is called twice in quick
 // succession, it kills the animation. Debouncing this means it should
 // update smoothly
-const updateBoundsDebounced = debounce_leading(() => {
-    debugLog("updateBounds RUN (not dropped)");
-    buildBubbles();
-    if (featuresWithBubbles.value.length > 0) {
-        const bounds = featuresWithBubbles.value.map(feature => {
-            const featureRef = getFeatureFromAreaId(feature.properties!.area_id)
-            return featureRef?.leafletObject.getBounds()
-        });
-        console.log("[bubble-debug] " + JSON.stringify({
-            event: "fitBounds", boundsCount: bounds.length, undefinedBounds: bounds.filter(b => !b).length
-        }));
-        map.value?.leafletObject.fitBounds(bounds);
-        if (circles.value.length > 0) {
-            circles.value.forEach(circle => circle.addTo(map.value?.leafletObject))
-        }
-        debugLog("after fitBounds");
-    } else {
-        debugLog("updateBounds RUN but no features with bubbles, nothing to fit");
-    }
-}, 50)
-
-// Step 4 of the bisect: the last run showed Leaflet's cached width of the map at 0 when the size indicator changed,
-// so fitBounds zoomed out to the world. Log what makes the size change: Leaflet's own resize event (it says the old and
-// new size) and the window's resize event. These are events, not reads, so they should not change the timing.
-const onMapReady = (...args: any[]) => {
-    const leafletMap = map.value?.leafletObject;
-    leafletMap?.on("resize", (e: any) => {
-        console.log("[bubble-debug] " + JSON.stringify({
-            t: Math.round(performance.now()), event: "leaflet resize",
-            oldSize: [e.oldSize?.x, e.oldSize?.y], newSize: [e.newSize?.x, e.newSize?.y]
-        }));
-    });
-    window.addEventListener("resize", () => {
-        console.log("[bubble-debug] " + JSON.stringify({
-            t: Math.round(performance.now()), event: "window resize",
-            innerWidth: window.innerWidth, innerHeight: window.innerHeight
-        }));
-    });
-    return updateBounds(...args);
-};
-
-const updateBounds = (...args: any[]) => {
-    debugLog("updateBounds called");
-    return (updateBoundsDebounced as any)(...args);
-};
+const updateBounds = debounce_leading(fitToBubbles, 50)
 
 const showBubble = (feature: Feature) => {
     return featureData.value[feature.properties!.area_id]
@@ -293,18 +253,15 @@ const getRadius = (feature: Feature) => {
 // But updating the plotSelections will also update the scale selections
 // So using computed we end up with duplicate updates when plotSelections change.
 // So we use watch instead for more control over when things are updated.
-watch(() => [store.state.plotSelections[plotName]], () => { debugLog("watch plotSelections"); updateMap(); });
-watch(colourScales, () => { debugLog("watch colourScales"); updateMapColours(); })
-watch(sizeScales, () => { debugLog("watch sizeScales"); updateBubbleSizes(); })
+watch(() => [store.state.plotSelections[plotName]], updateMap);
+watch(colourScales, updateMapColours)
+watch(sizeScales, updateBubbleSizes)
 
 const style = {
     className: "geojson-grey"
 };
 
-onBeforeUnmount(() => debugLog("Bubble unmounting"));
-
 onMounted(() => {
-    debugLog("Bubble mounted");
     updateFeatures();
     updateMapColours();
     updateSizeScales();
