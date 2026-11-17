@@ -90,7 +90,6 @@ describe(`uploadModal `, () => {
         anc: null,
         shape: null,
         survey: null,
-        vmmc: null,
     }
     const mockOrganization = {
         id: "123abc"

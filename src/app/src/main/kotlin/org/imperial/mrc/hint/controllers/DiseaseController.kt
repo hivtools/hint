@@ -43,13 +43,6 @@ class DiseaseController(fileManager: FileManager,
         return saveAndValidate(file, FileType.ANC)
     }
 
-    @PostMapping("/vmmc/")
-    @ResponseBody
-    fun uploadVmmc(@RequestParam("file") file: MultipartFile): ResponseEntity<String>
-    {
-        return saveAndValidate(file, FileType.Vmmc)
-    }
-
     @GetMapping("/survey/")
     @ResponseBody
     fun getSurvey(): ResponseEntity<String>
@@ -69,13 +62,6 @@ class DiseaseController(fileManager: FileManager,
     fun getANC(): ResponseEntity<String>
     {
         return getAndValidate(FileType.ANC)
-    }
-
-    @GetMapping("/vmmc/")
-    @ResponseBody
-    fun getVmmc(): ResponseEntity<String>
-    {
-        return getAndValidate(FileType.Vmmc)
     }
 
     @DeleteMapping("/survey/")
@@ -99,14 +85,6 @@ class DiseaseController(fileManager: FileManager,
     fun removeANC(): ResponseEntity<String>
     {
         versionRepository.removeVersionFile(session.getVersionId(), FileType.ANC)
-        return EmptySuccessResponse.asResponseEntity()
-    }
-
-    @DeleteMapping("/vmmc/")
-    @ResponseBody
-    fun removeVmmc(): ResponseEntity<String>
-    {
-        versionRepository.removeVersionFile(session.getVersionId(), FileType.Vmmc)
         return EmptySuccessResponse.asResponseEntity()
     }
 }

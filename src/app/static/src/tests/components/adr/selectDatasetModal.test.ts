@@ -58,8 +58,7 @@ describe("select dataset modal", () => {
                 metadataModified: "2020-11-04",
                 name: "Shape Resource"
             }),
-            anc: null,
-            vmmc: null
+            anc: null
         }
     };
 
@@ -82,8 +81,7 @@ describe("select dataset modal", () => {
                 metadataModified: "2020-11-04",
                 name: "Shape Resource"
             }),
-            anc: null,
-            vmmc: null
+            anc: null
         }
     };
 

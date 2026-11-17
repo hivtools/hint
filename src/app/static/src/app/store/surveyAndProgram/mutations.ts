@@ -1,7 +1,7 @@
 import {MutationTree} from 'vuex';
 import {SAPWarnings, SurveyAndProgramState} from "./surveyAndProgram";
 import {PayloadWithType} from "../../types";
-import {AncResponse, ProgrammeResponse, SurveyResponse, VmmcResponse, Error, Warning} from "../../generated";
+import {AncResponse, ProgrammeResponse, SurveyResponse, Error, Warning} from "../../generated";
 import {ReadyState} from "../../root";
 
 export enum SurveyAndProgramMutation {
@@ -14,9 +14,6 @@ export enum SurveyAndProgramMutation {
     ANCUpdated = "ANCUpdated",
     ANCError = "ANCError",
     ANCErroredFile = "ANCErroredFile",
-    VmmcUpdated = "VmmcUpdated",
-    VmmcError = "VmmcError",
-    VmmcErroredFile = "VmmcErroredFile",
     Ready = "Ready",
     WarningsFetched = "WarningsFetched",
     ClearWarnings = "ClearWarnings"
@@ -69,20 +66,6 @@ export const mutations: MutationTree<SurveyAndProgramState> = {
 
     [SurveyAndProgramMutation.ANCErroredFile](state: SurveyAndProgramState, action: PayloadWithType<string>) {
         state.ancErroredFile = action.payload;
-    },
-
-    [SurveyAndProgramMutation.VmmcUpdated](state: SurveyAndProgramState, action: PayloadWithType<VmmcResponse>) {
-        state.vmmc = action.payload;
-        state.vmmcError = null;
-        state.vmmcErroredFile = null;
-    },
-
-    [SurveyAndProgramMutation.VmmcError](state: SurveyAndProgramState, action: PayloadWithType<Error>) {
-        state.vmmcError = action.payload;
-    },
-
-    [SurveyAndProgramMutation.VmmcErroredFile](state: SurveyAndProgramState, action: PayloadWithType<string>) {
-        state.vmmcErroredFile = action.payload;
     },
 
     [SurveyAndProgramMutation.Ready](state: ReadyState) {

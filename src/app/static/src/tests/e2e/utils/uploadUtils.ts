@@ -26,10 +26,6 @@ const uploadFileTypes = {
         translationKey: "ANC",
         testFile: "../testdata/anc.csv"
     },
-    vmmc: {
-        translationKey: "VMMC",
-        testFile: "../testdata/vmmc.xlsx"
-    },
 }
 
 export async function uploadAllTestFiles(page: Page) {

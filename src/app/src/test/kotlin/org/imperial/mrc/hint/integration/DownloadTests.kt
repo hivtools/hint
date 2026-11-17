@@ -93,7 +93,6 @@ class DownloadTests : SecureIntegrationTests()
                         "project_notes" to note,
                         "version_notes" to listOf(note, note)
                 ),
-                "vmmc" to mapOf("filename" to "vmmc", "hash" to "123", "path" to "uploads/vmmc"),
                 "iso3" to "MWI",
         )
 
