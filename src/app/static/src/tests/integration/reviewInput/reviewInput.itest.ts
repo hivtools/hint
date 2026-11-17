@@ -34,5 +34,7 @@ describe("reviewInput actions", () => {
         expect(response.data.length).toBeGreaterThan(0);
         expect(response.data[0].area_id).toContain("MWI");
         expect(response.data[0].value).not.toBeUndefined();
-    });
+        // Uploads four files and fetches the dataset. This takes about 2 seconds alone but more than the default
+        // timeout (6 seconds) when the other test files run at the same time.
+    }, 30000);
 });
