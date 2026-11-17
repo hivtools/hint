@@ -1,6 +1,6 @@
 <template>
     <div>
-        <l-map ref="map" style="height: 800px; width: 100%" @ready="updateBounds" @vue:updated="updateBounds">
+        <l-map ref="map" style="height: 800px; width: 100%" @ready="onMapReady" @vue:updated="updateBounds">
             <l-geo-json v-for="feature in currentFeatures"
                         ref="featureRefs"
                         :key="feature.properties!.area_id"
@@ -248,6 +248,26 @@ const updateBoundsDebounced = debounce_leading(() => {
         debugLog("updateBounds RUN but no features with bubbles, nothing to fit");
     }
 }, 50)
+
+// Step 4 of the bisect: the last run showed Leaflet's cached width of the map at 0 when the size indicator changed,
+// so fitBounds zoomed out to the world. Log what makes the size change: Leaflet's own resize event (it says the old and
+// new size) and the window's resize event. These are events, not reads, so they should not change the timing.
+const onMapReady = (...args: any[]) => {
+    const leafletMap = map.value?.leafletObject;
+    leafletMap?.on("resize", (e: any) => {
+        console.log("[bubble-debug] " + JSON.stringify({
+            t: Math.round(performance.now()), event: "leaflet resize",
+            oldSize: [e.oldSize?.x, e.oldSize?.y], newSize: [e.newSize?.x, e.newSize?.y]
+        }));
+    });
+    window.addEventListener("resize", () => {
+        console.log("[bubble-debug] " + JSON.stringify({
+            t: Math.round(performance.now()), event: "window resize",
+            innerWidth: window.innerWidth, innerHeight: window.innerHeight
+        }));
+    });
+    return updateBounds(...args);
+};
 
 const updateBounds = (...args: any[]) => {
     debugLog("updateBounds called");
