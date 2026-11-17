@@ -285,9 +285,18 @@ async def test_a_file_sent_as_a_form_field_is_an_unsupported_media_type(on_a_ver
     assert r.status_code == 415
 
 
-async def test_a_file_with_no_name_is_a_bad_request(on_a_version, hintr, engine, version_id, uploads_dir):
-    r = await on_a_version.post("/baseline/pjnz", **upload_of(CONTENT, ""))
+async def test_a_file_with_an_empty_name_is_a_bad_request(on_a_version, hintr, engine, version_id, uploads_dir, caplog):
+    # The test client leaves the name out of the request when it is empty, and then the part is a text field and not a
+    # file. So write the multipart body by hand, with `filename=""` and some content.
+    body = b'--b\r\nContent-Disposition: form-data; name="file"; filename=""\r\n\r\nabc\r\n--b--\r\n'
+    r = await on_a_version.post(
+        "/baseline/pjnz", content=body, headers={"Content-Type": "multipart/form-data; boundary=b"}
+    )
     assert r.status_code == 400
+    # The user is shown a code, and the reason is in the log (as for the other `BadRequestError`s)
+    assert [record.reason for record in caplog.records if hasattr(record, "reason")] == [
+        "The uploaded file has no name"
+    ]
     assert files_in(uploads_dir) == []
     assert await version_files(engine, version_id) == {}
     assert hintr.calls == []
