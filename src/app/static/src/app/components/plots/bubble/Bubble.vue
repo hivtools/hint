@@ -110,12 +110,18 @@ const featureRefs = ref<typeof LGeoJson[]>([]);
 
 // TEMPORARY, remove when the e2e failure of the bubble plot (map zoomed out to the world) is understood.
 // Playwright traces keep the console, so a failing CI run shows what happened, in order.
-// Step 2 of the bisect: no reads of the map's size or zoom, because the first version with them stopped the failures.
+// Step 3 of the bisect: no calls of the map's getSize() or getZoom(), because the first version with them stopped the
+// failures (step 2 without them failed again). This reads Leaflet's own fields directly. Reading a field does not
+// measure the page, so it should not change what the map does.
 const debugLog = (event: string) => {
     const leafletMap = map.value?.leafletObject;
     console.log("[bubble-debug] " + JSON.stringify({
         t: Math.round(performance.now()),
         event,
+        cachedSize: leafletMap?._size ? [leafletMap._size.x, leafletMap._size.y] : null,
+        sizeChanged: leafletMap?._sizeChanged,
+        zoom: leafletMap?._zoom,
+        animatingZoom: leafletMap?._animatingZoom,
         features: currentFeatures.value.length,
         withBubbles: featuresWithBubbles.value.length,
         featureData: Object.keys(featureData.value).length,
