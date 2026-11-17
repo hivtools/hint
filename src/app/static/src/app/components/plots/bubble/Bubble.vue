@@ -30,7 +30,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, onMounted, ref, watch} from "vue";
+import {computed, onBeforeUnmount, onMounted, ref, watch} from "vue";
 import {useStore} from "vuex";
 import {RootState} from "../../../root";
 import { LMap, LGeoJson, LTileLayer } from "@vue-leaflet/vue-leaflet";
@@ -107,6 +107,28 @@ const baseMapVisible = ref(true);
 
 const map = ref<typeof LMap | null>(null);
 const featureRefs = ref<typeof LGeoJson[]>([]);
+
+// TEMPORARY, remove when the e2e failure of the bubble plot (map zoomed out to the world) is understood.
+// Playwright traces keep the console, so a failing CI run shows what happened, in order.
+const debugLog = (event: string) => {
+    const leafletMap = map.value?.leafletObject;
+    const size = leafletMap ? leafletMap.getSize() : null;
+    console.log("[bubble-debug] " + JSON.stringify({
+        t: Math.round(performance.now()),
+        event,
+        features: currentFeatures.value.length,
+        withBubbles: featuresWithBubbles.value.length,
+        featureData: Object.keys(featureData.value).length,
+        plotData: plotData.value.length,
+        refs: featureRefs.value.length,
+        refsWithLayer: featureRefs.value.filter(r => !!r?.leafletObject).length,
+        mapReady: !!leafletMap,
+        mapSize: size ? [size.x, size.y] : null,
+        zoom: leafletMap ? leafletMap.getZoom() : null,
+        sizeIndicator: sizeIndicator.value,
+        colourIndicator: colourIndicator.value
+    }));
+};
 
 const updateMap = () => {
     updateFeatures();
@@ -202,18 +224,31 @@ const featuresWithBubbles = computed(() => {
 // so debounce it instead. If the bound update is called twice in quick
 // succession, it kills the animation. Debouncing this means it should
 // update smoothly
-const updateBounds = debounce_leading(() => {
+const updateBoundsDebounced = debounce_leading(() => {
+    debugLog("updateBounds RUN (not dropped)");
     buildBubbles();
     if (featuresWithBubbles.value.length > 0) {
-        map.value?.leafletObject.fitBounds(featuresWithBubbles.value.map(feature => {
+        const bounds = featuresWithBubbles.value.map(feature => {
             const featureRef = getFeatureFromAreaId(feature.properties!.area_id)
             return featureRef?.leafletObject.getBounds()
+        });
+        console.log("[bubble-debug] " + JSON.stringify({
+            event: "fitBounds", boundsCount: bounds.length, undefinedBounds: bounds.filter(b => !b).length
         }));
+        map.value?.leafletObject.fitBounds(bounds);
         if (circles.value.length > 0) {
             circles.value.forEach(circle => circle.addTo(map.value?.leafletObject))
         }
+        debugLog("after fitBounds");
+    } else {
+        debugLog("updateBounds RUN but no features with bubbles, nothing to fit");
     }
 }, 50)
+
+const updateBounds = (...args: any[]) => {
+    debugLog("updateBounds called");
+    return (updateBoundsDebounced as any)(...args);
+};
 
 const showBubble = (feature: Feature) => {
     return featureData.value[feature.properties!.area_id]
@@ -234,15 +269,18 @@ const getRadius = (feature: Feature) => {
 // But updating the plotSelections will also update the scale selections
 // So using computed we end up with duplicate updates when plotSelections change.
 // So we use watch instead for more control over when things are updated.
-watch(() => [store.state.plotSelections[plotName]], updateMap);
-watch(colourScales, updateMapColours)
-watch(sizeScales, updateBubbleSizes)
+watch(() => [store.state.plotSelections[plotName]], () => { debugLog("watch plotSelections"); updateMap(); });
+watch(colourScales, () => { debugLog("watch colourScales"); updateMapColours(); })
+watch(sizeScales, () => { debugLog("watch sizeScales"); updateBubbleSizes(); })
 
 const style = {
     className: "geojson-grey"
 };
 
+onBeforeUnmount(() => debugLog("Bubble unmounting"));
+
 onMounted(() => {
+    debugLog("Bubble mounted");
     updateFeatures();
     updateMapColours();
     updateSizeScales();
