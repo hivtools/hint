@@ -55,7 +55,7 @@
           "query": {
             "hide_inaccessible_resources": "true",
             "include_private": "true",
-            "q": "type:(country-estimates-26)",
+            "q": "type:(country-estimates-27)",
             "rows": "1000"
           },
           "to": "adr"
@@ -90,7 +90,7 @@
                   }
                 ],
                 "title": "Dataset d-input-1",
-                "type": "country-estimates-26"
+                "type": "country-estimates-27"
               },
               {
                 "id": "d-output-1",
@@ -110,7 +110,7 @@
                   }
                 ],
                 "title": "Dataset d-output-1",
-                "type": "country-estimates-26"
+                "type": "country-estimates-27"
               },
               {
                 "id": "d-no-zip",
@@ -124,7 +124,7 @@
                   }
                 ],
                 "title": "Dataset d-no-zip",
-                "type": "country-estimates-26"
+                "type": "country-estimates-27"
               }
             ],
             "errors": [],

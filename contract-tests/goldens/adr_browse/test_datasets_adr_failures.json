@@ -55,7 +55,7 @@
           "query": {
             "hide_inaccessible_resources": "true",
             "include_private": "true",
-            "q": "type:(country-estimates-26)",
+            "q": "type:(country-estimates-27)",
             "rows": "1000"
           },
           "to": "adr"
@@ -100,7 +100,7 @@
           "query": {
             "hide_inaccessible_resources": "true",
             "include_private": "true",
-            "q": "type:(country-estimates-26)",
+            "q": "type:(country-estimates-27)",
             "rows": "1000"
           },
           "to": "adr"
@@ -145,7 +145,7 @@
           "query": {
             "hide_inaccessible_resources": "true",
             "include_private": "true",
-            "q": "type:(country-estimates-26)",
+            "q": "type:(country-estimates-27)",
             "rows": "1000"
           },
           "to": "adr"
@@ -190,7 +190,7 @@
           "query": {
             "hide_inaccessible_resources": "true",
             "include_private": "true",
-            "q": "type:(country-estimates-26)",
+            "q": "type:(country-estimates-27)",
             "rows": "1000"
           },
           "to": "adr"
@@ -235,7 +235,7 @@
           "query": {
             "hide_inaccessible_resources": "true",
             "include_private": "true",
-            "q": "type:(country-estimates-26)",
+            "q": "type:(country-estimates-27)",
             "rows": "1000"
           },
           "to": "adr"
@@ -280,7 +280,7 @@
           "query": {
             "hide_inaccessible_resources": "true",
             "include_private": "true",
-            "q": "type:(country-estimates-26)",
+            "q": "type:(country-estimates-27)",
             "rows": "1000"
           },
           "to": "adr"
@@ -325,7 +325,7 @@
           "query": {
             "hide_inaccessible_resources": "true",
             "include_private": "true",
-            "q": "type:(country-estimates-26)",
+            "q": "type:(country-estimates-27)",
             "rows": "1000"
           },
           "to": "adr"
@@ -370,7 +370,7 @@
           "query": {
             "hide_inaccessible_resources": "true",
             "include_private": "true",
-            "q": "type:(country-estimates-26)",
+            "q": "type:(country-estimates-27)",
             "rows": "1000"
           },
           "to": "adr"
@@ -415,7 +415,7 @@
           "query": {
             "hide_inaccessible_resources": "true",
             "include_private": "true",
-            "q": "type:(country-estimates-26)",
+            "q": "type:(country-estimates-27)",
             "rows": "1000"
           },
           "to": "adr"
@@ -460,7 +460,7 @@
           "query": {
             "hide_inaccessible_resources": "true",
             "include_private": "true",
-            "q": "type:(country-estimates-26)",
+            "q": "type:(country-estimates-27)",
             "rows": "1000"
           },
           "to": "adr"
@@ -474,7 +474,7 @@
           "query": {
             "hide_inaccessible_resources": "true",
             "include_private": "true",
-            "q": "type:(country-estimates-26)",
+            "q": "type:(country-estimates-27)",
             "rows": "1000"
           },
           "to": "adr"
@@ -519,7 +519,7 @@
           "query": {
             "hide_inaccessible_resources": "true",
             "include_private": "true",
-            "q": "type:(country-estimates-26)",
+            "q": "type:(country-estimates-27)",
             "rows": "1000"
           },
           "to": "adr"

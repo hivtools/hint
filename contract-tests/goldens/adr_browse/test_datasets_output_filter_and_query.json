@@ -55,7 +55,7 @@
           "query": {
             "hide_inaccessible_resources": "true",
             "include_private": "true",
-            "q": "type:(country-estimates-26 OR country-estimates-25)",
+            "q": "type:(country-estimates-27 OR country-estimates-26)",
             "rows": "1000"
           },
           "to": "adr"
@@ -90,7 +90,7 @@
                   }
                 ],
                 "title": "Dataset d-output-1",
-                "type": "country-estimates-26"
+                "type": "country-estimates-27"
               },
               {
                 "id": "d-output-old",
@@ -104,7 +104,7 @@
                   }
                 ],
                 "title": "Dataset d-output-old",
-                "type": "country-estimates-25"
+                "type": "country-estimates-26"
               }
             ],
             "errors": [],
