@@ -62,7 +62,7 @@ def test_strict_parameter_semantics(scn):
     for value in ("false", "False", "true", "bogus", ""):
         a.post(PATHS["anc"], files={"file": "anc.csv"}, params={"strict": value}, name=f"strict={value!r}")
     a.get(PATHS["anc"], params={"strict": "bogus"}, name="GET strict=bogus")
-    # hintr is asked with strict=<true|false> on the query string (see the outbound calls recorded)
+    # Kotlin asks hintr with strict=<true|false> on the query string (see the outbound calls recorded). Python does not (D10)
 
 
 def test_survey_errors(scn):

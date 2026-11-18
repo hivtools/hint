@@ -40,7 +40,6 @@ class ProjectService:
 
     async def clone_project_to_user(self, user_id: str, project_id: int, emails: list[str]) -> None:
         """Gives each of the users a copy of the project (and all its versions), marked as shared by user_id."""
-        # How many, not who: a user is an email address, which does not go in the log
         log.info("Cloning project", project=project_id, users=len(emails))
         target_user_ids = []
         for email in emails:

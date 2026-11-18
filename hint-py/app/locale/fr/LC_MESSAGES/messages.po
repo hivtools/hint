@@ -46,9 +46,6 @@ msgstr "L'utilisateur n'existe pas."
 msgid "missingShapeFile"
 msgstr "Vous devez télécharger un fichier de formes avant de télécharger des données d’enquête ou de programme."
 
-msgid "missingPjnzFile"
-msgstr "Vous devez télécharger un fichier Spectrum avant de télécharger des données d’enquête ou de programme."
-
 msgid "invalidToken"
 msgstr "Le jeton n'est pas valide."
 

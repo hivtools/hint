@@ -18,6 +18,7 @@ import {BaselineMutation} from "../../app/store/baseline/mutations";
 import {expectClearReviewInputCommits, expectEqualsFrozen, testUploadErrorCommitted} from "../testHelpers";
 import type {ADRSchemas} from "../../app/types";
 import type {Mock} from "vitest";
+import {sessionStorageManager} from "../../app/sessionStorageManager";
 
 const adrSchemas: ADRSchemas = {
     baseUrl: "adr.com",
@@ -154,10 +155,25 @@ describe("Baseline actions", () => {
         // stop apiService logging to console
         console.log = vi.fn();
         mockAxios.reset();
+        // A tab with an open version. The requests for data use the id of this version.
+        sessionStorageManager.saveVersionId("version-1");
     });
 
     afterEach(() => {
         (console.log as Mock).mockClear();
+        sessionStorageManager.saveVersionId(null);
+    });
+
+    it("asks for no baseline data and marks the state ready when the tab has no version open", async () => {
+        sessionStorageManager.saveVersionId(null);
+        const commit = vi.fn();
+        const dispatch = vi.fn();
+        await actions.getBaselineData({commit, dispatch, rootState, state: {iso3: ""}} as any);
+
+        expect(mockAxios.history["get"].length).toBe(0);
+        expect(dispatch).not.toHaveBeenCalled();
+        expect(commit).toBeCalledTimes(1);
+        expect(commit.mock.calls[0][0]).toStrictEqual({type: BaselineMutation.Ready, payload: true});
     });
 
     it("sets country and iso3 after PJNZ file upload and validates", async () => {

@@ -56,8 +56,10 @@ services:
   hintr:
     # scripts/dev.sh sets this from src/config/hintr_version
     image: ghcr.io/hivtools/hintr:${HINTR_VERSION:-main}
-    # hint sends hintr the path "<upload_dir>/<hash>" with upload_dir relative (config.properties: "uploads"), and hintr
-    # runs in "/", so the folder is mounted at "/<name>". scripts/dev.sh gives a second stack (PORT_OFFSET) other names.
+    # The Kotlin app sends hintr the path "<upload_dir>/<hash>". In production, upload_dir is "/uploads"
+    # (src/docker/config.properties). In the development config it is a relative path: "uploads" (config.properties).
+    # hintr runs in "/", so in both cases the folder is mounted at "/<name>". The Python app always sends the absolute
+    # path "/<name>/<hash>". This is the same file. scripts/dev.sh gives a second stack (PORT_OFFSET) other names.
     command: ["--results-dir=/${RESULTS_NAME:-results}", "--inputs-dir=/${UPLOADS_NAME:-uploads}"]
     ports:
       - "${HINTR_PORT:-8888}:8888"
@@ -87,8 +89,9 @@ services:
       # Through the recording and faulting proxy the contract tests put in front of hintr, like Kotlin's hintr_url.
       # It runs on the host (see ensure_stubs in scripts/dev.sh).
       HINT_HINTR_URL: http://host.docker.internal:${FAULT_PORT:-8882}
-      # What hint tells hintr the uploaded files are called, as in Kotlin's upload_dir
-      HINT_UPLOAD_DIR: ${UPLOADS_NAME:-uploads}
+      # The folder where this container writes the uploaded files. It tells hintr that the files are in this folder.
+      # The share is at the same path in both containers.
+      HINT_UPLOAD_DIR: /${UPLOADS_NAME:-uploads}
       # Where this container sees the results hintr writes. The path hintr gives for a result is relative to its own
       # results folder, so this is mounted at the same place as in hintr
       HINT_RESULTS_DIR: /${RESULTS_NAME:-results}
@@ -104,6 +107,8 @@ services:
       - "host.docker.internal:host-gateway"
     volumes:
       - ./hint-py:/app
+      # This container writes the uploaded files here
+      - ./src/app/${UPLOADS_NAME:-uploads}:/${UPLOADS_NAME:-uploads}
       # Only read, never written
       - ./src/app/${RESULTS_NAME:-results}:/${RESULTS_NAME:-results}:ro
     # sh, so that OTEL_LAUNCHER (empty unless OTEL=1) can go in front of fastapi

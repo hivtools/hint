@@ -1,5 +1,5 @@
 import {actions} from "../../app/store/baseline/actions";
-import {login, rootState} from "./integrationTest";
+import {closeVersion, login, openVersion, rootState} from "./integrationTest";
 import {getFormData} from "./helpers";
 import {BaselineMutation} from "../../app/store/baseline/mutations";
 
@@ -7,7 +7,10 @@ describe("Baseline actions", () => {
 
     beforeAll(async () => {
         await login();
+        await openVersion();
     });
+
+    afterAll(() => closeVersion());
 
     const state = {iso3: "Malawi"}
 
