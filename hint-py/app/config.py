@@ -50,6 +50,20 @@ class Settings(BaseSettings):
     # ANC (csv): the largest was under 1 MB.
     max_anc_upload_bytes: int = 10 * 1024 * 1024
 
+    # ADR, the UNAIDS data repository (adr_url in the Kotlin config.properties). It is sent to the browser (GET /adr/schemas),
+    # which builds the links to the datasets from it.
+    adr_url: str = "https://dev.adr.fjelltopp.org/"
+    # The resource type (schema) that ADR gives to each kind of file. The same as the adr_*_schema of config.properties.
+    adr_anc_schema: str = "inputs-unaids-anc"
+    adr_art_schema: str = "inputs-unaids-art"
+    adr_pjnz_schema: str = "inputs-unaids-spectrum-file"
+    adr_pop_schema: str = "inputs-unaids-population"
+    adr_shape_schema: str = "inputs-unaids-geographic"
+    adr_survey_schema: str = "inputs-unaids-survey"
+    adr_output_zip_schema: str = "inputs-unaids-naomi-output-zip"
+    adr_output_summary_schema: str = "inputs-unaids-naomi-report"
+    adr_output_comparison_schema: str = "inputs-unaids-naomi-comparison-report"
+
     # The folder hintr writes the results of tasks to. This API does open
     # these: it reads the results database of a calibration and sends the files made by a download. hintr answers with
     # paths relative to its own results folder, which this is the same share as, so the two are mounted differently

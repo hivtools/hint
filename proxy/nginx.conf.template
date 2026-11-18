@@ -51,6 +51,8 @@ server {
     location /calibrate/result/metadata/ { include snippets/python.conf; }
     location /calibrate/plot/ { include snippets/python.conf; }
     location /download/status/ { include snippets/python.conf; }
+    # Config only. /adr/schemas/ (trailing slash) stays with Kotlin, as the rest of /adr/ does
+    location = /adr/schemas { include snippets/python.conf; }
     # Calls that add the files of the version to the call
     location /chart-data/ { include snippets/python.conf; }
     location /meta/review-inputs/ { include snippets/python.conf; }

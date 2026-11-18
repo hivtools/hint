@@ -84,7 +84,7 @@ Every endpoint of the Kotlin app, in the order of the [endpoint index](endpoint-
 | GET | `/adr/key` | Gets the user's saved ADR API key | [ ] | |
 | POST | `/adr/key` | Saves the user's ADR API key | [ ] | |
 | DELETE | `/adr/key` | Deletes the user's ADR API key | [ ] | |
-| GET | `/adr/schemas` | ADR resource type names for each file type (from config) | [ ] | |
+| GET | `/adr/schemas` | ADR resource type names for each file type (from config) | [x] | Config only (`adr_url` and the `adr_*_schema` settings, `HINT_ADR_URL` and so on: a deployment that set these in Kotlin's config must set them for Python). Only the exact path `/adr/schemas` is Python: the Vue app now calls it without the trailing slash, and `/adr/schemas/` stays with Kotlin. The answer has no `vmmc`, as Kotlin since the VMMC removal (the golden was recorded before, and is edited to match) |
 | GET | `/adr/datasets` | Searches ADR datasets | [ ] | |
 | GET | `/adr/datasets/{id}` | One ADR dataset and its resources | [ ] | |
 | GET | `/adr/datasets/{id}/releases` | Releases of an ADR dataset | [ ] | |

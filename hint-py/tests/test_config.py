@@ -30,3 +30,12 @@ def test_results_dir_defaults_to_the_folder_hintr_writes_to_and_can_be_set(monke
     assert Settings().results_dir == "results"
     monkeypatch.setenv("HINT_RESULTS_DIR", "/mnt/results")
     assert Settings().results_dir == "/mnt/results"
+
+
+def test_adr_url_and_resource_types_default_to_those_of_the_kotlin_config_and_can_be_set(monkeypatch):
+    assert Settings().adr_url == "https://dev.adr.fjelltopp.org/"
+    assert Settings().adr_art_schema == "inputs-unaids-art"
+    monkeypatch.setenv("HINT_ADR_URL", "https://adr.example/")
+    monkeypatch.setenv("HINT_ADR_ART_SCHEMA", "my-art")
+    assert Settings().adr_url == "https://adr.example/"
+    assert Settings().adr_art_schema == "my-art"
