@@ -50,8 +50,7 @@ class Settings(BaseSettings):
     # ANC (csv): the largest was under 1 MB.
     max_anc_upload_bytes: int = 10 * 1024 * 1024
 
-    # ADR, the UNAIDS data repository (adr_url in the Kotlin config.properties). It is sent to the browser (GET /adr/schemas),
-    # which builds the links to the datasets from it.
+    # ADR URL. It is sent to the browser (GET /adr/schemas), which builds the links to the datasets from it.
     adr_url: str = "https://dev.adr.fjelltopp.org/"
     # The resource type (schema) that ADR gives to each kind of file. The same as the adr_*_schema of config.properties.
     adr_anc_schema: str = "inputs-unaids-anc"

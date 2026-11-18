@@ -42,8 +42,7 @@
               "population": "inputs-unaids-population",
               "programme": "inputs-unaids-art",
               "shape": "inputs-unaids-geographic",
-              "survey": "inputs-unaids-survey",
-              "vmmc": "inputs-unaids-vmmc-coverage-outputs"
+              "survey": "inputs-unaids-survey"
             },
             "errors": [],
             "status": "success"
@@ -75,8 +74,7 @@
               "population": "inputs-unaids-population",
               "programme": "inputs-unaids-art",
               "shape": "inputs-unaids-geographic",
-              "survey": "inputs-unaids-survey",
-              "vmmc": "inputs-unaids-vmmc-coverage-outputs"
+              "survey": "inputs-unaids-survey"
             },
             "errors": [],
             "status": "success"

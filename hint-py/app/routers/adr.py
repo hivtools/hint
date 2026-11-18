@@ -10,8 +10,6 @@ from app.schemas import SuccessResponse, success
 router = APIRouter(prefix="/adr", tags=["adr"])
 
 
-# The Vue app calls this without a trailing slash. Kotlin also answers /adr/schemas/, which stays with Kotlin for now:
-# only the exact path has a location in nginx.conf.template.
 @router.get("/schemas")
 async def file_type_mappings(settings: Annotated[Settings, Depends(get_settings)]) -> SuccessResponse[dict[str, str]]:
     """The resource type that ADR gives to each kind of file, and the address of ADR. Config only: no login, no ADR call."""

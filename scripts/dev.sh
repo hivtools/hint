@@ -197,6 +197,8 @@ do_up() { # $1 = pull | nopull, then --no-proxy, --rebuild
   fi
   if [ "${REAL_ADR:-0}" = 1 ]; then echo 1 > "$STATE/real_adr"; else rm -f "$STATE/real_adr"; fi
 
+  # The ADR address that the Python API sends to the browser is the one Kotlin has (see docker-compose.yml)
+  if [ "${REAL_ADR:-0}" = 1 ]; then unset PYTHON_ADR_URL; else export PYTHON_ADR_URL="http://127.0.0.1:$STUB_PORT/adr/"; fi
   if [ "$pull" = pull ] && [ "${NO_PULL:-0}" != 1 ]; then compose pull -q --ignore-buildable; fi
   if [ "$mode" = proxy ]; then compose --profile proxy up -d --build --wait; else compose up -d --wait; fi
   wait_http hintr "http://127.0.0.1:$HINTR_PORT/" 60
