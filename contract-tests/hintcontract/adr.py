@@ -9,8 +9,8 @@ SCHEMAS = {
     "vmmc": "inputs-unaids-vmmc-coverage-outputs", "outputZip": "inputs-unaids-naomi-output-zip",
     "outputSummary": "inputs-unaids-naomi-report", "outputComparison": "inputs-unaids-naomi-comparison-report",
 }
-THIS_YEAR = "country-estimates-26"
-LAST_YEAR = "country-estimates-25"
+THIS_YEAR = "country-estimates-27"
+LAST_YEAR = "country-estimates-26"
 API_KEY = "4c69b103-4532-4b30-8a37-27a15e56c0bb"
 
 

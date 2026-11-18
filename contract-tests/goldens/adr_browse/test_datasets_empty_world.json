@@ -55,7 +55,7 @@
           "query": {
             "hide_inaccessible_resources": "true",
             "include_private": "true",
-            "q": "type:(country-estimates-26)",
+            "q": "type:(country-estimates-27)",
             "rows": "1000"
           },
           "to": "adr"
@@ -95,7 +95,7 @@
           "query": {
             "hide_inaccessible_resources": "true",
             "include_private": "true",
-            "q": "type:(country-estimates-26 OR country-estimates-25)",
+            "q": "type:(country-estimates-27 OR country-estimates-26)",
             "rows": "1000"
           },
           "to": "adr"

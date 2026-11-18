@@ -95,7 +95,7 @@
           "query": {
             "hide_inaccessible_resources": "true",
             "include_private": "true",
-            "q": "type:(country-estimates-26)",
+            "q": "type:(country-estimates-27)",
             "rows": "1000"
           },
           "to": "adr-sso"
@@ -130,7 +130,7 @@
                   }
                 ],
                 "title": "Dataset d1",
-                "type": "country-estimates-26"
+                "type": "country-estimates-27"
               }
             ],
             "errors": [],
@@ -156,7 +156,7 @@
           "query": {
             "hide_inaccessible_resources": "true",
             "include_private": "true",
-            "q": "type:(country-estimates-26)",
+            "q": "type:(country-estimates-27)",
             "rows": "1000"
           },
           "to": "adr-sso"
@@ -201,7 +201,7 @@
           "query": {
             "hide_inaccessible_resources": "true",
             "include_private": "true",
-            "q": "type:(country-estimates-26)",
+            "q": "type:(country-estimates-27)",
             "rows": "1000"
           },
           "to": "adr-sso"
