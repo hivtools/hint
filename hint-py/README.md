@@ -20,10 +20,13 @@ app/schemas.py       request and response models
 app/errors.py        errors in the format the Vue app expects, with translated messages
 app/logging_setup.py where the logs go (see Logging below)
 app/messages.py      looks up translations in app/locale/ (gettext .po files, one per language, read with Babel)
-app/services/        logic that spans repositories
+app/clients/         the HTTP services this API calls: hintr and ADR
+app/storage/         the files on the share: the uploads this API writes, and the results hintr writes
+app/services/        the rules that combine repositories, storage and clients (e.g. taking in an input file)
 app/routers/         one module per group of endpoints
 tests/api/           endpoint tests, through the whole app on an in memory test database
 tests/db/            repository and session tests
+tests/storage/       tests of the files on the share
 tests/               everything else (config, errors, messages, dependencies), shared fixtures in conftest.py
 ```
 
