@@ -34,6 +34,11 @@ dev = [
 pythonpath = ["."]
 testpaths = ["tests"]
 asyncio_mode = "auto"
+# `make test` does not run the tests that call the real dev ADR. Run them with `make test-adr`.
+addopts = "-m 'not adr_live'"
+markers = [
+    "adr_live: calls the real dev ADR with the key in ADR_TEST_KEY. Skipped if there is no key. The dev ADR only accepts some IP addresses (its Front Door blocks bots), so these tests fail on CI for now.",
+]
 
 [tool.coverage.run]
 source = ["app"]
