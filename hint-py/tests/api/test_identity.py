@@ -15,6 +15,7 @@ def test_whoami_reads_identity_headers():
         "version_id": None,
         "is_guest": False,
         "guest_version_ids": [],
+        "has_access_token": False,
     }
 
 
@@ -47,6 +48,17 @@ def test_guest_without_versions():
 def test_a_logged_in_user_has_no_guest_versions_whatever_the_header_says():
     r = client.get("/items/whoami", headers={**IDENTITY, "X-Hint-Guest-Versions": "v1"})
     assert r.json()["guest_version_ids"] == []
+
+
+def test_the_access_token_of_an_sso_user_is_read_but_never_returned():
+    r = client.get("/items/whoami", headers={**IDENTITY, "X-Hint-Access-Token": "an.auth0.token"})
+    assert r.json()["has_access_token"] is True
+    assert "an.auth0.token" not in r.text
+
+
+def test_a_blank_access_token_header_means_no_token():
+    r = client.get("/items/whoami", headers={**IDENTITY, "X-Hint-Access-Token": ""})
+    assert r.json()["has_access_token"] is False
 
 
 def test_missing_identity_is_rejected():
