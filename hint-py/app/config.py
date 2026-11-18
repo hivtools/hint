@@ -30,6 +30,26 @@ class Settings(BaseSettings):
     # "<upload_dir>/<hash>". So the share must be at the same path in both containers. The path is "/uploads".
     upload_dir: str = "/uploads"
 
+    # The most that one uploaded file (the whole request that uploads it) may be, in bytes, for each kind of file. Each is
+    # about twice the largest file of its kind that a saved version used in November 2026 (the files of 1,000 to 1,800
+    # versions for PJNZ, programme and ANC, and 200 to 300 for the others). A user on a slow connection hits Azure's limit
+    # first: a request that takes more than 240 seconds is cancelled by the ingress. These are for the input files, and not
+    # for output zips (the largest a version used was 234 MB): the endpoint that loads one will need a limit of its own.
+    # Each upload in flight also takes its size of ephemeral disk (see app/upload_limit.py: about 10 of the largest fit at
+    # 1 vCPU).
+    # PJNZ (a subnational PJNZ is large, and may be a zip): the largest was 187 MB.
+    max_pjnz_upload_bytes: int = 400 * 1024 * 1024
+    # Shape (geojson): the largest was 44 MB.
+    max_shape_upload_bytes: int = 100 * 1024 * 1024
+    # Population (csv): the largest was 67 MB.
+    max_population_upload_bytes: int = 150 * 1024 * 1024
+    # Survey (csv): the largest was 25 MB.
+    max_survey_upload_bytes: int = 50 * 1024 * 1024
+    # Programme (csv): the largest was 8 MB.
+    max_programme_upload_bytes: int = 20 * 1024 * 1024
+    # ANC (csv): the largest was under 1 MB.
+    max_anc_upload_bytes: int = 10 * 1024 * 1024
+
     # The folder hintr writes the results of tasks to. This API does open
     # these: it reads the results database of a calibration and sends the files made by a download. hintr answers with
     # paths relative to its own results folder, which this is the same share as, so the two are mounted differently

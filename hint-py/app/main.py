@@ -11,6 +11,7 @@ from app.db.database import create_db_session_factory, create_engine
 from app.errors import register_error_handlers
 from app.logging_setup import configure_logging
 from app.routers import calibrate_results, downloads, hintr_forwards, input_files, items, model, projects, review_inputs
+from app.upload_limit import UploadSizeLimitMiddleware
 
 # pyproject.toml is the one place the version is set. The project is not installed as a package, so there is no
 # package metadata to read it from.
@@ -30,6 +31,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None]:
 
 app = FastAPI(lifespan=lifespan)
 register_error_handlers(app)
+app.add_middleware(UploadSizeLimitMiddleware, limits=input_files.UPLOAD_LIMITS)
 
 app.include_router(items.router)
 app.include_router(projects.router)

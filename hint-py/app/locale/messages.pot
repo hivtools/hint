@@ -41,6 +41,14 @@ msgstr ""
 msgid "missingShapeFile"
 msgstr ""
 
+#. Placeholders: {max_size} (such as "200 MB").
+msgid "fileTooLarge"
+msgstr ""
+
+#. Placeholders: {expected} (such as "PJNZ, zip"), {got}.
+msgid "invalidFileExtension"
+msgstr ""
+
 msgid "invalidToken"
 msgstr ""
 
