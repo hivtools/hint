@@ -24,7 +24,7 @@ export const getAdrDatasetUrl = (datasetType: AdrDatasetType): string => {
 export const getAdrReleaseUrl = (datasetType: AdrDatasetType, datasetId: string): string => {
     switch (datasetType) {
         case AdrDatasetType.Input:
-            return `/adr/datasets/${datasetId}/releases/`;
+            return `/adr/datasets/${datasetId}/releases`;
         case AdrDatasetType.Output:
             return `/adr/datasets/${datasetId}/releases?type=${AdrDatasetType.Output}`;
         default:
