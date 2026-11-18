@@ -30,7 +30,7 @@ dev = [
 ]
 
 [tool.pytest.ini_options]
-# Put the project root on sys.path so `from app.main import app` resolves
+# Put the project root on sys.path so `from app.main import create_app` resolves
 pythonpath = ["."]
 testpaths = ["tests"]
 asyncio_mode = "auto"

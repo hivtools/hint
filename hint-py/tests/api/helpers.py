@@ -4,6 +4,7 @@ import json
 from datetime import datetime
 
 import httpx2
+from fastapi import FastAPI
 from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncEngine
 
@@ -11,14 +12,13 @@ from app import schemas
 from app.db.database import create_db_session_factory
 from app.db.models import File, ProjectVersion
 from app.db.version_repository import VersionRepository
-from app.main import app
 from app.schemas import FileType
 
 STATE = json.dumps({"datasets": {}, "model_fit": {"id": "abc"}, "step": 3})
 
 
-def make_client(user: str, version_id: str | None = None) -> httpx2.AsyncClient:
-    """A client of the app, who the proxy has identified as `user` (and working on `version_id`, if given).
+def make_client(app: FastAPI, user: str, version_id: str | None = None) -> httpx2.AsyncClient:
+    """A client of `app`, who the proxy has identified as `user` (and working on `version_id`, if given).
 
     Unhandled errors in the app are answered with a 500, as a real client would see, rather than raised in the test.
     """

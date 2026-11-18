@@ -1,8 +1,5 @@
 """GET /adr/schemas (app/routers/adr.py): config only, so it needs no identity, no version, no database and no hintr."""
 
-from app.config import Settings, get_settings
-from app.main import app
-
 
 async def test_gives_the_resource_types_and_the_address_of_adr(anonymous_client):
     r = await anonymous_client.get("/adr/schemas")
@@ -31,14 +28,12 @@ async def test_has_no_vmmc_type(anonymous_client):
     assert "vmmc" not in (await anonymous_client.get("/adr/schemas")).json()["data"]
 
 
-async def test_the_settings_are_what_is_sent(anonymous_client):
-    app.dependency_overrides[get_settings] = lambda: Settings(
-        adr_url="https://adr.example/", adr_pjnz_schema="my-pjnz", adr_output_zip_schema="my-zip"
-    )
-    try:
-        data = (await anonymous_client.get("/adr/schemas")).json()["data"]
-    finally:
-        app.dependency_overrides.pop(get_settings, None)
+async def test_the_settings_are_what_is_sent(anonymous_client, settings):
+    settings.adr_url = "https://adr.example/"
+    settings.adr_pjnz_schema = "my-pjnz"
+    settings.adr_output_zip_schema = "my-zip"
+
+    data = (await anonymous_client.get("/adr/schemas")).json()["data"]
 
     assert data["baseUrl"] == "https://adr.example/"
     assert data["pjnz"] == "my-pjnz"

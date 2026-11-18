@@ -191,7 +191,7 @@ def unexpected_error(request: Request, status_code: int, reason: str, exc_info: 
         reason=reason,
         exc_info=exc_info,
     )
-    settings = get_settings()
+    settings = get_settings(request)
     language = negotiate_language(request.headers.get("accept-language"))
     detail = t(
         "unexpectedError",

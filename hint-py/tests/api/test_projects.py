@@ -113,13 +113,13 @@ async def test_current_project_is_null_without_a_version(api):
     assert r.json() == {"data": {"project": None, "version": None}, "errors": [], "status": "success"}
 
 
-async def test_current_project_is_the_one_the_tab_is_working_on(api):
+async def test_current_project_is_the_one_the_tab_is_working_on(app, api):
     project = await create_project(api, "p")
     v1 = project["versions"][0]["id"]
     v2 = (await api.post(f"/project/{project['id']}/version", json={"parent": v1, "note": "second"})).json()["data"]
 
     for version_id in (v1, v2["id"]):
-        async with make_client(USER, version_id) as tab:
+        async with make_client(app, USER, version_id) as tab:
             data = (await tab.get("/project/current")).json()["data"]
         assert data["version"]["id"] == version_id
         assert data["project"]["id"] == project["id"]
@@ -128,12 +128,12 @@ async def test_current_project_is_the_one_the_tab_is_working_on(api):
         assert [v["versionNumber"] for v in data["project"]["versions"]] == [1, 2]
 
 
-async def test_current_project_is_null_for_a_version_that_is_not_the_users(api, other_api):
+async def test_current_project_is_null_for_a_version_that_is_not_the_users(app, api, other_api):
     version_id = (await create_project(api))["versions"][0]["id"]
 
-    async with make_client(OTHER_USER, version_id) as tab:
+    async with make_client(app, OTHER_USER, version_id) as tab:
         assert (await tab.get("/project/current")).json()["data"] == {"project": None, "version": None}
-    async with make_client(USER, "unknown") as tab:
+    async with make_client(app, USER, "unknown") as tab:
         assert (await tab.get("/project/current")).json()["data"] == {"project": None, "version": None}
 
 

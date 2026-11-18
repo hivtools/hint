@@ -18,10 +18,11 @@ from collections.abc import AsyncIterator
 import httpx2
 import pytest
 import pytest_asyncio
+from pydantic import SecretStr
 
 from app.clients.adr_client import create_adr_http_client
 from app.config import Settings
-from app.main import app
+from app.main import create_app
 from tests.api.helpers import make_client
 from tests.support import USER
 
@@ -37,15 +38,15 @@ OUTPUT_ZIP = "inputs-unaids-naomi-output-zip"
 
 
 @pytest_asyncio.fixture
-async def live(settings_overrides: dict, caplog: pytest.LogCaptureFixture) -> AsyncIterator[httpx2.AsyncClient]:
-    """USER, with the app calling the real ADR (at `adr_url`, the dev ADR) with the key."""
+async def live(caplog: pytest.LogCaptureFixture) -> AsyncIterator[httpx2.AsyncClient]:
+    """USER, with an app calling the real ADR (at `adr_url`, the dev ADR) with the key. It needs no database."""
     key = os.environ["ADR_TEST_KEY"]
-    settings_overrides["environment"] = "development"
-    settings_overrides["adr_api_key"] = key
-    app.state.adr_http = create_adr_http_client(Settings(environment="development"))
-    async with make_client(USER) as client:
+    settings = Settings(environment="development", adr_api_key=SecretStr(key))
+    async with (
+        create_adr_http_client(settings) as adr_http,
+        make_client(create_app(settings, adr_http=adr_http), USER) as client,
+    ):
         yield client
-    await app.state.adr_http.aclose()
     assert key not in caplog.text, "the key of ADR is in the log"
 
 

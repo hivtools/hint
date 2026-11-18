@@ -11,7 +11,7 @@ the nginx proxy passes the user's identity to this API in headers (see `app/depe
 ## Layout
 
 ```
-app/main.py          creates the FastAPI app and includes the routers
+app/main.py          `create_app` makes the FastAPI app from the settings, with the routers; `app` is the one served
 app/dependencies.py  shared FastAPI dependencies, e.g. who is making the request
 app/config.py        settings, read from HINT_* environment variables
 app/db/              engine and session (database.py), SQLAlchemy tables (models.py), and the queries, one repository per
@@ -24,7 +24,7 @@ app/clients/         the HTTP services this API calls: hintr and ADR
 app/storage/         the files on the share: the uploads this API writes, and the results hintr writes
 app/services/        the rules that combine repositories, storage and clients (e.g. taking in an input file)
 app/routers/         one module per group of endpoints
-tests/api/           endpoint tests, through the whole app on an in memory test database
+tests/api/           endpoint tests, through the whole app (one for each test) on an in memory test database
 tests/db/            repository and session tests
 tests/storage/       tests of the files on the share
 tests/               everything else (config, errors, messages, dependencies), shared fixtures in conftest.py

@@ -13,6 +13,7 @@ from typing import Any
 import httpx2
 import pytest
 
+from app.config import Settings
 from app.db.database import create_db_session_factory
 from app.db.version_repository import VersionRepository
 from tests.api.helpers import add_files, create_project, hintr_file, known_hashes, make_client, version_files
@@ -43,9 +44,10 @@ def stored_as(file_type: str) -> str:
     return f"{ABC}.{GOOD_NAMES[file_type].rsplit('.', 1)[1]}"
 
 
-def set_limits(settings_overrides: dict, limit: int) -> None:
+def set_limits(settings: Settings, limit: int) -> None:
     """The same size limit for every kind of file."""
-    settings_overrides.update(dict.fromkeys(LIMIT_SETTINGS.values(), limit))
+    for setting in LIMIT_SETTINGS.values():
+        setattr(settings, setting, limit)
 
 
 def md5(content: bytes) -> str:
@@ -127,10 +129,10 @@ async def test_a_disease_file_is_validated_against_the_shape_file(
 
 
 async def test_the_upload_dir_is_where_the_files_are_written_and_where_hintr_is_told_they_are(
-    on_a_version, hintr, tmp_path, settings_overrides
+    on_a_version, hintr, tmp_path, settings
 ):
     folder = tmp_path / "share"
-    settings_overrides["upload_dir"] = str(folder)
+    settings.upload_dir = str(folder)
     await on_a_version.post("/baseline/pjnz", **upload_of())
     assert files_in(folder) == [f"{ABC}.PJNZ"]
     assert sent_to_hintr(hintr)[0][2]["file"]["path"] == f"{folder}/{ABC}.PJNZ"
@@ -245,9 +247,9 @@ def multipart(content: bytes) -> tuple[bytes, str]:
 
 @pytest.mark.parametrize("file_type", BASELINE + DISEASE)
 async def test_a_file_over_the_limit_is_refused_and_nothing_is_kept(
-    on_a_version, hintr, engine, version_id, uploads_dir, settings_overrides, file_type
+    on_a_version, hintr, engine, version_id, uploads_dir, settings, file_type
 ):
-    set_limits(settings_overrides, 1000)
+    set_limits(settings, 1000)
     response = await on_a_version.post(URLS[file_type], **upload_of(b"x" * 2000))
     assert response.status_code == 413
     assert response.json() == {
@@ -273,11 +275,11 @@ async def test_a_file_over_the_limit_is_refused_and_nothing_is_kept(
     ],
 )
 async def test_each_kind_of_file_has_its_own_limit(
-    on_a_version, hintr, engine, version_id, uploads_dir, settings_overrides, file_type, setting
+    on_a_version, hintr, engine, version_id, uploads_dir, settings, file_type, setting
 ):
     """Only the limit of the kind of file counts: this one is small, the others are as big as the file."""
-    set_limits(settings_overrides, 10_000)
-    settings_overrides[setting] = 1000
+    set_limits(settings, 10_000)
+    setattr(settings, setting, 1000)
     await add_files(engine, version_id, "pjnz", "shape")
     assert (await on_a_version.post(URLS[file_type], **upload_for(file_type, b"x" * 2000))).status_code == 413
     others = [t for t in URLS if LIMIT_SETTINGS[t] != setting]
@@ -286,16 +288,16 @@ async def test_each_kind_of_file_has_its_own_limit(
         assert (await on_a_version.post(URLS[other], **upload_for(other, b"x" * 2000))).status_code == 200
 
 
-async def test_a_file_within_the_limit_is_accepted(on_a_version, hintr, uploads_dir, settings_overrides):
-    set_limits(settings_overrides, 1000)
+async def test_a_file_within_the_limit_is_accepted(on_a_version, hintr, uploads_dir, settings):
+    set_limits(settings, 1000)
     response = await on_a_version.post("/baseline/pjnz", **upload_of(b"x" * 500))
     assert response.status_code == 200
 
 
 async def test_a_request_that_does_not_say_how_big_it_is_is_stopped_at_the_limit(
-    on_a_version, hintr, engine, version_id, uploads_dir, settings_overrides
+    on_a_version, hintr, engine, version_id, uploads_dir, settings
 ):
-    set_limits(settings_overrides, 1000)
+    set_limits(settings, 1000)
     body, content_type = multipart(b"x" * 5000)
 
     async def in_chunks():
@@ -311,9 +313,9 @@ async def test_a_request_that_does_not_say_how_big_it_is_is_stopped_at_the_limit
 
 
 async def test_a_request_that_says_less_than_it_sends_is_stopped_at_the_limit(
-    on_a_version, hintr, uploads_dir, settings_overrides
+    on_a_version, hintr, uploads_dir, settings
 ):
-    set_limits(settings_overrides, 1000)
+    set_limits(settings, 1000)
     body, content_type = multipart(b"x" * 5000)
     headers = {"content-type": content_type, "content-length": "500"}
     response = await on_a_version.post("/baseline/pjnz", content=body, headers=headers)
@@ -321,8 +323,8 @@ async def test_a_request_that_says_less_than_it_sends_is_stopped_at_the_limit(
     assert files_in(uploads_dir) == []
 
 
-async def test_the_limit_is_said_in_the_language_of_the_request(on_a_version, hintr, settings_overrides):
-    set_limits(settings_overrides, 3 * 1024 * 1024)
+async def test_the_limit_is_said_in_the_language_of_the_request(on_a_version, hintr, settings):
+    set_limits(settings, 3 * 1024 * 1024)
     big = upload_of(b"x" * (4 * 1024 * 1024))
     english = await on_a_version.post("/baseline/pjnz", **big)
     french = await on_a_version.post("/baseline/pjnz", headers={"Accept-Language": "fr"}, **big)
@@ -333,8 +335,8 @@ async def test_the_limit_is_said_in_the_language_of_the_request(on_a_version, hi
     )
 
 
-async def test_the_limit_is_on_the_uploads_and_not_on_other_requests(on_a_version, settings_overrides):
-    set_limits(settings_overrides, 10)
+async def test_the_limit_is_on_the_uploads_and_not_on_other_requests(on_a_version, settings):
+    set_limits(settings, 10)
     response = await on_a_version.post("/session/files", json={"pjnz": None})
     assert response.status_code == 200
 
@@ -373,10 +375,10 @@ async def test_the_same_content_as_two_types_is_one_file_and_two_rows(
     assert files["anc"] == files["programme"] == (f"{ABC}.csv", "data.csv", False, None)
 
 
-async def test_two_users_uploading_the_same_file_share_it(on_a_version, hintr, engine, uploads_dir):
-    async with make_client(OTHER_USER) as someone_else:
+async def test_two_users_uploading_the_same_file_share_it(app, on_a_version, hintr, engine, uploads_dir):
+    async with make_client(app, OTHER_USER) as someone_else:
         other_version = (await create_project(someone_else))["versions"][0]["id"]
-    async with make_client(OTHER_USER, other_version) as someone_else:
+    async with make_client(app, OTHER_USER, other_version) as someone_else:
         await on_a_version.post("/baseline/pjnz", **upload_of())
         await someone_else.post("/baseline/pjnz", **upload_of())
     assert files_in(uploads_dir) == [f"{ABC}.PJNZ"]
@@ -440,10 +442,10 @@ async def test_the_language_of_the_request_goes_to_hintr(on_a_version, hintr, up
     assert hintr.calls[0].headers["Accept-Language"] == "fr"
 
 
-async def test_a_guest_may_upload_to_a_version_the_server_gave_them(api, hintr, engine, uploads_dir):
+async def test_a_guest_may_upload_to_a_version_the_server_gave_them(app, hintr, engine, uploads_dir):
     async with create_db_session_factory(engine)() as db_session, db_session.begin():
         await VersionRepository(db_session).save_version("g1", None)
-    async with make_client("guest", "g1") as guest:
+    async with make_client(app, "guest", "g1") as guest:
         guest.headers["X-Hint-Guest-Versions"] = "g1"
         r = await guest.post("/baseline/pjnz", **upload_of())
     assert r.status_code == 200
@@ -452,9 +454,9 @@ async def test_a_guest_may_upload_to_a_version_the_server_gave_them(api, hintr, 
 
 @pytest.mark.parametrize("file_type", URLS)
 async def test_nothing_is_written_for_a_version_the_user_may_not_use(
-    api, hintr, engine, version_id, uploads_dir, file_type
+    app, hintr, engine, version_id, uploads_dir, file_type
 ):
-    async with make_client(OTHER_USER, version_id) as someone_else:
+    async with make_client(app, OTHER_USER, version_id) as someone_else:
         r = await someone_else.post(URLS[file_type], **upload_for(file_type))
     assert r.status_code == 403
     assert r.json()["errors"][0]["error"] == "INVALID_VERSION"
@@ -633,10 +635,10 @@ async def test_a_failure_of_hintr_comes_back_when_a_file_is_got(on_a_version, hi
     assert r.json() == HINTR_FAILURE
 
 
-async def test_the_file_got_is_the_one_of_the_version_in_the_request(on_a_version, hintr, engine, version_id, api):
+async def test_the_file_got_is_the_one_of_the_version_in_the_request(app, on_a_version, hintr, engine, version_id, api):
     await add_files(engine, version_id, "pjnz")
     other = (await create_project(api))["versions"][0]["id"]
-    async with make_client(USER, other) as on_another:
+    async with make_client(app, USER, other) as on_another:
         r = await on_another.get("/baseline/pjnz")
     assert r.json()["data"] is None
     assert hintr.calls == []
@@ -674,17 +676,17 @@ async def test_removing_a_file_that_is_not_there_is_a_success(on_a_version):
         assert r.json()["data"] is True
 
 
-async def test_a_file_is_not_removed_from_a_version_the_user_may_not_use(api, engine, version_id):
+async def test_a_file_is_not_removed_from_a_version_the_user_may_not_use(app, engine, version_id):
     await add_files(engine, version_id, "pjnz")
-    async with make_client(OTHER_USER, version_id) as someone_else:
+    async with make_client(app, OTHER_USER, version_id) as someone_else:
         r = await someone_else.delete("/baseline/pjnz")
     assert r.status_code == 403
     assert list(await version_files(engine, version_id)) == ["pjnz"]
 
 
-async def test_a_file_is_not_got_by_a_user_who_may_not_use_the_version(api, hintr, engine, version_id):
+async def test_a_file_is_not_got_by_a_user_who_may_not_use_the_version(app, hintr, engine, version_id):
     await add_files(engine, version_id, "pjnz")
-    async with make_client(OTHER_USER, version_id) as someone_else:
+    async with make_client(app, OTHER_USER, version_id) as someone_else:
         r = await someone_else.get("/baseline/pjnz")
     assert r.status_code == 403
     assert hintr.calls == []
@@ -718,8 +720,8 @@ async def test_a_failure_of_hintr_comes_back_when_the_baseline_is_validated(on_a
     assert r.json() == HINTR_FAILURE
 
 
-async def test_the_baseline_is_not_validated_for_a_version_the_user_may_not_use(api, hintr, version_id):
-    async with make_client(OTHER_USER, version_id) as someone_else:
+async def test_the_baseline_is_not_validated_for_a_version_the_user_may_not_use(app, hintr, version_id):
+    async with make_client(app, OTHER_USER, version_id) as someone_else:
         r = await someone_else.get("/baseline/validate")
     assert r.status_code == 403
     assert hintr.calls == []
@@ -850,9 +852,9 @@ async def test_no_body_and_a_body_that_is_not_json_are_bad_requests(on_a_version
     assert (await on_a_version.post("/session/files", data={"pjnz": "x"})).status_code == 415
 
 
-async def test_the_files_are_not_set_for_a_version_the_user_may_not_use(api, engine, version_id):
+async def test_the_files_are_not_set_for_a_version_the_user_may_not_use(app, engine, version_id):
     await add_files(engine, version_id, "pjnz")
-    async with make_client(OTHER_USER, version_id) as someone_else:
+    async with make_client(app, OTHER_USER, version_id) as someone_else:
         r = await someone_else.post("/session/files", json={})
     assert r.status_code == 403
     assert list(await version_files(engine, version_id)) == ["pjnz"]

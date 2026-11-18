@@ -6,6 +6,7 @@ import pytest
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
+from app.config import Settings
 from app.errors import ProjectDoesNotExistError, register_error_handlers
 
 
@@ -14,8 +15,15 @@ class Body(BaseModel):
 
 
 @pytest.fixture
-async def client():
+def settings() -> Settings:
+    return Settings()
+
+
+@pytest.fixture
+async def client(settings):
     app = FastAPI()
+    # What `create_app` gives every app, and what the message of an unexpected error is made from
+    app.state.settings = settings
     register_error_handlers(app)
 
     @app.get("/missing-project")
@@ -71,6 +79,15 @@ async def test_unexpected_errors_are_reported_with_a_code_and_no_details(client)
     assert error["detail"].startswith("Um erro inesperado ocorreu.")
     assert re.search(r"Naomi.*u[0-9a-f]{8}.*naomi-support@imperial\.ac\.uk", error["detail"])
     assert "secret details" not in r.text
+
+
+async def test_unexpected_errors_name_the_app_and_the_support_email_of_its_settings(client, settings):
+    settings.application_title = "Naomi Test"
+    settings.support_email = "help@example.org"
+
+    r = await client.get("/boom")
+
+    assert re.search(r"Naomi Test.*u[0-9a-f]{8}.*help@example\.org", r.json()["errors"][0]["detail"])
 
 
 async def test_invalid_request_bodies_are_400_and_other_media_types_415(client):

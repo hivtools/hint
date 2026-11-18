@@ -27,14 +27,15 @@ from collections.abc import Callable, Mapping
 from starlette.datastructures import Headers
 from starlette.types import ASGIApp, Message, Receive, Scope, Send
 
-from app.config import Settings, get_settings
+from app.config import Settings
 from app.errors import FileTooLargeError, hint_error_response
 
 
 class UploadSizeLimitMiddleware:
-    def __init__(self, app: ASGIApp, limits: Mapping[str, Callable[[Settings], int]]):
-        """`limits` reads the limit from the settings, for each path that uploads a file."""
+    def __init__(self, app: ASGIApp, settings: Settings, limits: Mapping[str, Callable[[Settings], int]]):
+        """`limits` reads the limit from `settings` (the settings of the app), for each path that uploads a file."""
         self.app = app
+        self.settings = settings
         self.limits = dict(limits)
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
@@ -42,8 +43,7 @@ class UploadSizeLimitMiddleware:
             await self.app(scope, receive, send)
             return
 
-        # The settings as the app has them, so that a test can change them
-        limit = self.limits[scope["path"]](scope["app"].dependency_overrides.get(get_settings, get_settings)())
+        limit = self.limits[scope["path"]](self.settings)
         headers = Headers(scope=scope)
         declared = headers.get("content-length", "")
         if declared.isdigit() and int(declared) > limit:

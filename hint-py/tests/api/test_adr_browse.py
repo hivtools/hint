@@ -6,7 +6,6 @@ These tests use a fake ADR (see tests/adr.py). The same calls to the real ADR ar
 import httpx2
 import pytest
 
-from app.main import app
 from tests.adr import LAST_YEAR, THIS_YEAR, ckan_error, ckan_ok
 from tests.api.helpers import make_client
 from tests.support import ADR_KEY, ADR_TOKEN
@@ -364,9 +363,9 @@ ENDPOINTS = {
 
 
 @pytest.fixture
-async def anonymous_user(adr, settings_overrides):
+async def anonymous_user(app, adr):
     """USER, with no credential for ADR: the proxy sent no access token, and the settings have no API key."""
-    async with make_client("test.user@example.com") as client:
+    async with make_client(app, "test.user@example.com") as client:
         yield client
 
 
@@ -425,9 +424,8 @@ async def test_the_token_is_not_in_an_answer_when_adr_cannot_be_reached(anonymou
 
 
 @pytest.mark.parametrize("path", ENDPOINTS.values(), ids=ENDPOINTS.keys())
-async def test_a_guest_may_not_use_them(adr, settings_overrides, path):
-    settings_overrides["adr_api_key"] = ADR_KEY
-    async with make_client("guest") as guest:
+async def test_a_guest_may_not_use_them(app, adr, adr_key, path):
+    async with make_client(app, "guest") as guest:
         r = await guest.get(path)
 
     assert r.status_code == 401
@@ -435,11 +433,8 @@ async def test_a_guest_may_not_use_them(adr, settings_overrides, path):
 
 
 @pytest.mark.parametrize("path", ENDPOINTS.values(), ids=ENDPOINTS.keys())
-async def test_they_need_the_identity_headers_of_the_proxy(adr, settings_overrides, path):
-    settings_overrides["adr_api_key"] = ADR_KEY
-    transport = httpx2.ASGITransport(app=app, raise_app_exceptions=False)
-    async with httpx2.AsyncClient(transport=transport, base_url="http://test") as client:
-        r = await client.get(path)
+async def test_they_need_the_identity_headers_of_the_proxy(anonymous_client, adr, adr_key, path):
+    r = await anonymous_client.get(path)
 
     assert r.status_code == 401
     assert adr.calls == []

@@ -23,8 +23,8 @@ GUEST_REQUESTS = [
 
 
 @pytest.mark.parametrize(("method", "path", "request_kwargs"), GUEST_REQUESTS)
-async def test_guests_are_not_allowed(api, method, path, request_kwargs):
-    async with make_client("guest") as guest:
+async def test_guests_are_not_allowed(app, method, path, request_kwargs):
+    async with make_client(app, "guest") as guest:
         r = await guest.request(method, path, **request_kwargs)
 
     # The Vue app sends the user to the login page on a 401

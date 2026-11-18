@@ -65,8 +65,8 @@ async def test_the_language_of_the_request_goes_to_hintr(on_a_version, hintr, me
 
 
 @pytest.mark.parametrize(("method", "path", "body"), ENDPOINTS.values(), ids=ENDPOINTS.keys())
-async def test_hintr_is_not_called_for_a_version_the_user_may_not_use(api, hintr, version_id, method, path, body):
-    async with make_client(OTHER_USER, version_id) as someone_else:
+async def test_hintr_is_not_called_for_a_version_the_user_may_not_use(app, hintr, version_id, method, path, body):
+    async with make_client(app, OTHER_USER, version_id) as someone_else:
         r = await someone_else.request(method, path, json=body)
     assert r.status_code == 403
     assert r.json()["errors"][0]["error"] == "INVALID_VERSION"
@@ -81,8 +81,8 @@ async def test_hintr_is_not_called_without_a_version(api, hintr, method, path, b
     assert hintr.calls == []
 
 
-async def test_a_guest_may_use_the_versions_the_server_gave_them(api, hintr):
-    async with make_client("guest", "g1") as guest:
+async def test_a_guest_may_use_the_versions_the_server_gave_them(app, hintr):
+    async with make_client(app, "guest", "g1") as guest:
         guest.headers["X-Hint-Guest-Versions"] = "g1,g2"
         r = await guest.get("/model/options")
     # g1 is allowed, but it is not a version in the database, so it has no files
@@ -90,8 +90,8 @@ async def test_a_guest_may_use_the_versions_the_server_gave_them(api, hintr):
     assert sent_to_hintr(hintr) == [("POST", "/model/options", {})]
 
 
-async def test_a_guest_may_not_use_any_other_version(api, hintr):
-    async with make_client("guest", "g3") as guest:
+async def test_a_guest_may_not_use_any_other_version(app, hintr):
+    async with make_client(app, "guest", "g3") as guest:
         guest.headers["X-Hint-Guest-Versions"] = "g1,g2"
         r = await guest.get("/model/options")
     assert r.status_code == 403

@@ -3,9 +3,9 @@
 The defaults match the development database (docker-compose.yml).
 """
 
-from functools import lru_cache
 from typing import Literal
 
+from fastapi import Request
 from pydantic import SecretStr, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from sqlalchemy import URL
@@ -124,6 +124,9 @@ class Settings(BaseSettings):
         )
 
 
-@lru_cache
-def get_settings() -> Settings:
-    return Settings()
+def get_settings(request: Request) -> Settings:
+    """The settings of the app that answers the request, the ones it was made with (see `create_app` in app/main.py).
+
+    Endpoints get them with `Depends(get_settings)`, so that each app, and each test, has its own.
+    """
+    return request.app.state.settings
