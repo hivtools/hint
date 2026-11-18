@@ -17,6 +17,7 @@ class InternalControllerTests
         val profile = CommonProfile().apply { id = "test.user@example.com" }
         val mockSession = mock<Session> {
             on { getUserProfile() } doReturn profile
+            on { getAccessToken() } doReturn ""
         }
 
         val result = InternalController(mockSession).whoami()
@@ -34,6 +35,7 @@ class InternalControllerTests
         val profile = CommonProfile().apply { id = "guest" }
         val mockSession = mock<Session> {
             on { getUserProfile() } doReturn profile
+            on { getAccessToken() } doReturn ""
             on { userIsGuest() } doReturn true
             on { getGuestVersionIds() } doReturn listOf("v1", "v2")
         }
@@ -50,6 +52,7 @@ class InternalControllerTests
         val profile = CommonProfile().apply { id = "guest" }
         val mockSession = mock<Session> {
             on { getUserProfile() } doReturn profile
+            on { getAccessToken() } doReturn ""
             on { userIsGuest() } doReturn true
             on { getGuestVersionIds() }.thenReturn(listOf<String>())
         }
@@ -65,6 +68,7 @@ class InternalControllerTests
         val profile = CommonProfile().apply { id = "test.user@example.com" }
         val mockSession = mock<Session> {
             on { getUserProfile() } doReturn profile
+            on { getAccessToken() } doReturn ""
             on { userIsGuest() } doReturn false
             on { getGuestVersionIds() } doReturn listOf("left-over-from-when-they-were-a-guest")
         }
@@ -72,5 +76,51 @@ class InternalControllerTests
         val result = InternalController(mockSession).whoami()
 
         assertThat(result.headers["X-Hint-Guest-Versions"]).isNull()
+    }
+
+    @Test
+    fun `whoami passes on the access token of a single sign-on user`()
+    {
+        val profile = CommonProfile().apply { id = "test.user@example.com" }
+        val mockSession = mock<Session> {
+            on { getUserProfile() } doReturn profile
+            on { getAccessToken() } doReturn "an.auth0.token"
+        }
+
+        val result = InternalController(mockSession).whoami()
+
+        assertThat(result.headers["X-Hint-Access-Token"]).containsExactly("an.auth0.token")
+        // the token is only ever a header
+        assertThat(result.body).isNull()
+    }
+
+    @Test
+    fun `whoami sends no access token for a user who has none`()
+    {
+        val profile = CommonProfile().apply { id = "test.user@example.com" }
+        val mockSession = mock<Session> {
+            on { getUserProfile() } doReturn profile
+            on { getAccessToken() } doReturn ""
+        }
+
+        val result = InternalController(mockSession).whoami()
+
+        assertThat(result.headers["X-Hint-Access-Token"]).isNull()
+    }
+
+    @Test
+    fun `whoami sends no access token for a guest`()
+    {
+        val profile = CommonProfile().apply { id = "guest" }
+        val mockSession = mock<Session> {
+            on { getUserProfile() } doReturn profile
+            on { userIsGuest() } doReturn true
+            on { getGuestVersionIds() } doReturn listOf("v1")
+            on { getAccessToken() } doReturn ""
+        }
+
+        val result = InternalController(mockSession).whoami()
+
+        assertThat(result.headers["X-Hint-Access-Token"]).isNull()
     }
 }
