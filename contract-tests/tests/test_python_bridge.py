@@ -5,6 +5,8 @@ and the identity bridge, and are skipped when the SUT is started without the pro
 """
 from __future__ import annotations
 
+import urllib.parse
+
 import pytest
 
 from hintcontract.flows import TEST_USER
@@ -23,6 +25,14 @@ def client(env):
 def login(c: Client):
     r = c.send("POST", "/callback/formClient", data={"username": TEST_USER, "password": "password"})
     assert r.status == 303
+
+
+def sso_login(c: Client):
+    """Logs in through the stub identity provider, which gives out an access token (/oauth2, then the callback)."""
+    start = c.send("GET", "/oauth2")
+    state = urllib.parse.parse_qs(urllib.parse.urlsplit(start.headers["location"]).query)["state"][0]
+    r = c.send("GET", "/callback/oauth2Client", params={"code": "the-code", "state": state})
+    assert r.status in (302, 303), r.text
 
 
 def test_python_sees_guest_without_a_session(client):
@@ -95,3 +105,33 @@ def test_internal_endpoints_are_not_public(client):
 def test_other_paths_still_go_to_kotlin(client):
     assert client.send("GET", "/login").status == 200
     assert client.send("GET", "/items/1", send_cookies=False).json() == {"item_id": 1}
+
+
+# The access token of a single sign-on user is a credential that Python needs to call ADR. whoami only says whether
+# there is one, so these tests cannot see the token itself (see test_the_token_is_never_sent_to_the_browser).
+def test_python_sees_the_access_token_of_an_sso_user(client):
+    sso_login(client)
+    body = client.send("GET", "/items/whoami").json()
+    assert body["user"] != "guest"
+    assert body["has_access_token"] is True
+
+
+def test_python_sees_no_access_token_for_a_password_login_or_a_guest(client):
+    assert client.send("GET", "/items/whoami", send_cookies=False).json()["has_access_token"] is False
+    login(client)
+    assert client.send("GET", "/items/whoami").json()["has_access_token"] is False
+
+
+def test_a_token_sent_by_the_browser_is_not_passed_to_python(client):
+    r = client.send("GET", "/items/whoami", headers={"X-Hint-Access-Token": "forged"}, send_cookies=False)
+    assert r.json()["has_access_token"] is False
+    login(client)
+    r = client.send("GET", "/items/whoami", headers={"X-Hint-Access-Token": "forged"})
+    assert r.json()["has_access_token"] is False
+
+
+def test_the_token_is_never_sent_to_the_browser(client):
+    sso_login(client)
+    r = client.send("GET", "/items/whoami")
+    assert "stub-access-token" not in r.text
+    assert not any("x-hint" in name.lower() for name in r.headers)
