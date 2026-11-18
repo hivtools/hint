@@ -11,8 +11,8 @@ from pathlib import Path
 
 import pytest
 
-from app.routers.downloads import download_filename
 from app.schemas import DownloadMetadata
+from app.services.task_results import download_filename
 from tests.hintr import HINTR_FAILURE, failure, success
 
 CONTENT = b"PK\x03\x04 pretend this is a zip"
