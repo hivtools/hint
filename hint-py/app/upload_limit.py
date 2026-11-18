@@ -83,9 +83,4 @@ class _CountedRequest:
             elif message["type"] == "http.response.start":
                 await _refuse(scope, receive, send, self.limit)
 
-        try:
-            await self.app(scope, counting_receive, replacing_send)
-        except Exception:
-            if not self.exceeded:
-                raise
-            await _refuse(scope, receive, send, self.limit)
+        await self.app(scope, counting_receive, replacing_send)
