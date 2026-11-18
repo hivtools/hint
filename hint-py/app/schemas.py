@@ -51,6 +51,13 @@ class CurrentProject(CamelModel):
     version: Version | None
 
 
+class AdrDatasetType(StrEnum):
+    """The kind of datasets to look for on ADR: the ones that an input file can come from, or an output zip."""
+
+    INPUT = "input"
+    OUTPUT = "output"
+
+
 class FileType(StrEnum):
     """The kinds of file a version has. The values are the names hint and hintr use."""
 

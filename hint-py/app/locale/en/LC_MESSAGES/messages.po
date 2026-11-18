@@ -95,3 +95,19 @@ msgstr "Unable to load output zip, model fit not generated on the web app. Pleas
 
 msgid "rehydrateCalibrateIdUnknown"
 msgstr "Unable to load output zip, model calibrate not generated on the web app. Please contact a system admin."
+
+msgid "noADRKey"
+msgstr ""
+"Could not find your ADR credentials. Please log out and log in again with your single sign-on account."
+
+msgid "noResponse"
+msgstr "No response returned. The request may have timed out."
+
+msgid "unparseableResponse"
+msgstr "Could not parse response."
+
+msgid "adrTimeout"
+msgstr "ADR request timed out"
+
+msgid "adrBadGateway"
+msgstr "Failed to get response from ADR, try again later."

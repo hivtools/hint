@@ -88,3 +88,18 @@ msgstr ""
 
 msgid "rehydrateCalibrateIdUnknown"
 msgstr ""
+
+msgid "noADRKey"
+msgstr ""
+
+msgid "noResponse"
+msgstr ""
+
+msgid "unparseableResponse"
+msgstr ""
+
+msgid "adrTimeout"
+msgstr ""
+
+msgid "adrBadGateway"
+msgstr ""

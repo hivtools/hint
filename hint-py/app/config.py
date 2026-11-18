@@ -1,21 +1,26 @@
 """All configuration, read from environment variables prefixed HINT_ (e.g. HINT_DB_HOST).
 
-The defaults match the development database (docker-compose.yml) and the Kotlin app's config.properties.
+The defaults match the development database (docker-compose.yml).
 """
 
 from functools import lru_cache
 from typing import Literal
 
-from pydantic import SecretStr, field_validator
+from pydantic import SecretStr, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from sqlalchemy import URL
 
 LogLevel = Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
 LogFormat = Literal["auto", "console", "json"]
+Environment = Literal["development", "production"]
 
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_prefix="HINT_")
+
+    # Where this API runs. Some settings are only for development, and a production API refuses to start with them (see
+    # `_only_in_development`). Production is the default, so that a real deployment is safe if nobody sets this.
+    environment: Environment = "production"
 
     db_host: str = "localhost"
     db_port: int = 5432
@@ -50,9 +55,10 @@ class Settings(BaseSettings):
     # ANC (csv): the largest was under 1 MB.
     max_anc_upload_bytes: int = 10 * 1024 * 1024
 
-    # ADR URL. It is sent to the browser (GET /adr/schemas), which builds the links to the datasets from it.
+    # The address of ADR. This API calls ADR here. The browser also gets it (GET /adr/schemas), and builds the links to
+    # the datasets from it.
     adr_url: str = "https://dev.adr.fjelltopp.org/"
-    # The resource type (schema) that ADR gives to each kind of file. The same as the adr_*_schema of config.properties.
+    # The resource type that ADR gives to each kind of file.
     adr_anc_schema: str = "inputs-unaids-anc"
     adr_art_schema: str = "inputs-unaids-art"
     adr_pjnz_schema: str = "inputs-unaids-spectrum-file"
@@ -62,6 +68,19 @@ class Settings(BaseSettings):
     adr_output_zip_schema: str = "inputs-unaids-naomi-output-zip"
     adr_output_summary_schema: str = "inputs-unaids-naomi-report"
     adr_output_comparison_schema: str = "inputs-unaids-naomi-comparison-report"
+    # The type of the datasets of this year, and of last year. Each year the datasets have a new type. A user chooses
+    # the datasets to import from the datasets of these two types.
+    adr_schema_this_year: str = "country-estimates-27"
+    adr_schema_last_year: str = "country-estimates-26"
+
+    # How this API calls ADR for a user:
+    # - A user who logged in with single sign-on has an Auth0 access token. The proxy passes it to this API. ADR is
+    #   called as that user. This is what happens in a real deployment.
+    # - In development, by default, SSO is turned off and so the users have no token.
+    #   `adr_api_key` is then the key of one user on ADR, and every user is called as that user.
+    # If a request has neither, it cannot call ADR.
+    # Only for development (`environment`). In production, every user would act as the same user on ADR.
+    adr_api_key: SecretStr | None = None
 
     # The folder hintr writes the results of tasks to. This API does open
     # these: it reads the results database of a calibration and sends the files made by a download. hintr answers with
@@ -79,6 +98,13 @@ class Settings(BaseSettings):
     # Shown in the message for unexpected errors (application_title and support_email in the Kotlin config.properties)
     application_title: str = "Naomi"
     support_email: str = "naomi-support@imperial.ac.uk"
+
+    @model_validator(mode="after")
+    def _only_in_development(self) -> Settings:
+        if self.environment != "development" and self.adr_api_key:
+            message = "HINT_ADR_API_KEY is only for development. Set HINT_ENVIRONMENT=development to use it."
+            raise ValueError(message)
+        return self
 
     @field_validator("log_level", mode="before")
     @classmethod
