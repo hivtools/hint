@@ -119,7 +119,7 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
         await api<ADRMutation, ADRMutation>(context)
             .ignoreErrors()
             .withSuccess(ADRMutation.SetSchemas)
-            .get("/adr/schemas/")
+            .get("/adr/schemas")
     },
 
     async getUserCanUpload(context) {

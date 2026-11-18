@@ -10,7 +10,17 @@ from app.config import get_settings
 from app.db.database import create_db_session_factory, create_engine
 from app.errors import register_error_handlers
 from app.logging_setup import configure_logging
-from app.routers import calibrate_results, downloads, hintr_forwards, input_files, items, model, projects, review_inputs
+from app.routers import (
+    adr,
+    calibrate_results,
+    downloads,
+    hintr_forwards,
+    input_files,
+    items,
+    model,
+    projects,
+    review_inputs,
+)
 from app.upload_limit import UploadSizeLimitMiddleware
 
 # pyproject.toml is the one place the version is set. The project is not installed as a package, so there is no
@@ -41,6 +51,7 @@ app.include_router(review_inputs.router)
 app.include_router(model.router)
 app.include_router(downloads.router)
 app.include_router(calibrate_results.router)
+app.include_router(adr.router)
 
 
 @app.get("/version")
