@@ -89,10 +89,16 @@ services:
       # Through the recording and faulting proxy the contract tests put in front of hintr, like Kotlin's hintr_url.
       # It runs on the host (see ensure_stubs in scripts/dev.sh).
       HINT_HINTR_URL: http://host.docker.internal:${FAULT_PORT:-8882}
-      # The address of ADR that the API gives to the browser (GET /adr/schemas), the same as adr_url of the Kotlin app. For the
-      # tests `scripts/dev.sh` sets it to the ADR stub, as it does for Kotlin. (When the API calls ADR itself, it will need an
-      # address that works from inside this container as well: the stub is on the host.)
+      # The address of ADR. The API calls ADR here, and gives it to the browser (GET /adr/schemas). For the contract tests,
+      # `scripts/dev.sh` sets it to the ADR stub, which runs on the host. So the container needs `host.docker.internal`
+      # to reach it.
       HINT_ADR_URL: ${PYTHON_ADR_URL:-https://dev.adr.fjelltopp.org/}
+      # This file is for development. The settings below are only allowed in development.
+      HINT_ENVIRONMENT: development
+      # In development, the users have no Auth0 access token. The API calls ADR for all of them with one API key:
+      # - Contract tests: the key that the ADR stub accepts.
+      # - Otherwise: HINT_ADR_API_KEY from your shell (the key of a user on the real ADR).
+      HINT_ADR_API_KEY: ${PYTHON_ADR_API_KEY:-${HINT_ADR_API_KEY:-}}
       # The folder where this container writes the uploaded files. It tells hintr that the files are in this folder.
       # The share is at the same path in both containers.
       HINT_UPLOAD_DIR: /${UPLOADS_NAME:-uploads}

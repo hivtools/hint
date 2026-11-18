@@ -45,6 +45,12 @@ browser --cookie--> nginx --(auth_request, cookie)--> Kotlin GET /internal/whoam
   never log it or put it in a response or an error (`/items/whoami` says only whether there is one). It is sized for the
   32k buffer of `/_whoami` (an Auth0 JWT is a few KB, and a user with a token is never a guest with a version list), and
   the Python server also limits the size of a request's headers, so check that if the tokens grow past a few KB.
+- Some paths have more than one method, and only some of the methods have moved to Python. A `location` cannot choose by
+  method. `/adr/datasets/{id}/releases` is an example: GET reads the releases, and POST creates one. Its `location` is a
+  regular expression. It sends every method except GET to Kotlin with `if ($request_method != GET) { return 418; }`.
+  (`return` is the only safe thing to do in an `if`.) `error_page 418 = @kotlin_release;` catches that error. It sends
+  the request to Kotlin from a named location. When you add a path like this, test both methods through the proxy. When
+  the POST moves to Python, replace this with one `location`.
 - When login and sessions move to Python, only `current_user` changes and `/internal/whoami` and `auth_request` go.
 
 ## Running it

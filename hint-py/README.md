@@ -168,6 +168,38 @@ This creates the virtual environment and installs the git hooks:
 Add a dependency with `uv add <package>` (or `uv add --dev <package>` for dev tools) and commit the changed
 `pyproject.toml` and `uv.lock`.
 
+### ADR
+
+The endpoints `/adr/datasets`, `/adr/orgs` and others call ADR, the UNAIDS data repository.
+
+**Tests.** `make test` uses a fake ADR (`tests/adr.py`). It is fast, it works without a network, and it can make ADR fail
+in ways that the real ADR rarely does. A few more tests call the real dev ADR (`tests/api/test_adr_live.py`). They show
+that the real ADR still answers in the way that the fake ADR does. Run them with:
+
+```
+export ADR_TEST_KEY=...       # the API key of a test user on the dev ADR (the Kotlin ADR tests use the same variable)
+make test-adr
+```
+
+They are skipped if `ADR_TEST_KEY` is not set. The dev ADR only accepts some IP addresses (its Front Door blocks bots), so
+these tests fail on CI for now. They only read from ADR. They use the dataset `antarctica-country-estimates-2027` in the
+organisation `naomi-development-team`, which needs a release called `Version 1.0` and an output zip.
+
+**Settings.** How the API calls ADR for a user:
+
+| Setting                                                   | Default                           | What it is                                                                         |
+|-----------------------------------------------------------|-----------------------------------|------------------------------------------------------------------------------------|
+| `HINT_ADR_URL`                                            | `https://dev.adr.fjelltopp.org/`  | The address of ADR. The API calls ADR here, and the browser gets it (`/adr/schemas`). |
+| `HINT_ENVIRONMENT`                                        | `production`                      | `development` or `production`. `HINT_ADR_API_KEY` needs `development`.             |
+| `HINT_ADR_API_KEY`                                        | (none)                            | Development only. The API key of one user on ADR. It is used for users with no token. |
+| `HINT_ADR_SCHEMA_THIS_YEAR`, `HINT_ADR_SCHEMA_LAST_YEAR` | `country-estimates-27`, `-26`     | The type of the datasets of this year and of last year                             |
+
+In a real deployment, every user logs in with single sign-on. The proxy passes their access token to the API, and the API
+calls ADR as that user. In development, users log in with a password and have no token. Set `HINT_ADR_API_KEY` in your
+shell before `scripts/dev.sh up`, and every user calls ADR as the user of that key. (`scripts/dev.sh up` uses the real
+ADR unless you set `REAL_ADR=0`.) The API does not start with `HINT_ADR_API_KEY` in production, because every user would
+then be the same user on ADR.
+
 ### Tests on Postgres
 
 By default the tests use an in memory SQLite database, so they need nothing installed. The same tests can run on a real

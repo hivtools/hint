@@ -6,7 +6,6 @@ format is made to look like it (see `_hint_response`).
 
 import json
 from collections.abc import Mapping
-from http import HTTPStatus
 from typing import Annotated, Any
 from urllib.parse import quote
 
@@ -16,8 +15,10 @@ from fastapi import Depends, Header, Request
 from fastapi.responses import JSONResponse, Response
 from pydantic_core import to_jsonable_python
 
+from app.clients.responses import TIMEOUT_SECONDS, failure_content, hint_status, parse_json
 from app.config import Settings
 from app.errors import HintrFailedError
+from app.messages import negotiate_language, t
 from app.schemas import DownloadResult, FileType, HintrFile, ModelOptions, success
 
 log = structlog.get_logger()
@@ -28,12 +29,6 @@ FilesByType = Mapping[FileType, HintrFile]
 # The baseline file types. hintr validates them against each other.
 BASELINE_TYPES = (FileType.PJNZ, FileType.SHAPE, FileType.POPULATION)
 
-# How long to wait for a connection and an answer
-TIMEOUT_SECONDS = 120
-
-NO_RESPONSE = "No response returned. The request may have timed out."
-UNPARSEABLE = "Could not parse response."
-
 
 def create_hintr_http_client(settings: Settings) -> httpx2.AsyncClient:
     # Does not connect yet, the first request does
@@ -41,46 +36,27 @@ def create_hintr_http_client(settings: Settings) -> httpx2.AsyncClient:
 
 
 def _failure(status_code: int, detail: str) -> JSONResponse:
-    return JSONResponse(
-        status_code=status_code,
-        content={"data": {}, "errors": [{"error": "OTHER_ERROR", "detail": detail}], "status": "failure"},
-    )
+    return JSONResponse(status_code=status_code, content=failure_content(detail))
 
 
-def _hint_status(hintr_status: int) -> int:
-    """Statuses up to 404 are passed on, anything else (and anything that is not a real status) is a 500."""
-    try:
-        HTTPStatus(hintr_status)
-    except ValueError:
-        return 500
-    return hintr_status if hintr_status <= HTTPStatus.NOT_FOUND else 500
+def _hint_response(hintr_status: int, body: bytes, language: str) -> Response:
+    """hintr's answer, in the format of every answer of this API.
 
-
-def _parse_json(body: bytes) -> tuple[bool, object]:
-    try:
-        return True, json.loads(body.decode("utf-8"))
-    except ValueError:  # includes a body that is not UTF-8
-        return False, None
-
-
-def _hint_response(hintr_status: int, body: bytes) -> Response:
-    """hintr's answer, in the format of every hint answer.
-
-    An answer with a `status` field is already in that format, and is passed on as it is. Anything else is wrapped: a
-    success if hintr said so, otherwise a failure with the answer as the message. An answer that is not JSON is
-    "Could not parse response".
+    An answer that has a `status` field already has that format. It goes to the browser as it is. Any other answer is
+    wrapped: it is a success if hintr said so, and if not, it is a failure that has the answer as its message. An answer
+    that is not JSON is a failure with the message "Could not parse response".
     """
-    status = _hint_status(hintr_status)
-    is_json, parsed = _parse_json(body)
+    status = hint_status(hintr_status)
+    is_json, parsed = parse_json(body)
     if not is_json:
         log.error("hintr answered with something that is not JSON", status=hintr_status, body=repr(body[:200]))
-        return _failure(500, UNPARSEABLE)
+        return _failure(500, t("unparseableResponse", language))
 
     if isinstance(parsed, dict) and "status" in parsed:
         return Response(content=body, status_code=status, media_type="application/json")
     if status < 400:
         return JSONResponse(content=success(parsed).model_dump(), status_code=status)
-    # The text of a string, and the JSON of anything else
+    # A string is the message as it is. Any other JSON becomes text.
     message = parsed if isinstance(parsed, str) else json.dumps(parsed)
     log.error("hintr failed", status=hintr_status, message=message)
     return _failure(status, message)
@@ -115,8 +91,8 @@ class HintrClient:
             )
         except httpx2.RequestError:
             log.exception("No response from hintr", method=method, path=path)
-            return _failure(500, NO_RESPONSE)
-        return _hint_response(r.status_code, r.content)
+            return _failure(500, t("noResponse", negotiate_language(self._language)))
+        return _hint_response(r.status_code, r.content, negotiate_language(self._language))
 
     # The calls that have a body. The files are the ones hint looked up for the version, hintr reads them from the
     # uploads folder. Each of hintr's calls has its own shape: the files are the whole body, or under "data", or in

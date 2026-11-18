@@ -138,6 +138,27 @@ class NullInFileNameError(BadRequestError):
         super().__init__("The name of the uploaded file contains a null character")
 
 
+class NoAdrCredentialsError(HintError):
+    """ADR cannot be called, because the request has no credential for it.
+
+    A user who logged in with single sign-on has an access token. In development, `adr_api_key` is the credential. The
+    request has neither.
+    """
+
+    def __init__(self):
+        super().__init__("noADRKey", 400)
+
+
+class AdrFetchingDatasetsError(HintError):
+    """ADR did not give the list of datasets. The status is the status of the answer of ADR (see `AdrAnswer`).
+
+    ADR refuses a user who has never logged in to ADR itself, and its message says so. That user is told what to do.
+    """
+
+    def __init__(self, status_code: int, no_account: bool):
+        super().__init__("adrFetchingDatasetsNoAccountError" if no_account else "adrFetchingDatasetsError", status_code)
+
+
 class UnknownInputTimeSeriesTypeError(HintError):
     def __init__(self):
         super().__init__("unknownInputTimeSeriesType", 400)
