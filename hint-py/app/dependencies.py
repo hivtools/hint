@@ -5,7 +5,8 @@ passes the answer on in headers (see proxy/snippets/python.conf), so this API on
 sessions move to Python, only `current_user` needs to change.
 
 The project version a request works on is a separate matter: the browser tab sends it, and `current_version_id` checks
-that the user may use it.
+that the user may use it. The Auth0 access token of a single sign-on user comes the same way, in
+`current_adr_access_token`.
 """
 
 from dataclasses import dataclass
@@ -44,6 +45,15 @@ def current_user(
     # A comma separated list, kept in the Kotlin session (see `Session.addGuestVersionId`)
     ids = frozenset(v.strip() for v in (x_hint_guest_versions or "").split(",") if v.strip())
     return User(id=x_hint_user, guest_version_ids=ids)
+
+
+def current_adr_access_token(x_hint_access_token: Annotated[str | None, Header()] = None) -> str | None:
+    """The user's Auth0 access token, which the proxy passes on for single sign-on users so that ADR can be called as
+    them. It is None for everyone else (a guest, a password login, anyone whose token the session does not hold).
+
+    The token is a credential. Use it only to call ADR, never put it in a response, a log line or an error message.
+    """
+    return x_hint_access_token or None
 
 
 def requested_version_id(x_version_id: Annotated[str | None, Header()] = None) -> str | None:
