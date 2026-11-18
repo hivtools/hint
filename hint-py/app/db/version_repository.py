@@ -1,4 +1,5 @@
 from collections.abc import Collection, Mapping
+from typing import NamedTuple
 
 from sqlalchemy import Integer, String, delete, func, insert, literal, select, update
 from sqlalchemy.dialects import postgresql, sqlite
@@ -8,6 +9,11 @@ from app.db.database import DbSession
 from app.db.models import File, Project, ProjectVersion, VersionFile
 from app.errors import LoadFailedError, VersionDoesNotExistError
 from app.schemas import FileType
+
+
+class VersionOwner(NamedTuple):
+    project_id: int
+    user_id: str
 
 
 class VersionRepository:
@@ -44,55 +50,43 @@ class VersionRepository:
             id=row.id, created=row.created, updated=row.updated, version_number=row.version_number, note=row.note
         )
 
-    async def get_version_details(self, version_id: str, project_id: int, user_id: str) -> schemas.VersionDetails:
-        await self._check_version_exists(version_id, project_id, user_id)
+    async def get_owner(self, version_id: str) -> VersionOwner | None:
+        """The project the version is in, and the user whose project it is. None for a version that does not exist or is
+        in no project (a guest's version)."""
+        result = await self.db_session.execute(
+            select(ProjectVersion.project_id, Project.user_id)
+            .join(Project, ProjectVersion.project_id == Project.id)
+            .where(ProjectVersion.id == version_id)
+        )
+        row = result.one_or_none()
+        return None if row is None else VersionOwner(project_id=row.project_id, user_id=row.user_id)
+
+    async def get_version_details(self, version_id: str) -> schemas.VersionDetails:
         files = await self.get_version_files(version_id)
         state = await self.db_session.scalar(select(ProjectVersion.state).where(ProjectVersion.id == version_id))
         # A version that has never had its state saved has no state to return, which is an error (as in Kotlin)
         return schemas.VersionDetails(state=state, files=files)  # ty: ignore[invalid-argument-type]
 
-    async def save_version_state(self, version_id: str, project_id: int, user_id: str, state: str) -> None:
-        await self._check_version_exists(version_id, project_id, user_id)
+    async def save_version_state(self, version_id: str, state: str) -> None:
         await self.db_session.execute(update(ProjectVersion).where(ProjectVersion.id == version_id).values(state=state))
 
-    async def update_version_note(self, version_id: str, project_id: int, user_id: str, note: str) -> None:
-        await self._check_version_exists(version_id, project_id, user_id)
+    async def update_version_note(self, version_id: str, note: str) -> None:
         await self.db_session.execute(update(ProjectVersion).where(ProjectVersion.id == version_id).values(note=note))
 
-    async def delete_version(self, version_id: str, project_id: int, user_id: str) -> None:
+    async def delete_version(self, version_id: str) -> None:
         """Soft delete."""
-        await self._check_version_exists(version_id, project_id, user_id)
         await self.db_session.execute(
             update(ProjectVersion).where(ProjectVersion.id == version_id).values(deleted=True)
         )
 
-    async def version_exists(self, version_id: str, user_id: str) -> bool:
-        result = await self.db_session.execute(
-            select(ProjectVersion.id)
-            .join(Project, ProjectVersion.project_id == Project.id)
-            .where(ProjectVersion.id == version_id, Project.user_id == user_id)
-        )
-        return result.one_or_none() is not None
-
     async def copy_version(
-        self, parent_version_id: str, new_version_id: str, project_id: int, user_id: str, note: str | None = None
+        self, parent_version_id: str, new_version_id: str, project_id: int, note: str | None = None
     ) -> None:
-        """A new version of the project, with the state and files of the parent version."""
-        await self._check_version_exists(parent_version_id, project_id, user_id)
+        """A new version of the project, with the state and files of the parent version. The parent is not checked: it
+        can be in another project (promote copies a version into a new project this way), or not exist, which gives a
+        version with no state and no files."""
         await self._insert_with_parent_state(
             parent_version_id, new_version_id, project_id, note, await self._next_version_number(project_id)
-        )
-        await self._copy_files(parent_version_id, new_version_id)
-
-    async def promote_version(
-        self, parent_version_id: str, new_version_id: str, new_project_id: int, user_id: str, note: str | None = None
-    ) -> None:
-        """The first version of a new project, with the state and files of the parent version.
-
-        As in Kotlin, this does not check that the parent version exists or that it is the user's (user_id is unused).
-        """
-        await self._insert_with_parent_state(
-            parent_version_id, new_version_id, new_project_id, note, await self._next_version_number(new_project_id)
         )
         await self._copy_files(parent_version_id, new_version_id)
 
@@ -226,15 +220,6 @@ class VersionRepository:
 
     async def _copy_files(self, parent_version_id: str, new_version_id: str) -> None:
         await self.set_files_for_version(new_version_id, await self.get_version_files(parent_version_id))
-
-    async def _check_version_exists(self, version_id: str, project_id: int, user_id: str) -> None:
-        result = await self.db_session.execute(
-            select(ProjectVersion.id)
-            .join(Project, ProjectVersion.project_id == Project.id)
-            .where(ProjectVersion.id == version_id, Project.id == project_id, Project.user_id == user_id)
-        )
-        if result.one_or_none() is None:
-            raise VersionDoesNotExistError
 
     async def _next_version_number(self, project_id: int | None) -> int:
         highest = await self.db_session.scalar(

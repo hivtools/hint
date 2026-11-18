@@ -31,15 +31,18 @@ class ProjectService:
         return schemas.Project(id=project_id, name=name, versions=[version], is_uploaded=is_uploaded)
 
     async def promote_version(self, user_id: str, version_id: str, name: str, note: str | None) -> schemas.Project:
-        """A new project, whose first version is a copy of this one (with its state and files)."""
+        """A new project, whose first version is a copy of this one (with its state and files).
+
+        As in Kotlin, nothing checks that the version exists or is the user's (quirk 30 in contract-tests/QUIRKS.md)."""
         project_id = await self.projects.save_new_project(user_id, name)
         promoted_version_id = new_version_id()
-        await self.versions.promote_version(version_id, promoted_version_id, project_id, user_id, note)
+        await self.versions.copy_version(version_id, promoted_version_id, project_id, note)
         version = await self.versions.get_version(promoted_version_id)
         return schemas.Project(id=project_id, name=name, versions=[version])
 
     async def clone_project_to_user(self, user_id: str, project_id: int, emails: list[str]) -> None:
-        """Gives each of the users a copy of the project (and all its versions), marked as shared by user_id."""
+        """Gives each of the users a copy of the project (and all its versions), marked as shared by user_id. The caller
+        has checked that the project is user_id's."""
         log.info("Cloning project", project=project_id, users=len(emails))
         target_user_ids = []
         for email in emails:
@@ -48,7 +51,7 @@ class ProjectService:
                 raise UserDoesNotExistError
             target_user_ids.append(target)
 
-        project = await self.projects.get_project(project_id, user_id)
+        project = await self.projects.get_project(project_id)
         for target in target_user_ids:
             new_project_id = await self.projects.save_new_project(target, project.name, shared_by=user_id)
             for version in project.versions:
