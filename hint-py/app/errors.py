@@ -9,15 +9,14 @@ import secrets
 import structlog
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
-from fastapi.responses import JSONResponse, Response
+from fastapi.responses import Response
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
+from app.clients.responses import DEFAULT_ERROR, HintResponse
 from app.config import get_settings
 from app.messages import negotiate_language, t
 
 log = structlog.get_logger()
-
-DEFAULT_ERROR = "OTHER_ERROR"
 
 
 class HintError(Exception):
@@ -30,6 +29,12 @@ class HintError(Exception):
         self.code = code
         # What fills in the {placeholders} of the message
         self.arguments = arguments or {}
+
+    def hint_response(self, accept_language: str | None) -> HintResponse:
+        """The failure that the user sees, in the language of the request."""
+        return HintResponse.failure(
+            self.status_code, t(self.key, negotiate_language(accept_language), **self.arguments), self.code
+        )
 
 
 class ProjectDoesNotExistError(HintError):
@@ -104,23 +109,16 @@ class MissingResultFileError(Exception):
 
 
 class HintrFailedError(Exception):
-    """A call to hintr that this API needed the answer of did not succeed. The response is hintr's own failure, as it
-    is sent to the browser for any call that is passed on."""
+    """A call to hintr that this API needed the answer of did not succeed. The answer is hintr's own failure, which is
+    sent to the browser as it is for any call that is passed on."""
 
-    def __init__(self, response: Response):
-        super().__init__(f"hintr answered {response.status_code}")
-        self.response = response
+    def __init__(self, answer: HintResponse):
+        super().__init__(f"hintr answered {answer.status_code}")
+        self.answer = answer
 
 
 class BadRequestError(Exception):
     """The request is malformed in a way that FastAPI does not already check. The message is for the log."""
-
-
-def _failure(status_code: int, detail: str, code: str = DEFAULT_ERROR) -> JSONResponse:
-    return JSONResponse(
-        status_code=status_code,
-        content={"data": {}, "errors": [{"error": code, "detail": detail}], "status": "failure"},
-    )
 
 
 class EmptyBodyError(BadRequestError):
@@ -150,7 +148,7 @@ class NoAdrCredentialsError(HintError):
 
 
 class AdrFetchingDatasetsError(HintError):
-    """ADR did not give the list of datasets. The status is the status of the answer of ADR (see `AdrAnswer`).
+    """ADR did not give the list of datasets. The status is the status of the answer of ADR, as the ADR client made it.
 
     ADR refuses a user who has never logged in to ADR itself, and its message says so. That user is told what to do.
     """
@@ -169,11 +167,11 @@ class UnknownReviewInputFileTypeError(HintError):
         super().__init__("unknownReviewInputFileType", 400)
 
 
-def hint_error_response(exc: HintError, accept_language: str | None) -> JSONResponse:
+def hint_error_response(exc: HintError, accept_language: str | None) -> Response:
     """Returns the response for an error. Use it when an endpoint must answer with the error and not raise it.
 
     A raised error rolls back the database changes of the request. An answer does not."""
-    return _failure(exc.status_code, t(exc.key, negotiate_language(accept_language), **exc.arguments), exc.code)
+    return exc.hint_response(accept_language).response()
 
 
 def unexpected_error(request: Request, status_code: int, reason: str, exc_info: BaseException | None = None):
@@ -200,27 +198,27 @@ def unexpected_error(request: Request, status_code: int, reason: str, exc_info: 
         code=code,
         support_email=settings.support_email,
     )
-    return _failure(status_code, detail)
+    return HintResponse.failure(status_code, detail).response()
 
 
 def register_error_handlers(app: FastAPI) -> None:
     @app.exception_handler(StarletteHTTPException)
-    async def http_error(request: Request, exc: StarletteHTTPException) -> JSONResponse:
+    async def http_error(request: Request, exc: StarletteHTTPException) -> Response:
         # Errors FastAPI raises itself (401 from logged_in_user, 404, 405...) get the same shape as all the others
-        response = _failure(exc.status_code, str(exc.detail))
+        response = HintResponse.failure(exc.status_code, str(exc.detail)).response()
         response.headers.update(exc.headers or {})
         return response
 
     @app.exception_handler(HintError)
-    async def hint_error(request: Request, exc: HintError) -> JSONResponse:
+    async def hint_error(request: Request, exc: HintError) -> Response:
         return hint_error_response(exc, request.headers.get("accept-language"))
 
     @app.exception_handler(HintrFailedError)
     async def hintr_failed(request: Request, exc: HintrFailedError) -> Response:
-        return exc.response
+        return exc.answer.response()
 
     @app.exception_handler(RequestValidationError)
-    async def invalid_request(request: Request, exc: RequestValidationError) -> JSONResponse:
+    async def invalid_request(request: Request, exc: RequestValidationError) -> Response:
         # Only where and why, not the values, which could be anything the user typed
         reason = "; ".join(f"{'.'.join(str(part) for part in e['loc'])}: {e['msg']}" for e in exc.errors())
         # A body that is not JSON (a form, for example) is "unsupported media type", as in Kotlin. A file upload is the
@@ -230,10 +228,10 @@ def register_error_handlers(app: FastAPI) -> None:
         return unexpected_error(request, 415 if unsupported else 400, reason)
 
     @app.exception_handler(BadRequestError)
-    async def bad_request(request: Request, exc: BadRequestError) -> JSONResponse:
+    async def bad_request(request: Request, exc: BadRequestError) -> Response:
         return unexpected_error(request, 400, str(exc))
 
     @app.exception_handler(Exception)
-    async def unexpected(request: Request, exc: Exception) -> JSONResponse:
+    async def unexpected(request: Request, exc: Exception) -> Response:
         # The stack trace stays in the log, it is not sent to the browser
         return unexpected_error(request, 500, repr(exc), exc_info=exc)

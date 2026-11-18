@@ -40,11 +40,11 @@ def _add_routes(spec: InputFileType) -> None:
         spec.url, name=f"upload_{name}", summary=f"Upload the {name} file and validate it", response_model=None
     )
     async def upload(file: Annotated[UploadFile, File()], input_files: InputFiles) -> Response:
-        return await input_files.upload(file_type, file.file, file.filename or "")
+        return (await input_files.upload(file_type, file.file, file.filename or "")).response()
 
     @router.get(spec.url, name=f"get_{name}", summary=f"Get the {name} file and validate it again", response_model=None)
     async def get(input_files: InputFiles) -> Response:
-        return await input_files.validate(file_type)
+        return (await input_files.validate(file_type)).response()
 
     @router.delete(spec.url, name=f"delete_{name}", summary=f"Remove the {name} file")
     async def delete(files: Files) -> SuccessResponse[bool]:
@@ -58,7 +58,7 @@ for spec in INPUT_FILE_TYPES.values():
 
 @router.get("/baseline/validate", summary="Validate the baseline files against each other")
 async def validate_baseline(files: Files, hintr: Hintr) -> Response:
-    return await hintr.validate_baseline_combined(await files.get_files(*BASELINE_TYPES))
+    return (await hintr.validate_baseline_combined(await files.get_files(*BASELINE_TYPES))).response()
 
 
 @router.post("/session/files", summary="Set all the files of the version")

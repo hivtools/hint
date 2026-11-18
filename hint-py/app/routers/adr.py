@@ -9,7 +9,8 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, Query
 from fastapi.responses import Response
 
-from app.clients.adr_client import Adr, AdrAnswer
+from app.clients.adr_client import Adr
+from app.clients.responses import HintResponse
 from app.config import Settings, get_settings
 from app.dependencies import logged_in_user
 from app.schemas import AdrDatasetType, SuccessResponse, success
@@ -49,7 +50,7 @@ async def datasets(
     - `type=input`: the datasets of this year that have a file to import.
     - `type=output`: the datasets of this year and of last year that have an output zip.
     """
-    return AdrAnswer.success(await find_datasets(adr, settings, dataset_type, show_inaccessible)).response()
+    return HintResponse.success(await find_datasets(adr, settings, dataset_type, show_inaccessible)).response()
 
 
 @router.get("/datasets/{dataset_id}", dependencies=[Depends(logged_in_user)])
@@ -68,7 +69,7 @@ async def releases(
     """The releases of a dataset. With `type=output`, only the releases that have an output zip."""
     if release_type != AdrDatasetType.OUTPUT:
         return (await adr.releases(dataset_id)).response()
-    return AdrAnswer.success(await find_releases_with_output_zip(adr, settings, dataset_id)).response()
+    return HintResponse.success(await find_releases_with_output_zip(adr, settings, dataset_id)).response()
 
 
 @router.get("/orgs", dependencies=[Depends(logged_in_user)])
