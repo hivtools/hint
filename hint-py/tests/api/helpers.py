@@ -4,7 +4,7 @@ import json
 from datetime import datetime
 
 import httpx2
-from sqlalchemy import update
+from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncEngine
 
 from app import schemas
@@ -76,7 +76,7 @@ async def add_files(engine: AsyncEngine, version_id: str, *file_types: str):
 def hintr_file(file_type: str) -> dict:
     """What hintr is told about a file that `add_files` gave a version."""
     return {
-        "path": f"uploads/{file_type}123",
+        "path": f"/uploads/{file_type}123",
         "hash": f"{file_type}123",
         "filename": f"{file_type}.{file_type}",
         "fromADR": False,
@@ -93,3 +93,16 @@ async def set_updated(engine: AsyncEngine, version_id: str, updated: datetime):
 def assert_failure(r: httpx2.Response, status: int, detail: str):
     assert r.status_code == status
     assert r.json() == {"data": {}, "errors": [{"error": "OTHER_ERROR", "detail": detail}], "status": "failure"}
+
+
+async def version_files(engine: AsyncEngine, version_id: str) -> dict[str, tuple[str, str, bool, str | None]]:
+    """The files of the version in the database, by file type: (hash, filename, from_adr, resource_url)."""
+    async with create_db_session_factory(engine)() as db_session:
+        files = await VersionRepository(db_session).get_version_files(version_id)
+    return {t.value: (f.hash, f.filename, f.from_adr, f.resource_url) for t, f in files.items()}
+
+
+async def known_hashes(engine: AsyncEngine) -> list[str]:
+    """The hashes in the table of uploaded files."""
+    async with create_db_session_factory(engine)() as db_session:
+        return sorted(await db_session.scalars(select(File.hash)))

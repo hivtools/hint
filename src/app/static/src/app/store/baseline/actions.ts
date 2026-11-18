@@ -8,6 +8,7 @@ import {DatasetResourceSet, DatasetResource, ADRSchemas, UploadImportPayload} fr
 import {RootState} from "../../root";
 import { ReviewInputMutation } from '../reviewInput/mutations';
 import { DATASET_TYPE } from '../surveyAndProgram/actions';
+import {sessionStorageManager} from "../../sessionStorageManager";
 
 export interface BaselineActions {
     refreshDatasetMetadata: (store: ActionContext<BaselineState, RootState>) => void
@@ -221,6 +222,13 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
 
     async getBaselineData(context) {
         const {commit, dispatch} = context;
+        if (!sessionStorageManager.getVersionId()) {
+            // A tab with no version open has no files to get. A new tab is one: it starts on the projects page.
+            // The server refuses a request with no version (403 INVALID_VERSION). Then the front end sends the tab back
+            // to the start.
+            commit({type: "Ready", payload: true});
+            return;
+        }
         await Promise.all([
             api<BaselineMutation, BaselineMutation>(context)
                 .ignoreErrors()

@@ -46,9 +46,6 @@ msgstr "User does not exist."
 msgid "missingShapeFile"
 msgstr "You must upload a shape file before uploading survey or programme data."
 
-msgid "missingPjnzFile"
-msgstr "You must upload a Spectrum file before uploading survey or programme data."
-
 msgid "invalidToken"
 msgstr "Token is not valid."
 

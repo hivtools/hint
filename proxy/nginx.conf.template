@@ -59,6 +59,17 @@ server {
     location = /model/run { include snippets/python.conf; }
     location /calibrate/submit/ { include snippets/python.conf; }
     location /download/submit/ { include snippets/python.conf; }
+    # Upload, validate and remove the input files, and set all the files. Each URL is listed. The proxy does not send all
+    # of /baseline/ and /disease/ to Python, for two reasons. `/disease/vmmc` is not ported, because nothing uses it now.
+    # A path with a trailing slash goes to Kotlin, which accepts it. FastAPI would redirect it.
+    location = /baseline/pjnz { include snippets/python.conf; }
+    location = /baseline/shape { include snippets/python.conf; }
+    location = /baseline/population { include snippets/python.conf; }
+    location = /baseline/validate { include snippets/python.conf; }
+    location = /disease/survey { include snippets/python.conf; }
+    location = /disease/programme { include snippets/python.conf; }
+    location = /disease/anc { include snippets/python.conf; }
+    location = /session/files { include snippets/python.conf; }
     # Calls that read the results folder. `/calibrate/result/data/` is not ported, so it stays with Kotlin
     location /calibrate/result/filteredData/ { include snippets/python.conf; }
     location /download/result/ { include snippets/python.conf; }

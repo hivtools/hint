@@ -25,6 +25,9 @@ log = structlog.get_logger()
 # The files of a version, by type
 FilesByType = Mapping[FileType, HintrFile]
 
+# The baseline file types. hintr validates them against each other.
+BASELINE_TYPES = (FileType.PJNZ, FileType.SHAPE, FileType.POPULATION)
+
 # How long to wait for a connection and an answer
 TIMEOUT_SECONDS = 120
 
@@ -141,6 +144,26 @@ class HintrClient:
 
     async def input_population(self, files: FilesByType) -> Response:
         return await self.forward("POST", "/chart-data/input-population", json=files)
+
+    async def validate_baseline_individual(self, file_type: FileType, file: HintrFile) -> Response:
+        return await self.forward("POST", "/validate/baseline-individual", json={"type": file_type, "file": file})
+
+    async def validate_baseline_combined(self, files: FilesByType) -> Response:
+        """hintr receives only the paths, with one entry for each baseline file type. A file that the version does not
+        have is null."""
+        return await self.forward(
+            "POST",
+            "/validate/baseline-combined",
+            json={file_type: files[file_type].path if file_type in files else None for file_type in BASELINE_TYPES},
+        )
+
+    async def validate_survey_and_programme(self, file_type: FileType, file: HintrFile, shape_path: str) -> Response:
+        """Validates the survey, programme or ANC file against the shape file."""
+        return await self.forward(
+            "POST",
+            "/validate/survey-and-programme",
+            json={"type": file_type, "file": file, "shape": shape_path},
+        )
 
     async def review_input_metadata(self, iso3: str, files: Mapping[str, HintrFile | None]) -> Response:
         """The files are by the name of the type, and null where the version has no file of that type."""

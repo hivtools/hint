@@ -198,7 +198,7 @@ async def test_a_file_from_adr_says_so_and_where_from(on_a_version, hintr, engin
     await on_a_version.get("/chart-data/input-population")
     assert sent_to_hintr(hintr)[0][2] == {
         "population": {
-            "path": "uploads/h1",
+            "path": "/uploads/h1",
             "hash": "h1",
             "filename": "pop.csv",
             "fromADR": True,

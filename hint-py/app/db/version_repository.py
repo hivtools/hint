@@ -1,11 +1,12 @@
-from collections.abc import Mapping
+from collections.abc import Collection, Mapping
 
 from sqlalchemy import Integer, String, delete, func, insert, literal, select, update
+from sqlalchemy.dialects import postgresql, sqlite
 
 from app import schemas
 from app.db.database import DbSession
-from app.db.models import Project, ProjectVersion, VersionFile
-from app.errors import VersionDoesNotExistError
+from app.db.models import File, Project, ProjectVersion, VersionFile
+from app.errors import LoadFailedError, VersionDoesNotExistError
 from app.schemas import FileType
 
 
@@ -123,16 +124,20 @@ class VersionRepository:
         )
         await self._copy_files(parent_version_id, new_version_id)
 
-    async def get_version_files(self, version_id: str) -> dict[FileType, schemas.VersionFile]:
-        result = await self.db_session.execute(
-            select(
-                VersionFile.hash,
-                VersionFile.filename,
-                VersionFile.type,
-                VersionFile.from_adr,
-                VersionFile.resource_url,
-            ).where(VersionFile.version == version_id)
-        )
+    async def get_version_files(
+        self, version_id: str, types: Collection[FileType] | None = None
+    ) -> dict[FileType, schemas.VersionFile]:
+        """Returns the files of the version by file type, only for these file types if `types` is given."""
+        query = select(
+            VersionFile.hash,
+            VersionFile.filename,
+            VersionFile.type,
+            VersionFile.from_adr,
+            VersionFile.resource_url,
+        ).where(VersionFile.version == version_id)
+        if types is not None:
+            query = query.where(VersionFile.type.in_(types))
+        result = await self.db_session.execute(query)
         return {
             FileType(row.type): schemas.VersionFile(
                 hash=row.hash, filename=row.filename, from_adr=row.from_adr, resource_url=row.resource_url
@@ -140,10 +145,59 @@ class VersionRepository:
             for row in result
         }
 
+    async def save_new_hash(self, file_hash: str) -> None:
+        """Records that a file with this hash exists. Does nothing if the hash is already recorded.
+
+        Two requests can upload the same file at the same time. Both requests reach this point, so the database ignores
+        the second insert."""
+        # `on_conflict_do_nothing` is only on the insert of the dialect, not on SQLAlchemy's generic `insert`. Production
+        # uses Postgres and the tests use SQLite.
+        dialect_insert = postgresql.insert if self.db_session.get_bind().dialect.name == "postgresql" else sqlite.insert
+        await self.db_session.execute(dialect_insert(File).values(hash=file_hash).on_conflict_do_nothing())
+
+    async def save_version_file(self, version_id: str, file_type: FileType, file: schemas.VersionFile) -> None:
+        """Makes this file the version's file for its file type. It replaces the old file.
+
+        This is Kotlin's logic: update the version's row for the file type if there is one, otherwise insert a row. Two
+        requests that upload a file type that the version has no file for yet, at the same time, can both insert.
+        Kotlin has the same problem. The fix is a unique constraint on `(version, type)` and one `insert ... on conflict
+        do update`, but Kotlin shares this database, so it waits until Kotlin is gone (porting checklist, "Deferred")."""
+        values = {
+            "hash": file.hash,
+            "filename": file.filename,
+            "from_adr": file.from_adr,
+            "resource_url": file.resource_url,
+        }
+        has_file = await self.db_session.scalar(
+            select(VersionFile.type).where(VersionFile.version == version_id, VersionFile.type == file_type).limit(1)
+        )
+        if has_file is None:
+            await self.db_session.execute(insert(VersionFile).values(version=version_id, type=file_type, **values))
+        else:
+            await self.db_session.execute(
+                update(VersionFile)
+                .where(VersionFile.version == version_id, VersionFile.type == file_type)
+                .values(**values)
+            )
+
+    async def remove_version_file(self, version_id: str, file_type: FileType) -> None:
+        """Removes the file from the version. The file stays on the share, because other versions can use it."""
+        await self.db_session.execute(
+            delete(VersionFile).where(VersionFile.version == version_id, VersionFile.type == file_type)
+        )
+
     async def set_files_for_version(
         self, version_id: str, files: Mapping[FileType, schemas.VersionFile | None]
     ) -> None:
-        """Replaces the version's files. Runs in the request's transaction, so it all happens or none of it does."""
+        """Replaces the version's files. Runs in the request's transaction, so it all happens or none of it does.
+
+        A hash that no upload made is an error (`LoadFailedError`). Without this check, the database raises a foreign key
+        error."""
+        hashes = {file.hash for file in files.values() if file is not None}
+        if hashes:
+            known = set(await self.db_session.scalars(select(File.hash).where(File.hash.in_(hashes))))
+            if known != hashes:
+                raise LoadFailedError
         await self.db_session.execute(delete(VersionFile).where(VersionFile.version == version_id))
         rows = [
             {
