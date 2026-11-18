@@ -1,3 +1,6 @@
+import pytest
+from pydantic import ValidationError
+
 from app.config import Settings
 
 
@@ -39,3 +42,42 @@ def test_adr_url_and_resource_types_default_to_those_of_the_kotlin_config_and_ca
     monkeypatch.setenv("HINT_ADR_ART_SCHEMA", "my-art")
     assert Settings().adr_url == "https://adr.example/"
     assert Settings().adr_art_schema == "my-art"
+
+
+def test_the_adr_settings_have_defaults_and_can_be_set(monkeypatch):
+    assert Settings().adr_url == "https://dev.adr.fjelltopp.org/"
+    assert Settings().adr_api_key is None
+    assert (Settings().adr_schema_this_year, Settings().adr_schema_last_year) == (
+        "country-estimates-27",
+        "country-estimates-26",
+    )
+    monkeypatch.setenv("HINT_ENVIRONMENT", "development")
+    monkeypatch.setenv("HINT_ADR_URL", "https://adr.example/")
+    monkeypatch.setenv("HINT_ADR_API_KEY", "a-key")
+    monkeypatch.setenv("HINT_ADR_SCHEMA_THIS_YEAR", "country-estimates-28")
+    key = Settings().adr_api_key
+    assert key is not None
+    assert key.get_secret_value() == "a-key"
+    assert Settings().adr_url == "https://adr.example/"
+    assert Settings().adr_schema_this_year == "country-estimates-28"
+
+
+def test_the_key_for_adr_is_not_shown_in_the_settings_repr():
+    assert "a-key-of-adr" not in repr(Settings(environment="development", adr_api_key="a-key-of-adr"))
+
+
+def test_an_api_is_in_production_unless_it_is_set_to_development(monkeypatch):
+    assert Settings().environment == "production"
+    monkeypatch.setenv("HINT_ENVIRONMENT", "development")
+    assert Settings().environment == "development"
+
+
+def test_a_production_api_does_not_start_with_a_setting_for_development_only():
+    with pytest.raises(ValidationError, match="only for development"):
+        Settings(adr_api_key="a-key")
+    with pytest.raises(ValidationError, match="only for development"):
+        Settings(environment="production", adr_api_key="a-key")
+
+
+def test_a_development_api_can_have_the_settings_for_development_only():
+    assert Settings(environment="development", adr_api_key="a-key")

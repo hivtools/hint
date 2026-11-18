@@ -9,9 +9,10 @@ from sqlalchemy.ext.asyncio import AsyncEngine
 from app.config import Settings, get_settings
 from app.db.database import create_db_session_factory
 from app.main import app
+from tests.adr import FakeAdr
 from tests.api.helpers import create_project, make_client
 from tests.hintr import FakeHintr
-from tests.support import OTHER_USER, USER
+from tests.support import ADR_KEY, OTHER_USER, USER
 
 
 @pytest_asyncio.fixture
@@ -57,6 +58,13 @@ async def hintr(hintr: FakeHintr) -> FakeHintr:
     return hintr
 
 
+@pytest_asyncio.fixture
+async def adr(adr: FakeAdr) -> FakeAdr:
+    """The same ADR, now the one that the app calls."""
+    app.state.adr_http = adr.http
+    return adr
+
+
 @pytest.fixture
 def settings_overrides() -> Iterator[dict]:
     """The settings that the app uses in a test, in addition to the defaults. Fixtures add to this dict. See `results_dir`."""
@@ -82,3 +90,12 @@ def uploads_dir(tmp_path: Path, settings_overrides: dict) -> Path:
     folder.mkdir()
     settings_overrides["upload_dir"] = str(folder)
     return folder
+
+
+@pytest_asyncio.fixture
+async def adr_user(adr: FakeAdr, settings_overrides: dict) -> AsyncIterator[httpx2.AsyncClient]:
+    """USER in development, where ADR is called with the API key of the settings. Needs no database."""
+    settings_overrides["environment"] = "development"
+    settings_overrides["adr_api_key"] = ADR_KEY
+    async with make_client(USER) as client:
+        yield client

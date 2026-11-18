@@ -105,3 +105,19 @@ msgid "rehydrateCalibrateIdUnknown"
 msgstr ""
 "Impossible de charger le fichier zip de sortie, le calibrage du modèle n'a pas été généré sur l'application web. "
 "Veuillez contacter un administrateur système."
+
+msgid "noADRKey"
+msgstr ""
+"Vos identifiants ADR sont introuvables. Veuillez vous déconnecter, puis vous reconnecter avec votre compte d'authentification unique."
+
+msgid "noResponse"
+msgstr "Aucune réponse reçue. La requête a peut-être expiré."
+
+msgid "unparseableResponse"
+msgstr "Impossible de lire la réponse."
+
+msgid "adrTimeout"
+msgstr "La requête vers l'ADR a expiré."
+
+msgid "adrBadGateway"
+msgstr "Impossible d'obtenir une réponse de l'ADR. Veuillez réessayer plus tard."
