@@ -450,6 +450,8 @@ def main(argv=None):
     ap.add_argument("--proxy-port", type=int, default=18882)
     ap.add_argument("--proxy-bind", default="127.0.0.1",
                     help="address the recording proxy listens on (0.0.0.0 when a container has to reach it)")
+    ap.add_argument("--stub-bind", default="127.0.0.1",
+                    help="address the ADR stub listens on (0.0.0.0 when a container must reach it, as the Python API does)")
     ap.add_argument("--upstream", default="http://127.0.0.1:18881")
     ap.add_argument("--stub-port", type=int, default=18883)
     ap.add_argument("--idp-port", type=int, default=18884)
@@ -460,7 +462,7 @@ def main(argv=None):
     UPSTREAM.update(host=u.hostname, port=u.port or 80)
     FIXTURES_DIR["path"] = Path(args.fixtures_dir)
     serve(ProxyHandler, args.proxy_port, name="proxy", bind=args.proxy_bind)
-    serve(StubHandler, args.stub_port, name="stub")
+    serve(StubHandler, args.stub_port, name="stub", bind=args.stub_bind)
     if args.idp_cert:
         serve(idp_handler_factory(), args.idp_port, tls=args.idp_cert, name="idp")
     print(f"proxy :{args.proxy_port} -> {args.upstream}; stub :{args.stub_port}; idp :{args.idp_port if args.idp_cert else '-'}",

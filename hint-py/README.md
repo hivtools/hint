@@ -168,35 +168,37 @@ This creates the virtual environment and installs the git hooks:
 Add a dependency with `uv add <package>` (or `uv add --dev <package>` for dev tools) and commit the changed
 `pyproject.toml` and `uv.lock`.
 
-### Tests against the real ADR
+### ADR
 
-The ADR endpoints (`/adr/datasets`, `/adr/orgs` and so on) call ADR, the UNAIDS data repository. The tests of `make test`
-use a fake ADR. A few more call the real dev ADR (`tests/api/test_adr_live.py`), to check that ADR answers as the client
-expects:
+The endpoints `/adr/datasets`, `/adr/orgs` and others call ADR, the UNAIDS data repository.
+
+**Tests.** `make test` uses a fake ADR (`tests/adr.py`). It is fast, it works without a network, and it can make ADR fail
+in ways that the real ADR rarely does. A few more tests call the real dev ADR (`tests/api/test_adr_live.py`). They show
+that the real ADR still answers in the way that the fake ADR does. Run them with:
 
 ```
-export ADR_TEST_KEY=...       # the API key of a test user on the dev ADR (the same one as the Kotlin ADR tests use)
+export ADR_TEST_KEY=...       # the API key of a test user on the dev ADR (the Kotlin ADR tests use the same variable)
 make test-adr
 ```
 
-They are skipped without `ADR_TEST_KEY`, and they need an IP address that the dev ADR lets in (its Front Door only allows
-some, because of bots), so they fail on CI. They only read from ADR, using the dataset `antarctica-country-estimates-2027`
-of the organisation `naomi-development-team` (it needs a release called `Version 1.0` and an output zip).
+They are skipped if `ADR_TEST_KEY` is not set. The dev ADR only accepts some IP addresses (its Front Door blocks bots), so
+these tests fail on CI for now. They only read from ADR. They use the dataset `antarctica-country-estimates-2027` in the
+organisation `naomi-development-team`, which needs a release called `Version 1.0` and an output zip.
 
-How the API calls ADR, as a user:
+**Settings.** How the API calls ADR for a user:
 
-| Setting                | Default                              | What it is                                                                                           |
-|------------------------|--------------------------------------|------------------------------------------------------------------------------------------------------|
-| `HINT_ADR_URL`         | `https://dev.adr.fjelltopp.org/`     | ADR, as the browser is told (`/adr/schemas`), and where the key is used                              |
-| `HINT_ADR_OAUTH2_URL`  | `http://localhost:5000/`             | ADR for single sign-on, where the Auth0 access token of a user is used                               |
-| `HINT_ADR_API_KEY`     | (none)                               | For development only: the API key of a user on ADR, for anyone who has no access token               |
-| `HINT_ADR_API_URL`     | (`HINT_ADR_URL`)                     | Where to call ADR with the key, if that is not where the browser goes (the ADR stub in docker)       |
-| `HINT_ADR_SCHEMA_THIS_YEAR`, `HINT_ADR_SCHEMA_LAST_YEAR` | `country-estimates-27`, `-26` | The type of the datasets to choose from              |
+| Setting                                                   | Default                           | What it is                                                                         |
+|-----------------------------------------------------------|-----------------------------------|------------------------------------------------------------------------------------|
+| `HINT_ADR_URL`                                            | `https://dev.adr.fjelltopp.org/`  | The address of ADR. The API calls ADR here, and the browser gets it (`/adr/schemas`). |
+| `HINT_ENVIRONMENT`                                        | `production`                      | `development` or `production`. `HINT_ADR_API_KEY` needs `development`.             |
+| `HINT_ADR_API_KEY`                                        | (none)                            | Development only. The API key of one user on ADR. It is used for users with no token. |
+| `HINT_ADR_SCHEMA_THIS_YEAR`, `HINT_ADR_SCHEMA_LAST_YEAR` | `country-estimates-27`, `-26`     | The type of the datasets of this year and of last year                             |
 
-A single sign-on user is called with their access token (the proxy passes it on). The Kotlin app keeps an ADR key for each
-user, which Python does not read. In the dev stack (`scripts/dev.sh`) everyone logs in with a password, so set
-`HINT_ADR_API_KEY` in your shell before `scripts/dev.sh up` (which uses the real ADR unless you set `REAL_ADR=0`) to browse ADR from
-the Python endpoints.
+In a real deployment, every user logs in with single sign-on. The proxy passes their access token to the API, and the API
+calls ADR as that user. In development, users log in with a password and have no token. Set `HINT_ADR_API_KEY` in your
+shell before `scripts/dev.sh up`, and every user calls ADR as the user of that key. (`scripts/dev.sh up` uses the real
+ADR unless you set `REAL_ADR=0`.) The API does not start with `HINT_ADR_API_KEY` in production, because every user would
+then be the same user on ADR.
 
 ### Tests on Postgres
 

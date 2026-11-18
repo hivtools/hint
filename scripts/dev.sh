@@ -113,11 +113,11 @@ ensure_certificate() {
 ensure_stubs() {
   if alive "$STATE/stubs.pid"; then return 0; fi
   for p in "$FAULT_PORT" "$STUB_PORT" "$IDP_PORT"; do need_port "$p" "the stubs and the recording proxy"; done
-  # The Python API runs in a container, so with the nginx proxy the recording proxy has to be reachable from there.
-  # Without it only this machine needs to reach it.
+  # With the nginx proxy, the Python API runs in a container. That container must reach the recording proxy (for hintr)
+  # and the ADR stub. Without the nginx proxy, only this machine must reach them.
   local bind=127.0.0.1
   if [ "$(cat "$STATE/mode" 2>/dev/null)" = proxy ]; then bind=0.0.0.0; fi
-  ( cd "$CT" && exec nohup "$VENV_PY" -m hintcontract.stubs.server --proxy-port "$FAULT_PORT" --proxy-bind "$bind" \
+  ( cd "$CT" && exec nohup "$VENV_PY" -m hintcontract.stubs.server --proxy-port "$FAULT_PORT" --proxy-bind "$bind" --stub-bind "$bind" \
       --upstream "http://127.0.0.1:$HINTR_PORT" --stub-port "$STUB_PORT" --idp-port "$IDP_PORT" \
       --idp-cert "$STATE/idp.pem" --fixtures-dir "$CT/fixtures" ) > "$STATE/stubs.log" 2>&1 < /dev/null &
   echo $! > "$STATE/stubs.pid"
@@ -197,8 +197,20 @@ do_up() { # $1 = pull | nopull, then --no-proxy, --rebuild
   fi
   if [ "${REAL_ADR:-0}" = 1 ]; then echo 1 > "$STATE/real_adr"; else rm -f "$STATE/real_adr"; fi
 
-  # The ADR address that the Python API sends to the browser is the one Kotlin has (see docker-compose.yml)
-  if [ "${REAL_ADR:-0}" = 1 ]; then unset PYTHON_ADR_URL; else export PYTHON_ADR_URL="http://127.0.0.1:$STUB_PORT/adr/"; fi
+  # The Python API calls ADR at one address, and gives the same address to the browser (see docker-compose.yml). With the
+  # ADR stub, that address is the stub as the container sees it: the stub is on the host. The contract tests treat it as
+  # the same address as the one of Kotlin (see normalize.py).
+  # The Python API also calls ADR with an API key (see docker-compose.yml). The stub accepts any key. The tests record
+  # each key as <UUID:1>, <UUID:2> and so on, in the order they appear. So the key must be the key that the tests save
+  # for Kotlin (`API_KEY` in contract-tests/hintcontract/adr.py). If it is not, a call to Kotlin and a call to Python
+  # look different.
+  if [ "${REAL_ADR:-0}" = 1 ]; then
+    unset PYTHON_ADR_URL PYTHON_ADR_API_KEY
+  else
+    export PYTHON_ADR_URL="http://host.docker.internal:$STUB_PORT/adr/"
+    PYTHON_ADR_API_KEY=$(sed -n 's/^API_KEY = "\(.*\)"$/\1/p' "$CT/hintcontract/adr.py")
+    export PYTHON_ADR_API_KEY
+  fi
   if [ "$pull" = pull ] && [ "${NO_PULL:-0}" != 1 ]; then compose pull -q --ignore-buildable; fi
   if [ "$mode" = proxy ]; then compose --profile proxy up -d --build --wait; else compose up -d --wait; fi
   wait_http hintr "http://127.0.0.1:$HINTR_PORT/" 60
