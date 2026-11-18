@@ -48,6 +48,8 @@ class Normalizer:
             (str(env.results_dir) if env.results_dir else None, "<RESULTS>"),
             (env.adr_sso_url.rstrip("/"), "<ADR_SSO>"),
             (env.adr_url.rstrip("/"), "<ADR>"),
+            # The ADR stub as the Python container sees it, because the stub is on the host (see scripts/dev.sh)
+            (env.adr_url.rstrip("/").replace("127.0.0.1", "host.docker.internal"), "<ADR>"),
             (env.app_public_url.rstrip("/"), "<APP>"),
             ((env.sso_base_url or "").rstrip("/") or None, "<APP>"),
             (env.idp_host, "<IDP_HOST>"),

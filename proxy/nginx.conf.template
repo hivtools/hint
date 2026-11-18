@@ -53,6 +53,20 @@ server {
     location /download/status/ { include snippets/python.conf; }
     # Config only. /adr/schemas/ (trailing slash) stays with Kotlin, as the rest of /adr/ does
     location = /adr/schemas { include snippets/python.conf; }
+    # Reading from ADR. Only these exact paths go to Python. Kotlin keeps the same paths with a trailing slash, and
+    # everything else under /adr/ (the key, importing, pushing).
+    location = /adr/datasets { include snippets/python.conf; }
+    location = /adr/orgs { include snippets/python.conf; }
+    location ~ ^/adr/datasets/[^/]+$ { include snippets/python.conf; }
+    # A GET goes to Python. A POST to the same path creates a release, and Kotlin still does that. A `location` cannot
+    # choose by method, so the `if` below sends every other method to Kotlin. `return` is the only safe thing to do in
+    # an `if`. Its error page is a named location that proxies to Kotlin (see proxy/README.md).
+    location ~ ^/adr/datasets/[^/]+/releases$ {
+        error_page 418 = @kotlin_release;
+        if ($request_method != GET) { return 418; }
+        include snippets/python.conf;
+    }
+    location @kotlin_release { include snippets/kotlin.conf; }
     # Calls that add the files of the version to the call
     location /chart-data/ { include snippets/python.conf; }
     location /meta/review-inputs/ { include snippets/python.conf; }

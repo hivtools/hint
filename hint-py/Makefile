@@ -12,6 +12,10 @@ check: ## Lint, format check and type check (what the pre-commit hook runs)
 test: ## Run the tests with coverage
 	@uv run pytest --cov --cov-report=term-missing --cov-report=xml
 
+.PHONY: test-adr
+test-adr: ## Run the tests that call the real dev ADR (needs ADR_TEST_KEY, and an IP address that the dev ADR accepts)
+	@uv run pytest -m adr_live
+
 .PHONY: run
 run: ## Run the API locally with auto reload
 	@uv run fastapi dev app/main.py

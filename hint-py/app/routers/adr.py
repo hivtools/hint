@@ -1,18 +1,26 @@
-"""Endpoints that give the browser what it needs to talk about ADR, the UNAIDS data repository."""
+"""Endpoints about ADR, the UNAIDS data repository.
+
+`/adr/schemas` gives the browser the settings for ADR. The other endpoints read from ADR as the user (see
+`app/clients/adr_client.py`). Only a logged in user can use them.
+"""
 
 from typing import Annotated
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
+from fastapi.responses import Response
 
+from app.clients.adr_client import Adr, AdrAnswer
 from app.config import Settings, get_settings
-from app.schemas import SuccessResponse, success
+from app.dependencies import logged_in_user
+from app.schemas import AdrDatasetType, SuccessResponse, success
+from app.services.adr_datasets import find_datasets, find_releases_with_output_zip
 
 router = APIRouter(prefix="/adr", tags=["adr"])
 
 
 @router.get("/schemas")
 async def file_type_mappings(settings: Annotated[Settings, Depends(get_settings)]) -> SuccessResponse[dict[str, str]]:
-    """The resource type that ADR gives to each kind of file, and the address of ADR. Config only: no login, no ADR call."""
+    """The address of ADR, and the resource type that ADR gives to each kind of file. It needs no login and no call to ADR."""
     return success(
         {
             "baseUrl": settings.adr_url,
@@ -27,3 +35,43 @@ async def file_type_mappings(settings: Annotated[Settings, Depends(get_settings)
             "outputComparison": settings.adr_output_comparison_schema,
         }
     )
+
+
+@router.get("/datasets", dependencies=[Depends(logged_in_user)])
+async def datasets(
+    adr: Adr,
+    settings: Annotated[Settings, Depends(get_settings)],
+    dataset_type: Annotated[AdrDatasetType, Query(alias="type")],
+    show_inaccessible: Annotated[bool, Query(alias="showInaccessible")] = False,
+) -> Response:
+    """The datasets that the user can choose from.
+
+    - `type=input`: the datasets of this year that have a file to import.
+    - `type=output`: the datasets of this year and of last year that have an output zip.
+    """
+    return AdrAnswer.success(await find_datasets(adr, settings, dataset_type, show_inaccessible)).response()
+
+
+@router.get("/datasets/{dataset_id}", dependencies=[Depends(logged_in_user)])
+async def dataset(dataset_id: str, adr: Adr, release: str | None = None) -> Response:
+    """One dataset. If there is a release, the dataset as it was at that release."""
+    return (await adr.dataset(dataset_id, release)).response()
+
+
+@router.get("/datasets/{dataset_id}/releases", dependencies=[Depends(logged_in_user)])
+async def releases(
+    dataset_id: str,
+    adr: Adr,
+    settings: Annotated[Settings, Depends(get_settings)],
+    release_type: Annotated[str | None, Query(alias="type")] = None,
+) -> Response:
+    """The releases of a dataset. With `type=output`, only the releases that have an output zip."""
+    if release_type != AdrDatasetType.OUTPUT:
+        return (await adr.releases(dataset_id)).response()
+    return AdrAnswer.success(await find_releases_with_output_zip(adr, settings, dataset_id)).response()
+
+
+@router.get("/orgs", dependencies=[Depends(logged_in_user)])
+async def orgs(adr: Adr, permission: str) -> Response:
+    """The organisations on ADR where the user has the permission (for example, the permission to create datasets)."""
+    return (await adr.organisations(permission)).response()
