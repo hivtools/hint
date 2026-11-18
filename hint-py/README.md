@@ -168,6 +168,36 @@ This creates the virtual environment and installs the git hooks:
 Add a dependency with `uv add <package>` (or `uv add --dev <package>` for dev tools) and commit the changed
 `pyproject.toml` and `uv.lock`.
 
+### Tests against the real ADR
+
+The ADR endpoints (`/adr/datasets`, `/adr/orgs` and so on) call ADR, the UNAIDS data repository. The tests of `make test`
+use a fake ADR. A few more call the real dev ADR (`tests/api/test_adr_live.py`), to check that ADR answers as the client
+expects:
+
+```
+export ADR_TEST_KEY=...       # the API key of a test user on the dev ADR (the same one as the Kotlin ADR tests use)
+make test-adr
+```
+
+They are skipped without `ADR_TEST_KEY`, and they need an IP address that the dev ADR lets in (its Front Door only allows
+some, because of bots), so they fail on CI. They only read from ADR, using the dataset `antarctica-country-estimates-2027`
+of the organisation `naomi-development-team` (it needs a release called `Version 1.0` and an output zip).
+
+How the API calls ADR, as a user:
+
+| Setting                | Default                              | What it is                                                                                           |
+|------------------------|--------------------------------------|------------------------------------------------------------------------------------------------------|
+| `HINT_ADR_URL`         | `https://dev.adr.fjelltopp.org/`     | ADR, as the browser is told (`/adr/schemas`), and where the key is used                              |
+| `HINT_ADR_OAUTH2_URL`  | `http://localhost:5000/`             | ADR for single sign-on, where the Auth0 access token of a user is used                               |
+| `HINT_ADR_API_KEY`     | (none)                               | For development only: the API key of a user on ADR, for anyone who has no access token               |
+| `HINT_ADR_API_URL`     | (`HINT_ADR_URL`)                     | Where to call ADR with the key, if that is not where the browser goes (the ADR stub in docker)       |
+| `HINT_ADR_SCHEMA_THIS_YEAR`, `HINT_ADR_SCHEMA_LAST_YEAR` | `country-estimates-27`, `-26` | The type of the datasets to choose from              |
+
+A single sign-on user is called with their access token (the proxy passes it on). The Kotlin app keeps an ADR key for each
+user, which Python does not read. In the dev stack (`scripts/dev.sh`) everyone logs in with a password, so set
+`HINT_ADR_API_KEY` in your shell before `scripts/dev.sh up` (which uses the real ADR unless you set `REAL_ADR=0`) to browse ADR from
+the Python endpoints.
+
 ### Tests on Postgres
 
 By default the tests use an in memory SQLite database, so they need nothing installed. The same tests can run on a real
