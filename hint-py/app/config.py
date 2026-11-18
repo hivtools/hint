@@ -68,8 +68,9 @@ class Settings(BaseSettings):
     adr_output_zip_schema: str = "inputs-unaids-naomi-output-zip"
     adr_output_summary_schema: str = "inputs-unaids-naomi-report"
     adr_output_comparison_schema: str = "inputs-unaids-naomi-comparison-report"
-    # The type of the datasets of this year, and of last year. Each year the datasets have a new type. A user chooses
-    # the datasets to import from the datasets of these two types.
+    # The type of the datasets of this year, and of last year. Each year the datasets have a new type.
+    # Datasets for this_year can be imported as model inputs, last_year can be imported to rehydrate an
+    # old model fit.
     adr_schema_this_year: str = "country-estimates-27"
     adr_schema_last_year: str = "country-estimates-26"
 
