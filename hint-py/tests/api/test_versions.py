@@ -215,3 +215,46 @@ async def test_promote_version_without_a_name_is_rejected(api):
     r = await api.post(f"/project/{project['id']}/version/x/promote", json={})
 
     assert r.status_code == 400
+
+
+async def test_promote_version_does_not_check_the_version_or_who_owns_it(api, other_api):
+    # A quirk of the Kotlin app that is kept (contract test test_promote_does_not_check_version_or_ownership)
+    project = await create_project(api)
+    v1 = project["versions"][0]["id"]
+    await save_state(api, project)
+
+    r = await other_api.post(f"/project/999/version/{v1}/promote", json={"name": "taken"})
+
+    assert r.status_code == 200
+    promoted = r.json()["data"]
+    details = (await other_api.get(f"/project/{promoted['id']}/version/{promoted['versions'][0]['id']}")).json()
+    assert details["data"]["state"] == STATE
+    assert (await other_api.post("/project/999/version/nonexistent/promote", json={"name": "x"})).status_code == 200
+
+
+# ------------------------------------------------------------------------------------------------------ order of checks
+@pytest.mark.parametrize(
+    ("path", "request_kwargs"),
+    [
+        ("state", {}),  # no state at all
+        ("note", {"json": {}}),
+    ],
+)
+async def test_the_version_is_checked_before_the_body(api, other_api, path, request_kwargs):
+    # Kotlin read the body first, so it answered with the error about the body (D14 in the porting checklist)
+    project = await create_project(api)
+    v1 = project["versions"][0]["id"]
+
+    r = await other_api.post(f"/project/{project['id']}/version/{v1}/{path}", **request_kwargs)
+
+    assert_failure(r, 400, "Version does not exist.")
+
+
+async def test_new_version_checks_the_body_before_the_parent(api, other_api):
+    # The parent is in the body, so the body is checked first, as in Kotlin
+    project = await create_project(api)
+
+    r = await other_api.post(f"/project/{project['id']}/version", json={"note": "no parent"})
+
+    assert r.status_code == 400
+    assert "show them this code" in r.json()["errors"][0]["detail"]

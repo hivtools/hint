@@ -1,6 +1,8 @@
 """Projects and their versions (Kotlin: ProjectsController).
 
-All of these need a logged in user. The version a browser tab is working on is not kept in a session here: the tab sends
+All of these need a logged in user. An endpoint that names a project or version in its path takes it as `ProjectOfUser`
+or `VersionOfUser`, which check that it is the user's before the endpoint runs (promote does not, as in Kotlin). The
+version a browser tab is working on is not kept in a session here: the tab sends
 it in the X-Version-Id header (see `requested_version_id`) and keeps track of it itself, so the endpoints that used to
 set or clear the session's version just return.
 """
@@ -11,9 +13,16 @@ import structlog
 from fastapi import APIRouter, Depends, Request
 
 from app import schemas
-from app.db.project_repository import ProjectRepository, get_project_repository
-from app.db.version_repository import VersionRepository, get_version_repository
-from app.dependencies import User, logged_in_user, requested_version_id
+from app.dependencies import (
+    LoggedInUser,
+    ParentVersionOfUser,
+    ProjectOfUser,
+    Projects,
+    VersionOfUser,
+    Versions,
+    find_owned_version,
+    requested_version_id,
+)
 from app.errors import EmptyBodyError
 from app.ids import new_version_id
 from app.schemas import SuccessResponse, empty_success, success
@@ -23,9 +32,6 @@ log = structlog.get_logger()
 
 router = APIRouter()
 
-LoggedInUser = Annotated[User, Depends(logged_in_user)]
-Projects = Annotated[ProjectRepository, Depends(get_project_repository)]
-Versions = Annotated[VersionRepository, Depends(get_version_repository)]
 Service = Annotated[ProjectService, Depends(get_project_service)]
 
 
@@ -38,30 +44,28 @@ async def new_project(
 
 @router.post("/project/{project_id}/clone")
 async def clone_project_to_user(
-    project_id: int, body: schemas.CloneProjectRequest, user: LoggedInUser, service: Service
+    project: ProjectOfUser, body: schemas.CloneProjectRequest, user: LoggedInUser, service: Service
 ) -> SuccessResponse[None]:
-    await service.clone_project_to_user(user.id, project_id, body.emails)
+    await service.clone_project_to_user(user.id, project.id, body.emails)
     return success(None)
 
 
 @router.post("/project/{project_id}/version")
 async def new_version(
-    project_id: int, body: schemas.NewVersionRequest, user: LoggedInUser, versions: Versions
+    parent: ParentVersionOfUser, body: schemas.NewVersionRequest, versions: Versions
 ) -> SuccessResponse[schemas.Version]:
     version_id = new_version_id()
-    await versions.copy_version(body.parent, version_id, project_id, user.id, body.note)
+    await versions.copy_version(parent.id, version_id, parent.project_id, body.note)
     return success(await versions.get_version(version_id))
 
 
 @router.post("/project/{project_id}/version/{version_id}/state")
-async def upload_state(
-    project_id: int, version_id: str, request: Request, user: LoggedInUser, versions: Versions
-) -> SuccessResponse[bool]:
+async def upload_state(version: VersionOfUser, request: Request, versions: Versions) -> SuccessResponse[bool]:
     # The state is stored exactly as it was sent, whatever the content type
     state = (await request.body()).decode("utf-8")
     if not state:
         raise EmptyBodyError
-    await versions.save_version_state(version_id, project_id, user.id, state)
+    await versions.save_version_state(version.id, state)
     return empty_success()
 
 
@@ -69,31 +73,31 @@ async def upload_state(
 async def promote_version(
     project_id: int, version_id: str, body: schemas.PromoteVersionRequest, user: LoggedInUser, service: Service
 ) -> SuccessResponse[schemas.Project]:
+    # As in Kotlin, this does not check that the version exists or is the user's, so it takes the ids in the path as they
+    # are and not through `VersionOfUser`. The project id is not used at all. Quirk 30 in contract-tests/QUIRKS.md.
     return success(await service.promote_version(user.id, version_id, body.name, body.note))
 
 
 @router.post("/project/{project_id}/note")
 async def update_project_note(
-    project_id: int, body: schemas.NoteRequest, user: LoggedInUser, projects: Projects
+    project: ProjectOfUser, body: schemas.NoteRequest, projects: Projects
 ) -> SuccessResponse[bool]:
-    await projects.update_project_note(project_id, user.id, body.note)
-    log.info("Updated project notes", project=project_id)
+    await projects.update_project_note(project.id, body.note)
+    log.info("Updated project notes", project=project.id)
     return empty_success()
 
 
 @router.post("/project/{project_id}/version/{version_id}/note")
 async def update_version_note(
-    project_id: int, version_id: str, body: schemas.NoteRequest, user: LoggedInUser, versions: Versions
+    version: VersionOfUser, body: schemas.NoteRequest, versions: Versions
 ) -> SuccessResponse[bool]:
-    await versions.update_version_note(version_id, project_id, user.id, body.note)
+    await versions.update_version_note(version.id, body.note)
     return empty_success()
 
 
 @router.get("/project/{project_id}/version/{version_id}")
-async def load_version_details(
-    project_id: int, version_id: str, user: LoggedInUser, versions: Versions
-) -> SuccessResponse[schemas.VersionDetails]:
-    return success(await versions.get_version_details(version_id, project_id, user.id))
+async def load_version_details(version: VersionOfUser, versions: Versions) -> SuccessResponse[schemas.VersionDetails]:
+    return success(await versions.get_version_details(version.id))
 
 
 # Only this URL, with the trailing slash, is the API. /projects without it is a page of the Vue app, which Kotlin
@@ -104,16 +108,14 @@ async def get_projects(user: LoggedInUser, projects: Projects) -> SuccessRespons
 
 
 @router.delete("/project/{project_id}/version/{version_id}")
-async def delete_version(
-    project_id: int, version_id: str, user: LoggedInUser, versions: Versions
-) -> SuccessResponse[bool]:
-    await versions.delete_version(version_id, project_id, user.id)
+async def delete_version(version: VersionOfUser, versions: Versions) -> SuccessResponse[bool]:
+    await versions.delete_version(version.id)
     return empty_success()
 
 
 @router.delete("/project/{project_id}")
-async def delete_project(project_id: int, user: LoggedInUser, projects: Projects) -> SuccessResponse[bool]:
-    await projects.delete_project(project_id, user.id)
+async def delete_project(project: ProjectOfUser, projects: Projects) -> SuccessResponse[bool]:
+    await projects.delete_project(project.id)
     return empty_success()
 
 
@@ -124,16 +126,17 @@ async def get_current_project(
     versions: Versions,
     version_id: Annotated[str | None, Depends(requested_version_id)],
 ) -> SuccessResponse[schemas.CurrentProject]:
-    if version_id is None or not await versions.version_exists(version_id, user.id):
+    owned = await find_owned_version(version_id, user, versions) if version_id else None
+    if owned is None:
         return success(schemas.CurrentProject(project=None, version=None))
-    version = await versions.get_version(version_id)
-    project = await projects.get_project_from_version_id(version_id, user.id)
+    version = await versions.get_version(owned.id)
+    project = await projects.get_project(owned.project_id)
     return success(schemas.CurrentProject(project=project, version=version))
 
 
 @router.post("/project/{project_id}/rename")
 async def rename_project(
-    project_id: int, body: schemas.RenameProjectRequest, user: LoggedInUser, projects: Projects
+    project: ProjectOfUser, body: schemas.RenameProjectRequest, projects: Projects
 ) -> SuccessResponse[bool]:
-    await projects.rename_project(project_id, user.id, body.name, body.note)
+    await projects.rename_project(project.id, body.name, body.note)
     return empty_success()

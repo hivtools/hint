@@ -304,3 +304,23 @@ async def test_clone_errors(api, other_api):
     assert_failure(await other_api.post(clone, json={"emails": [USER]}), 400, "Project does not exist.")
     assert (await api.post(clone, json={"emails": []})).status_code == 200
     assert (await other_api.get("/projects/")).json()["data"] == []
+
+
+# ------------------------------------------------------------------------------------------------------ order of checks
+@pytest.mark.parametrize(
+    ("path", "body"),
+    [
+        ("rename", {}),
+        ("note", {}),
+        ("clone", {}),
+        ("clone", {"emails": ["not-an-email"]}),
+        ("clone", {"emails": ["nobody@example.com"]}),
+    ],
+)
+async def test_the_project_is_checked_before_the_body(api, other_api, path, body):
+    # Kotlin read the body first, so it answered with the error about the body (D14 in the porting checklist)
+    project = await create_project(api)
+
+    r = await other_api.post(f"/project/{project['id']}/{path}", json=body)
+
+    assert_failure(r, 400, "Project does not exist.")

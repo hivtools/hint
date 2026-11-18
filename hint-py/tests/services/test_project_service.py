@@ -26,7 +26,7 @@ async def test_create_project_has_a_first_version_and_no_note(service, session):
 async def test_promote_version_copies_it_into_a_new_project(service, session):
     original = await service.create_project(USER, "original", None, None)
     original_version = original.versions[0].id
-    await VersionRepository(session).save_version_state(original_version, original.id, USER, '{"a": 1}')
+    await VersionRepository(session).save_version_state(original_version, '{"a": 1}')
 
     promoted = await service.promote_version(USER, original_version, "promoted", "from original")
 
@@ -34,7 +34,7 @@ async def test_promote_version_copies_it_into_a_new_project(service, session):
     assert (promoted.name, promoted.is_uploaded) == ("promoted", False)
     [version] = promoted.versions
     assert (version.version_number, version.note) == (1, "from original")
-    details = await VersionRepository(session).get_version_details(version.id, promoted.id, USER)
+    details = await VersionRepository(session).get_version_details(version.id)
     assert details.state == '{"a": 1}'
 
 
