@@ -46,6 +46,14 @@ msgstr "Usuário não existe."
 msgid "missingShapeFile"
 msgstr "Você deve fazer upload de um arquivo de forma antes de fazer upload de dados de pesquisa ou programa."
 
+#. Placeholders: {max_size} (such as "200 MB").
+msgid "fileTooLarge"
+msgstr "O arquivo é muito grande. Os arquivos podem ter até {max_size}."
+
+#. Placeholders: {expected} (such as "PJNZ, zip"), {got}.
+msgid "invalidFileExtension"
+msgstr "O ficheiro tem de ser do tipo {expected}, foi obtido o tipo {got}."
+
 msgid "invalidToken"
 msgstr "O token não é válido."
 
