@@ -40,7 +40,7 @@ async def find_datasets(
     # The Vue app never asks to see the datasets that the user has no permission to use. Only tests do.
     answer = await adr.search_datasets(years, MAX_DATASETS, show_inaccessible)
     if not answer.ok:
-        raise AdrFetchingDatasetsError(answer.status_code, NO_ADR_ACCOUNT in str(answer.content))
+        raise AdrFetchingDatasetsError(answer.status_code, NO_ADR_ACCOUNT in str(answer.envelope))
 
     found = answer.data
     if dataset_type == AdrDatasetType.INPUT:

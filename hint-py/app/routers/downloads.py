@@ -35,7 +35,7 @@ async def submit_download(
             payload.pop("vmmc", None)
         else:
             payload["vmmc"] = vmmc
-    return await hintr.submit_download(download_type, task_id, payload)
+    return (await hintr.submit_download(download_type, task_id, payload)).response()
 
 
 @router.get("/download/result/{task_id}")

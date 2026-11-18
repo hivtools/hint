@@ -10,6 +10,7 @@ import pytest
 from pydantic import ValidationError
 
 from app.clients.hintr_client import HintrClient
+from app.clients.responses import HintResponse
 from app.errors import HintrFailedError
 from app.schemas import FileType, HintrFile, ModelOptions
 from tests.hintr import HINTR_FAILURE, SUCCESS, FakeHintr, failure, success
@@ -18,10 +19,6 @@ from tests.hintr import HINTR_FAILURE, SUCCESS, FakeHintr, failure, success
 @pytest.fixture
 def client(hintr: FakeHintr) -> HintrClient:
     return HintrClient(hintr.http, "en")
-
-
-def body_of(response) -> object:
-    return json.loads(bytes(response.body))
 
 
 async def test_the_call_is_made_with_the_method_and_path(client, hintr):
@@ -45,27 +42,22 @@ async def test_a_parameter_cannot_change_the_path_or_add_a_query(client, hintr):
 
 
 async def test_hintrs_own_answer_comes_back_as_it_is(client):
-    r = await client.forward("GET", "/hintr/version")
-    assert r.status_code == 200
-    assert r.headers["content-type"] == "application/json"
     # The body is hintr's own, not read and written again
-    assert r.body == SUCCESS
+    assert await client.forward("GET", "/hintr/version") == HintResponse(200, SUCCESS)
 
 
 @pytest.mark.parametrize("hintr_status", [400, 401, 403, 404])
 async def test_error_statuses_up_to_404_are_passed_on(client, hintr, hintr_status):
     hintr.answer(hintr_status, json=HINTR_FAILURE)
     r = await client.forward("GET", "/hintr/version")
-    assert r.status_code == hintr_status
-    assert body_of(r) == HINTR_FAILURE
+    assert (r.status_code, r.envelope) == (hintr_status, HINTR_FAILURE)
 
 
 @pytest.mark.parametrize("hintr_status", [405, 409, 500, 503, 599])
 async def test_other_error_statuses_become_500(client, hintr, hintr_status):
     hintr.answer(hintr_status, json=HINTR_FAILURE)
     r = await client.forward("GET", "/hintr/version")
-    assert r.status_code == 500
-    assert body_of(r) == HINTR_FAILURE
+    assert (r.status_code, r.envelope) == (500, HINTR_FAILURE)
 
 
 async def test_an_unknown_status_becomes_500(client, hintr):
@@ -76,8 +68,7 @@ async def test_an_unknown_status_becomes_500(client, hintr):
 async def test_a_failure_that_hintr_sends_with_a_200_is_passed_on(client, hintr):
     hintr.answer(200, json=HINTR_FAILURE)
     r = await client.forward("GET", "/hintr/version")
-    assert r.status_code == 200
-    assert body_of(r) == HINTR_FAILURE
+    assert (r.status_code, r.envelope) == (200, HINTR_FAILURE)
 
 
 # hintr status, content, content type, and what hint answers (status and body)
@@ -129,10 +120,7 @@ async def test_what_hintr_sends_in_another_format_is_made_to_look_like_hintr(
     client, hintr, hintr_status, content, content_type, hint_status, body
 ):
     hintr.answer(hintr_status, content=content, headers={"Content-Type": content_type})
-    r = await client.forward("GET", "/hintr/version")
-    assert r.status_code == hint_status
-    assert r.headers["content-type"] == "application/json"
-    assert body_of(r) == body
+    assert await client.forward("GET", "/hintr/version") == HintResponse(hint_status, body)
 
 
 @pytest.mark.parametrize(
@@ -147,8 +135,7 @@ async def test_what_hintr_sends_in_another_format_is_made_to_look_like_hintr(
 async def test_no_answer_from_hintr_is_a_500(client, hintr, error):
     hintr.fail_to_connect(error)
     r = await client.forward("GET", "/model/status/t1")
-    assert r.status_code == 500
-    assert body_of(r) == failure("No response returned. The request may have timed out.")
+    assert r == HintResponse(500, failure("No response returned. The request may have timed out."))
 
 
 # ---- The calls with a body: the shape of what hintr is sent. Which files each endpoint uses is tested with the endpoints.
@@ -258,8 +245,10 @@ async def test_a_failure_of_hintr_is_raised_with_hintrs_own_answer(client, hintr
     with pytest.raises(HintrFailedError) as raised:
         await getattr(client, call)("t1")
 
-    assert raised.value.response.status_code == (status if status <= 404 else 500)
-    assert body_of(raised.value.response) == HINTR_FAILURE
+    assert (raised.value.answer.status_code, raised.value.answer.envelope) == (
+        status if status <= 404 else 500,
+        HINTR_FAILURE,
+    )
 
 
 @pytest.mark.parametrize("call", ["calibrate_result_path", "download_result"])
@@ -269,8 +258,7 @@ async def test_no_answer_from_hintr_is_raised_as_a_failure(client, hintr, call):
     with pytest.raises(HintrFailedError) as raised:
         await getattr(client, call)("t1")
 
-    assert raised.value.response.status_code == 500
-    assert body_of(raised.value.response) == failure("No response returned. The request may have timed out.")
+    assert raised.value.answer == HintResponse(500, failure("No response returned. The request may have timed out."))
 
 
 async def test_a_task_id_cannot_change_the_path_of_a_result(client, hintr):
