@@ -14,6 +14,10 @@ import org.springframework.web.bind.annotation.RestController
  * version the request works on is not part of the identity: the browser sends it in X-Version-Id. Python checks that
  * the user may use it, and for a guest that means knowing which versions this session was given, so those are passed
  * on too.
+ *
+ * For a single sign-on user the response also has their Auth0 access token, which Python needs to call ADR on their
+ * behalf. The token is a credential: it only ever travels in this response header (never a body, never a log line) to
+ * nginx, which hands it to Python and to nothing else (see proxy/snippets/python.conf).
  */
 @RestController
 @RequestMapping("/internal")
@@ -29,6 +33,11 @@ class InternalController(private val session: Session)
         {
             response.header(GUEST_VERSIONS_HEADER, guestVersionIds.joinToString(","))
         }
+        val accessToken = session.getAccessToken()
+        if (accessToken.isNotEmpty())
+        {
+            response.header(ACCESS_TOKEN_HEADER, accessToken)
+        }
         return response.build()
     }
 
@@ -36,5 +45,6 @@ class InternalController(private val session: Session)
     {
         const val USER_HEADER = "X-Hint-User"
         const val GUEST_VERSIONS_HEADER = "X-Hint-Guest-Versions"
+        const val ACCESS_TOKEN_HEADER = "X-Hint-Access-Token"
     }
 }

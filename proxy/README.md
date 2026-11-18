@@ -20,7 +20,7 @@ Authentication and sessions stay in Kotlin until login moves. For each request t
 
 ```
 browser --cookie--> nginx --(auth_request, cookie)--> Kotlin GET /internal/whoami
-                      |                                   returns 204 + X-Hint-User (+ X-Hint-Guest-Versions)
+                      |                                   returns 204 + X-Hint-User (+ X-Hint-Guest-Versions, X-Hint-Access-Token)
                       +--(no cookie, X-Hint-* headers)--> Python
 ```
 
@@ -37,6 +37,14 @@ browser --cookie--> nginx --(auth_request, cookie)--> Kotlin GET /internal/whoam
   *change* in the Kotlin session would need another `/internal/` endpoint.
 - The guest versions grow by 37 bytes for each tab a guest opens, and the auth_request response headers must fit in one
   nginx buffer, so the `/_whoami` location sets `proxy_buffer_size 32k` (about 800 versions).
+- A single sign-on user's Auth0 access token is in the Kotlin session, and Python needs it to call ADR as them, so
+  whoami passes it on in `X-Hint-Access-Token` (only when the user has one: no header for a guest or a password login).
+  The token is a credential. It travels only on the internal hop: `python.conf` hands it to Python and nothing else
+  (the browser gets only the `Set-Cookie` of the whoami answer, and `kotlin.conf` does not set it), and nginx replaces
+  any such header the browser sends. Python reads it with `current_adr_access_token`, uses it only to call ADR, and must
+  never log it or put it in a response or an error (`/items/whoami` says only whether there is one). It is sized for the
+  32k buffer of `/_whoami` (an Auth0 JWT is a few KB, and a user with a token is never a guest with a version list), and
+  the Python server also limits the size of a request's headers, so check that if the tokens grow past a few KB.
 - When login and sessions move to Python, only `current_user` changes and `/internal/whoami` and `auth_request` go.
 
 ## Running it

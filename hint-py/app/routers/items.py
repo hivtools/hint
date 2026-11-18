@@ -2,7 +2,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends
 
-from app.dependencies import User, current_user, requested_version_id
+from app.dependencies import User, current_adr_access_token, current_user, requested_version_id
 
 router = APIRouter(prefix="/items", tags=["items"])
 
@@ -13,12 +13,15 @@ router = APIRouter(prefix="/items", tags=["items"])
 async def whoami(
     user: Annotated[User, Depends(current_user)],
     version_id: Annotated[str | None, Depends(requested_version_id)],
+    access_token: Annotated[str | None, Depends(current_adr_access_token)],
 ):
     return {
         "user": user.id,
         "version_id": version_id,
         "is_guest": user.is_guest,
         "guest_version_ids": sorted(user.guest_version_ids),
+        # Whether, never the token itself: it is a credential
+        "has_access_token": access_token is not None,
     }
 
 
