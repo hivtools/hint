@@ -2,7 +2,7 @@
 to it.
 
 ADR answers in the format of CKAN: `{"success": true, "result": ...}`. It answers with status 200 for most failures. This
-module turns each answer into one in the format of this API (see `AdrAnswer`), so the Vue app does not see the
+module turns each answer into one in the format of this API (a `HintResponse`), so the Vue app does not see the
 difference.
 
 The rules for what a user can choose (which datasets and releases) are in `app/services/adr_datasets.py`. That module
@@ -11,16 +11,14 @@ asks ADR through this one.
 
 import json
 import time
-from dataclasses import dataclass
-from typing import Annotated, Any
+from typing import Annotated
 
 import httpx2
 import structlog
 from fastapi import Depends, Header, Request
-from fastapi.responses import JSONResponse
 from pydantic import SecretStr
 
-from app.clients.responses import TIMEOUT_SECONDS, failure_content, hint_status, parse_json
+from app.clients.responses import TIMEOUT_SECONDS, HintResponse, hint_status, parse_json
 from app.config import Settings, get_settings
 from app.dependencies import current_adr_access_token
 from app.errors import NoAdrCredentialsError
@@ -52,53 +50,20 @@ def adr_authorization(settings: Settings, access_token: str | None) -> SecretStr
     return None
 
 
-@dataclass(frozen=True)
-class AdrAnswer:
-    """The answer of ADR, in the format of this API.
-
-    It has a status code, and a body with `data`, `errors` and `status`. It is a success (status 200), or a failure with
-    the message of CKAN.
-    """
-
-    status_code: int
-    content: dict[str, Any]
-
-    @classmethod
-    def success(cls, data: object) -> AdrAnswer:
-        return cls(200, {"data": data, "errors": [], "status": "success"})
-
-    @classmethod
-    def failure(cls, status_code: int, detail: str, code: str = "OTHER_ERROR") -> AdrAnswer:
-        return cls(status_code, failure_content(detail, code))
-
-    @property
-    def ok(self) -> bool:
-        return self.status_code == 200
-
-    @property
-    def data(self) -> Any:
-        return self.content["data"]
-
-    def response(self) -> JSONResponse:
-        # FastAPI sends this JSON as it is. It does not check or convert it again. This matters for a long list of
-        # datasets.
-        return JSONResponse(status_code=self.status_code, content=self.content)
-
-
-def _not_json(status_code: int, body: bytes, language: str) -> AdrAnswer:
+def _not_json(status_code: int, body: bytes, language: str) -> HintResponse:
     text = body.decode("utf-8", errors="replace")
     # A gateway that cannot reach ADR answers with an HTML page. The page says what went wrong.
     if "504 Gateway Time-out" in text:
         log.error("ADR request timed out")
-        return AdrAnswer.failure(504, t("adrTimeout", language))
+        return HintResponse.failure(504, t("adrTimeout", language))
     if "502 Bad Gateway" in text:
         log.error("ADR gateway failed")
-        return AdrAnswer.failure(502, t("adrBadGateway", language))
+        return HintResponse.failure(502, t("adrBadGateway", language))
     log.error("ADR answered with something that is not JSON", status=status_code)
-    return AdrAnswer.failure(500, t("unparseableResponse", language))
+    return HintResponse.failure(500, t("unparseableResponse", language))
 
 
-def adr_answer(status_code: int, body: bytes, language: str = "en") -> AdrAnswer:
+def adr_answer(status_code: int, body: bytes, language: str = "en") -> HintResponse:
     """Turns the answer of ADR into an answer in the format of this API.
 
     - If the body is in the format of CKAN (it has `success`), a success gives the `result`. A failure gives status 500,
@@ -114,20 +79,20 @@ def adr_answer(status_code: int, body: bytes, language: str = "en") -> AdrAnswer
 
     status = hint_status(status_code)
     if isinstance(parsed, dict) and "status" in parsed:
-        return AdrAnswer(status, parsed)
+        return HintResponse(status, parsed)
     if isinstance(parsed, dict) and "success" in parsed:
         if parsed["success"] is True:
-            return AdrAnswer.success(parsed.get("result"))
+            return HintResponse.success(parsed.get("result"))
         # A failure with no message (a KeyError here) is an error that this API does not expect, so it is a 500.
         message = parsed["error"]["message"]
         # Do not log the message. It can have the name of a person in it (see "Personal data" in the README).
         log.error("ADR failed", status=status_code)
-        return AdrAnswer.failure(500, str(message), "ADR_ERROR")
+        return HintResponse.failure(500, str(message), "ADR_ERROR")
     if status < 400:
-        return AdrAnswer.success(parsed)
+        return HintResponse.success(parsed)
     message = parsed if isinstance(parsed, str) else json.dumps(parsed)
     log.error("ADR failed", status=status_code)
-    return AdrAnswer.failure(status, message)
+    return HintResponse.failure(status, message)
 
 
 class AdrClient:
@@ -145,7 +110,7 @@ class AdrClient:
         self._authorization = authorization
         self._language = language
 
-    async def search_datasets(self, dataset_types: list[str], limit: int, show_inaccessible: bool) -> AdrAnswer:
+    async def search_datasets(self, dataset_types: list[str], limit: int, show_inaccessible: bool) -> HintResponse:
         """The datasets of these types, at most `limit`. On success the data is the list of datasets.
 
         A dataset that has resources the user cannot use is only in the list if `show_inaccessible` is true.
@@ -155,24 +120,24 @@ class AdrClient:
             params["hide_inaccessible_resources"] = "true"
         answer = await self._get("package_search", params)
         # CKAN puts the datasets in `results`, next to the number found
-        return AdrAnswer.success(answer.data["results"]) if answer.ok else answer
+        return HintResponse.success(answer.data["results"]) if answer.ok else answer
 
-    async def dataset(self, dataset_id: str, release: str | None = None) -> AdrAnswer:
+    async def dataset(self, dataset_id: str, release: str | None = None) -> HintResponse:
         """One dataset. With a release, the dataset as it was at that release."""
         params = {"id": dataset_id}
         if release is not None:
             params["release"] = release
         return await self._get("package_show", params)
 
-    async def releases(self, dataset_id: str) -> AdrAnswer:
+    async def releases(self, dataset_id: str) -> HintResponse:
         """The releases of a dataset. On success the data is a list."""
         return await self._get("dataset_version_list", {"dataset_id": dataset_id})
 
-    async def organisations(self, permission: str) -> AdrAnswer:
+    async def organisations(self, permission: str) -> HintResponse:
         """The organisations where the user has the permission (for example, the permission to create datasets)."""
         return await self._get("organization_list_for_user", {"permission": permission})
 
-    async def _get(self, action: str, params: dict[str, str]) -> AdrAnswer:
+    async def _get(self, action: str, params: dict[str, str]) -> HintResponse:
         """A read-only call of one of the actions of CKAN.
 
         The parameters are encoded. A value from the URL, such as a dataset id, cannot add parameters to the call.
@@ -187,7 +152,7 @@ class AdrClient:
         except httpx2.RequestError:
             # The log has the message of the library. It has the address and has no headers.
             log.exception("No response from ADR", action=action)
-            return AdrAnswer.failure(500, t("noResponse", self._language))
+            return HintResponse.failure(500, t("noResponse", self._language))
         log.info(
             "ADR request",
             action=action,

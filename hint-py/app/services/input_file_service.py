@@ -18,19 +18,13 @@ from dataclasses import dataclass
 from typing import Annotated, BinaryIO
 
 from fastapi import Depends, Header
-from fastapi.responses import JSONResponse, Response
 
 from app import schemas
 from app.clients.hintr_client import BASELINE_TYPES, Hintr, HintrClient
+from app.clients.responses import HintResponse
 from app.config import Settings, get_settings
-from app.errors import (
-    EmptyFileNameError,
-    HintError,
-    InvalidFileExtensionError,
-    MissingShapeFileError,
-    hint_error_response,
-)
-from app.schemas import FileType, success
+from app.errors import EmptyFileNameError, HintError, InvalidFileExtensionError, MissingShapeFileError
+from app.schemas import FileType
 from app.services.version_files import Files, VersionFiles
 from app.storage.uploads import UploadStorage, file_extension
 
@@ -86,7 +80,8 @@ def _wrong_extension(spec: InputFileType, filename: str) -> InvalidFileExtension
 class InputFileService:
     """The input files of the version in the request, as hintr validates them.
 
-    Both methods return the response for the browser: hintr's validation, or the error that the user should see.
+    Both methods return the answer for the browser: hintr's validation, or the error that the user should see. It is
+    a `HintResponse`, as hintr's own answer is, so a caller can also read whether the file is valid.
     """
 
     def __init__(self, files: VersionFiles, storage: UploadStorage, hintr: HintrClient, accept_language: str | None):
@@ -95,7 +90,7 @@ class InputFileService:
         self._hintr = hintr
         self._accept_language = accept_language
 
-    async def upload(self, file_type: FileType, source: BinaryIO, filename: str) -> Response:
+    async def upload(self, file_type: FileType, source: BinaryIO, filename: str) -> HintResponse:
         """Makes the file the version's file of this type, in place of the old one, and asks hintr to validate it.
 
         - A name with an extension that the type does not have: nothing is written, and the version's file of this type
@@ -117,15 +112,15 @@ class InputFileService:
         )
         return await self._validate(file_type, saved)
 
-    async def validate(self, file_type: FileType) -> Response:
+    async def validate(self, file_type: FileType) -> HintResponse:
         """Asks hintr to validate the version's file of this type again. Only hintr can read what is in a file. A
         success with null data if the version has no file of this type."""
         file = await self._files.get_file(file_type)
         if file is None:
-            return JSONResponse(success(None).model_dump())
+            return HintResponse.success(None)
         return await self._validate(file_type, file)
 
-    async def _validate(self, file_type: FileType, file: schemas.HintrFile) -> Response:
+    async def _validate(self, file_type: FileType, file: schemas.HintrFile) -> HintResponse:
         if INPUT_FILE_TYPES[file_type].is_baseline:
             return await self._hintr.validate_baseline_individual(file_type, file)
         # So the version must have a shape file before the user adds any of the other files
@@ -134,9 +129,9 @@ class InputFileService:
             return self._answer(MissingShapeFileError())
         return await self._hintr.validate_survey_and_programme(file_type, file, shape.path)
 
-    def _answer(self, error: HintError) -> Response:
+    def _answer(self, error: HintError) -> HintResponse:
         # Answered and not raised, so that the request's transaction commits (see the top of this module)
-        return hint_error_response(error, self._accept_language)
+        return error.hint_response(self._accept_language)
 
 
 def get_input_file_service(

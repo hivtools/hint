@@ -37,17 +37,17 @@ async def input_time_series(series_type: str, files: Files, hintr: Hintr) -> Res
         wanted = TIME_SERIES_FILES[file_type]
     except ValueError, KeyError:
         raise UnknownInputTimeSeriesTypeError() from None
-    return await hintr.input_time_series(file_type, await files.get_files(*wanted))
+    return (await hintr.input_time_series(file_type, await files.get_files(*wanted))).response()
 
 
 @router.get("/chart-data/input-comparison")
 async def input_comparison(files: Files, hintr: Hintr) -> Response:
-    return await hintr.input_comparison(await files.get_files(*INPUT_COMPARISON_FILES))
+    return (await hintr.input_comparison(await files.get_files(*INPUT_COMPARISON_FILES))).response()
 
 
 @router.get("/chart-data/input-population")
 async def input_population(files: Files, hintr: Hintr) -> Response:
-    return await hintr.input_population(await files.get_files(FileType.POPULATION))
+    return (await hintr.input_population(await files.get_files(FileType.POPULATION))).response()
 
 
 class ReviewInputsRequest(BaseModel):
@@ -67,4 +67,5 @@ async def review_inputs_metadata(iso3: str, body: ReviewInputsRequest, files: Fi
             raise UnknownReviewInputFileTypeError()
         wanted[name] = file_type
     found = await files.get_files(*wanted.values())
-    return await hintr.review_input_metadata(iso3, {name: found.get(file_type) for name, file_type in wanted.items()})
+    answer = await hintr.review_input_metadata(iso3, {name: found.get(file_type) for name, file_type in wanted.items()})
+    return answer.response()

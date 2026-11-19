@@ -11,7 +11,8 @@ import httpx2
 import pytest
 from pydantic import SecretStr
 
-from app.clients.adr_client import AdrAnswer, AdrClient, adr_answer, adr_authorization, create_adr_http_client
+from app.clients.adr_client import AdrClient, adr_answer, adr_authorization, create_adr_http_client
+from app.clients.responses import HintResponse
 from app.config import Settings
 from app.errors import NoAdrCredentialsError
 from tests.adr import FakeAdr, ckan_error, ckan_ok
@@ -20,8 +21,8 @@ from tests.support import ADR_KEY, ADR_TOKEN
 KEY = SecretStr(ADR_KEY)
 
 
-def failure(status: int, detail: str, code: str = "OTHER_ERROR") -> AdrAnswer:
-    return AdrAnswer(status, {"data": {}, "errors": [{"error": code, "detail": detail}], "status": "failure"})
+def failure(status: int, detail: str, code: str = "OTHER_ERROR") -> HintResponse:
+    return HintResponse(status, {"data": {}, "errors": [{"error": code, "detail": detail}], "status": "failure"})
 
 
 def dev_settings(**settings: Any) -> Settings:
@@ -184,11 +185,11 @@ async def test_a_call_is_logged_with_its_action_and_status_only(client, adr, cap
 def test_a_success_of_ckan_is_its_result():
     body = json.dumps({"success": True, "result": [{"id": "a"}], "help": "https://adr.example/help"}).encode()
 
-    assert adr_answer(200, body) == AdrAnswer(200, {"data": [{"id": "a"}], "errors": [], "status": "success"})
+    assert adr_answer(200, body) == HintResponse(200, {"data": [{"id": "a"}], "errors": [], "status": "success"})
 
 
 def test_a_success_of_ckan_with_no_result_has_no_data():
-    assert adr_answer(200, b'{"success": true}').content["data"] is None
+    assert adr_answer(200, b'{"success": true}').envelope["data"] is None
 
 
 @pytest.mark.parametrize("status", [200, 401, 403, 404, 500])
@@ -210,13 +211,13 @@ def test_a_failure_of_ckan_that_does_not_say_why_is_not_made_up(body):
 def test_an_answer_that_is_in_the_format_of_this_api_is_passed_on():
     body = {"status": "success", "data": {"a": 1}, "errors": []}
 
-    assert adr_answer(200, json.dumps(body).encode()) == AdrAnswer(200, body)
+    assert adr_answer(200, json.dumps(body).encode()) == HintResponse(200, body)
     assert adr_answer(400, json.dumps(body).encode()).status_code == 400
     assert adr_answer(502, json.dumps(body).encode()).status_code == 500
 
 
 def test_json_that_is_not_ckans_is_a_success_if_the_status_is():
-    assert adr_answer(200, b'{"a": 1}') == AdrAnswer(200, {"data": {"a": 1}, "errors": [], "status": "success"})
+    assert adr_answer(200, b'{"a": 1}') == HintResponse(200, {"data": {"a": 1}, "errors": [], "status": "success"})
     assert adr_answer(302, b"[1]").status_code == 200
 
 
@@ -256,18 +257,11 @@ def test_a_body_that_is_not_json_is_a_failure(body, answer):
     ],
 )
 def test_the_failure_for_a_body_that_is_not_json_is_in_the_language_of_the_request(body, detail):
-    assert adr_answer(500, body, "fr").content["errors"][0]["detail"] == detail
-
-
-def test_an_answer_is_a_response_with_its_status_and_body():
-    response = AdrAnswer(404, {"data": {}}).response()
-
-    assert response.status_code == 404
-    assert json.loads(bytes(response.body)) == {"data": {}}
+    assert adr_answer(500, body, "fr").envelope["errors"][0]["detail"] == detail
 
 
 async def test_ckan_answers_of_the_fake_are_what_the_client_reads(client, adr):
     adr.fail("package_show", ckan_error(403, "No"))
-    assert (await client.dataset("d")).content["errors"][0]["detail"] == "No"
+    assert (await client.dataset("d")).envelope["errors"][0]["detail"] == "No"
     adr.fail("package_show", ckan_ok({"id": "d"}))
-    assert (await client.dataset("d")).content["data"] == {"id": "d"}
+    assert (await client.dataset("d")).envelope["data"] == {"id": "d"}

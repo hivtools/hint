@@ -11,6 +11,7 @@ from fastapi import APIRouter
 from fastapi.concurrency import run_in_threadpool
 from fastapi.responses import Response
 
+from app.clients.responses import HintResponse
 from app.db.calibrate_data_repository import read_filtered_calibrate_data
 from app.schemas import FilterQuery
 from app.services.task_results import Results
@@ -22,9 +23,5 @@ router = APIRouter(tags=["calibrate"])
 async def filtered_calibrate_data(task_id: str, filter_query: FilterQuery, results: Results) -> Response:
     path = await results.calibration_database(task_id)
     rows = await run_in_threadpool(read_filtered_calibrate_data, path, filter_query)
-    # The rows are already JSON text, so they are put inside the usual {data, errors, status} envelope as text. Going
-    # through `success(rows)` would parse them into Python objects and write them out again, which for up to 70 MB of
-    # rows costs a lot of time and memory
-    return Response(
-        content=b'{"data":' + rows.encode() + b',"errors":[],"status":"success"}', media_type="application/json"
-    )
+    # The rows are already JSON text, up to 70 MB of it, so they go into the envelope as text and are not parsed
+    return HintResponse.success_from_json(rows.encode()).response()
