@@ -166,13 +166,13 @@ const buildBubbles = () => {
         circles.value.forEach(circle => circle.remove())
         circles.value = []
     }
-    let circlesArray: CircleMarker[] = [];
+    const circlesArray: CircleMarker[] = [];
     if (!emptyFeature.value) {
         currentFeatures.value.forEach((feature: Feature) => {
             if (!showBubble(feature)) {
                 return;
             }
-            let circle = circleMarker([feature.properties?.center_y, feature.properties?.center_x], {
+            const circle = circleMarker([feature.properties?.center_y, feature.properties?.center_x], {
                 radius: getRadius(feature),
                 fillOpacity: 0.75,
                 opacity: 0.75,
