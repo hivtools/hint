@@ -11,67 +11,8 @@ class PasswordEmailTemplateTests
             "token" to "testToken",
             "email" to "test.user@test.com")
 
-    private val accountCreationEmail = PasswordEmailTemplate.CreateAccount()
-    private val accountCreationEmailData = accountCreationEmail.emailData(values)
     private val passwordResetEmail = PasswordEmailTemplate.ResetPassword()
     private val passwordResetEmailData = passwordResetEmail.emailData(values)
-
-    @Test
-    fun `account creation has correct subject`()
-    {
-        assertThat(accountCreationEmail.subject).isEqualTo("Account creation for {{appTitle}}")
-        assertThat(accountCreationEmailData.subject).isEqualTo("Account creation for testApp")
-    }
-
-    @Test
-    fun `account creation has correct text`()
-    {
-
-        assertThat(accountCreationEmail.textTemplate).isEqualTo("account-creation.txt")
-        assertThat(accountCreationEmailData.text).isEqualTo("""Hello,
-
-This is an automated email from testApp. We have received a request to create an account for
-this email address (test.user@test.com).
-
-To set your password on testApp please browse to:
-
-http://testAppUrl/password/reset-password/?token=testToken
-
-This link will expire in 24 hours. If you don't get a chance to use it within that time, you can request a new one by
-visiting http://testAppUrl/password/forgot-password/
-
-Have a great day!""")
-    }
-
-    @Test
-    fun `account creation has correct html`()
-    {
-        assertThat(accountCreationEmail.htmlTemplate).isEqualTo("account-creation.html")
-        assertThat(accountCreationEmailData.html).isEqualTo("""<html>
-<head>
-    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
-</head>
-<body>
-<p>Hello,</p>
-<p>
-    This is an automated email from
-    <a href="http://testAppUrl">testApp</a>.
-    We have received a request to create an account for
-    this email address (test.user@test.com).
-</p>
-<p>
-    To set your password on testApp please click:
-    <a href="http://testAppUrl/password/reset-password/?token=testToken">here</a>.
-</p>
-<p>
-    This link will expire in 24 hours. If you don't get a chance to use it within that time, you can request a new one
-    <a href="http://testAppUrl/password/forgot-password/">here</a>.
-</p>
-<p>Have a great day!</p>
-</body>
-</html>
-""")
-    }
 
     @Test
     fun `password reset has correct subject`()

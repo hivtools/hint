@@ -2,8 +2,6 @@ package org.imperial.mrc.hint.logic
 
 import org.imperial.mrc.hint.caseInsensitiveEmail
 import org.imperial.mrc.hint.db.UserRepository
-import org.imperial.mrc.hint.emails.EmailManager
-import org.imperial.mrc.hint.emails.PasswordEmailTemplate
 import org.imperial.mrc.hint.exceptions.UserException
 import org.pac4j.core.profile.CommonProfile
 import org.pac4j.core.profile.UserProfile
@@ -24,8 +22,7 @@ interface UserLogic
 
 @Component
 class DbProfileServiceUserLogic(private val userRepository: UserRepository,
-                                private val profileService: DbProfileService,
-                                private val emailManager: EmailManager) : UserLogic
+                                private val profileService: DbProfileService) : UserLogic
 {
 
     override fun addUser(email: String, password: String?)
@@ -46,9 +43,7 @@ class DbProfileServiceUserLogic(private val userRepository: UserRepository,
 
         val pw = if (password.isNullOrEmpty())
         {
-            val pw = generateRandomPassword()
-            emailManager.sendPasswordEmail(email, email, PasswordEmailTemplate.CreateAccount())
-            pw
+            generateRandomPassword()
         }
         else
         {

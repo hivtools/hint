@@ -97,35 +97,4 @@ If you did not request a password change, or you no longer want to change your p
 Have a great day!""")
         }
     }
-
-    @Test
-    fun `send account creation email`()
-    {
-
-        val mockTokenManager = mock<OneTimeTokenManager> {
-            on { generateOnetimeSetPasswordToken("test.user") } doReturn "TOKEN"
-        }
-        val sut = RealEmailManager(mockAppProps, mockTokenManager, mockLogger, mockMailer)
-        sut.sendPasswordEmail("test.user@example.com", "test.user", PasswordEmailTemplate.CreateAccount())
-
-        argumentCaptor<Email>().apply {
-            verify(mockMailer).sendMail(capture())
-
-            val emailObj = firstValue
-            assertThat(emailObj.subject).isEqualTo("Account creation for testApp")
-            assertThat(emailObj.plainText).isEqualTo("""Hello,
-
-This is an automated email from testApp. We have received a request to create an account for
-this email address (test.user@example.com).
-
-To set your password on testApp please browse to:
-
-http://testurl.com/password/reset-password/?token=TOKEN
-
-This link will expire in 24 hours. If you don't get a chance to use it within that time, you can request a new one by
-visiting http://testurl.com/password/forgot-password/
-
-Have a great day!""")
-        }
-    }
 }
