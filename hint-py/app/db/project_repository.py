@@ -58,54 +58,31 @@ class ProjectRepository:
         # The rows are ordered by update time, so the projects come out in the order of their latest version
         return [_to_project(project_rows) for project_rows in by_project.values()]
 
-    async def get_project(self, project_id: int, user_id: str) -> schemas.Project:
+    async def get_owner(self, project_id: int) -> str | None:
+        """The user whose project it is. None for a project that does not exist."""
+        return await self.session.scalar(select(Project.user_id).where(Project.id == project_id))
+
+    async def get_project(self, project_id: int) -> schemas.Project:
         # Includes deleted versions, as the Kotlin app does
         # Oldest version first, which is how the Vue app adds a new version to the current project. Kotlin did not
         # order these, so it returned them in whatever order Postgres found them.
-        query = _PROJECT_WITH_VERSIONS.where(Project.id == project_id, Project.user_id == user_id).order_by(
-            ProjectVersion.version_number
-        )
+        query = _PROJECT_WITH_VERSIONS.where(Project.id == project_id).order_by(ProjectVersion.version_number)
         rows = await self._rows(query)
         if not rows:
             raise ProjectDoesNotExistError
         return _to_project(rows)
 
-    async def get_project_from_version_id(self, version_id: str, user_id: str) -> schemas.Project:
-        result = await self.session.execute(
-            select(ProjectVersion.project_id)
-            .join(Project, ProjectVersion.project_id == Project.id)
-            .where(ProjectVersion.id == version_id, Project.user_id == user_id)
-        )
-        project_id = result.scalar_one_or_none()
-        if project_id is None:
-            raise ProjectDoesNotExistError
-        return await self.get_project(project_id, user_id)
-
-    async def delete_project(self, project_id: int, user_id: str) -> None:
+    async def delete_project(self, project_id: int) -> None:
         """Soft delete: marks every version deleted, nothing is removed."""
-        await self._check_project_exists(project_id, user_id)
         await self.session.execute(
             update(ProjectVersion).where(ProjectVersion.project_id == project_id).values(deleted=True)
         )
 
-    async def rename_project(self, project_id: int, user_id: str, name: str, note: str | None = None) -> None:
-        await self._check_project_exists(project_id, user_id)
-        await self.session.execute(
-            update(Project).where(Project.id == project_id, Project.user_id == user_id).values(name=name, note=note)
-        )
+    async def rename_project(self, project_id: int, name: str, note: str | None = None) -> None:
+        await self.session.execute(update(Project).where(Project.id == project_id).values(name=name, note=note))
 
-    async def update_project_note(self, project_id: int, user_id: str, note: str) -> None:
-        await self._check_project_exists(project_id, user_id)
-        await self.session.execute(
-            update(Project).where(Project.id == project_id, Project.user_id == user_id).values(note=note)
-        )
-
-    async def _check_project_exists(self, project_id: int, user_id: str) -> None:
-        result = await self.session.execute(
-            select(Project.id).where(Project.id == project_id, Project.user_id == user_id)
-        )
-        if result.one_or_none() is None:
-            raise ProjectDoesNotExistError
+    async def update_project_note(self, project_id: int, note: str) -> None:
+        await self.session.execute(update(Project).where(Project.id == project_id).values(note=note))
 
     async def _rows(self, query: Select[*tuple[Any, ...]]) -> Sequence[Row[*tuple[Any, ...]]]:
         result = await self.session.execute(query)

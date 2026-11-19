@@ -13,6 +13,7 @@ from fastapi import Depends, FastAPI
 from sqlalchemy.ext.asyncio import AsyncEngine
 
 from app.db.database import create_db_session_factory
+from app.db.version_repository import VersionRepository
 from app.dependencies import current_version_id
 from app.errors import register_error_handlers
 from tests.api.helpers import create_project
@@ -99,7 +100,10 @@ async def test_a_guest_may_not_use_a_version_of_a_project(api, version_app):
         assert (await client.get("/on-a-version")).json() == INVALID_VERSION
 
 
-async def test_a_logged_in_user_may_not_use_a_version_just_because_a_guest_header_names_it(version_app):
+async def test_a_logged_in_user_may_not_use_a_version_just_because_a_guest_header_names_it(version_app, engine):
+    # A guest's version is in no project, so it is nobody's
+    async with create_db_session_factory(engine)() as db_session, db_session.begin():
+        await VersionRepository(db_session).save_version("g1", None)
     async with client_of(version_app, USER, "g1", guest_versions="g1") as client:
         assert (await client.get("/on-a-version")).json() == INVALID_VERSION
 

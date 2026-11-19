@@ -5,6 +5,8 @@ import pytest
 
 from tests.api.helpers import STATE, add_file, assert_failure, create_project, save_state
 
+NO_VERSION = "Version does not exist."
+
 
 async def test_new_version_copies_state_and_files_and_is_numbered(api, engine):
     project = await create_project(api)
@@ -211,7 +213,52 @@ async def test_promote_version_creates_a_new_project_with_the_state_and_files(ap
 
 async def test_promote_version_without_a_name_is_rejected(api):
     project = await create_project(api)
+    v1 = project["versions"][0]["id"]
 
-    r = await api.post(f"/project/{project['id']}/version/x/promote", json={})
+    r = await api.post(f"/project/{project['id']}/version/{v1}/promote", json={})
 
     assert r.status_code == 400
+
+
+async def test_promote_version_checks_the_version_and_who_owns_it(api, other_api):
+    # Kotlin promoted any version id, so a user could copy another user's version (quirk 30, D15 in the porting checklist)
+    project = await create_project(api)
+    other_project = await create_project(api, "other")
+    v1 = project["versions"][0]["id"]
+    body = {"json": {"name": "taken"}}
+
+    assert_failure(await other_api.post(f"/project/{project['id']}/version/{v1}/promote", **body), 400, NO_VERSION)
+    assert_failure(await other_api.post(f"/project/999/version/{v1}/promote", **body), 400, NO_VERSION)
+    assert_failure(await api.post(f"/project/{project['id']}/version/nonexistent/promote", **body), 400, NO_VERSION)
+    assert_failure(await api.post(f"/project/{other_project['id']}/version/{v1}/promote", **body), 400, NO_VERSION)
+    assert (await other_api.get("/projects/")).json()["data"] == []
+    assert len((await api.get("/projects/")).json()["data"]) == 2
+
+
+# ------------------------------------------------------------------------------------------------------ order of checks
+@pytest.mark.parametrize(
+    ("path", "request_kwargs"),
+    [
+        ("state", {}),  # no state at all
+        ("note", {"json": {}}),
+        ("promote", {"json": {}}),  # no name
+    ],
+)
+async def test_the_version_is_checked_before_the_body(api, other_api, path, request_kwargs):
+    # Kotlin read the body first, so it answered with the error about the body (D14 in the porting checklist)
+    project = await create_project(api)
+    v1 = project["versions"][0]["id"]
+
+    r = await other_api.post(f"/project/{project['id']}/version/{v1}/{path}", **request_kwargs)
+
+    assert_failure(r, 400, "Version does not exist.")
+
+
+async def test_new_version_checks_the_body_before_the_parent(api, other_api):
+    # The parent is in the body, so the body is checked first, as in Kotlin
+    project = await create_project(api)
+
+    r = await other_api.post(f"/project/{project['id']}/version", json={"note": "no parent"})
+
+    assert r.status_code == 400
+    assert "show them this code" in r.json()["errors"][0]["detail"]
