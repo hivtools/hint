@@ -2,11 +2,8 @@ package org.imperial.mrc.hint.logic
 
 import org.imperial.mrc.hint.caseInsensitiveEmail
 import org.imperial.mrc.hint.db.UserRepository
-import org.imperial.mrc.hint.emails.EmailManager
-import org.imperial.mrc.hint.emails.PasswordEmailTemplate
 import org.imperial.mrc.hint.exceptions.UserException
 import org.pac4j.core.profile.CommonProfile
-import org.pac4j.core.profile.UserProfile
 import org.pac4j.oauth.profile.OAuth20Profile
 import org.pac4j.sql.profile.DbProfile
 import org.pac4j.sql.profile.service.DbProfileService
@@ -19,13 +16,11 @@ interface UserLogic
     fun addUser(email: String, password: String?)
     fun removeUser(email: String)
     fun getUser(email: String, oauthLogin: Boolean = false): CommonProfile?
-    fun updateUserPassword(user: UserProfile, password: String)
 }
 
 @Component
 class DbProfileServiceUserLogic(private val userRepository: UserRepository,
-                                private val profileService: DbProfileService,
-                                private val emailManager: EmailManager) : UserLogic
+                                private val profileService: DbProfileService) : UserLogic
 {
 
     override fun addUser(email: String, password: String?)
@@ -46,9 +41,7 @@ class DbProfileServiceUserLogic(private val userRepository: UserRepository,
 
         val pw = if (password.isNullOrEmpty())
         {
-            val pw = generateRandomPassword()
-            emailManager.sendPasswordEmail(email, email, PasswordEmailTemplate.CreateAccount())
-            pw
+            generateRandomPassword()
         }
         else
         {
@@ -88,12 +81,6 @@ class DbProfileServiceUserLogic(private val userRepository: UserRepository,
             }
         }
         return profileService.findById(username)
-    }
-
-    override fun updateUserPassword(user: UserProfile, password: String)
-    {
-        val dbUser: DbProfile = getUser(user.id) as DbProfile
-        profileService.update(dbUser, password)
     }
 
     companion object

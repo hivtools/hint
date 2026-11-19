@@ -3,24 +3,16 @@ package org.imperial.mrc.hint.userCLI
 import org.docopt.Docopt
 import org.imperial.mrc.hint.ConfiguredAppProperties
 import org.imperial.mrc.hint.db.DbConfig
-import org.imperial.mrc.hint.db.JooqTokenRepository
 import org.imperial.mrc.hint.db.JooqUserRepository
-import org.imperial.mrc.hint.emails.EmailConfig
 import org.imperial.mrc.hint.logic.DbProfileServiceUserLogic
 import org.imperial.mrc.hint.logic.UserLogic
 import org.imperial.mrc.hint.security.HintDbProfileService
 import org.imperial.mrc.hint.security.SecurePasswordEncoder
-import org.imperial.mrc.hint.security.tokens.KeyHelper
-import org.imperial.mrc.hint.security.tokens.OneTimeTokenManager
 import org.jooq.SQLDialect
 import org.jooq.impl.DSL
-import org.pac4j.jwt.config.signature.RSASignatureConfiguration
-import org.pac4j.jwt.credentials.authenticator.JwtAuthenticator
 import java.util.*
 import javax.sql.DataSource
 import kotlin.system.exitProcess
-import org.imperial.mrc.hint.logging.GenericLogger
-import org.imperial.mrc.hint.logging.GenericLoggerImpl
 
 const val doc = """
 Hint User CLI
@@ -118,19 +110,8 @@ fun getUserLogic(dataSource: DataSource): UserLogic {
     val profileService = HintDbProfileService(dataSource, SecurePasswordEncoder())
 
     val dslContext = DSL.using(dataSource.connection, SQLDialect.POSTGRES)
-    val appProperties = ConfiguredAppProperties()
-    val logger: GenericLogger = GenericLoggerImpl()
 
     val userRepository = JooqUserRepository(dslContext)
-    val tokenRepository = JooqTokenRepository(dslContext)
-    val signatureConfig = RSASignatureConfiguration(KeyHelper.keyPair)
 
-    val oneTimeTokenManager = OneTimeTokenManager(appProperties,
-            tokenRepository,
-            signatureConfig,
-            JwtAuthenticator(signatureConfig))
-
-    return DbProfileServiceUserLogic(userRepository,
-            profileService,
-            EmailConfig().getEmailManager(appProperties, oneTimeTokenManager, logger))
+    return DbProfileServiceUserLogic(userRepository, profileService)
 }

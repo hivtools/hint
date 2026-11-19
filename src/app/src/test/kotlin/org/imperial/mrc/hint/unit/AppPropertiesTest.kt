@@ -47,14 +47,6 @@ class AppPropertiesTests
     }
 
     @Test
-    fun `can read tokenIssuer`()
-    {
-        val props = readPropsFromTempFile("token_issuer=fakeIssuer")
-        val sut = ConfiguredAppProperties(props)
-        assertEquals(sut.tokenIssuer, "fakeIssuer")
-    }
-
-    @Test
     fun `can read applicationTitle`()
     {
         val props = readPropsFromTempFile("application_title=TestTitle")
@@ -68,54 +60,6 @@ class AppPropertiesTests
         val props = readPropsFromTempFile("application_url=https://test")
         val sut = ConfiguredAppProperties(props)
         assertEquals(sut.applicationUrl, "https://test")
-    }
-
-    @Test
-    fun `can read email mode`()
-    {
-        val props = readPropsFromTempFile("email_mode=test_mode")
-        val sut = ConfiguredAppProperties(props)
-        assertEquals(sut.emailMode, "test_mode")
-    }
-
-    @Test
-    fun `can read email server`()
-    {
-        val props = readPropsFromTempFile("email_server=test_server")
-        val sut = ConfiguredAppProperties(props)
-        assertEquals(sut.emailServer, "test_server")
-    }
-
-    @Test
-    fun `can read email port`()
-    {
-        val props = readPropsFromTempFile("email_port=100")
-        val sut = ConfiguredAppProperties(props)
-        assertEquals(sut.emailPort, 100)
-    }
-
-    @Test
-    fun `can read email sender`()
-    {
-        val props = readPropsFromTempFile("email_sender=test_sender")
-        val sut = ConfiguredAppProperties(props)
-        assertEquals(sut.emailSender, "test_sender")
-    }
-
-    @Test
-    fun `can read email username`()
-    {
-        val props = readPropsFromTempFile("email_username=test_username")
-        val sut = ConfiguredAppProperties(props)
-        assertEquals(sut.emailUsername, "test_username")
-    }
-
-    @Test
-    fun `can read email password`()
-    {
-        val props = readPropsFromTempFile("email_password=test_password")
-        val sut = ConfiguredAppProperties(props)
-        assertEquals(sut.emailPassword, "test_password")
     }
 
     @Test
