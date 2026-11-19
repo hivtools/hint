@@ -92,4 +92,4 @@ To make it again, run this from this folder:
 ## Supported browsers
 
 The `browserslist` field in `package.json` gives the browsers that we support. The build uses this list to select the
-JavaScript syntax and the core-js polyfills. To see the browsers in the list, run `npx browserslist`.
+JavaScript and CSS syntax. It does not add polyfills. To see the browsers in the list, run `npx browserslist`.
