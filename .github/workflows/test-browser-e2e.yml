@@ -10,7 +10,14 @@ name: Test Browser E2E
 
 jobs:
     test:
+        name: Test (shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }})
         runs-on: ubuntu-latest
+        strategy:
+            # Run all the shards to the end, so that the report has every failure.
+            fail-fast: false
+            matrix:
+                shardIndex: [1, 2]
+                shardTotal: [2]
         steps:
             - uses: actions/checkout@v4
 
@@ -36,12 +43,22 @@ jobs:
                 npx playwright install-deps chromium
 
             - name: Test browser e2e
-              run: npm run browser-test --prefix=src/app/static
+              run: npm run browser-test --prefix=src/app/static -- --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
 
-            - uses: actions/upload-artifact@v4
+            - name: Upload blob report
+              uses: actions/upload-artifact@v4
               if: ${{ !cancelled() }}
               with:
-                name: test-results
+                name: blob-report-${{ matrix.shardIndex }}
+                path: src/app/static/blob-report/
+                if-no-files-found: 'ignore'
+                retention-days: 1
+
+            - name: Upload test results
+              uses: actions/upload-artifact@v4
+              if: ${{ !cancelled() }}
+              with:
+                name: test-results-${{ matrix.shardIndex }}
                 path: src/app/static/test-results/
                 if-no-files-found: 'ignore'
                 retention-days: 7
