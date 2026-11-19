@@ -169,16 +169,6 @@ plainTest.describe("not logged in", () => {
         }
     });
 
-    // KNOWN ISSUE, found by this test on 2026-11-17: the page is blank. The browser reports
-    // "ReferenceError: currentUser is not defined". The store (root.ts and localStorageManager.ts) reads the global
-    // currentUser when the script loads, and only index.ftl defines it, not forgot-password.ftl or reset-password.ftl.
-    // The webpack build and the Vite build both have this problem. Change fixme to test when it is fixed.
-    plainTest.fixme("the forgotten password page loads", async ({page}) => {
-        await page.goto("/password/forgot-password/");
-
-        await plainExpect(page.getByRole("heading", {name: translate("forgottenPassword")})).toBeVisible();
-    });
-
     plainTest("an unknown page shows the 404 page", async ({page}) => {
         const response = await page.goto("/no-such-page");
 

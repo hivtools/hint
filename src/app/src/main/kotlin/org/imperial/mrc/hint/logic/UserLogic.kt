@@ -4,7 +4,6 @@ import org.imperial.mrc.hint.caseInsensitiveEmail
 import org.imperial.mrc.hint.db.UserRepository
 import org.imperial.mrc.hint.exceptions.UserException
 import org.pac4j.core.profile.CommonProfile
-import org.pac4j.core.profile.UserProfile
 import org.pac4j.oauth.profile.OAuth20Profile
 import org.pac4j.sql.profile.DbProfile
 import org.pac4j.sql.profile.service.DbProfileService
@@ -17,7 +16,6 @@ interface UserLogic
     fun addUser(email: String, password: String?)
     fun removeUser(email: String)
     fun getUser(email: String, oauthLogin: Boolean = false): CommonProfile?
-    fun updateUserPassword(user: UserProfile, password: String)
 }
 
 @Component
@@ -83,12 +81,6 @@ class DbProfileServiceUserLogic(private val userRepository: UserRepository,
             }
         }
         return profileService.findById(username)
-    }
-
-    override fun updateUserPassword(user: UserProfile, password: String)
-    {
-        val dbUser: DbProfile = getUser(user.id) as DbProfile
-        profileService.update(dbUser, password)
     }
 
     companion object

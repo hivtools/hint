@@ -53,9 +53,6 @@
                             <input type="password" size="20" class="form-control" name="password" id="pw-id"
                                    placeholder="Password" required>
                             <div id="pw-feedback" class="invalid-feedback">Please enter your password.</div>
-                            <div id="forgot-password" class="mt-1">
-                                <a href="/password/forgot-password/">Forgotten your password?</a>
-                            </div>
                         </div>
                         <div class="text-center mt-2">
                             <input class="btn btn-red w-100" type="submit" value="Log In">

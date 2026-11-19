@@ -40,9 +40,6 @@ class LoginTests
         assertThat(doc.select("form input[type='submit']").attr("value")).isEqualTo("Log In")
         assertThat(doc.select("#error").text()).isEqualTo("test error")
 
-        assertThat(doc.select("#forgot-password").text()).isEqualTo("Forgotten your password?")
-        assertThat(doc.select("#forgot-password a").attr("href")).isEqualTo("/password/forgot-password/")
-
         assertThat(doc.select("#register-an-account").text()).isEqualTo("Don't have an account? Create an account")
         assertThat(doc.select("#register-an-account a").attr("href")).isEqualTo("https://forms.office.com/r/7S9EMigGr4")
 

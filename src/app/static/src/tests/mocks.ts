@@ -1,7 +1,6 @@
 import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
 import {BaselineState, initialBaselineState} from "../app/store/baseline/baseline";
-import {initialPasswordState, PasswordState} from "../app/store/password/password";
 import {initialSurveyAndProgramState, SurveyAndProgramState} from "../app/store/surveyAndProgram/surveyAndProgram"
 
 import {
@@ -63,13 +62,6 @@ import {PlotDataState, initialPlotDataState, PopulationPyramidData} from "../app
 import { PlotState, initialPlotState } from "../app/store/plotState/plotState";
 
 export const mockAxios = new MockAdapter(axios);
-
-export const mockPasswordState = (props?: Partial<PasswordState>): PasswordState => {
-    return {
-        ...initialPasswordState,
-        ...props
-    }
-};
 
 export const mockADRState = (props?: Partial<ADRState>): ADRState => {
     return {
