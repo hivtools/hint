@@ -7,12 +7,12 @@ import {Scale, ScaleSettings, ScaleType} from "../../../app/store/plotState/plot
 import {defineComponent} from "vue";
 import {shallowMount} from "@vue/test-utils";
 
-describe('useUpdateScale', () => {
+// Mocking getIndicatorMetadata utility
+vi.mock('../../../app/components/plots/utils', () => ({
+    getIndicatorMetadata: vi.fn().mockReturnValue({ min: 0, max: 100 })
+}));
 
-    // Mocking getIndicatorMetadata utility
-    vi.mock('../../../app/components/plots/utils', () => ({
-        getIndicatorMetadata: vi.fn().mockReturnValue({ min: 0, max: 100 })
-    }));
+describe('useUpdateScale', () => {
 
     const TestComponent = defineComponent({
         props: {

@@ -88,6 +88,12 @@ describe("Hintr Menu Version", () => {
     });
 
     it("expect get method to have been called", () => {
+        const store = createStore();
+        shallowMountWithTranslate(HintrVersionMenu, store, {
+            global: {
+                plugins: [store]
+            }
+        });
         expect(mockGetHinrVersion).toHaveBeenCalled()
     });
 })

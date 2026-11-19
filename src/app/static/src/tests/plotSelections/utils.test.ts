@@ -20,7 +20,7 @@ import {PlotName} from "../../app/store/plotSelections/plotSelections";
 
 describe("Plot selections utils", () => {
     beforeEach(() => {
-        vi.resetAllMocks()
+        vi.clearAllMocks()
     });
 
     const commit = vi.fn();

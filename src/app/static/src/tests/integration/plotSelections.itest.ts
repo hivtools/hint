@@ -19,7 +19,7 @@ describe("plotSelections itest", () => {
         mockAxios.reset();
         // stop apiService logging to console
         console.log = vi.fn();
-        vi.resetAllMocks()
+        vi.clearAllMocks()
     });
 
     afterEach(() => {
