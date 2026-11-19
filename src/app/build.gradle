@@ -90,6 +90,8 @@ tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile) {
     }
 }
 
+// Type-checks the front end and builds it with Vite into static/public.
+// With -PhotReload=true, use `npm run dev` in static/ instead (see the README).
 task compileFrontEnd() {
     onlyIf {
         hotReload != "true"
@@ -101,7 +103,10 @@ task compileFrontEnd() {
     }
 }
 
+// Copies the Freemarker templates and the images into static/public.
+// The Vite build empties static/public first, so this task must run after it.
 task copyAssets() {
+    mustRunAfter compileFrontEnd
     doLast {
         exec {
             commandLine npmCommand, "run", "copy", "--prefix=$projectDir/static/"

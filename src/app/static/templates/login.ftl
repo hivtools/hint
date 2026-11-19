@@ -4,9 +4,8 @@
     <title>${title}</title>
     <link rel="shortcut icon" href="/public/favicon.ico"/>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <!-- inject:css -->
+    <#-- The front-end build writes app.css (a fixed name) for this page. See vite.config.mts. -->
     <link href="/public/css/app.css" rel="stylesheet">
-    <!-- endinject -->
     <script>
         function validate(event) {
             const userIdInput = document.getElementById("user-id");
