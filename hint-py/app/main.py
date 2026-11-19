@@ -24,6 +24,7 @@ from app.routers import (
     review_inputs,
 )
 from app.services.input_file_service import UPLOAD_LIMITS
+from app.telemetry import trace_outgoing_calls
 from app.upload_limit import UploadSizeLimitMiddleware
 
 # pyproject.toml is the one place the version is set. The project is not installed as a package, so there is no
@@ -34,6 +35,7 @@ VERSION = tomllib.loads((Path(__file__).parent.parent / "pyproject.toml").read_t
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None]:
     configure_logging(get_settings())
+    trace_outgoing_calls()
     engine = create_engine(get_settings())
     app.state.db_session_factory = create_db_session_factory(engine)
     app.state.hintr_http = create_hintr_http_client(get_settings())

@@ -10,7 +10,6 @@ asks ADR through this one.
 """
 
 import json
-import time
 from typing import Annotated
 
 import httpx2
@@ -146,19 +145,12 @@ class AdrClient:
         if authorization is None:
             log.warning("No credential to call ADR: there is no single sign-on token, and HINT_ADR_API_KEY is not set")
             raise NoAdrCredentialsError()
-        started = time.perf_counter()
         try:
             r = await self._http.get(action, params=params, headers={"Authorization": authorization.get_secret_value()})
         except httpx2.RequestError:
             # The log has the message of the library. It has the address and has no headers.
             log.exception("No response from ADR", action=action)
             return HintResponse.failure(500, t("noResponse", self._language))
-        log.info(
-            "ADR request",
-            action=action,
-            status=r.status_code,
-            duration_ms=round((time.perf_counter() - started) * 1000),
-        )
         return adr_answer(r.status_code, r.content, self._language)
 
 
