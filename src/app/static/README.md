@@ -76,8 +76,11 @@ build did not check them either.
 npm run lint
 ```
 
-CI fails if there are lint errors. We use the basic TypeScript and Vue recommendations. Our only custom rule: the
-content of the `<template>` and `<script>` blocks of a Vue component is indented by 4 spaces.
+CI fails if there are lint errors. The config is `eslint.config.mjs`. We use the basic ESLint, TypeScript and Vue
+recommendations. ESLint checks `src/app`; it does not check the tests. Our only custom rule: you can import
+`rawDeepClone` only in Vuex actions and mutations, because Vue does not track its reads, so a `computed` or `watch`
+that uses it does not update. ESLint does not check the indentation. The IntelliJ style files indent the content of the
+`<template>` and `<script>` blocks of a Vue component by 4 spaces.
 
 ## Types from hintr
 
