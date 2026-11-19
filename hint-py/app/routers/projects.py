@@ -1,9 +1,8 @@
 """Projects and their versions (Kotlin: ProjectsController).
 
 All of these need a logged in user. An endpoint that names a project or version in its path takes it as `ProjectOfUser`
-or `VersionOfUser`, which check that it is the user's before the endpoint runs (promote does not, as in Kotlin). The
-version a browser tab is working on is not kept in a session here: the tab sends
-it in the X-Version-Id header (see `requested_version_id`) and keeps track of it itself, so the endpoints that used to
+or `VersionOfUser`, which check that it is the user's before the endpoint runs. The version a browser tab is working on
+is not kept in a session here: the tab sends it in the X-Version-Id header (see `requested_version_id`) and keeps track of it itself, so the endpoints that used to
 set or clear the session's version just return.
 """
 
@@ -71,11 +70,10 @@ async def upload_state(version: VersionOfUser, request: Request, versions: Versi
 
 @router.post("/project/{project_id}/version/{version_id}/promote")
 async def promote_version(
-    project_id: int, version_id: str, body: schemas.PromoteVersionRequest, user: LoggedInUser, service: Service
+    version: VersionOfUser, body: schemas.PromoteVersionRequest, user: LoggedInUser, service: Service
 ) -> SuccessResponse[schemas.Project]:
-    # As in Kotlin, this does not check that the version exists or is the user's, so it takes the ids in the path as they
-    # are and not through `VersionOfUser`. The project id is not used at all. Quirk 30 in contract-tests/QUIRKS.md.
-    return success(await service.promote_version(user.id, version_id, body.name, body.note))
+    # Kotlin did not check the version, so a user could copy anyone's version (quirk 30 in contract-tests/QUIRKS.md, D15)
+    return success(await service.promote_version(user.id, version.id, body.name, body.note))
 
 
 @router.post("/project/{project_id}/note")

@@ -33,7 +33,7 @@ class ProjectService:
     async def promote_version(self, user_id: str, version_id: str, name: str, note: str | None) -> schemas.Project:
         """A new project, whose first version is a copy of this one (with its state and files).
 
-        As in Kotlin, nothing checks that the version exists or is the user's (quirk 30 in contract-tests/QUIRKS.md)."""
+        The caller has checked that the version is the user's."""
         project_id = await self.projects.save_new_project(user_id, name)
         promoted_version_id = new_version_id()
         await self.versions.copy_version(version_id, promoted_version_id, project_id, note)

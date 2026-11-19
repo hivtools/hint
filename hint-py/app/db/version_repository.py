@@ -82,9 +82,9 @@ class VersionRepository:
     async def copy_version(
         self, parent_version_id: str, new_version_id: str, project_id: int, note: str | None = None
     ) -> None:
-        """A new version of the project, with the state and files of the parent version. The parent is not checked: it
-        can be in another project (promote copies a version into a new project this way), or not exist, which gives a
-        version with no state and no files."""
+        """A new version of the project, with the state and files of the parent version. The parent is not checked
+        here (the endpoints check that it is the user's): it can be in another project (promote copies a version into a
+        new project this way), or not exist, which gives a version with no state and no files."""
         await self._insert_with_parent_state(
             parent_version_id, new_version_id, project_id, note, await self._next_version_number(project_id)
         )
