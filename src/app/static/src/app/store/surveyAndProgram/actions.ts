@@ -124,7 +124,7 @@ export const actions: ActionTree<SurveyAndProgramState, RootState> & SurveyAndPr
     async importSurvey(context, url) {
         if (url) {
             const data = buildData (context.rootState.baseline?.selectedDataset, url, "survey")
-            await uploadOrImportSurvey(context, {url: "/adr/survey/", payload: data},
+            await uploadOrImportSurvey(context, {url: "/adr/survey", payload: data},
                 getFilenameFromImportUrl(url));
         }
     },
@@ -132,7 +132,7 @@ export const actions: ActionTree<SurveyAndProgramState, RootState> & SurveyAndPr
     async importProgram(context, url) {
         if (url) {
             const data = buildData (context.rootState.baseline?.selectedDataset, url, "program")
-            await uploadOrImportProgram(context, {url: "/adr/programme/", payload: data},
+            await uploadOrImportProgram(context, {url: "/adr/programme", payload: data},
                 getFilenameFromImportUrl(url));
         }
     },
@@ -140,7 +140,7 @@ export const actions: ActionTree<SurveyAndProgramState, RootState> & SurveyAndPr
     async importANC(context, url) {
         if (url) {
             const data = buildData (context.rootState.baseline?.selectedDataset, url, "anc")
-            await uploadOrImportANC(context, {url: "/adr/anc/", payload: data},
+            await uploadOrImportANC(context, {url: "/adr/anc", payload: data},
                 getFilenameFromImportUrl(url))
         }
     },

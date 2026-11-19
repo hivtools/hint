@@ -191,7 +191,7 @@ describe("Baseline actions", () => {
     });
 
     it("sets country and iso3 after PJNZ import and validates", async () => {
-        const url = "/adr/pjnz/"
+        const url = "/adr/pjnz"
         mockAxios.onPost(url)
             .reply(200, mockSuccess({data: {country: "Malawi", iso3: "MWI"}}));
 
@@ -234,7 +234,7 @@ describe("Baseline actions", () => {
     });
 
     it("import PJNZ does not validate if error occurs", async () => {
-        mockAxios.onPost(`/adr/pjnz/`)
+        mockAxios.onPost(`/adr/pjnz`)
             .reply(400, mockFailure("test error"));
 
         const commit = vi.fn();
@@ -275,7 +275,7 @@ describe("Baseline actions", () => {
     });
 
     it("import Shape commits error if error occurs", async () => {
-        mockAxios.onPost(`/adr/shape/`)
+        mockAxios.onPost(`/adr/shape`)
             .reply(400, mockFailure("test error"));
 
         const commit = vi.fn();
@@ -294,7 +294,7 @@ describe("Baseline actions", () => {
     });
 
     it("commits response and validates after shape file import", async () => {
-        const url = "/adr/shape/"
+        const url = "/adr/shape"
         const mockShape = mockShapeResponse();
         mockAxios.onPost(url)
             .reply(200, mockSuccess(mockShape));
@@ -356,7 +356,7 @@ describe("Baseline actions", () => {
     });
 
     it("commits response and validates after population file import", async () => {
-        const url = "/adr/population/"
+        const url = "/adr/population"
 
         const mockPop = mockPopulationResponse();
         mockAxios.onPost(url)
@@ -394,7 +394,7 @@ describe("Baseline actions", () => {
 
 
     it("import Population commits error if error occurs", async () => {
-        mockAxios.onPost(`/adr/population/`)
+        mockAxios.onPost(`/adr/population`)
             .reply(400, mockFailure("test error"));
 
         const commit = vi.fn();

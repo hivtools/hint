@@ -59,6 +59,10 @@ browser --cookie--> nginx --(auth_request, cookie)--> Kotlin GET /internal/whoam
   token: Python checks the token with GitHub (`github_team_member` in `hint-py/app/dependencies.py`). `/model/debug/`
   with no id stays with Kotlin, as before. To test it through the proxy, call it once with a session cookie and no
   token (401), and once with `Authorization: Bearer <token>` and no cookie.
+- Most ported paths are exact (`location = /adr/pjnz`). The same path with a trailing slash still goes to Kotlin,
+  which accepts it, where FastAPI would answer with a redirect. So the Vue app calls the ported paths without one: when
+  you port a path that the Vue app calls with a trailing slash, change the Vue app too. The ADR imports
+  (`/adr/pjnz`, `/adr/shape`, `/adr/population`, `/adr/survey`, `/adr/programme`, `/adr/anc`) are an example.
 - When login and sessions move to Python, only `current_user` changes and `/internal/whoami` and `auth_request` go.
 
 ## Running it
