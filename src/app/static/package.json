@@ -30,6 +30,7 @@
     "@types/i18next": "^13.0.0",
     "@types/katex": "^0.16.7",
     "@types/leaflet": "^1.9.3",
+    "@types/node": "^24.19.2",
     "@types/numeral": "0.0.26",
     "@types/qs": "^6.5.3",
     "@typescript-eslint/eslint-plugin": "^5.4.0",
