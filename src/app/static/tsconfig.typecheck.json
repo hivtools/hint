@@ -1,0 +1,14 @@
+// Config for `npm run typecheck` (vue-tsc).
+// It does the same check as the old Vue CLI build (fork-ts-checker):
+// - skipLibCheck: the old check did not check the .d.ts files.
+// - skipTemplateCodegen: the old check did not check the <template> blocks.
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "skipLibCheck": true
+  },
+  "vueCompilerOptions": {
+    "skipTemplateCodegen": true
+  }
+}
