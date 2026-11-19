@@ -8,6 +8,11 @@ on:
 
 name: Test Browser E2E
 
+env:
+    # The shards and the merge job must use the same Playwright version,
+    # because merge-reports reads the blob reports of the shards.
+    PLAYWRIGHT_VERSION: 1.49.1
+
 jobs:
     test:
         name: Test (shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }})
@@ -38,7 +43,7 @@ jobs:
             - name: Install playwright et al
               run: |
                 cd src/app/static
-                npm install @playwright/test@1.49.1
+                npm install @playwright/test@${{ env.PLAYWRIGHT_VERSION }}
                 npx playwright install chromium
                 npx playwright install-deps chromium
 
@@ -61,4 +66,30 @@ jobs:
                 name: test-results-${{ matrix.shardIndex }}
                 path: src/app/static/test-results/
                 if-no-files-found: 'ignore'
+                retention-days: 7
+
+    merge-reports:
+        name: Merge reports
+        # Merge the reports also when a shard fails: the report shows the failures.
+        if: ${{ !cancelled() }}
+        needs: [test]
+        runs-on: ubuntu-latest
+        steps:
+            - name: Download blob reports
+              uses: actions/download-artifact@v4
+              with:
+                path: all-blob-reports
+                pattern: blob-report-*
+                merge-multiple: true
+
+            # This job has no checkout and no npm install: merge-reports
+            # needs only the blob reports and the Node of the runner image.
+            - name: Merge into HTML report
+              run: npx --yes playwright@${{ env.PLAYWRIGHT_VERSION }} merge-reports --reporter html ./all-blob-reports
+
+            - name: Upload HTML report
+              uses: actions/upload-artifact@v4
+              with:
+                name: playwright-report-attempt-${{ github.run_attempt }}
+                path: playwright-report/
                 retention-days: 7
