@@ -12,7 +12,7 @@ import https from "node:https";
 // templates to ./public, and Kotlin reads them from there. Kotlin serves ./public at /public/.
 // The build writes the files with hashed names to ./public/assets. The `freemarkerAssets` plugin below
 // writes ./public/vite-assets.ftl, which has the <script> and <link> tags for the current build.
-// index.ftl, forgot-password.ftl and reset-password.ftl include that file.
+// index.ftl includes that file.
 // The build also writes ./public/css/app.css (a fixed name) for login.ftl and 404.ftl.
 
 // The browsers that we support. Vue CLI used this list by default, so it is the same as before.
@@ -24,7 +24,7 @@ const buildTargets = browserslistToEsbuild(packageJson.browserslist);
 const base = "/public/";
 const entry = "/src/app/index.ts";
 
-// The templates put these markers around the include of vite-assets.ftl.
+// index.ftl puts these markers around the include of vite-assets.ftl.
 // The dev server replaces the part between the markers.
 const assetsStartMarker = "<!-- vite-assets -->";
 const assetsEndMarker = "<!-- /vite-assets -->";

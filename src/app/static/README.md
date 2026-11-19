@@ -46,8 +46,7 @@ The build writes:
 
 - `./public/assets/`: the JavaScript and CSS files. Each name contains a hash of the content, so a browser never uses an
   old file after a deploy. The `.map` files are the source maps.
-- `./public/vite-assets.ftl`: the `<script>` and `<link>` tags for the current build. `index.ftl`, `forgot-password.ftl`
-  and `reset-password.ftl` include it.
+- `./public/vite-assets.ftl`: the `<script>` and `<link>` tags for the current build. `index.ftl` includes it.
 - `./public/css/app.css`: a copy of the CSS with a fixed name, for `login.ftl` and `404.ftl`.
 
 `npm run copy` copies the templates and the images to `./public`. Gradle runs it after the build.
