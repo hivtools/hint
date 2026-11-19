@@ -38,6 +38,10 @@ const config: PlaywrightTestConfig = {
         }
     },
     fullyParallel: false,
+    // In CI, each shard writes a blob report. The workflow merges the blob
+    // reports of all shards into one HTML report. "dot" keeps the progress in
+    // the job log. Local runs keep the Playwright default, "list".
+    reporter: process.env.CI ? [["dot"], ["blob"]] : "list",
     retries: process.env.CI ? 1 : 0,
     workers: process.env.CI ? 1 : undefined,
 };
