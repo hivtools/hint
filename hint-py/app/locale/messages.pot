@@ -103,3 +103,15 @@ msgstr ""
 
 msgid "adrBadGateway"
 msgstr ""
+
+msgid "githubTokenRequired"
+msgstr ""
+
+msgid "githubTokenInvalid"
+msgstr ""
+
+msgid "notInGitHubTeam"
+msgstr ""
+
+msgid "githubFailed"
+msgstr ""

@@ -14,8 +14,9 @@ from app.db.database import create_db_session_factory
 from app.db.models import Base, User
 from app.logging_setup import RESERVED_FIELDS, UVICORN_LOGGERS, LogHandler, configure_logging
 from tests.adr import FakeAdr
+from tests.github import INVITED_TOKEN, FakeGitHub
 from tests.hintr import FakeHintr
-from tests.support import ADR_KEY, ADR_TOKEN, OTHER_USER, USER
+from tests.support import ADR_KEY, ADR_TOKEN, GITHUB_OTHER_TOKEN, GITHUB_TOKEN, OTHER_USER, USER
 
 # Set this to run the tests on a real Postgres instead of in memory SQLite, for example
 # postgresql+asyncpg://hintuser:changeme@localhost:55432/hint. It has to be a database that the Kotlin migrations have
@@ -88,11 +89,26 @@ async def adr() -> AsyncIterator[FakeAdr]:
     await fake.http.aclose()
 
 
+@pytest_asyncio.fixture
+async def github() -> AsyncIterator[FakeGitHub]:
+    """GitHub, which records the calls it gets and knows a few tokens and one team (see tests/github.py)."""
+    fake = FakeGitHub()
+    yield fake
+    await fake.http.aclose()
+
+
 @pytest.fixture(autouse=True)
 def no_adr_settings_in_the_environment(monkeypatch: pytest.MonkeyPatch) -> None:
-    """The tests set what they need of ADR. A developer who has set these to browse ADR in the dev stack (see the
-    README) must not change what the tests find."""
-    for name in ("HINT_ENVIRONMENT", "HINT_ADR_URL", "HINT_ADR_API_KEY"):
+    """The tests set what they need of ADR and GitHub. A developer who has set these to browse ADR in the dev stack
+    (see the README) must not change what the tests find."""
+    for name in (
+        "HINT_ENVIRONMENT",
+        "HINT_ADR_URL",
+        "HINT_ADR_API_KEY",
+        "HINT_GITHUB_AUTH_ORG",
+        "HINT_GITHUB_AUTH_TEAM_SLUG",
+        "HINT_GITHUB_API_URL",
+    ):
         monkeypatch.delenv(name, raising=False)
 
 
@@ -138,7 +154,7 @@ class _Records(logging.Handler):
 
 @pytest.fixture(autouse=True)
 def no_personal_data_in_logs(isolated_logging: None) -> Iterator[None]:
-    """Fail any test that logs the email of one of the test users, or a credential for ADR.
+    """Fail any test that logs the email of one of the test users, or a credential for ADR or GitHub.
 
     The users are who the tests make requests as (`USER`, `OTHER_USER`). A user is an email address, so what is logged
     about a request must not have it: not in the message, in a field, in a traceback or in a library's message (for
@@ -156,3 +172,5 @@ def no_personal_data_in_logs(isolated_logging: None) -> Iterator[None]:
             assert user not in shown, f"{record.name} logged a user's email: {shown[:300]}"
         for secret in (ADR_KEY, ADR_TOKEN):
             assert secret not in shown, f"{record.name} logged a credential for ADR: {shown[:300]}"
+        for secret in (GITHUB_TOKEN, GITHUB_OTHER_TOKEN, INVITED_TOKEN):
+            assert secret not in shown, f"{record.name} logged a GitHub token: {shown[:300]}"

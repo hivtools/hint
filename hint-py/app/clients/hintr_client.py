@@ -5,14 +5,16 @@ format is made to look like it (see `_hint_response`). Each call returns a `Hint
 """
 
 import json
-from collections.abc import Mapping
+from collections.abc import AsyncIterator, Mapping
 from typing import Annotated, Any
 from urllib.parse import quote
 
 import httpx2
 import structlog
 from fastapi import Depends, Header, Request
+from fastapi.responses import StreamingResponse
 from pydantic_core import to_jsonable_python
+from starlette.background import BackgroundTask
 
 from app.clients.responses import TIMEOUT_SECONDS, HintResponse, hint_status, parse_json
 from app.config import Settings
@@ -27,6 +29,9 @@ FilesByType = Mapping[FileType, HintrFile]
 
 # The baseline file types. hintr validates them against each other.
 BASELINE_TYPES = (FileType.PJNZ, FileType.SHAPE, FileType.POPULATION)
+
+# The headers of a file from hintr that go on to the browser with the file
+FILE_HEADERS = ("content-type", "content-disposition", "content-length")
 
 
 def create_hintr_http_client(settings: Settings) -> httpx2.AsyncClient:
@@ -169,6 +174,53 @@ class HintrClient:
             {"download_type": download_type, "task_id": task_id},
             payload or None,
         )
+
+    async def model_debug(self, task_id: str) -> StreamingResponse:
+        """The debug zip of a model run: the task's inputs and options, for a developer to run it again.
+
+        The zip goes on to the browser in pieces, as hintr sends it. It keeps hintr's content type, file name (in the
+        Content-Disposition) and length. If hintr does not send the zip, `HintrFailedError` is raised with hintr's
+        answer.
+        """
+        path = f"/model/debug/{quote(task_id, safe='')}"
+        # "identity" asks hintr not to compress the zip. The bytes and the length then go on as hintr sent them.
+        request = self._http.build_request(
+            "GET", path, headers={"Accept-Language": self._language, "Accept-Encoding": "identity"}
+        )
+        language = negotiate_language(self._language)
+        try:
+            r = await self._http.send(request, stream=True)
+        except httpx2.RequestError:
+            log.exception("No response from hintr", method="GET", path=path)
+            raise HintrFailedError(HintResponse.failure(500, t("noResponse", language))) from None
+        if not r.is_success:
+            try:
+                body = await r.aread()
+            except httpx2.RequestError:
+                log.exception("No response from hintr", method="GET", path=path)
+                raise HintrFailedError(HintResponse.failure(500, t("noResponse", language))) from None
+            finally:
+                await r.aclose()
+            raise HintrFailedError(_hint_response(r.status_code, body, language))
+        headers = {name: r.headers[name] for name in FILE_HEADERS if name in r.headers}
+        headers.setdefault("content-type", "application/octet-stream")
+        log.info("Sending the debug zip of a task", task=task_id, size=r.headers.get("content-length"))
+        # The background task closes the answer of hintr if the stream never starts (the browser went away first)
+        return StreamingResponse(_stream(r, path), headers=headers, background=BackgroundTask(r.aclose))
+
+
+async def _stream(r: httpx2.Response, path: str) -> AsyncIterator[bytes]:
+    """The body of hintr's answer, in pieces as they arrive. The answer is closed at the end, or if the browser goes away."""
+    try:
+        async for chunk in r.aiter_raw():
+            yield chunk
+    except httpx2.RequestError:
+        # The status and the start of the file are sent already, so the browser cannot be told. The connection is cut
+        # off, and the browser sees that the file is shorter than its length.
+        log.exception("hintr stopped sending a file", path=path)
+        raise
+    finally:
+        await r.aclose()
 
 
 def get_hintr_client(request: Request, accept_language: Annotated[str | None, Header()] = None) -> HintrClient:
