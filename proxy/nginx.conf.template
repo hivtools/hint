@@ -89,6 +89,9 @@ server {
     # Calls that read the results folder. `/calibrate/result/data/` is not ported, so it stays with Kotlin
     location /calibrate/result/filteredData/ { include snippets/python.conf; }
     location /download/result/ { include snippets/python.conf; }
+    # The debug zip of a model run, for developers. The caller sends a GitHub token and no hint login, so this location
+    # does not ask Kotlin who the user is (see snippets/python-github.conf). `/model/debug/` (no id) stays with Kotlin.
+    location ~ ^/model/debug/[^/]+$ { include snippets/python-github.conf; }
 
     # ---- Identity bridge ----
     # Only reachable from auth_request, never directly. The Cookie and Authorization headers of the original request
