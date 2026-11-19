@@ -1,6 +1,5 @@
 import {defineConfig, Plugin, ViteDevServer} from "vite";
 import vue from "@vitejs/plugin-vue";
-import legacy from "@vitejs/plugin-legacy";
 import browserslistToEsbuild from "browserslist-to-esbuild";
 import {readFileSync} from "node:fs";
 import {fileURLToPath} from "node:url";
@@ -40,7 +39,7 @@ const sourceText = (source: string | Uint8Array) =>
     typeof source === "string" ? source : Buffer.from(source).toString("utf-8");
 
 // Build only. Writes public/vite-assets.ftl and public/css/app.css from the index.html that Vite makes.
-// Vite puts the tags for the entry script, the polyfills, the preloaded chunks and the CSS into index.html.
+// Vite puts the tags for the entry script, the preloaded chunks and the CSS into index.html.
 const freemarkerAssets = (): Plugin => ({
     name: "hint:freemarker-assets",
     apply: "build",
@@ -172,13 +171,6 @@ export default defineConfig(({command}) => ({
     publicDir: false,
     plugins: [
         vue(),
-        // No legacy bundle: all the target browsers support ES modules.
-        // modernPolyfills adds the core-js polyfills that the target browsers need, as Vue CLI did.
-        legacy({
-            modernTargets: browserTargets,
-            modernPolyfills: true,
-            renderLegacyChunks: false
-        }),
         freemarkerAssets(),
         kotlinPages()
     ],
