@@ -216,12 +216,13 @@ interface Data {
                     shape && this.importShape(shape.url),
                 ]);
 
-                (shape || this.hasShapeFile) &&
-                (await Promise.all([
-                    survey && this.importSurvey(survey.url),
-                    program && this.importProgram(program.url),
-                    anc && this.importANC(anc.url),
-                ]));
+                if (shape || this.hasShapeFile) {
+                    await Promise.all([
+                        survey && this.importSurvey(survey.url),
+                        program && this.importProgram(program.url),
+                        anc && this.importANC(anc.url),
+                    ]);
+                }
 
                 this.loading = false;
                 this.open = false;
@@ -261,18 +262,19 @@ interface Data {
                 // if baseline files are updated, we have to re-import all survey & program files,
                 // regardless of whether they have changed, since updating the baseline files will
                 // have wiped these
-                (shape || this.hasShapeFile) &&
-                (await Promise.all([
-                    (baselineUpdated || this.outOfDateResources["survey"]) &&
-                    survey &&
-                    this.importSurvey(survey.url),
-                    (baselineUpdated || this.outOfDateResources["program"]) &&
-                    program &&
-                    this.importProgram(program.url),
-                    (baselineUpdated || this.outOfDateResources["anc"]) &&
-                    anc &&
-                    this.importANC(anc.url),
-                ]));
+                if (shape || this.hasShapeFile) {
+                    await Promise.all([
+                        (baselineUpdated || this.outOfDateResources["survey"]) &&
+                        survey &&
+                        this.importSurvey(survey.url),
+                        (baselineUpdated || this.outOfDateResources["program"]) &&
+                        program &&
+                        this.importProgram(program.url),
+                        (baselineUpdated || this.outOfDateResources["anc"]) &&
+                        anc &&
+                        this.importANC(anc.url),
+                    ]);
+                }
 
                 this.markResourcesUpdated();
                 this.loading = false;
