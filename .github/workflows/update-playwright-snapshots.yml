@@ -40,10 +40,8 @@ jobs:
         run: scripts/run-kotlin-server.sh
 
       - name: Install playwright et al
-        run: |
-          cd src/app/static
-          npx playwright install chromium
-          npx playwright install-deps chromium
+        run: npx playwright install --with-deps --only-shell --no-progress chromium
+        working-directory: src/app/static
 
       - name: Update snapshots
         run: |

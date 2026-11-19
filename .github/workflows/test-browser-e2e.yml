@@ -37,11 +37,13 @@ jobs:
 
             # Playwright itself comes from package-lock.json (make-shared-env
             # installs it). Here we install only the browser for that version.
+            # The tests run headless, so the headless shell is enough.
+            # The browser is not cached: the Playwright docs advise against
+            # it, and the slow part is the system packages (fonts), which
+            # apt installs and a cache of the browser does not include.
             - name: Install playwright et al
-              run: |
-                cd src/app/static
-                npx playwright install chromium
-                npx playwright install-deps chromium
+              run: npx playwright install --with-deps --only-shell --no-progress chromium
+              working-directory: src/app/static
 
             - name: Test browser e2e
               run: npm run browser-test --prefix=src/app/static -- --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
