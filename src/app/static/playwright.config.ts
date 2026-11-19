@@ -37,9 +37,19 @@ const config: PlaywrightTestConfig = {
             maxDiffPixelRatio: 0.02
         }
     },
-    fullyParallel: false,
+    // In CI, schedule and shard single tests, not whole files, so that the
+    // tests of a slow file can run at the same time on different workers.
+    // The tests in a file do not depend on each other: each test makes its
+    // own project. Local runs stay as before: one worker for each file.
+    fullyParallel: !!process.env.CI,
+    // In CI, each shard writes a blob report. The workflow merges the blob
+    // reports of all shards into one HTML report. "dot" keeps the progress in
+    // the job log. Local runs keep the Playwright default, "list".
+    reporter: process.env.CI ? [["dot"], ["blob"]] : "list",
     retries: process.env.CI ? 1 : 0,
-    workers: process.env.CI ? 1 : undefined,
+    // Two workers share one app stack in each CI job. More workers can make
+    // the tests time out.
+    workers: process.env.CI ? 2 : undefined,
 };
 
 export default config;

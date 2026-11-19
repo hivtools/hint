@@ -10,7 +10,14 @@ name: Test Browser E2E
 
 jobs:
     test:
+        name: Test (shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }})
         runs-on: ubuntu-latest
+        strategy:
+            # Run all the shards to the end, so that the report has every failure.
+            fail-fast: false
+            matrix:
+                shardIndex: [1, 2]
+                shardTotal: [2]
         steps:
             - uses: actions/checkout@v4
 
@@ -28,20 +35,68 @@ jobs:
             - name: Start Kotlin server
               run: scripts/run-kotlin-server.sh
 
+            # Playwright itself comes from package-lock.json (make-shared-env
+            # installs it). Here we install only the browser for that version.
+            # The tests run headless, so the headless shell is enough.
+            # The browser is not cached: the Playwright docs advise against
+            # it, and the slow part is the system packages (fonts), which
+            # apt installs and a cache of the browser does not include.
             - name: Install playwright et al
-              run: |
-                cd src/app/static
-                npm install @playwright/test@1.49.1
-                npx playwright install chromium
-                npx playwright install-deps chromium
+              run: npx playwright install --with-deps --only-shell --no-progress chromium
+              working-directory: src/app/static
 
             - name: Test browser e2e
-              run: npm run browser-test --prefix=src/app/static
+              run: npm run browser-test --prefix=src/app/static -- --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
 
-            - uses: actions/upload-artifact@v4
+            - name: Upload blob report
+              uses: actions/upload-artifact@v4
               if: ${{ !cancelled() }}
               with:
-                name: test-results
+                name: blob-report-${{ matrix.shardIndex }}
+                path: src/app/static/blob-report/
+                if-no-files-found: 'ignore'
+                retention-days: 1
+
+            - name: Upload test results
+              uses: actions/upload-artifact@v4
+              if: ${{ !cancelled() }}
+              with:
+                name: test-results-${{ matrix.shardIndex }}
                 path: src/app/static/test-results/
                 if-no-files-found: 'ignore'
+                retention-days: 7
+
+    merge-reports:
+        name: Merge reports
+        # Merge the reports also when a shard fails: the report shows the failures.
+        if: ${{ !cancelled() }}
+        needs: [test]
+        runs-on: ubuntu-latest
+        steps:
+            # Only the lock file: it gives the Playwright version of the shards.
+            - uses: actions/checkout@v4
+              with:
+                sparse-checkout: src/app/static/package-lock.json
+                sparse-checkout-cone-mode: false
+
+            - name: Download blob reports
+              uses: actions/download-artifact@v4
+              with:
+                path: all-blob-reports
+                pattern: blob-report-*
+                merge-multiple: true
+
+            # merge-reports must be the same Playwright version as the shards,
+            # because it reads their blob reports. This job does no npm install:
+            # it needs only the blob reports and the Node of the runner image.
+            - name: Merge into HTML report
+              run: |
+                version=$(node -p "require('./src/app/static/package-lock.json').packages['node_modules/@playwright/test'].version")
+                npx --yes "playwright@$version" merge-reports --reporter html ./all-blob-reports
+
+            - name: Upload HTML report
+              uses: actions/upload-artifact@v4
+              with:
+                name: playwright-report-attempt-${{ github.run_attempt }}
+                path: playwright-report/
                 retention-days: 7

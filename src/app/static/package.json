@@ -23,7 +23,7 @@
     "not dead"
   ],
   "devDependencies": {
-    "@playwright/test": "1.35.1",
+    "@playwright/test": "1.65.1",
     "@types/crypto-js": "^3.1.43",
     "@types/d3-format": "^3.0.1",
     "@types/d3-scale-chromatic": "^3.0.0",
