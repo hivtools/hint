@@ -5,7 +5,7 @@ import sys
 import pytest
 
 from app.errors import NullInFileNameError
-from app.services.upload_storage import UploadStorage, file_extension
+from app.storage.uploads import UploadStorage, file_extension
 
 
 @pytest.mark.parametrize(
