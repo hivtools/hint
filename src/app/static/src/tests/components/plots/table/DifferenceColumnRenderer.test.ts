@@ -1,4 +1,5 @@
 import { mount } from '@vue/test-utils';
+import {ICellRendererParams} from "ag-grid-community";
 import DifferenceColumnRenderer from "../../../../app/components/plots/table/DifferenceColumnRenderer.vue";
 import {DIFFERENCE_NEGATIVE_COLOR, DIFFERENCE_POSITIVE_COLOR} from "../../../../app/components/plots/table/utils";
 
@@ -9,7 +10,7 @@ describe('DifferenceColumnRenderer', () => {
                 params: {
                     value,
                     valueFormatted
-                }
+                } as ICellRendererParams
             }
         });
     }

@@ -30,7 +30,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, onMounted, ref, watch} from "vue";
+import {Ref, computed, onMounted, ref, watch} from "vue";
 import {useStore} from "vuex";
 import {RootState} from "../../../root";
 import { LMap, LGeoJson, LTileLayer } from "@vue-leaflet/vue-leaflet";
@@ -87,7 +87,7 @@ const plotData = computed<OutputData>(() => {
 });
 
 const colourRange = ref<NumericRange | null>(null);
-const colourScaleLevels = ref<ScaleLevels[]>([]);
+const colourScaleLevels = ref([]) as Ref<ScaleLevels[]>;
 const colourScale = ref<ScaleSettings | null>(null);
 const colourScales = computed(() => {
     return store.state.plotState.output.colourScales

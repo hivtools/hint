@@ -35,7 +35,7 @@ const download = debounce_leading(() => {
     const filename = `${prefix}_naomi_data-review_${appendCurrentDateTime()}.xlsx`
     if (unfilteredData.value) {
         const payload = {
-            data: {unfilteredData: unfilteredData.value, filteredData: chartData.value},
+            data: {unfilteredData: unfilteredData.value, filteredData: chartData.value as unknown[]},
             filename
         }
         exportService(payload)
