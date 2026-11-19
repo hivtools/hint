@@ -17,22 +17,23 @@ the largest in use in November 2026 was 187 MB. If a replica restarts during upl
 reserves its size before its body is read, and waits if it is used up), or stream the body to the share and not to a
 temporary file.
 
-The limit is a setting of `Settings` for each path (`max_pjnz_upload_bytes` and the others) and the answer is the usual error for the browser: 413 and a message in the
-language of the request. It applies to the request as a whole, which is a little more than the file in it.
+The limit of each path comes from the settings (`max_pjnz_upload_bytes` and the others, see `INPUT_FILE_TYPES` in
+app/services/input_file_service.py) and the answer is the usual error for the browser: 413 and a message in the language
+of the request. It applies to the request as a whole, which is a little more than the file in it.
 """
 
-from collections.abc import Mapping
+from collections.abc import Callable, Mapping
 
 from starlette.datastructures import Headers
 from starlette.types import ASGIApp, Message, Receive, Scope, Send
 
-from app.config import get_settings
+from app.config import Settings, get_settings
 from app.errors import FileTooLargeError, hint_error_response
 
 
 class UploadSizeLimitMiddleware:
-    def __init__(self, app: ASGIApp, limits: Mapping[str, str]):
-        """`limits` has the name of the setting that gives the limit, for each path that uploads a file."""
+    def __init__(self, app: ASGIApp, limits: Mapping[str, Callable[[Settings], int]]):
+        """`limits` reads the limit from the settings, for each path that uploads a file."""
         self.app = app
         self.limits = dict(limits)
 
@@ -42,7 +43,7 @@ class UploadSizeLimitMiddleware:
             return
 
         # The settings as the app has them, so that a test can change them
-        limit = getattr(scope["app"].dependency_overrides.get(get_settings, get_settings)(), self.limits[scope["path"]])
+        limit = self.limits[scope["path"]](scope["app"].dependency_overrides.get(get_settings, get_settings)())
         headers = Headers(scope=scope)
         declared = headers.get("content-length", "")
         if declared.isdigit() and int(declared) > limit:

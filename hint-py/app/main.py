@@ -22,6 +22,7 @@ from app.routers import (
     projects,
     review_inputs,
 )
+from app.services.input_file_service import UPLOAD_LIMITS
 from app.upload_limit import UploadSizeLimitMiddleware
 
 # pyproject.toml is the one place the version is set. The project is not installed as a package, so there is no
@@ -44,7 +45,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None]:
 
 app = FastAPI(lifespan=lifespan)
 register_error_handlers(app)
-app.add_middleware(UploadSizeLimitMiddleware, limits=input_files.UPLOAD_LIMITS)
+app.add_middleware(UploadSizeLimitMiddleware, limits=UPLOAD_LIMITS)
 
 app.include_router(items.router)
 app.include_router(projects.router)

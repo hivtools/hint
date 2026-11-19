@@ -1,5 +1,5 @@
 """Tests of the endpoints that upload, validate and remove the input files of a version, and set all the files
-(app/routers/input_files.py).
+(app/routers/input_files.py, and through it app/services/input_file_service.py).
 
 Only hintr can validate the content of a file. So in these tests hintr gives the answer that the test sets, and the
 tests check what the API asked hintr.
@@ -15,8 +15,6 @@ import pytest
 
 from app.db.database import create_db_session_factory
 from app.db.version_repository import VersionRepository
-from app.routers.input_files import LIMIT_SETTINGS
-from app.schemas import FileType
 from tests.api.helpers import add_files, create_project, hintr_file, known_hashes, make_client, version_files
 from tests.hintr import HINTR_FAILURE, SUCCESS, failure
 from tests.support import OTHER_USER, USER
@@ -24,6 +22,9 @@ from tests.support import OTHER_USER, USER
 BASELINE = ["pjnz", "shape", "population"]
 DISEASE = ["survey", "programme", "anc"]
 URLS = {**{t: f"/baseline/{t}" for t in BASELINE}, **{t: f"/disease/{t}" for t in DISEASE}}
+
+# The setting that has the size limit of each kind of file
+LIMIT_SETTINGS = {t: f"max_{t}_upload_bytes" for t in URLS}
 
 CONTENT = b"abc"
 # The upper case MD5 of "abc"
@@ -279,7 +280,7 @@ async def test_each_kind_of_file_has_its_own_limit(
     settings_overrides[setting] = 1000
     await add_files(engine, version_id, "pjnz", "shape")
     assert (await on_a_version.post(URLS[file_type], **upload_for(file_type, b"x" * 2000))).status_code == 413
-    others = [t for t in URLS if LIMIT_SETTINGS[FileType(t)] != setting]
+    others = [t for t in URLS if LIMIT_SETTINGS[t] != setting]
     assert others
     for other in others:
         assert (await on_a_version.post(URLS[other], **upload_for(other, b"x" * 2000))).status_code == 200
