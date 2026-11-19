@@ -86,6 +86,9 @@ What protects this:
   user (`no_personal_data_in_logs` in `tests/conftest.py`). It checks all the requests that the tests make.
 - **Database errors** do not have the values of the statement (`hide_parameters` in `app/db/database.py`).
 - **The access log** of uvicorn has no query string (`_drop_query_string` in `app/logging_setup.py`).
+- **The calls that the API makes** are logged by httpx with their address. The value of each secret in its query (the
+  token of ADR's storage, `jwt`) is replaced by `REDACTED` (`_redact_outgoing_url` in `app/logging_setup.py`), as it is
+  in their spans (`app/telemetry.py`).
 - **No request headers or bodies** are logged, and OpenTelemetry does not collect them unless it is told to.
 - **No SQL** is logged.
 

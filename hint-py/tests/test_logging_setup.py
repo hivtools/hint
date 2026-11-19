@@ -7,6 +7,7 @@ import logging.config
 import sys
 from collections.abc import Iterator
 
+import httpx2
 import pytest
 import structlog
 import uvicorn.config
@@ -136,6 +137,27 @@ def test_the_query_string_of_a_request_is_not_in_the_access_log(capsys, otel):
     assert '"GET /download/result/abc HTTP/1.1" 400' in line
     assert "SECRET" not in line
     assert "a@b.c" not in otel.records[0].getMessage()
+
+
+def test_a_secret_in_the_address_of_a_call_that_the_api_makes_is_not_in_the_log(capsys, otel):
+    configure()
+
+    url = httpx2.URL("https://blob.example/storage/1?jwt=SECRET&filename=a.csv")
+    logging.getLogger("httpx2").info('HTTP Request: %s %s "%s %d %s"', "GET", url, "HTTP/1.1", 200, "OK")
+
+    [line] = lines(capsys)
+    assert 'HTTP Request: GET https://blob.example/storage/1?jwt=REDACTED&filename=a.csv "HTTP/1.1 200 OK"' in line
+    assert "SECRET" not in line
+    assert "SECRET" not in otel.records[0].getMessage()
+
+
+def test_a_log_record_of_httpx_of_another_shape_is_left_alone(capsys):
+    configure()
+
+    logging.getLogger("httpx2").info("%s?%s", "a", "b")
+
+    [line] = lines(capsys)
+    assert "a?b" in line
 
 
 def test_an_access_log_record_of_another_shape_is_left_alone(capsys):
