@@ -85,7 +85,7 @@ describe("Baseline actions", () => {
 
         // if the file has been deleted, data should come back null
         await actions.getBaselineData({commit, dispatch, rootState, state} as any);
-        expect(commit.mock.calls.find(c => c[0]["type"] == BaselineMutation.PJNZUpdated)[0]["payload"]).toBe(null);
+        expect(commit.mock.calls.find(c => c[0]["type"] == BaselineMutation.PJNZUpdated)![0]["payload"]).toBe(null);
     });
 
     it("can delete shape", async () => {
@@ -106,7 +106,7 @@ describe("Baseline actions", () => {
 
         // if the file has been deleted, data should come back null
         await actions.getBaselineData({commit, dispatch, rootState, state} as any);
-        expect(commit.mock.calls.find(c => c[0]["type"] == BaselineMutation.ShapeUpdated)[0]["payload"]).toBe(null);
+        expect(commit.mock.calls.find(c => c[0]["type"] == BaselineMutation.ShapeUpdated)![0]["payload"]).toBe(null);
     });
 
     it("can delete population", async () => {
@@ -127,7 +127,7 @@ describe("Baseline actions", () => {
 
         // if the file has been deleted, data should come back null
         await actions.getBaselineData({commit, dispatch, rootState, state} as any);
-        expect(commit.mock.calls.find(c => c[0]["type"] == BaselineMutation.PopulationUpdated)[0]["payload"]).toBe(null);
+        expect(commit.mock.calls.find(c => c[0]["type"] == BaselineMutation.PopulationUpdated)![0]["payload"]).toBe(null);
     });
 
 });

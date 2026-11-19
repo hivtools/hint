@@ -26,7 +26,7 @@ describe("Projects actions", () => {
         mockAxios.reset();
         // stop apiService logging to console
         console.log = vi.fn();
-        vi.resetAllMocks()
+        vi.clearAllMocks()
     });
 
     afterEach(() => {

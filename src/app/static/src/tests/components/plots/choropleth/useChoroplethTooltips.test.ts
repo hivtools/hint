@@ -59,10 +59,10 @@ describe("useChoroplethTooltips", () => {
             area_name: 'Test Area'
         }
     } as any as Feature;
-    const mockLayer = new (vi.fn(() => ({
+    const mockLayer = {
         setTooltipContent: vi.fn(),
         bindTooltip: vi.fn()
-    })) as unknown as { new(): Layer })();
+    } as unknown as Layer;
     const featureRefs = ref<typeof LGeoJson[]>([
         {
             geojson: mockFeature,
