@@ -218,8 +218,7 @@ export const roundRange = function (unrounded: NumericRange) {
 };
 
 /* c8 ignore start */
-// eslint-disable-next-line @typescript-eslint/ban-types
-export const debounce = (fn: Function, ms = 300) => {
+export const debounce = (fn: (...args: any[]) => void, ms = 300) => {
     let timeoutId: ReturnType<typeof setTimeout>;
     return function (this: any, ...args: any[]) {
         clearTimeout(timeoutId);
@@ -227,8 +226,7 @@ export const debounce = (fn: Function, ms = 300) => {
     };
 };
 
-// eslint-disable-next-line @typescript-eslint/ban-types
-export const debounce_leading = (fn: Function, ms = 300) => {
+export const debounce_leading = (fn: (...args: any[]) => void, ms = 300) => {
     let timeoutId: ReturnType<typeof setTimeout> | undefined;
     return function (this: any, ...args: any[]) {
         if (!timeoutId) {
