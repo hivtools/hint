@@ -26,12 +26,6 @@ interface AppProperties
     val apiUrl: String
     val applicationTitle: String
     val applicationUrl: String
-    val emailMode: String
-    val emailServer: String
-    val emailPort: Int?
-    val emailSender: String
-    val emailUsername: String
-    val emailPassword: String
     val tokenIssuer: String
     val uploadDirectory: String
     val resultsDirectory: String
@@ -77,12 +71,6 @@ class ConfiguredAppProperties(
     final override val apiUrl = propString("hintr_url")
     final override val applicationTitle = propString("application_title")
     final override val applicationUrl = propString("application_url")
-    final override val emailMode = propString("email_mode")
-    final override val emailServer = propString("email_server")
-    final override val emailPort = propString("email_port").toIntOrNull()
-    final override val emailSender = propString("email_sender")
-    final override val emailUsername = propString("email_username")
-    final override val emailPassword = propString("email_password")
     final override val tokenIssuer = propString("token_issuer")
     final override val uploadDirectory = propString("upload_dir")
     final override val resultsDirectory = propString("results_dir")
