@@ -16,9 +16,10 @@ import https from "node:https";
 // The build also writes ./public/css/app.css (a fixed name) for login.ftl and 404.ftl.
 
 // The browsers that we support. Vue CLI used this list by default, so it is the same as before.
+// Vite does not read browserslist. browserslist-to-esbuild changes the list to targets such as "chrome151",
+// which Vite gives to Oxc (JavaScript) and Lightning CSS (CSS).
 const packageJson = JSON.parse(readFileSync(fileURLToPath(new URL("./package.json", import.meta.url)), "utf-8"));
-const browserTargets: string[] = packageJson.browserslist;
-const esbuildTargets = browserslistToEsbuild(browserTargets);
+const buildTargets = browserslistToEsbuild(packageJson.browserslist);
 
 const base = "/public/";
 const entry = "/src/app/index.ts";
@@ -177,15 +178,14 @@ export default defineConfig(({command}) => ({
     build: {
         outDir: "public",
         emptyOutDir: true,
-        target: esbuildTargets,
-        cssTarget: esbuildTargets,
+        target: buildTargets,
+        cssTarget: buildTargets,
         sourcemap: true,
-        rollupOptions: {
+        rolldownOptions: {
             output: {
-                manualChunks(id: string) {
-                    if (id.includes("/node_modules/leaflet/")) {
-                        return "leaflet";
-                    }
+                // Put Leaflet in its own chunk.
+                codeSplitting: {
+                    groups: [{name: "leaflet", test: /[\\/]node_modules[\\/]leaflet[\\/]/}]
                 }
             }
         }
