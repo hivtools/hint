@@ -47,14 +47,6 @@ class AppPropertiesTests
     }
 
     @Test
-    fun `can read tokenIssuer`()
-    {
-        val props = readPropsFromTempFile("token_issuer=fakeIssuer")
-        val sut = ConfiguredAppProperties(props)
-        assertEquals(sut.tokenIssuer, "fakeIssuer")
-    }
-
-    @Test
     fun `can read applicationTitle`()
     {
         val props = readPropsFromTempFile("application_title=TestTitle")

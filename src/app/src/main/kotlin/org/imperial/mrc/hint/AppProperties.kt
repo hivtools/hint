@@ -26,7 +26,6 @@ interface AppProperties
     val apiUrl: String
     val applicationTitle: String
     val applicationUrl: String
-    val tokenIssuer: String
     val uploadDirectory: String
     val resultsDirectory: String
     val dbUser: String
@@ -71,7 +70,6 @@ class ConfiguredAppProperties(
     final override val apiUrl = propString("hintr_url")
     final override val applicationTitle = propString("application_title")
     final override val applicationUrl = propString("application_url")
-    final override val tokenIssuer = propString("token_issuer")
     final override val uploadDirectory = propString("upload_dir")
     final override val resultsDirectory = propString("results_dir")
     final override val dbUser: String = propString("db_user")
