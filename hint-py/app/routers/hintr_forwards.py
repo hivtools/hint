@@ -44,7 +44,7 @@ FORWARDS = [
 def _endpoint(forward: Forward, hintr_method: str, hintr_path: str):
     async def endpoint(**kwargs) -> Response:
         hintr: Hintr = kwargs.pop("hintr")
-        return await hintr.forward(hintr_method, hintr_path, kwargs)
+        return (await hintr.forward(hintr_method, hintr_path, kwargs)).response()
 
     # FastAPI reads the path parameters, and so the API docs, from the signature. This one has the parameters of this
     # path, which are all text.
