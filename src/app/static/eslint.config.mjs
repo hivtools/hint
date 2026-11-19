@@ -29,7 +29,29 @@ export default withVueTs(
                     varsIgnorePattern: "^_",
                     caughtErrorsIgnorePattern: "^_"
                 }
+            ],
+            "no-restricted-imports": [
+                "error",
+                {
+                    patterns: [
+                        {
+                            group: ["**/utils"],
+                            importNames: ["rawDeepClone"],
+                            message: "rawDeepClone reads through Vue's toRaw, so Vue does not track the reads, " +
+                                "and a computed or watch that uses it does not update. " +
+                                "Use it only in Vuex actions and mutations."
+                        }
+                    ]
+                }
             ]
+        }
+    },
+
+    {
+        name: "app/raw-deep-clone-allowed",
+        files: ["src/app/store/**/actions.ts", "src/app/store/**/mutations.ts", "src/tests/**"],
+        rules: {
+            "no-restricted-imports": "off"
         }
     }
 );
