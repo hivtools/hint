@@ -70,6 +70,10 @@ msgstr "You do not have permission to load this resource from ADR. Contact datas
 msgid "adrResourceError"
 msgstr "Unable to load resource, check resource in ADR {resource}."
 
+#. Placeholders: {resource} (the link that the user gave).
+msgid "notOnAdr"
+msgstr "This link does not lead to ADR, so the file cannot be imported: {resource}"
+
 msgid "adrFetchingDatasetsError"
 msgstr "There was an error fetching datasets from ADR."
 

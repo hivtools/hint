@@ -72,6 +72,12 @@ msgstr ""
 msgid "adrResourceError"
 msgstr "Não é possível carregar o recurso, verifique o recurso no ADR {resource}."
 
+# New in hint-py: needs review by a translator.
+#. Placeholders: {resource} (the link that the user gave).
+#, fuzzy
+msgid "notOnAdr"
+msgstr "Este link não leva ao ADR, por isso o arquivo não pode ser importado: {resource}"
+
 msgid "adrFetchingDatasetsError"
 msgstr "Ocorreu um erro ao obter conjuntos de dados do ADR"
 

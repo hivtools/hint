@@ -65,6 +65,10 @@ msgstr ""
 msgid "adrResourceError"
 msgstr ""
 
+#. Placeholders: {resource} (the link that the user gave).
+msgid "notOnAdr"
+msgstr ""
+
 msgid "adrFetchingDatasetsError"
 msgstr ""
 

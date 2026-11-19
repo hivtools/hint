@@ -10,7 +10,7 @@ import os
 import shutil
 import tempfile
 from pathlib import Path
-from typing import BinaryIO
+from typing import IO
 
 from app.errors import NullInFileNameError
 
@@ -30,7 +30,7 @@ def file_extension(filename: str) -> str:
     return name.rsplit(".", 1)[-1]
 
 
-def _hash_and_size(source: BinaryIO) -> tuple[str, int]:
+def _hash_and_size(source: IO[bytes]) -> tuple[str, int]:
     """Reads the whole file once to hash it. Then goes back to the start of the file, so that it can be read again."""
     md5 = hashlib.md5(usedforsecurity=False)
     size = 0
@@ -47,7 +47,7 @@ def _is_stored(target: Path, size: int) -> bool:
     return target.is_file() and target.stat().st_size == size
 
 
-def _store(directory: Path, source: BinaryIO, filename: str) -> str:
+def _store(directory: Path, source: IO[bytes], filename: str) -> str:
     directory.mkdir(parents=True, exist_ok=True)
     # Hash the file first. This API has already received the upload, so this step does not use the network. If the file is
     # already on the share, we do not send it again. The share is slower than the local disk, and the write time counts
@@ -76,7 +76,7 @@ class UploadStorage:
     def __init__(self, directory: str):
         self._directory = Path(directory)
 
-    async def save(self, source: BinaryIO, filename: str) -> str:
+    async def save(self, source: IO[bytes], filename: str) -> str:
         """Writes the file, unless it is already there. Returns the name of the file, which contains its hash.
 
         The source must support `seek`, so that it can be read again from the start. An upload does."""

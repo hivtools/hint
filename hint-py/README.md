@@ -182,7 +182,9 @@ Add a dependency with `uv add <package>` (or `uv add --dev <package>` for dev to
 
 ### ADR
 
-The endpoints `/adr/datasets`, `/adr/orgs` and others call ADR, the UNAIDS data repository.
+The endpoints `/adr/datasets`, `/adr/orgs` and others call ADR, the UNAIDS data repository. `POST /adr/pjnz`,
+`/adr/shape`, `/adr/population`, `/adr/survey`, `/adr/programme` and `/adr/anc` import a file from ADR into the user's
+version, as an upload of that file would (see `app/services/adr_imports.py`).
 
 **Tests.** `make test` uses a fake ADR (`tests/adr.py`). It is fast, it works without a network, and it can make ADR fail
 in ways that the real ADR rarely does. A few more tests call the real dev ADR (`tests/api/test_adr_live.py`). They show
@@ -195,7 +197,8 @@ make test-adr
 
 They are skipped if `ADR_TEST_KEY` is not set. The dev ADR only accepts some IP addresses (its Front Door blocks bots), so
 these tests fail on CI for now. They only read from ADR. They use the dataset `antarctica-country-estimates-2027` in the
-organisation `naomi-development-team`, which needs a release called `Version 1.0` and an output zip.
+organisation `naomi-development-team`, which needs a release called `Version 1.0`, an output zip, and a PJNZ, a shape and
+a population file (the import tests download these three).
 
 **Settings.** How the API calls ADR for a user:
 
@@ -211,6 +214,22 @@ calls ADR as that user. In development, users log in with a password and have no
 shell before `scripts/dev.sh up`, and every user calls ADR as the user of that key. (`scripts/dev.sh up` uses the real
 ADR unless you set `REAL_ADR=0`.) The API does not start with `HINT_ADR_API_KEY` in production, because every user would
 then be the same user on ADR.
+
+**Imports.** The browser sends the link of the file, which ADR gave it. The API sends the user's credential only to
+`HINT_ADR_URL`, so:
+
+- The host in the link is not used. The file is downloaded from `HINT_ADR_URL`, with the path and the query of the link.
+  The browser sends the link, so it could lead to any site. A list of the hosts of ADR is not kept either: the links of
+  the dev ADR start with `https://dev-adr.unaids.org/`, not with its address, and a list would need to be kept up to
+  date. A link is refused (400) if it is not an http or https address, or if its path is not under the path of
+  `HINT_ADR_URL` (the ADR stub of the dev stack has a path).
+- ADR answers with a redirect to its storage, which is on another address. The API follows it, and does not send the
+  credential there. The storage does not need it: the redirect has a short-lived token for the file in its query.
+- The extension is checked before the download, and the size limit of the type of file (`INPUT_FILE_TYPES` in
+  `app/services/input_file_service.py`) applies to the download: it stops as soon as it passes the limit, with the same
+  413 as an upload.
+- The HTTP client of ADR, which every user's calls share, keeps no cookies. A cookie that ADR set for one user would
+  otherwise go with the calls of the others.
 
 ### Debug zips (GitHub)
 

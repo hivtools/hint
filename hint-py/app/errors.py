@@ -78,7 +78,7 @@ class MissingShapeFileError(HintError):
 
 
 class FileTooLargeError(HintError):
-    """An uploaded file is bigger than the limit for its kind of file (`max_pjnz_upload_bytes` and the others)."""
+    """An uploaded or imported file is bigger than the limit for its kind of file (see `INPUT_FILE_TYPES`)."""
 
     def __init__(self, max_bytes: int):
         super().__init__("fileTooLarge", 413, "FILE_TOO_LARGE", {"max_size": f"{max_bytes // (1024 * 1024)} MB"})
@@ -162,6 +162,35 @@ class AdrFetchingDatasetsError(HintError):
 
     def __init__(self, status_code: int, no_account: bool):
         super().__init__("adrFetchingDatasetsNoAccountError" if no_account else "adrFetchingDatasetsError", status_code)
+
+
+class NotOnAdrError(HintError):
+    """The link of a file to import is not an http or https address under ADR's address (see `AdrClient.file_at`)."""
+
+    def __init__(self, link: str):
+        super().__init__("notOnAdr", 400, arguments={"resource": link})
+
+
+class AdrResourceError(HintError):
+    """ADR did not give the file. The status is the status of ADR's answer if that is an error status, and 500 if not."""
+
+    def __init__(self, adr_status: int, link: str):
+        status = adr_status if 400 <= adr_status < 600 else 500
+        super().__init__("adrResourceError", status, arguments={"resource": link})
+
+
+class NoPermissionToAccessResourceError(HintError):
+    """ADR answered with a web page and not with the file. ADR shows its login page to a user who may not see the file."""
+
+    def __init__(self):
+        super().__init__("noPermissionToAccessResource", 403)
+
+
+class NoResponseFromAdrError(HintError):
+    """ADR did not answer: the connection failed or timed out."""
+
+    def __init__(self):
+        super().__init__("noResponse", 500)
 
 
 class GitHubTokenRequiredError(HintError):

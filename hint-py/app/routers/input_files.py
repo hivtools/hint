@@ -40,7 +40,7 @@ def _add_routes(spec: InputFileType) -> None:
         spec.url, name=f"upload_{name}", summary=f"Upload the {name} file and validate it", response_model=None
     )
     async def upload(file: Annotated[UploadFile, File()], input_files: InputFiles) -> Response:
-        return (await input_files.upload(file_type, file.file, file.filename or "")).response()
+        return (await input_files.save(file_type, file.file, file.filename or "")).response()
 
     @router.get(spec.url, name=f"get_{name}", summary=f"Get the {name} file and validate it again", response_model=None)
     async def get(input_files: InputFiles) -> Response:
