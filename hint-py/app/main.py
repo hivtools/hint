@@ -6,6 +6,7 @@ from pathlib import Path
 from fastapi import FastAPI
 
 from app.clients.adr_client import create_adr_http_client
+from app.clients.github_client import create_github_http_client
 from app.clients.hintr_client import create_hintr_http_client
 from app.config import get_settings
 from app.db.database import create_db_session_factory, create_engine
@@ -37,7 +38,9 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None]:
     app.state.db_session_factory = create_db_session_factory(engine)
     app.state.hintr_http = create_hintr_http_client(get_settings())
     app.state.adr_http = create_adr_http_client(get_settings())
+    app.state.github_http = create_github_http_client(get_settings())
     yield
+    await app.state.github_http.aclose()
     await app.state.adr_http.aclose()
     await app.state.hintr_http.aclose()
     await engine.dispose()

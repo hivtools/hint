@@ -20,7 +20,7 @@ app/schemas.py       request and response models
 app/errors.py        errors in the format the Vue app expects, with translated messages
 app/logging_setup.py where the logs go (see Logging below)
 app/messages.py      looks up translations in app/locale/ (gettext .po files, one per language, read with Babel)
-app/clients/         the HTTP services this API calls: hintr and ADR
+app/clients/         the HTTP services this API calls: hintr, ADR and GitHub
 app/storage/         the files on the share: the uploads this API writes, and the results hintr writes
 app/services/        the rules that combine repositories, storage and clients (e.g. taking in an input file)
 app/routers/         one module per group of endpoints
@@ -88,6 +88,9 @@ What protects this:
 - **The access log** of uvicorn has no query string (`_drop_query_string` in `app/logging_setup.py`).
 - **No request headers or bodies** are logged, and OpenTelemetry does not collect them unless it is told to.
 - **No SQL** is logged.
+
+One thing is logged on purpose: the GitHub login (a public user name) of a developer who asks for a debug zip, so that
+there is a record of who downloaded a user's files. GitHub tokens are never logged (the same test checks this).
 
 What does not: a test only catches what the tests do, and the text of an email is easy to miss in free text, so
 redacting by pattern would not be a guarantee. Two known gaps: OpenTelemetry's trace of a request has its URL with the
@@ -202,6 +205,39 @@ calls ADR as that user. In development, users log in with a password and have no
 shell before `scripts/dev.sh up`, and every user calls ADR as the user of that key. (`scripts/dev.sh up` uses the real
 ADR unless you set `REAL_ADR=0`.) The API does not start with `HINT_ADR_API_KEY` in production, because every user would
 then be the same user on ADR.
+
+### Debug zips (GitHub)
+
+`GET /model/debug/{id}` sends the debug zip of a model run: hintr makes it from the run's input files and options, so
+that a developer can run the model again on their own machine. The R function `hintr::download_debug` calls it. It does
+not use the hint login. The caller sends a GitHub token (`Authorization: Bearer <token>`), and the API asks GitHub who
+the token's user is and whether that user is an active member of one GitHub team (`github_team_member` in
+`app/dependencies.py`). A classic token needs the `read:org` scope to show the team. The proxy sends no hint identity
+and no cookie on this path (see `proxy/snippets/python-github.conf`), so a hint session cannot take the place of the
+token.
+
+| Setting                      | Default                  | What it is                                                         |
+|------------------------------|--------------------------|--------------------------------------------------------------------|
+| `HINT_GITHUB_AUTH_ORG`       | (none)                   | The GitHub organisation of the team, for example `hivtools`        |
+| `HINT_GITHUB_AUTH_TEAM_SLUG` | (none)                   | The team, as in its URL (`github.com/orgs/<org>/teams/<slug>`), for example `naomi-debug` |
+| `HINT_GITHUB_API_URL`        | `https://api.github.com` | The address of the GitHub API. Only tests change it.               |
+
+If the organisation or the team is not set, nobody gets in (403), and GitHub is not called. A real deployment must set
+both: the Kotlin app had `hivtools` and `naomi-debug` in its config.
+
+| The caller sends                                | The answer                    |
+|-------------------------------------------------|-------------------------------|
+| no `Bearer` token                               | 401 `githubTokenRequired`     |
+| a token that GitHub does not accept             | 401 `githubTokenInvalid`      |
+| a token of a user who is not an active member   | 403 `notInGitHubTeam`         |
+| a token, but GitHub fails or does not answer    | 502 `githubFailed`            |
+| a token of a member                             | the zip, or hintr's failure (for example 400 `INVALID_TASK` for a task that hintr does not know) |
+
+Each request calls GitHub twice. Nothing is kept between requests: debug zips are rare, and a token that is revoked
+stops working at once.
+
+**Tests.** `make test` uses a fake GitHub (`tests/github.py`). `make test-github` calls the real GitHub API with the
+token in `HINT_GITHUB_TEST_TOKEN` (`tests/api/test_github_live.py`, skipped without it). It only reads.
 
 ### Tests on Postgres
 

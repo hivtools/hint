@@ -16,6 +16,10 @@ test: ## Run the tests with coverage
 test-adr: ## Run the tests that call the real dev ADR (needs ADR_TEST_KEY, and an IP address that the dev ADR accepts)
 	@uv run pytest -m adr_live
 
+.PHONY: test-github
+test-github: ## Run the tests that call the real GitHub API (needs HINT_GITHUB_TEST_TOKEN)
+	@uv run pytest -m github_live
+
 .PHONY: run
 run: ## Run the API locally with auto reload
 	@uv run fastapi dev app/main.py

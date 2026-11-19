@@ -21,7 +21,12 @@ log = structlog.get_logger()
 
 class HintError(Exception):
     def __init__(
-        self, key: str, status_code: int = 500, code: str = DEFAULT_ERROR, arguments: dict[str, str] | None = None
+        self,
+        key: str,
+        status_code: int = 500,
+        code: str = DEFAULT_ERROR,
+        arguments: dict[str, str] | None = None,
+        headers: dict[str, str] | None = None,
     ):
         super().__init__(f"HintError with key {key}")
         self.key = key
@@ -29,6 +34,8 @@ class HintError(Exception):
         self.code = code
         # What fills in the {placeholders} of the message
         self.arguments = arguments or {}
+        # Headers to add to the response, such as WWW-Authenticate for a 401
+        self.headers = headers or {}
 
     def hint_response(self, accept_language: str | None) -> HintResponse:
         """The failure that the user sees, in the language of the request."""
@@ -157,6 +164,35 @@ class AdrFetchingDatasetsError(HintError):
         super().__init__("adrFetchingDatasetsNoAccountError" if no_account else "adrFetchingDatasetsError", status_code)
 
 
+class GitHubTokenRequiredError(HintError):
+    """The request has no GitHub token. It must be in the Authorization header, as "Bearer <token>"."""
+
+    def __init__(self):
+        super().__init__("githubTokenRequired", 401, headers={"WWW-Authenticate": "Bearer"})
+
+
+class GitHubTokenInvalidError(HintError):
+    """GitHub does not accept the token. It is wrong, it has expired, or it was revoked."""
+
+    def __init__(self):
+        super().__init__("githubTokenInvalid", 401, headers={"WWW-Authenticate": 'Bearer error="invalid_token"'})
+
+
+class NotInGitHubTeamError(HintError):
+    """The token's user is not a member of the GitHub team that may come in. No team is set, or GitHub says no, or the
+    token cannot read the team."""
+
+    def __init__(self):
+        super().__init__("notInGitHubTeam", 403)
+
+
+class GitHubFailedError(HintError):
+    """GitHub did not answer, or did not answer as expected, so the token could not be checked."""
+
+    def __init__(self):
+        super().__init__("githubFailed", 502)
+
+
 class UnknownInputTimeSeriesTypeError(HintError):
     def __init__(self):
         super().__init__("unknownInputTimeSeriesType", 400)
@@ -171,7 +207,9 @@ def hint_error_response(exc: HintError, accept_language: str | None) -> Response
     """Returns the response for an error. Use it when an endpoint must answer with the error and not raise it.
 
     A raised error rolls back the database changes of the request. An answer does not."""
-    return exc.hint_response(accept_language).response()
+    response = exc.hint_response(accept_language).response()
+    response.headers.update(exc.headers)
+    return response
 
 
 def unexpected_error(request: Request, status_code: int, reason: str, exc_info: BaseException | None = None):

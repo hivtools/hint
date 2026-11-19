@@ -1,6 +1,7 @@
 import logging
 
 import httpx2
+import pytest
 from sqlalchemy.ext.asyncio import async_sessionmaker
 
 from app.config import get_settings
@@ -14,12 +15,13 @@ async def test_lifespan_sets_up_the_session_factory():
         assert isinstance(app.state.db_session_factory, async_sessionmaker)
 
 
-async def test_lifespan_sets_up_and_closes_the_hintr_client():
+@pytest.mark.parametrize("client", ["hintr_http", "adr_http", "github_http"])
+async def test_lifespan_sets_up_and_closes_the_http_clients(client):
     async with lifespan(app):
-        hintr_http = app.state.hintr_http
-        assert isinstance(hintr_http, httpx2.AsyncClient)
-        assert not hintr_http.is_closed
-    assert hintr_http.is_closed
+        http = getattr(app.state, client)
+        assert isinstance(http, httpx2.AsyncClient)
+        assert not http.is_closed
+    assert http.is_closed
 
 
 async def test_lifespan_sets_up_the_logging(monkeypatch):

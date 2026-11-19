@@ -121,3 +121,21 @@ msgstr "La requête vers l'ADR a expiré."
 
 msgid "adrBadGateway"
 msgstr "Impossible d'obtenir une réponse de l'ADR. Veuillez réessayer plus tard."
+
+# New in hint-py: needs a check by a translator.
+msgid "githubTokenRequired"
+msgstr "Un jeton GitHub est nécessaire. Envoyez-le dans l'en-tête Authorization sous la forme \"Bearer <jeton>\"."
+
+# New in hint-py: needs a check by a translator.
+msgid "githubTokenInvalid"
+msgstr "GitHub n'a pas accepté le jeton. Vérifiez qu'il est correct et qu'il n'a pas expiré."
+
+# New in hint-py: needs a check by a translator.
+msgid "notInGitHubTeam"
+msgstr ""
+"Vous ne pouvez pas télécharger ceci. Votre utilisateur GitHub doit être membre de l'équipe autorisée à télécharger "
+"les fichiers de débogage, et le jeton doit pouvoir lire l'équipe (un jeton classique a besoin de la portée read:org)."
+
+# New in hint-py: needs a check by a translator.
+msgid "githubFailed"
+msgstr "Impossible de vérifier le jeton GitHub, car GitHub n'a pas répondu comme prévu. Réessayez plus tard."
