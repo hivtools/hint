@@ -15,9 +15,9 @@ const config: PlaywrightTestConfig = {
             use: {
                 ...devices['Desktop Chrome'],
                 baseURL,
-                trace: 'on-first-retry',
-                // For debugging on CI
-                //trace: 'retain-on-failure',
+                // Keep the trace of a failed attempt, including the first. With 'on-first-retry' only the retry has a trace,
+                // so when a test fails and then passes (or fails differently) the first failure cannot be looked at
+                trace: 'retain-on-failure',
             }
         },
     ],

@@ -1,0 +1,121 @@
+{
+  "scenario": "hintr_faults/test_metrics_with_unexpected_worker_status",
+  "steps": [
+    {
+      "client": "A",
+      "name": "every worker state",
+      "outbound": [
+        {
+          "fault": "status",
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "GET",
+          "path": "/hintr/worker/status",
+          "status": null,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/metrics"
+      },
+      "response": {
+        "body": {
+          "text": "running 1\nbusy_workers 1\nidle_workers 2\npaused_workers 1\nexited_workers 1\nlost_workers 1\nsomething_new_workers 1\nlive_workers 4"
+        },
+        "headers": {
+          "content-type": "text/plain"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "no workers",
+      "outbound": [
+        {
+          "fault": "status",
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "GET",
+          "path": "/hintr/worker/status",
+          "status": null,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/metrics"
+      },
+      "response": {
+        "body": {
+          "text": "running 1\nbusy_workers 0\nidle_workers 0\npaused_workers 0\nexited_workers 0\nlost_workers 0\nlive_workers 0"
+        },
+        "headers": {
+          "content-type": "text/plain"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "malformed worker status",
+      "outbound": [
+        {
+          "fault": "raw",
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "GET",
+          "path": "/hintr/worker/status",
+          "status": null,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/metrics"
+      },
+      "response": {
+        "body": {
+          "text": "running 1\nbusy_workers 0\nidle_workers 0\npaused_workers 0\nexited_workers 0\nlost_workers 0\nlive_workers 0"
+        },
+        "headers": {
+          "content-type": "text/plain"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "worker status endpoint failing",
+      "outbound": [
+        {
+          "fault": "status",
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "GET",
+          "path": "/hintr/worker/status",
+          "status": null,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/metrics"
+      },
+      "response": {
+        "body": {
+          "text": "running 1\nbusy_workers 0\nidle_workers 0\npaused_workers 0\nexited_workers 0\nlost_workers 0\nlive_workers 0"
+        },
+        "headers": {
+          "content-type": "text/plain"
+        },
+        "status": 200
+      }
+    }
+  ]
+}

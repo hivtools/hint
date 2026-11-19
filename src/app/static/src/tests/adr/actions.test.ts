@@ -196,7 +196,7 @@ describe("ADR actions", () => {
     });
 
     it("fetches schemas", async () => {
-        mockAxios.onGet(`/adr/schemas/`)
+        mockAxios.onGet(`/adr/schemas`)
             .reply(200, mockSuccess({baseUrl: "adr.com"}));
 
         const commit = vi.fn();

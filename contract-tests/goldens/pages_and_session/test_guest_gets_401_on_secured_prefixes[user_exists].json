@@ -1,0 +1,28 @@
+{
+  "scenario": "pages_and_session/test_guest_gets_401_on_secured_prefixes[user_exists]",
+  "steps": [
+    {
+      "client": "A",
+      "name": "guest GET /user/a@b.com/exists",
+      "request": {
+        "method": "GET",
+        "path": "/user/a@b.com/exists"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "error": "Unauthorized",
+            "path": "/user/a@b.com/exists",
+            "status": 401,
+            "timestamp": "<EPOCH_MS>"
+          }
+        },
+        "headers": {
+          "content-type": "application/json",
+          "www-authenticate": "Bearer realm=\"pac4j\""
+        },
+        "status": 401
+      }
+    }
+  ]
+}

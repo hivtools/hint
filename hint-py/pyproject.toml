@@ -1,0 +1,94 @@
+[project]
+name = "hint-py"
+version = "0.1.0"
+description = "Backend API for naomi/hint web app"
+requires-python = ">=3.14"
+dependencies = [
+    "asyncpg>=0.32.0",
+    "babel>=2.18.0",
+    "colorama>=0.4.6 ; sys_platform == 'win32'",
+    "duckdb>=2.0.0",
+    "fastapi[standard]>=0.157.0",
+    "httpx2>=2.16.0",
+    "opentelemetry-distro>=0.66b1",
+    "opentelemetry-exporter-otlp>=1.45.1",
+    "opentelemetry-instrumentation-fastapi>=0.66b1",
+    "pydantic-settings>=2.16.1",
+    "sqlalchemy[asyncio]>=2.1.6",
+    "structlog>=26.1.0",
+]
+
+[dependency-groups]
+dev = [
+    "aiosqlite>=0.22.1",
+    "pre-commit>=4.5.1",
+    "pytest>=9.1.1",
+    "pytest-asyncio>=1.4.1",
+    "pytest-cov",
+    "ruff",
+    "ty",
+]
+
+[tool.pytest.ini_options]
+# Put the project root on sys.path so `from app.main import app` resolves
+pythonpath = ["."]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+# `make test` does not run the tests that call the real dev ADR. Run them with `make test-adr`.
+addopts = "-m 'not adr_live'"
+markers = [
+    "adr_live: calls the real dev ADR with the key in ADR_TEST_KEY. Skipped if there is no key. The dev ADR only accepts some IP addresses (its Front Door blocks bots), so these tests fail on CI for now.",
+]
+
+[tool.coverage.run]
+source = ["app"]
+omit = ["tests/*", ".venv/*"]
+
+[tool.ruff]
+line-length = 120
+src = ["."]
+
+[tool.ruff.lint]
+select = [
+    # flake8-2020
+    "YTT",
+    # flake8-bandit
+    "S",
+    # flake8-bugbear
+    "B",
+    # flake8-builtins
+    "A",
+    # flake8-comprehensions
+    "C4",
+    # flake8-debugger
+    "T10",
+    # flake8-simplify
+    "SIM",
+    # isort
+    "I",
+    # mccabe
+    "C90",
+    # pycodestyle
+    "E", "W",
+    # pyflakes
+    "F",
+    # pygrep-hooks
+    "PGH",
+    # pyupgrade
+    "UP",
+    # ruff
+    "RUF",
+    # tryceratops
+    "TRY",
+]
+ignore = [
+    "E501", # line length is left to the formatter
+]
+
+[tool.ruff.lint.isort]
+# Our own top level packages. Listed explicitly because the editor runs ruff from the repo root, where `src` is not
+# enough for it to see these as first party. Everything lives under `app`, so this should not need to change.
+known-first-party = ["app"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["S101", "S105"] # assert is how pytest tests work, and the passwords in them are made up

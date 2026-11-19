@@ -18,6 +18,7 @@ import {expectEqualsFrozen} from "../testHelpers";
 import {FileType} from "../../app/store/surveyAndProgram/surveyAndProgram";
 import {expectValidAdrImportPayload} from "../baseline/actions.test";
 import {Mock} from "vitest";
+import {sessionStorageManager} from "../../app/sessionStorageManager";
 
 const rootState = mockRootState();
 const mockFormData = {
@@ -36,15 +37,28 @@ describe("Survey and programme actions", () => {
         // stop apiService logging to console
         console.log = vi.fn();
         mockAxios.reset();
+        // A tab with an open version. The requests for data use the id of this version.
+        sessionStorageManager.saveVersionId("version-1");
     });
 
     afterEach(() => {
         (console.log as Mock).mockClear();
+        sessionStorageManager.saveVersionId(null);
+    });
+
+    it("asks for no survey or programme data and marks the state ready when the tab has no version open", async () => {
+        sessionStorageManager.saveVersionId(null);
+        const commit = vi.fn();
+        await actions.getSurveyAndProgramData({commit, rootState, dispatch: vi.fn()} as any);
+
+        expect(mockAxios.history["get"].length).toBe(0);
+        expect(commit).toBeCalledTimes(1);
+        expect(commit.mock.calls[0][0]).toStrictEqual({type: SurveyAndProgramMutation.Ready, payload: true});
     });
 
     it("sets data after surveys file upload", async () => {
 
-        mockAxios.onPost(`/disease/survey/?strict=true`)
+        mockAxios.onPost(`/disease/survey`)
             .reply(200, mockSuccess({data: "SOME DATA", warnings: "TEST WARNINGS"}));
 
         const commit = vi.fn();
@@ -55,7 +69,7 @@ describe("Survey and programme actions", () => {
     });
 
     it("sets data after surveys file import", async () => {
-        const url = "/adr/survey/?strict=true"
+        const url = "/adr/survey/"
         mockAxios.onPost(url)
             .reply(200, mockSuccess({data: "SOME DATA", warnings: "TEST WARNINGS"}));
 
@@ -90,7 +104,7 @@ describe("Survey and programme actions", () => {
 
     it("sets error message after failed surveys upload", async () => {
 
-        mockAxios.onPost(`/disease/survey/?strict=true`)
+        mockAxios.onPost(`/disease/survey`)
             .reply(500, mockFailure("error message"));
 
         const commit = vi.fn();
@@ -101,7 +115,7 @@ describe("Survey and programme actions", () => {
 
     it("sets error message after failed surveys import", async () => {
 
-        mockAxios.onPost(`/adr/survey/?strict=true`)
+        mockAxios.onPost(`/adr/survey/`)
             .reply(500, mockFailure("error message"));
 
         const commit = vi.fn();
@@ -135,7 +149,7 @@ describe("Survey and programme actions", () => {
 
     it("sets data after programme file upload", async () => {
 
-        mockAxios.onPost(`/disease/programme/?strict=true`)
+        mockAxios.onPost(`/disease/programme`)
             .reply(200, mockSuccess({data: "TEST", warnings: "TEST WARNINGS"}));
 
         const commit = vi.fn();
@@ -146,7 +160,7 @@ describe("Survey and programme actions", () => {
     });
 
     it("sets data after programme file import", async () => {
-        const url = "/adr/programme/?strict=true"
+        const url = "/adr/programme/"
         mockAxios.onPost(url)
             .reply(200, mockSuccess({data: "TEST", warnings: "TEST WARNINGS"}));
 
@@ -212,7 +226,7 @@ describe("Survey and programme actions", () => {
 
     it("sets error message after failed programme upload", async () => {
 
-        mockAxios.onPost(`/disease/programme/?strict=true`)
+        mockAxios.onPost(`/disease/programme`)
             .reply(500, mockFailure("error message"));
 
         const commit = vi.fn();
@@ -223,7 +237,7 @@ describe("Survey and programme actions", () => {
 
     it("sets error message after failed programme import", async () => {
 
-        mockAxios.onPost(`/adr/programme/?strict=true`)
+        mockAxios.onPost(`/adr/programme/`)
             .reply(500, mockFailure("error message"));
 
         const commit = vi.fn();
@@ -267,7 +281,7 @@ describe("Survey and programme actions", () => {
 
     it("sets data after anc file upload", async () => {
 
-        mockAxios.onPost(`/disease/anc/?strict=true`)
+        mockAxios.onPost(`/disease/anc`)
             .reply(200, mockSuccess({data: "TEST", warnings: "TEST WARNINGS"}));
 
         const commit = vi.fn();
@@ -278,7 +292,7 @@ describe("Survey and programme actions", () => {
     });
 
     it("sets data after anc file import", async () => {
-        const url = "/adr/anc/?strict=true"
+        const url = "/adr/anc/"
         mockAxios.onPost(url)
             .reply(200, mockSuccess({data: "TEST", warnings: "TEST WARNINGS"}));
 
@@ -324,7 +338,7 @@ describe("Survey and programme actions", () => {
 
     it("sets error message after failed anc upload", async () => {
 
-        mockAxios.onPost(`/disease/anc/?strict=true`)
+        mockAxios.onPost(`/disease/anc`)
             .reply(500, mockFailure("error message"));
 
         const commit = vi.fn();
@@ -335,7 +349,7 @@ describe("Survey and programme actions", () => {
 
     it("sets error message after failed anc import", async () => {
 
-        mockAxios.onPost(`/adr/anc/?strict=true`)
+        mockAxios.onPost(`/adr/anc/`)
             .reply(500, mockFailure("error message"));
 
         const commit = vi.fn();
@@ -379,13 +393,13 @@ describe("Survey and programme actions", () => {
 
     it("gets data, commits it and marks state ready", async () => {
 
-        mockAxios.onGet(`/disease/survey/?strict=true`)
+        mockAxios.onGet(`/disease/survey`)
             .reply(200, mockSuccess(mockSurveyResponse()));
 
-        mockAxios.onGet(`/disease/programme/?strict=true`)
+        mockAxios.onGet(`/disease/programme`)
             .reply(200, mockSuccess(mockProgramResponse()));
 
-        mockAxios.onGet(`/disease/anc/?strict=true`)
+        mockAxios.onGet(`/disease/anc`)
             .reply(200, mockSuccess(mockAncResponse()));
 
         const commit = vi.fn();
@@ -406,13 +420,13 @@ describe("Survey and programme actions", () => {
 
     it("it validates, commits and marks state ready", async () => {
 
-        mockAxios.onGet(`/disease/survey/?strict=true`)
+        mockAxios.onGet(`/disease/survey`)
             .reply(200, mockSuccess(mockSurveyResponse()));
 
-        mockAxios.onGet(`/disease/programme/?strict=true`)
+        mockAxios.onGet(`/disease/programme`)
             .reply(200, mockSuccess(mockProgramResponse()));
 
-        mockAxios.onGet(`/disease/anc/?strict=true`)
+        mockAxios.onGet(`/disease/anc`)
             .reply(200, mockSuccess(mockAncResponse()));
 
         const commit = vi.fn();
@@ -433,13 +447,13 @@ describe("Survey and programme actions", () => {
 
     it("it runs validation, fails one and commits correctly", async () => {
 
-        mockAxios.onGet(`/disease/survey/?strict=true`)
+        mockAxios.onGet(`/disease/survey`)
             .reply(500, mockFailure("Error message"));
 
-        mockAxios.onGet(`/disease/programme/?strict=true`)
+        mockAxios.onGet(`/disease/programme`)
             .reply(200, mockSuccess(mockProgramResponse()));
 
-        mockAxios.onGet(`/disease/anc/?strict=true`)
+        mockAxios.onGet(`/disease/anc`)
             .reply(200, mockSuccess(mockAncResponse()));
 
         const commit = vi.fn();
@@ -461,13 +475,13 @@ describe("Survey and programme actions", () => {
 
     it("it runs validation, fails all and commits correctly", async () => {
 
-        mockAxios.onGet(`/disease/survey/?strict=true`)
+        mockAxios.onGet(`/disease/survey`)
             .reply(500, mockFailure("Failed"));
 
-        mockAxios.onGet(`/disease/programme/?strict=true`)
+        mockAxios.onGet(`/disease/programme`)
             .reply(500, mockFailure("Failed"));
 
-        mockAxios.onGet(`/disease/anc/?strict=true`)
+        mockAxios.onGet(`/disease/anc`)
             .reply(500, mockFailure("Failed"));
 
         const commit = vi.fn();
@@ -486,13 +500,13 @@ describe("Survey and programme actions", () => {
 
     it("fails silently and marks state ready if getting data fails", async () => {
 
-        mockAxios.onGet(`/disease/survey/?strict=true`)
+        mockAxios.onGet(`/disease/survey`)
             .reply(500);
 
-        mockAxios.onGet(`/disease/anc/?strict=true`)
+        mockAxios.onGet(`/disease/anc`)
             .reply(500);
 
-        mockAxios.onGet(`/disease/programme/?strict=true`)
+        mockAxios.onGet(`/disease/programme`)
             .reply(500);
 
         const commit = vi.fn();
@@ -503,7 +517,7 @@ describe("Survey and programme actions", () => {
     });
 
     it("deletes survey", async () => {
-        mockAxios.onDelete("/disease/survey/")
+        mockAxios.onDelete("/disease/survey")
             .reply(200, mockSuccess(true));
 
         const commit = vi.fn();
@@ -520,7 +534,7 @@ describe("Survey and programme actions", () => {
     });
 
     it("deletes program", async () => {
-        mockAxios.onDelete("/disease/programme/")
+        mockAxios.onDelete("/disease/programme")
             .reply(200, mockSuccess(true));
 
         const commit = vi.fn();
@@ -545,7 +559,7 @@ describe("Survey and programme actions", () => {
     });
 
     it("deletes ANC and resets selected data type", async () => {
-        mockAxios.onDelete("/disease/anc/")
+        mockAxios.onDelete("/disease/anc")
             .reply(200, mockSuccess(true));
 
         const commit = vi.fn();
@@ -570,13 +584,13 @@ describe("Survey and programme actions", () => {
     });
 
     it("deletes all", async () => {
-        mockAxios.onDelete("/disease/anc/")
+        mockAxios.onDelete("/disease/anc")
             .reply(200, mockSuccess(true));
 
-        mockAxios.onDelete("/disease/survey/")
+        mockAxios.onDelete("/disease/survey")
             .reply(200, mockSuccess(true));
 
-        mockAxios.onDelete("/disease/programme/")
+        mockAxios.onDelete("/disease/programme")
             .reply(200, mockSuccess(true));
 
         const commit = vi.fn();

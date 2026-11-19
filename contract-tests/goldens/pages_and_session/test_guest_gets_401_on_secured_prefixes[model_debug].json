@@ -1,0 +1,28 @@
+{
+  "scenario": "pages_and_session/test_guest_gets_401_on_secured_prefixes[model_debug]",
+  "steps": [
+    {
+      "client": "A",
+      "name": "guest GET /model/debug/abc",
+      "request": {
+        "method": "GET",
+        "path": "/model/debug/abc"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "error": "Unauthorized",
+            "path": "/model/debug/abc",
+            "status": 401,
+            "timestamp": "<EPOCH_MS>"
+          }
+        },
+        "headers": {
+          "content-type": "application/json",
+          "www-authenticate": "Bearer realm=\"authentication required\""
+        },
+        "status": 401
+      }
+    }
+  ]
+}

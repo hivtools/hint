@@ -6,9 +6,8 @@ import {ProjectsState} from "./projects";
 import {RootState} from "../../root";
 import {api} from "../../apiService";
 import {ProjectsMutations} from "./mutations";
-import {serialiseState} from "../../localStorageManager";
-import qs from "qs";
-import {CurrentProject, Project, VersionDetails, VersionIds} from "../../types";
+import {serialiseState, sessionStorageManager} from "../../sessionStorageManager";
+import {CurrentProject, Project, Version, VersionDetails, VersionIds} from "../../types";
 import {ModelCalibrateMutation} from "../modelCalibrate/mutations";
 import {ModelRunMutation} from "../modelRun/mutations";
 
@@ -33,6 +32,7 @@ export interface ProjectsActions {
     createProject: (store: ActionContext<ProjectsState, RootState>, payload: CreateProjectPayload) => void,
     getProjects: (store: ActionContext<ProjectsState, RootState>) => void
     getCurrentProject: (store: ActionContext<ProjectsState, RootState>) => void
+    ensureGuestVersion: (store: ActionContext<ProjectsState, RootState>) => void
     queueVersionStateUpload: (store: ActionContext<ProjectsState, RootState>, interval?: number | null) => void,
     newVersion: (store: ActionContext<ProjectsState, RootState>, note: string) => void,
     loadVersion: (store: ActionContext<ProjectsState, RootState>, version: VersionIds) => void
@@ -73,12 +73,10 @@ export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
         const {commit} = context;
         commit({type: ProjectsMutations.CloningProject, payload: true});
 
-        const emails = "emails=" + payload.emails.join(",");
-
         await api<ProjectsMutations, ProjectsMutations>(context)
             .withSuccess(ProjectsMutations.CloningProject)
             .withError(ProjectsMutations.CloneProjectError)
-            .postAndReturn(`/project/${payload.projectId}/clone`, emails);
+            .postAndReturn(`/project/${payload.projectId}/clone`, {emails: payload.emails});
     },
 
     async createProject(context, payload) {
@@ -98,7 +96,7 @@ export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
         await api<RootMutation, ProjectsMutations>(context)
             .withSuccess(RootMutation.SetProject, true)
             .withError(ProjectsMutations.ProjectError)
-            .postAndReturn<string>("/project/", qs.stringify(payload))
+            .postAndReturn<string>("/project", payload)
             .then(() => {
                 dispatch("getProjects")
             })
@@ -121,11 +119,30 @@ export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
         const {rootGetters, commit} = context;
         if (!rootGetters.isGuest) {
             commit({type: ProjectsMutations.SetLoading, payload: true});
-            await api<ProjectsMutations, ProjectsMutations>(context)
-                .withSuccess(ProjectsMutations.SetCurrentProject)
-                .withError(ProjectsMutations.ProjectError)
-                .get<CurrentProject>("/project/current");
+            if (sessionStorageManager.getVersionId()) {
+                await api<ProjectsMutations, ProjectsMutations>(context)
+                    .withSuccess(ProjectsMutations.SetCurrentProject)
+                    .withError(ProjectsMutations.ProjectError)
+                    .get<CurrentProject>("/project/current");
+            } else {
+                // A tab with no version open, e.g. a new tab, starts on the projects page
+                commit({type: ProjectsMutations.SetCurrentProject, payload: {project: null, version: null}});
+            }
             commit({type: ProjectsMutations.SetLoading, payload: false});
+        }
+    },
+
+    // A guest has no project to open. The server gives each guest tab its own version to work on.
+    async ensureGuestVersion(context) {
+        const {rootGetters} = context;
+        if (rootGetters.isGuest && !sessionStorageManager.getVersionId()) {
+            const response = await api<ProjectsMutations, ErrorsMutation>(context)
+                .ignoreSuccess()
+                .withError(`errors/${ErrorsMutation.ErrorAdded}` as ErrorsMutation, true)
+                .postAndReturn<Version>("/guest/version");
+            if (response && response.data) {
+                sessionStorageManager.saveVersionId(response.data.id);
+            }
         }
     },
 
@@ -156,7 +173,7 @@ export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
         await api<ProjectsMutations, ErrorsMutation>(context)
             .ignoreSuccess()
             .withError(`errors/${ErrorsMutation.ErrorAdded}` as ErrorsMutation, true)
-            .postAndReturn(`/project/${projectId}/version/${versionId}/note`, qs.stringify({note}))
+            .postAndReturn(`/project/${projectId}/version/${versionId}/note`, {note})
             .then(() => {
                 dispatch("getProjects", false);
             });
@@ -171,7 +188,7 @@ export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
         await api<ProjectsMutations, ErrorsMutation>(context)
             .withSuccess(ProjectsMutations.VersionCreated)
             .withError(`errors/${ErrorsMutation.ErrorAdded}` as ErrorsMutation, true)
-            .postAndReturn(`project/${projectId}/version/?parent=${versionId}&note=${note}`)
+            .postAndReturn(`project/${projectId}/version`, {parent: versionId, note})
     },
 
     async updateProjectNote(context, payload) {
@@ -181,7 +198,7 @@ export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
         await api<ProjectsMutations, ErrorsMutation>(context)
             .ignoreSuccess()
             .withError(`errors/${ErrorsMutation.ErrorAdded}` as ErrorsMutation, true)
-            .postAndReturn(`project/${projectId}/note`, qs.stringify({note}))
+            .postAndReturn(`project/${projectId}/note`, {note})
             .then(() => {
                 dispatch("getProjects", false);
             });
@@ -197,6 +214,8 @@ export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
             .get<VersionDetails>(`project/${version.projectId}/version/${version.versionId}`)
             .then((response: any) => {
                 if (state.error === null) {
+                    // The files are attached to the version this tab sends in X-Version-Id, so it must be this one
+                    sessionStorageManager.saveVersionId(version.versionId);
                     dispatch("load/loadFromVersion", response.data, {root: true})
                 }
             });
@@ -243,7 +262,7 @@ export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
         await api<ProjectsMutations, ErrorsMutation>(context)
             .ignoreSuccess()
             .withError(`errors/${ErrorsMutation.ErrorAdded}` as ErrorsMutation, true)
-            .postAndReturn(`/project/${projectId}/version/${versionId}/promote`, qs.stringify({name, note}))
+            .postAndReturn(`/project/${projectId}/version/${versionId}/promote`, {name, note})
             .then(() => {
                 dispatch("getProjects");
             });
@@ -256,7 +275,7 @@ export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
         await api<ProjectsMutations, ErrorsMutation>(context)
             .ignoreSuccess()
             .withError(`errors/${ErrorsMutation.ErrorAdded}` as ErrorsMutation, true)
-            .postAndReturn(`/project/${projectId}/rename`, qs.stringify({name: name, note: note}))
+            .postAndReturn(`/project/${projectId}/rename`, {name, note})
             .then(() => {
                 if (state.currentProject && state.currentProject.id === projectId) {
                     dispatch("getCurrentProject")
@@ -275,7 +294,7 @@ async function immediateUploadVersionState(context: ActionContext<ProjectsState,
         await api<ProjectsMutations, ErrorsMutation>(context)
             .withSuccess(ProjectsMutations.VersionUploadSuccess)
             .withError(`errors/${ErrorsMutation.ErrorAdded}` as ErrorsMutation, true)
-            .postAndReturn(`/project/${projectId}/version/${versionId}/state/`, serialiseState(rootState));
+            .postAndReturn(`/project/${projectId}/version/${versionId}/state`, serialiseState(rootState));
         commit({type: ProjectsMutations.SetVersionUploadInProgress, payload: false});
     }
 }

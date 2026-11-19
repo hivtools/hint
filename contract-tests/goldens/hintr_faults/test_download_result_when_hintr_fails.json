@@ -1,0 +1,151 @@
+{
+  "scenario": "hintr_faults/test_download_result_when_hintr_fails",
+  "steps": [
+    {
+      "client": "A",
+      "name": "login test.user@example.com",
+      "request": {
+        "body": {
+          "form": {
+            "password": "password",
+            "username": "test.user@example.com"
+          }
+        },
+        "method": "POST",
+        "path": "/callback/formClient"
+      },
+      "response": {
+        "body": {
+          "empty": true
+        },
+        "headers": {
+          "location": "/"
+        },
+        "status": 303
+      }
+    },
+    {
+      "client": "A",
+      "name": "open /",
+      "request": {
+        "method": "GET",
+        "path": "/"
+      },
+      "response": {
+        "body": {
+          "html": true,
+          "title": "Naomi"
+        },
+        "headers": {
+          "content-type": "text/html"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "HEAD answers 500",
+      "outbound": [
+        {
+          "fault": "status",
+          "method": "HEAD",
+          "path": "/download/result/<TASK:download-summary>",
+          "status": null,
+          "to": "hintr"
+        },
+        {
+          "method": "GET",
+          "path": "/download/result/<TASK:download-summary>",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/download/result/<TASK:download-summary>"
+      },
+      "response": {
+        "body": {
+          "invalid_json": true,
+          "text": "<!DOCTYPE html>\n\n<html>\n\n<head>\n\n<meta charset=\"utf-8\" />\n<meta name=\"generator\" content=\"pandoc\" />\n<"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 500
+      }
+    },
+    {
+      "client": "A",
+      "name": "HEAD connection dropped",
+      "outbound": [
+        {
+          "fault": "close",
+          "method": "HEAD",
+          "path": "/download/result/<TASK:download-summary>",
+          "status": null,
+          "to": "hintr"
+        },
+        {
+          "fault": "close",
+          "method": "HEAD",
+          "path": "/download/result/<TASK:download-summary>",
+          "status": null,
+          "to": "hintr"
+        },
+        {
+          "method": "GET",
+          "path": "/download/result/<TASK:download-summary>",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/download/result/<TASK:download-summary>"
+      },
+      "response": {
+        "body": {
+          "binary": {
+            "magic": "html",
+            "non_empty": true
+          }
+        },
+        "status": 500
+      }
+    },
+    {
+      "client": "A",
+      "name": "HEAD answers 404",
+      "outbound": [
+        {
+          "fault": "status",
+          "method": "HEAD",
+          "path": "/download/result/<TASK:download-summary>",
+          "status": null,
+          "to": "hintr"
+        },
+        {
+          "method": "GET",
+          "path": "/download/result/<TASK:download-summary>",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/download/result/<TASK:download-summary>"
+      },
+      "response": {
+        "body": {
+          "invalid_json": true,
+          "text": "<!DOCTYPE html>\n\n<html>\n\n<head>\n\n<meta charset=\"utf-8\" />\n<meta name=\"generator\" content=\"pandoc\" />\n<"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 404
+      }
+    }
+  ]
+}

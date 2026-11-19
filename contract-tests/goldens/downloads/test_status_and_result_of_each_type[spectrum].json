@@ -1,0 +1,223 @@
+{
+  "scenario": "downloads/test_status_and_result_of_each_type[spectrum]",
+  "steps": [
+    {
+      "client": "A",
+      "name": "login test.user@example.com",
+      "request": {
+        "body": {
+          "form": {
+            "password": "password",
+            "username": "test.user@example.com"
+          }
+        },
+        "method": "POST",
+        "path": "/callback/formClient"
+      },
+      "response": {
+        "body": {
+          "empty": true
+        },
+        "headers": {
+          "location": "/"
+        },
+        "status": 303
+      }
+    },
+    {
+      "client": "A",
+      "name": "open /",
+      "request": {
+        "method": "GET",
+        "path": "/"
+      },
+      "response": {
+        "body": {
+          "html": true,
+          "title": "Naomi"
+        },
+        "headers": {
+          "content-type": "text/html"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "status",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "GET",
+          "path": "/download/status/<TASK:download-spectrum>",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/download/status/<TASK:download-spectrum>"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "result",
+      "outbound": [
+        {
+          "method": "HEAD",
+          "path": "/download/result/<TASK:download-spectrum>",
+          "status": 200,
+          "to": "hintr"
+        },
+        {
+          "method": "GET",
+          "path": "/download/result/<TASK:download-spectrum>",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/download/result/<TASK:download-spectrum>"
+      },
+      "response": {
+        "body": {
+          "binary": {
+            "magic": "zip",
+            "non_empty": true,
+            "zip_members": [
+              "README.md",
+              "art_attendance.csv",
+              "boundaries.geojson",
+              "fit/",
+              "fit/calibration_options.yml",
+              "fit/data_options.yml",
+              "fit/model_options.yml",
+              "fit/spectrum_calibration.csv",
+              "indicators.csv",
+              "info/",
+              "info/inputs.csv",
+              "info/options.yml",
+              "info/packages.csv",
+              "info/project_state.json",
+              "info/unaids_navigator_checklist.csv",
+              "inputs_outputs.csv",
+              "meta_age_group.csv",
+              "meta_area.csv",
+              "meta_indicator.csv",
+              "meta_period.csv",
+              "notes.txt",
+              "pepfar_datapack_indicators_2025.csv"
+            ]
+          }
+        },
+        "headers": {
+          "content-disposition": "attachment; filename=\"MWI_naomi-output_<TIMESTAMP>.zip\"",
+          "content-type": "application/octet-stream"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "adr metadata",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "GET",
+          "path": "/meta/adr/<TASK:download-spectrum>",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/meta/adr/<TASK:download-spectrum>"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "result as guest-less second download",
+      "outbound": [
+        {
+          "method": "HEAD",
+          "path": "/download/result/<TASK:download-spectrum>",
+          "status": 200,
+          "to": "hintr"
+        },
+        {
+          "method": "GET",
+          "path": "/download/result/<TASK:download-spectrum>",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "headers": {
+          "accept-language": "fr"
+        },
+        "method": "GET",
+        "path": "/download/result/<TASK:download-spectrum>"
+      },
+      "response": {
+        "body": {
+          "binary": {
+            "magic": "zip",
+            "non_empty": true,
+            "zip_members": [
+              "README.md",
+              "art_attendance.csv",
+              "boundaries.geojson",
+              "fit/",
+              "fit/calibration_options.yml",
+              "fit/data_options.yml",
+              "fit/model_options.yml",
+              "fit/spectrum_calibration.csv",
+              "indicators.csv",
+              "info/",
+              "info/inputs.csv",
+              "info/options.yml",
+              "info/packages.csv",
+              "info/project_state.json",
+              "info/unaids_navigator_checklist.csv",
+              "inputs_outputs.csv",
+              "meta_age_group.csv",
+              "meta_area.csv",
+              "meta_indicator.csv",
+              "meta_period.csv",
+              "notes.txt",
+              "pepfar_datapack_indicators_2025.csv"
+            ]
+          }
+        },
+        "headers": {
+          "content-disposition": "attachment; filename=\"MWI_naomi-output_<TIMESTAMP>.zip\"",
+          "content-type": "application/octet-stream"
+        },
+        "status": 200
+      }
+    }
+  ]
+}

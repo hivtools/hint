@@ -1,0 +1,224 @@
+{
+  "scenario": "adr_browse/test_adr_endpoints_guest_401",
+  "steps": [
+    {
+      "client": "A",
+      "name": "open /",
+      "request": {
+        "method": "GET",
+        "path": "/"
+      },
+      "response": {
+        "body": {
+          "html": true,
+          "title": "Naomi"
+        },
+        "headers": {
+          "content-type": "text/html"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "guest /adr/datasets?type=input",
+      "request": {
+        "method": "GET",
+        "path": "/adr/datasets?type=input"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "error": "Unauthorized",
+            "path": "/adr/datasets",
+            "status": 401,
+            "timestamp": "<EPOCH_MS>"
+          }
+        },
+        "headers": {
+          "content-type": "application/json",
+          "www-authenticate": "Bearer realm=\"pac4j\""
+        },
+        "status": 401
+      }
+    },
+    {
+      "client": "A",
+      "name": "guest /adr/datasets/x",
+      "request": {
+        "method": "GET",
+        "path": "/adr/datasets/x"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "error": "Unauthorized",
+            "path": "/adr/datasets/x",
+            "status": 401,
+            "timestamp": "<EPOCH_MS>"
+          }
+        },
+        "headers": {
+          "content-type": "application/json",
+          "www-authenticate": "Bearer realm=\"pac4j\""
+        },
+        "status": 401
+      }
+    },
+    {
+      "client": "A",
+      "name": "guest /adr/datasets/x/releases",
+      "request": {
+        "method": "GET",
+        "path": "/adr/datasets/x/releases"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "error": "Unauthorized",
+            "path": "/adr/datasets/x/releases",
+            "status": 401,
+            "timestamp": "<EPOCH_MS>"
+          }
+        },
+        "headers": {
+          "content-type": "application/json",
+          "www-authenticate": "Bearer realm=\"pac4j\""
+        },
+        "status": 401
+      }
+    },
+    {
+      "client": "A",
+      "name": "guest /adr/orgs?permission=read",
+      "request": {
+        "method": "GET",
+        "path": "/adr/orgs?permission=read"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "error": "Unauthorized",
+            "path": "/adr/orgs",
+            "status": 401,
+            "timestamp": "<EPOCH_MS>"
+          }
+        },
+        "headers": {
+          "content-type": "application/json",
+          "www-authenticate": "Bearer realm=\"pac4j\""
+        },
+        "status": 401
+      }
+    },
+    {
+      "client": "A",
+      "name": "guest create release",
+      "request": {
+        "method": "POST",
+        "path": "/adr/datasets/x/releases",
+        "query": {
+          "name": "r"
+        }
+      },
+      "response": {
+        "body": {
+          "json": {
+            "error": "Unauthorized",
+            "path": "/adr/datasets/x/releases",
+            "status": 401,
+            "timestamp": "<EPOCH_MS>"
+          }
+        },
+        "headers": {
+          "content-type": "application/json",
+          "www-authenticate": "Bearer realm=\"pac4j\""
+        },
+        "status": 401
+      }
+    },
+    {
+      "client": "A",
+      "name": "guest import pjnz",
+      "request": {
+        "body": {
+          "json": {
+            "url": "http://x"
+          }
+        },
+        "method": "POST",
+        "path": "/adr/pjnz"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "error": "Unauthorized",
+            "path": "/adr/pjnz",
+            "status": 401,
+            "timestamp": "<EPOCH_MS>"
+          }
+        },
+        "headers": {
+          "content-type": "application/json",
+          "www-authenticate": "Bearer realm=\"pac4j\""
+        },
+        "status": 401
+      }
+    },
+    {
+      "client": "A",
+      "name": "guest import output",
+      "request": {
+        "body": {
+          "json": {
+            "url": "http://x"
+          }
+        },
+        "method": "POST",
+        "path": "/adr/output"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "error": "Unauthorized",
+            "path": "/adr/output",
+            "status": 401,
+            "timestamp": "<EPOCH_MS>"
+          }
+        },
+        "headers": {
+          "content-type": "application/json",
+          "www-authenticate": "Bearer realm=\"pac4j\""
+        },
+        "status": 401
+      }
+    },
+    {
+      "client": "A",
+      "name": "guest push",
+      "request": {
+        "method": "POST",
+        "path": "/adr/datasets/x/resource/y/z",
+        "query": {
+          "resourceFileName": "f",
+          "resourceName": "n"
+        }
+      },
+      "response": {
+        "body": {
+          "json": {
+            "error": "Unauthorized",
+            "path": "/adr/datasets/x/resource/y/z",
+            "status": 401,
+            "timestamp": "<EPOCH_MS>"
+          }
+        },
+        "headers": {
+          "content-type": "application/json",
+          "www-authenticate": "Bearer realm=\"pac4j\""
+        },
+        "status": 401
+      }
+    }
+  ]
+}

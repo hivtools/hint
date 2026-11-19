@@ -12,7 +12,7 @@ import {
 } from "../mocks";
 import {actions, getVersionOrdering, Ordering} from "../../app/store/load/actions";
 import {LoadingState} from "../../app/store/load/state";
-import {localStorageManager} from "../../app/localStorageManager";
+import {sessionStorageManager} from "../../app/sessionStorageManager";
 import {DynamicControlType} from "@reside-ic/vue-next-dynamic-form";
 import {RootState} from "../../app/root";
 import {router} from "../../app/router";
@@ -50,7 +50,7 @@ describe("Load actions", () => {
     });
 
     it("loadVersion sets files and updates store state", async () => {
-        mockAxios.onPost(`/session/files/`)
+        mockAxios.onPost(`/session/files`)
             .reply(200, mockSuccess({}));
         const commit = vi.fn();
         const dispatch = vi.fn();
@@ -66,7 +66,7 @@ describe("Load actions", () => {
         expect(commit.mock.calls[0][0]).toStrictEqual({type: "SettingFiles", payload: null});
         expect(commit.mock.calls[1][0]).toStrictEqual({type: "UpdatingState", payload: {}});
 
-        expect(mockAxios.history.post[0].url).toBe("/session/files/");
+        expect(mockAxios.history.post[0].url).toBe("/session/files");
         expect(mockAxios.history.post[0].data).toBe("files");
 
         expect(dispatch.mock.calls[0][0]).toBe("updateStoreState");
@@ -108,7 +108,7 @@ describe("Load actions", () => {
     });
 
     it("loadVersion pushes home route if not already there", async () => {
-        mockAxios.onPost(`/session/files/`)
+        mockAxios.onPost(`/session/files`)
             .reply(200, mockSuccess({}));
         const commit = vi.fn();
         const dispatch = vi.fn();
@@ -126,9 +126,9 @@ describe("Load actions", () => {
         expect(routerSpy.mock.calls[1][0]).toBe("/");
     });
 
-    it("updateStoreState saves file state to local storage and reloads page", async () => {
-        const mockSaveToLocalStorage = vi.fn();
-        localStorageManager.savePartialState = mockSaveToLocalStorage;
+    it("updateStoreState saves file state to session storage and reloads page", async () => {
+        const mockSaveToSessionStorage = vi.fn();
+        sessionStorageManager.savePartialState = mockSaveToSessionStorage;
 
         const mockLocationReload = vi.fn();
         delete (window as any).location
@@ -139,7 +139,7 @@ describe("Load actions", () => {
         const testState = mockRootState();
         await actions.updateStoreState({rootState, commit} as any, testState);
 
-        expect(mockSaveToLocalStorage.mock.calls[0][0]).toStrictEqual(testState);
+        expect(mockSaveToSessionStorage.mock.calls[0][0]).toStrictEqual(testState);
         expect(mockLocationReload.mock.calls.length).toBe(1);
         expect(commit).toHaveBeenCalledTimes(1);
         expect(commit).toHaveBeenLastCalledWith(
@@ -154,8 +154,8 @@ describe("Load actions", () => {
     });
 
     it("extracts calibrate options from dynamicFormMeta and saves and loads file state", async () => {
-        const mockSaveToLocalStorage = vi.fn();
-        localStorageManager.savePartialState = mockSaveToLocalStorage;
+        const mockSaveToSessionStorage = vi.fn();
+        sessionStorageManager.savePartialState = mockSaveToSessionStorage;
 
         const mockLocationReload = vi.fn();
         delete (window as any).location
@@ -199,7 +199,7 @@ describe("Load actions", () => {
         const commit = vi.fn();
         await actions.updateStoreState({rootState, commit} as any, testState);
 
-        const root = mockSaveToLocalStorage.mock.calls[0][0] as RootState
+        const root = mockSaveToSessionStorage.mock.calls[0][0] as RootState
         expect(root.modelCalibrate.options).toStrictEqual({"TestValue": 5, "TestValue2": 6});
         expect(mockLocationReload.mock.calls.length).toBe(1);
         expect(commit).toHaveBeenCalledTimes(1);
@@ -215,8 +215,8 @@ describe("Load actions", () => {
     });
 
     it("does not extracts calibrate options from dynamicFormMeta if model has not been calibrated", async () => {
-        const mockSaveToLocalStorage = vi.fn();
-        localStorageManager.savePartialState = mockSaveToLocalStorage;
+        const mockSaveToSessionStorage = vi.fn();
+        sessionStorageManager.savePartialState = mockSaveToSessionStorage;
 
         const mockLocationReload = vi.fn();
         delete (window as any).location
@@ -258,7 +258,7 @@ describe("Load actions", () => {
         const commit = vi.fn();
         await actions.updateStoreState({rootState, commit} as any, testState);
 
-        const root = mockSaveToLocalStorage.mock.calls[0][0] as RootState
+        const root = mockSaveToSessionStorage.mock.calls[0][0] as RootState
         expect(root.modelCalibrate.options).toStrictEqual({});
         expect(mockLocationReload.mock.calls.length).toBe(1);
         expect(commit).toHaveBeenCalledTimes(1);
@@ -274,8 +274,8 @@ describe("Load actions", () => {
     });
 
     it("calibrate options returns empty object if no options to extract from dynamic form meta", async () => {
-        const mockSaveToLocalStorage = vi.fn();
-        localStorageManager.savePartialState = mockSaveToLocalStorage;
+        const mockSaveToSessionStorage = vi.fn();
+        sessionStorageManager.savePartialState = mockSaveToSessionStorage;
 
         const mockLocationReload = vi.fn();
         delete (window as any).location
@@ -294,7 +294,7 @@ describe("Load actions", () => {
         const commit = vi.fn();
         await actions.updateStoreState({rootState, commit} as any, testState);
 
-        const root = mockSaveToLocalStorage.mock.calls[0][0] as RootState
+        const root = mockSaveToSessionStorage.mock.calls[0][0] as RootState
         expect(root.modelCalibrate.options).toStrictEqual({});
         expect(mockLocationReload.mock.calls.length).toBe(1);
         expect(commit).toHaveBeenCalledTimes(1);
@@ -380,7 +380,7 @@ describe("Load actions", () => {
         mockAxios.onPost(`/rehydrate/zip`)
             .reply(200, mockSuccess(rehydrateResponse));
 
-        mockAxios.onPost(`/session/files/`)
+        mockAxios.onPost(`/session/files`)
             .reply(200, mockSuccess({}));
 
         const file = new File(["TEST"], "testFile.zip")
@@ -395,7 +395,7 @@ describe("Load actions", () => {
         await flushPromises();
         expect(mockAxios.history.post.length).toBe(2)
         expect(mockAxios.history.post[0]["url"]).toBe("/rehydrate/zip")
-        expect(mockAxios.history.post[1]["url"]).toBe("/session/files/")
+        expect(mockAxios.history.post[1]["url"]).toBe("/session/files")
         expect(JSON.parse(mockAxios.history.post[1]["data"])).toStrictEqual(sessionFilesPayload)
 
         expect(commit.mock.calls.length).toBe(3)
@@ -453,7 +453,7 @@ describe("Load actions", () => {
         mockAxios.onPost(`/rehydrate/adr`)
             .reply(200, mockSuccess(rehydrateResponse));
 
-        mockAxios.onPost(`/session/files/`)
+        mockAxios.onPost(`/session/files`)
             .reply(200, mockSuccess({}));
 
         const resource = mockDatasetResource();
@@ -466,7 +466,7 @@ describe("Load actions", () => {
         await flushPromises();
         expect(mockAxios.history.post.length).toBe(2)
         expect(mockAxios.history.post[0]["url"]).toBe("/rehydrate/adr")
-        expect(mockAxios.history.post[1]["url"]).toBe("/session/files/")
+        expect(mockAxios.history.post[1]["url"]).toBe("/session/files")
         expect(JSON.parse(mockAxios.history.post[1]["data"])).toStrictEqual(sessionFilesPayload)
 
         expect(commit.mock.calls.length).toBe(3)
@@ -524,7 +524,7 @@ describe("Load actions", () => {
         mockAxios.onPost(`/rehydrate/zip`)
             .reply(200, mockSuccess(rehydrateResponse));
 
-        mockAxios.onPost(`session/files/`)
+        mockAxios.onPost(`session/files`)
             .reply(200, mockSuccess({}));
 
         const file = new File(["TEST"], "testFile.zip")

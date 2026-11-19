@@ -1,0 +1,116 @@
+# Front door for hint while endpoints are migrated from Kotlin to Python.
+#
+# Everything goes to Kotlin unless it is listed below. To migrate an endpoint, add a `location` that includes
+# snippets/python.conf (most specific prefix wins). See that file for how authentication works.
+#
+# KOTLIN_UPSTREAM and PYTHON_UPSTREAM (host:port) are substituted from the environment on container start by the nginx
+# image's envsubst templating.
+
+# Trust X-Forwarded-Proto from an upstream TLS terminator, else use our own scheme.
+map $http_x_forwarded_proto $forwarded_proto {
+    default $http_x_forwarded_proto;
+    ''      $scheme;
+}
+
+upstream kotlin {
+    server ${KOTLIN_UPSTREAM};
+}
+
+upstream python {
+    server ${PYTHON_UPSTREAM};
+}
+
+server {
+    listen 80;
+
+    # Uploads can be large and are streamed straight through to the backend.
+    client_max_body_size 0;
+    proxy_request_buffering off;
+
+    # Model/ADR calls can be slow.
+    proxy_read_timeout 300s;
+    proxy_send_timeout 300s;
+
+    # ---- Migrated to Python ----
+    location /items/ { include snippets/python.conf; }
+    # Projects and their versions. /projects (no slash) is the page, which Kotlin serves
+    location = /project { include snippets/python.conf; }
+    location /project/ { include snippets/python.conf; }
+    location /projects/ { include snippets/python.conf; }
+    # Without this nginx redirects /projects to /projects/
+    location = /projects { include snippets/kotlin.conf; }
+    # Calls that only pass on to hintr and need no files and no version
+    location = /meta/hintr/version { include snippets/python.conf; }
+    location /meta/adr/ { include snippets/python.conf; }
+    location /model/status/ { include snippets/python.conf; }
+    location /model/result/ { include snippets/python.conf; }
+    location /model/cancel/ { include snippets/python.conf; }
+    location /model/comparison/plot/ { include snippets/python.conf; }
+    location /calibrate/options/ { include snippets/python.conf; }
+    location /calibrate/status/ { include snippets/python.conf; }
+    location /calibrate/result/metadata/ { include snippets/python.conf; }
+    location /calibrate/plot/ { include snippets/python.conf; }
+    location /download/status/ { include snippets/python.conf; }
+    # Config only. /adr/schemas/ (trailing slash) stays with Kotlin, as the rest of /adr/ does
+    location = /adr/schemas { include snippets/python.conf; }
+    # Reading from ADR. Only these exact paths go to Python. Kotlin keeps the same paths with a trailing slash, and
+    # everything else under /adr/ (the key, importing, pushing).
+    location = /adr/datasets { include snippets/python.conf; }
+    location = /adr/orgs { include snippets/python.conf; }
+    location ~ ^/adr/datasets/[^/]+$ { include snippets/python.conf; }
+    # A GET goes to Python. A POST to the same path creates a release, and Kotlin still does that. A `location` cannot
+    # choose by method, so the `if` below sends every other method to Kotlin. `return` is the only safe thing to do in
+    # an `if`. Its error page is a named location that proxies to Kotlin (see proxy/README.md).
+    location ~ ^/adr/datasets/[^/]+/releases$ {
+        error_page 418 = @kotlin_release;
+        if ($request_method != GET) { return 418; }
+        include snippets/python.conf;
+    }
+    location @kotlin_release { include snippets/kotlin.conf; }
+    # Calls that add the files of the version to the call
+    location /chart-data/ { include snippets/python.conf; }
+    location /meta/review-inputs/ { include snippets/python.conf; }
+    location = /model/options { include snippets/python.conf; }
+    location = /model/validate/options { include snippets/python.conf; }
+    location = /model/run { include snippets/python.conf; }
+    location /calibrate/submit/ { include snippets/python.conf; }
+    location /download/submit/ { include snippets/python.conf; }
+    # Upload, validate and remove the input files, and set all the files. Each URL is listed. The proxy does not send all
+    # of /baseline/ and /disease/ to Python, for two reasons. `/disease/vmmc` is not ported, because nothing uses it now.
+    # A path with a trailing slash goes to Kotlin, which accepts it. FastAPI would redirect it.
+    location = /baseline/pjnz { include snippets/python.conf; }
+    location = /baseline/shape { include snippets/python.conf; }
+    location = /baseline/population { include snippets/python.conf; }
+    location = /baseline/validate { include snippets/python.conf; }
+    location = /disease/survey { include snippets/python.conf; }
+    location = /disease/programme { include snippets/python.conf; }
+    location = /disease/anc { include snippets/python.conf; }
+    location = /session/files { include snippets/python.conf; }
+    # Calls that read the results folder. `/calibrate/result/data/` is not ported, so it stays with Kotlin
+    location /calibrate/result/filteredData/ { include snippets/python.conf; }
+    location /download/result/ { include snippets/python.conf; }
+
+    # ---- Identity bridge ----
+    # Only reachable from auth_request, never directly. The Cookie and Authorization headers of the original request
+    # are passed through by default, the body is not needed.
+    location = /_whoami {
+        internal;
+        include snippets/proxy-common.conf;
+        # A guest's versions are in a header of the answer (37 bytes each), which has to fit in this one buffer
+        proxy_buffer_size 32k;
+        # nginx refuses to start with a buffer this big and the default buffers: the busy size must be at least the big
+        # buffer, and less than all the buffers together minus one
+        proxy_buffers 8 8k;
+        proxy_busy_buffers_size 32k;
+        proxy_pass_request_body off;
+        proxy_set_header Content-Length "";
+        proxy_set_header X-Original-URI $request_uri;
+        proxy_pass http://kotlin/internal/whoami;
+    }
+
+    # Kotlin's /internal/ endpoints are for this proxy only
+    location ^~ /internal/ { return 404; }
+
+    # ---- Everything else is still Kotlin ----
+    location / { include snippets/kotlin.conf; }
+}

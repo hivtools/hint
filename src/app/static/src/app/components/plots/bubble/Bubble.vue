@@ -197,23 +197,42 @@ const featuresWithBubbles = computed(() => {
     return currentFeatures.value.filter(feature => showBubble(feature));
 });
 
+// Fits the map to the areas that have bubbles.
+// fitBounds works out the zoom from the size of the map. Leaflet keeps the size it measured at its last resize. If
+// the map had no width at that moment, the zoom is the lowest one, the whole world, and the map stays there. This
+// happened in the end to end tests: the cached size was 0 x 800 when the output plot updated, and then 825 x 800 again
+// a moment later. So measure the map again before fitting. If it still has no size, wait: Leaflet fires "resize"
+// when it gets one, and then we fit.
+const fitToBubbles = () => {
+    const leafletMap = map.value?.leafletObject;
+    if (!leafletMap) {
+        return;
+    }
+    leafletMap.invalidateSize({pan: false});
+    const size = leafletMap.getSize();
+    if (size.x === 0 || size.y === 0) {
+        // Leaflet ignores a listener that is already registered, so waiting twice adds one listener
+        leafletMap.once("resize", fitToBubbles);
+        return;
+    }
+    buildBubbles();
+    if (featuresWithBubbles.value.length > 0) {
+        leafletMap.fitBounds(featuresWithBubbles.value.map(feature => {
+            const featureRef = getFeatureFromAreaId(feature.properties!.area_id)
+            return featureRef?.leafletObject.getBounds()
+        }));
+        if (circles.value.length > 0) {
+            circles.value.forEach(circle => circle.addTo(leafletMap))
+        }
+    }
+};
+
 // Update bounds can be called multiple times by v-node-updated, but
 // I can't find an appropriate thing to watch to trigger this only once
 // so debounce it instead. If the bound update is called twice in quick
 // succession, it kills the animation. Debouncing this means it should
 // update smoothly
-const updateBounds = debounce_leading(() => {
-    buildBubbles();
-    if (featuresWithBubbles.value.length > 0) {
-        map.value?.leafletObject.fitBounds(featuresWithBubbles.value.map(feature => {
-            const featureRef = getFeatureFromAreaId(feature.properties!.area_id)
-            return featureRef?.leafletObject.getBounds()
-        }));
-        if (circles.value.length > 0) {
-            circles.value.forEach(circle => circle.addTo(map.value?.leafletObject))
-        }
-    }
-}, 50)
+const updateBounds = debounce_leading(fitToBubbles, 50)
 
 const showBubble = (feature: Feature) => {
     return featureData.value[feature.properties!.area_id]

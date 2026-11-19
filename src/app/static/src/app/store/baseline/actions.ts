@@ -8,6 +8,7 @@ import {DatasetResourceSet, DatasetResource, ADRSchemas, UploadImportPayload} fr
 import {RootState} from "../../root";
 import { ReviewInputMutation } from '../reviewInput/mutations';
 import { DATASET_TYPE } from '../surveyAndProgram/actions';
+import {sessionStorageManager} from "../../sessionStorageManager";
 
 export interface BaselineActions {
     refreshDatasetMetadata: (store: ActionContext<BaselineState, RootState>) => void
@@ -159,17 +160,17 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
     },
 
     async uploadPJNZ(context, formData) {
-        await uploadOrImportPJNZ(context, {url: "/baseline/pjnz/", payload: formData},
+        await uploadOrImportPJNZ(context, {url: "/baseline/pjnz", payload: formData},
             getFilenameFromUploadFormData(formData));
     },
 
     async uploadShape(context, formData) {
-        await uploadOrImportShape(context, {url: "/baseline/shape/", payload: formData},
+        await uploadOrImportShape(context, {url: "/baseline/shape", payload: formData},
             getFilenameFromUploadFormData(formData));
     },
 
     async uploadPopulation(context, formData) {
-        await uploadOrImportPopulation(context, {url: "/baseline/population/", payload: formData},
+        await uploadOrImportPopulation(context, {url: "/baseline/population", payload: formData},
             getFilenameFromUploadFormData(formData));
     },
 
@@ -177,7 +178,7 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
         const {commit, dispatch} = context;
         commitClearReviewInputDataset(commit, DATASET_TYPE.PJNZ);
         await api<BaselineMutation, BaselineMutation>(context)
-            .delete("/baseline/pjnz/")
+            .delete("/baseline/pjnz")
             .then((response) => {
                 if (response) {
                     commit({type: BaselineMutation.PJNZUpdated, payload: null});
@@ -190,7 +191,7 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
         const {commit, dispatch} = context;
         commitClearReviewInputDataset(commit, DATASET_TYPE.SHAPE);
         await api<BaselineMutation, BaselineMutation>(context)
-            .delete("/baseline/shape/")
+            .delete("/baseline/shape")
             .then((response) => {
                 if (response) {
                     commit({type: BaselineMutation.ShapeUpdated, payload: null});
@@ -202,7 +203,7 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
     async deletePopulation(context) {
         const {commit, dispatch} = context;
         await api<BaselineMutation, BaselineMutation>(context)
-            .delete("/baseline/population/")
+            .delete("/baseline/population")
             .then((response) => {
                 if (response) {
                     commit({type: BaselineMutation.PopulationUpdated, payload: null});
@@ -221,22 +222,29 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
 
     async getBaselineData(context) {
         const {commit, dispatch} = context;
+        if (!sessionStorageManager.getVersionId()) {
+            // A tab with no version open has no files to get. A new tab is one: it starts on the projects page.
+            // The server refuses a request with no version (403 INVALID_VERSION). Then the front end sends the tab back
+            // to the start.
+            commit({type: "Ready", payload: true});
+            return;
+        }
         await Promise.all([
             api<BaselineMutation, BaselineMutation>(context)
                 .ignoreErrors()
                 .withSuccess(BaselineMutation.PJNZUpdated)
                 .freezeResponse()
-                .get<PjnzResponse>("/baseline/pjnz/"),
+                .get<PjnzResponse>("/baseline/pjnz"),
             api<BaselineMutation, BaselineMutation>(context)
                 .ignoreErrors()
                 .withSuccess(BaselineMutation.PopulationUpdated)
                 .freezeResponse()
-                .get<PjnzResponse>("/baseline/population/"),
+                .get<PjnzResponse>("/baseline/population"),
             api<BaselineMutation, BaselineMutation>(context)
                 .ignoreErrors()
                 .withSuccess(BaselineMutation.ShapeUpdated)
                 .freezeResponse()
-                .get<PjnzResponse>("/baseline/shape/")
+                .get<PjnzResponse>("/baseline/shape")
         ]);
 
         await dispatch('validate');
@@ -251,6 +259,6 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
             .withSuccess(BaselineMutation.Validated)
             .withError(BaselineMutation.BaselineError)
             .freezeResponse()
-            .get<ValidateBaselineResponse>("/baseline/validate/");
+            .get<ValidateBaselineResponse>("/baseline/validate");
     }
 };

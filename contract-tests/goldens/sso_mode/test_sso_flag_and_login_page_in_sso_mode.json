@@ -1,0 +1,71 @@
+{
+  "scenario": "sso_mode/test_sso_flag_and_login_page_in_sso_mode",
+  "steps": [
+    {
+      "client": "S",
+      "name": "sso flag is true",
+      "request": {
+        "method": "GET",
+        "path": "/sso"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": true,
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "S",
+      "name": "login page offers the sso button",
+      "request": {
+        "method": "GET",
+        "path": "/login"
+      },
+      "response": {
+        "body": {
+          "contains": [
+            "Log in with HIV Tools Single Sign-On account"
+          ],
+          "html": true,
+          "title": "Login"
+        },
+        "headers": {
+          "content-type": "text/html"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "S",
+      "name": "continue as guest link keeps redirectTo",
+      "request": {
+        "method": "GET",
+        "path": "/login",
+        "query": {
+          "redirectTo": "/projects"
+        }
+      },
+      "response": {
+        "body": {
+          "contains": [
+            "href=\"/projects\">Continue as guest"
+          ],
+          "html": true,
+          "title": "Login"
+        },
+        "headers": {
+          "content-type": "text/html"
+        },
+        "status": 200
+      }
+    }
+  ]
+}

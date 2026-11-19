@@ -1,0 +1,447 @@
+{
+  "scenario": "chart_data/test_review_inputs_metadata",
+  "steps": [
+    {
+      "client": "A",
+      "name": "login test.user@example.com",
+      "request": {
+        "body": {
+          "form": {
+            "password": "password",
+            "username": "test.user@example.com"
+          }
+        },
+        "method": "POST",
+        "path": "/callback/formClient"
+      },
+      "response": {
+        "body": {
+          "empty": true
+        },
+        "headers": {
+          "location": "/"
+        },
+        "status": 303
+      }
+    },
+    {
+      "client": "A",
+      "name": "open /",
+      "request": {
+        "method": "GET",
+        "path": "/"
+      },
+      "response": {
+        "body": {
+          "html": true,
+          "title": "Naomi"
+        },
+        "headers": {
+          "content-type": "text/html"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "all types",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "data": {
+              "anc": {
+                "filename": "anc.csv",
+                "fromADR": false,
+                "hash": "212FBB9D1AE1077EF9497BD8EA83298F.csv",
+                "path": "<UPLOADS>/212FBB9D1AE1077EF9497BD8EA83298F.csv",
+                "resource_url": null
+              },
+              "programme": {
+                "filename": "programme.csv",
+                "fromADR": false,
+                "hash": "A900936E6908D6CECA92A099980667F3.csv",
+                "path": "<UPLOADS>/A900936E6908D6CECA92A099980667F3.csv",
+                "resource_url": null
+              },
+              "shape": {
+                "filename": "malawi.geojson",
+                "fromADR": false,
+                "hash": "EBE533976BFAF0CABCA2C2E1B611B9C7.geojson",
+                "path": "<UPLOADS>/EBE533976BFAF0CABCA2C2E1B611B9C7.geojson",
+                "resource_url": null
+              },
+              "survey": {
+                "filename": "survey.csv",
+                "fromADR": false,
+                "hash": "2D229A4507FECFE5471C2CC90431CB3C.csv",
+                "path": "<UPLOADS>/2D229A4507FECFE5471C2CC90431CB3C.csv",
+                "resource_url": null
+              }
+            },
+            "iso3": "MWI"
+          },
+          "method": "POST",
+          "path": "/review-input/metadata",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "json": {
+            "types": [
+              "anc",
+              "programme",
+              "survey",
+              "shape"
+            ]
+          }
+        },
+        "method": "POST",
+        "path": "/meta/review-inputs/MWI"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "anc only",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "data": {
+              "anc": {
+                "filename": "anc.csv",
+                "fromADR": false,
+                "hash": "212FBB9D1AE1077EF9497BD8EA83298F.csv",
+                "path": "<UPLOADS>/212FBB9D1AE1077EF9497BD8EA83298F.csv",
+                "resource_url": null
+              }
+            },
+            "iso3": "MWI"
+          },
+          "method": "POST",
+          "path": "/review-input/metadata",
+          "status": 500,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "json": {
+            "types": [
+              "anc"
+            ]
+          }
+        },
+        "method": "POST",
+        "path": "/meta/review-inputs/MWI"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 500
+      }
+    },
+    {
+      "client": "A",
+      "name": "programme only",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "data": {
+              "programme": {
+                "filename": "programme.csv",
+                "fromADR": false,
+                "hash": "A900936E6908D6CECA92A099980667F3.csv",
+                "path": "<UPLOADS>/A900936E6908D6CECA92A099980667F3.csv",
+                "resource_url": null
+              }
+            },
+            "iso3": "MWI"
+          },
+          "method": "POST",
+          "path": "/review-input/metadata",
+          "status": 500,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "json": {
+            "types": [
+              "programme"
+            ]
+          }
+        },
+        "method": "POST",
+        "path": "/meta/review-inputs/MWI"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 500
+      }
+    },
+    {
+      "client": "A",
+      "name": "survey only",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "data": {
+              "survey": {
+                "filename": "survey.csv",
+                "fromADR": false,
+                "hash": "2D229A4507FECFE5471C2CC90431CB3C.csv",
+                "path": "<UPLOADS>/2D229A4507FECFE5471C2CC90431CB3C.csv",
+                "resource_url": null
+              }
+            },
+            "iso3": "MWI"
+          },
+          "method": "POST",
+          "path": "/review-input/metadata",
+          "status": 500,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "json": {
+            "types": [
+              "survey"
+            ]
+          }
+        },
+        "method": "POST",
+        "path": "/meta/review-inputs/MWI"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 500
+      }
+    },
+    {
+      "client": "A",
+      "name": "shape only",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "data": {
+              "shape": {
+                "filename": "malawi.geojson",
+                "fromADR": false,
+                "hash": "EBE533976BFAF0CABCA2C2E1B611B9C7.geojson",
+                "path": "<UPLOADS>/EBE533976BFAF0CABCA2C2E1B611B9C7.geojson",
+                "resource_url": null
+              }
+            },
+            "iso3": "MWI"
+          },
+          "method": "POST",
+          "path": "/review-input/metadata",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "json": {
+            "types": [
+              "shape"
+            ]
+          }
+        },
+        "method": "POST",
+        "path": "/meta/review-inputs/MWI"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "type names are case insensitive",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "data": {
+              "ANC": {
+                "filename": "anc.csv",
+                "fromADR": false,
+                "hash": "212FBB9D1AE1077EF9497BD8EA83298F.csv",
+                "path": "<UPLOADS>/212FBB9D1AE1077EF9497BD8EA83298F.csv",
+                "resource_url": null
+              },
+              "Survey": {
+                "filename": "survey.csv",
+                "fromADR": false,
+                "hash": "2D229A4507FECFE5471C2CC90431CB3C.csv",
+                "path": "<UPLOADS>/2D229A4507FECFE5471C2CC90431CB3C.csv",
+                "resource_url": null
+              }
+            },
+            "iso3": "MWI"
+          },
+          "method": "POST",
+          "path": "/review-input/metadata",
+          "status": 500,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "json": {
+            "types": [
+              "ANC",
+              "Survey"
+            ]
+          }
+        },
+        "method": "POST",
+        "path": "/meta/review-inputs/MWI"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 500
+      }
+    },
+    {
+      "client": "A",
+      "name": "no types",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "json": {
+            "data": {},
+            "iso3": "MWI"
+          },
+          "method": "POST",
+          "path": "/review-input/metadata",
+          "status": 500,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "json": {
+            "types": []
+          }
+        },
+        "method": "POST",
+        "path": "/meta/review-inputs/MWI"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 500
+      }
+    },
+    {
+      "client": "A",
+      "name": "in french",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "fr"
+          },
+          "json": {
+            "data": {
+              "anc": {
+                "filename": "anc.csv",
+                "fromADR": false,
+                "hash": "212FBB9D1AE1077EF9497BD8EA83298F.csv",
+                "path": "<UPLOADS>/212FBB9D1AE1077EF9497BD8EA83298F.csv",
+                "resource_url": null
+              }
+            },
+            "iso3": "MWI"
+          },
+          "method": "POST",
+          "path": "/review-input/metadata",
+          "status": 500,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "body": {
+          "json": {
+            "types": [
+              "anc"
+            ]
+          }
+        },
+        "headers": {
+          "accept-language": "fr"
+        },
+        "method": "POST",
+        "path": "/meta/review-inputs/MWI"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 500
+      }
+    }
+  ]
+}

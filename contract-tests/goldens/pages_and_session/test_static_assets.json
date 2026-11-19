@@ -1,0 +1,41 @@
+{
+  "scenario": "pages_and_session/test_static_assets",
+  "steps": [
+    {
+      "client": "A",
+      "name": "css asset",
+      "request": {
+        "method": "GET",
+        "path": "/public/css/app.css"
+      },
+      "response": {
+        "body": {
+          "ignored": true,
+          "non_empty": true
+        },
+        "headers": {
+          "content-type": "text/css"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "favicon",
+      "request": {
+        "method": "GET",
+        "path": "/public/favicon.ico"
+      },
+      "response": {
+        "body": {
+          "ignored": true,
+          "non_empty": true
+        },
+        "headers": {
+          "content-type": "image/x-icon"
+        },
+        "status": 200
+      }
+    }
+  ]
+}

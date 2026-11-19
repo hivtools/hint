@@ -2,6 +2,7 @@ import {mockDatasetResource, mockProjectsState} from "../mocks";
 import {mutations, ProjectsMutations} from "../../app/store/projects/mutations";
 import {router} from "../../app/router";
 import {Mock} from "vitest";
+import {sessionStorageManager} from "../../app/sessionStorageManager";
 
 describe("Projects mutations", () => {
     const testNow = Date.now();
@@ -25,6 +26,7 @@ describe("Projects mutations", () => {
 
     beforeEach(() => {
         console.error = consoleSpy;
+        sessionStorage.clear();
     });
 
     afterEach(() => {
@@ -116,6 +118,8 @@ describe("Projects mutations", () => {
         expect(state.currentVersion).toBe(newVersion);
         expect(state.currentProject!.versions.length).toBe(2);
         expect(state.currentProject!.versions[1]).toBe(newVersion);
+        // the tab sends this version from now on
+        expect(sessionStorageManager.getVersionId()).toBe("NEW VERSION");
     });
 
     it("clears current version", () => {
@@ -124,6 +128,39 @@ describe("Projects mutations", () => {
         mutations[ProjectsMutations.ClearCurrentVersion](state);
         expect(state.currentProject).toBeNull();
         expect(state.currentVersion).toBeNull();
+        expect(sessionStorageManager.getVersionId()).toBeNull();
+    });
+
+    it("clearing the current version forgets the version in the tab", () => {
+        sessionStorageManager.saveVersionId("OLD VERSION");
+        const state = mockProjectsState({currentProject: mockProject, currentVersion: mockProject.versions[0]});
+
+        mutations[ProjectsMutations.ClearCurrentVersion](state);
+
+        expect(sessionStorageManager.getVersionId()).toBeNull();
+    });
+
+    it("sets current project and keeps its version in the tab", () => {
+        const state = mockProjectsState();
+        router.push = vi.fn();
+
+        mutations[ProjectsMutations.SetCurrentProject](state, {
+            payload: {project: mockProject, version: mockProject.versions[0]}
+        });
+
+        expect(state.currentProject).toBe(mockProject);
+        expect(state.currentVersion).toBe(mockProject.versions[0]);
+        expect(sessionStorageManager.getVersionId()).toBe("OLD VERSION");
+    });
+
+    it("setting no current project forgets the version in the tab", () => {
+        sessionStorageManager.saveVersionId("STALE VERSION");
+        const state = mockProjectsState();
+        router.push = vi.fn();
+
+        mutations[ProjectsMutations.SetCurrentProject](state, {payload: {project: null, version: null}});
+
+        expect(sessionStorageManager.getVersionId()).toBeNull();
     });
 
     it("pushes router to projects if logged in user and currentProject not set", () => {

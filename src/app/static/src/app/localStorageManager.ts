@@ -1,45 +1,4 @@
-import {RootState} from "./root";
-import {currentHintVersion} from "./hintVersion";
 import {Language} from "./store/translations/locales";
-
-const appStateKey = `hintAppState_v${currentHintVersion}`;
-
-export const serialiseState = (state: RootState): Partial<RootState> => {
-    const baseline = {
-        selectedDataset: state.baseline.selectedDataset,
-        selectedDatasetIsRefreshed: state.baseline.selectedDatasetHasChanged,
-        selectedRelease: state.baseline.selectedRelease
-    } as any;
-    const surveyAndProgram = {
-        warnings: state.surveyAndProgram.warnings
-    } as any;
-    const metadata =  {...state.metadata, reviewInputMetadataError: null};
-    return {
-        version: state.version,
-        baseline,
-        metadata,
-        surveyAndProgram,
-        modelRun: {
-            ...state.modelRun,
-            statusPollId: -1,
-            result: null,
-            errors: []
-        },
-        modelOptions: state.modelOptions,
-        modelOutput: state.modelOutput,
-        modelCalibrate: {
-            ...state.modelCalibrate,
-            result: null,
-            fetchedIndicators: null,
-            calibratePlotResult: null,
-            comparisonPlotResult: null
-        },
-        stepper: state.stepper,
-        hintrVersion: state.hintrVersion
-    }
-};
-
-declare const currentUser: string;
 
 export class LocalStorageManager {
 
@@ -52,33 +11,13 @@ export class LocalStorageManager {
         return storedLang ? storedLang as Language : Language.en;
     }
 
-    saveState = (state: RootState) => {
-        const partialState = serialiseState(state);
-        this.savePartialState(partialState);
-    };
-
-    savePartialState = (partialState: Partial<RootState>) => {
-        window.localStorage.setItem(appStateKey, JSON.stringify(partialState));
-    };
-
-    getState = (): Partial<RootState> | null => {
-        if (currentUser != window.localStorage.getItem("user")) {
-            localStorage.clear();
-            localStorage.setItem("user", currentUser);
-        }
-
-        const item = window.localStorage.getItem(appStateKey);
-        if (item) {
-            const partialRootState = JSON.parse(item) as Partial<RootState>;
-            /**
-             * For smooth compatibility, code uses local storage persisted language state,
-             * and default to English if needed.
-             */
-            return {...partialRootState, language: this.getLanguage()}
-        } else {
-            return null;
-        }
-    };
+    // The working state used to be kept here, shared by every tab. It is kept per tab in sessionStorage now
+    // (see sessionStorageManager.ts), so remove what earlier versions left behind.
+    removeLegacyState = () => {
+        Object.keys(localStorage)
+            .filter((key) => key === "user" || key.startsWith("hintAppState_v"))
+            .forEach((key) => localStorage.removeItem(key));
+    }
 }
 
 export const localStorageManager = new LocalStorageManager();
