@@ -3,7 +3,7 @@ import {FileType, SurveyAndProgramState} from "./surveyAndProgram";
 import {api} from "../../apiService";
 import {AncResponse, ProgrammeResponse, SurveyResponse, SurveyResponseData} from "../../generated";
 import {SurveyAndProgramMutation} from "./mutations";
-import {buildData, freezer, getFilenameFromImportUrl, getFilenameFromUploadFormData} from "../../utils";
+import {buildData, freezer, getFilenameFromImportUrl, getFilenameFromUploadFormData, rawDeepClone} from "../../utils";
 import {ReviewInputMutation} from "../reviewInput/mutations";
 import {UploadImportPayload} from "../../types";
 import { RootState } from '../../root';
@@ -296,7 +296,7 @@ function getUrlWithQuery(url: string) {
 }
 
 const getDataWithAreaLevel = (data: SurveyResponseData, features: Feature[]) => {
-    const newData = structuredClone(data);
+    const newData = rawDeepClone(data);
     for (let i = 0; i < data.length; i++) {
         newData[i]["area_level"] = features.find(f => f.properties!.area_id === data[i].area_id)!.properties!.area_level;
     }

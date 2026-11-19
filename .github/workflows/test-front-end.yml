@@ -25,6 +25,9 @@ jobs:
             - name: Lint
               run: npm run lint --prefix=src/app/static -- --quiet
 
+            - name: Type check
+              run: npm run typecheck --prefix=src/app/static
+
             - name: Front-end tests
               run: npm run test --prefix=src/app/static
 

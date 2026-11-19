@@ -23,8 +23,8 @@ defineProps({
 });
 
 const emit = defineEmits<{
-    (e: "submitCreate"): void
-    (e: "cancelCreate"): void
+    (e: "submit-create"): void
+    (e: "cancel-create"): void
 }>();
 
 const loading = ref<boolean>(false);

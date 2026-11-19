@@ -6,6 +6,7 @@ import {FilterOption, PlotSettingEffect, PlotSettingOption,} from "../../generat
 import {PlotSelectionsMutations, PlotSelectionUpdate} from "./mutations"
 import {filtersInfoFromEffects, getPlotData} from "./utils"
 import {PlotMetadataFrame} from "../metadata/metadata"
+import {rawDeepClone} from "../../utils"
 
 type IdOptions = {
     id: string,
@@ -62,7 +63,7 @@ export const actions: ActionTree<PlotSelectionsState, RootState> & PlotSelection
         const {plot, selection} = payload.payload;
         const {state, commit, rootState, rootGetters} = context;
         const metadata = getMetadataFromPlotName(rootState, plot);
-        const updatedSelections: PlotSelectionsState[PlotName] = structuredClone(state[plot]);
+        const updatedSelections: PlotSelectionsState[PlotName] = rawDeepClone(state[plot]);
         if ("filters" in selection) {
             selection.filters.forEach(singleFilter => {
                 const fIndex = updatedSelections.filters.findIndex(f => f.stateFilterId === singleFilter.id);

@@ -146,7 +146,8 @@ describe("select dataset modal", () => {
             },
             propsData: {
                 datasetType: datasetType,
-                open: true
+                open: true,
+                loading: false
             },
         });
     };

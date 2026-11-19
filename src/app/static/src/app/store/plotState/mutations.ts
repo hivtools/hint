@@ -1,6 +1,7 @@
 import { MutationTree } from "vuex";
 import { PayloadWithType } from "../../types";
 import {PlotState, Scale, ScaleSelections, ScaleSettings} from "./plotState";
+import {rawDeepClone} from "../../utils";
 
 export interface UpdateScale {
     scale: Scale
@@ -29,11 +30,11 @@ export const mutations: MutationTree<PlotState> = {
     [PlotStateMutations.updateOutputScale](state: PlotState, action: PayloadWithType<UpdateScale>) {
         const {scale, indicatorId, newScaleSettings} = action.payload;
         if (scale === Scale.Colour) {
-            const newColourScales = structuredClone(state.output.colourScales);
+            const newColourScales = rawDeepClone(state.output.colourScales);
             newColourScales[indicatorId] = newScaleSettings;
             state.output.colourScales = newColourScales;
         } else if (scale === Scale.Size) {
-            const newSizeScale = structuredClone(state.output.sizeScales);
+            const newSizeScale = rawDeepClone(state.output.sizeScales);
             newSizeScale[indicatorId] = newScaleSettings;
             state.output.sizeScales = newSizeScale;
         }

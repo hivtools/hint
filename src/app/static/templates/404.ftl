@@ -4,9 +4,8 @@
     <title> 404 Error Page</title>
     <link rel="shortcut icon" href="/public/favicon.ico"/>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <!-- inject:css -->
+    <#-- The front-end build writes app.css (a fixed name) for this page. See vite.config.mts. -->
     <link rel="stylesheet" href="/public/css/app.css">
-    <!-- endinject -->
 </head>
 <body>
 <div class ="error-page text-center mt-3">

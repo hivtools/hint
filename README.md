@@ -30,12 +30,17 @@ apt-get install adoptopenjdk-11-hotspot -y
 1. Run `./scripts/run-development-dependencies.sh` to start docker instances of [hint-db](https://github.com/hivtools/hint-db/)
 and [hintr](https://github.com/hivtools/hintr) and add a test user with username `test.user@example.com`
  and password `password`.
-1. Run `npm run build` from `src/app/static` to compile front-end dependencies.
+1. Run `npm run build` from `src/app/static` to build the front end.
 1. Run app from your IDE or by `./src/gradlew -p src :app:bootRun` to serve the app on port 8080
 
-To run with hot reloading of the front end, after installing npm packages and running development dependencies.
-1. Open a terminal at `src/app/static` and run `npm run serve`
-1. In another terminal, from the root run `src/gradlew -PhotReload=true -p src app:bootRun`
+To run the front end with hot reload, first install the npm packages and start the development dependencies. Then:
+1. From the root, run `src/gradlew -PhotReload=true -p src app:bootRun`. This starts Kotlin on port 8080. It does not build the front end.
+1. In another terminal, go to `src/app/static` and run `npm run dev`. This starts the Vite dev server.
+1. Open the URL that Vite shows (usually http://localhost:5173).
+
+The Vite dev server gets each page from Kotlin and adds the front-end code from `src/app/static/src`.
+It sends all other requests to Kotlin. If Kotlin is not at http://localhost:8080, set `HINT_BACKEND_URL`.
+For example: `HINT_BACKEND_URL=http://localhost:8081 npm run dev`.
 
 For more information about developing the front-end see [src/app/static/README](https://github.com/hivtools/hint/blob/main/src/app/static/README.md)
 
