@@ -10,6 +10,7 @@ import {
     freezer,
     getFilenameFromImportUrl,
     parseAndFillForm,
+    rawDeepClone,
     readStream,
     rootOptionChildren,
     validateEmail,
@@ -18,6 +19,7 @@ import {
 import {NestedFilterOption} from "../app/generated";
 import {DynamicFormData, DynamicFormMeta} from "@reside-ic/vue-next-dynamic-form";
 import {AxiosResponse} from "axios";
+import {computed, isProxy, reactive} from "vue";
 
 describe("utils", () => {
 
@@ -109,6 +111,103 @@ describe("utils", () => {
         expect(frozen).toStrictEqual(data);
         expect(Object.isFrozen(frozen[0])).toBe(true);
         expect(Object.isFrozen(frozen[1].child)).toBe(true);
+    });
+
+    it("deep clones nested reactive state", () => {
+        const data = {
+            nothing: null,
+            time: 10,
+            name: "hello",
+            items: [1, null, "three", {label: "l1"}],
+            child: {
+                name: "child",
+                items: [4, null, "five"]
+            }
+        };
+        const proxyState = reactive({wrapper: structuredClone(data)});
+        expect(isProxy(proxyState.wrapper.child)).toBe(true);
+
+        const proxyCopy = rawDeepClone(proxyState.wrapper);
+        expect(proxyCopy).toStrictEqual(data);
+        expect(isProxy(proxyCopy)).toBe(false);
+        expect(isProxy(proxyCopy.child)).toBe(false);
+        expect(isProxy(proxyCopy.items[3])).toBe(false);
+
+        proxyCopy.child.items.push("six");
+        expect(proxyState.wrapper.child.items).toStrictEqual([4, null, "five"]);
+    });
+
+    it("deep clones primitive values and null", () => {
+        expect(rawDeepClone(null)).toBe(null);
+        expect(rawDeepClone(undefined)).toBe(undefined);
+        expect(rawDeepClone(3)).toBe(3);
+        expect(rawDeepClone("text")).toBe("text");
+        expect(rawDeepClone(false)).toBe(false);
+    });
+
+    it("deep clones Date, Map and Set", () => {
+        const data = {
+            date: new Date("2026-01-02T03:04:05Z"),
+            map: new Map<string, { n: number }>([["a", {n: 1}]]),
+            set: new Set([1, 2])
+        };
+
+        const copy = rawDeepClone(data);
+        expect(copy).toStrictEqual(data);
+        expect(copy.date).toBeInstanceOf(Date);
+        expect(copy.date).not.toBe(data.date);
+        expect(copy.map).toBeInstanceOf(Map);
+        expect(copy.map.get("a")).not.toBe(data.map.get("a"));
+        expect(copy.set).toBeInstanceOf(Set);
+
+        copy.date.setFullYear(2000);
+        copy.map.get("a")!.n = 99;
+        copy.set.add(3);
+        expect(data.date.toISOString()).toBe("2026-01-02T03:04:05.000Z");
+        expect(data.map.get("a")!.n).toBe(1);
+        expect([...data.set]).toStrictEqual([1, 2]);
+    });
+
+    it("deep clones a reactive Map and Set with reactive values", () => {
+        const state = reactive({
+            nested: {items: [{x: 1}]},
+            map: new Map<string, any>(),
+            set: new Set<any>()
+        });
+        state.map.set("nested", state.nested);
+        state.map.set("spread", {...state.nested});
+        state.set.add(state.nested);
+        expect(isProxy(state.map)).toBe(true);
+
+        const copy = rawDeepClone(state);
+        expect(isProxy(copy.map)).toBe(false);
+        expect(isProxy(copy.set)).toBe(false);
+        expect(copy.map.get("nested")).toStrictEqual({items: [{x: 1}]});
+        expect(isProxy(copy.map.get("nested"))).toBe(false);
+        expect(isProxy(copy.map.get("spread").items)).toBe(false);
+        expect([...copy.set]).toStrictEqual([{items: [{x: 1}]}]);
+
+        copy.map.get("nested").items[0].x = 99;
+        expect(state.nested.items[0].x).toBe(1);
+    });
+
+    it("deep clones other built-in types with structuredClone", () => {
+        const data = {pattern: /a+b/gi, bytes: new Uint8Array([1, 2, 3])};
+        const copy = rawDeepClone(data);
+        expect(copy.pattern).toBeInstanceOf(RegExp);
+        expect(copy.pattern.source).toBe("a+b");
+        expect(copy.pattern.flags).toBe("gi");
+        expect([...copy.bytes]).toStrictEqual([1, 2, 3]);
+        expect(copy.bytes).not.toBe(data.bytes);
+    });
+
+    it("deep clone of reactive state is not tracked by a computed", () => {
+        // This is why rawDeepClone is only for actions and mutations.
+        const state = reactive({x: {y: 1}});
+        const y = computed(() => rawDeepClone(state.x).y);
+        expect(y.value).toBe(1);
+        state.x.y = 2;
+        expect(y.value).toBe(1);
     });
 
     it("can flatten options", () => {

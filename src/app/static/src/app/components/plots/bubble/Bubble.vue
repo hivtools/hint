@@ -34,7 +34,7 @@ import {computed, onMounted, ref, watch} from "vue";
 import {useStore} from "vuex";
 import {RootState} from "../../../root";
 import { LMap, LGeoJson, LTileLayer } from "@vue-leaflet/vue-leaflet";
-import { Feature } from "geojson";
+import type { Feature } from "geojson";
 import {
     getIndicatorMetadata,
     ScaleLevels,
