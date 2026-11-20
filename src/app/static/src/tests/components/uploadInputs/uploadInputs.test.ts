@@ -18,7 +18,6 @@ import ErrorAlert from "../../../app/components/ErrorAlert.vue";
 import LoadingSpinner from "../../../app/components/LoadingSpinner.vue";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {expectTranslatedWithStoreType, mountWithTranslate, shallowMountWithTranslate} from "../../testHelpers";
-import {SurveyAndProgramActions} from "../../../app/store/surveyAndProgram/actions";
 import {getters} from "../../../app/store/surveyAndProgram/getters";
 import {SurveyAndProgramState} from "../../../app/store/surveyAndProgram/surveyAndProgram";
 import {testUploadComponent} from "./fileUploads";
@@ -30,7 +29,6 @@ describe("UploadInputs upload component", () => {
     let actions: Mocked<BaselineActions>;
     let mutations = {};
 
-    let sapActions: Mocked<SurveyAndProgramActions>;
     let sapMutations = {};
 
     const mockStepperGetters = {
@@ -95,7 +93,6 @@ describe("UploadInputs upload component", () => {
                     namespaced: true,
                     state: mockSurveyAndProgramState(surveyAndProgramState),
                     mutations: {...sapMutations},
-                    actions: {...sapActions},
                     getters: getters
                 },
                 load: {

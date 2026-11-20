@@ -102,7 +102,7 @@ describe("Router", () => {
     it("doesn't redirect returning guest to login page", () => {
         const realLocation = window.location
         delete (window as any).location
-        window.location = {...realLocation, assign: vi.fn()};
+        window.location = {...realLocation, assign: vi.fn()} as any;
 
         store.state.currentUser = "guest";
         Storage.prototype.getItem = vi.fn((key) => key === "asGuest" ? "continueAsGuest" : null);
@@ -111,13 +111,13 @@ describe("Router", () => {
 
         expect(window.location.assign).not.toHaveBeenCalled();
 
-        window.location = realLocation
+        window.location = realLocation as any;
     });
 
     it("redirects to login page if user is not a returning guest", () => {
         const realLocation = window.location
         delete (window as any).location
-        window.location = {...realLocation, assign: vi.fn()};
+        window.location = {...realLocation, assign: vi.fn()} as any;
 
         store.state.currentUser = "guest";
         Storage.prototype.getItem = vi.fn();
@@ -127,19 +127,19 @@ describe("Router", () => {
         expect(window.location.assign).toHaveBeenCalledTimes(1);
         expect(window.location.assign).toHaveBeenCalledWith("/login");
 
-        window.location = realLocation
+        window.location = realLocation as any;
     });
 
     it("does not redirect to login page for authenticated user", () => {
         const realLocation = window.location
         delete (window as any).location
-        window.location = {...realLocation, assign: vi.fn()};
+        window.location = {...realLocation, assign: vi.fn()} as any;
 
         store.state.currentUser = "test.user@example.com";
 
         beforeEnter({} as RouteLocationNormalized, {} as RouteLocationNormalized);
 
         expect(window.location.assign).not.toHaveBeenCalled();
-        window.location = realLocation
+        window.location = realLocation as any;
     });
 });

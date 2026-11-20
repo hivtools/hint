@@ -20,7 +20,7 @@ describe("load actions", () => {
     });
 
     afterAll(() => {
-        window.location = realLocation;
+        window.location = realLocation as any;
     });
 
     it("can submit model output ZIP file", async () => {
