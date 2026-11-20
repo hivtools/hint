@@ -18,7 +18,7 @@ import {
 } from "../app/utils";
 import {NestedFilterOption} from "../app/generated";
 import {DynamicFormData, DynamicFormMeta} from "@reside-ic/vue-next-dynamic-form";
-import {AxiosResponse} from "axios";
+import {AxiosHeaders, AxiosResponse} from "axios";
 import {computed, isProxy, reactive} from "vue";
 
 describe("utils", () => {
@@ -33,7 +33,7 @@ describe("utils", () => {
         data: file,
         headers: {"content-disposition": "attachment; filename=test.html"},
         status: 200,
-        config: {},
+        config: {headers: new AxiosHeaders()},
         statusText: ""
     }
 

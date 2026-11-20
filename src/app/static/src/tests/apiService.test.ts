@@ -1,3 +1,4 @@
+import {AxiosHeaders} from "axios";
 import {api} from "../app/apiService";
 import {mockAxios, mockDownloadFailure, mockError, mockFailure, mockRootState, mockSuccess} from "./mocks";
 import {freezer} from '../app/utils';
@@ -442,7 +443,7 @@ describe("ApiService", () => {
             .ignoreErrors()
             .get("/baseline/");
 
-        expect(mockAxios.history.get[0].headers).toStrictEqual({
+        expect((mockAxios.history.get[0].headers as AxiosHeaders).toJSON()).toEqual({
             "Accept": "application/json, text/plain, */*",
             "Accept-Language": "en"
         })
@@ -458,7 +459,7 @@ describe("ApiService", () => {
             .ignoreErrors()
             .postAndReturn("/baseline/");
 
-        expect(mockAxios.history.post[0].headers).toStrictEqual({
+        expect((mockAxios.history.post[0].headers as AxiosHeaders).toJSON()).toEqual({
             "Accept": "application/json, text/plain, */*",
             "Accept-Language": "en",
             "Content-Type": "application/x-www-form-urlencoded"
