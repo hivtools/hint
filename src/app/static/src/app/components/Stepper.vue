@@ -52,17 +52,12 @@
     import AdrIntegration from "./adr/ADRIntegration.vue";
     import Step from "./Step.vue";
     import UploadInputs from "./uploadInputs/UploadInputs.vue";
-    import ReviewInputs from "./reviewInputs/ReviewInputs.vue";
     import LoadingSpinner from "./LoadingSpinner.vue";
-    import ModelRun from "./modelRun/ModelRun.vue";
-    import ModelCalibrate from "./modelCalibrate/ModelCalibrate.vue";
-    import ModelOutput from "./modelOutput/ModelOutput.vue";
-    import DownloadResults from "./downloadResults/DownloadResults.vue";
+    import {lazyStep, stepLoaders} from "./lazySteps";
     import WarningAlert from "./WarningAlert.vue";
     import LoadInvalidModal from "./load/LoadInvalidModal.vue";
     import {StepDescription, StepperState} from "../store/stepper/stepper";
     import {LoadingState, LoadState} from "../store/load/state";
-    import ModelOptions from "./modelOptions/ModelOptions.vue";
     import VersionStatus from "./projects/VersionStatus.vue";
     import {mapGettersByNames, mapStateProp, mapStateProps, mapMutationByName, mapGetterByName} from "../utils";
     import {StepperNavigationProps, StepWarnings, Step as StepEnum} from "../types";
@@ -77,6 +72,14 @@
     import { defineComponent } from "vue";
 
     const namespace = 'stepper';
+
+    // Steps 2 to 7 load their files when the user first needs them
+    const ReviewInputs = lazyStep(stepLoaders.reviewInputs);
+    const ModelOptions = lazyStep(stepLoaders.modelOptions);
+    const ModelRun = lazyStep(stepLoaders.modelRun);
+    const ModelCalibrate = lazyStep(stepLoaders.modelCalibrate);
+    const ModelOutput = lazyStep(stepLoaders.modelOutput);
+    const DownloadResults = lazyStep(stepLoaders.downloadResults);
 
     const readyCompleteGetters = ["ready", "complete"] as const
     interface ReadyCompleteGetters {
