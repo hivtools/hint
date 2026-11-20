@@ -62,7 +62,7 @@
     "numeral": "^2.0.6",
     "qs": "^6.9.0",
     "sass": "1.77.8",
-    "typescript": "~5.9.3",
+    "typescript": "~6.0.3",
     "vite": "8.3.8",
     "vitest": "5.1.1",
     "vue-eslint-parser": "10.4.2",
