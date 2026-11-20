@@ -53,10 +53,10 @@ describe("data export service", () => {
     }
 
 
-    it('can download filtered and unfiltered data', () => {
+    it('can download filtered and unfiltered data', async () => {
         const data = mockDownloadIndicatorData()
 
-        exportService({data, filename: "MWI_naomi_data.xlsx"})
+        await exportService({data, filename: "MWI_naomi_data.xlsx"})
             .addUnfilteredData()
             .addFilteredData()
             .download()
@@ -78,30 +78,30 @@ describe("data export service", () => {
 
     });
 
-    it('can download only filtered data', () => {
+    it('can download only filtered data', async () => {
         const data = mockDownloadIndicatorData()
 
-        exportService({data, filename: "MWI_naomi_data.xlsx"})
+        await exportService({data, filename: "MWI_naomi_data.xlsx"})
             .addFilteredData()
             .download()
 
         assertExpectedSingleSheet()
     });
 
-    it('can download only unfiltered data', () => {
+    it('can download only unfiltered data', async () => {
         const data = mockDownloadIndicatorData()
 
-        exportService({data, filename: "MWI_naomi_data.xlsx"})
+        await exportService({data, filename: "MWI_naomi_data.xlsx"})
             .addUnfilteredData()
             .download()
 
         assertExpectedSingleSheet()
     });
 
-    it("can take options", () => {
+    it("can take options", async () => {
         const data = mockDownloadIndicatorData();
         const options = { testOp: "testConfig" };
-        exportService({data, filename: "testFile", options})
+        await exportService({data, filename: "testFile", options})
             .addFilteredData()
             .download()
 
