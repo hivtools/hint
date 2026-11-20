@@ -5,7 +5,7 @@ import sys
 import pytest
 
 from app.errors import NullInFileNameError
-from app.storage.uploads import UploadStorage, file_extension
+from app.storage.uploads import UploadStorage, file_extension, md5_of_file
 
 
 @pytest.mark.parametrize(
@@ -173,3 +173,18 @@ async def test_a_name_that_is_not_the_name_of_a_file_of_the_folder_is_not_found(
     (folder / "sub\\ABC.csv").write_bytes(b"x")
 
     assert not await UploadStorage(str(folder)).has_file(name)
+
+
+def test_the_md5_of_a_file_is_in_upper_case_and_the_file_is_not_changed(tmp_path):
+    path = tmp_path / "f"
+    content = b"abc" * 1_000_000  # More than one piece
+    path.write_bytes(content)
+
+    assert md5_of_file(path) == hashlib.md5(content, usedforsecurity=False).hexdigest().upper()
+    assert path.read_bytes() == content
+
+
+def test_the_md5_of_an_empty_file(tmp_path):
+    (tmp_path / "f").write_bytes(b"")
+
+    assert md5_of_file(tmp_path / "f") == "D41D8CD98F00B204E9800998ECF8427E"
