@@ -29,9 +29,8 @@ export const test = baseTest.extend<{}, { workerStorageState: string }>({
         await page.getByPlaceholder('Password').fill('password');
         await page.getByText('Log In').click();
 
-        // Wait for login to complete. A longer wait than usual: this is often the first page load of the run,
-        // with no cache and a server that has just started.
-        await expect(page.getByRole('heading', { name: 'Projects', exact: true })).toBeVisible({timeout: 20_000});
+        // Wait for login to complete.
+        await expect(page.getByRole('heading', { name: 'Projects', exact: true })).toBeVisible();
 
         // Save storage state.
         await page.context().storageState({ path: fileName });
