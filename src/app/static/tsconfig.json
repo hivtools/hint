@@ -5,12 +5,17 @@
     "strict": true,
     "noImplicitReturns": true,
     "module": "esnext",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "target": "esnext",
     "experimentalDecorators": true,
     "esModuleInterop": true,
     "types": ["vitest/globals"],
     "noImplicitThis": false,
+    // Vuex 4.1 has no "types" in the "exports" of its package.json,
+    // so "bundler" resolution cannot find its types. Point TypeScript to them.
+    "paths": {
+      "vuex": ["./node_modules/vuex/types/index.d.ts"]
+    }
   },
   "include": [
     "./src/app/**/*.ts",
@@ -19,6 +24,7 @@
     "./src/tests/**/*.ts"
   ],
   "files": [
+    "./env.d.ts",
     "./vue-shims.d.ts",
     "./vuex-shims.d.ts"
   ],
