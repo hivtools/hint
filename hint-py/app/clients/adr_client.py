@@ -5,8 +5,10 @@ ADR answers in the format of CKAN: `{"success": true, "result": ...}`. It answer
 module turns each answer into one in the format of this API (a `HintResponse`), so the Vue app does not see the
 difference.
 
-The rules for what a user can choose (which datasets and releases) are in `app/services/adr_datasets.py`. That module
-asks ADR through this one. The rules for importing a file are in `app/services/adr_imports.py`.
+The rules for what a user can choose are in `app/services/adr_datasets.py` (the datasets) and
+`app/services/adr_release_service.py` (the releases, which also makes a new one). The rules for importing a file are in
+`app/services/adr_imports.py`, and the rules for pushing a file to ADR are in `app/services/adr_resource_service.py`.
+Those modules ask ADR through this one.
 
 The user's credential goes only to ADR's address (`adr_url`). The HTTP client has that address as its base, and each
 call is a path under it. A download from a link of the user is made from that address too, whatever the host in the link
@@ -20,6 +22,8 @@ from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 from dataclasses import dataclass
 from http.cookiejar import CookieJar, DefaultCookiePolicy
+from io import BufferedReader
+from pathlib import Path
 from typing import IO, Annotated
 from urllib.parse import quote, urlsplit
 
@@ -42,6 +46,7 @@ from app.errors import (
 )
 from app.messages import negotiate_language, t
 from app.utils.byte_limit import MB, TooMuchData, within_limit_async
+from app.utils.http_streams import read_in_thread
 
 log = structlog.get_logger()
 
@@ -50,6 +55,22 @@ IN_MEMORY_BYTES = 1 * MB
 
 # The characters that stay as they are in a part of the path of a link (RFC 3986: unreserved, sub-delims, ":" and "@")
 PATH_SAFE = "-._~!$&'()*+,;=:@"
+
+# Who may see a new resource that a user pushes: only the people of the organisation "unaids" (CKAN reads this as JSON).
+# The organisation of the dataset can open it up later on ADR.
+RESTRICTED_TO_UNAIDS = '{"allowed_organizations":"unaids","allowed_users":"","level":"restricted"}'
+
+# The time limits for the upload of a file. The output zip of a model can be 234 MB or more.
+# - A limit of httpx is for one step, not for the whole call: one connection, one write of a part of the body, or one wait
+#   for the next part of the answer. So an upload is not stopped at 120 seconds while ADR keeps taking the data. These
+#   limits stay at `TIMEOUT_SECONDS`.
+# - The wait for the answer is longer. After the last byte, ADR stores the file and then answers. For a big file this can
+#   take more than 120 seconds.
+# - It is not much longer than that, because Azure cancels the request of the browser after 240 seconds, and then nobody
+#   hears the answer. 220 seconds leaves 20 for the calls that come before the upload (the hash and the check of the
+#   resource). A user who sees an error may push again, and a new resource has then been made twice (see D19).
+UPLOAD_ANSWER_SECONDS = 220
+UPLOAD_TIMEOUT = httpx2.Timeout(TIMEOUT_SECONDS, read=UPLOAD_ANSWER_SECONDS)
 
 
 def create_adr_http_client(
@@ -135,6 +156,33 @@ def adr_answer(status_code: int, body: bytes, language: str = "en") -> HintRespo
     message = parsed if isinstance(parsed, str) else json.dumps(parsed)
     log.error("ADR failed", status=status_code)
     return HintResponse.failure(status, message)
+
+
+@dataclass(frozen=True)
+class ResourceUpload:
+    """A file to put on ADR as a resource of a dataset, and what ADR is told about it."""
+
+    # The file to send. It is read in pieces, and is not changed.
+    path: Path
+    # The name that ADR gives the file
+    filename: str
+    # The name of the resource
+    name: str
+    # The MD5 of the file, in upper case
+    hash: str
+    # The kind of resource (for example the one of an output zip), from app/services/file_types.py
+    resource_type: str
+    # Only the outputs have one
+    description: str | None = None
+
+
+def _action_path(action: str) -> str:
+    """The path of one of the actions of CKAN, under the address of ADR."""
+    return f"api/3/action/{action}"
+
+
+def _open_for_reading(path: Path) -> BufferedReader:
+    return path.open("rb")
 
 
 class AdrClient:
@@ -264,6 +312,35 @@ class AdrClient:
         """The releases of a dataset. On success the data is a list."""
         return await self._get("dataset_version_list", {"dataset_id": dataset_id})
 
+    async def delete_release(self, release_id: str) -> HintResponse:
+        """Deletes a release. This API cannot undo it."""
+        return await self._post("version_delete", {"version_id": release_id})
+
+    async def create_release(self, dataset_id: str, name: str) -> HintResponse:
+        """A release of the dataset as it is now, with this name. On success the data is the release."""
+        return await self._post("dataset_version_create", {"dataset_id": dataset_id, "name": name})
+
+    async def resource_hash(self, resource_id: str) -> HintResponse:
+        """The hash that ADR has for a resource. On success the data is the hash, or null if ADR has none."""
+        answer = await self._get("resource_show", {"id": resource_id})
+        return HintResponse.success(answer.data.get("hash")) if answer.ok else answer
+
+    async def create_resource(self, dataset_id: str, upload: ResourceUpload) -> HintResponse:
+        """Puts the file on ADR as a new resource of the dataset. It is restricted to the organisation "unaids"."""
+        fields = {**self._resource_fields(upload), "package_id": dataset_id, "restricted": RESTRICTED_TO_UNAIDS}
+        return await self._post_file("resource_create", fields, upload)
+
+    async def update_resource(self, resource_id: str, upload: ResourceUpload) -> HintResponse:
+        """Replaces the file and the details of a resource that ADR has."""
+        return await self._post_file("resource_patch", {**self._resource_fields(upload), "id": resource_id}, upload)
+
+    @staticmethod
+    def _resource_fields(upload: ResourceUpload) -> dict[str, str]:
+        fields = {"name": upload.name, "hash": upload.hash, "resource_type": upload.resource_type}
+        if upload.description is not None:
+            fields["description"] = upload.description
+        return fields
+
     async def organisations(self, permission: str) -> HintResponse:
         """The organisations where the user has the permission (for example, the permission to create datasets)."""
         return await self._get("organization_list_for_user", {"permission": permission})
@@ -273,9 +350,43 @@ class AdrClient:
 
         The parameters are encoded. A value from the URL, such as a dataset id, cannot add parameters to the call.
         """
+        request = self._http.build_request(
+            "GET", _action_path(action), params=params, headers=self._authorization_header()
+        )
+        return await self._send(action, request)
+
+    async def _post(self, action: str, form: dict[str, str]) -> HintResponse:
+        """A call of one of the actions of CKAN that changes something. The parameters are in the body, as a form."""
+        request = self._http.build_request(
+            "POST", _action_path(action), data=form, headers=self._authorization_header()
+        )
+        return await self._send(action, request)
+
+    async def _post_file(self, action: str, fields: dict[str, str], upload: ResourceUpload) -> HintResponse:
+        """A call that sends a file, as the part `upload` of a multipart form, with the other parameters as its other
+        parts. The file is read in pieces as it is sent, so a large file is not in memory. The length of the body is
+        known, so it is sent with a `Content-Length`: a gateway of ADR may not take a chunked body."""
+        # The credential is looked for first, as for every call: with none, the file is not opened and nothing is sent
         headers = self._authorization_header()
+        handle = await asyncio.to_thread(_open_for_reading, upload.path)
         try:
-            r = await self._http.get(f"api/3/action/{action}", params=params, headers=headers)
+            request = self._http.build_request(
+                "POST",
+                _action_path(action),
+                data=fields,
+                files={"upload": (upload.filename, handle)},
+                headers=headers,
+                timeout=UPLOAD_TIMEOUT,
+            )
+            read_in_thread(request)
+            return await self._send(action, request)
+        finally:
+            await asyncio.to_thread(handle.close)
+
+    async def _send(self, action: str, request: httpx2.Request) -> HintResponse:
+        """Sends the request, and turns the answer into an answer of this API."""
+        try:
+            r = await self._http.send(request)
         except httpx2.RequestError:
             # The log has the message of the library. It has the address and has no headers.
             log.exception("No response from ADR", action=action)

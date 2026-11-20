@@ -6,16 +6,26 @@ These tests are true for every call to ADR, whichever endpoint makes it.
 import io
 import json
 import logging
+import threading
+from pathlib import Path
 from typing import Any
 
 import httpx2
 import pytest
 from pydantic import SecretStr
 
-from app.clients.adr_client import AdrClient, AdrFile, adr_answer, adr_authorization, create_adr_http_client
+from app.clients.adr_client import (
+    AdrClient,
+    AdrFile,
+    ResourceUpload,
+    adr_answer,
+    adr_authorization,
+    create_adr_http_client,
+)
 from app.clients.responses import HintResponse
 from app.config import Settings
 from app.errors import NoAdrCredentialsError, NotOnAdrError
+from app.utils import http_streams
 from tests.adr import FakeAdr, ckan_error, ckan_ok, file_response
 from tests.support import ADR_KEY, ADR_TOKEN
 
@@ -492,3 +502,213 @@ async def test_an_address_with_no_slash_at_the_end_gives_the_same_download_and_l
 
     assert str(adr.downloads()[0].url) == link
     assert await client.resource_url("d-input-1", "r1", "a.csv") == f"{link}?activity_id=act-new"
+
+
+# ------------------------------------------------------------------------------------------------ the calls that change ADR
+async def test_a_release_is_deleted_by_a_form_with_its_id(client, adr):
+    answer = await client.delete_release("rel-1")
+
+    assert answer == HintResponse.success(None)
+    [call] = adr.calls
+    assert (call.method, call.url.path, call.url.query) == ("POST", "/api/3/action/version_delete", b"")
+    assert call.headers["Content-Type"] == "application/x-www-form-urlencoded"
+    assert call.headers["Authorization"] == ADR_KEY
+    assert adr.forms("version_delete") == [{"version_id": "rel-1"}]
+
+
+async def test_a_release_is_made_by_a_form_with_the_dataset_and_the_name(client, adr):
+    answer = await client.create_release("d-input-1", "Naomi: a project v1")
+
+    assert answer.ok
+    assert answer.data["name"] == "Naomi: a project v1"
+    assert adr.forms("dataset_version_create") == [{"dataset_id": "d-input-1", "name": "Naomi: a project v1"}]
+
+
+async def test_the_values_of_a_form_cannot_add_parameters(client, adr):
+    await client.create_release("a&name=b", "c=d&e")
+
+    assert adr.forms("dataset_version_create") == [{"dataset_id": "a&name=b", "name": "c=d&e"}]
+
+
+@pytest.mark.parametrize("action", ["delete_release", "create_release"])
+async def test_a_form_that_gets_no_answer_is_the_failure_of_any_call_that_gets_none(client, adr, action):
+    adr.fail_to_connect("version_delete", httpx2.ConnectError("connection refused"))
+    adr.fail_to_connect("dataset_version_create", httpx2.ConnectError("connection refused"))
+    call = client.delete_release("r") if action == "delete_release" else client.create_release("d", "n")
+
+    assert await call == failure(500, "No response returned. The request may have timed out.")
+
+
+async def test_the_hash_of_a_resource_is_the_hash_that_adr_has(client, adr):
+    adr.resources["res-1"] = {"id": "res-1", "hash": "ABC"}
+    adr.resources["res-2"] = {"id": "res-2"}
+
+    assert await client.resource_hash("res-1") == HintResponse.success("ABC")
+    # ADR has no hash for it
+    assert await client.resource_hash("res-2") == HintResponse.success(None)
+    assert adr.queries("resource_show") == [{"id": "res-1"}, {"id": "res-2"}]
+
+
+async def test_a_resource_that_adr_cannot_show_is_the_failure(client, adr):
+    assert await client.resource_hash("none") == failure(500, "Not found", "ADR_ERROR")
+
+
+@pytest.fixture
+def file(tmp_path: Path) -> Path:
+    path = tmp_path / "stored-under-a-hash"
+    path.write_bytes(b"the content")
+    return path
+
+
+def upload_of(file: Path, description: str | None = None, name: str = "Naomi Output ZIP") -> ResourceUpload:
+    return ResourceUpload(
+        path=file,
+        filename="naomi_outputs.zip",
+        name=name,
+        hash="ABC123",
+        resource_type="inputs-unaids-naomi-output-zip",
+        description=description,
+    )
+
+
+async def test_a_new_resource_is_a_multipart_form_with_the_file_as_the_part_upload(client, adr, file):
+    answer = await client.create_resource("d-input-1", upload_of(file, description="Naomi model outputs"))
+
+    assert answer.ok
+    [call] = adr.calls
+    assert (call.method, call.url.path, call.url.query) == ("POST", "/api/3/action/resource_create", b"")
+    assert call.headers["Authorization"] == ADR_KEY
+    assert call.headers["Content-Type"].startswith("multipart/form-data; boundary=")
+    [upload] = adr.uploads
+    assert (upload.filename, upload.content) == ("naomi_outputs.zip", b"the content")
+    assert upload.fields == {
+        "name": "Naomi Output ZIP",
+        "hash": "ABC123",
+        "resource_type": "inputs-unaids-naomi-output-zip",
+        "description": "Naomi model outputs",
+        "package_id": "d-input-1",
+        "restricted": '{"allowed_organizations":"unaids","allowed_users":"","level":"restricted"}',
+    }
+
+
+async def test_a_resource_without_a_description_is_sent_without_one(client, adr, file):
+    await client.create_resource("d", upload_of(file))
+
+    assert "description" not in adr.uploads[0].fields
+
+
+async def test_a_resource_that_is_replaced_has_its_id_and_is_not_made_restricted_again(client, adr, file):
+    adr.resources["res-1"] = {"id": "res-1", "hash": "OLD"}
+
+    answer = await client.update_resource("res-1", upload_of(file))
+
+    assert answer.ok
+    [call] = adr.calls
+    assert call.url.path == "/api/3/action/resource_patch"
+    assert adr.uploads[0].fields == {
+        "name": "Naomi Output ZIP",
+        "hash": "ABC123",
+        "resource_type": "inputs-unaids-naomi-output-zip",
+        "id": "res-1",
+    }
+    assert adr.resources["res-1"]["hash"] == "ABC123"
+
+
+async def test_an_empty_file_is_sent(client, adr, file):
+    file.write_bytes(b"")
+
+    assert (await client.create_resource("d", upload_of(file))).ok
+    assert adr.uploads[0].content == b""
+
+
+async def test_the_body_of_an_upload_is_sent_with_its_length_in_pieces_read_in_a_thread(client, adr, file, monkeypatch):
+    reading_threads = set()
+    real = http_streams.next_piece
+
+    def next_piece_in_a_thread(body):
+        reading_threads.add(threading.get_ident())
+        return real(body)
+
+    monkeypatch.setattr(http_streams, "next_piece", next_piece_in_a_thread)
+    file.write_bytes(b"x" * (300 * 1024))
+
+    await client.create_resource("d", upload_of(file))
+
+    [call] = adr.calls
+    [pieces] = adr.body_pieces
+    assert int(call.headers["Content-Length"]) == sum(pieces)
+    assert "Transfer-Encoding" not in call.headers
+    assert len(pieces) > 4
+    # The file is read off the event loop, which every other request of the API shares
+    assert reading_threads
+    assert threading.get_ident() not in reading_threads
+
+
+async def test_the_file_is_closed_after_the_upload_whether_adr_answers_or_not(client, adr, file, monkeypatch):
+    opened = []
+    real = Path.open
+
+    def record(self, *args, **kwargs):
+        handle = real(self, *args, **kwargs)
+        opened.append(handle)
+        return handle
+
+    monkeypatch.setattr(Path, "open", record)
+    adr.fail_to_connect("resource_patch", httpx2.WriteError("connection dropped"))
+
+    await client.create_resource("d", upload_of(file))
+    answer = await client.update_resource("r", upload_of(file))
+
+    assert answer == failure(500, "No response returned. The request may have timed out.")
+    assert len(opened) == 2
+    assert all(handle.closed for handle in opened)
+
+
+async def test_the_failure_of_an_upload_is_logged_without_the_credential_or_the_content(client, adr, file, caplog):
+    adr.fail_to_connect("resource_create", httpx2.WriteError("connection dropped"))
+
+    await client.create_resource("d", upload_of(file))
+
+    assert [r.getMessage() for r in caplog.records if r.levelno == logging.ERROR] == ["No response from ADR"]
+    assert ADR_KEY not in caplog.text
+    assert "the content" not in caplog.text
+
+
+@pytest.mark.parametrize("action", ["create", "update"])
+async def test_an_upload_needs_a_credential_and_opens_no_file(adr, tmp_path, action):
+    client = AdrClient(adr.http, None, "en")
+    upload = upload_of(tmp_path / "does-not-exist")
+
+    with pytest.raises(NoAdrCredentialsError):
+        await (client.create_resource("d", upload) if action == "create" else client.update_resource("r", upload))
+
+    assert adr.calls == []
+
+
+@pytest.mark.parametrize("call", ["delete_release", "create_release", "resource_hash"])
+async def test_the_other_calls_need_a_credential_too(adr, call):
+    client = AdrClient(adr.http, None, "en")
+    arguments = {"delete_release": ("r",), "create_release": ("d", "n"), "resource_hash": ("r",)}[call]
+
+    with pytest.raises(NoAdrCredentialsError):
+        await getattr(client, call)(*arguments)
+
+    assert adr.calls == []
+
+
+async def test_a_token_is_the_credential_of_an_upload(adr, file):
+    await AdrClient(adr.http, SecretStr(f"Bearer {ADR_TOKEN}"), "en").create_resource("d", upload_of(file))
+
+    assert adr.calls[0].headers["Authorization"] == f"Bearer {ADR_TOKEN}"
+
+
+async def test_an_upload_waits_longer_for_the_answer_than_the_other_calls_and_no_longer_than_azure_does(
+    client, adr, file
+):
+    await client.dataset("d")
+    await client.create_resource("d", upload_of(file))
+
+    get, post = (call.extensions["timeout"] for call in adr.calls)
+    assert get == {"connect": 120, "read": 120, "write": 120, "pool": 120}
+    # Azure cancels the request of the browser after 240 seconds
+    assert post == {"connect": 120, "read": 220, "write": 120, "pool": 120}
