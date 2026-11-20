@@ -175,6 +175,17 @@ export default defineConfig(({command}) => ({
         freemarkerAssets(),
         kotlinPages()
     ],
+    resolve: {
+        alias: [
+            // Use the Vue build without the template compiler. Our components are .vue files, which the build
+            // compiles to render functions. Two CommonJS libraries (@reside-ic/vue3-treeselect and
+            // @reside-ic/vue-next-dynamic-form) call require("vue"), which gives the full build with the
+            // compiler. Their components have render functions, so they do not need the compiler.
+            // The unit tests (vitest.config.mts) do not use this file, so they keep the full build.
+            // Some tests mount components that have a template string.
+            {find: /^vue$/, replacement: "vue/dist/vue.runtime.esm-bundler.js"}
+        ]
+    },
     build: {
         outDir: "public",
         emptyOutDir: true,
