@@ -130,7 +130,7 @@ describe("ApiService", () => {
     it("can redirect to login when 401 response is received", async () => {
         const realLocation = window.location
         delete (window as any).location
-        window.location = {...window.location, assign: vi.fn()};
+        window.location = {...window.location, assign: vi.fn()} as any;
 
         mockAxios.onGet("/baseline/")
             .reply(401, null);
@@ -143,7 +143,7 @@ describe("ApiService", () => {
         expect(window.location.assign).toHaveBeenCalledWith("/login?error=SessionExpired" +
             "&message=Your%20session%20has%20expired.%20Please%20log%20in%20again.")
 
-        window.location = realLocation
+        window.location = realLocation as any;
     });
 
     it("commits the success response with the specified type", async () => {
