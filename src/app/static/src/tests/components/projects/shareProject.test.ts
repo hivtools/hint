@@ -276,7 +276,9 @@ describe("ShareProject", () => {
             },
             global: {
                 plugins: [store]
-            }
+            },
+            // isVisible() reads the computed style, which jsdom gives only for elements in the document
+            attachTo: document.body
         });
 
         const link = wrapper.find("button");
@@ -302,7 +304,9 @@ describe("ShareProject", () => {
             },
             global: {
                 plugins: [store]
-            }
+            },
+            // isVisible() reads the computed style, which jsdom gives only for elements in the document
+            attachTo: document.body
         });
 
         const link = wrapper.find("button");
