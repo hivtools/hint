@@ -41,7 +41,7 @@
             :placeholder="translate('select')"
             :disabled="!useRelease"
             :model-value="releaseId"
-            @update:model-value="newVal => releaseId = newVal">
+            @update:model-value="(newVal: string | undefined) => releaseId = newVal">
             <template v-slot:option-label="{node}">
                 <label v-html="node.raw.customLabel">
                 </label>

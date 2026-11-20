@@ -26,8 +26,8 @@
                                 :open="open"
                                 :dataset-type="datasetType"
                                 :selector-label-key="releaseLabelKey"
-                                @selected-dataset-release="(newReleaseId) => datasetReleaseId = newReleaseId"
-                                @valid="(newValue) => valid = newValue">
+                                @selected-dataset-release="(newReleaseId: string | null) => datasetReleaseId = newReleaseId"
+                                @valid="(newValue: boolean) => valid = newValue">
                 </select-release>
                 <div :class="fetchingDatasets ? 'visible' : 'invisible'"
                      style="margin-top: 15px"
