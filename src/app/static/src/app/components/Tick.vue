@@ -6,19 +6,19 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+    import { defineComponent } from 'vue';
 
-export default defineComponent({
-    props: {
-        color: {
-            type: String,
-            required: true
-        },
-        width: {
-            type: String,
-            required: false,
-            default: "15px"
+    export default defineComponent({
+        props: {
+            color: {
+                type: String,
+                required: true
+            },
+            width: {
+                type: String,
+                required: false,
+                default: "15px"
+            }
         }
-    }
-})
+    })
 </script>

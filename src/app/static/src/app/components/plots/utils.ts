@@ -43,8 +43,8 @@ export const getColourScaleLevels = (indicatorMetadata: IndicatorMetadata, colou
 };
 
 export const getColour = (value: number,
-                         metadata: IndicatorMetadata,
-                         colourRange: NumericRange) => {
+                          metadata: IndicatorMetadata,
+                          colourRange: NumericRange) => {
 
     const min = colourRange.min;
     const max = colourRange.max;

@@ -58,7 +58,7 @@ describe("loadErrorModal", () => {
     });
 
 
-   it("can display error text and translates elements when there is load error", () => {
+    it("can display error text and translates elements when there is load error", () => {
         const wrapper = getWrapper()
         const modal = wrapper.find(".modal")
         expect(mockClearLoadError.mock.calls.length).toBe(0)

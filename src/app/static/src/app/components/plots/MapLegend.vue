@@ -30,52 +30,52 @@
 
 <script lang="ts">
 
-import {computed, defineComponent, type PropType, ref} from "vue";
-import {LControl} from "@vue-leaflet/vue-leaflet";
-import MapAdjustScale from "./MapAdjustScale.vue";
-import {useStore} from "vuex";
-import type {RootState} from "../../root";
-import type {IndicatorMetadata} from "../../generated";
-import {Scale, type ScaleSettings} from "../../store/plotState/plotState";
-import type {ScaleLevels} from "./utils";
-import type { PlotName } from "../../store/plotSelections/plotSelections";
+    import {computed, defineComponent, type PropType, ref} from "vue";
+    import {LControl} from "@vue-leaflet/vue-leaflet";
+    import MapAdjustScale from "./MapAdjustScale.vue";
+    import {useStore} from "vuex";
+    import type {RootState} from "../../root";
+    import type {IndicatorMetadata} from "../../generated";
+    import {Scale, type ScaleSettings} from "../../store/plotState/plotState";
+    import type {ScaleLevels} from "./utils";
+    import type { PlotName } from "../../store/plotSelections/plotSelections";
 
-export default defineComponent({
-    props: {
-        indicatorMetadata: {
-            type: Object as PropType<IndicatorMetadata>,
-            required: true
+    export default defineComponent({
+        props: {
+            indicatorMetadata: {
+                type: Object as PropType<IndicatorMetadata>,
+                required: true
+            },
+            scaleLevels: {
+                type: Object as PropType<ScaleLevels[]>,
+                required: true
+            },
+            selectedScale: {
+                type: Object as PropType<ScaleSettings>,
+                required: true
+            },
+            plot: {
+                type: String as PropType<PlotName>,
+                required: true
+            }
         },
-        scaleLevels: {
-            type: Object as PropType<ScaleLevels[]>,
-            required: true
+        setup() {
+            const store = useStore<RootState>();
+            const colourScales = computed(() => {
+                return store.state.plotState.output.colourScales;
+            });
+
+            const showAdjust = ref<boolean>(false);
+
+            return {
+                colourScales,
+                showAdjust,
+                Scale
+            }
         },
-        selectedScale: {
-            type: Object as PropType<ScaleSettings>,
-            required: true
-        },
-        plot: {
-            type: String as PropType<PlotName>,
-            required: true
+        components: {
+            LControl,
+            MapAdjustScale
         }
-    },
-    setup() {
-        const store = useStore<RootState>();
-        const colourScales = computed(() => {
-            return store.state.plotState.output.colourScales;
-        });
-
-        const showAdjust = ref<boolean>(false);
-
-        return {
-            colourScales,
-            showAdjust,
-            Scale
-        }
-    },
-    components: {
-        LControl,
-        MapAdjustScale
-    }
-})
+    })
 </script>

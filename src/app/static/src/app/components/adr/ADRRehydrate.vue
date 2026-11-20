@@ -9,40 +9,40 @@
 </template>
 
 <script setup lang="ts">
-import SelectDataset from "./SelectDatasetModal.vue";
-import {onMounted, ref} from "vue";
-import {AdrDatasetType} from "../../store/adr/adr";
-import {useStore} from "vuex";
-import type {RootState} from "../../root";
+    import SelectDataset from "./SelectDatasetModal.vue";
+    import {onMounted, ref} from "vue";
+    import {AdrDatasetType} from "../../store/adr/adr";
+    import {useStore} from "vuex";
+    import type {RootState} from "../../root";
 
-defineProps({
-    openModal: {
-        type: Boolean,
-        required: true
-    }
-});
+    defineProps({
+        openModal: {
+            type: Boolean,
+            required: true
+        }
+    });
 
-const emit = defineEmits<{
-    (e: "submit-create"): void
-    (e: "cancel-create"): void
-}>();
+    const emit = defineEmits<{
+        (e: "submit-create"): void
+        (e: "cancel-create"): void
+    }>();
 
-const loading = ref<boolean>(false);
-const store = useStore<RootState>();
+    const loading = ref<boolean>(false);
+    const store = useStore<RootState>();
 
-const importOutputZip = async (datasetId: string, releaseId: string | null) => {
-    loading.value = true;
-    await store.dispatch("adr/getDataset", {id: datasetId, release: releaseId, datasetType: AdrDatasetType.Output});
-    loading.value = false;
+    const importOutputZip = async (datasetId: string, releaseId: string | null) => {
+        loading.value = true;
+        await store.dispatch("adr/getDataset", {id: datasetId, release: releaseId, datasetType: AdrDatasetType.Output});
+        loading.value = false;
 
-    const fetchingError = store.state.adr.adrData[AdrDatasetType.Output].fetchingError;
-    const outputZip = store.state.projects.adrRehydrateOutputZip;
-    if (!fetchingError && outputZip) {
-        emit('submit-create');
-    }
-};
+        const fetchingError = store.state.adr.adrData[AdrDatasetType.Output].fetchingError;
+        const outputZip = store.state.projects.adrRehydrateOutputZip;
+        if (!fetchingError && outputZip) {
+            emit('submit-create');
+        }
+    };
 
-onMounted(() => {
-    store.dispatch("adr/getDatasets", AdrDatasetType.Output)
-});
+    onMounted(() => {
+        store.dispatch("adr/getDatasets", AdrDatasetType.Output)
+    });
 </script>

@@ -37,14 +37,14 @@
         },
         computed: {
             hasUploadPermission: mapStateProp<ADRState, boolean>(namespace,
-                (state: ADRState) => state.userCanUpload),
+                                                                 (state: ADRState) => state.userCanUpload),
 
             currentLanguage: mapStateProp<RootState, Language>(
                 null,
                 (state: RootState) => state.language
             ),
             selectedDataset: mapStateProp<BaselineState, Dataset | null>("baseline",
-                (state: BaselineState) => state.selectedDataset)
+                                                                         (state: BaselineState) => state.selectedDataset)
         },
         methods: {
             getDatasets: mapActionByName(namespace, 'getDatasets'),

@@ -8,20 +8,20 @@
 </template>
 
 <script setup lang="ts">
-import { LControl } from "@vue-leaflet/vue-leaflet";
+    import { LControl } from "@vue-leaflet/vue-leaflet";
 
-defineProps({
-    checked: {
-        type: Boolean,
-        required: true
-    },
-})
+    defineProps({
+        checked: {
+            type: Boolean,
+            required: true
+        },
+    })
 
-const emit = defineEmits(['toggle-base-map'])
+    const emit = defineEmits(['toggle-base-map'])
 
-const toggleBaseMap = () => {
-    emit('toggle-base-map')
-}
+    const toggleBaseMap = () => {
+        emit('toggle-base-map')
+    }
 </script>
 
 <style scoped>

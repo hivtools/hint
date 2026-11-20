@@ -13,7 +13,7 @@ export const getters = {
         (plotName: PlotName, filterId: string) => {
             const metadata = getMetadataFromPlotName(rootState, plotName);
             return metadata.filterTypes.find(f => f.id === filterId)!.column_id;
-    },
+        },
     tableMetadata: (state: ModelCalibrateState, getters: any, rootState: RootState, rootGetters: any) =>
         (plotName: PlotName): TableMetadata | undefined => {
             const metadata: PlotMetadataFrame = getMetadataFromPlotName(rootState, plotName);

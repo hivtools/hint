@@ -16,15 +16,15 @@
 </template>
 
 <script lang="ts">
-import {defineComponent} from "vue";
-import {LControl} from "@vue-leaflet/vue-leaflet";
-import VueFeather from "vue-feather";
+    import {defineComponent} from "vue";
+    import {LControl} from "@vue-leaflet/vue-leaflet";
+    import VueFeather from "vue-feather";
 
-export default defineComponent({
-    components: {
-        VueFeather,
-        LControl
-    }
-})
+    export default defineComponent({
+        components: {
+            VueFeather,
+            LControl
+        }
+    })
 
 </script>

@@ -33,42 +33,42 @@
 </template>
 
 <script lang="ts">
-import {computed, defineComponent} from "vue";
-import FilterSet from "../plots/FilterSet.vue";
-import PlotControlSet from "../plots/PlotControlSet.vue";
-import {type OutputPlotName, outputPlotNames} from "../../store/plotSelections/plotSelections";
-import {useStore} from "vuex";
-import type {RootState} from "../../root";
-import { ModelOutputMutation } from "../../store/modelOutput/mutations";
-import Choropleth from "../plots/choropleth/Choropleth.vue";
-import Bubble from "../plots/bubble/Bubble.vue";
-import Barchart from "../plots/bar/Barchart.vue";
-import Table from "../plots/table/Table.vue";
-import FilterWithReset from "../plots/FilterWithReset.vue";
+    import {computed, defineComponent} from "vue";
+    import FilterSet from "../plots/FilterSet.vue";
+    import PlotControlSet from "../plots/PlotControlSet.vue";
+    import {type OutputPlotName, outputPlotNames} from "../../store/plotSelections/plotSelections";
+    import {useStore} from "vuex";
+    import type {RootState} from "../../root";
+    import { ModelOutputMutation } from "../../store/modelOutput/mutations";
+    import Choropleth from "../plots/choropleth/Choropleth.vue";
+    import Bubble from "../plots/bubble/Bubble.vue";
+    import Barchart from "../plots/bar/Barchart.vue";
+    import Table from "../plots/table/Table.vue";
+    import FilterWithReset from "../plots/FilterWithReset.vue";
 
-export default defineComponent({
+    export default defineComponent({
 
-    setup() {
-        const store = useStore<RootState>();
-        const selectedPlot = computed(() => store.state.modelOutput.selectedTab);
-        const switchTab = (plotName: OutputPlotName) => store.commit(`modelOutput/${ModelOutputMutation.TabSelected}`, {payload: plotName});
-        const outputMetadataFetched = computed(() => store.state.modelCalibrate.metadata)
-        return {
-            outputPlotNames,
-            selectedPlot,
-            switchTab,
-            outputMetadataFetched
+        setup() {
+            const store = useStore<RootState>();
+            const selectedPlot = computed(() => store.state.modelOutput.selectedTab);
+            const switchTab = (plotName: OutputPlotName) => store.commit(`modelOutput/${ModelOutputMutation.TabSelected}`, {payload: plotName});
+            const outputMetadataFetched = computed(() => store.state.modelCalibrate.metadata)
+            return {
+                outputPlotNames,
+                selectedPlot,
+                switchTab,
+                outputMetadataFetched
+            }
+        },
+
+        components: {
+            Barchart,
+            Choropleth,
+            Bubble,
+            PlotTable: Table,
+            FilterSet,
+            PlotControlSet,
+            FilterWithReset
         }
-    },
-
-    components: {
-        Barchart,
-        Choropleth,
-        Bubble,
-        PlotTable: Table,
-        FilterSet,
-        PlotControlSet,
-        FilterWithReset
-    }
-})
+    })
 </script>

@@ -7,7 +7,7 @@
                     <span v-translate="'uploadFileDataset'"></span>
                     <span>{{ dataset }}</span></div>
                 <div class="pt-3 text-danger" id="output-file-error" v-if="outputFileError"
-                v-translate="isOutputFileErrorKey ? outputFileError : ''">
+                     v-translate="isOutputFileErrorKey ? outputFileError : ''">
                     {{ isOutputFileErrorKey ? '' : outputFileError }}
                 </div>
                 <div class="pt-3 form-check form-check-inline">
@@ -177,7 +177,7 @@
                 return null
             },
             dataset: mapStateProp<BaselineState, string | undefined>("baseline",
-                (state: BaselineState) => state.selectedDataset?.title),
+                                                                     (state: BaselineState) => state.selectedDataset?.title),
             createRelease(): boolean {
                 return this.choiceUpload === 'createRelease';
             },
@@ -186,7 +186,7 @@
                 (state: RootState) => state.language
             ),
             uploadableFiles: mapStateProp<ADRUploadState, Dict<UploadFile>>("adrUpload",
-                (state) => state.uploadFiles!
+                                                                            (state) => state.uploadFiles!
             ),
             uploadFileSections(): any[] {
                 if (this.uploadableFiles) {

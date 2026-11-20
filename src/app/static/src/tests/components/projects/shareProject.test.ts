@@ -572,7 +572,7 @@ describe("ShareProject", () => {
     });
 
     it("closes modal when cloningProject changes from true to false, if there is not an error",
-         async () => {
+        async () => {
             const store = createStore(vi.fn(), vi.fn(), mockProjectsState({cloningProject: true}));
             const wrapper = shallowMountWithTranslate(ShareProject, store, {
                 props: {
@@ -592,7 +592,7 @@ describe("ShareProject", () => {
         });
 
     it("does not close modal when cloningProject changes from true to false if there is an error",
-         async () => {
+        async () => {
             const store = createStore(vi.fn(),
                 vi.fn(),
                 mockProjectsState({cloningProject: true}));

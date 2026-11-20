@@ -4,6 +4,7 @@ import pluginVue from "eslint-plugin-vue";
 import {defineConfigWithVueTs, vueTsConfigs} from "@vue/eslint-config-typescript";
 import pluginPlaywright from "eslint-plugin-playwright";
 import pluginVitest from "@vitest/eslint-plugin";
+import stylistic from "@stylistic/eslint-plugin";
 
 export default defineConfigWithVueTs(
     {
@@ -63,6 +64,31 @@ export default defineConfigWithVueTs(
                     ]
                 }
             ]
+        }
+    },
+
+    {
+        // Indent with 4 spaces. The core "indent" rule is deprecated, so we use the rule of ESLint Stylistic.
+        // Function parameters on more than one line align with the first parameter, as IntelliJ does.
+        name: "app/indent",
+        files: ["**/*.{js,ts,mts,tsx}"],
+        plugins: {"@stylistic": stylistic},
+        rules: {
+            "@stylistic/indent": ["error", 4, {
+                SwitchCase: 1,
+                FunctionDeclaration: {parameters: "first"},
+                FunctionExpression: {parameters: "first"}
+            }]
+        }
+    },
+
+    {
+        // In a .vue file, also indent the content of <template> and <script> by one level.
+        name: "app/vue-indent",
+        files: ["**/*.vue"],
+        rules: {
+            "vue/html-indent": ["error", 4, {baseIndent: 1}],
+            "vue/script-indent": ["error", 4, {baseIndent: 1, switchCase: 1}]
         }
     },
 

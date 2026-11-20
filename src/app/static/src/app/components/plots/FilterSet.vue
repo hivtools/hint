@@ -14,34 +14,34 @@
 </template>
 
 <script lang="ts">
-import {type PropType, computed, defineComponent} from 'vue';
-import {useStore} from "vuex";
-import type {RootState} from "../../root";
-import Filter from "./Filter.vue";
-import type {PlotName} from "../../store/plotSelections/plotSelections";
-import FilterWithReset from './FilterWithReset.vue';
+    import {type PropType, computed, defineComponent} from 'vue';
+    import {useStore} from "vuex";
+    import type {RootState} from "../../root";
+    import Filter from "./Filter.vue";
+    import type {PlotName} from "../../store/plotSelections/plotSelections";
+    import FilterWithReset from './FilterWithReset.vue';
 
-export default defineComponent({
-    components: {
-        PlotFilter: Filter,
-        FilterWithReset
-    },
-    props: {
-        plot:{
-            type: String as PropType<PlotName>,
-            required: true
-        }
-    },
-    setup(props) {
-        const store = useStore<RootState>();
-        const filters = computed(() => {
-            return store.state.plotSelections[props.plot].filters;
-        });
+    export default defineComponent({
+        components: {
+            PlotFilter: Filter,
+            FilterWithReset
+        },
+        props: {
+            plot:{
+                type: String as PropType<PlotName>,
+                required: true
+            }
+        },
+        setup(props) {
+            const store = useStore<RootState>();
+            const filters = computed(() => {
+                return store.state.plotSelections[props.plot].filters;
+            });
 
-        return {
-            filters
+            return {
+                filters
+            }
         }
-    }
-})
+    })
 
 </script>

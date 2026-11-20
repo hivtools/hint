@@ -94,7 +94,7 @@
             steps: mapStateProp<StepperState, StepDescription[]>("stepper", state => state.steps),
             projectName: mapStateProp<ProjectsState, string | undefined>("projects", state => state.currentProject?.name),
             currentLanguage: mapStateProp<RootState, Language>(null,
-                (state: RootState) => state.language),
+                                                               (state: RootState) => state.language),
             support(): string {
                 return i18next.t("support", this.currentLanguage)
             },
@@ -102,16 +102,16 @@
                 return "https://www.youtube.com/@naomi-unaids"
             },
             helpFilename: mapStateProp<RootState, string>(null,
-                (state: RootState) => {
-                    if (state.language == Language.fr) {
-                        return HelpFile.french;
-                    }
-                    return HelpFile.english;
-                }),
+                                                          (state: RootState) => {
+                                                              if (state.language == Language.fr) {
+                                                                  return HelpFile.french;
+                                                              }
+                                                              return HelpFile.english;
+                                                          }),
         },
         methods: {
             generateErrorReport: mapActionByName(null,
-                "generateErrorReport"),
+                                                 "generateErrorReport"),
             async sendErrorReport(errorReport: ErrorReportManualDetails) {
                 await this.generateErrorReport({
                     section: this.currentSection,

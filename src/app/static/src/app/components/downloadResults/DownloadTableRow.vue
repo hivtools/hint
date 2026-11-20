@@ -24,49 +24,49 @@
 </template>
 
 <script setup lang="ts">
-import { computed, type PropType } from "vue";
-import VueFeather from "vue-feather";
-import { type DownloadType, fileTypeUIConfigs, getDownloadTranslationKey, statusUIConfigs, TaskStatus } from "../../store/downloadResults/downloadConfig";
-import { useStore } from "vuex";
-import type { RootState } from "../../root";
+    import { computed, type PropType } from "vue";
+    import VueFeather from "vue-feather";
+    import { type DownloadType, fileTypeUIConfigs, getDownloadTranslationKey, statusUIConfigs, TaskStatus } from "../../store/downloadResults/downloadConfig";
+    import { useStore } from "vuex";
+    import type { RootState } from "../../root";
 
-const props = defineProps({
-    downloadType: { type: String as PropType<DownloadType>, required: true }
-});
+    const props = defineProps({
+        downloadType: { type: String as PropType<DownloadType>, required: true }
+    });
 
-const store = useStore<RootState>();
+    const store = useStore<RootState>();
 
-const downloadState = computed(() => store.state.downloadResults[props.downloadType]);
-const disabled = computed(() => {
-    return !downloadState.value.downloadId || downloadState.value.preparing || !!downloadState.value.metadataError;
-});
+    const downloadState = computed(() => store.state.downloadResults[props.downloadType]);
+    const disabled = computed(() => {
+        return !downloadState.value.downloadId || downloadState.value.preparing || !!downloadState.value.metadataError;
+    });
 
-const downloadStatus = computed(() => {
-    // this branch might be a queued icon in the future so keeping it
-    // separate from the actual statusResponse.status being PENDING
-    if (!downloadState.value.statusResponse) return TaskStatus.PENDING;
-    switch (downloadState.value.statusResponse.status) {
-        case TaskStatus.PENDING:
-            return TaskStatus.PENDING;
-        case TaskStatus.RUNNING:
-            return TaskStatus.RUNNING;
-        case TaskStatus.COMPLETE:
-            return TaskStatus.COMPLETE;
-        case TaskStatus.ERROR:
-            return TaskStatus.ERROR;
-        default:
-            return TaskStatus.UNKNOWN
+    const downloadStatus = computed(() => {
+        // this branch might be a queued icon in the future so keeping it
+        // separate from the actual statusResponse.status being PENDING
+        if (!downloadState.value.statusResponse) return TaskStatus.PENDING;
+        switch (downloadState.value.statusResponse.status) {
+            case TaskStatus.PENDING:
+                return TaskStatus.PENDING;
+            case TaskStatus.RUNNING:
+                return TaskStatus.RUNNING;
+            case TaskStatus.COMPLETE:
+                return TaskStatus.COMPLETE;
+            case TaskStatus.ERROR:
+                return TaskStatus.ERROR;
+            default:
+                return TaskStatus.UNKNOWN
+        }
+    });
+
+    const download = () => {
+        const fileUrl = `/download/result/${downloadState.value.downloadId}`
+        const link = document.createElement("a");
+        link.href = fileUrl;
+        link.download = "downloaded_file";
+        link.click();
+        link.remove();
     }
-});
-
-const download = () => {
-    const fileUrl = `/download/result/${downloadState.value.downloadId}`
-    const link = document.createElement("a");
-    link.href = fileUrl;
-    link.download = "downloaded_file";
-    link.click();
-    link.remove();
-}
 </script>
 
 <style lang="css" scoped>

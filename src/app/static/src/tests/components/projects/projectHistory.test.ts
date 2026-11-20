@@ -240,7 +240,7 @@ describe("Project history component", () => {
     });
 
     const testRendersProject = async (wrapper: any, id: number, name: string, updatedIsoDate: string,
-                                versionsCount: number) => {
+                                      versionsCount: number) => {
         const v = wrapper.find(`#p-${id}`).findAll(".project-cell");
         const button = v[0].find("button");
         const feather = button.findAllComponents(VueFeather);

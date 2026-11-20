@@ -28,12 +28,12 @@ describe("model calibrate actions integration", () => {
             version: {hintr: "0.1.3", naomi: "1.0.4", rrq: "0.2.7"},
         };
         const testRootState = {
-           language: Language.en,
-           modelRun:{
-               modelRunId: "1234"
-           },
-           baseline: {iso3: "MWI"}
-       };
+            language: Language.en,
+            modelRun:{
+                modelRunId: "1234"
+            },
+            baseline: {iso3: "MWI"}
+        };
         await actions.submit({commit, state: testState, rootState: testRootState} as any, {});
 
         // passing an invalid run id so this will return an error

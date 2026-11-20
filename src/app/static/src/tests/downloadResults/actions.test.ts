@@ -61,10 +61,10 @@ const testDownloadAction = (type: DownloadType) => {
         const rootState = mockRootState({
             modelCalibrate: mockModelCalibrateState({ calibrateId: mockCalibrateId }),
             ... metadataError
-            ? {
-                metadata: mockMetadataState({ adrUploadMetadataError: mockMetadataError })
-            }
-            : {}
+                ? {
+                    metadata: mockMetadataState({ adrUploadMetadataError: mockMetadataError })
+                }
+                : {}
         });
         const rootGetters = { projectState: "mockProjectState" };
         const state = mockDownloadResultsState(partialDownloadState);

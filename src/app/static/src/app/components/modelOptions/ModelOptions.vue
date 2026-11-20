@@ -62,7 +62,7 @@
                 optionsError: (state: ModelOptionsState) => state.optionsError
             }),
             currentLanguage: mapStateProp<RootState, Language>(null,
-                (state: RootState) => state.language),
+                                                               (state: RootState) => state.language),
             selectText(): string {
                 return i18next.t("select", {lng: this.currentLanguage})
             },

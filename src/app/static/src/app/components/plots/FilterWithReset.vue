@@ -20,48 +20,48 @@
 </template>
 
 <script setup lang="ts">
-import VueFeather from "vue-feather";
-import { useStore } from "vuex";
-import type { RootState } from "../../root";
-import { computed, type PropType, ref } from "vue";
-import type { PlotName } from "../../store/plotSelections/plotSelections";
-import { getDefaultFilterSelections, type PlotSelectionActionUpdate } from "../../store/plotSelections/actions";
-import i18next from "i18next";
+    import VueFeather from "vue-feather";
+    import { useStore } from "vuex";
+    import type { RootState } from "../../root";
+    import { computed, type PropType, ref } from "vue";
+    import type { PlotName } from "../../store/plotSelections/plotSelections";
+    import { getDefaultFilterSelections, type PlotSelectionActionUpdate } from "../../store/plotSelections/actions";
+    import i18next from "i18next";
 
-const props = defineProps({
-    plot: { type: String as PropType<PlotName>, required: true },
-    stateFilterId: { type: String, required: false }
-});
+    const props = defineProps({
+        plot: { type: String as PropType<PlotName>, required: true },
+        stateFilterId: { type: String, required: false }
+    });
 
-const store = useStore<RootState>();
-const rootState = computed(() => store.state);
-const controls = computed(() => store.state.plotSelections[props.plot].controls);
-const resetFilters = () => {
-    let defaultFilterSelections = getDefaultFilterSelections(rootState.value, props.plot, controls.value);
-    if (props.stateFilterId) {
-        defaultFilterSelections = defaultFilterSelections.filter(f => f.stateFilterId === props.stateFilterId);
-    }
-    store.dispatch("plotSelections/updateSelections", {
-        payload: {
-            plot: props.plot,
-            selection: {
-                filters: defaultFilterSelections.map(f => ({
-                    id: f.stateFilterId,
-                    options: f.selection
-                }))
-            }
-        } as PlotSelectionActionUpdate
-    }, { root: true });
-};
+    const store = useStore<RootState>();
+    const rootState = computed(() => store.state);
+    const controls = computed(() => store.state.plotSelections[props.plot].controls);
+    const resetFilters = () => {
+        let defaultFilterSelections = getDefaultFilterSelections(rootState.value, props.plot, controls.value);
+        if (props.stateFilterId) {
+            defaultFilterSelections = defaultFilterSelections.filter(f => f.stateFilterId === props.stateFilterId);
+        }
+        store.dispatch("plotSelections/updateSelections", {
+            payload: {
+                plot: props.plot,
+                selection: {
+                    filters: defaultFilterSelections.map(f => ({
+                        id: f.stateFilterId,
+                        options: f.selection
+                    }))
+                }
+            } as PlotSelectionActionUpdate
+        }, { root: true });
+    };
 
-const showReset = ref(false);
-const currentLanguage = computed(() => store.state.language);
-const tooltipContent = computed(() => {
-    return i18next.t(
-        props.stateFilterId ? "resetSingleFilter" : "resetAllFilters",
-        { lng: currentLanguage.value }
-    )
-})
+    const showReset = ref(false);
+    const currentLanguage = computed(() => store.state.language);
+    const tooltipContent = computed(() => {
+        return i18next.t(
+            props.stateFilterId ? "resetSingleFilter" : "resetAllFilters",
+            { lng: currentLanguage.value }
+        )
+    })
 </script>
 
 <style scoped>

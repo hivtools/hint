@@ -1,18 +1,18 @@
 <template>
     <treeselect
-    :key="reRender"
-    :options="options"
-    :model-value="modelValue"
-    :multiple="multiple"
-    :disabled="!!disabled"
-    :clearable="!!clearable"
-    :placeholder="placeholder"
-    :searchable="searchable"
-    @update:model-value="input">
-    <!-- way to pass down all slots -->
-    <template v-for="(_, slot) in $slots" v-slot:[slot]="scope">
-        <slot :name="slot" v-bind="scope || {}" />
-    </template>
+        :key="reRender"
+        :options="options"
+        :model-value="modelValue"
+        :multiple="multiple"
+        :disabled="!!disabled"
+        :clearable="!!clearable"
+        :placeholder="placeholder"
+        :searchable="searchable"
+        @update:model-value="input">
+        <!-- way to pass down all slots -->
+        <template v-for="(_, slot) in $slots" v-slot:[slot]="scope">
+            <slot :name="slot" v-bind="scope || {}" />
+        </template>
     </treeselect>
 </template>
 <script lang="ts">

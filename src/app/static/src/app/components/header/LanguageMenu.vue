@@ -20,7 +20,7 @@
     export default defineComponent({
         computed: {
             currentLanguage: mapStateProp<RootState, string>(null,
-                (state: RootState) => state.language.toUpperCase())
+                                                             (state: RootState) => state.language.toUpperCase())
         },
         methods: {
             changeLanguage: mapActionByName<File>(null, "changeLanguage")
