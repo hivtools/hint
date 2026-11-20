@@ -27,7 +27,7 @@ test("can go through whole estimates process", async ({ projectPage }) => {
     await uploadAllTestFiles(page);
 
     // Continue button is enabled
-    await expect(continueButton).not.toBeDisabled();
+    await expect(continueButton).toBeEnabled();
 
     // Back button is disabled
     await expect(backButton).toBeDisabled();
@@ -39,14 +39,14 @@ test("can go through whole estimates process", async ({ projectPage }) => {
     expect(await getActiveStep(page)).toBe(Step.ReviewInputs);
 
     // and back button is enabled
-    await expect(backButton).not.toBeDisabled();
+    await expect(backButton).toBeEnabled();
 
     // When review input has finished loading
     await expect(page.locator("#review-loading")).toHaveCount(0, {timeout: 10000});
 
     // Continue and back buttons are enabled
-    await expect(continueButton).not.toBeDisabled();
-    await expect(backButton).not.toBeDisabled();
+    await expect(continueButton).toBeEnabled();
+    await expect(backButton).toBeEnabled();
 
     // When I click continue
     await continueButton.click();
@@ -56,14 +56,14 @@ test("can go through whole estimates process", async ({ projectPage }) => {
 
     // Continue button is disabled
     await expect(continueButton).toBeDisabled();
-    await expect(backButton).not.toBeDisabled();
+    await expect(backButton).toBeEnabled();
 
     // When I fill in options and click validate
     await setValidModelOptions(page);
 
     // then continue button is enabled
-    await expect(continueButton).not.toBeDisabled();
-    await expect(backButton).not.toBeDisabled();
+    await expect(continueButton).toBeEnabled();
+    await expect(backButton).toBeEnabled();
 
     // When I click continue
     await continueButton.click();
@@ -73,14 +73,14 @@ test("can go through whole estimates process", async ({ projectPage }) => {
 
     // Continue button is disabled
     await expect(continueButton).toBeDisabled();
-    await expect(backButton).not.toBeDisabled();
+    await expect(backButton).toBeEnabled();
 
     // When I fit the model
     await fitModel(page);
 
     // Continue button is enabled
-    await expect(continueButton).not.toBeDisabled();
-    await expect(backButton).not.toBeDisabled();
+    await expect(continueButton).toBeEnabled();
+    await expect(backButton).toBeEnabled();
 
     // When I click continue
     await continueButton.click();
@@ -90,7 +90,7 @@ test("can go through whole estimates process", async ({ projectPage }) => {
 
     // and continue button is disabled
     await expect(continueButton).toBeDisabled();
-    await expect(backButton).not.toBeDisabled();
+    await expect(backButton).toBeEnabled();
 
     // When I calibrate model
     await calibrateModel(page);
@@ -99,8 +99,8 @@ test("can go through whole estimates process", async ({ projectPage }) => {
     await expect(page.locator('canvas')).toBeVisible();
 
     // Continue button is enabled
-    await expect(continueButton).not.toBeDisabled();
-    await expect(backButton).not.toBeDisabled();
+    await expect(continueButton).toBeEnabled();
+    await expect(backButton).toBeEnabled();
 
     // When I click continue
     await continueButton.click();
@@ -109,8 +109,8 @@ test("can go through whole estimates process", async ({ projectPage }) => {
     expect(await getActiveStep(page)).toBe(Step.ReviewOutput);
 
     // Continue button is enabled
-    await expect(continueButton).not.toBeDisabled();
-    await expect(backButton).not.toBeDisabled();
+    await expect(continueButton).toBeEnabled();
+    await expect(backButton).toBeEnabled();
 
     // When I click continue
     await continueButton.click();
