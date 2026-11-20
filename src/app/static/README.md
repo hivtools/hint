@@ -66,7 +66,8 @@ The type check is `vue-tsc --build`. It checks the projects in `tsconfig.json`, 
 | `tsconfig.node.json` | the config files for Vite, Vitest, ESLint and Playwright |
 | `src/tests/e2e/tsconfig.json` | the Playwright tests |
 
-The type check does not check the `<template>` blocks or the `.d.ts` files of the packages.
+The type check also checks the `<template>` blocks of the components. It does not check the `.d.ts` files of the
+packages (`skipLibCheck`).
 
 ## Tests
 
