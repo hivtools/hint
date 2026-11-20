@@ -56,6 +56,12 @@ import {ReviewInputState} from "../../app/store/reviewInput/reviewInput";
 import {ReviewInputMutation} from "../../app/store/reviewInput/mutations";
 import {nextTick} from 'vue';
 
+// The prefetch imports every step when the browser is idle, which the tests do not need
+vi.mock("../../app/components/lazySteps", async (importOriginal) => ({
+    ...(await importOriginal<typeof import("../../app/components/lazySteps")>()),
+    prefetchSteps: vi.fn()
+}));
+
 describe("Stepper component", () => {
 
     const clearOptionsWarnings = vi.fn(); 

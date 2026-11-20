@@ -53,7 +53,7 @@
     import Step from "./Step.vue";
     import UploadInputs from "./uploadInputs/UploadInputs.vue";
     import LoadingSpinner from "./LoadingSpinner.vue";
-    import {lazyStep, stepLoaders} from "./lazySteps";
+    import {lazyStep, prefetchSteps, stepLoaders} from "./lazySteps";
     import WarningAlert from "./WarningAlert.vue";
     import LoadInvalidModal from "./load/LoadInvalidModal.vue";
     import {StepDescription, StepperState} from "../store/stepper/stepper";
@@ -73,7 +73,7 @@
 
     const namespace = 'stepper';
 
-    // Steps 2 to 7 load their files when the user first needs them
+    // Steps 2 to 7 load their files when the user first needs them (or earlier, see prefetchSteps)
     const ReviewInputs = lazyStep(stepLoaders.reviewInputs);
     const ModelOptions = lazyStep(stepLoaders.modelOptions);
     const ModelRun = lazyStep(stepLoaders.modelRun);
@@ -179,6 +179,10 @@
             if ((!this.isGuest) && (this.currentProject == null) && (!this.projectLoading)) {
                 this.$router.push('/projects');
             }
+        },
+        mounted() {
+            // Do not wait for this: it runs when the browser is idle
+            prefetchSteps();
         },
         components: {
             AdrIntegration,
