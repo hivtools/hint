@@ -31,12 +31,12 @@ const projectsActions = {
     getCurrentProject: vi.fn()
 };
 
-storeOptions.modules!!.baseline!!.actions = baselineActions;
-storeOptions.modules!!.surveyAndProgram!!.actions = surveyAndProgramActions;
-storeOptions.modules!!.modelRun!!.actions = modelRunActions;
-storeOptions.modules!!.modelCalibrate!!.actions = modelCalibrateActions;
-storeOptions.modules!!.projects!!.actions = projectsActions;
-storeOptions.modules!!.adr!!.actions = adrActions;
+storeOptions.modules!.baseline!.actions = baselineActions;
+storeOptions.modules!.surveyAndProgram!.actions = surveyAndProgramActions;
+storeOptions.modules!.modelRun!.actions = modelRunActions;
+storeOptions.modules!.modelCalibrate!.actions = modelCalibrateActions;
+storeOptions.modules!.projects!.actions = projectsActions;
+storeOptions.modules!.adr!.actions = adrActions;
 
 console.error = vi.fn();
 
@@ -65,15 +65,15 @@ describe("App", () => {
 
     const getStore = (ready: boolean = false) => {
         const localStoreOptions = {...storeOptions};
-        Object.assign(localStoreOptions.modules!!.baseline.state,
+        Object.assign(localStoreOptions.modules!.baseline.state,
             {
                 ready,
                 selectedDataset: {id: "1"}
             }
         );
-        localStoreOptions.modules!!.surveyAndProgram.state.ready = ready;
-        localStoreOptions.modules!!.modelRun.state.ready = ready;
-        localStoreOptions.modules!!.modelCalibrate.state.ready = ready;
+        localStoreOptions.modules!.surveyAndProgram.state.ready = ready;
+        localStoreOptions.modules!.modelRun.state.ready = ready;
+        localStoreOptions.modules!.modelCalibrate.state.ready = ready;
         return new Vuex.Store<RootState>(localStoreOptions);
     };
 
