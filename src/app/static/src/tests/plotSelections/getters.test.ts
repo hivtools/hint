@@ -551,7 +551,7 @@ describe("plotSelections getters", () => {
         });
     })
 
-    it ('population data returns 0 datasets when plot type not known ', () => {
+    it ('population data returns 0 datasets when plot type not known', () => {
         const plotData = mockPopulationPyramidData();
         const mockGetters = {
             controlSelectionFromId: (plotName: PlotName, controlId: string) => {

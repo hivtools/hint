@@ -404,7 +404,7 @@ describe("Survey and programme actions", () => {
         expect(payloads.filter(p => Object.isFrozen(p)).length).toBe(1);
     });
 
-    it("it validates, commits and marks state ready", async () => {
+    it("validates, commits and marks state ready", async () => {
 
         mockAxios.onGet(`/disease/survey/?strict=true`)
             .reply(200, mockSuccess(mockSurveyResponse()));
@@ -431,7 +431,7 @@ describe("Survey and programme actions", () => {
         //ready payload is true, which is frozen by definition
     });
 
-    it("it runs validation, fails one and commits correctly", async () => {
+    it("runs validation, fails one and commits correctly", async () => {
 
         mockAxios.onGet(`/disease/survey/?strict=true`)
             .reply(500, mockFailure("Error message"));
@@ -459,7 +459,7 @@ describe("Survey and programme actions", () => {
         //ready payload is true, which is frozen by definition
     });
 
-    it("it runs validation, fails all and commits correctly", async () => {
+    it("runs validation, fails all and commits correctly", async () => {
 
         mockAxios.onGet(`/disease/survey/?strict=true`)
             .reply(500, mockFailure("Failed"));

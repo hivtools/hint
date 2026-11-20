@@ -4,7 +4,7 @@ import type {Mock} from "vitest";
 
 const rootState = mockRootState();
 
-describe("hintrVersion Actions ", ()=> {
+describe("hintrVersion Actions", ()=> {
 
     beforeEach(() => {
         // stop apiService logging to console

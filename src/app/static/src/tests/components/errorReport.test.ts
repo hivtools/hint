@@ -652,7 +652,7 @@ describe("Error report component", () => {
     });
 
 
-    it("validates email and enables send button ", async () => {
+    it("validates email and enables send button", async () => {
         const store = createStore({}, {}, {}, true)
         const wrapper = mountWithTranslate(ErrorReport, store, {
             props: {

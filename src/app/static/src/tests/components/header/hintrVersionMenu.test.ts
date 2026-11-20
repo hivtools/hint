@@ -76,7 +76,7 @@ describe("Hintr Menu Version", () => {
         expect(wrapper.findAll("span")[4].text()).toBe(`hint : v${currentHintVersion}`);
     });
 
-    it("hintr version menu gets initial version placeholder before getter ", async() => {
+    it("hintr version menu gets initial version placeholder before getter", async() => {
         const store = createStore();
         const wrapper = shallowMountWithTranslate(HintrVersionMenu, store, {
             global: {
