@@ -9,9 +9,6 @@
     <!-- vite-assets -->
     <#include "vite-assets.ftl" parse=false ignore_missing=true>
     <!-- /vite-assets -->
-    <#-- Must match the katex version in package.json/package-lock.json. An unpinned URL serves the latest
-         CSS, which does not match the markup produced by the locked katex JS and breaks equation layout -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
 </head>
 <body>
 <div id="app" :class="language" data-user="${user}" data-title="${title}"></div>

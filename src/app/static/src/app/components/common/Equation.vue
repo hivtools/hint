@@ -5,6 +5,7 @@
 <script setup lang="ts">
 import {onMounted, ref, watch} from "vue";
 import katex from 'katex';
+import 'katex/dist/katex.min.css';
 
 const props = defineProps({
     formula: {
