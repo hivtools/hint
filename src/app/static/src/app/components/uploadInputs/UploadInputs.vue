@@ -4,7 +4,7 @@
             <button id="load-zip-button"
                     class="btn btn-red mb-4"
                     type="button"
-                    @click="$refs.loadZip.click()">
+                    @click="($refs.loadZip as HTMLInputElement).click()">
                 <vue-feather type="upload" size="20" class="icon ml-1 align-middle"></vue-feather>
                 <span class="align-middle ml-2" v-translate="'loadZip'"></span>
             </button>
