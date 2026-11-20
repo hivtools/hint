@@ -27,155 +27,155 @@
 </template>
 
 <script setup lang="ts">
-import {type PropType, type Ref, computed, onMounted, ref, toRefs, watch} from "vue";
-import {useStore} from "vuex";
-import type {RootState} from "../../../root";
-import { LMap, LGeoJson, LTileLayer } from "@vue-leaflet/vue-leaflet";
-import type { Feature } from "geojson";
-import {
-    getVisibleFeatures,
-    getIndicatorRange,
-    getColourScaleLevels,
-    debounce_leading,
-    getIndicatorMetadata,
-    type ScaleLevels
-} from "../utils";
-import ResetMap from "../ResetMap.vue";
-import MapLegend from "../MapLegend.vue";
-import type {IndicatorValuesDict, NumericRange} from "../../../types";
-import type {CalibrateDataResponse, IndicatorMetadata} from "../../../generated";
-import type { ScaleSettings } from "../../../store/plotState/plotState";
-import {useChoroplethTooltips} from "./useChoroplethTooltips";
-import {getFeatureData} from "./utils";
-import MapEmptyFeature from "../MapEmptyFeature.vue";
-import type { PlotName } from "../../../store/plotSelections/plotSelections";
-import BaseMapCheckbox from "../BaseMapCheckbox.vue";
+    import {type PropType, type Ref, computed, onMounted, ref, toRefs, watch} from "vue";
+    import {useStore} from "vuex";
+    import type {RootState} from "../../../root";
+    import { LMap, LGeoJson, LTileLayer } from "@vue-leaflet/vue-leaflet";
+    import type { Feature } from "geojson";
+    import {
+        getVisibleFeatures,
+        getIndicatorRange,
+        getColourScaleLevels,
+        debounce_leading,
+        getIndicatorMetadata,
+        type ScaleLevels
+    } from "../utils";
+    import ResetMap from "../ResetMap.vue";
+    import MapLegend from "../MapLegend.vue";
+    import type {IndicatorValuesDict, NumericRange} from "../../../types";
+    import type {CalibrateDataResponse, IndicatorMetadata} from "../../../generated";
+    import type { ScaleSettings } from "../../../store/plotState/plotState";
+    import {useChoroplethTooltips} from "./useChoroplethTooltips";
+    import {getFeatureData} from "./utils";
+    import MapEmptyFeature from "../MapEmptyFeature.vue";
+    import type { PlotName } from "../../../store/plotSelections/plotSelections";
+    import BaseMapCheckbox from "../BaseMapCheckbox.vue";
 
-const props = defineProps({
-    plot: {
-        type: String as PropType<PlotName>,
-        required: true
+    const props = defineProps({
+        plot: {
+            type: String as PropType<PlotName>,
+            required: true
+        }
+    });
+    const { plot } = toRefs(props);
+
+    const tileLayerUrl = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
+
+    const store = useStore<RootState>();
+    const plotData = computed(() => store.state.plotData[plot.value] as CalibrateDataResponse["data"]);
+
+    const selectedIndicator = computed<string>(() => {
+        return store.state.plotSelections[plot.value].filters.find(f => f.stateFilterId === "indicator")!.selection[0].id
+    });
+    const indicatorMetadata = computed<IndicatorMetadata>(() => {
+        return getIndicatorMetadata(store, plot.value, selectedIndicator.value)
+    });
+    const colourRange = ref<NumericRange | null>(null);
+    const scaleLevels = ref([]) as Ref<ScaleLevels[]>;
+    const selectedScale = ref<ScaleSettings | null>(null);
+    const baseMapVisible = ref(true);
+
+    const features = store.state.baseline.shape ?
+        store.state.baseline.shape.data.features as Feature[] : [] as Feature[];
+    const currentFeatures = ref<Feature[]>([]);
+    const featureData = ref<IndicatorValuesDict>({});
+
+    const map = ref<typeof LMap | null>(null);
+    const featureRefs = ref<typeof LGeoJson[]>([]);
+
+    const currentLanguage = computed(() => store.state.language);
+
+    const {createTooltips, updateTooltips} = useChoroplethTooltips(featureData, indicatorMetadata, currentFeatures, featureRefs, currentLanguage.value)
+
+    const updateMap = () => {
+        updateFeatures();
+        updateMapColours();
+        updateTooltips();
+    };
+
+    const colourScales = computed(() => {
+        return store.state.plotState.output.colourScales
+    });
+
+    const updateMapColours = () => {
+        selectedScale.value = colourScales.value[selectedIndicator.value];
+        colourRange.value = getIndicatorRange(indicatorMetadata.value, selectedScale.value, plotData.value);
+        scaleLevels.value = getColourScaleLevels(indicatorMetadata.value, colourRange.value);
+        featureData.value = getFeatureData(
+            plotData.value,
+            indicatorMetadata.value,
+            colourRange.value ? colourRange.value : {max: 1, min: 0}
+        );
+    };
+
+    const updateFeatures = () => {
+        const selectedLevel = store.state.plotSelections[plot.value].filters
+            .find(f => f.stateFilterId === "detail")!.selection;
+        currentFeatures.value = getVisibleFeatures(features, selectedLevel);
+    };
+
+    const toggleBaseMap = () => {
+        baseMapVisible.value = !baseMapVisible.value
     }
-});
-const { plot } = toRefs(props);
 
-const tileLayerUrl = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
+    const selectedAreaIds = computed(() => {
+        return store.state.plotSelections[plot.value].filters
+            .find(f => f.stateFilterId === "area")!.selection
+            .map(opt => opt.id);
+    });
 
-const store = useStore<RootState>();
-const plotData = computed(() => store.state.plotData[plot.value] as CalibrateDataResponse["data"]);
-
-const selectedIndicator = computed<string>(() => {
-    return store.state.plotSelections[plot.value].filters.find(f => f.stateFilterId === "indicator")!.selection[0].id
-});
-const indicatorMetadata = computed<IndicatorMetadata>(() => {
-    return getIndicatorMetadata(store, plot.value, selectedIndicator.value)
-});
-const colourRange = ref<NumericRange | null>(null);
-const scaleLevels = ref([]) as Ref<ScaleLevels[]>;
-const selectedScale = ref<ScaleSettings | null>(null);
-const baseMapVisible = ref(true);
-
-const features = store.state.baseline.shape ?
-    store.state.baseline.shape.data.features as Feature[] : [] as Feature[];
-const currentFeatures = ref<Feature[]>([]);
-const featureData = ref<IndicatorValuesDict>({});
-
-const map = ref<typeof LMap | null>(null);
-const featureRefs = ref<typeof LGeoJson[]>([]);
-
-const currentLanguage = computed(() => store.state.language);
-
-const {createTooltips, updateTooltips} = useChoroplethTooltips(featureData, indicatorMetadata, currentFeatures, featureRefs, currentLanguage.value)
-
-const updateMap = () => {
-    updateFeatures();
-    updateMapColours();
-    updateTooltips();
-};
-
-const colourScales = computed(() => {
-    return store.state.plotState.output.colourScales
-});
-
-const updateMapColours = () => {
-    selectedScale.value = colourScales.value[selectedIndicator.value];
-    colourRange.value = getIndicatorRange(indicatorMetadata.value, selectedScale.value, plotData.value);
-    scaleLevels.value = getColourScaleLevels(indicatorMetadata.value, colourRange.value);
-    featureData.value = getFeatureData(
-        plotData.value,
-        indicatorMetadata.value,
-        colourRange.value ? colourRange.value : {max: 1, min: 0}
-    );
-};
-
-const updateFeatures = () => {
-    const selectedLevel = store.state.plotSelections[plot.value].filters
-        .find(f => f.stateFilterId === "detail")!.selection;
-    currentFeatures.value = getVisibleFeatures(features, selectedLevel);
-};
-
-const toggleBaseMap = () => {
-    baseMapVisible.value = !baseMapVisible.value
-}
-
-const selectedAreaIds = computed(() => {
-    return store.state.plotSelections[plot.value].filters
-        .find(f => f.stateFilterId === "area")!.selection
-        .map(opt => opt.id);
-});
-
-// Update bounds can be called multiple times by v-node-updated, but
-// I can't find an appropriate thing to watch to trigger this only once
-// so debounce it instead. If the bound update is called twice in quick
-// succession, it kills the animation. Debouncing this means it should
-// update smoothly
-const updateBounds = debounce_leading(() => {
-    const visibleRefs = featureRefs.value
-        .filter(f => selectedAreaIds.value.includes(f.geojson?.properties?.area_id))
-    if (visibleRefs.length > 0) {
-        map.value?.leafletObject.fitBounds(visibleRefs
+    // Update bounds can be called multiple times by v-node-updated, but
+    // I can't find an appropriate thing to watch to trigger this only once
+    // so debounce it instead. If the bound update is called twice in quick
+    // succession, it kills the animation. Debouncing this means it should
+    // update smoothly
+    const updateBounds = debounce_leading(() => {
+        const visibleRefs = featureRefs.value
+            .filter(f => selectedAreaIds.value.includes(f.geojson?.properties?.area_id))
+        if (visibleRefs.length > 0) {
+            map.value?.leafletObject.fitBounds(visibleRefs
                 .map(f => f.leafletObject.getBounds()));
+        }
+    }, 50);
+
+    // Use watchers instead of computed
+    // When the plotSelections updates, the new data will have been fetched from the backend already
+    // so we can update the UI.
+    // We also want to update the UI when scale selections get changed.
+    // But updating the plotSelections will also update the scale selections
+    // So using computed we end up with duplicate updates when plotSelections change.
+    // So we use watch instead for more control over when things are updated.
+    watch(colourScales, updateMapColours)
+    watch(selectedAreaIds, updateBounds);
+    watch(() => [store.state.plotSelections[plot.value]], updateMap);
+
+    const showColour = (feature: Feature) => {
+        return featureData.value[feature.properties!.area_id]
+    };
+
+    const getColour = (feature: Feature) => {
+        if (showColour(feature)) {
+            return featureData.value[feature.properties!.area_id].color;
+        } else {
+            //show a lighter grey than the outlines if no data
+            //so unselected regions are still distinguishable
+            return "rgb(200,200,200)";
+        }
+    };
+
+    const getStyle = (feature: Feature) => {
+        return {
+            className: "geojson",
+            fillColor: getColour(feature)
+        }
     }
-}, 50);
 
-// Use watchers instead of computed
-// When the plotSelections updates, the new data will have been fetched from the backend already
-// so we can update the UI.
-// We also want to update the UI when scale selections get changed.
-// But updating the plotSelections will also update the scale selections
-// So using computed we end up with duplicate updates when plotSelections change.
-// So we use watch instead for more control over when things are updated.
-watch(colourScales, updateMapColours)
-watch(selectedAreaIds, updateBounds);
-watch(() => [store.state.plotSelections[plot.value]], updateMap);
+    const emptyFeature = computed(() => {
+        return plotData.value.length === 0
+    });
 
-const showColour = (feature: Feature) => {
-    return featureData.value[feature.properties!.area_id]
-};
-
-const getColour = (feature: Feature) => {
-    if (showColour(feature)) {
-        return featureData.value[feature.properties!.area_id].color;
-    } else {
-        //show a lighter grey than the outlines if no data
-        //so unselected regions are still distinguishable
-        return "rgb(200,200,200)";
-    }
-};
-
-const getStyle = (feature: Feature) => {
-    return {
-        className: "geojson",
-        fillColor: getColour(feature)
-    }
-}
-
-const emptyFeature = computed(() => {
-    return plotData.value.length === 0
-});
-
-onMounted(() => {
-    updateFeatures();
-    updateMapColours();
-});
+    onMounted(() => {
+        updateFeatures();
+        updateMapColours();
+    });
 </script>

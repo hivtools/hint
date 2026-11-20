@@ -37,7 +37,7 @@
             </div>
             <load-invalid-modal></load-invalid-modal>
             <template v-if="activeStep === 3">
-              <warning-alert :warnings="activeStepWarnings" @clear-warnings="clearWarnings"></warning-alert>
+                <warning-alert :warnings="activeStepWarnings" @clear-warnings="clearWarnings"></warning-alert>
             </template>
         </div>
         <template v-if="activeStep !== 4">
@@ -98,7 +98,7 @@
                 projectLoading: (state: ProjectsState) => state.loading
             }),
             updatingLanguage: mapStateProp<RootState, boolean>(null,
-                (state: RootState) => state.updatingLanguage
+                                                               (state: RootState) => state.updatingLanguage
             ),
             ...mapGettersByNames<typeof readyCompleteGetters, ReadyCompleteGetters>(namespace, readyCompleteGetters),
             loading: function (): boolean {
@@ -198,7 +198,7 @@
                 // auto-progress from modelRun to modelCalibrate if there are no warnings to display
                 if (this.activeStep === StepEnum.FitModel && this.isComplete(StepEnum.FitModel) &&
                     this.isEnabled(StepEnum.CalibrateModel) &&
-                        this.activeStepWarnings.modelRun.length === 0) {
+                    this.activeStepWarnings.modelRun.length === 0) {
                     this.next();
                 }
             },

@@ -13,10 +13,10 @@
             </a>
             <span class="color-red">
                 <vue-feather type="info"
-                           size="20"
-                           v-if="outOfDateMessage"
-                           v-tooltip="outOfDateMessage"
-                           class="align-text-bottom">
+                             size="20"
+                             v-if="outOfDateMessage"
+                             v-tooltip="outOfDateMessage"
+                             class="align-text-bottom">
                 </vue-feather>
             </span>
         </div>
@@ -47,21 +47,21 @@
     </div>
 </template>
 <script lang="ts">
-import i18next from "i18next";
-import type {Language} from "../../store/translations/locales";
-import {mapActionByName, mapGetterByName, mapMutationByName, mapStateProp,} from "../../utils";
-import type {RootState} from "../../root";
-import {BaselineMutation} from "../../store/baseline/mutations";
-import type {BaselineState} from "../../store/baseline/baseline";
-import {type Dataset, type DatasetResourceSet, type Release, Step} from "../../types";
-import VueFeather from "vue-feather";
-import ResetConfirmation from "../resetConfirmation/ResetConfirmation.vue";
-import SelectDatasetModal from "./SelectDatasetModal.vue";
-import ResetConfirmationMixin from "../resetConfirmation/ResetConfirmationMixin";
-import {defineComponent} from "vue";
-import {AdrDatasetType} from "../../store/adr/adr";
+    import i18next from "i18next";
+    import type {Language} from "../../store/translations/locales";
+    import {mapActionByName, mapGetterByName, mapMutationByName, mapStateProp,} from "../../utils";
+    import type {RootState} from "../../root";
+    import {BaselineMutation} from "../../store/baseline/mutations";
+    import type {BaselineState} from "../../store/baseline/baseline";
+    import {type Dataset, type DatasetResourceSet, type Release, Step} from "../../types";
+    import VueFeather from "vue-feather";
+    import ResetConfirmation from "../resetConfirmation/ResetConfirmation.vue";
+    import SelectDatasetModal from "./SelectDatasetModal.vue";
+    import ResetConfirmationMixin from "../resetConfirmation/ResetConfirmationMixin";
+    import {defineComponent} from "vue";
+    import {AdrDatasetType} from "../../store/adr/adr";
 
-interface Data {
+    interface Data {
         open: boolean;
         showConfirmation: boolean;
         loading: boolean;
@@ -244,14 +244,14 @@ interface Data {
                 } = this.selectedDataset!.resources;
                 await Promise.all([
                     this.outOfDateResources["pjnz"] &&
-                    pjnz &&
-                    this.importPJNZ(pjnz.url),
+                        pjnz &&
+                        this.importPJNZ(pjnz.url),
                     this.outOfDateResources["pop"] &&
-                    pop &&
-                    this.importPopulation(pop.url),
+                        pop &&
+                        this.importPopulation(pop.url),
                     this.outOfDateResources["shape"] &&
-                    shape &&
-                    this.importShape(shape.url),
+                        shape &&
+                        this.importShape(shape.url),
                 ]);
 
                 const baselineUpdated =
@@ -265,14 +265,14 @@ interface Data {
                 if (shape || this.hasShapeFile) {
                     await Promise.all([
                         (baselineUpdated || this.outOfDateResources["survey"]) &&
-                        survey &&
-                        this.importSurvey(survey.url),
+                            survey &&
+                            this.importSurvey(survey.url),
                         (baselineUpdated || this.outOfDateResources["program"]) &&
-                        program &&
-                        this.importProgram(program.url),
+                            program &&
+                            this.importProgram(program.url),
                         (baselineUpdated || this.outOfDateResources["anc"]) &&
-                        anc &&
-                        this.importANC(anc.url),
+                            anc &&
+                            this.importANC(anc.url),
                     ]);
                 }
 

@@ -6,7 +6,7 @@
                     <h1 class="mb-1" v-translate="'projects'"></h1>
                     <span v-if="currentProject">
                         <a v-translate="'projectsHeaderReturn'"
-                        href="#" @click="handleCurrentProjectClick"></a> ({{ currentProject.name }})
+                           href="#" @click="handleCurrentProjectClick"></a> ({{ currentProject.name }})
                     </span>
                 </div>
                 <div class="flex-grow-1"></div>

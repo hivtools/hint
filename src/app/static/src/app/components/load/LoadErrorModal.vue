@@ -29,8 +29,8 @@
         name: "LoadErrorModal",
         computed: {
             ...mapStateProps("load", {
-              hasError: (state: LoadState) => state.loadingState === LoadingState.LoadFailed,
-              loadError: (state: LoadState) => state.loadError && state.loadError.detail
+                hasError: (state: LoadState) => state.loadingState === LoadingState.LoadFailed,
+                loadError: (state: LoadState) => state.loadError && state.loadError.detail
             })
         },
         methods: {

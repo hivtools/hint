@@ -40,103 +40,103 @@
 </template>
 
 <script lang="ts">
-import {computed, defineComponent, onBeforeMount, ref} from 'vue';
-import {useStore} from 'vuex';
-import type {RootState} from '../../root';
-import PlotControlSet from '../plots/PlotControlSet.vue';
-import FilterSet from '../plots/FilterSet.vue';
-import {type InputPlotName, inputPlotNames, type PlotName} from '../../store/plotSelections/plotSelections';
-import TimeSeries from "../plots/timeSeries/TimeSeries.vue";
-import Choropleth from '../plots/choropleth/Choropleth.vue';
-import LoadingSpinner from "../LoadingSpinner.vue";
-import ErrorAlert from "../ErrorAlert.vue";
-import DownloadTimeSeries from "../plots/timeSeries/downloadTimeSeries/DownloadTimeSeries.vue";
-import Barchart from "../plots/bar/Barchart.vue";
-import Table from "../plots/table/Table.vue";
-import PopulationGrid from '../plots/population/PopulationGrid.vue';
-import FilterWithReset from '../plots/FilterWithReset.vue';
+    import {computed, defineComponent, onBeforeMount, ref} from 'vue';
+    import {useStore} from 'vuex';
+    import type {RootState} from '../../root';
+    import PlotControlSet from '../plots/PlotControlSet.vue';
+    import FilterSet from '../plots/FilterSet.vue';
+    import {type InputPlotName, inputPlotNames, type PlotName} from '../../store/plotSelections/plotSelections';
+    import TimeSeries from "../plots/timeSeries/TimeSeries.vue";
+    import Choropleth from '../plots/choropleth/Choropleth.vue';
+    import LoadingSpinner from "../LoadingSpinner.vue";
+    import ErrorAlert from "../ErrorAlert.vue";
+    import DownloadTimeSeries from "../plots/timeSeries/downloadTimeSeries/DownloadTimeSeries.vue";
+    import Barchart from "../plots/bar/Barchart.vue";
+    import Table from "../plots/table/Table.vue";
+    import PopulationGrid from '../plots/population/PopulationGrid.vue';
+    import FilterWithReset from '../plots/FilterWithReset.vue';
 
-export default defineComponent({
-    components: {
-        Barchart,
-        DownloadTimeSeries,
-        ErrorAlert,
-        PlotControlSet,
-        FilterSet,
-        PlotTable: Table,
-        TimeSeries,
-        Choropleth,
-        LoadingSpinner,
-        FilterWithReset,
-        PopulationGrid
-    },
-    setup() {
-        const store = useStore<RootState>();
-        const inputComparisonPlots: PlotName[] = ["inputComparisonBarchart", "inputComparisonTable"];
-        const availablePlots = computed(() => {
-            if (!store.state.surveyAndProgram.anc && !store.state.surveyAndProgram.program) {
-                return inputPlotNames.filter(name => name != "timeSeries" && !inputComparisonPlots.includes(name))
-            } else {
-                return inputPlotNames
-            }
-        })
-        const activePlot = ref<InputPlotName>(availablePlots.value[0]);
+    export default defineComponent({
+        components: {
+            Barchart,
+            DownloadTimeSeries,
+            ErrorAlert,
+            PlotControlSet,
+            FilterSet,
+            PlotTable: Table,
+            TimeSeries,
+            Choropleth,
+            LoadingSpinner,
+            FilterWithReset,
+            PopulationGrid
+        },
+        setup() {
+            const store = useStore<RootState>();
+            const inputComparisonPlots: PlotName[] = ["inputComparisonBarchart", "inputComparisonTable"];
+            const availablePlots = computed(() => {
+                if (!store.state.surveyAndProgram.anc && !store.state.surveyAndProgram.program) {
+                    return inputPlotNames.filter(name => name != "timeSeries" && !inputComparisonPlots.includes(name))
+                } else {
+                    return inputPlotNames
+                }
+            })
+            const activePlot = ref<InputPlotName>(availablePlots.value[0]);
 
-        const changePlot = async (plot: InputPlotName) => {
-            activePlot.value = plot;
-            if (inputComparisonPlots.includes(activePlot.value) && !store.state.reviewInput.inputComparison.data) {
-                await store.dispatch("reviewInput/getInputComparisonDataset", {}, {root: true});
+            const changePlot = async (plot: InputPlotName) => {
+                activePlot.value = plot;
+                if (inputComparisonPlots.includes(activePlot.value) && !store.state.reviewInput.inputComparison.data) {
+                    await store.dispatch("reviewInput/getInputComparisonDataset", {}, {root: true});
+                }
+                if (activePlot.value === "population" && !store.state.reviewInput.population.data) {
+                    await store.dispatch('reviewInput/getPopulationDataset', {}, { root: true })
+                }
             }
-            if (activePlot.value === "population" && !store.state.reviewInput.population.data) {
-                await store.dispatch('reviewInput/getPopulationDataset', {}, { root: true })
+            const loading = computed(() => store.state.reviewInput.loading ||
+                store.state.reviewInput.inputComparison.loading || store.state.reviewInput.population.loading);
+
+            const plotDescription = computed(() => {
+                if (activePlot.value === "timeSeries") {
+                    return "inputTimeSeriesDescription"
+                } else if (activePlot.value === 'population' && isPopulationProportion.value) {
+                    return 'populationPlotNote'
+                } else {
+                    return null
+                }
+            });
+
+            const error = computed(() => {
+                return store.state.metadata.reviewInputMetadataError
+            });
+
+            const inputComparisonError = computed(() => {
+                return store.state.reviewInput.inputComparison.error
+            });
+
+            const populationMetadataError = computed(() => {
+                return store.state.reviewInput.population.error
+            });
+
+            const plotControlGetter = store.getters["plotSelections/controlSelectionFromId"];
+
+            const isPopulationProportion = computed(() => {
+                const plotTypeSelection = plotControlGetter?.("population", "plot")?.id
+                return plotTypeSelection === "population_proportion"
+            });
+
+            onBeforeMount(async () => {
+                await store.dispatch("metadata/getReviewInputMetadata", {}, { root: true });
+            });
+
+            return {
+                availablePlots,
+                activePlot,
+                changePlot,
+                loading,
+                plotDescription,
+                error,
+                inputComparisonError,
+                populationMetadataError
             }
         }
-        const loading = computed(() => store.state.reviewInput.loading ||
-            store.state.reviewInput.inputComparison.loading || store.state.reviewInput.population.loading);
-
-        const plotDescription = computed(() => {
-            if (activePlot.value === "timeSeries") {
-                return "inputTimeSeriesDescription"
-            } else if (activePlot.value === 'population' && isPopulationProportion.value) {
-                return 'populationPlotNote'
-            } else {
-                return null
-            }
-        });
-
-        const error = computed(() => {
-            return store.state.metadata.reviewInputMetadataError
-        });
-
-        const inputComparisonError = computed(() => {
-            return store.state.reviewInput.inputComparison.error
-        });
-
-        const populationMetadataError = computed(() => {
-            return store.state.reviewInput.population.error
-        });
-
-        const plotControlGetter = store.getters["plotSelections/controlSelectionFromId"];
-
-        const isPopulationProportion = computed(() => {
-            const plotTypeSelection = plotControlGetter?.("population", "plot")?.id
-            return plotTypeSelection === "population_proportion"
-        });
-
-        onBeforeMount(async () => {
-            await store.dispatch("metadata/getReviewInputMetadata", {}, { root: true });
-        });
-
-        return {
-            availablePlots,
-            activePlot,
-            changePlot,
-            loading,
-            plotDescription,
-            error,
-            inputComparisonError,
-            populationMetadataError
-        }
-    }
-})
+    })
 </script>

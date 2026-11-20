@@ -9,7 +9,7 @@
                 <div class="align-self-center pl-2">
                     <div v-if="!editing">
                         <span class="pr-2 align-middle">
-                          {{ keyText }}
+                            {{ keyText }}
                         </span>
                         <span v-if="!key">
                             <button class="btn btn-red"
@@ -24,12 +24,12 @@
                                v-tooltip="tooltipContent"></a>
                         </span>
                         <span v-if="key">
-                             <button class="btn btn-red"
-                                     type="button"
-                                     @click="remove"
-                                     v-translate="'removeButton'">
+                            <button class="btn btn-red"
+                                    type="button"
+                                    @click="remove"
+                                    v-translate="'removeButton'">
                             </button>
-                         </span>
+                        </span>
                     </div>
                     <div class="input-group"
                          style="margin-top: -8px; min-width: 390px"
@@ -81,13 +81,13 @@
         },
         computed: {
             key: mapStateProp<ADRState, string | null>(namespace,
-                (state: ADRState) => state.key),
+                                                       (state: ADRState) => state.key),
             adrProfileUrl: mapStateProp<ADRState, string>(namespace,
-                (state: ADRState) => `${state.schemas?.baseUrl}/me`),
+                                                          (state: ADRState) => `${state.schemas?.baseUrl}/me`),
             currentLanguage: mapStateProp<RootState, Language>(null,
-                (state: RootState) => state.language),
+                                                               (state: RootState) => state.language),
             error: mapStateProp<ADRState, Error | null>(namespace,
-                (state: ADRState) => state.keyError),
+                                                        (state: ADRState) => state.keyError),
             keyText(): string {
                 if (this.key) {
                     let str = ""

@@ -11,18 +11,18 @@
 </template>
 
 <script lang="ts">
-import {defineComponent} from 'vue';
-import UserHeader from "./header/UserHeader.vue";
-import Errors from "./Errors.vue";
-import {mapActions, mapState} from "vuex";
-import type { RootState } from '../root';
-import type { Language } from '../store/translations/locales';
-import LoadingSpinner from './LoadingSpinner.vue';
+    import {defineComponent} from 'vue';
+    import UserHeader from "./header/UserHeader.vue";
+    import Errors from "./Errors.vue";
+    import {mapActions, mapState} from "vuex";
+    import type { RootState } from '../root';
+    import type { Language } from '../store/translations/locales';
+    import LoadingSpinner from './LoadingSpinner.vue';
 
-type Computed = {
-    language: (state: RootState) => string,
-    baselineReady: (state: RootState) => boolean
-}
+    type Computed = {
+        language: (state: RootState) => string,
+        baselineReady: (state: RootState) => boolean
+    }
 
     export default defineComponent({
         props: {
@@ -45,12 +45,12 @@ type Computed = {
             baselineReady: (state: RootState) => state.baseline.ready
         }),
         methods: {
-        ...mapActions({loadBaseline: 'baseline/getBaselineData'}),
-        ...mapActions({loadSurveyAndProgram: 'surveyAndProgram/getSurveyAndProgramData'}),
-        ...mapActions({loadModelRun: 'modelRun/getResult'}),
-        ...mapActions({loadModelCalibrate: 'modelCalibrate/getResult'}),
-        ...mapActions({getADRSchemas: 'adr/getSchemas'}),
-        ...mapActions({getCurrentProject: 'projects/getCurrentProject'}),
+            ...mapActions({loadBaseline: 'baseline/getBaselineData'}),
+            ...mapActions({loadSurveyAndProgram: 'surveyAndProgram/getSurveyAndProgramData'}),
+            ...mapActions({loadModelRun: 'modelRun/getResult'}),
+            ...mapActions({loadModelCalibrate: 'modelCalibrate/getResult'}),
+            ...mapActions({getADRSchemas: 'adr/getSchemas'}),
+            ...mapActions({getCurrentProject: 'projects/getCurrentProject'}),
         },
         beforeMount: function () {
             this.loadBaseline();

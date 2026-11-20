@@ -168,17 +168,17 @@ describe("ModelCalibrate mutations", () => {
         mutations[ModelCalibrateMutation.ModelCalibrateOptionsFetched](state, {payload: payload});
 
         const expected = {controlSections: [{
-                label: "Calibrate section",
-                controlGroups: [{
-                    "label": "Adjust to spectrum PLHIV",
-                    "controls": [{
-                        "name": "spectrum_plhiv_calibration_level",
-                        "type": "select",
-                        "options": [{"id": "none", "label": "None"}, {"id": "national", "label": "National"}],
-                        "value": "national"
-                    }]
+            label: "Calibrate section",
+            controlGroups: [{
+                "label": "Adjust to spectrum PLHIV",
+                "controls": [{
+                    "name": "spectrum_plhiv_calibration_level",
+                    "type": "select",
+                    "options": [{"id": "none", "label": "None"}, {"id": "national", "label": "National"}],
+                    "value": "national"
                 }]
-            }]};
+            }]
+        }]};
         expect(state.optionsFormMeta).toStrictEqual(expected);
     });
 
@@ -188,32 +188,32 @@ describe("ModelCalibrate mutations", () => {
         const options = {"spectrum_plhiv_calibration_level": "unknown"}
         const state = mockModelCalibrateState({options: options});
         const payload = {controlSections: [{
-                label: "Calibrate section",
-                controlGroups: [{
-                    "label": "Adjust to spectrum PLHIV",
-                    "controls": [{
-                        "name": "spectrum_plhiv_calibration_level",
-                        "type": "select",
-                        "options": [{"id": "none", "label": "None"}, {"id": "national", "label": "National"}],
-                        "value": "none"
-                    }]
+            label: "Calibrate section",
+            controlGroups: [{
+                "label": "Adjust to spectrum PLHIV",
+                "controls": [{
+                    "name": "spectrum_plhiv_calibration_level",
+                    "type": "select",
+                    "options": [{"id": "none", "label": "None"}, {"id": "national", "label": "National"}],
+                    "value": "none"
                 }]
-            }]};
+            }]
+        }]};
 
         mutations[ModelCalibrateMutation.ModelCalibrateOptionsFetched](state, {payload: payload});
 
         const expected = {controlSections: [{
-                label: "Calibrate section",
-                controlGroups: [{
-                    "label": "Adjust to spectrum PLHIV",
-                    "controls": [{
-                        "name": "spectrum_plhiv_calibration_level",
-                        "type": "select",
-                        "options": [{"id": "none", "label": "None"}, {"id": "national", "label": "National"}],
-                        "value": "unknown"
-                    }]
+            label: "Calibrate section",
+            controlGroups: [{
+                "label": "Adjust to spectrum PLHIV",
+                "controls": [{
+                    "name": "spectrum_plhiv_calibration_level",
+                    "type": "select",
+                    "options": [{"id": "none", "label": "None"}, {"id": "national", "label": "National"}],
+                    "value": "unknown"
                 }]
-            }]};
+            }]
+        }]};
         expect(state.optionsFormMeta).toStrictEqual(expected);
         expect(state.fetching).toBe(false);
     });

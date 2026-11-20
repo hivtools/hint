@@ -24,14 +24,14 @@
                         class="btn btn-xs bg-transparent shadow-none py-0"
                         @click="toggleVersionMenu(p.id)">
                         <vue-feather v-show="!openVersion[p.id]"
-                            type="chevron-right"
-                            size="20"
-                            class="icon when-closed"
+                                     type="chevron-right"
+                                     size="20"
+                                     class="icon when-closed"
                         ></vue-feather>
                         <vue-feather v-show="openVersion[p.id]"
-                            type="chevron-down"
-                            size="20"
-                            class="icon when-open"
+                                     type="chevron-down"
+                                     size="20"
+                                     class="icon when-open"
                         ></vue-feather>
                     </button>
                 </div>
@@ -41,17 +41,17 @@
                         {{ p.name }}
                     </a>
                     <span class="float-right">
-                    <button v-if="showTooltip" href="#" class="btn btn-sm btn-red-icons"
-                            v-tooltip="getTranslatedValue('editProjectNote')"
-                            @click.prevent="handleEditProjectNote(p.id)"
-                            v-translate:aria-label="'editProjectNote'">
-                        <vue-feather type="file-text" size="20"></vue-feather>
-                    </button>
-                    <button v-else href="#" class="btn btn-sm btn-red-icons"
-                            @click.prevent="handleEditProjectNote(p.id)"
-                            v-translate:aria-label="'editProjectNote'">
-                        <vue-feather type="file-text" size="20"></vue-feather>
-                    </button>
+                        <button v-if="showTooltip" href="#" class="btn btn-sm btn-red-icons"
+                                v-tooltip="getTranslatedValue('editProjectNote')"
+                                @click.prevent="handleEditProjectNote(p.id)"
+                                v-translate:aria-label="'editProjectNote'">
+                            <vue-feather type="file-text" size="20"></vue-feather>
+                        </button>
+                        <button v-else href="#" class="btn btn-sm btn-red-icons"
+                                @click.prevent="handleEditProjectNote(p.id)"
+                                v-translate:aria-label="'editProjectNote'">
+                            <vue-feather type="file-text" size="20"></vue-feather>
+                        </button>
                     </span>
                     <small v-if="p.sharedBy" class="text-muted d-flex">
                         {{ getTranslatedValue("sharedBy") }}: {{ p.sharedBy }}
@@ -144,12 +144,12 @@
                                     v-tooltip="getTranslatedValue('editVersionNote')"
                                     v-translate:aria-label="'editVersionNote'"
                                     @click.prevent="handleEditVersionNote(p.id, v.id, v.versionNumber)">
-                            <vue-feather type="file-text" size="20"></vue-feather>
+                                <vue-feather type="file-text" size="20"></vue-feather>
                             </button>
                             <button v-else href="#" class="btn btn-sm btn-red-icons"
                                     v-translate:aria-label="'editVersionNote'"
                                     @click.prevent="handleEditVersionNote(p.id, v.id, v.versionNumber)">
-                            <vue-feather type="file-text" size="20"></vue-feather>
+                                <vue-feather type="file-text" size="20"></vue-feather>
                             </button>
                         </span>
                     </div>
@@ -179,12 +179,12 @@
                                 v-tooltip="getTranslatedValue('delete')"
                                 v-translate:aria-label="'delete'"
                                 @click="deleteVersion($event, p.id, v.id)">
-                        <vue-feather type="trash-2" size="20"></vue-feather>
+                            <vue-feather type="trash-2" size="20"></vue-feather>
                         </button>
                         <button v-else class=" btn btn-sm btn-red-icons"
                                 v-translate:aria-label="'delete'"
                                 @click="deleteVersion($event, p.id, v.id)">
-                        <vue-feather type="trash-2" size="20"></vue-feather>
+                            <vue-feather type="trash-2" size="20"></vue-feather>
                         </button>
                     </div>
                     <div class="col-md-1 version-cell copy-cell">
@@ -286,7 +286,7 @@
             <div v-if="versionNoteToEdit">
                 <label class="h4" for="edit-note-id"
                        v-html="editVersionNoteHeader"
-                    id="editVersionNoteHeader"></label>
+                       id="editVersionNoteHeader"></label>
                 <div class="pb-3"
                      v-html="editVersionNoteSubHeader"
                      id="editVersionNoteSubHeader"></div>

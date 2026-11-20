@@ -159,8 +159,8 @@ describe("App", () => {
         const store = getStore(true);
         const spy = vi.spyOn(store, "commit");
         store.commit(prefixNamespace(
-                "baseline", BaselineMutation.PJNZUpdated),
-            {payload: null});
+            "baseline", BaselineMutation.PJNZUpdated),
+        {payload: null});
 
         expect(spy.mock.calls[1][0].type).toBe("modelOptions/UnValidate");
         expect(spy.mock.calls[2][0]).toBe(RootMutation.ResetOutputs);
@@ -173,8 +173,8 @@ describe("App", () => {
         const store = getStore(true);
         const spy = vi.spyOn(store, "commit");
         store.commit(prefixNamespace(
-                "surveyAndProgram", SurveyAndProgramMutation.SurveyUpdated),
-            {payload: null});
+            "surveyAndProgram", SurveyAndProgramMutation.SurveyUpdated),
+        {payload: null});
 
         expect(spy.mock.calls[1][0].type).toBe("modelOptions/UnValidate");
         expect(spy.mock.calls[2][0]).toBe(RootMutation.ResetOutputs);

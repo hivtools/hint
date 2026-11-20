@@ -30,43 +30,43 @@
 </template>
 
 <script lang="ts">
-import i18next from "i18next";
-import {computed, defineComponent} from "vue";
-import VueFeather from "vue-feather";
-import { useStore } from "vuex";
-import type { RootState } from "../../../root";
-import NumberInput from "../../common/NumberInput.vue";
+    import i18next from "i18next";
+    import {computed, defineComponent} from "vue";
+    import VueFeather from "vue-feather";
+    import { useStore } from "vuex";
+    import type { RootState } from "../../../root";
+    import NumberInput from "../../common/NumberInput.vue";
 
-export default defineComponent({
-    emits: ["set-page"],
-    components: {
-        NumberInput,
-        VueFeather
-    },
-    props: {
-        pageNumber: {
-            type: Number,
-            required: true
+    export default defineComponent({
+        emits: ["set-page"],
+        components: {
+            NumberInput,
+            VueFeather
         },
-        totalPages: {
-            type: Number,
-            required: true
-        }
-    },
-    setup(props, { emit }) {
-        const store = useStore<RootState>();
-        const totalPagesText = computed(() => {
-            return i18next.t("pageTotal", {
-                totalPages: props.totalPages,
-                lng: store.state.language
+        props: {
+            pageNumber: {
+                type: Number,
+                required: true
+            },
+            totalPages: {
+                type: Number,
+                required: true
+            }
+        },
+        setup(props, { emit }) {
+            const store = useStore<RootState>();
+            const totalPagesText = computed(() => {
+                return i18next.t("pageTotal", {
+                    totalPages: props.totalPages,
+                    lng: store.state.language
+                })
             })
-        })
-        const pageUpdate = (newValue: number) => {
-            emit("set-page", newValue)
+            const pageUpdate = (newValue: number) => {
+                emit("set-page", newValue)
+            }
+            return { totalPagesText, pageUpdate };
         }
-        return { totalPagesText, pageUpdate };
-    }
-})
+    })
 </script>
 
 <style scoped>

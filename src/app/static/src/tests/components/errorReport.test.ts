@@ -108,7 +108,7 @@ describe("Error report component", () => {
         `,
         computed: {
             projectName: mapStateProp<ProjectsState, string | undefined>("projects",
-                    state => state.currentProject?.name)
+                state => state.currentProject?.name)
         }
     }
 

@@ -268,9 +268,9 @@ describe("ADR input dataset", () => {
     }
 
     const getRootStore = (baselineProps: Partial<BaselineState> = {},
-        adrProps: Partial<ADRState> = {},
-        requireConfirmation: boolean = false,
-        baselineGetters = {}) => {
+                          adrProps: Partial<ADRState> = {},
+                          requireConfirmation: boolean = false,
+                          baselineGetters = {}) => {
 
         const store = new Vuex.Store({
             state: mockRootState(),
@@ -291,9 +291,9 @@ describe("ADR input dataset", () => {
     }
 
     const getStore = (baselineProps: Partial<BaselineState> = {},
-        adrProps: Partial<ADRState> = {},
-        requireConfirmation: boolean = false,
-        baselineGetters = {}) => {
+                      adrProps: Partial<ADRState> = {},
+                      requireConfirmation: boolean = false,
+                      baselineGetters = {}) => {
 
         const store = new Vuex.Store({
             state: mockRootState(),
@@ -815,8 +815,8 @@ describe("ADR input dataset", () => {
         const store = getStore({}, {}, false, {
             selectedDatasetAvailableResources: () => {
                 return {
-                        survey: mockDatasetResource(survey),
-                        program: mockDatasetResource(program),
+                    survey: mockDatasetResource(survey),
+                    program: mockDatasetResource(program),
                     anc: mockDatasetResource(anc)
                 }
             }

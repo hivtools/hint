@@ -10,40 +10,40 @@
 </template>
 
 <script lang="ts">
-import {type PropType, computed, defineComponent} from 'vue';
-import {useStore} from "vuex";
-import type {RootState} from "../../root";
-import PlotControl from "./PlotControl.vue";
-import type {PlotName} from "../../store/plotSelections/plotSelections";
-import {getMetadataFromPlotName} from "../../store/plotSelections/actions";
+    import {type PropType, computed, defineComponent} from 'vue';
+    import {useStore} from "vuex";
+    import type {RootState} from "../../root";
+    import PlotControl from "./PlotControl.vue";
+    import type {PlotName} from "../../store/plotSelections/plotSelections";
+    import {getMetadataFromPlotName} from "../../store/plotSelections/actions";
 
-export default defineComponent({
-    components: {
-        PlotControl
-    },
-    props: {
-        plot: {
-            type: String as PropType<PlotName>,
-            required: true
+    export default defineComponent({
+        components: {
+            PlotControl
+        },
+        props: {
+            plot: {
+                type: String as PropType<PlotName>,
+                required: true
+            }
+        },
+        setup(props) {
+            const store = useStore<RootState>();
+            const plotControls = computed(() => {
+                return store.state.plotSelections[props.plot].controls;
+            });
+
+            const plotMetadata = computed(() => getMetadataFromPlotName(store.state, props.plot));
+
+            const isHidden = (controlId: string) => {
+                return plotMetadata.value.plotSettingsControl[props.plot].plotSettings.find(c => c.id === controlId)!.hidden;
+            };
+
+            return {
+                plotControls,
+                isHidden
+            }
         }
-    },
-    setup(props) {
-        const store = useStore<RootState>();
-        const plotControls = computed(() => {
-            return store.state.plotSelections[props.plot].controls;
-        });
-
-        const plotMetadata = computed(() => getMetadataFromPlotName(store.state, props.plot));
-
-        const isHidden = (controlId: string) => {
-            return plotMetadata.value.plotSettingsControl[props.plot].plotSettings.find(c => c.id === controlId)!.hidden;
-        };
-
-        return {
-            plotControls,
-            isHidden
-        }
-    }
-})
+    })
 
 </script>

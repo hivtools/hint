@@ -129,7 +129,7 @@
         },
         computed: {
             currentLanguage: mapStateProp<RootState, Language>(null,
-                (state: RootState) => state.language),
+                                                               (state: RootState) => state.language),
             errorReportError: mapStateProp<ErrorsState, Error | null>(
                 "errors",
                 (state: ErrorsState) => state.errorReportError),

@@ -60,78 +60,78 @@
 
 <script lang="ts">
 
-import {computed, defineComponent, type PropType} from "vue";
-import {type Scale, type ScaleSettings, ScaleType} from "../../store/plotState/plotState";
-import i18next from "i18next";
-import type {IndicatorMetadata} from "../../generated";
-import {useUpdateScale} from "./useUpdateScale";
-import type { PlotName } from "../../store/plotSelections/plotSelections";
+    import {computed, defineComponent, type PropType} from "vue";
+    import {type Scale, type ScaleSettings, ScaleType} from "../../store/plotState/plotState";
+    import i18next from "i18next";
+    import type {IndicatorMetadata} from "../../generated";
+    import {useUpdateScale} from "./useUpdateScale";
+    import type { PlotName } from "../../store/plotSelections/plotSelections";
 
-export default defineComponent({
-    props: {
-        scale: {
-            type: String as PropType<Scale>,
-            required: true
-        },
-        indicatorMetadata: {
-            type: Object as PropType<IndicatorMetadata>,
-            required: true
-        },
-        selectedScale: {
-            type: Object as PropType<ScaleSettings>,
-            required: true
-        },
-        plot: {
-            type: String as PropType<PlotName>,
-            required: true
-        }
-    },
-    setup(props) {
-        const {getScaleStep, updateOutputScale} = useUpdateScale(props.plot);
-
-        const updateScale = (newSettings: ScaleSettings) => {
-            updateOutputScale(props.scale, props.indicatorMetadata.indicator, newSettings);
-        }
-
-        const scaleStep = computed(() => getScaleStep(props.scale));
-
-        const invalidMsg = computed(() => {
-            let result = null;
-            if (props.selectedScale.type === ScaleType.Custom) {
-                if (props.selectedScale.customMin >= props.selectedScale.customMax) {
-                    result = i18next.t("maxMustBeGreaterThanMin");
-                }
+    export default defineComponent({
+        props: {
+            scale: {
+                type: String as PropType<Scale>,
+                required: true
+            },
+            indicatorMetadata: {
+                type: Object as PropType<IndicatorMetadata>,
+                required: true
+            },
+            selectedScale: {
+                type: Object as PropType<ScaleSettings>,
+                required: true
+            },
+            plot: {
+                type: String as PropType<PlotName>,
+                required: true
             }
-            return result;
-        });
+        },
+        setup(props) {
+            const {getScaleStep, updateOutputScale} = useUpdateScale(props.plot);
 
-        const disableCustom = computed(() => {
-            return props.selectedScale.type !== ScaleType.Custom;
-        });
-
-        const scaleText = computed(() => {
-            if (props.indicatorMetadata) {
-                const {format, scale} = props.indicatorMetadata
-                if (!format.includes('%') && scale !== 1) {
-                    return `x ${scale}`
-                }
+            const updateScale = (newSettings: ScaleSettings) => {
+                updateOutputScale(props.scale, props.indicatorMetadata.indicator, newSettings);
             }
-            return ''
-        });
 
-        const scaleTypeGroup = computed(() => {
-            return `${props.scale}-scaleType`;
-        });
+            const scaleStep = computed(() => getScaleStep(props.scale));
 
-        return {
-            invalidMsg,
-            disableCustom,
-            scaleText,
-            scaleTypeGroup,
-            scaleType: ScaleType,
-            colourScaleStep: scaleStep,
-            updateScale
+            const invalidMsg = computed(() => {
+                let result = null;
+                if (props.selectedScale.type === ScaleType.Custom) {
+                    if (props.selectedScale.customMin >= props.selectedScale.customMax) {
+                        result = i18next.t("maxMustBeGreaterThanMin");
+                    }
+                }
+                return result;
+            });
+
+            const disableCustom = computed(() => {
+                return props.selectedScale.type !== ScaleType.Custom;
+            });
+
+            const scaleText = computed(() => {
+                if (props.indicatorMetadata) {
+                    const {format, scale} = props.indicatorMetadata
+                    if (!format.includes('%') && scale !== 1) {
+                        return `x ${scale}`
+                    }
+                }
+                return ''
+            });
+
+            const scaleTypeGroup = computed(() => {
+                return `${props.scale}-scaleType`;
+            });
+
+            return {
+                invalidMsg,
+                disableCustom,
+                scaleText,
+                scaleTypeGroup,
+                scaleType: ScaleType,
+                colourScaleStep: scaleStep,
+                updateScale
+            }
         }
-    }
-})
+    })
 </script>

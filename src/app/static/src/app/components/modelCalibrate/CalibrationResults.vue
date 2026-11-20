@@ -14,8 +14,8 @@
 </template>
 
 <script setup lang="ts">
-import Barchart from "../plots/bar/Barchart.vue";
-import {calibratePlotName} from "../../store/plotSelections/plotSelections";
-import FilterSet from "../plots/FilterSet.vue";
-import FilterWithReset from "../plots/FilterWithReset.vue";
+    import Barchart from "../plots/bar/Barchart.vue";
+    import {calibratePlotName} from "../../store/plotSelections/plotSelections";
+    import FilterSet from "../plots/FilterSet.vue";
+    import FilterWithReset from "../plots/FilterWithReset.vue";
 </script>
