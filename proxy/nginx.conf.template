@@ -75,6 +75,10 @@ server {
     location = /adr/survey { include snippets/python.conf; }
     location = /adr/programme { include snippets/python.conf; }
     location = /adr/anc { include snippets/python.conf; }
+    # Load a project from an output zip, uploaded or on ADR. Only these exact paths go to Python (the Vue app calls them
+    # without a trailing slash). The upload is not buffered by nginx (see above), and Python stops it at its size limit.
+    location = /rehydrate/zip { include snippets/python.conf; }
+    location = /rehydrate/adr { include snippets/python.conf; }
     # Calls that add the files of the version to the call
     location /chart-data/ { include snippets/python.conf; }
     location /meta/review-inputs/ { include snippets/python.conf; }
