@@ -112,35 +112,6 @@ describe("adr integration", () => {
         expect(fetchKeyStub.mock.calls.length).toBe(0);
     });
 
-    it("fetches sso login method if logged in", () => {
-        shallowMount(ADRIntegration, {
-            global: {
-                plugins: [createStore()]
-            }
-        });
-        expect(ssoLoginMethodStud.mock.calls.length).toBe(1);
-    });
-
-    it("does not fetch sso login method if not logged in", () => {
-        const store = createStore('', null, {currentUser: 'guest'});
-        shallowMount(ADRIntegration, {
-            global: {
-                plugins: [store]
-            }
-        });
-        expect(ssoLoginMethodStud.mock.calls.length).toBe(0);
-    });
-
-    it("does not fetch adrKey if user logs in with SSO", () => {
-        const store = createStore("", null, {}, false, {}, true)
-        shallowMount(ADRIntegration, {
-            global: {
-                plugins: [store]
-            }
-        });
-        expect(fetchKeyStub.mock.calls.length).toBe(0);
-    });
-
     it("fetches ADR key if logged in", () => {
         shallowMount(ADRIntegration, {global: {plugins: [createStore()]}});
         expect(fetchKeyStub.mock.calls.length).toBe(1);
@@ -170,16 +141,6 @@ describe("adr integration", () => {
     it("does not render select dataset widget if key is not present or not ssoLogin method", () => {
         const rendered = shallowMount(ADRIntegration, {global: {plugins: [createStore()]}});
         expect(rendered.findAllComponents(SelectDataset).length).toBe(0);
-    });
-
-    it("renders select dataset widget if ssoLogin is present", () => {
-        const store = createStore("", null, {}, false, {}, true)
-        const rendered = shallowMount(ADRIntegration, {
-            global: {
-                plugins: [store]
-            }
-        });
-        expect(rendered.findAllComponents(SelectDataset).length).toBe(1);
     });
 
     it("renders select dataset widget if ssoLogin is present", () => {

@@ -383,7 +383,7 @@ describe("UploadInputs upload component", () => {
         await expectDeleteToDispatchAction(2, () => actions.deletePopulation);
     });
 
-    it("can return true when fromADR", async () => {
+    it("can return true when baseline files are fromADR", async () => {
         const store = createSut({
             pjnz: {
                 "fromADR": true,
@@ -416,7 +416,7 @@ describe("UploadInputs upload component", () => {
 
     });
 
-    it("can return false when not fromADR", async () => {
+    it("can return false when baseline files are not fromADR", async () => {
         const store = createSut({
             pjnz: {
                 "fromADR": "",
@@ -509,7 +509,7 @@ describe("UploadInputs upload component", () => {
         expect(wrapper.findAllComponents(ManageFile)[5].props("existingFileName")).toBe("errored file");
     });
 
-    it("can return true when fromADR", async () => {
+    it("can return true when survey and program files are fromADR", async () => {
         const store = createSut({}, {}, {
             survey: {
                 "fromADR": true
@@ -532,7 +532,7 @@ describe("UploadInputs upload component", () => {
         expect(wrapper.findAllComponents(ManageFile)[5].props().fromADR).toBe(true);
     });
 
-    it("can return false when not fromADR", async () => {
+    it("can return false when survey and program files are not fromADR", async () => {
         const store = createSut({}, {}, {
             survey: {
                 "fromADR": ""
