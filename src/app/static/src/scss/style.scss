@@ -1,3 +1,4 @@
+@use "sass:color";
 @import "partials/variables";
 @import "../../node_modules/bootstrap/scss/bootstrap.scss";
 @import "../../node_modules/bootstrap/scss/mixins";
@@ -18,7 +19,7 @@ a {
   color: $theme-red;
 
   &:hover {
-    color: darken($theme-red, 10%);
+    color: color.adjust($theme-red, $lightness: -10%);
   }
 
   &.disabled {
@@ -36,14 +37,14 @@ a {
 }
 
 .btn-red {
-  @include button-variant($theme-red, darken($theme-red, 10%))
+  @include button-variant($theme-red, color.adjust($theme-red, $lightness: -10%))
 }
 
 .btn-red-icons {
   color: $theme-red;
 
   &:hover {
-    color: darken($theme-red, 10%);
+    color: color.adjust($theme-red, $lightness: -10%);
   }
 }
 
@@ -149,12 +150,12 @@ a.down::after {
 }
 
 .annotation-text tspan {
-  @include button-outline-variant($theme-red, darken($theme-red, 10%));
+  @include button-outline-variant($theme-red, color.adjust($theme-red, $lightness: -10%));
   font-size: 20px;
   fill: $theme-red;
 
   &:hover {
-    fill: darken($theme-red, 10%);
+    fill: color.adjust($theme-red, $lightness: -10%);
   }
 }
 

@@ -594,7 +594,7 @@ describe("ADR input dataset", () => {
             "Conjuntos de dados", store);
 
         // dataset is preselected in dropdown and click button to import
-        expect(rendered.findComponent(TreeSelect).attributes()["model-value"]).toBe("id2");
+        expect(rendered.findComponent(TreeSelect).props("modelValue")).toBe("id2");
         const selectRelease = rendered.findComponent(SelectRelease)
         await selectRelease.vm.$emit("selected-dataset-release", fakeRelease);
         await rendered.findComponent(SelectDatasetModal).find("button").trigger("click");

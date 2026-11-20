@@ -1,3 +1,4 @@
+@use "sass:color";
 .map-control {
   border: 1px solid #adb5bd;
   background: white;
@@ -118,7 +119,7 @@
 
     &:hover {
       border-color: $theme-red;
-      background: darken($theme-red, 10%);
+      background: color.adjust($theme-red, $lightness: -10%);
       color: white !important;
     }
   }
