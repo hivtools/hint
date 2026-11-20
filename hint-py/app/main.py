@@ -23,7 +23,7 @@ from app.routers import (
     projects,
     review_inputs,
 )
-from app.services.input_file_service import UPLOAD_LIMITS
+from app.services.input_file_service import upload_limit
 from app.telemetry import trace_outgoing_calls
 from app.upload_limit import UploadSizeLimitMiddleware
 
@@ -50,7 +50,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None]:
 
 app = FastAPI(lifespan=lifespan)
 register_error_handlers(app)
-app.add_middleware(UploadSizeLimitMiddleware, limits=UPLOAD_LIMITS)
+app.add_middleware(UploadSizeLimitMiddleware, limit_of=upload_limit)
 
 app.include_router(items.router)
 app.include_router(projects.router)

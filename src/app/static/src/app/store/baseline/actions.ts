@@ -138,7 +138,7 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
     async importPJNZ(context, url) {
         if (url) {
             const data = buildData (context.state.selectedDataset, url, "pjnz")
-            await uploadOrImportPJNZ(context, {url: "/adr/pjnz/", payload: data},
+            await uploadOrImportPJNZ(context, {url: "/adr/pjnz", payload: data},
                 getFilenameFromImportUrl(url));
         }
     },
@@ -146,7 +146,7 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
     async importPopulation(context, url) {
         if (url) {
             const data = buildData (context.state.selectedDataset, url, "pop")
-            await uploadOrImportPopulation(context, {url: "/adr/population/", payload: data},
+            await uploadOrImportPopulation(context, {url: "/adr/population", payload: data},
                 getFilenameFromImportUrl(url));
         }
     },
@@ -154,7 +154,7 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
     async importShape(context, url) {
         if (url) {
             const data = buildData (context.state.selectedDataset, url, "shape")
-            await uploadOrImportShape(context, {url: "/adr/shape/", payload: data},
+            await uploadOrImportShape(context, {url: "/adr/shape", payload: data},
                 getFilenameFromImportUrl(url));
         }
     },

@@ -8,12 +8,15 @@ ADR must also accept your IP address: its Front Door only accepts some addresses
 on CI for now.
 
 The tests use the dataset `antarctica-country-estimates-2027` in the organisation `naomi-development-team`. It has a
-release called `Version 1.0` and an output zip. The user of the key can be in other organisations too, so the tests look
-for this one organisation and do not count them. The tests never write to ADR.
+release called `Version 1.0`, an output zip, and a PJNZ, a shape and a population file. The user of the key can be in
+other organisations too, so the tests look for this one organisation and do not count them. The tests never write to
+ADR. The import tests write to the test database and to a temporary folder, and use the fake hintr.
 """
 
+import hashlib
 import os
 from collections.abc import AsyncIterator
+from pathlib import Path
 
 import httpx2
 import pytest
@@ -22,7 +25,9 @@ import pytest_asyncio
 from app.clients.adr_client import create_adr_http_client
 from app.config import Settings
 from app.main import app
-from tests.api.helpers import make_client
+from app.schemas import FileType
+from tests.api.helpers import make_client, version_files
+from tests.hintr import FakeHintr
 from tests.support import USER
 
 pytestmark = [
@@ -34,6 +39,9 @@ DATASET = "antarctica-country-estimates-2027"
 ORGANISATION = "naomi-development-team"
 RELEASE = "Version 1.0"
 OUTPUT_ZIP = "inputs-unaids-naomi-output-zip"
+PJNZ = "inputs-unaids-spectrum-file"
+SHAPE = "inputs-unaids-geographic"
+POPULATION = "inputs-unaids-population"
 
 
 @pytest_asyncio.fixture
@@ -119,3 +127,75 @@ async def test_the_organisations_of_the_user_have_the_one_of_the_test_dataset(li
 
     assert r.status_code == 200, r.text
     assert ORGANISATION in [org["name"] for org in r.json()["data"]]
+
+
+# ---- Importing a file
+
+
+@pytest_asyncio.fixture
+async def live_importer(
+    live: httpx2.AsyncClient, version_id: str, hintr: FakeHintr, uploads_dir: Path
+) -> AsyncIterator[httpx2.AsyncClient]:
+    """USER on a version, with the app calling the real ADR. hintr is the fake hintr, which says that each file is valid."""
+    async with make_client(USER, version_id) as client:
+        yield client
+
+
+async def resource_of(client: httpx2.AsyncClient, resource_type: str) -> dict:
+    r = await client.get(f"/adr/datasets/{DATASET}")
+    assert r.status_code == 200, r.text
+    [resource] = [res for res in r.json()["data"]["resources"] if res["resource_type"] == resource_type]
+    return {"url": resource["url"], "datasetId": r.json()["data"]["id"], "resourceId": resource["id"]}
+
+
+@pytest.mark.parametrize(
+    ("file_type", "resource_type"),
+    [("pjnz", PJNZ), ("shape", SHAPE), ("population", POPULATION)],
+)
+async def test_an_input_file_is_imported_from_adr(
+    live_importer, engine, version_id, uploads_dir, file_type, resource_type
+):
+    resource = await resource_of(live_importer, resource_type)
+
+    r = await live_importer.post(f"/adr/{file_type}", json=resource)
+
+    assert r.status_code == 200, r.text
+    file_hash, filename, from_adr, resource_url = (await version_files(engine, version_id))[file_type]
+    content = (uploads_dir / file_hash).read_bytes()
+    assert content
+    assert file_hash.split(".")[0] == hashlib.md5(content, usedforsecurity=False).hexdigest().upper()
+    assert filename == resource["url"].rsplit("/", 1)[-1]
+    assert from_adr
+    expected = f"{Settings().adr_url}dataset/{resource['datasetId']}/resource/{resource['resourceId']}/download/"
+    assert (resource_url or "").startswith(f"{expected}{filename}?activity_id=")
+
+
+async def test_the_credential_goes_to_adr_and_not_to_its_storage(live_importer):
+    resource = await resource_of(live_importer, PJNZ)
+    seen: list[tuple[str, bool]] = []
+
+    async def record(request: httpx2.Request) -> None:
+        seen.append((request.url.host, "Authorization" in request.headers))
+
+    app.state.adr_http.event_hooks["request"].append(record)
+
+    r = await live_importer.post("/adr/pjnz", json=resource)
+
+    assert r.status_code == 200, r.text
+    adr_host = httpx2.URL(Settings().adr_url).host
+    # The download, which ADR redirects to its storage, then the activities of the dataset
+    assert seen[0] == (adr_host, True)
+    assert any(host != adr_host and not sent for host, sent in seen)
+    assert all(sent for host, sent in seen if host == adr_host)
+    assert not any(sent for host, sent in seen if host != adr_host)
+
+
+async def test_a_file_bigger_than_the_limit_is_refused_as_it_is_downloaded(live_importer, upload_limits, uploads_dir):
+    # The storage of ADR does not say how big the file is, so the download is counted as it arrives
+    upload_limits(100 * 1024, FileType.PJNZ)
+
+    r = await live_importer.post("/adr/pjnz", json=await resource_of(live_importer, PJNZ))
+
+    assert r.status_code == 413, r.text
+    assert r.json()["errors"][0]["error"] == "FILE_TOO_LARGE"
+    assert list(uploads_dir.iterdir()) == []

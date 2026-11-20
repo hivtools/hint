@@ -69,7 +69,7 @@ describe("Survey and programme actions", () => {
     });
 
     it("sets data after surveys file import", async () => {
-        const url = "/adr/survey/"
+        const url = "/adr/survey"
         mockAxios.onPost(url)
             .reply(200, mockSuccess({data: "SOME DATA", warnings: "TEST WARNINGS"}));
 
@@ -115,7 +115,7 @@ describe("Survey and programme actions", () => {
 
     it("sets error message after failed surveys import", async () => {
 
-        mockAxios.onPost(`/adr/survey/`)
+        mockAxios.onPost(`/adr/survey`)
             .reply(500, mockFailure("error message"));
 
         const commit = vi.fn();
@@ -160,7 +160,7 @@ describe("Survey and programme actions", () => {
     });
 
     it("sets data after programme file import", async () => {
-        const url = "/adr/programme/"
+        const url = "/adr/programme"
         mockAxios.onPost(url)
             .reply(200, mockSuccess({data: "TEST", warnings: "TEST WARNINGS"}));
 
@@ -237,7 +237,7 @@ describe("Survey and programme actions", () => {
 
     it("sets error message after failed programme import", async () => {
 
-        mockAxios.onPost(`/adr/programme/`)
+        mockAxios.onPost(`/adr/programme`)
             .reply(500, mockFailure("error message"));
 
         const commit = vi.fn();
@@ -292,7 +292,7 @@ describe("Survey and programme actions", () => {
     });
 
     it("sets data after anc file import", async () => {
-        const url = "/adr/anc/"
+        const url = "/adr/anc"
         mockAxios.onPost(url)
             .reply(200, mockSuccess({data: "TEST", warnings: "TEST WARNINGS"}));
 
@@ -349,7 +349,7 @@ describe("Survey and programme actions", () => {
 
     it("sets error message after failed anc import", async () => {
 
-        mockAxios.onPost(`/adr/anc/`)
+        mockAxios.onPost(`/adr/anc`)
             .reply(500, mockFailure("error message"));
 
         const commit = vi.fn();

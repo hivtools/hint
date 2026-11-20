@@ -1,7 +1,8 @@
 """Endpoints about ADR, the UNAIDS data repository.
 
 `/adr/schemas` gives the browser the settings for ADR. The other endpoints read from ADR as the user (see
-`app/clients/adr_client.py`). Only a logged in user can use them.
+`app/clients/adr_client.py`), or import an input file from ADR into the user's version (see
+`app/services/adr_imports.py`). Only a logged in user can use them.
 """
 
 from typing import Annotated
@@ -13,8 +14,10 @@ from app.clients.adr_client import Adr
 from app.clients.responses import HintResponse
 from app.config import Settings, get_settings
 from app.dependencies import logged_in_user
-from app.schemas import AdrDatasetType, SuccessResponse, success
+from app.schemas import AdrDatasetType, AdrResource, FileType, SuccessResponse, success
 from app.services.adr_datasets import find_datasets, find_releases_with_output_zip
+from app.services.adr_imports import import_input_file
+from app.services.input_file_service import INPUT_FILE_TYPES, InputFiles
 
 router = APIRouter(prefix="/adr", tags=["adr"])
 
@@ -76,3 +79,25 @@ async def releases(
 async def orgs(adr: Adr, permission: str) -> Response:
     """The organisations on ADR where the user has the permission (for example, the permission to create datasets)."""
     return (await adr.organisations(permission)).response()
+
+
+def _add_import_route(file_type: FileType) -> None:
+    name = file_type.value
+
+    @router.post(
+        f"/{name}",
+        name=f"import_{name}",
+        summary=f"Import the {name} file from ADR and validate it",
+        dependencies=[Depends(logged_in_user)],
+        response_model=None,
+    )
+    async def import_file(
+        resource: AdrResource,
+        adr: Adr,
+        input_files: InputFiles,
+    ) -> Response:
+        return (await import_input_file(file_type, resource, adr, input_files)).response()
+
+
+for file_type in INPUT_FILE_TYPES:
+    _add_import_route(file_type)
