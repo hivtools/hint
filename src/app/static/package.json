@@ -48,7 +48,7 @@
     "eslint-plugin-vue": "10.12.1",
     "floating-vue": "^2.0.0-beta.20",
     "form-data": "^2.5.1",
-    "i18next": "^19.0.1",
+    "i18next": "^27.2.2",
     "json-schema-to-typescript": "^7.1.0",
     "leaflet": "^1.9.3",
     "numeral": "^2.0.6",
