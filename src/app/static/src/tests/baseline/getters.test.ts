@@ -238,7 +238,7 @@ const stateEmptyProperties = mockBaselineState({
 });
 
 it("areaIdToPropertiesMap returns empty if no shape data or properties", () => {
-    let state = mockBaselineState();
+    const state = mockBaselineState();
     expect(baselineGetters.areaIdToPropertiesMap(state)).toStrictEqual({});
 
     expect(baselineGetters.areaIdToPropertiesMap(stateEmptyProperties)).toStrictEqual({});

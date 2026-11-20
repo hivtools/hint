@@ -52,7 +52,7 @@ describe("time series utils", () => {
         it("converts thousand separator formats as expected", () => {
             const testValue = 100000;
 
-            let result = numeralJsToD3format("0,0");
+            const result = numeralJsToD3format("0,0");
             expect(result).toBe(",");
             expect(format(result)(testValue)).toBe("100,000");
         });

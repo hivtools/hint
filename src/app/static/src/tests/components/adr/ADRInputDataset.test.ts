@@ -212,7 +212,7 @@ describe("ADR input dataset", () => {
         changesToRelevantSteps: () => [{ number: 4, textKey: "fitModel" }]
     };
 
-    let currentVersion = {id: "version-id", created: "", updated: "", versionNumber: 1}
+    const currentVersion = {id: "version-id", created: "", updated: "", versionNumber: 1}
 
     const genericModules = (baselineProps: Partial<BaselineState> = {}, adrProps: Partial<ADRState> = {}, requireConfirmation: boolean, baselineGetters = {}) => {
         return {
@@ -335,14 +335,14 @@ describe("ADR input dataset", () => {
     });
 
     it("renders select dataset button when no dataset is selected", async () => {
-        let store = getStore()
+        const store = getStore()
         const rendered = mountADRDataset(store);
         await expectTranslatedWithStoreType(rendered.find("button"), "Select ADR dataset",
             "Sélectionner l’ensemble de données ADR", "Selecionar conjunto de dados do ADR", store);
     });
 
     it("renders edit dataset button when dataset is already selected", async () => {
-        let store = getStore({
+        const store = getStore({
             selectedDataset: fakeDataset
         })
         const rendered = mountADRDataset(store);
@@ -523,7 +523,7 @@ describe("ADR input dataset", () => {
         });
 
     it("renders selected dataset if it exists", async () => {
-        let store = getStore({
+        const store = getStore({
             selectedDataset: fakeDataset
         })
         const rendered = shallowMountWithTranslate(ADRInputDataset, store, {
@@ -538,7 +538,7 @@ describe("ADR input dataset", () => {
     });
 
     it("renders selected dataset and selected release with url pointing to release's activity page", async () => {
-        let store = getStore({
+        const store = getStore({
             selectedDataset: fakeDatasetWithRelease,
             selectedRelease: fakeRelease
         })
@@ -578,7 +578,7 @@ describe("ADR input dataset", () => {
     });
 
     it("sets current dataset", async () => {
-        let store = getStore({selectedDataset: fakeDataset2});
+        const store = getStore({selectedDataset: fakeDataset2});
         const rendered = mountADRDataset(store, {
             stubs: ["treeselect"]
         });
@@ -620,7 +620,7 @@ describe("ADR input dataset", () => {
     });
 
     it("renders reset confirmation dialog when importing a new dataset and then saves new version and imports if click save", async () => {
-        let store = getRootStore({selectedDataset: fakeDataset2}, {}, true);
+        const store = getRootStore({selectedDataset: fakeDataset2}, {}, true);
         const rendered = mountADRDataset(store, {
             stubs: ["treeselect"]
         });
@@ -645,7 +645,7 @@ describe("ADR input dataset", () => {
     });
 
     it("renders reset confirmation dialog when changing selected dataset and closes if click cancel", async () => {
-        let store = getRootStore({selectedDataset: fakeDataset}, {}, true);
+        const store = getRootStore({selectedDataset: fakeDataset}, {}, true);
         const rendered = mountADRDataset(store, {
             stubs: ["treeselect"]
         });

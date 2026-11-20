@@ -82,7 +82,7 @@ describe("select release", () => {
     });
 
     it("renders select release", async () => {
-        let store = getStore()
+        const store = getStore()
         const rendered = mountWithTranslate(SelectRelease, store, {
             global: {
                 plugins: [store]
@@ -239,7 +239,7 @@ describe("select release", () => {
     });
 
     it("radial toggles whether release tree select is disabled", async () => {
-        let store = getStore()
+        const store = getStore()
         const rendered = mountWithTranslate(SelectRelease, store, {
             global: {
                 plugins: [store]
@@ -257,7 +257,7 @@ describe("select release", () => {
     });
 
     it("radial toggles automatically toggles and selects release if selectedDataset has an appropriate releaseId", () => {
-        let store = getStore(releasesArray, fakeDataset)
+        const store = getStore(releasesArray, fakeDataset)
         const rendered = mountWithTranslate(SelectRelease, store, {
             global: {
                 plugins: [store]
@@ -273,7 +273,7 @@ describe("select release", () => {
     });
 
     it("preselect release occurs if releases are updated", async () => {
-        let store = getStore([releasesArray[1]], fakeDataset)
+        const store = getStore([releasesArray[1]], fakeDataset)
         const rendered = mountWithTranslate(SelectRelease, store, {
             global: {
                 plugins: [store]
@@ -297,7 +297,7 @@ describe("select release", () => {
     });
 
     it("does not automatically select release if no matching release and reverts to use latest", () => {
-        let store = getStore([releasesArray[1]], fakeDataset)
+        const store = getStore([releasesArray[1]], fakeDataset)
         const rendered = mountWithTranslate(SelectRelease, store, {
             global: {
                 plugins: [store]
@@ -315,7 +315,7 @@ describe("select release", () => {
 
     it("changes to datasetId and true open prop triggers getRelease method", async () => {
         const spy = vi.fn()
-        let store = getStore(releasesArray, null, spy)
+        const store = getStore(releasesArray, null, spy)
         const rendered = shallowMountWithTranslate(SelectRelease, store, {
             global: {
                 plugins: [store]
@@ -338,7 +338,7 @@ describe("select release", () => {
     
 
     it("selecting a release emits release id", async () => {
-        let store = getStore()
+        const store = getStore()
         const rendered = shallowMountWithTranslate(SelectRelease, store, {
             global: {
                 plugins: [store]
@@ -355,7 +355,7 @@ describe("select release", () => {
     });
 
     it("selecting a release emits true valid", async () => {
-        let store = getStore()
+        const store = getStore()
         const rendered = shallowMountWithTranslate(SelectRelease, store, {
             global: {
                 plugins: [store]
@@ -373,7 +373,7 @@ describe("select release", () => {
     });
 
     it("changing datasetId clears releases and resets radial and releaseId", async () => {
-        let store = getStore()
+        const store = getStore()
         const rendered = mountWithTranslate(SelectRelease, store, {
             global: {
                 plugins: [store]
