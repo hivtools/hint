@@ -1,9 +1,10 @@
+@use "sass:color";
 @mixin navbar-header-mixin($color) {
   margin-top: -8px;
   margin-bottom: -8px;
   padding: 10px;
   margin-left: -30px;
-  background-color: darken($color, 10%);
+  background-color: color.adjust($color, $lightness: -10%);
   color: white;
 }
 .navbar-header {
