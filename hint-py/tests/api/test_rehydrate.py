@@ -20,8 +20,8 @@ import pytest
 import pytest_asyncio
 
 from app.main import app
-from app.services import upload_file_types
-from app.services.upload_file_types import OUTPUT_ZIP
+from app.services import file_types
+from app.services.file_types import OUTPUT_ZIP
 from tests.adr import STORAGE, FakeAdr, download_link, file_response
 from tests.api.helpers import assert_failure, make_client
 from tests.hintr import FakeHintr
@@ -728,7 +728,7 @@ def zip_limit(monkeypatch: pytest.MonkeyPatch) -> Callable[[int], None]:
     500 MB."""
 
     def set_limit(limit: int) -> None:
-        monkeypatch.setattr(upload_file_types, "OUTPUT_ZIP", replace(OUTPUT_ZIP, max_upload_bytes=limit))
+        monkeypatch.setattr(file_types, "OUTPUT_ZIP", replace(OUTPUT_ZIP, max_upload_bytes=limit))
 
     return set_limit
 

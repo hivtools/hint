@@ -16,8 +16,8 @@ an upload.
 from app.clients.adr_client import AdrClient
 from app.clients.responses import HintResponse
 from app.schemas import AdrResource, FileType
+from app.services.file_types import INPUT_FILE_TYPES
 from app.services.input_file_service import InputFileService
-from app.services.upload_file_types import INPUT_FILE_TYPES
 
 
 async def import_input_file(

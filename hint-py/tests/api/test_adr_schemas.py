@@ -1,7 +1,12 @@
-"""GET /adr/schemas (app/routers/adr.py): config only, so it needs no identity, no version, no database and no hintr."""
+"""GET /adr/schemas (app/routers/adr.py): a setting and the table of file types (app/services/file_types.py) only, so it
+needs no identity, no version, no database and no hintr."""
+
+from dataclasses import replace
 
 from app.config import Settings, get_settings
 from app.main import app
+from app.schemas import FileType
+from app.services.file_types import INPUT_FILE_TYPES, OUTPUT_ZIP
 
 
 async def test_gives_the_resource_types_and_the_address_of_adr(anonymous_client):
@@ -31,9 +36,10 @@ async def test_has_no_vmmc_type(anonymous_client):
     assert "vmmc" not in (await anonymous_client.get("/adr/schemas")).json()["data"]
 
 
-async def test_the_settings_are_what_is_sent(anonymous_client):
-    app.dependency_overrides[get_settings] = lambda: Settings(
-        adr_url="https://adr.example/", adr_pjnz_schema="my-pjnz", adr_output_zip_schema="my-zip"
+async def test_the_address_is_the_setting_and_the_resource_types_are_those_of_the_table(anonymous_client, monkeypatch):
+    app.dependency_overrides[get_settings] = lambda: Settings(adr_url="https://adr.example/")
+    monkeypatch.setitem(
+        INPUT_FILE_TYPES, FileType.PJNZ, replace(INPUT_FILE_TYPES[FileType.PJNZ], adr_resource_type="my-pjnz")
     )
     try:
         data = (await anonymous_client.get("/adr/schemas")).json()["data"]
@@ -42,8 +48,7 @@ async def test_the_settings_are_what_is_sent(anonymous_client):
 
     assert data["baseUrl"] == "https://adr.example/"
     assert data["pjnz"] == "my-pjnz"
-    assert data["outputZip"] == "my-zip"
-    assert data["anc"] == "inputs-unaids-anc"
+    assert data["outputZip"] == OUTPUT_ZIP.adr_resource_type
 
 
 async def test_a_trailing_slash_is_not_an_endpoint_of_the_api(anonymous_client):
