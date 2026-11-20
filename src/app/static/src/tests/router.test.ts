@@ -26,10 +26,10 @@ const actions = {
     getADRSchemas: vi.fn()
 };
 
-storeOptions.modules!!.baseline!!.actions = baselineActions;
-storeOptions.modules!!.surveyAndProgram!!.actions = surveyAndProgramActions;
-storeOptions.modules!!.modelRun!!.actions = modelRunActions;
-storeOptions.modules!!.projects!!.actions = projectActions;
+storeOptions.modules!.baseline!.actions = baselineActions;
+storeOptions.modules!.surveyAndProgram!.actions = surveyAndProgramActions;
+storeOptions.modules!.modelRun!.actions = modelRunActions;
+storeOptions.modules!.projects!.actions = projectActions;
 storeOptions.actions = actions
 
 console.error = vi.fn();

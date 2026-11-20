@@ -39,7 +39,7 @@ describe("download button", () => {
     it('it can emit click event ', async() => {
         const wrapper = getWrapper()
         await wrapper.find(".btn").trigger("click")
-        expect(wrapper.emitted("click")!?.length).toBe(1)
+        expect(wrapper.emitted("click")?.length).toBe(1)
     });
 
     it('it can render download icon', () => {

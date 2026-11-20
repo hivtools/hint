@@ -21,7 +21,7 @@ describe("ADR mutations", () => {
     it("can set key error", () => {
         const state = mockADRState();
         mutations[ADRMutation.SetKeyError](state, {payload: mockError("whatevs")});
-        expect(state.keyError!!.detail).toBe("whatevs");
+        expect(state.keyError!.detail).toBe("whatevs");
 
         mutations[ADRMutation.SetKeyError](state, {payload: null});
         expect(state.keyError).toBe(null);
@@ -30,7 +30,7 @@ describe("ADR mutations", () => {
     it.each(Object.values(AdrDatasetType))("can set adr error", (datasetType: AdrDatasetType) => {
         const state = mockADRState();
         mutations[ADRMutation.SetADRError](state, {payload: {data: mockError("whatevs"), datasetType}});
-        expect(state.adrData[datasetType].fetchingError!!.detail).toBe("whatevs");
+        expect(state.adrData[datasetType].fetchingError!.detail).toBe("whatevs");
 
         mutations[ADRMutation.SetADRError](state, {payload: {data: null, datasetType}});
         expect(state.adrData[datasetType].fetchingError).toBe(null);

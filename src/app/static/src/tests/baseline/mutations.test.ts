@@ -30,7 +30,7 @@ describe("Baseline mutations", () => {
         });
         expect(testState.country).toBe("Malawi");
         expect(testState.iso3).toBe("MWI");
-        expect(testState.pjnz!!.filename).toBe("file.pjnz");
+        expect(testState.pjnz!.filename).toBe("file.pjnz");
         expect(testState.pjnzError).toBe(null);
         expect(testState.pjnzErroredFile).toBe(null);
     });
@@ -42,7 +42,7 @@ describe("Baseline mutations", () => {
         };
         const testState = testStore.state as BaselineState;
         const testRootState = mockRootState({baseline: testState});
-        const complete = testStore.getters!!.complete;
+        const complete = testStore.getters!.complete;
 
         mutations[BaselineMutation.PJNZUpdated](testState, {
             payload:
@@ -93,7 +93,7 @@ describe("Baseline mutations", () => {
         mutations[BaselineMutation.PJNZUpdated](testState, {
             payload: mockPJNZResponse({filename: "file.pjnz", data: {country: "Malawi", iso3: "MWI"}})
         });
-        expect(testState.pjnz!!.filename).toBe("file.pjnz");
+        expect(testState.pjnz!.filename).toBe("file.pjnz");
         expect(testState.country).toBe("Malawi");
         expect(testState.pjnzError).toBe(null);
         expect(testState.pjnzErroredFile).toBe(null);
@@ -245,7 +245,7 @@ describe("Baseline mutations", () => {
         const testState = mockBaselineState({selectedDataset: fakeDataset});
         mutations[BaselineMutation.UpdateDatasetResources](testState, {pjnz: fakeResource} as any);
 
-        expect(testState.selectedDataset!!.resources.pjnz).toEqual({...fakeResource, outOfDate: true});
+        expect(testState.selectedDataset!.resources.pjnz).toEqual({...fakeResource, outOfDate: true});
     });
 
     it("UpdateDatasetResources marks resource as out of date and updates metadata if last modified changed", () => {
@@ -256,7 +256,7 @@ describe("Baseline mutations", () => {
         const testState = mockBaselineState({selectedDataset: fakeDataset});
         mutations[BaselineMutation.UpdateDatasetResources](testState, {pjnz: newResouce} as any);
 
-        expect(testState.selectedDataset!!.resources.pjnz).toEqual({...newResouce, outOfDate: true});
+        expect(testState.selectedDataset!.resources.pjnz).toEqual({...newResouce, outOfDate: true});
     });
 
     it("UpdateDatasetResources marks resource as out of date and updates metadata if metadata modified changed", () => {
@@ -267,7 +267,7 @@ describe("Baseline mutations", () => {
         const testState = mockBaselineState({selectedDataset: fakeDataset});
         mutations[BaselineMutation.UpdateDatasetResources](testState, {pjnz: newResouce} as any);
 
-        expect(testState.selectedDataset!!.resources.pjnz).toEqual({...newResouce, outOfDate: true});
+        expect(testState.selectedDataset!.resources.pjnz).toEqual({...newResouce, outOfDate: true});
     });
 
     it("UpdateDatasetResources sets resource to null if new data is null", () => {
@@ -276,7 +276,7 @@ describe("Baseline mutations", () => {
         const testState = mockBaselineState({selectedDataset: fakeDataset});
         mutations[BaselineMutation.UpdateDatasetResources](testState, {pjnz: null} as any);
 
-        expect(testState.selectedDataset!!.resources.pjnz).toEqual(null);
+        expect(testState.selectedDataset!.resources.pjnz).toEqual(null);
     });
 
     it("UpdateDatasetResources does nothing if modified values both  match", () => {
@@ -289,7 +289,7 @@ describe("Baseline mutations", () => {
         const testState = mockBaselineState({selectedDataset: fakeDataset});
         mutations[BaselineMutation.UpdateDatasetResources](testState, {pjnz: newResource} as any);
 
-        expect(testState.selectedDataset!!.resources.pjnz).toEqual(oldResource);
+        expect(testState.selectedDataset!.resources.pjnz).toEqual(oldResource);
     });
 
     it("UpdateDatasetResources does nothing if selectedDataset is null", () => {
@@ -311,13 +311,13 @@ describe("Baseline mutations", () => {
         const testState = mockBaselineState({selectedDataset: fakeDataset});
         mutations[BaselineMutation.MarkDatasetResourcesUpdated](testState);
 
-        const resources = testState.selectedDataset!!.resources;
-        expect(resources.pjnz!!.outOfDate).toBe(false);
-        expect(resources.pop!!.outOfDate).toBe(false);
-        expect(resources.shape!!.outOfDate).toBe(false);
-        expect(resources.survey!!.outOfDate).toBe(false);
-        expect(resources.program!!.outOfDate).toBe(false);
-        expect(resources.anc!!.outOfDate).toBe(false);
+        const resources = testState.selectedDataset!.resources;
+        expect(resources.pjnz!.outOfDate).toBe(false);
+        expect(resources.pop!.outOfDate).toBe(false);
+        expect(resources.shape!.outOfDate).toBe(false);
+        expect(resources.survey!.outOfDate).toBe(false);
+        expect(resources.program!.outOfDate).toBe(false);
+        expect(resources.anc!.outOfDate).toBe(false);
     });
 
     it("MarkDatasetResourcesUpdated does nothing if selectedDataset is null", () => {
