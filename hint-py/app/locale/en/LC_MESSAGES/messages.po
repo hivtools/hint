@@ -74,6 +74,21 @@ msgstr "Unable to load resource, check resource in ADR {resource}."
 msgid "notOnAdr"
 msgstr "This link does not lead to ADR, so the file cannot be imported: {resource}"
 
+msgid "invalidResourceType"
+msgstr "Invalid resourceType"
+
+msgid "descriptionRequired"
+msgstr "description must be provided for output resourceType"
+
+msgid "resourceIdRequired"
+msgstr "resourceId must be provided for input resourceType"
+
+msgid "fileDoesNotExist"
+msgstr "File does not exist"
+
+msgid "adrHashUnavailable"
+msgstr "Unable to retrieve hash from ADR"
+
 msgid "adrFetchingDatasetsError"
 msgstr "There was an error fetching datasets from ADR."
 

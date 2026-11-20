@@ -12,7 +12,7 @@ notes of the project. The Vue app reads that state and sets up the project from 
 The zip comes from an upload (`RehydrateService.from_upload`) or from ADR (`RehydrateService.from_adr`). Both give a file
 on the disk (in memory when it is small) that can seek, which the zip format needs. The answer is the same for both.
 
-The size limit of the zip itself is `OUTPUT_ZIP` in app/services/upload_file_types.py. It is applied to the request (see
+The size limit of the zip itself is `OUTPUT_ZIP` in app/services/file_types.py. It is applied to the request (see
 app/middleware/upload_limit.py) and to the download from ADR.
 
 A project does not get any files from this. The Vue app sets the files of the version with `POST /session/files`, using
@@ -38,7 +38,7 @@ from app.errors import (
     RehydrateModelFitIdUnknownError,
 )
 from app.schemas import AdrResource
-from app.services import upload_file_types
+from app.services import file_types
 from app.storage.uploads import UploadStorage
 from app.utils.byte_limit import MB
 from app.utils.zip_files import UnreadableZipError, read_entries
@@ -155,7 +155,7 @@ class RehydrateService:
         If the download fails, the failure is the answer.
         """
         file = self._adr.file_at(resource.url)
-        async with self._adr.spooled_download(file, upload_file_types.OUTPUT_ZIP.max_upload_bytes) as (
+        async with self._adr.spooled_download(file, file_types.OUTPUT_ZIP.max_upload_bytes) as (
             downloaded,
             content,
         ):

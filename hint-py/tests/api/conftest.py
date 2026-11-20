@@ -11,7 +11,7 @@ from app.config import Settings, get_settings
 from app.db.database import create_db_session_factory
 from app.main import app
 from app.schemas import FileType
-from app.services.upload_file_types import INPUT_FILE_TYPES
+from app.services.file_types import INPUT_FILE_TYPES
 from tests.adr import FakeAdr
 from tests.api.helpers import create_project, make_client
 from tests.github import ORG, TEAM, FakeGitHub
