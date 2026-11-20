@@ -1,9 +1,8 @@
-'use strict';
 // This file is executed by ./scripts/generate-types.sh
 
-const schemaToTs = require('json-schema-to-typescript');
-const fs = require('fs');
-const path = require('path');
+import schemaToTs from "json-schema-to-typescript";
+import fs from "node:fs";
+import path from "node:path";
 
 const branchName = process.argv[2];
 const dir = `hintr-${branchName}/inst/schema`;

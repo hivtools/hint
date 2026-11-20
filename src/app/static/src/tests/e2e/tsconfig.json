@@ -1,0 +1,10 @@
+// The Playwright tests import some app modules (for example the step names and the translations),
+// so they extend the app config. They run in Node.js, so they also get the Node.js types.
+{
+  "extends": "../../../tsconfig.app.json",
+  "include": ["./**/*", "../../app/**/*.d.ts", "../../../env.d.ts", "../../../vuex-shims.d.ts"],
+  "compilerOptions": {
+    "types": ["node"],
+    "tsBuildInfoFile": "../../../node_modules/.tmp/tsconfig.e2e.tsbuildinfo"
+  }
+}

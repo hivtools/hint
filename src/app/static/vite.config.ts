@@ -1,5 +1,6 @@
 import {defineConfig, Plugin, ViteDevServer} from "vite";
 import vue from "@vitejs/plugin-vue";
+import vueDevTools from "vite-plugin-vue-devtools";
 import browserslistToEsbuild from "browserslist-to-esbuild";
 import {readFileSync} from "node:fs";
 import {fileURLToPath} from "node:url";
@@ -57,7 +58,7 @@ const freemarkerAssets = (): Plugin => ({
         this.emitFile({
             type: "asset",
             fileName: "vite-assets.ftl",
-            source: ["<!-- Written by the Vite build (vite.config.mts). Do not edit. -->", ...tags].join("\n") + "\n"
+            source: ["<!-- Written by the Vite build (vite.config.ts). Do not edit. -->", ...tags].join("\n") + "\n"
         });
 
         const cssFiles = tags
@@ -172,6 +173,8 @@ export default defineConfig(({command}) => ({
     publicDir: false,
     plugins: [
         vue(),
+        // Adds the Vue DevTools to the dev server. It does nothing in the build.
+        vueDevTools(),
         freemarkerAssets(),
         kotlinPages()
     ],
@@ -181,9 +184,9 @@ export default defineConfig(({command}) => ({
             // compiles to render functions. Two CommonJS libraries (@reside-ic/vue3-treeselect and
             // @reside-ic/vue-next-dynamic-form) call require("vue"), which gives the full build with the
             // compiler. Their components have render functions, so they do not need the compiler.
-            // The unit tests (vitest.config.mts) do not use this file, so they keep the full build.
-            // Some tests mount components that have a template string.
-            {find: /^vue$/, replacement: "vue/dist/vue.runtime.esm-bundler.js"}
+            // The unit tests (vitest.config.ts merges this file) keep the full build, because some tests mount
+            // components that have a template string. Vitest sets VITEST.
+            ...(process.env.VITEST ? [] : [{find: /^vue$/, replacement: "vue/dist/vue.runtime.esm-bundler.js"}])
         ]
     },
     build: {
