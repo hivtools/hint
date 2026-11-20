@@ -1,4 +1,4 @@
-import {Locator, Page, expect} from "@playwright/test";
+import {Locator, Page, Request, expect} from "@playwright/test";
 import {translate} from "./translationUtils";
 
 const uploadFileTypes = {
@@ -28,7 +28,15 @@ const uploadFileTypes = {
     },
 }
 
+// Each baseline upload re-validates the survey, programme and ANC data in the background
+// (uploadCallback in store/baseline/actions.ts). The upload's tick shows before that finishes,
+// and when it lands it un-validates the model options.
+const baselineUploads = ["spectrum", "shape", "population"];
+const revalidatedDatasets = ["survey", "programme", "anc"];
+const revalidationUrl = new RegExp(`/disease/(${revalidatedDatasets.join("|")})/\\?strict=true$`);
+
 export async function uploadAllTestFiles(page: Page) {
+    const revalidation = trackRevalidation(page);
     for (const type of Object.keys(uploadFileTypes) as Array<keyof typeof uploadFileTypes>) {
         await uploadTestFile(page, type);
     }
@@ -37,6 +45,40 @@ export async function uploadAllTestFiles(page: Page) {
     for (const type of Object.keys(uploadFileTypes) as Array<keyof typeof uploadFileTypes>) {
         await testUploaded(page, type);
     }
+    // Wait for the background re-validation too, or it can undo a later "Validate" on model options.
+    await revalidation.waitForAll(baselineUploads.length * revalidatedDatasets.length);
+}
+
+function trackRevalidation(page: Page) {
+    const started = new Set<Request>();
+    let finished = 0;
+    const onRequest = (request: Request) => {
+        if (request.method() === "GET" && revalidationUrl.test(request.url())) {
+            started.add(request);
+        }
+    };
+    const onDone = (request: Request) => {
+        if (started.has(request)) {
+            finished++;
+        }
+    };
+    page.on("request", onRequest);
+    page.on("requestfinished", onDone);
+    page.on("requestfailed", onDone);
+    return {
+        async waitForAll(expected: number) {
+            try {
+                await expect.poll(() => finished, {
+                    message: "survey, programme and ANC re-validation after the baseline uploads",
+                    timeout: 30000
+                }).toBeGreaterThanOrEqual(expected);
+            } finally {
+                page.off("request", onRequest);
+                page.off("requestfinished", onDone);
+                page.off("requestfailed", onDone);
+            }
+        }
+    };
 }
 
 async function uploadTestFile(page: Page, type: keyof typeof uploadFileTypes) {
