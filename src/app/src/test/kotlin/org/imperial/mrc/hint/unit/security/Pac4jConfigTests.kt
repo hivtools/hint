@@ -98,5 +98,6 @@ class Pac4jConfigTests
         assertThat(result.dataSource).isInstanceOf(TransactionAwareDataSourceProxy::class.java)
         assertThat((result.dataSource as TransactionAwareDataSourceProxy).targetDataSource).isSameAs(wiredDataSource)
         assertThat(result.passwordEncoder).isInstanceOf(SecurePasswordEncoder::class.java)
+        assertThat(result.isInitialized).isTrue()
     }
 }
