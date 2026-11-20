@@ -1,45 +1,51 @@
-import * as XLSX from "xlsx";
+import type {JSON2SheetOpts} from "xlsx";
 import {DownloadIndicatorPayload, DownloadIndicatorDataset} from "./types";
 
 export interface ExportService {
-    download: () => void
+    download: () => Promise<void>
     addFilteredData: () => ExportService
     addUnfilteredData: () => ExportService
+}
+
+type Sheet = {
+    name: string
+    rows: unknown[]
+    options?: JSON2SheetOpts
 }
 
 export class DataExportService implements ExportService {
     private readonly _data: DownloadIndicatorDataset
     private readonly _filename: string
     private readonly _options: any
-
-    private readonly _workbook: XLSX.WorkBook;
+    private readonly _sheets: Sheet[] = [];
 
     constructor(payload: DownloadIndicatorPayload) {
         this._filename = payload.filename
         this._data = payload.data
-        this._workbook = XLSX.utils.book_new();
         this._options = payload.options;
     }
 
     addFilteredData = (): ExportService => {
-        let worksheet;
-        if (this._options) {
-            worksheet = XLSX.utils.json_to_sheet(this._data.filteredData, this._options);
-        } else {
-            worksheet = XLSX.utils.json_to_sheet(this._data.filteredData);
-        }
-        XLSX.utils.book_append_sheet(this._workbook, worksheet, "filtered data");
+        this._sheets.push({name: "filtered data", rows: this._data.filteredData, options: this._options});
         return this;
     }
 
     addUnfilteredData = (): ExportService => {
-        const worksheet = XLSX.utils.json_to_sheet(this._data.unfilteredData);
-        XLSX.utils.book_append_sheet(this._workbook, worksheet, "all data");
+        this._sheets.push({name: "all data", rows: this._data.unfilteredData});
         return this;
     }
 
-    download = (): void => {
-        XLSX.writeFile(this._workbook, this._filename);
+    // xlsx is large, so the browser gets it only when the user downloads a file.
+    download = async (): Promise<void> => {
+        const XLSX = await import("xlsx");
+        const workbook = XLSX.utils.book_new();
+        this._sheets.forEach(sheet => {
+            const worksheet = sheet.options
+                ? XLSX.utils.json_to_sheet(sheet.rows, sheet.options)
+                : XLSX.utils.json_to_sheet(sheet.rows);
+            XLSX.utils.book_append_sheet(workbook, worksheet, sheet.name);
+        });
+        XLSX.writeFile(workbook, this._filename);
     }
 }
 
