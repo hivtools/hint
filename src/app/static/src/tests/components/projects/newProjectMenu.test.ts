@@ -18,7 +18,7 @@ import {nextTick} from "vue";
 
 describe("New project menu component", () => {
 
-    // @ts-ignore
+    // @ts-expect-error -- MockFile does not have all the members of File.
     global.File = class MockFile {
         filename: string;
         constructor(_parts: (string | Blob | ArrayBuffer | ArrayBufferView)[], filename: string, _properties ? : FilePropertyBag) {
