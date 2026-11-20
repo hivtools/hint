@@ -25,10 +25,16 @@ import javax.sql.DataSource
 class Pac4jConfig
 {
 
+    // pac4j objects initialise themselves on first use, and that is not safe for requests that arrive at the
+    // same time. After one request starts init(), shouldInitialize() returns false for 5s to any other request,
+    // which then carries on without waiting and finds the object half set up (for this service, dbi is null and
+    // the login fails with a 500). So initialise the objects the form login uses here, before any request.
     @Bean
     fun getProfileService(dataSource: DataSource): HintDbProfileService
     {
-        return HintDbProfileService(TransactionAwareDataSourceProxy(dataSource), SecurePasswordEncoder())
+        return HintDbProfileService(TransactionAwareDataSourceProxy(dataSource), SecurePasswordEncoder()).apply {
+            init()
+        }
     }
 
     @Bean
