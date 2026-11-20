@@ -1,11 +1,11 @@
 import {storeOptions} from "../app/root";
-import {RouteLocationNormalized} from "vue-router";
+import type {RouteLocationNormalized} from "vue-router";
 import {mount} from '@vue/test-utils'
 import Vuex from "vuex";
 import {mockRootState} from "./mocks";
 import {store} from "../app/main";
 import Hint from "../app/components/Hint.vue";
-import {Mock} from "vitest";
+import type {Mock} from "vitest";
 import {beforeEnter, router} from '../app/router';
 
 // Mock the actions before import the router as the app will call

@@ -1,4 +1,4 @@
-import {AsyncComponentLoader, defineAsyncComponent} from "vue";
+import {type AsyncComponentLoader, defineAsyncComponent} from "vue";
 import StepLoading from "./StepLoading.vue";
 import StepLoadError from "./StepLoadError.vue";
 import {Step} from "../types";

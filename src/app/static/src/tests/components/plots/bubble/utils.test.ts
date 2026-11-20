@@ -1,7 +1,7 @@
 import {getFeatureData, getRadius, tooltipContent} from "../../../../app/components/plots/bubble/utils";
-import {Feature} from "geojson";
+import type {Feature} from "geojson";
 import {mockIndicatorMetadata} from "../../../mocks";
-import {BubbleIndicatorValuesDict, NumericRange} from "../../../../app/types";
+import type {BubbleIndicatorValuesDict, NumericRange} from "../../../../app/types";
 import {getColour} from "../../../../app/components/plots/utils";
 
 describe("Bubble plot utils", () => {

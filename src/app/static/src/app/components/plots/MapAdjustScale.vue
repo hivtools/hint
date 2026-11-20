@@ -60,12 +60,12 @@
 
 <script lang="ts">
 
-import {computed, defineComponent, PropType} from "vue";
-import {Scale, ScaleSettings, ScaleType} from "../../store/plotState/plotState";
+import {computed, defineComponent, type PropType} from "vue";
+import {type Scale, type ScaleSettings, ScaleType} from "../../store/plotState/plotState";
 import i18next from "i18next";
-import {IndicatorMetadata} from "../../generated";
+import type {IndicatorMetadata} from "../../generated";
 import {useUpdateScale} from "./useUpdateScale";
-import { PlotName } from "../../store/plotSelections/plotSelections";
+import type { PlotName } from "../../store/plotSelections/plotSelections";
 
 export default defineComponent({
     props: {

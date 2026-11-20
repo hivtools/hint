@@ -15,8 +15,8 @@ import {
     getInputComparisonFilteredData
 } from "../../app/store/plotData/filter";
 import {mockBaselineState, mockPlotMetadataFrame, mockRootState, mockShapeResponse} from "../mocks";
-import {ShapeResponse} from "../../app/generated";
-import {PlotName} from "../../app/store/plotSelections/plotSelections";
+import type {ShapeResponse} from "../../app/generated";
+import type {PlotName} from "../../app/store/plotSelections/plotSelections";
 
 describe("Plot selections utils", () => {
     beforeEach(() => {

@@ -1,9 +1,9 @@
-import {Module} from "vuex";
+import type {Module} from "vuex";
 import {actions} from "./actions";
 import {mutations} from "./mutations";
-import {RootState, WarningsState} from "../../root";
-import {ReviewInputDataset} from "../../types";
-import {
+import type {RootState, WarningsState} from "../../root";
+import type {ReviewInputDataset} from "../../types";
+import type {
     Error,
     FilterOption,
     InputComparisonData,

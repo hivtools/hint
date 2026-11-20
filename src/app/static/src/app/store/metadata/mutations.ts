@@ -1,7 +1,7 @@
-import {MutationTree} from 'vuex';
-import {MetadataState} from "./metadata";
-import {Error, AdrMetadataResponse, ReviewInputFilterMetadataResponse} from "../../generated";
-import {PayloadWithType} from "../../types";
+import type {MutationTree} from 'vuex';
+import type {MetadataState} from "./metadata";
+import type {Error, AdrMetadataResponse, ReviewInputFilterMetadataResponse} from "../../generated";
+import type {PayloadWithType} from "../../types";
 
 export enum MetadataMutations {
     ReviewInputsMetadataFetched = "ReviewInputsMetadataFetched",

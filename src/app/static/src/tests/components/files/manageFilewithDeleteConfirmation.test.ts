@@ -1,9 +1,9 @@
 import Vuex from "vuex";
-import {VueWrapper} from '@vue/test-utils';
+import type {VueWrapper} from '@vue/test-utils';
 import ManageFile from "../../../app/components/files/ManageFile.vue";
 import ResetConfirmation from "../../../app/components/resetConfirmation/ResetConfirmation.vue";
 import {mockFile, mockRootState} from "../../mocks";
-import {RootState} from "../../../app/root";
+import type {RootState} from "../../../app/root";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {getters} from "../../../app/store/root/getters";
 import {mountWithTranslate} from "../../testHelpers";

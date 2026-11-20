@@ -14,11 +14,11 @@
 </template>
 
 <script lang="ts">
-import {PropType, computed, defineComponent} from 'vue';
+import {type PropType, computed, defineComponent} from 'vue';
 import {useStore} from "vuex";
-import {RootState} from "../../root";
+import type {RootState} from "../../root";
 import Filter from "./Filter.vue";
-import {PlotName} from "../../store/plotSelections/plotSelections";
+import type {PlotName} from "../../store/plotSelections/plotSelections";
 import FilterWithReset from './FilterWithReset.vue';
 
 export default defineComponent({

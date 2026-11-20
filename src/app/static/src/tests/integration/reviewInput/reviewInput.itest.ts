@@ -1,6 +1,6 @@
 import {actions} from "../../../app/store/reviewInput/actions";
 import {login, rootState} from "../integrationTest";
-import {ReviewInputDataset} from "../../../app/types";
+import type {ReviewInputDataset} from "../../../app/types";
 import {ReviewInputMutation} from "../../../app/store/reviewInput/mutations";
 import {getFormData} from "../helpers";
 import {actions as baselineActions} from "../../../app/store/baseline/actions";

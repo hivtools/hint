@@ -12,7 +12,7 @@ import {
     mockSurveyResponse
 } from "../mocks";
 import {actions} from "../../app/store/metadata/actions";
-import {Mock} from "vitest";
+import type {Mock} from "vitest";
 import * as utils from "../../app/store/plotSelections/utils";
 import {FileType} from "../../app/store/surveyAndProgram/surveyAndProgram";
 import {MetadataMutations} from "../../app/store/metadata/mutations";

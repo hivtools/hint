@@ -1,7 +1,7 @@
 import {actions} from "../../app/store/adr/actions";
 import {login, rootState} from "./integrationTest";
 import {ADRMutation} from "../../app/store/adr/mutations";
-import {ADRSchemas} from "../../app/types";
+import type {ADRSchemas} from "../../app/types";
 
 describe("ADR non-dataset actions", () => {
 

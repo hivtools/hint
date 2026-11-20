@@ -5,7 +5,7 @@ import registerTranslations from "../../../app/store/translations/registerTransl
 import {mockADRDatasetState, mockADRDataState, mockRootState} from "../../mocks";
 import {expectTranslated, mountWithTranslate, shallowMountWithTranslate} from "../../testHelpers";
 import {Language} from "../../../app/store/translations/locales";
-import {Dataset} from "../../../app/types";
+import type {Dataset} from "../../../app/types";
 import VueFeather from "vue-feather";
 import {nextTick} from "vue";
 import HintTreeSelect from "../../../app/components/HintTreeSelect.vue";

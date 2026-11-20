@@ -3,7 +3,7 @@ import { emptyState } from "../../../app/root";
 import { mockDownloadResultsState } from "../../mocks";
 import { mount } from "@vue/test-utils";
 import DownloadErrorAlert from "../../../app/components/downloadResults/DownloadErrorAlert.vue";
-import { DownloadResultsState } from "../../../app/store/downloadResults/downloadResults";
+import type { DownloadResultsState } from "../../../app/store/downloadResults/downloadResults";
 import { DownloadType } from "../../../app/store/downloadResults/downloadConfig";
 
 describe("Download Error Alert", () => {

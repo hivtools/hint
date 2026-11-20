@@ -4,7 +4,7 @@
 // pages around the main flow (login, guest, logout, deep links, language) and errors in the browser console.
 // They are written to protect front-end changes such as the move from webpack to Vite. They should pass before and
 // after those changes.
-import {test as plainTest, expect as plainExpect, Page} from "@playwright/test";
+import {test as plainTest, expect as plainExpect, type Page} from "@playwright/test";
 import {expect, test} from "./fixtures/project-page";
 import {baseURL} from "../../../playwright.config";
 import {locales} from "../../app/store/translations/locales";

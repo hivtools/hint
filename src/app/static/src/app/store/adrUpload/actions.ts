@@ -1,12 +1,12 @@
-import {ActionContext, ActionTree} from "vuex";
-import {RootState} from "../../root";
+import type {ActionContext, ActionTree} from "vuex";
+import type {RootState} from "../../root";
 import {api} from "../../apiService";
 import qs from "qs";
-import {ADRUploadState} from "./adrUpload";
+import type {ADRUploadState} from "./adrUpload";
 import {ADRUploadMutation} from "./mutations";
 import {constructUploadFile, constructUploadFileWithResourceName} from "../../utils";
-import {Dict, UploadFile} from "../../types";
-import {ValidateInputResponse} from "../../generated";
+import type {Dict, UploadFile} from "../../types";
+import type {ValidateInputResponse} from "../../generated";
 import { DownloadType } from "../downloadResults/downloadConfig";
 
 export interface ADRUploadActions {

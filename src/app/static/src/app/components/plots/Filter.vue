@@ -15,13 +15,13 @@
 
 <script lang="ts">
 import { SingleSelect, MultiSelect } from "@reside-ic/vue-nested-multiselect";
-import {PropType, computed, defineComponent} from 'vue';
+import {type PropType, computed, defineComponent} from 'vue';
 import i18next from "i18next";
 import { useStore } from "vuex";
-import { RootState } from "../../root";
-import { FilterOption } from "../../generated";
-import { PlotSelectionActionUpdate, getMetadataFromPlotName } from "../../store/plotSelections/actions";
-import { PlotName } from "../../store/plotSelections/plotSelections";
+import type { RootState } from "../../root";
+import type { FilterOption } from "../../generated";
+import { type PlotSelectionActionUpdate, getMetadataFromPlotName } from "../../store/plotSelections/actions";
+import type { PlotName } from "../../store/plotSelections/plotSelections";
 
 export default defineComponent({
     props: {

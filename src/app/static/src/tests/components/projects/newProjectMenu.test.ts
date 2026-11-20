@@ -9,10 +9,10 @@ import {
     mockProjectsState,
     mockRootState
 } from "../../mocks";
-import {DOMWrapper, mount, VueWrapper} from "@vue/test-utils";
+import {type DOMWrapper, mount, type VueWrapper} from "@vue/test-utils";
 import NewProjectMenu from "../../../app/components/projects/NewProjectMenu.vue";
 import UploadNewProject from "../../../app/components/load/NewProjectCreate.vue";
-import {Translations} from "../../../app/store/translations/locales";
+import type {Translations} from "../../../app/store/translations/locales";
 import ADRRehydrate from "../../../app/components/adr/ADRRehydrate.vue";
 import {nextTick} from "vue";
 

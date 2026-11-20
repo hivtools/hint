@@ -8,7 +8,7 @@ const existingState = {
     surveyAndProgram: {}
 } as any;
 
-import {baseline, BaselineState} from "../../app/store/baseline/baseline";
+import {baseline, type BaselineState} from "../../app/store/baseline/baseline";
 
 it("loads initial state from existingState", () => {
     const state = baseline(existingState).state as BaselineState;

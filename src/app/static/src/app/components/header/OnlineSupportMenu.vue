@@ -64,12 +64,12 @@
     import DropDown from "./DropDown.vue";
     import i18next from "i18next";
     import {HelpFile, mapActionByName, mapStateProp} from "../../utils";
-    import {RootState} from "../../root";
+    import type {RootState} from "../../root";
     import {Language} from "../../store/translations/locales";
     import ErrorReport from "../ErrorReport.vue";
-    import {ProjectsState} from "../../store/projects/projects";
-    import {StepDescription, StepperState} from "../../store/stepper/stepper";
-    import {ErrorReportManualDetails} from "../../types";
+    import type {ProjectsState} from "../../store/projects/projects";
+    import type {StepDescription, StepperState} from "../../store/stepper/stepper";
+    import type {ErrorReportManualDetails} from "../../types";
     import { defineComponent } from "vue";
 
     export default defineComponent({

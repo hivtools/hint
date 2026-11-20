@@ -1,4 +1,4 @@
-import {createRouter, createWebHistory, RouteLocationNormalized} from "vue-router";
+import {createRouter, createWebHistory, type RouteLocationNormalized} from "vue-router";
 import Stepper from "./components/Stepper.vue";
 import Projects from "./components/projects/Projects.vue";
 import {store} from "./main";

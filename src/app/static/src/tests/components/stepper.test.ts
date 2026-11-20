@@ -1,5 +1,5 @@
 import Vuex from 'vuex';
-import {baselineGetters, BaselineState} from "../../app/store/baseline/baseline";
+import {baselineGetters, type BaselineState} from "../../app/store/baseline/baseline";
 import {
     mockADRState,
     mockBaselineState,
@@ -18,7 +18,7 @@ import {
     mockSurveyResponse,
     mockValidateBaselineResponse
 } from "../mocks";
-import {SurveyAndProgramState} from "../../app/store/surveyAndProgram/surveyAndProgram";
+import type {SurveyAndProgramState} from "../../app/store/surveyAndProgram/surveyAndProgram";
 import {getters as surveyAndProgramGetters} from "../../app/store/surveyAndProgram/getters";
 import {mutations} from '../../app/store/baseline/mutations';
 import {mutations as surveyAndProgramMutations} from '../../app/store/surveyAndProgram/mutations';
@@ -26,7 +26,7 @@ import {ModelRunMutation, mutations as modelRunMutations} from '../../app/store/
 import {mutations as stepperMutations} from '../../app/store/stepper/mutations';
 import {mutations as loadMutations} from '../../app/store/load/mutations';
 import {ModelCalibrateMutation, mutations as modelCalibrateMutations} from '../../app/store/modelCalibrate/mutations';
-import {modelRunGetters, ModelRunState} from "../../app/store/modelRun/modelRun";
+import {modelRunGetters, type ModelRunState} from "../../app/store/modelRun/modelRun";
 import ADRIntegration from "../../app/components/adr/ADRIntegration.vue";
 import Stepper from "../../app/components/Stepper.vue";
 import {prefetchStep} from "../../app/components/lazySteps";
@@ -34,18 +34,18 @@ import Step from "../../app/components/Step.vue";
 import LoadingSpinner from "../../app/components/LoadingSpinner.vue";
 import {actions} from "../../app/store/stepper/actions";
 import {getters} from "../../app/store/stepper/getters";
-import {StepperState} from "../../app/store/stepper/stepper";
+import type {StepperState} from "../../app/store/stepper/stepper";
 import {actions as rootActions} from "../../app/store/root/actions"
 import {mutations as rootMutations} from "../../app/store/root/mutations"
-import {MetadataState} from "../../app/store/metadata/metadata";
-import {ModelStatusResponse, Warning} from "../../app/generated";
-import {modelOptionsGetters, ModelOptionsState} from "../../app/store/modelOptions/modelOptions";
-import {LoadingState, LoadState} from "../../app/store/load/state";
+import type {MetadataState} from "../../app/store/metadata/metadata";
+import type {ModelStatusResponse, Warning} from "../../app/generated";
+import {modelOptionsGetters, type ModelOptionsState} from "../../app/store/modelOptions/modelOptions";
+import {LoadingState, type LoadState} from "../../app/store/load/state";
 import registerTranslations from "../../app/store/translations/registerTranslations";
-import {ProjectsState} from "../../app/store/projects/projects";
-import {ModelCalibrateState} from "../../app/store/modelCalibrate/modelCalibrate";
+import type {ProjectsState} from "../../app/store/projects/projects";
+import type {ModelCalibrateState} from "../../app/store/modelCalibrate/modelCalibrate";
 import VersionStatus from "../../app/components/projects/VersionStatus.vue";
-import {RootState} from "../../app/root";
+import type {RootState} from "../../app/root";
 import ModelCalibrate from "../../app/components/modelCalibrate/ModelCalibrate.vue";
 import {getters as rootGetters} from "../../app/store/root/getters";
 import {expectTranslated, shallowMountWithTranslate} from "../testHelpers";
@@ -53,7 +53,7 @@ import StepperNavigation from "../../app/components/StepperNavigation.vue";
 import WarningAlert from "../../app/components/WarningAlert.vue";
 import LoadInvalidModal from "../../app/components/load/LoadInvalidModal.vue";
 import {ModelOptionsMutation} from "../../app/store/modelOptions/mutations";
-import {ReviewInputState} from "../../app/store/reviewInput/reviewInput";
+import type {ReviewInputState} from "../../app/store/reviewInput/reviewInput";
 import {ReviewInputMutation} from "../../app/store/reviewInput/mutations";
 import {nextTick} from 'vue';
 

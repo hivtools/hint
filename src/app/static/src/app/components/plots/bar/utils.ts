@@ -1,12 +1,12 @@
-import {ChartData, ChartDataset, DefaultDataPoint} from "chart.js";
-import {IndicatorMetadata, FilterOption} from "../../../generated";
-import {AnnotationOptions} from "chartjs-plugin-annotation";
+import type {ChartData, ChartDataset, DefaultDataPoint} from "chart.js";
+import type {IndicatorMetadata, FilterOption} from "../../../generated";
+import type {AnnotationOptions} from "chartjs-plugin-annotation";
 import {formatOutput} from "../utils";
-import {PlotData} from "../../../store/plotData/plotData";
-import {Dict} from "../../../types";
+import type {PlotData} from "../../../store/plotData/plotData";
+import type {Dict} from "../../../types";
 import i18next from "i18next";
-import {AreaProperties} from "../../../store/baseline/baseline";
-import {InputComparisonPlotData} from "../../../store/reviewInput/reviewInput";
+import type {AreaProperties} from "../../../store/baseline/baseline";
+import type {InputComparisonPlotData} from "../../../store/reviewInput/reviewInput";
 
 type BarChartDataset<Data> = ChartDataset<"bar", Data>
 

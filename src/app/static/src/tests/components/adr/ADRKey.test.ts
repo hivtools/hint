@@ -1,15 +1,15 @@
 import {nextTick} from "vue";
 
 import ADRKey from "../../../app/components/adr/ADRKey.vue";
-import Vuex, {ActionTree} from "vuex";
-import {Error} from "../../../app/generated";
+import Vuex, {type ActionTree} from "vuex";
+import type {Error} from "../../../app/generated";
 import {mockADRState, mockError, mockRootState} from "../../mocks";
 import {mutations} from "../../../app/store/adr/mutations";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
-import {RootState} from "../../../app/root";
+import type {RootState} from "../../../app/root";
 import ErrorAlert from "../../../app/components/ErrorAlert.vue";
-import {ADRActions} from "../../../app/store/adr/actions";
-import {ADRState} from "../../../app/store/adr/adr";
+import type {ADRActions} from "../../../app/store/adr/actions";
+import type {ADRState} from "../../../app/store/adr/adr";
 import {mountWithTranslate, shallowMountWithTranslate} from "../../testHelpers";
 
 describe("ADR Key", function () {

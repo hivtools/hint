@@ -1,7 +1,7 @@
-import { MutationTree } from "vuex";
-import { PlotName, PlotSelectionsState } from "./plotSelections";
-import { PayloadWithType } from "../../types";
-import { Error } from "../../generated";
+import type { MutationTree } from "vuex";
+import type { PlotName, PlotSelectionsState } from "./plotSelections";
+import type { PayloadWithType } from "../../types";
+import type { Error } from "../../generated";
 
 export enum PlotSelectionsMutations {
     updatePlotSelection = "updatePlotSelection",

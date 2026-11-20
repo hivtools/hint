@@ -8,7 +8,7 @@
 
 <script setup lang="ts">
 import { useStore } from 'vuex';
-import { RootState } from '../../root';
+import type { RootState } from '../../root';
 import { DownloadType, getDownloadTranslationKey } from '../../store/downloadResults/downloadConfig';
 import { computed } from 'vue';
 import i18next from 'i18next';

@@ -1,13 +1,13 @@
-import {ActionContext, ActionTree, Commit} from 'vuex';
-import {FileType, SurveyAndProgramState} from "./surveyAndProgram";
+import type {ActionContext, ActionTree, Commit} from 'vuex';
+import {FileType, type SurveyAndProgramState} from "./surveyAndProgram";
 import {api} from "../../apiService";
-import {AncResponse, ProgrammeResponse, SurveyResponse, SurveyResponseData} from "../../generated";
+import type {AncResponse, ProgrammeResponse, SurveyResponse, SurveyResponseData} from "../../generated";
 import {SurveyAndProgramMutation} from "./mutations";
 import {buildData, freezer, getFilenameFromImportUrl, getFilenameFromUploadFormData, rawDeepClone} from "../../utils";
 import {ReviewInputMutation} from "../reviewInput/mutations";
-import {UploadImportPayload} from "../../types";
-import { RootState } from '../../root';
-import {Feature} from "geojson";
+import type {UploadImportPayload} from "../../types";
+import type { RootState } from '../../root';
+import type {Feature} from "geojson";
 
 export interface SurveyAndProgramActions {
     importSurvey: (store: ActionContext<SurveyAndProgramState, RootState>, url: string) => void,

@@ -1,5 +1,5 @@
 import { mutations } from "./mutations";
-import {Dict} from "../../types";
+import type {Dict} from "../../types";
 
 export interface PlotState {
     input: InputPlotState,

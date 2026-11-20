@@ -98,12 +98,12 @@
     import Modal from "./Modal.vue";
     import ErrorAlert from "./ErrorAlert.vue";
     import i18next from "i18next";
-    import {Language} from "../store/translations/locales";
-    import {Error} from "../generated";
-    import { ErrorsState } from "../store/errors/errors";
+    import type {Language} from "../store/translations/locales";
+    import type {Error} from "../generated";
+    import type { ErrorsState } from "../store/errors/errors";
     import LoadingSpinner from "./LoadingSpinner.vue";
     import { defineComponent } from "vue";
-    import { RootState } from '../root';
+    import type { RootState } from '../root';
 
     export default defineComponent({
         components: {

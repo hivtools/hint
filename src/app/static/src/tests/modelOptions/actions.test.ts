@@ -1,7 +1,7 @@
 import {actions} from "../../app/store/modelOptions/actions";
 import {ModelOptionsMutation} from "../../app/store/modelOptions/mutations";
 import {mockAxios, mockError, mockFailure, mockRootState, mockSuccess} from "../mocks";
-import {Mock} from "vitest";
+import type {Mock} from "vitest";
 
 const rootState = mockRootState();
 describe("model run options actions", () => {

@@ -2,7 +2,7 @@ import {actions} from "../../app/store/downloadResults/actions";
 import {rootState} from "./integrationTest";
 import {formatToLocalISODateTime} from "../../app/utils";
 import { DownloadType } from "../../app/store/downloadResults/downloadConfig";
-import { DownloadResultsState } from "../../app/store/downloadResults/downloadResults";
+import type { DownloadResultsState } from "../../app/store/downloadResults/downloadResults";
 import { DownloadResultsMutation } from "../../app/store/downloadResults/mutations";
 
 describe(`download results actions integration`, () => {

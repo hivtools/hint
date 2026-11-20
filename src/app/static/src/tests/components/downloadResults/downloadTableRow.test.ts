@@ -4,7 +4,7 @@ import DownloadTableRow from "../../../app/components/downloadResults/DownloadTa
 import { mockDownloadResultsState } from "../../mocks";
 import { mount } from "@vue/test-utils";
 import { DownloadType, fileTypeUIConfigs, statusUIConfigs, TaskStatus } from "../../../app/store/downloadResults/downloadConfig";
-import { DownloadResultsDependency } from "../../../app/types";
+import type { DownloadResultsDependency } from "../../../app/types";
 import VueFeather from "vue-feather";
 
 const downloadType = DownloadType.SUMMARY;

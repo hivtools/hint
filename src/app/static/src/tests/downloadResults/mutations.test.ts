@@ -1,6 +1,6 @@
 import {mockDownloadResultsDependency, mockDownloadResultsState, mockError} from "../mocks";
 import {DownloadResultsMutation, mutations} from "../../app/store/downloadResults/mutations";
-import {DownloadStatusResponse} from "../../app/generated";
+import type {DownloadStatusResponse} from "../../app/generated";
 import { DownloadType } from "../../app/store/downloadResults/downloadConfig";
 
 describe(`All DownloadType mutations`, () => {

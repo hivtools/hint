@@ -1,6 +1,6 @@
-import {TableData} from "../../../store/plotData/plotData";
-import {FilterSelection, PlotName,} from "../../../store/plotSelections/plotSelections";
-import {
+import type {TableData} from "../../../store/plotData/plotData";
+import type {FilterSelection, PlotName,} from "../../../store/plotSelections/plotSelections";
+import type {
     CalibrateDataResponse,
     FilterOption,
     IndicatorMetadata,
@@ -9,8 +9,8 @@ import {
 } from "../../../generated";
 import {formatOutput} from "../utils";
 import i18next from "i18next";
-import {Language} from "../../../store/translations/locales";
-import {ITooltipComp, ITooltipParams, ValueFormatterParams, ValueGetterParams} from "ag-grid-community";
+import type {Language} from "../../../store/translations/locales";
+import type {ITooltipComp, ITooltipParams, ValueFormatterParams, ValueGetterParams} from "ag-grid-community";
 import DifferenceColumnRenderer from "./DifferenceColumnRenderer.vue";
 
 export interface TableHeaderDef {

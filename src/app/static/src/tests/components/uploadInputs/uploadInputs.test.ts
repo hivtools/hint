@@ -1,5 +1,5 @@
-import Vuex, {Store} from 'vuex';
-import {BaselineActions} from "../../../app/store/baseline/actions";
+import Vuex, {type Store} from 'vuex';
+import type {BaselineActions} from "../../../app/store/baseline/actions";
 import {
     mockBaselineState,
     mockError,
@@ -10,19 +10,19 @@ import {
     mockShapeResponse,
     mockSurveyAndProgramState
 } from "../../mocks";
-import {BaselineState} from "../../../app/store/baseline/baseline";
+import type {BaselineState} from "../../../app/store/baseline/baseline";
 import UploadInputs from "../../../app/components/uploadInputs/UploadInputs.vue";
 import ManageFile from "../../../app/components/files/ManageFile.vue";
-import {MetadataState} from "../../../app/store/metadata/metadata";
+import type {MetadataState} from "../../../app/store/metadata/metadata";
 import ErrorAlert from "../../../app/components/ErrorAlert.vue";
 import LoadingSpinner from "../../../app/components/LoadingSpinner.vue";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {expectTranslatedWithStoreType, mountWithTranslate, shallowMountWithTranslate} from "../../testHelpers";
 import {getters} from "../../../app/store/surveyAndProgram/getters";
-import {SurveyAndProgramState} from "../../../app/store/surveyAndProgram/surveyAndProgram";
+import type {SurveyAndProgramState} from "../../../app/store/surveyAndProgram/surveyAndProgram";
 import {testUploadComponent} from "./fileUploads";
-import {Mocked, MockInstance} from 'vitest';
-import {flushPromises, VueWrapper} from '@vue/test-utils';
+import type {Mocked, MockInstance} from 'vitest';
+import {flushPromises, type VueWrapper} from '@vue/test-utils';
 
 describe("UploadInputs upload component", () => {
 

@@ -15,7 +15,7 @@
 
 <script lang="ts">
     import { defineComponent } from "vue";
-    import {ErrorsState} from "../store/errors/errors";
+    import type {ErrorsState} from "../store/errors/errors";
     import {mapMutationByName, mapStateProps} from "../utils";
     import {ErrorsMutation} from "../store/errors/mutations";
 

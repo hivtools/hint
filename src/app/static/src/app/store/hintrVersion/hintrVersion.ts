@@ -1,8 +1,8 @@
-import { Module } from "vuex";
+import type { Module } from "vuex";
 import { actions } from "./actions";
 import { mutations } from "./mutations";
-import { HintrVersionResponse } from "../../generated";
-import {RootState} from "../../root";
+import type { HintrVersionResponse } from "../../generated";
+import type {RootState} from "../../root";
 
 export interface HintrVersionState {
     hintrVersion: HintrVersionResponse

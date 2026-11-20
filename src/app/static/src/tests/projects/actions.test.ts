@@ -3,9 +3,9 @@ import {actions} from "../../app/store/projects/actions";
 import {ProjectsMutations} from "../../app/store/projects/mutations";
 import {RootMutation} from "../../app/store/root/mutations";
 import {ErrorsMutation} from "../../app/store/errors/mutations";
-import {Project} from "../../app/types";
+import type {Project} from "../../app/types";
 import {serialiseState} from "../../app/localStorageManager";
-import {Mock} from "vitest";
+import type {Mock} from "vitest";
 import {flushPromises} from "@vue/test-utils";
 
 describe("Projects actions", () => {

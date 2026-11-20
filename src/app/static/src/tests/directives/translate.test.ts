@@ -3,7 +3,7 @@ import registerTranslations from "../../app/store/translations/registerTranslati
 import {Language} from "../../app/store/translations/locales";
 import {mountWithTranslate, shallowMountWithTranslate} from "../testHelpers";
 import {nextTick} from "vue";
-import {Mock} from "vitest";
+import type {Mock} from "vitest";
 
 describe("translate directive", () => {
 

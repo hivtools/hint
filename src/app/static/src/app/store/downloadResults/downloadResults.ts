@@ -1,8 +1,8 @@
-import {RootState} from "../../root";
-import {Module} from "vuex";
+import type {RootState} from "../../root";
+import type {Module} from "vuex";
 import {actions} from "./actions";
 import {mutations} from "./mutations";
-import {DownloadResultsDependency} from "../../types";
+import type {DownloadResultsDependency} from "../../types";
 import { DownloadType } from "./downloadConfig";
 
 export type DownloadResultsState = {

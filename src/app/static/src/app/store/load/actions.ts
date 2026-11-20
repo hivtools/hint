@@ -1,18 +1,18 @@
-import {ActionContext, ActionTree} from "vuex";
-import {LoadingState, LoadState, RehydrateProjectResponse} from "./state";
-import {emptyState, RootState} from "../../root";
+import type {ActionContext, ActionTree} from "vuex";
+import {LoadingState, type LoadState, type RehydrateProjectResponse} from "./state";
+import {emptyState, type RootState} from "../../root";
 import {api} from "../../apiService";
 import {
     constructRehydrateProjectState,
     flatMapControlSections,
 } from "../../utils";
-import {DatasetResource, Dict, LocalSessionFile, VersionDetails} from "../../types";
+import type {DatasetResource, Dict, LocalSessionFile, VersionDetails} from "../../types";
 import {localStorageManager} from "../../localStorageManager";
 import {router} from "../../router";
 import {initialStepperState} from "../stepper/stepper";
-import {DynamicFormData} from "@reside-ic/vue-next-dynamic-form";
-import {ModelCalibrateState} from "../modelCalibrate/modelCalibrate";
-import {LoadMutations} from "./mutations";
+import type {DynamicFormData} from "@reside-ic/vue-next-dynamic-form";
+import type {ModelCalibrateState} from "../modelCalibrate/modelCalibrate";
+import type {LoadMutations} from "./mutations";
 import {ProjectsMutations} from "../projects/mutations";
 
 export type LoadErrorActionTypes = "LoadFailed" | "RehydrateResultError"

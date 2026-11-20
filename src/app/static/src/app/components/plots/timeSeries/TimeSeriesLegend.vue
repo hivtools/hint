@@ -40,7 +40,7 @@
 
 <script setup lang="ts">
 import {useStore} from "vuex";
-import { RootState } from '../../../root';
+import type { RootState } from '../../../root';
 import {PlotColours, timeSeriesExpandedViews, timeSeriesFixedColours} from "./utils";
 
 // We're creating a manual time series legend as at the time of writing plotly doesn't have

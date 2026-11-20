@@ -1,7 +1,7 @@
-import {MutationTree} from "vuex";
-import {ModelOutputState} from "./modelOutput";
-import {PayloadWithType} from "../../types";
-import {OutputPlotName} from "../plotSelections/plotSelections";
+import type {MutationTree} from "vuex";
+import type {ModelOutputState} from "./modelOutput";
+import type {PayloadWithType} from "../../types";
+import type {OutputPlotName} from "../plotSelections/plotSelections";
 
 export enum ModelOutputMutation {
     TabSelected = "TabSelected"

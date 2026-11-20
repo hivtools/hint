@@ -1,9 +1,9 @@
 import {mockAxios, mockCalibrateMetadataResponse} from "../mocks";
-import {Mock} from "vitest";
+import type {Mock} from "vitest";
 import {commitInitialScaleSelections} from "../../app/store/plotState/utils";
 import {PlotStateMutations} from "../../app/store/plotState/mutations";
 import {Scale, ScaleType} from "../../app/store/plotState/plotState";
-import {CalibrateMetadataResponse} from "../../app/generated";
+import type {CalibrateMetadataResponse} from "../../app/generated";
 
 describe("plotState utils", () => {
 

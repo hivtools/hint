@@ -1,4 +1,4 @@
-import {plotData, PlotDataState} from "../../app/store/plotData/plotData";
+import {plotData, type PlotDataState} from "../../app/store/plotData/plotData";
 import {plotNames} from "../../app/store/plotSelections/plotSelections";
 
 it("loads initial state", () => {

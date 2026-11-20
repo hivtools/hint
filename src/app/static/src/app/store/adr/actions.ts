@@ -1,13 +1,13 @@
-import {ActionContext, ActionTree} from "vuex";
+import type {ActionContext, ActionTree} from "vuex";
 import {api} from "../../apiService";
 import qs from "qs";
-import {AdrDatasetType, ADRState, getAdrDatasetUrl, getAdrReleaseUrl} from "./adr";
-import {ADRMutation, DatasetTypePayload} from "./mutations";
+import {AdrDatasetType, type ADRState, getAdrDatasetUrl, getAdrReleaseUrl} from "./adr";
+import {ADRMutation, type DatasetTypePayload} from "./mutations";
 import {datasetFromMetadata, findResource, resourceTypes} from "../../utils";
-import {Organization, Release} from "../../types";
+import type {Organization, Release} from "../../types";
 import {BaselineMutation} from "../baseline/mutations";
-import {RootState} from "../../root";
-import {Error} from "../../generated";
+import type {RootState} from "../../root";
+import type {Error} from "../../generated";
 
 export interface ADRActions {
     fetchKey: (store: ActionContext<ADRState, RootState>) => void;

@@ -1,10 +1,10 @@
-import {Module} from 'vuex';
+import type {Module} from 'vuex';
 import {actions} from './actions';
 import {mutations} from './mutations';
-import {ReadyState, WarningsState} from "../../root";
-import {AncResponse, ProgrammeResponse, SurveyResponse, Error, Warning} from "../../generated";
+import type {ReadyState, WarningsState} from "../../root";
+import type {AncResponse, ProgrammeResponse, SurveyResponse, Error, Warning} from "../../generated";
 import {getters} from "./getters";
-import {RootState} from "../../root";
+import type {RootState} from "../../root";
 
 export enum FileType {
     ANC = "anc",

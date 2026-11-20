@@ -1,4 +1,4 @@
-import {plotState, PlotState} from "../../app/store/plotState/plotState";
+import {plotState, type PlotState} from "../../app/store/plotState/plotState";
 
 it("loads initial state", () => {
     const state = plotState.state as PlotState;

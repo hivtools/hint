@@ -1,7 +1,7 @@
-import {Module} from "vuex";
-import {RootState} from "../../root";
-import {Error} from "../../generated";
-import {Dict, UploadFile} from "../../types";
+import type {Module} from "vuex";
+import type {RootState} from "../../root";
+import type {Error} from "../../generated";
+import type {Dict, UploadFile} from "../../types";
 import {actions} from "./actions";
 import {mutations} from "./mutations";
 

@@ -7,7 +7,7 @@ import {actions as adrUploadActions} from "../../app/store/adrUpload/actions";
 import {SurveyAndProgramMutation} from "../../app/store/surveyAndProgram/mutations";
 import {getFormData} from "./helpers";
 import {ADRMutation} from "../../app/store/adr/mutations";
-import {UploadFile} from "../../app/types";
+import type {UploadFile} from "../../app/types";
 import {AdrDatasetType} from "../../app/store/adr/adr";
 
 // this suite tests all endpoints that talk to the ADR

@@ -1,7 +1,7 @@
-import { MutationTree } from 'vuex';
-import { HintrVersionResponse } from '../../generated';
-import { PayloadWithType } from "../../types";
-import { HintrVersionState } from './hintrVersion';
+import type { MutationTree } from 'vuex';
+import type { HintrVersionResponse } from '../../generated';
+import type { PayloadWithType } from "../../types";
+import type { HintrVersionState } from './hintrVersion';
 
 
 export enum HintrVersionMutation {

@@ -27,9 +27,9 @@
 </template>
 
 <script setup lang="ts">
-import {PropType, Ref, computed, onMounted, ref, toRefs, watch} from "vue";
+import {type PropType, type Ref, computed, onMounted, ref, toRefs, watch} from "vue";
 import {useStore} from "vuex";
-import {RootState} from "../../../root";
+import type {RootState} from "../../../root";
 import { LMap, LGeoJson, LTileLayer } from "@vue-leaflet/vue-leaflet";
 import type { Feature } from "geojson";
 import {
@@ -38,17 +38,17 @@ import {
     getColourScaleLevels,
     debounce_leading,
     getIndicatorMetadata,
-    ScaleLevels
+    type ScaleLevels
 } from "../utils";
 import ResetMap from "../ResetMap.vue";
 import MapLegend from "../MapLegend.vue";
-import {IndicatorValuesDict, NumericRange} from "../../../types";
-import {CalibrateDataResponse, IndicatorMetadata} from "../../../generated";
-import { ScaleSettings } from "../../../store/plotState/plotState";
+import type {IndicatorValuesDict, NumericRange} from "../../../types";
+import type {CalibrateDataResponse, IndicatorMetadata} from "../../../generated";
+import type { ScaleSettings } from "../../../store/plotState/plotState";
 import {useChoroplethTooltips} from "./useChoroplethTooltips";
 import {getFeatureData} from "./utils";
 import MapEmptyFeature from "../MapEmptyFeature.vue";
-import { PlotName } from "../../../store/plotSelections/plotSelections";
+import type { PlotName } from "../../../store/plotSelections/plotSelections";
 import BaseMapCheckbox from "../BaseMapCheckbox.vue";
 
 const props = defineProps({

@@ -1,10 +1,10 @@
-import {Ref} from "vue";
-import {Feature} from "geojson";
-import {Layer} from "leaflet";
+import type {Ref} from "vue";
+import type {Feature} from "geojson";
+import type {Layer} from "leaflet";
 import {build_missing_id_text, formatOutput} from "../utils";
-import {IndicatorValuesDict} from "../../../types";
-import {IndicatorMetadata} from "../../../generated";
-import {LGeoJson} from "@vue-leaflet/vue-leaflet";
+import type {IndicatorValuesDict} from "../../../types";
+import type {IndicatorMetadata} from "../../../generated";
+import type {LGeoJson} from "@vue-leaflet/vue-leaflet";
 
 export const useChoroplethTooltips = (featureData: Ref<IndicatorValuesDict>,
                                       indicatorMetadata: Ref<IndicatorMetadata>,

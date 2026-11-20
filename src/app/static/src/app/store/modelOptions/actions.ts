@@ -1,10 +1,10 @@
-import {ModelOptionsState} from "./modelOptions";
-import {ActionContext, ActionTree} from "vuex";
-import {DynamicFormData, DynamicFormMeta} from "@reside-ic/vue-next-dynamic-form";
+import type {ModelOptionsState} from "./modelOptions";
+import type {ActionContext, ActionTree} from "vuex";
+import type {DynamicFormData, DynamicFormMeta} from "@reside-ic/vue-next-dynamic-form";
 import {api} from "../../apiService";
-import {RootState} from "../../root";
+import type {RootState} from "../../root";
 import {ModelOptionsMutation} from "./mutations";
-import { ModelOptionsValidate } from "../../generated";
+import type { ModelOptionsValidate } from "../../generated";
 
 export interface ModelOptionsActions {
     fetchModelRunOptions: (store: ActionContext<ModelOptionsState, RootState>) => void

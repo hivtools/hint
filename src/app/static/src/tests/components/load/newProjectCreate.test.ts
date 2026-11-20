@@ -1,12 +1,12 @@
 import {mockError, mockLoadState, mockProjectsState} from "../../mocks";
 import NewProjectCreate from "../../../app/components/load/NewProjectCreate.vue"
-import Vuex, {Store} from "vuex";
-import {emptyState, RootState} from "../../../app/root";
+import Vuex, {type Store} from "vuex";
+import {emptyState, type RootState} from "../../../app/root";
 import RegisterTranslations from "../../../app/store/translations/registerTranslations";
 import {expectTranslated, mountWithTranslate} from "../../testHelpers";
 import LoadErrorModal from "../../../app/components/load/LoadErrorModal.vue";
 import UploadProgress from "../../../app/components/load/UploadProgress.vue";
-import {LoadingState, LoadState} from "../../../app/store/load/state";
+import {LoadingState, type LoadState} from "../../../app/store/load/state";
 import LoadingSpinner from "../../../app/components/LoadingSpinner.vue";
 
 describe("newProjectCreate", () => {

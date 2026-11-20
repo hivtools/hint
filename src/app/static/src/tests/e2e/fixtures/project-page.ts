@@ -1,7 +1,7 @@
 import type {Locator, Page} from '@playwright/test';
 import {test as base, expect} from './worker-login';
 import {generateId} from "zoo-ids";
-import {Step} from "../../../app/types";
+import type {Step} from "../../../app/types";
 import {uploadAllTestFiles} from "../utils/uploadUtils";
 import {setValidModelOptions} from "../utils/modelOptionsUtils";
 import {calibrateModel, fitModel} from "../utils/utils";

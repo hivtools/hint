@@ -1,8 +1,8 @@
-import {RootState} from "../../root";
-import {Getter, GetterTree} from "vuex";
-import {DownloadSubmitRequest, Error, Note, VersionInfo} from "../../generated"
-import {Warning} from "../../generated";
-import {Dict, StepWarnings, Version} from "../../types";
+import type {RootState} from "../../root";
+import type {Getter, GetterTree} from "vuex";
+import type {DownloadSubmitRequest, Error, Note, VersionInfo} from "../../generated"
+import type {Warning} from "../../generated";
+import type {Dict, StepWarnings, Version} from "../../types";
 import {extractErrors, formatToLocalISODateTime} from "../../utils";
 
 interface RootGetters {

@@ -16,9 +16,9 @@ import {
     validateEmail,
     versionLabel
 } from "../app/utils";
-import {NestedFilterOption} from "../app/generated";
-import {DynamicFormData, DynamicFormMeta} from "@reside-ic/vue-next-dynamic-form";
-import {AxiosHeaders, AxiosResponse} from "axios";
+import type {NestedFilterOption} from "../app/generated";
+import type {DynamicFormData, DynamicFormMeta} from "@reside-ic/vue-next-dynamic-form";
+import {AxiosHeaders, type AxiosResponse} from "axios";
 import {computed, isProxy, reactive} from "vue";
 
 describe("utils", () => {

@@ -7,7 +7,7 @@ import {
     mockRootState
 } from "../mocks";
 import {getters} from "../../app/store/modelCalibrate/getters";
-import {InputComparisonResponse} from "../../app/generated";
+import type {InputComparisonResponse} from "../../app/generated";
 
 describe("modelCalibrate getters", () => {
     it("can get column ID from filter ID", () => {

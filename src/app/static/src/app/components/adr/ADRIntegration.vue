@@ -16,12 +16,12 @@
     import {mapActionByName, mapStateProp} from "../../utils";
     import AdrKey from "./ADRKey.vue";
     import AdrDataset from "./ADRInputDataset.vue";
-    import {AdrDatasetType, ADRState} from "../../store/adr/adr";
+    import {AdrDatasetType, type ADRState} from "../../store/adr/adr";
     import i18next from "i18next";
-    import {RootState} from "../../root";
-    import {Language} from "../../store/translations/locales";
-    import {BaselineState} from "../../store/baseline/baseline";
-    import {Dataset} from "../../types";
+    import type {RootState} from "../../root";
+    import type {Language} from "../../store/translations/locales";
+    import type {BaselineState} from "../../store/baseline/baseline";
+    import type {Dataset} from "../../types";
     import {defineComponent} from "vue";
     import {useADR} from "./useADR";
 

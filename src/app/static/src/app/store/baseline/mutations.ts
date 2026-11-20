@@ -1,6 +1,6 @@
-import {MutationTree} from 'vuex';
-import {BaselineState} from "./baseline";
-import {
+import type {MutationTree} from 'vuex';
+import type {BaselineState} from "./baseline";
+import type {
     Error,
     NestedFilterOption,
     PjnzResponse,
@@ -8,9 +8,9 @@ import {
     ShapeResponse,
     ValidateBaselineResponse
 } from "../../generated";
-import {Dataset, DatasetResourceSet, PayloadWithType, Release} from "../../types";
+import type {Dataset, DatasetResourceSet, PayloadWithType, Release} from "../../types";
 import {flattenOptions} from "../../utils";
-import {ReadyState} from "../../root";
+import type {ReadyState} from "../../root";
 
 export enum BaselineMutation {
     PJNZUpdated = "PJNZUpdated",
