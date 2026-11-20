@@ -76,6 +76,13 @@ class UploadStorage:
     def __init__(self, directory: str):
         self._directory = Path(directory)
 
+    async def has_file(self, name: str) -> bool:
+        """Whether a file with this stored name is in the folder. A name that is empty, or is `.` or `..`, or has a path
+        separator, is not the name of a file of the folder, so it is never found."""
+        if name in ("", ".", "..") or "/" in name or "\\" in name:
+            return False
+        return await asyncio.to_thread((self._directory / name).is_file)
+
     async def save(self, source: IO[bytes], filename: str) -> str:
         """Writes the file, unless it is already there. Returns the name of the file, which contains its hash.
 

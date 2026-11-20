@@ -11,18 +11,20 @@ Disk space (Azure Container Apps, as at November 2026). FastAPI also copies each
 received (in memory up to 1 MB, then in the system temp directory), which is the replica's ephemeral storage and is
 freed when the request ends. Azure gives a replica 1 GiB of it at 0.25 vCPU or less, 2 GiB at 0.5, 4 GiB at 1 and 8 GiB
 above 1 vCPU (https://learn.microsoft.com/en-us/azure/container-apps/storage-mounts), with no guarantee. At 1 vCPU (4 GiB),
-about 10 uploads of the largest PJNZ (400 MB, the biggest limit) can be in flight at once before it is full, and about 20 at
-2 vCPU. Nothing here caps how many uploads run at once, which is not a risk at that size: most files are a few MB, and
-the largest in use in November 2026 was 187 MB. If a replica restarts during uploads, give uploads a byte budget (each one
-reserves its size before its body is read, and waits if it is used up), or stream the body to the share and not to a
-temporary file.
+about 10 uploads of the largest PJNZ (400 MB) can be in flight at once before it is full, and about 20 at 2 vCPU. The
+biggest limit is the one of an output zip (500 MB, see `MAX_OUTPUT_ZIP_BYTES` in app/services/rehydrate_service.py): about 8 at
+1 vCPU. A download from ADR is kept in a temporary file in the same way. Nothing here caps how many uploads run at once,
+which is not a risk at that size: most files are a few MB, and the largest input file in use in November 2026 was 187 MB.
+If a replica restarts during uploads, give uploads a byte budget (each one reserves its size before its body is read, and
+waits if it is used up), or stream the body to the share and not to a temporary file.
 
-The limit of each path is the one of its kind of file (see `INPUT_FILE_TYPES` in app/services/input_file_service.py),
-and the answer is the usual error for the browser: 413 and a message in the language of the request. It applies to the
-request as a whole, which is a little more than the file in it.
+The limit of each path is in one table (`UPLOAD_LIMITS` in app/main.py), which has a row for each kind of input file (see
+`INPUT_FILE_TYPES` in app/services/input_file_service.py) and one for an output zip (see
+app/services/rehydrate_service.py). The middleware reads the table at each request, so a test can change a limit. The answer is the usual error for the browser: 413 and a
+message in the language of the request. It applies to the request as a whole, which is a little more than the file in it.
 """
 
-from collections.abc import Callable
+from collections.abc import Mapping
 
 from starlette.datastructures import Headers
 from starlette.types import ASGIApp, Message, Receive, Scope, Send
@@ -31,13 +33,13 @@ from app.errors import FileTooLargeError, hint_error_response
 
 
 class UploadSizeLimitMiddleware:
-    def __init__(self, app: ASGIApp, limit_of: Callable[[str], int | None]):
-        """`limit_of` gives the limit of a path, or None if the path does not upload a file."""
+    def __init__(self, app: ASGIApp, limits: Mapping[str, int]):
+        """`limits` has the limit of each path that uploads a file, in bytes. It is not copied."""
         self.app = app
-        self.limit_of = limit_of
+        self.limits = limits
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
-        limit = self.limit_of(scope["path"]) if scope["type"] == "http" and scope["method"] == "POST" else None
+        limit = self.limits.get(scope["path"]) if scope["type"] == "http" and scope["method"] == "POST" else None
         if limit is None:
             await self.app(scope, receive, send)
             return

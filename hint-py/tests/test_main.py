@@ -4,9 +4,12 @@ import httpx2
 import pytest
 from sqlalchemy.ext.asyncio import async_sessionmaker
 
+from app.byte_limit import MB
 from app.config import get_settings
 from app.logging_setup import LogHandler
-from app.main import app, lifespan
+from app.main import UPLOAD_LIMITS, app, lifespan
+from app.services.input_file_service import INPUT_FILE_TYPES
+from app.services.rehydrate_service import MAX_OUTPUT_ZIP_BYTES, UPLOAD_PATH
 
 
 async def test_lifespan_sets_up_the_session_factory():
@@ -34,3 +37,18 @@ async def test_lifespan_sets_up_the_logging(monkeypatch):
             assert root.level == logging.WARNING
     finally:
         get_settings.cache_clear()
+
+
+def test_the_upload_limits_have_a_row_for_each_input_file_type_and_one_for_an_output_zip():
+    assert UPLOAD_LIMITS == {
+        "/baseline/pjnz": 400 * MB,
+        "/baseline/shape": 100 * MB,
+        "/baseline/population": 150 * MB,
+        "/disease/survey": 50 * MB,
+        "/disease/programme": 20 * MB,
+        "/disease/anc": 10 * MB,
+        "/rehydrate/zip": 500 * MB,
+    }
+    assert {spec.url: spec.max_upload_bytes for spec in INPUT_FILE_TYPES.values()} | {
+        UPLOAD_PATH: MAX_OUTPUT_ZIP_BYTES
+    } == UPLOAD_LIMITS

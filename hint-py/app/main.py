@@ -21,9 +21,11 @@ from app.routers import (
     items,
     model,
     projects,
+    rehydrate,
     review_inputs,
 )
-from app.services.input_file_service import upload_limit
+from app.services.input_file_service import INPUT_FILE_TYPES
+from app.services.rehydrate_service import MAX_OUTPUT_ZIP_BYTES, UPLOAD_PATH
 from app.telemetry import trace_outgoing_calls
 from app.upload_limit import UploadSizeLimitMiddleware
 
@@ -48,9 +50,15 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None]:
     await engine.dispose()
 
 
+# The most that a request may be, for each path that uploads a file. The one table of the limits: the size limit middleware
+# reads it as it is (it does not copy it).
+UPLOAD_LIMITS = {spec.url: spec.max_upload_bytes for spec in INPUT_FILE_TYPES.values()} | {
+    UPLOAD_PATH: MAX_OUTPUT_ZIP_BYTES
+}
+
 app = FastAPI(lifespan=lifespan)
 register_error_handlers(app)
-app.add_middleware(UploadSizeLimitMiddleware, limit_of=upload_limit)
+app.add_middleware(UploadSizeLimitMiddleware, limits=UPLOAD_LIMITS)
 
 app.include_router(items.router)
 app.include_router(projects.router)
@@ -61,6 +69,7 @@ app.include_router(model.router)
 app.include_router(downloads.router)
 app.include_router(calibrate_results.router)
 app.include_router(adr.router)
+app.include_router(rehydrate.router)
 
 
 @app.get("/version")
