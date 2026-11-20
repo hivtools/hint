@@ -12,7 +12,7 @@ export default defineComponent({
     methods: {
         // The page was loaded before a deploy and its files are gone, or the connection failed.
         // The new files may not work with the old page, so the only safe fix is a full reload.
-        // The store is kept in local storage, so the user stays on the same step.
+        // The store is kept in browser storage and survives a reload, so the user stays on the same step.
         reload() {
             window.location.reload();
         }
