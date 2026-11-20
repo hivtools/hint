@@ -1,16 +1,17 @@
 import {AsyncComponentLoader, defineAsyncComponent} from "vue";
 import StepLoading from "./StepLoading.vue";
 import StepLoadError from "./StepLoadError.vue";
+import {Step} from "../types";
 
 // One loader for each step after the first. The step component and the prefetch use the same
 // function, so the browser fetches, parses and runs each module only once.
-export const stepLoaders = {
-    reviewInputs: () => import("./reviewInputs/ReviewInputs.vue"),
-    modelOptions: () => import("./modelOptions/ModelOptions.vue"),
-    modelRun: () => import("./modelRun/ModelRun.vue"),
-    modelCalibrate: () => import("./modelCalibrate/ModelCalibrate.vue"),
-    modelOutput: () => import("./modelOutput/ModelOutput.vue"),
-    downloadResults: () => import("./downloadResults/DownloadResults.vue")
+export const stepLoaders: Record<number, () => Promise<unknown>> = {
+    [Step.ReviewInputs]: () => import("./reviewInputs/ReviewInputs.vue"),
+    [Step.ModelOptions]: () => import("./modelOptions/ModelOptions.vue"),
+    [Step.FitModel]: () => import("./modelRun/ModelRun.vue"),
+    [Step.CalibrateModel]: () => import("./modelCalibrate/ModelCalibrate.vue"),
+    [Step.ReviewOutput]: () => import("./modelOutput/ModelOutput.vue"),
+    [Step.SaveResults]: () => import("./downloadResults/DownloadResults.vue")
 };
 
 const RETRY_DELAY_MS = 1000;
@@ -46,21 +47,20 @@ const whenIdle = (): Promise<void> => new Promise(resolve => {
 const saveDataEnabled = (): boolean => !!(navigator as any).connection?.saveData;
 
 /**
- * Loads the files of the steps, one at a time in step order, when the browser is idle. Most users
- * spend time on the first step, so the other steps are ready before they need them. We stop at the
- * first failure: a step that is opened later shows the error component if its file is still missing.
- * Users who have asked to save data do not get the prefetch.
+ * Loads the files of a step when the browser is idle. The Stepper calls it for the next step, so the
+ * files are in the browser before the user needs them, and a user who stops early does not download
+ * the later steps. Users who have asked to save data do not get the prefetch. If the load fails, we
+ * do nothing: the step shows the error component when the user opens it and its file is still missing.
  */
-export const prefetchSteps = async (loaders: Array<() => Promise<unknown>> = Object.values(stepLoaders)) => {
-    if (saveDataEnabled()) {
+export const prefetchStep = async (step: number, loaders = stepLoaders) => {
+    const load = loaders[step];
+    if (!load || saveDataEnabled()) {
         return;
     }
-    for (const load of loaders) {
-        await whenIdle();
-        try {
-            await load();
-        } catch {
-            return;
-        }
+    await whenIdle();
+    try {
+        await load();
+    } catch {
+        // see above
     }
 };

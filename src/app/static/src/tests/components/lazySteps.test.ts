@@ -1,6 +1,6 @@
 import {flushPromises, mount} from "@vue/test-utils";
 import {defineComponent, h} from "vue";
-import {lazyStep, prefetchSteps} from "../../app/components/lazySteps";
+import {lazyStep, prefetchStep} from "../../app/components/lazySteps";
 import StepLoading from "../../app/components/StepLoading.vue";
 import StepLoadError from "../../app/components/StepLoadError.vue";
 
@@ -90,7 +90,7 @@ describe("StepLoadError", () => {
     });
 });
 
-describe("prefetchSteps", () => {
+describe("prefetchStep", () => {
     const setSaveData = (saveData: boolean | undefined) => {
         Object.defineProperty(navigator, "connection", {
             value: saveData === undefined ? undefined : {saveData},
@@ -104,49 +104,53 @@ describe("prefetchSteps", () => {
         setSaveData(undefined);
     });
 
-    it("loads the steps one at a time, in order, when the browser is idle", async () => {
+    it("loads the step when the browser is idle", async () => {
         const idleCallbacks: Array<() => void> = [];
         vi.stubGlobal("requestIdleCallback", (cb: () => void) => idleCallbacks.push(cb));
-        const calls: string[] = [];
-        const loaders = ["a", "b", "c"].map(name => vi.fn(async () => { calls.push(name); }));
+        const load2 = vi.fn().mockResolvedValue(undefined);
+        const load3 = vi.fn().mockResolvedValue(undefined);
 
-        const done = prefetchSteps(loaders);
+        const done = prefetchStep(2, {2: load2, 3: load3});
         await flushPromises();
-        expect(calls).toEqual([]); // waiting for idle
+        expect(load2).not.toHaveBeenCalled(); // waiting for idle
 
-        for (const expected of [["a"], ["a", "b"], ["a", "b", "c"]]) {
-            idleCallbacks.shift()!();
-            await flushPromises();
-            expect(calls).toEqual(expected);
-        }
+        idleCallbacks.shift()!();
         await done;
+        expect(load2).toHaveBeenCalledTimes(1);
+        expect(load3).not.toHaveBeenCalled(); // only the step that we asked for
     });
 
     it("falls back to a timeout when there is no requestIdleCallback (Safari)", async () => {
         vi.useFakeTimers();
         vi.stubGlobal("requestIdleCallback", undefined);
-        const loader = vi.fn().mockResolvedValue(undefined);
-        const done = prefetchSteps([loader]);
-        expect(loader).not.toHaveBeenCalled();
+        const load = vi.fn().mockResolvedValue(undefined);
+        const done = prefetchStep(2, {2: load});
+        expect(load).not.toHaveBeenCalled();
         await vi.advanceTimersByTimeAsync(1000);
         await done;
-        expect(loader).toHaveBeenCalledTimes(1);
+        expect(load).toHaveBeenCalledTimes(1);
+    });
+
+    it("does nothing for a step without a loader (step 1, or after the last step)", async () => {
+        vi.stubGlobal("requestIdleCallback", (cb: () => void) => cb());
+        const load = vi.fn().mockResolvedValue(undefined);
+        await prefetchStep(1, {2: load});
+        await prefetchStep(8, {2: load});
+        expect(load).not.toHaveBeenCalled();
     });
 
     it("loads nothing when the user has asked to save data", async () => {
         vi.stubGlobal("requestIdleCallback", (cb: () => void) => cb());
         setSaveData(true);
-        const loader = vi.fn().mockResolvedValue(undefined);
-        await prefetchSteps([loader]);
-        expect(loader).not.toHaveBeenCalled();
+        const load = vi.fn().mockResolvedValue(undefined);
+        await prefetchStep(2, {2: load});
+        expect(load).not.toHaveBeenCalled();
     });
 
-    it("stops at the first failure and does not throw", async () => {
+    it("does not throw when the load fails", async () => {
         vi.stubGlobal("requestIdleCallback", (cb: () => void) => cb());
-        const first = vi.fn().mockRejectedValue(new Error("404"));
-        const second = vi.fn().mockResolvedValue(undefined);
-        await expect(prefetchSteps([first, second])).resolves.toBeUndefined();
-        expect(first).toHaveBeenCalledTimes(1);
-        expect(second).not.toHaveBeenCalled();
+        const load = vi.fn().mockRejectedValue(new Error("404"));
+        await expect(prefetchStep(2, {2: load})).resolves.toBeUndefined();
+        expect(load).toHaveBeenCalledTimes(1);
     });
 });

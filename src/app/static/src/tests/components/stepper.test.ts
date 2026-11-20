@@ -29,6 +29,7 @@ import {ModelCalibrateMutation, mutations as modelCalibrateMutations} from '../.
 import {modelRunGetters, ModelRunState} from "../../app/store/modelRun/modelRun";
 import ADRIntegration from "../../app/components/adr/ADRIntegration.vue";
 import Stepper from "../../app/components/Stepper.vue";
+import {prefetchStep} from "../../app/components/lazySteps";
 import Step from "../../app/components/Step.vue";
 import LoadingSpinner from "../../app/components/LoadingSpinner.vue";
 import {actions} from "../../app/store/stepper/actions";
@@ -56,10 +57,10 @@ import {ReviewInputState} from "../../app/store/reviewInput/reviewInput";
 import {ReviewInputMutation} from "../../app/store/reviewInput/mutations";
 import {nextTick} from 'vue';
 
-// The prefetch imports every step when the browser is idle, which the tests do not need
+// The prefetch imports a step when the browser is idle, which the tests do not need
 vi.mock("../../app/components/lazySteps", async (importOriginal) => ({
     ...(await importOriginal<typeof import("../../app/components/lazySteps")>()),
-    prefetchSteps: vi.fn()
+    prefetchStep: vi.fn()
 }));
 
 describe("Stepper component", () => {
@@ -667,6 +668,44 @@ describe("Stepper component", () => {
 
         await makeReady(wrapper);
         expect(spy).toHaveBeenCalled();
+    });
+
+    describe("prefetch of the next step", () => {
+        const projectsState = {currentProject: {id: 1, name: "testProject", versions: []}};
+
+        it("prefetches the next step when the stepper is ready", () => {
+            createReadySut({}, {}, {}, {}, {activeStep: 1}, {}, projectsState);
+            expect(prefetchStep).toHaveBeenCalledTimes(1);
+            expect(prefetchStep).toHaveBeenCalledWith(2);
+        });
+
+        it("prefetches the step after the new step when the active step changes", async () => {
+            const wrapper = createReadySut({}, {}, {}, {}, {activeStep: 1}, {}, projectsState);
+            wrapper.vm.$store.commit({type: "stepper/Jump", payload: 2});
+            await nextTick();
+            expect(prefetchStep).toHaveBeenLastCalledWith(3);
+        });
+
+        it("waits until the stepper is ready", async () => {
+            const wrapper = createSut({}, {}, {}, {}, {activeStep: 1}, {}, projectsState);
+            expect(prefetchStep).not.toHaveBeenCalled();
+            wrapper.vm.$store.state.baseline.ready = true;
+            wrapper.vm.$store.state.surveyAndProgram.ready = true;
+            wrapper.vm.$store.state.modelRun.ready = true;
+            wrapper.vm.$store.state.modelCalibrate.ready = true;
+            await nextTick();
+            expect(prefetchStep).toHaveBeenCalledWith(2);
+        });
+
+        it("does not prefetch for a logged in user with no project, who goes to /projects", () => {
+            createReadySut();
+            expect(prefetchStep).not.toHaveBeenCalled();
+        });
+
+        it("prefetches for a guest, who has no project", () => {
+            createReadySut({}, {}, {}, {}, {activeStep: 1}, {}, {}, vi.fn(), {currentUser: "guest"});
+            expect(prefetchStep).toHaveBeenCalledWith(2);
+        });
     });
 
     it("pushes router to projects if logged in user and currentProject not set", () => {
