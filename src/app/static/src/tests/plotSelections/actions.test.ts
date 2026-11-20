@@ -7,19 +7,18 @@ import {
     mockPlotSelections,
     mockRootState
 } from "../mocks";
-import {Mock, MockInstance} from "vitest";
+import type {Mock} from "vitest";
 import {
     actions,
     handlePlotControlOverrides,
-    PlotSelectionActionUpdate,
-    Selection
+    type PlotSelectionActionUpdate,
+    type Selection
 } from "../../app/store/plotSelections/actions";
 import * as plotSelectionsUtils from "../../app/store/plotSelections/utils";
-import {PayloadWithType} from "../../app/types";
+import type {PayloadWithType} from "../../app/types";
 import {PlotSelectionsMutations} from "../../app/store/plotSelections/mutations";
-import {PlotName, PlotSelectionsState} from "../../app/store/plotSelections/plotSelections";
-import {RootState} from "../../app/root";
-import {PlotMetadataFrame} from "../../app/store/metadata/metadata";
+import type {PlotName, PlotSelectionsState} from "../../app/store/plotSelections/plotSelections";
+import type {PlotMetadataFrame} from "../../app/store/metadata/metadata";
 
 describe("Projects actions", () => {
     beforeEach(() => {

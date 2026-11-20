@@ -1,8 +1,8 @@
-import {Error} from "../../../app/generated";
-import Vuex, {ActionTree} from "vuex";
+import type {Error} from "../../../app/generated";
+import Vuex, {type ActionTree} from "vuex";
 import {mockADRState, mockBaselineState, mockDatasetResource, mockRootState} from "../../mocks";
-import {ADRActions} from "../../../app/store/adr/actions";
-import {RootState} from "../../../app/root";
+import type {ADRActions} from "../../../app/store/adr/actions";
+import type {RootState} from "../../../app/root";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {shallowMount} from "@vue/test-utils";
 import ADRKey from "../../../app/components/adr/ADRKey.vue";
@@ -10,11 +10,11 @@ import ADRIntegration from "../../../app/components/adr/ADRIntegration.vue";
 import SelectDataset from "../../../app/components/adr/ADRInputDataset.vue";
 import {ADRMutation, mutations} from "../../../app/store/adr/mutations";
 import {getters} from "../../../app/store/root/getters";
-import {ADRState} from "../../../app/store/adr/adr";
+import type {ADRState} from "../../../app/store/adr/adr";
 import {prefixNamespace} from "../../../app/utils";
 import {Language} from "../../../app/store/translations/locales";
 import {expectTranslated, shallowMountWithTranslate} from "../../testHelpers";
-import {BaselineState} from "../../../app/store/baseline/baseline";
+import type {BaselineState} from "../../../app/store/baseline/baseline";
 import {nextTick} from "vue";
 
 describe("adr integration", () => {

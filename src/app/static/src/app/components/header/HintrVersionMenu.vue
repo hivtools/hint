@@ -15,8 +15,8 @@
 </template>
 
 <script lang="ts">
-    import {HintrVersionResponse} from "../../generated";
-    import {RootState} from "../../root";
+    import type {HintrVersionResponse} from "../../generated";
+    import type {RootState} from "../../root";
     import {mapActionByName, mapStateProp} from "../../utils";
     import DropDown from "./DropDown.vue";
     import {currentHintVersion} from "../../hintVersion";

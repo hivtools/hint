@@ -18,7 +18,7 @@ import {switches} from "../../app/featureSwitches";
 import {DownloadResultsMutation} from "../../app/store/downloadResults/mutations";
 import * as filter from "../../app/store/plotData/filter";
 import {Scale} from "../../app/store/plotState/plotState";
-import {Mock} from "vitest";
+import type {Mock} from "vitest";
 import {flushPromises} from "@vue/test-utils";
 
 const rootState = mockRootState();

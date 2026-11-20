@@ -1,9 +1,9 @@
-import {Module} from 'vuex';
-import {RootState} from "../../root";
+import type {Module} from 'vuex';
+import type {RootState} from "../../root";
 import {mutations} from "./mutations";
 import {actions} from "./actions";
-import {Version, Project, DatasetResource} from "../../types";
-import {Error} from "../../generated";
+import type {Version, Project, DatasetResource} from "../../types";
+import type {Error} from "../../generated";
 
 export interface ProjectsState {
     currentProject: Project | null,

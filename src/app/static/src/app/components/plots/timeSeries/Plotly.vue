@@ -3,19 +3,19 @@
 </template>
 
 <script lang="ts">
-import { PropType, computed, defineComponent, onMounted, ref, watch } from 'vue';
-import { InputTimeSeriesData } from '../../../generated';
+import { type PropType, computed, defineComponent, onMounted, ref, watch } from 'vue';
+import type { InputTimeSeriesData } from '../../../generated';
 import { useStore } from 'vuex';
-import { RootState } from '../../../root';
+import type { RootState } from '../../../root';
 import {
     drawConfig,
     getScatterPointsFromAreaIds,
-    Layout,
+    type Layout,
     getChartDataByArea,
     getChartDataByIndicatorGroup,
     getScatterPointsFromIndicator,
     getLayoutFromData,
-    HintPlotlyAnnotation
+    type HintPlotlyAnnotation
 } from "./utils";
 import Plotly from "plotly.js-basic-dist";
 

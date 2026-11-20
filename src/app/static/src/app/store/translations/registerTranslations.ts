@@ -1,7 +1,7 @@
 import i18next from "i18next";
 import {Language, locales} from "./locales";
-import {Store} from "vuex";
-import {TranslatableState} from "../../types";
+import type {Store} from "vuex";
+import type {TranslatableState} from "../../types";
 
 export default <S extends TranslatableState>(store: Store<S>) => {
     i18next.init({

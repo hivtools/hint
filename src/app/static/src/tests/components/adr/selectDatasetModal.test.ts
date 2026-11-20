@@ -1,7 +1,7 @@
 import SelectRelease from "../../../app/components/adr/SelectRelease.vue";
 import {expectHasTranslationKey, expectTranslatedWithStoreType, mountWithTranslate} from "../../testHelpers";
 import SelectDatasetModal from "../../../app/components/adr/SelectDatasetModal.vue";
-import {AdrDatasetType, ADRState} from "../../../app/store/adr/adr";
+import {AdrDatasetType, type ADRState} from "../../../app/store/adr/adr";
 import {nextTick} from "vue";
 import TreeSelect from "@reside-ic/vue3-treeselect";
 import {
@@ -15,10 +15,10 @@ import {
 } from "../../mocks";
 import HintTreeSelect from "../../../app/components/HintTreeSelect.vue";
 import LoadingSpinner from "../../../app/components/LoadingSpinner.vue";
-import {BaselineState} from "../../../app/store/baseline/baseline";
-import Vuex, {Store} from "vuex";
+import type {BaselineState} from "../../../app/store/baseline/baseline";
+import Vuex, {type Store} from "vuex";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
-import {RootState} from "../../../app/root";
+import type {RootState} from "../../../app/root";
 import Modal from "../../../app/components/Modal.vue";
 import {ADRMutation} from "../../../app/store/adr/mutations";
 import {mount} from "@vue/test-utils";

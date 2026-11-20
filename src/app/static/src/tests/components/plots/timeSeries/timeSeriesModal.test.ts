@@ -5,12 +5,12 @@ import Modal from '../../../../app/components/Modal.vue';
 import Plotly from '../../../../app/components/plots/timeSeries/Plotly.vue';
 import TimeSeriesLegend from '../../../../app/components/plots/timeSeries/TimeSeriesLegend.vue';
 import Equation from '../../../../app/components/common/Equation.vue';
-import Vuex, {Store} from 'vuex';
-import {RootState} from "../../../../app/root";
+import Vuex, {type Store} from 'vuex';
+import type {RootState} from "../../../../app/root";
 import {mockMetadataState, mockReviewInputDataset, mockReviewInputMetadata, mockReviewInputState} from "../../../mocks";
-import {PlotSelectionsState} from "../../../../app/store/plotSelections/plotSelections";
-import {InputTimeSeriesData} from "../../../../app/generated";
-import {ReviewInputDataColumnValue} from "../../../../app/types";
+import type {PlotSelectionsState} from "../../../../app/store/plotSelections/plotSelections";
+import type {InputTimeSeriesData} from "../../../../app/generated";
+import type {ReviewInputDataColumnValue} from "../../../../app/types";
 
 describe('Time series modal works as expected', () => {
     const inputData = [

@@ -322,14 +322,14 @@
 
 <script lang="ts">
     import i18next from "i18next";
-    import {Project, Version, VersionIds} from "../../types";
+    import type {Project, Version, VersionIds} from "../../types";
     import {BCollapse} from "bootstrap-vue-next";
     import VueFeather from "vue-feather";
     import Modal from "../Modal.vue";
     import {formatDateTime, mapActionByName, mapStateProp, versionLabel} from "../../utils";
-    import {projectPayload, versionPayload} from "../../store/projects/actions";
-    import {Language} from "../../store/translations/locales";
-    import {RootState} from "../../root";
+    import type {projectPayload, versionPayload} from "../../store/projects/actions";
+    import type {Language} from "../../store/translations/locales";
+    import type {RootState} from "../../root";
     import ProjectsMixin from "./ProjectsMixin";
     import ShareProject from "./ShareProject.vue";
     import { defineComponent } from "vue";

@@ -1,11 +1,11 @@
-import {ActionContext, ActionTree, Commit, Dispatch} from 'vuex';
-import {BaselineState} from "./baseline";
+import type {ActionContext, ActionTree, Commit, Dispatch} from 'vuex';
+import type {BaselineState} from "./baseline";
 import {api} from "../../apiService";
-import {PjnzResponse, PopulationResponse, ShapeResponse, ValidateBaselineResponse} from "../../generated";
+import type {PjnzResponse, PopulationResponse, ShapeResponse, ValidateBaselineResponse} from "../../generated";
 import {BaselineMutation} from "./mutations";
 import {buildData, findResource, getFilenameFromImportUrl, getFilenameFromUploadFormData} from "../../utils";
-import {DatasetResourceSet, DatasetResource, ADRSchemas, UploadImportPayload} from "../../types";
-import {RootState} from "../../root";
+import type {DatasetResourceSet, DatasetResource, ADRSchemas, UploadImportPayload} from "../../types";
+import type {RootState} from "../../root";
 import { ReviewInputMutation } from '../reviewInput/mutations';
 import { DATASET_TYPE } from '../surveyAndProgram/actions';
 

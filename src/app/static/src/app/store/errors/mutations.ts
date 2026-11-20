@@ -1,7 +1,7 @@
-import {MutationTree} from "vuex";
-import {PayloadWithType} from "../../types";
-import {Error} from "../../generated";
-import {ErrorsState} from "./errors";
+import type {MutationTree} from "vuex";
+import type {PayloadWithType} from "../../types";
+import type {Error} from "../../generated";
+import type {ErrorsState} from "./errors";
 
 export enum ErrorsMutation {
     ErrorAdded = "ErrorAdded",

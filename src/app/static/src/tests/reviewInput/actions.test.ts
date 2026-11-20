@@ -10,7 +10,7 @@ import {
 import {actions} from "../../app/store/reviewInput/actions";
 import {ReviewInputMutation} from "../../app/store/reviewInput/mutations";
 import {freezer} from "../../app/utils";
-import {Mock} from "vitest";
+import type {Mock} from "vitest";
 import * as utils from "../../app/store/plotSelections/utils";
 
 describe("reviewInput actions", () => {

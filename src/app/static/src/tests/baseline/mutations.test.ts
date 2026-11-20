@@ -11,9 +11,9 @@ import {
     mockShapeResponse,
     mockValidateBaselineResponse
 } from "../mocks";
-import {baselineGetters, BaselineState} from "../../app/store/baseline/baseline";
-import {Module} from "vuex";
-import {RootState} from "../../app/root";
+import {baselineGetters, type BaselineState} from "../../app/store/baseline/baseline";
+import type {Module} from "vuex";
+import type {RootState} from "../../app/root";
 import {expectAllMutationsDefined} from "../testHelpers";
 
 describe("Baseline mutations", () => {

@@ -25,7 +25,7 @@
     import ResetConfirmation from "../resetConfirmation/ResetConfirmation.vue";
     import ResetConfirmationMixin from "../resetConfirmation/ResetConfirmationMixin"
     import {Step} from "../../types";
-    import { PropType, defineComponent } from "vue";
+    import { type PropType, defineComponent } from "vue";
 
     interface Data {
         showUploadConfirmation: boolean

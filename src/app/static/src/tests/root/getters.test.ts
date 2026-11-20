@@ -20,9 +20,9 @@ import {
     mockADRDataState,
     mockADRDatasetState
 } from "../mocks";
-import {RootState} from "../../app/root";
+import type {RootState} from "../../app/root";
 import {initialDownloadResults} from "../../app/store/downloadResults/downloadResults";
-import {Warning} from "../../app/generated";
+import type {Warning} from "../../app/generated";
 import {extractErrors} from "../../app/utils";
 import {expectArraysEqual} from "../testHelpers";
 import { DownloadType } from "../../app/store/downloadResults/downloadConfig";

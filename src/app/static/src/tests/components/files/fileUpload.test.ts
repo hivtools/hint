@@ -2,8 +2,8 @@ import {defineComponent, nextTick} from "vue";
 
 import FileUpload from "../../../app/components/files/FileUpload.vue";
 import {mockFile} from "../../mocks";
-import Vuex, {Store} from "vuex";
-import {emptyState, RootState} from "../../../app/root";
+import Vuex, {type Store} from "vuex";
+import {emptyState, type RootState} from "../../../app/root";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {BDropdown} from "bootstrap-vue-next";
 import {expectTranslatedWithStoreType, mountWithTranslate, shallowMountWithTranslate} from "../../testHelpers";

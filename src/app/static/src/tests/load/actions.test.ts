@@ -13,10 +13,10 @@ import {
 import {actions, getVersionOrdering, Ordering} from "../../app/store/load/actions";
 import {LoadingState} from "../../app/store/load/state";
 import {localStorageManager} from "../../app/localStorageManager";
-import {DynamicControlType} from "@reside-ic/vue-next-dynamic-form";
-import {RootState} from "../../app/root";
+import type {DynamicControlType} from "@reside-ic/vue-next-dynamic-form";
+import type {RootState} from "../../app/root";
 import {router} from "../../app/router";
-import {Mock} from "vitest";
+import type {Mock} from "vitest";
 import {flushPromises} from "@vue/test-utils";
 
 const rootState = mockRootState();

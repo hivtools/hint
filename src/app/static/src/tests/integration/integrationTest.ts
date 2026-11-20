@@ -1,4 +1,4 @@
-import axios, {AxiosRequestConfig} from 'axios';
+import axios, {type AxiosRequestConfig} from 'axios';
 import {Service} from 'axios-middleware';
 import {Language} from "../../app/store/translations/locales";
 

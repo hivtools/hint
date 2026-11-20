@@ -1,4 +1,4 @@
-import {createRouter, createWebHistory, RouteLocationNormalized} from "vue-router";
+import {createRouter, createWebHistory, type RouteLocationNormalized} from "vue-router";
 import Stepper from "./components/Stepper.vue";
 import Accessibility from "./components/Accessibility.vue";
 import Privacy from "./components/Privacy.vue";

@@ -1,9 +1,9 @@
-import { OutputPlotName, PlotDataType, PlotName, plotNameToDataType } from "./plotSelections";
-import { PlotSelectionUpdate, PlotSelectionsMutations } from "./mutations";
-import { RootState } from "../../root";
-import { PlotMetadataFrame } from "../metadata/metadata";
-import { Commit } from "vuex";
-import {
+import { type OutputPlotName, PlotDataType, type PlotName, plotNameToDataType } from "./plotSelections";
+import { type PlotSelectionUpdate, PlotSelectionsMutations } from "./mutations";
+import type { RootState } from "../../root";
+import type { PlotMetadataFrame } from "../metadata/metadata";
+import type { Commit } from "vuex";
+import type {
     FilterOption,
     FilterTypes,
     PlotSettingEffect,

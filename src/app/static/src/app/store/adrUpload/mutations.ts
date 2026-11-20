@@ -1,7 +1,7 @@
-import {MutationTree} from "vuex";
-import {Dict, PayloadWithType, UploadFile} from "../../types";
-import {Error} from "../../generated";
-import {ADRUploadState} from "./adrUpload";
+import type {MutationTree} from "vuex";
+import type {Dict, PayloadWithType, UploadFile} from "../../types";
+import type {Error} from "../../generated";
+import type {ADRUploadState} from "./adrUpload";
 import i18next from "i18next";
 
 export enum ADRUploadMutation {

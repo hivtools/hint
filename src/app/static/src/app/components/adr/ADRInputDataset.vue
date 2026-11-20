@@ -48,12 +48,12 @@
 </template>
 <script lang="ts">
 import i18next from "i18next";
-import {Language} from "../../store/translations/locales";
+import type {Language} from "../../store/translations/locales";
 import {mapActionByName, mapGetterByName, mapMutationByName, mapStateProp,} from "../../utils";
-import {RootState} from "../../root";
+import type {RootState} from "../../root";
 import {BaselineMutation} from "../../store/baseline/mutations";
-import {BaselineState} from "../../store/baseline/baseline";
-import {Dataset, DatasetResourceSet, Release, Step} from "../../types";
+import type {BaselineState} from "../../store/baseline/baseline";
+import {type Dataset, type DatasetResourceSet, type Release, Step} from "../../types";
 import VueFeather from "vue-feather";
 import ResetConfirmation from "../resetConfirmation/ResetConfirmation.vue";
 import SelectDatasetModal from "./SelectDatasetModal.vue";

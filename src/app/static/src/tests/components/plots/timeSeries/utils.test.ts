@@ -12,7 +12,7 @@ import {
     timeSeriesFixedColours
 } from "../../../../app/components/plots/timeSeries/utils";
 import {format} from "d3-format";
-import {InputTimeSeriesData} from "../../../../app/generated";
+import type {InputTimeSeriesData} from "../../../../app/generated";
 import {Language} from "../../../../app/store/translations/locales";
 
 describe("time series utils", () => {

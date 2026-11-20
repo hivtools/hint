@@ -50,7 +50,7 @@
 </template>
 <script lang="ts">
     import i18next from "i18next";
-    import { DynamicFormMeta, DynamicForm } from "@reside-ic/vue-next-dynamic-form";
+    import { type DynamicFormMeta, DynamicForm } from "@reside-ic/vue-next-dynamic-form";
     import LoadingSpinner from "../LoadingSpinner.vue";
     import Tick from "../Tick.vue";
     import {
@@ -60,9 +60,9 @@
         mapStateProps,
     } from "../../utils";
     import { ModelCalibrateMutation } from "../../store/modelCalibrate/mutations";
-    import { RootState } from "../../root";
-    import { Language } from "../../store/translations/locales";
-    import { ModelCalibrateState } from "../../store/modelCalibrate/modelCalibrate";
+    import type { RootState } from "../../root";
+    import type { Language } from "../../store/translations/locales";
+    import type { ModelCalibrateState } from "../../store/modelCalibrate/modelCalibrate";
     import ErrorAlert from "../ErrorAlert.vue";
     import CalibrationResults from "./CalibrationResults.vue";
     import { defineComponent } from "vue";

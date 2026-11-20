@@ -1,6 +1,6 @@
 import {mount, shallowMount} from '@vue/test-utils';
-import Vuex, {Store} from 'vuex';
-import {ReadyState, RootState, storeOptions} from "../../app/root";
+import Vuex, {type Store} from 'vuex';
+import {type ReadyState, type RootState, storeOptions} from "../../app/root";
 import {localStorageManager} from "../../app/localStorageManager";
 import {prefixNamespace} from "../../app/utils";
 import {BaselineMutation} from "../../app/store/baseline/mutations";
@@ -49,7 +49,7 @@ import {ModelCalibrateMutation} from "../../app/store/modelCalibrate/mutations";
 import {LanguageMutation} from "../../app/store/language/mutations";
 import {Language} from "../../app/store/translations/locales";
 import {nextTick} from 'vue';
-import {Mock} from 'vitest';
+import type {Mock} from 'vitest';
 
 describe("App", () => {
 

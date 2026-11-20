@@ -1,7 +1,7 @@
-import {Module} from 'vuex';
+import type {Module} from 'vuex';
 import {actions} from './actions';
 import {mutations} from './mutations';
-import {
+import type {
     AdrMetadataResponse,
     IndicatorMetadata,
     Error,
@@ -9,7 +9,7 @@ import {
     PlotSettingsControl,
     ReviewInputFilterMetadataResponse
 } from "../../generated";
-import {RootState} from '../../root';
+import type {RootState} from '../../root';
 import {getters} from "./getters";
 
 export type PlotMetadataFrame = {

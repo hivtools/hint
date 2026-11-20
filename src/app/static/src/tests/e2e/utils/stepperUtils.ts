@@ -1,5 +1,5 @@
-import { Page } from '@playwright/test';
-import {Step} from "../../../app/types";
+import type { Page } from '@playwright/test';
+import type {Step} from "../../../app/types";
 
 export async function getActiveStep(page: Page): Promise<Step> {
     // Wait for the active class to appear on any step element, need this

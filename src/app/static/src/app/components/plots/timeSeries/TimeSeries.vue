@@ -70,14 +70,14 @@
 <script lang="ts">
 import { computed, defineComponent, onUnmounted, ref, watch } from "vue";
 import { useStore } from "vuex";
-import { RootState } from "../../../root";
-import { InputPlotName, PlotSelectionsState } from "../../../store/plotSelections/plotSelections";
-import { ReviewInputDataColumnValue } from "../../../types";
+import type { RootState } from "../../../root";
+import type { InputPlotName, PlotSelectionsState } from "../../../store/plotSelections/plotSelections";
+import type { ReviewInputDataColumnValue } from "../../../types";
 import { numeralJsToD3format } from "./utils";
 import Plotly from "./Plotly.vue";
 import PageControl from "./PageControl.vue";
-import { InputTimeSeriesData } from "../../../generated";
-import { InputTimeSeriesKey } from "../../../store/plotData/plotData";
+import type { InputTimeSeriesData } from "../../../generated";
+import type { InputTimeSeriesKey } from "../../../store/plotData/plotData";
 import TimeSeriesModal from "./TimeSeriesModal.vue";
 import { onMounted } from "vue";
 import { nextTick } from "vue";

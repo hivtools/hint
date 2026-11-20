@@ -7,7 +7,7 @@ import {
     mockModelCalibrateState,
     mockWarning,
 } from "../mocks";
-import {CalibrateMetadataResponse, ComparisonPlotResponse, VersionInfo} from "../../app/generated";
+import type {ComparisonPlotResponse, VersionInfo} from "../../app/generated";
 
 describe("ModelCalibrate mutations", () => {
     afterEach(() => {

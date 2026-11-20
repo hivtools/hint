@@ -1,6 +1,6 @@
-import {RootState} from "../../root";
-import {Getter, GetterTree} from "vuex";
-import {StepDescription, StepperState} from "./stepper";
+import type {RootState} from "../../root";
+import type {Getter, GetterTree} from "vuex";
+import type {StepDescription, StepperState} from "./stepper";
 
 interface StepperGetters {
     ready: Getter<StepperState, RootState>,

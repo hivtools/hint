@@ -62,12 +62,12 @@
 </template>
 <script lang="ts">
     import {mapActionsByNames, mapStateProp} from "../../utils";
-    import {Error} from "../../generated"
-    import {RootState} from "../../root";
-    import {Language} from "../../store/translations/locales";
+    import type {Error} from "../../generated"
+    import type {RootState} from "../../root";
+    import type {Language} from "../../store/translations/locales";
     import i18next from "i18next";
     import ErrorAlert from "../ErrorAlert.vue";
-    import {ADRState} from "../../store/adr/adr";
+    import type {ADRState} from "../../store/adr/adr";
     import { defineComponent } from "vue";
 
     const namespace = "adr";

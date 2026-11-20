@@ -1,5 +1,5 @@
 import {expectAllMutationsDefined} from "../testHelpers";
-import {mutations, PlotStateMutations, SetScale, UpdateScale} from "../../app/store/plotState/mutations";
+import {mutations, PlotStateMutations, type SetScale, type UpdateScale} from "../../app/store/plotState/mutations";
 import {mockPlotState} from "../mocks";
 import {ScaleType} from "../../app/store/plotState/plotState";
 

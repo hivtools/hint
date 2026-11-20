@@ -1,10 +1,10 @@
-import {Store, useStore} from "vuex";
-import {RootState} from "../../root";
-import {Scale, ScaleSettings} from "../../store/plotState/plotState";
+import {type Store, useStore} from "vuex";
+import type {RootState} from "../../root";
+import {Scale, type ScaleSettings} from "../../store/plotState/plotState";
 import {getIndicatorMetadata} from "./utils";
 import {computed} from "vue";
 import {PlotStateMutations} from "../../store/plotState/mutations";
-import { PlotName } from "../../store/plotSelections/plotSelections";
+import type { PlotName } from "../../store/plotSelections/plotSelections";
 
 export const useUpdateScale = (activePlot: PlotName) => {
     const store = useStore<RootState>();

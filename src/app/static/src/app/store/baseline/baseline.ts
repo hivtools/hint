@@ -1,15 +1,15 @@
-import {Module} from 'vuex';
+import type {Module} from 'vuex';
 import {actions} from './actions';
 import {mutations} from './mutations';
-import {
+import type {
     NestedFilterOption,
     PjnzResponse,
     PopulationResponse,
     ShapeResponse,
     Error,
 } from "../../generated";
-import { Dataset, Release, Dict, DatasetResourceSet, DatasetResource } from "../../types";
-import {ReadyState, RootState} from "../../root";
+import type { Dataset, Release, Dict, DatasetResourceSet, DatasetResource } from "../../types";
+import type {ReadyState, RootState} from "../../root";
 import {inputResourceTypes} from "../../utils";
 import {AdrDatasetType} from "../adr/adr";
 

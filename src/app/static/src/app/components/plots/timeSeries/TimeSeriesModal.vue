@@ -31,16 +31,16 @@
 <script setup lang="ts">
 import Modal from "../../Modal.vue";
 import Plotly from "./Plotly.vue";
-import {InputTimeSeriesData} from '../../../generated';
+import type {InputTimeSeriesData} from '../../../generated';
 import {computed, ref} from "vue";
 import {useStore} from "vuex";
-import { RootState } from '../../../root';
+import type { RootState } from '../../../root';
 import {filterTimeSeriesData} from "../../../store/plotData/filter";
-import {FilterSelection} from "../../../store/plotSelections/plotSelections";
-import {expressionToString, Layout, numeralJsToD3format, timeSeriesExpandedViews} from "./utils";
+import type {FilterSelection} from "../../../store/plotSelections/plotSelections";
+import {expressionToString, type Layout, numeralJsToD3format, timeSeriesExpandedViews} from "./utils";
 import Equation from "../../common/Equation.vue";
 import TimeSeriesLegend from "./TimeSeriesLegend.vue";
-import {ReviewInputDataColumnValue} from "../../../types";
+import type {ReviewInputDataColumnValue} from "../../../types";
 
 const props = defineProps({
     openModal: {

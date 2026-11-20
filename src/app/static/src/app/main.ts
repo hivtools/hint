@@ -1,5 +1,5 @@
 import Vuex from 'vuex';
-import {RootState, storeOptions} from "./root";
+import {type RootState, storeOptions} from "./root";
 import registerTranslations from "./store/translations/registerTranslations";
 
 // Main app

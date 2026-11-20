@@ -31,15 +31,15 @@
 </template>
 
 <script lang="ts">
-import {computed, defineComponent, PropType, ref} from "vue";
-import {IndicatorMetadata} from "../../../generated";
+import {computed, defineComponent, type PropType, ref} from "vue";
+import type {IndicatorMetadata} from "../../../generated";
 import MapAdjustScale from "../MapAdjustScale.vue";
-import {Scale, ScaleSettings} from "../../../store/plotState/plotState";
-import { NumericRange } from "../../../types";
+import {Scale, type ScaleSettings} from "../../../store/plotState/plotState";
+import type { NumericRange } from "../../../types";
 import { formatLegend } from "../utils";
 import {getRadius} from "./utils";
 import {LControl} from "@vue-leaflet/vue-leaflet";
-import { PlotName } from "../../../store/plotSelections/plotSelections";
+import type { PlotName } from "../../../store/plotSelections/plotSelections";
 
 export default defineComponent({
     components: {LControl, MapAdjustScale},

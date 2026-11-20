@@ -1,8 +1,8 @@
-import {Module} from "vuex";
-import {ReadyState, RootState, WarningsState} from "../../root";
+import type {Module} from "vuex";
+import type {ReadyState, RootState, WarningsState} from "../../root";
 import {actions} from "./actions";
 import {mutations} from "./mutations";
-import {ModelResultResponse, ModelStatusResponse, Error} from "../../generated";
+import type {ModelResultResponse, ModelStatusResponse, Error} from "../../generated";
 
 export interface ModelRunState extends ReadyState, WarningsState {
     modelRunId: string,

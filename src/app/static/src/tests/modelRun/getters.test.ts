@@ -1,5 +1,5 @@
 import {mockModelResultResponse, mockModelRunState} from "../mocks";
-import {ModelStatusResponse} from "../../app/generated";
+import type {ModelStatusResponse} from "../../app/generated";
 import {modelRunGetters} from "../../app/store/modelRun/modelRun";
 
 describe("model run getters", () => {

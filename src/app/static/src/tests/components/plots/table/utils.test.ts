@@ -1,4 +1,4 @@
-import {CalibrateDataResponse, TableMetadata} from "../../../../app/generated";
+import type {CalibrateDataResponse, TableMetadata} from "../../../../app/generated";
 import {
     mockCalibrateDataResponse,
     mockFilterSelection,
@@ -8,9 +8,9 @@ import {
 import {
     getColumnDefs,
     getTableValues,
-    TableHeaderDef
+    type TableHeaderDef
 } from "../../../../app/components/plots/table/utils";
-import {FilterSelection} from "../../../../app/store/plotSelections/plotSelections";
+import type {FilterSelection} from "../../../../app/store/plotSelections/plotSelections";
 import {Language} from "../../../../app/store/translations/locales";
 import DifferenceColumnRenderer from "../../../../app/components/plots/table/DifferenceColumnRenderer.vue";
 

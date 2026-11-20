@@ -6,8 +6,8 @@
 </template>
 
 <script lang="ts">
-    import { PropType, defineComponent } from "vue";
-    import {Error} from "../generated";
+    import { type PropType, defineComponent } from "vue";
+    import type {Error} from "../generated";
 
     export default defineComponent({
         props: {

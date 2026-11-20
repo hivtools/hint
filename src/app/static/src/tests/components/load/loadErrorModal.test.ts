@@ -1,7 +1,7 @@
 import {mount} from "@vue/test-utils";
 import LoadErrorModal from "../../../app/components/load/LoadErrorModal.vue"
 import Vuex from "vuex";
-import {emptyState, RootState} from "../../../app/root";
+import {emptyState, type RootState} from "../../../app/root";
 import {LoadingState} from "../../../app/store/load/state";
 import {expectHasTranslationKey, expectTranslated, mountWithTranslate} from "../../testHelpers";
 import registerTranslations from "../../../app/store/translations/registerTranslations";

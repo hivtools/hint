@@ -11,9 +11,9 @@ import registerTranslations from "../../../app/store/translations/registerTransl
 import {emptyState} from "../../../app/root";
 import {expectTranslated, mountWithTranslate, shallowMountWithTranslate} from "../../testHelpers";
 import UploadModal from "../../../app/components/downloadResults/UploadModal.vue";
-import {DownloadResultsState} from "../../../app/store/downloadResults/downloadResults";
-import {ADRState} from "../../../app/store/adr/adr";
-import {ADRUploadState} from "../../../app/store/adrUpload/adrUpload";
+import type {DownloadResultsState} from "../../../app/store/downloadResults/downloadResults";
+import type {ADRState} from "../../../app/store/adr/adr";
+import type {ADRUploadState} from "../../../app/store/adrUpload/adrUpload";
 import ErrorAlert from "../../../app/components/ErrorAlert.vue";
 import { DownloadType } from '../../../app/store/downloadResults/downloadConfig';
 import DownloadTableRow from '../../../app/components/downloadResults/DownloadTableRow.vue';

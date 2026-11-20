@@ -1,8 +1,8 @@
-import {AxiosHeaders} from "axios";
+import type {AxiosHeaders} from "axios";
 import {api} from "../app/apiService";
 import {mockAxios, mockDownloadFailure, mockError, mockFailure, mockRootState, mockSuccess} from "./mocks";
 import {freezer} from '../app/utils';
-import {Mock} from "vitest";
+import type {Mock} from "vitest";
 
 const rootState = mockRootState();
 

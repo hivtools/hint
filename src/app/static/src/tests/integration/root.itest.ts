@@ -1,6 +1,6 @@
 import {actions} from "../../app/store/root/actions";
 import {actions as projectActions} from "../../app/store/projects/actions";
-import {ErrorReportManualDetails} from "../../app/types";
+import type {ErrorReportManualDetails} from "../../app/types";
 import {emptyState} from "../../app/root";
 import {login, rootState} from "./integrationTest";
 import { DownloadType } from "../../app/store/downloadResults/downloadConfig";

@@ -1,8 +1,8 @@
 import {flushPromises} from '@vue/test-utils';
 import Vuex from 'vuex';
 import ManageFile from "../../../app/components/files/ManageFile.vue";
-import {SurveyAndProgramState} from "../../../app/store/surveyAndProgram/surveyAndProgram";
-import {SurveyAndProgramActions} from "../../../app/store/surveyAndProgram/actions";
+import type {SurveyAndProgramState} from "../../../app/store/surveyAndProgram/surveyAndProgram";
+import type {SurveyAndProgramActions} from "../../../app/store/surveyAndProgram/actions";
 import {
     mockBaselineState,
     mockError,
@@ -11,7 +11,7 @@ import {
 } from "../../mocks";
 import UploadInputs from "../../../app/components/uploadInputs/UploadInputs.vue";
 import {shallowMountWithTranslate} from '../../testHelpers';
-import {Mocked} from 'vitest';
+import type {Mocked} from 'vitest';
 
 export function testUploadComponent(name: string, position: number) {
 

@@ -24,10 +24,10 @@
     import VueFeather from "vue-feather";
     import i18next from "i18next";
     import { mapStateProp } from "../utils";
-    import { RootState } from "../root";
-    import { Language } from "../store/translations/locales";
-    import { Warning } from "../generated";
-    import { PropType, defineComponent, nextTick, StyleValue } from "vue";
+    import type { RootState } from "../root";
+    import type { Language } from "../store/translations/locales";
+    import type { Warning } from "../generated";
+    import { type PropType, defineComponent, nextTick, type StyleValue } from "vue";
 
     export default defineComponent({
         name: "Warning",

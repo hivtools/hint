@@ -11,7 +11,7 @@
 import DownloadButton from "./DownloadButton.vue";
 import {computed} from "vue";
 import {useStore} from "vuex";
-import { RootState } from '../../../../root';
+import type { RootState } from '../../../../root';
 import {appendCurrentDateTime} from "../../../../utils";
 import {exportService} from "../../../../dataExportService";
 import {debounce_leading} from "../../utils";

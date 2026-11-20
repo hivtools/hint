@@ -1,10 +1,10 @@
-import {ModelCalibrateState} from "./modelCalibrate";
-import {ActionContext, ActionTree} from "vuex";
-import {DynamicFormData, DynamicFormMeta} from "@reside-ic/vue-next-dynamic-form";
+import type {ModelCalibrateState} from "./modelCalibrate";
+import type {ActionContext, ActionTree} from "vuex";
+import type {DynamicFormData, DynamicFormMeta} from "@reside-ic/vue-next-dynamic-form";
 import {api} from "../../apiService";
-import {RootState} from "../../root";
+import type {RootState} from "../../root";
 import {ModelCalibrateMutation} from "./mutations";
-import {
+import type {
     CalibrateMetadataResponse,
     CalibratePlotResponse,
     ComparisonPlotResponse,

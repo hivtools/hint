@@ -1,7 +1,7 @@
 import {mockError, mockModelOptionsState, mockWarning} from "../mocks";
 import {ModelOptionsMutation, mutations} from "../../app/store/modelOptions/mutations";
-import {DynamicFormMeta, MultiSelectControl, NumberControl, SelectControl} from "@reside-ic/vue-next-dynamic-form";
-import {VersionInfo} from "../../app/generated";
+import type {DynamicFormMeta, MultiSelectControl, NumberControl, SelectControl} from "@reside-ic/vue-next-dynamic-form";
+import type {VersionInfo} from "../../app/generated";
 
 describe("Model run options mutations", () => {
 

@@ -8,8 +8,8 @@ import {
     mockSurveyAndProgramState
 } from "../mocks";
 import {getters} from "../../app/store/stepper/getters";
-import {StepperState} from "../../app/store/stepper/stepper";
-import {RootState} from "../../app/root";
+import type {StepperState} from "../../app/store/stepper/stepper";
+import type {RootState} from "../../app/root";
 
 describe("stepper getters", () => {
 

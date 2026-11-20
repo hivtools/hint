@@ -12,9 +12,9 @@ import {
     mockPopulationPyramidData
 } from "../mocks";
 import {getters, PopulationColors} from "../../app/store/plotSelections/getters";
-import {PlotName} from "../../app/store/plotSelections/plotSelections";
+import type {PlotName} from "../../app/store/plotSelections/plotSelections";
 import * as barUtils from "../../app/components/plots/bar/utils";
-import {InputComparisonData} from "../../app/generated";
+import type {InputComparisonData} from "../../app/generated";
 import {Language} from "../../app/store/translations/locales";
 
 describe("plotSelections getters", () => {

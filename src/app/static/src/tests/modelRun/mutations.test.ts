@@ -1,7 +1,7 @@
 import {ModelRunMutation, mutations} from "../../app/store/modelRun/mutations";
 import {mockError, mockModelResultResponse, mockModelRunState, mockModelStatusResponse, mockWarning} from "../mocks";
 import {expectAllMutationsDefined} from "../testHelpers";
-import {ModelStatusResponse} from "../../app/generated";
+import type {ModelStatusResponse} from "../../app/generated";
 
 describe("Model run mutations", () => {
 

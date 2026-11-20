@@ -42,10 +42,10 @@
 <script lang="ts">
 import {computed, defineComponent, onBeforeMount, ref} from 'vue';
 import {useStore} from 'vuex';
-import {RootState} from '../../root';
+import type {RootState} from '../../root';
 import PlotControlSet from '../plots/PlotControlSet.vue';
 import FilterSet from '../plots/FilterSet.vue';
-import {InputPlotName, inputPlotNames, PlotName} from '../../store/plotSelections/plotSelections';
+import {type InputPlotName, inputPlotNames, type PlotName} from '../../store/plotSelections/plotSelections';
 import TimeSeries from "../plots/timeSeries/TimeSeries.vue";
 import Choropleth from '../plots/choropleth/Choropleth.vue';
 import LoadingSpinner from "../LoadingSpinner.vue";

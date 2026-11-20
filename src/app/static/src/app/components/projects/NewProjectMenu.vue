@@ -49,10 +49,10 @@ import NewProjectCreate from "../load/NewProjectCreate.vue";
 import AdrRehydrate from "../adr/ADRRehydrate.vue";
 import {defineComponent, ref} from "vue";
 import {useStore} from "vuex";
-import {CreateProjectPayload} from "../../store/projects/actions";
-import {RootState} from "../../root";
+import type {CreateProjectPayload} from "../../store/projects/actions";
+import type {RootState} from "../../root";
 import {BDropdown, BDropdownItem} from "bootstrap-vue-next";
-import {DatasetResource} from "../../types";
+import type {DatasetResource} from "../../types";
 import {useADR} from "../adr/useADR";
 
 enum NewProjectType {

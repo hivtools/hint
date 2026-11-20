@@ -9,7 +9,7 @@ const existingState = {
 } as any;
 
 
-import {modelCalibrate, ModelCalibrateState} from "../../app/store/modelCalibrate/modelCalibrate";
+import {modelCalibrate, type ModelCalibrateState} from "../../app/store/modelCalibrate/modelCalibrate";
 
 it("loads initial state from existingState", () => {
     const state = modelCalibrate(existingState).state as ModelCalibrateState;
