@@ -42,6 +42,13 @@ def _hash_and_size(source: IO[bytes]) -> tuple[str, int]:
     return md5.hexdigest().upper(), size
 
 
+def md5_of_file(path: Path) -> str:
+    """The MD5 of the content of the file, in upper case, as the names of the uploaded files and ADR's hashes have it.
+    It reads the whole file, in pieces, so call it with `asyncio.to_thread`."""
+    with path.open("rb") as source:
+        return _hash_and_size(source)[0]
+
+
 def _is_stored(target: Path, size: int) -> bool:
     # Check the size also. The Kotlin app wrote a file straight to its final name. If a crash stopped the write, the file
     # has the final name but is too short.
