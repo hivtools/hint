@@ -1,5 +1,4 @@
 import {
-    mockAncResponse,
     mockAxios,
     mockCalibrateDataResponse,
     mockCalibrateMetadataResponse,

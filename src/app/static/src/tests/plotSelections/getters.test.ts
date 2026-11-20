@@ -113,7 +113,7 @@ describe("plotSelections getters", () => {
 
     const mockInputComparisonPlotDataToChartData = vi
         .spyOn(barUtils, "inputComparisonPlotDataToChartData")
-        .mockImplementation((...args) => {
+        .mockImplementation((..._args) => {
             return {
                 maxValuePlusError: 1,
                 labels: ["A", "B"],
@@ -258,7 +258,7 @@ describe("plotSelections getters", () => {
         const plotSelectionsState = mockPlotSelectionsState();
         const rootState = mockRootState();
         const mockGetters = {
-            "controlSelectionFromId": (plotName: PlotName, controlId: string) => {
+            "controlSelectionFromId": (_plotName: PlotName, _controlId: string) => {
                 return null
             }
         };
@@ -282,7 +282,7 @@ describe("plotSelections getters", () => {
             })
         });
         const mockRootGetters = {
-            "modelCalibrate/filterIdToColumnId": (plotName: PlotName, filterId: string) => {
+            "modelCalibrate/filterIdToColumnId": (_plotName: PlotName, _filterId: string) => {
                 return null
             }
         }
@@ -502,7 +502,7 @@ describe("plotSelections getters", () => {
 
     it ('population data calculates proportion and returns four datasets when proportion plot type is selected', () => {
         const mockGetters = {
-            controlSelectionFromId: (plotName: PlotName, controlId: string) => {
+            controlSelectionFromId: (_plotName: PlotName, _controlId: string) => {
                 return {id: 'population_proportion'}
             }
         };
@@ -554,7 +554,7 @@ describe("plotSelections getters", () => {
     it ('population data returns 0 datasets when plot type not known', () => {
         const plotData = mockPopulationPyramidData();
         const mockGetters = {
-            controlSelectionFromId: (plotName: PlotName, controlId: string) => {
+            controlSelectionFromId: (_plotName: PlotName, _controlId: string) => {
                 return null
             }
         };

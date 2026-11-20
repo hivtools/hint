@@ -6,14 +6,6 @@ import {
 } from "../../app/store/plotSelections/utils";
 import {PlotSelectionsMutations} from "../../app/store/plotSelections/mutations";
 import * as filter from "../../app/store/plotData/filter";
-import {
-    getCalibrateFilteredDataset,
-    getComparisonFilteredDataset,
-    getOutputFilteredData,
-    getTimeSeriesFilteredDataset,
-    getInputChoroplethFilteredData,
-    getInputComparisonFilteredData
-} from "../../app/store/plotData/filter";
 import {mockBaselineState, mockPlotMetadataFrame, mockRootState, mockShapeResponse} from "../mocks";
 import type {ShapeResponse} from "../../app/generated";
 import type {PlotName} from "../../app/store/plotSelections/plotSelections";
@@ -27,43 +19,43 @@ describe("Plot selections utils", () => {
 
     const mockGetOutputFilteredData = vi
         .spyOn(filter, "getOutputFilteredData")
-        .mockImplementation(async (...args) => {
+        .mockImplementation(async (..._args) => {
             return
         });
 
     const mockGetTimeSeriesFilteredDataset = vi
         .spyOn(filter, "getTimeSeriesFilteredDataset")
-        .mockImplementation(async (...args) => {
+        .mockImplementation(async (..._args) => {
             return
         });
 
     const mockGetCalibrateFilteredDataset = vi
         .spyOn(filter, "getCalibrateFilteredDataset")
-        .mockImplementation(async (...args) => {
+        .mockImplementation(async (..._args) => {
             return
         });
 
     const mockGetComparisonFilteredDataset = vi
         .spyOn(filter, "getComparisonFilteredDataset")
-        .mockImplementation(async (...args) => {
+        .mockImplementation(async (..._args) => {
             return
         });
 
     const mockGetInputChoroplethFilteredData = vi
         .spyOn(filter, "getInputChoroplethFilteredData")
-        .mockImplementation(async (...args) => {
+        .mockImplementation(async (..._args) => {
             return
         });
 
     const mockGetInputComparisonFilteredData = vi
         .spyOn(filter, "getInputComparisonFilteredData")
-        .mockImplementation(async (...args) => {
+        .mockImplementation(async (..._args) => {
             return
         });
 
     const mockGetPopulationFilteredData = vi
         .spyOn(filter, "getPopulationFilteredData")
-        .mockImplementation(async (...args) => {
+        .mockImplementation(async (..._args) => {
             return
         });
     

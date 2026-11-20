@@ -1,6 +1,6 @@
 import {
     mockAxios,
-    mockCalibrateMetadataResponse, mockComparisonPlotResponse,
+    mockCalibrateMetadataResponse,
     mockControlSelection,
     mockFilterSelection,
     mockModelCalibrateState,

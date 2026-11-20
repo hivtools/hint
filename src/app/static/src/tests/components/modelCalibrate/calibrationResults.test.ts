@@ -19,7 +19,7 @@ const defaultSelections = {
     }
 }
 
-function getStore(modelCalibrateState: Partial<ModelCalibrateState> = {}, partialGetters = {}, partialSelections = {}) {
+function getStore(modelCalibrateState: Partial<ModelCalibrateState> = {}, partialGetters = {}) {
     const store = new Vuex.Store({
         state: emptyState(),
         modules: {
