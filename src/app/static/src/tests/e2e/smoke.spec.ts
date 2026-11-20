@@ -49,6 +49,7 @@ test.describe("logged in", () => {
 
         await expect(page).toHaveTitle("Naomi");
         await expect(page.locator("#projects-content #projects-title h1")).toHaveText("Projects");
+        // eslint-disable-next-line playwright/no-networkidle -- wait for all the requests, so that trackProblems sees their errors
         await page.waitForLoadState("networkidle");
         expect(problems).toEqual([]);
     });
@@ -71,6 +72,7 @@ test.describe("logged in", () => {
 
         await expect(page.getByRole("heading", {name: "Projects", exact: true})).toBeVisible();
         expect(new URL(page.url()).pathname).toBe("/projects");
+        // eslint-disable-next-line playwright/no-networkidle -- wait for all the requests, so that trackProblems sees their errors
         await page.waitForLoadState("networkidle");
         expect(problems).toEqual([]);
     });
@@ -143,6 +145,7 @@ plainTest.describe("not logged in", () => {
         await plainExpect(header.locator('a[href="/login"]')).toHaveCount(1);
         await plainExpect(header).not.toContainText(translate("loggedInAs"));
         await plainExpect(page.locator("#stepper")).toBeVisible();
+        // eslint-disable-next-line playwright/no-networkidle -- wait for all the requests, so that trackProblems sees their errors
         await page.waitForLoadState("networkidle");
         plainExpect(problems).toEqual([]);
     });
