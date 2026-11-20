@@ -10,7 +10,7 @@ import {DatasetResource, Dict, LocalSessionFile, VersionDetails} from "../../typ
 import {localStorageManager} from "../../localStorageManager";
 import {router} from "../../router";
 import {initialStepperState} from "../stepper/stepper";
-import {DynamicFormData} from "@reside-ic/vue-next-dynamic-form";
+import type {DynamicFormData} from "@reside-ic/vue-next-dynamic-form";
 import {ModelCalibrateState} from "../modelCalibrate/modelCalibrate";
 import {LoadMutations} from "./mutations";
 import {ProjectsMutations} from "../projects/mutations";

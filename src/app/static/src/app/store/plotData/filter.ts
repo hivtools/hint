@@ -19,7 +19,7 @@ import { ReviewInputMutation } from "../reviewInput/mutations";
 import { ReviewInputDataset } from "../../types";
 import { getMetadataFromPlotName } from "../plotSelections/actions";
 import { InputTimeSeriesKey } from "./plotData";
-import { Dict } from "@reside-ic/vue-next-dynamic-form";
+import type { Dict } from "@reside-ic/vue-next-dynamic-form";
 import {aggregatePopulation} from "./aggregate";
 import {AreaProperties} from "../baseline/baseline";
 import {InputComparisonPlotData} from "../reviewInput/reviewInput";

@@ -10,7 +10,7 @@ import {
 import {formatOutput} from "../utils";
 import i18next from "i18next";
 import {Language} from "../../../store/translations/locales";
-import {ITooltipComp, ITooltipParams, ValueFormatterParams, ValueGetterParams} from "ag-grid-community";
+import type {ITooltipComp, ITooltipParams, ValueFormatterParams, ValueGetterParams} from "ag-grid-community";
 import DifferenceColumnRenderer from "./DifferenceColumnRenderer.vue";
 
 export interface TableHeaderDef {

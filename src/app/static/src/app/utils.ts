@@ -2,7 +2,7 @@ import {ActionMethod, CustomVue, mapActions, mapGetters, mapMutations, mapState,
 import {ADRSchemas, Dataset, DatasetResource, DatasetResourceType, Dict, UploadFile, Version} from "./types";
 import {Error, FilterOption, NestedFilterOption, Response} from "./generated";
 import moment from 'moment';
-import {
+import type {
     DynamicControlGroup,
     DynamicControlSection,
     DynamicFormData,

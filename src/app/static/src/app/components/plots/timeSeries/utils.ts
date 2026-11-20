@@ -1,6 +1,6 @@
 import { InputTimeSeriesData, InputTimeSeriesRow } from "../../../generated";
 import { Dict } from "../../../types";
-import { Annotations } from "plotly.js-basic-dist"
+import type { Annotations } from "plotly.js-basic-dist"
 import {build_missing_id_text} from "../utils";
 
 export function numeralJsToD3format(numeralJsFormat: string) {

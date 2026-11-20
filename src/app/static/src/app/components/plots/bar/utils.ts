@@ -1,6 +1,6 @@
-import {ChartData, ChartDataset, DefaultDataPoint} from "chart.js";
+import type {ChartData, ChartDataset, DefaultDataPoint} from "chart.js";
 import {IndicatorMetadata, FilterOption} from "../../../generated";
-import {AnnotationOptions} from "chartjs-plugin-annotation";
+import type {AnnotationOptions} from "chartjs-plugin-annotation";
 import {formatOutput} from "../utils";
 import {PlotData} from "../../../store/plotData/plotData";
 import {Dict} from "../../../types";
