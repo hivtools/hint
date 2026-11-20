@@ -64,7 +64,7 @@ describe("Survey and programme mutations", () => {
         expect(testState.programError).toBe("Some error");
     });
 
-    it("sets errored file on SurveyErroredFile", () => {
+    it("sets errored file on ProgramErroredFile", () => {
         const testState = mockSurveyAndProgramState();
         mutations[SurveyAndProgramMutation.ProgramErroredFile](testState, {payload: "error.txt"});
         expect(testState.programErroredFile).toBe("error.txt");
