@@ -263,6 +263,7 @@ test("can view population pyramid chart", async ({ projectPage }) => {
     // Population pyramid grid is rendered
     await expect(page.locator("#review-loading")).toHaveCount(0, {timeout: 10_000});
     await expect(page.locator('.chart-grid')).toBeVisible();
+    // eslint-disable-next-line playwright/no-wait-for-timeout -- the plot must finish its animation before the screenshot
     await page.waitForTimeout(500);
     await expect(page.locator("#review-inputs")).toHaveScreenshot("population-landing.png");
 
@@ -271,6 +272,7 @@ test("can view population pyramid chart", async ({ projectPage }) => {
     await page.locator('a').filter({ hasText: 'Population proportion' }).click();
 
     // Population pyramid grid has been updated
+    // eslint-disable-next-line playwright/no-wait-for-timeout -- the plot must finish its animation before the screenshot
     await page.waitForTimeout(500);
     await expect(page.locator("#review-inputs")).toHaveScreenshot("population-proportion.png");
 
@@ -279,6 +281,7 @@ test("can view population pyramid chart", async ({ projectPage }) => {
     await page.locator('a').filter({ hasText: 'Region' }).click();
 
     // Population pyramid grid has been updated
+    // eslint-disable-next-line playwright/no-wait-for-timeout -- the plot must finish its animation before the screenshot
     await page.waitForTimeout(500);
     await expect(page.locator("#review-inputs")).toHaveScreenshot("population-proportion-aggregated.png");
 });

@@ -4,7 +4,7 @@ import path from 'path';
 import {baseURL} from "../../../../playwright.config";
 
 export * from '@playwright/test';
-export const test = baseTest.extend<{}, { workerStorageState: string }>({
+export const test = baseTest.extend<object, { workerStorageState: string }>({
     // Use the same storage state for all tests in this worker.
     storageState: ({ workerStorageState }, use) => use(workerStorageState),
 

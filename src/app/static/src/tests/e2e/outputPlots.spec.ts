@@ -23,6 +23,7 @@ test("can view output plots", async ({ projectPage }) => {
     // When I switch to barchart tab
     await page.getByText('Bar').click();
     // This can take a little while to redraw the error bars, so give it a second
+    // eslint-disable-next-line playwright/no-wait-for-timeout -- the plot must finish its animation before the screenshot
     await page.waitForTimeout(500);
 
     // barchart is rendered as expected
@@ -34,6 +35,7 @@ test("can view output plots", async ({ projectPage }) => {
         await page.locator('a').filter({ hasText: 'Area' }).first().click();
     });
     // This can take a little while to redraw the error bars, so give it a second
+    // eslint-disable-next-line playwright/no-wait-for-timeout -- the plot must finish its animation before the screenshot
     await page.waitForTimeout(1000);
 
     // barchart is rendered as expected
@@ -53,6 +55,7 @@ test("can view output plots", async ({ projectPage }) => {
         await page.getByRole('button', { name: '55-59', exact: true }).click();
     });
     // This can take a little while to redraw the error bars, so give it a second
+    // eslint-disable-next-line playwright/no-wait-for-timeout -- the plot must finish its animation before the screenshot
     await page.waitForTimeout(500);
 
     // barchart is rendered as expected
@@ -165,6 +168,7 @@ test("can view output plots", async ({ projectPage }) => {
     await page.getByRole('button', { name: 'Zoom in' }).click();
 
     // bubble plot is updated, wait first for animation to complete
+    // eslint-disable-next-line playwright/no-wait-for-timeout -- the plot must finish its animation before the screenshot
     await page.waitForTimeout(500);
     await expect(page.locator("#review-output")).toHaveScreenshot("bubble-zoom.png");
 
