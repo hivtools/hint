@@ -32,6 +32,7 @@ from structlog.stdlib import LOG_KWARG_NAMES
 from structlog.typing import EventDict, Processor
 
 from app.config import Settings
+from app.telemetry import redact_url
 
 # The loggers that uvicorn gives handlers of its own (and that do not pass on to the root logger) when it starts
 UVICORN_LOGGERS = ("uvicorn", "uvicorn.error", "uvicorn.access")
@@ -94,6 +95,19 @@ def _drop_query_string(record: logging.LogRecord) -> bool:
     # uvicorn logs: client address, method, path with query string, HTTP version, status
     if isinstance(args, tuple) and len(args) == 5 and isinstance(args[2], str):
         record.args = (*args[:2], args[2].partition("?")[0], *args[3:])
+    return True
+
+
+def _redact_outgoing_url(record: logging.LogRecord) -> bool:
+    """Redact the secrets in the address in the line that httpx logs for each call that this API makes.
+
+    ADR redirects a download to its storage, with a token in the query string that lets anyone read the file for 5
+    minutes. The token must not be in the log. The same secrets are redacted as in the traces (see app/telemetry.py).
+    """
+    args = record.args
+    # httpx logs: method, URL, HTTP version, status, reason
+    if isinstance(args, tuple) and len(args) == 5:
+        record.args = (args[0], redact_url(str(args[1])), *args[2:])
     return True
 
 
@@ -179,3 +193,4 @@ def configure_logging(settings: Settings) -> None:
         uvicorn_logger.setLevel(level)
         uvicorn_logger.addFilter(_drop_color_message)  # (adding the same filter again does nothing)
     logging.getLogger("uvicorn.access").addFilter(_drop_query_string)
+    logging.getLogger("httpx2").addFilter(_redact_outgoing_url)

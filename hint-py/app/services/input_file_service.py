@@ -2,10 +2,11 @@
 
 Each file type has a row in `INPUT_FILE_TYPES`, which says all that this API knows about the type: its URL, the
 extensions that hintr accepts and the size limit of an upload. The routers, the size limit middleware and the tests read
-the rows. Nothing else lists the file types.
+the rows. Nothing else lists the file types. The limits are not settings: a change to one is a change to the code.
 
-`InputFileService.accept` is the one way a new file becomes a version's file. An upload calls it now. An import from ADR
-and a rehydrate will call it too, with the bytes that they got.
+`InputFileService.save` is the one way a new file becomes a version's file. An upload and an import from ADR
+(`app/services/adr_imports.py`) call it. A rehydrate will call it too, with the bytes that it got. An import also calls
+`refuse_wrong_extension` before it downloads the file, so that a file of the wrong type is not downloaded.
 
 The rule that matters most: once the file is stored and recorded, a failed validation is answered and not raised. A
 raised error rolls back the request's transaction, which would drop the new file from the version. The user must keep
@@ -13,9 +14,8 @@ the new file and see why it is not valid (and the Vue app has already taken the 
 """
 
 import re
-from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Annotated, BinaryIO
+from typing import IO, Annotated
 
 from fastapi import Depends, Header
 
@@ -35,8 +35,9 @@ class InputFileType:
     # What hintr accepts as the extension (it says "File must be of type ..." for any other). The check is made here as
     # well, so that a file of another kind is not written to the share.
     extensions: tuple[str, ...]
-    # The most that one upload of this type may be, in bytes (see app/upload_limit.py)
-    max_upload_bytes: Callable[[Settings], int]
+    # The most that one upload of this type (the whole request that uploads it) may be, in bytes (see
+    # app/upload_limit.py). It is also the most that an import from ADR may download (see app/services/adr_imports.py).
+    max_upload_bytes: int
 
     @property
     def is_baseline(self) -> bool:
@@ -49,20 +50,37 @@ class InputFileType:
         return f"/{'baseline' if self.is_baseline else 'disease'}/{self.file_type.value}"
 
 
+MB = 1024 * 1024
+
+# Each limit is about twice the largest file of its kind that a saved version used in November 2026 (the files of 1,000
+# to 1,800 versions for PJNZ, programme and ANC, and 200 to 300 for the others). A user on a slow connection hits Azure's
+# limit first: a request that takes more than 240 seconds is cancelled by the ingress. These are for the input files, and
+# not for output zips (the largest a version used was 234 MB): the endpoint that loads one will need a limit of its own.
+# Each upload in flight also takes its size of ephemeral disk (see app/upload_limit.py: about 10 of the largest fit at
+# 1 vCPU).
 INPUT_FILE_TYPES = {
     spec.file_type: spec
     for spec in (
-        InputFileType(FileType.PJNZ, ("PJNZ", "zip"), lambda s: s.max_pjnz_upload_bytes),
-        InputFileType(FileType.SHAPE, ("geojson",), lambda s: s.max_shape_upload_bytes),
-        InputFileType(FileType.POPULATION, ("csv",), lambda s: s.max_population_upload_bytes),
-        InputFileType(FileType.SURVEY, ("csv",), lambda s: s.max_survey_upload_bytes),
-        InputFileType(FileType.PROGRAMME, ("csv",), lambda s: s.max_programme_upload_bytes),
-        InputFileType(FileType.ANC, ("csv",), lambda s: s.max_anc_upload_bytes),
+        # A subnational PJNZ is large, and may be a zip: the largest was 187 MB
+        InputFileType(FileType.PJNZ, ("PJNZ", "zip"), 400 * MB),
+        # The largest was 44 MB
+        InputFileType(FileType.SHAPE, ("geojson",), 100 * MB),
+        # The largest was 67 MB
+        InputFileType(FileType.POPULATION, ("csv",), 150 * MB),
+        # The largest was 25 MB
+        InputFileType(FileType.SURVEY, ("csv",), 50 * MB),
+        # The largest was 8 MB
+        InputFileType(FileType.PROGRAMME, ("csv",), 20 * MB),
+        # The largest was under 1 MB
+        InputFileType(FileType.ANC, ("csv",), 10 * MB),
     )
 }
 
-# The size limit of each path that uploads a file
-UPLOAD_LIMITS = {spec.url: spec.max_upload_bytes for spec in INPUT_FILE_TYPES.values()}
+
+def upload_limit(path: str) -> int | None:
+    """The size limit of a path that uploads a file, or None if the path does not upload one. The rows are read at each
+    call, so that a test can change a limit."""
+    return next((spec.max_upload_bytes for spec in INPUT_FILE_TYPES.values() if spec.url == path), None)
 
 
 def _wrong_extension(spec: InputFileType, filename: str) -> InvalidFileExtensionError | None:
@@ -90,25 +108,47 @@ class InputFileService:
         self._hintr = hintr
         self._accept_language = accept_language
 
-    async def upload(self, file_type: FileType, source: BinaryIO, filename: str) -> HintResponse:
+    async def refuse_wrong_extension(self, file_type: FileType, filename: str) -> HintResponse | None:
+        """The answer that refuses a file whose name has an extension that the type does not have, or None if the
+        extension is a good one. Check this before the file is received, written or downloaded.
+
+        A refused file is not written, and the version's file of this type is taken off: the Vue app has already taken it
+        off the screen when the upload or import started.
+        """
+        refused = _wrong_extension(INPUT_FILE_TYPES[file_type], filename)
+        if refused is None:
+            return None
+        await self._files.remove(file_type)
+        return self._answer(refused)
+
+    async def save(
+        self,
+        file_type: FileType,
+        source: IO[bytes],
+        filename: str,
+        resource_url: str | None = None,
+    ) -> HintResponse:
         """Makes the file the version's file of this type, in place of the old one, and asks hintr to validate it.
 
-        - A name with an extension that the type does not have: nothing is written, and the version's file of this type
-          is taken off (the Vue app has already taken it off the screen when the upload started).
+        - A file with no name is refused (400).
+        - A name with an extension that the type does not have is refused (see `refuse_wrong_extension`).
         - Otherwise the file is written to the share, then recorded, so no database row points at a missing file. The
           version keeps it even if it is not valid.
 
-        The source must support `seek` (see `UploadStorage.save`).
+        The source must support `seek` (see `UploadStorage.save`). A file imported from ADR has a `resource_url`: its link
+        on ADR, which can be empty (see `AdrClient.resource_url`). The version records it as from ADR. An upload has none.
         """
         if not filename:
             raise EmptyFileNameError()
-        refused = _wrong_extension(INPUT_FILE_TYPES[file_type], filename)
+        refused = await self.refuse_wrong_extension(file_type, filename)
         if refused is not None:
-            await self._files.remove(file_type)
-            return self._answer(refused)
+            return refused
         file_hash = await self._storage.save(source, filename)
         saved = await self._files.record(
-            file_type, schemas.VersionFile(hash=file_hash, filename=filename, from_adr=False, resource_url=None)
+            file_type,
+            schemas.VersionFile(
+                hash=file_hash, filename=filename, from_adr=resource_url is not None, resource_url=resource_url
+            ),
         )
         return await self._validate(file_type, saved)
 

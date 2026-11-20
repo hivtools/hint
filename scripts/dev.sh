@@ -204,6 +204,8 @@ do_up() { # $1 = pull | nopull, then --no-proxy, --rebuild
   # each key as <UUID:1>, <UUID:2> and so on, in the order they appear. So the key must be the key that the tests save
   # for Kotlin (`API_KEY` in contract-tests/hintcontract/adr.py). If it is not, a call to Kotlin and a call to Python
   # look different.
+  # A file to import from ADR has a link to the stub as the host sees it (127.0.0.1), because the tests and Kotlin make
+  # the links. The Python API does not use the host of a link: it downloads the path of the link from its own address.
   if [ "${REAL_ADR:-0}" = 1 ]; then
     unset PYTHON_ADR_URL PYTHON_ADR_API_KEY
   else

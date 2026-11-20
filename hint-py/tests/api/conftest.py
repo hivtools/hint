@@ -1,4 +1,5 @@
-from collections.abc import AsyncIterator, Iterator
+from collections.abc import AsyncIterator, Callable, Iterator
+from dataclasses import replace
 from pathlib import Path
 
 import httpx2
@@ -9,6 +10,8 @@ from sqlalchemy.ext.asyncio import AsyncEngine
 from app.config import Settings, get_settings
 from app.db.database import create_db_session_factory
 from app.main import app
+from app.schemas import FileType
+from app.services.input_file_service import INPUT_FILE_TYPES
 from tests.adr import FakeAdr
 from tests.api.helpers import create_project, make_client
 from tests.github import ORG, TEAM, FakeGitHub
@@ -88,6 +91,19 @@ def settings_overrides() -> Iterator[dict]:
     app.dependency_overrides[get_settings] = lambda: Settings(**overrides)
     yield overrides
     del app.dependency_overrides[get_settings]
+
+
+@pytest.fixture
+def upload_limits(monkeypatch: pytest.MonkeyPatch) -> Callable[..., None]:
+    """Sets the size limit of some kinds of file, or of all of them if none is given, for one test. The real limits are
+    tens or hundreds of MB."""
+
+    def set_limit(limit: int, *file_types: FileType) -> None:
+        for file_type in file_types or tuple(INPUT_FILE_TYPES):
+            spec = replace(INPUT_FILE_TYPES[file_type], max_upload_bytes=limit)
+            monkeypatch.setitem(INPUT_FILE_TYPES, file_type, spec)
+
+    return set_limit
 
 
 @pytest.fixture

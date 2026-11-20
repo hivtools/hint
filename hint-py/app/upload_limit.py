@@ -17,33 +17,31 @@ the largest in use in November 2026 was 187 MB. If a replica restarts during upl
 reserves its size before its body is read, and waits if it is used up), or stream the body to the share and not to a
 temporary file.
 
-The limit of each path comes from the settings (`max_pjnz_upload_bytes` and the others, see `INPUT_FILE_TYPES` in
-app/services/input_file_service.py) and the answer is the usual error for the browser: 413 and a message in the language
-of the request. It applies to the request as a whole, which is a little more than the file in it.
+The limit of each path is the one of its kind of file (see `INPUT_FILE_TYPES` in app/services/input_file_service.py),
+and the answer is the usual error for the browser: 413 and a message in the language of the request. It applies to the
+request as a whole, which is a little more than the file in it.
 """
 
-from collections.abc import Callable, Mapping
+from collections.abc import Callable
 
 from starlette.datastructures import Headers
 from starlette.types import ASGIApp, Message, Receive, Scope, Send
 
-from app.config import Settings, get_settings
 from app.errors import FileTooLargeError, hint_error_response
 
 
 class UploadSizeLimitMiddleware:
-    def __init__(self, app: ASGIApp, limits: Mapping[str, Callable[[Settings], int]]):
-        """`limits` reads the limit from the settings, for each path that uploads a file."""
+    def __init__(self, app: ASGIApp, limit_of: Callable[[str], int | None]):
+        """`limit_of` gives the limit of a path, or None if the path does not upload a file."""
         self.app = app
-        self.limits = dict(limits)
+        self.limit_of = limit_of
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
-        if scope["type"] != "http" or scope["method"] != "POST" or scope["path"] not in self.limits:
+        limit = self.limit_of(scope["path"]) if scope["type"] == "http" and scope["method"] == "POST" else None
+        if limit is None:
             await self.app(scope, receive, send)
             return
 
-        # The settings as the app has them, so that a test can change them
-        limit = self.limits[scope["path"]](scope["app"].dependency_overrides.get(get_settings, get_settings)())
         headers = Headers(scope=scope)
         declared = headers.get("content-length", "")
         if declared.isdigit() and int(declared) > limit:

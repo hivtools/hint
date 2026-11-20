@@ -15,6 +15,7 @@ import pytest
 
 from app.db.database import create_db_session_factory
 from app.db.version_repository import VersionRepository
+from app.schemas import FileType
 from tests.api.helpers import add_files, create_project, hintr_file, known_hashes, make_client, version_files
 from tests.hintr import HINTR_FAILURE, SUCCESS, failure
 from tests.support import OTHER_USER, USER
@@ -22,9 +23,6 @@ from tests.support import OTHER_USER, USER
 BASELINE = ["pjnz", "shape", "population"]
 DISEASE = ["survey", "programme", "anc"]
 URLS = {**{t: f"/baseline/{t}" for t in BASELINE}, **{t: f"/disease/{t}" for t in DISEASE}}
-
-# The setting that has the size limit of each kind of file
-LIMIT_SETTINGS = {t: f"max_{t}_upload_bytes" for t in URLS}
 
 CONTENT = b"abc"
 # The upper case MD5 of "abc"
@@ -41,11 +39,6 @@ def upload_for(file_type: str, content: bytes = CONTENT) -> dict:
 
 def stored_as(file_type: str) -> str:
     return f"{ABC}.{GOOD_NAMES[file_type].rsplit('.', 1)[1]}"
-
-
-def set_limits(settings_overrides: dict, limit: int) -> None:
-    """The same size limit for every kind of file."""
-    settings_overrides.update(dict.fromkeys(LIMIT_SETTINGS.values(), limit))
 
 
 def md5(content: bytes) -> str:
@@ -245,9 +238,9 @@ def multipart(content: bytes) -> tuple[bytes, str]:
 
 @pytest.mark.parametrize("file_type", BASELINE + DISEASE)
 async def test_a_file_over_the_limit_is_refused_and_nothing_is_kept(
-    on_a_version, hintr, engine, version_id, uploads_dir, settings_overrides, file_type
+    on_a_version, hintr, engine, version_id, uploads_dir, upload_limits, file_type
 ):
-    set_limits(settings_overrides, 1000)
+    upload_limits(1000)
     response = await on_a_version.post(URLS[file_type], **upload_of(b"x" * 2000))
     assert response.status_code == 413
     assert response.json() == {
@@ -261,41 +254,31 @@ async def test_a_file_over_the_limit_is_refused_and_nothing_is_kept(
     assert hintr.calls == []
 
 
-@pytest.mark.parametrize(
-    ("file_type", "setting"),
-    [
-        ("pjnz", "max_pjnz_upload_bytes"),
-        ("shape", "max_shape_upload_bytes"),
-        ("population", "max_population_upload_bytes"),
-        ("survey", "max_survey_upload_bytes"),
-        ("programme", "max_programme_upload_bytes"),
-        ("anc", "max_anc_upload_bytes"),
-    ],
-)
+@pytest.mark.parametrize("file_type", BASELINE + DISEASE)
 async def test_each_kind_of_file_has_its_own_limit(
-    on_a_version, hintr, engine, version_id, uploads_dir, settings_overrides, file_type, setting
+    on_a_version, hintr, engine, version_id, uploads_dir, upload_limits, file_type
 ):
     """Only the limit of the kind of file counts: this one is small, the others are as big as the file."""
-    set_limits(settings_overrides, 10_000)
-    settings_overrides[setting] = 1000
+    upload_limits(10_000)
+    upload_limits(1000, FileType(file_type))
     await add_files(engine, version_id, "pjnz", "shape")
     assert (await on_a_version.post(URLS[file_type], **upload_for(file_type, b"x" * 2000))).status_code == 413
-    others = [t for t in URLS if LIMIT_SETTINGS[t] != setting]
+    others = [t for t in URLS if t != file_type]
     assert others
     for other in others:
         assert (await on_a_version.post(URLS[other], **upload_for(other, b"x" * 2000))).status_code == 200
 
 
-async def test_a_file_within_the_limit_is_accepted(on_a_version, hintr, uploads_dir, settings_overrides):
-    set_limits(settings_overrides, 1000)
+async def test_a_file_within_the_limit_is_accepted(on_a_version, hintr, uploads_dir, upload_limits):
+    upload_limits(1000)
     response = await on_a_version.post("/baseline/pjnz", **upload_of(b"x" * 500))
     assert response.status_code == 200
 
 
 async def test_a_request_that_does_not_say_how_big_it_is_is_stopped_at_the_limit(
-    on_a_version, hintr, engine, version_id, uploads_dir, settings_overrides
+    on_a_version, hintr, engine, version_id, uploads_dir, upload_limits
 ):
-    set_limits(settings_overrides, 1000)
+    upload_limits(1000)
     body, content_type = multipart(b"x" * 5000)
 
     async def in_chunks():
@@ -311,9 +294,9 @@ async def test_a_request_that_does_not_say_how_big_it_is_is_stopped_at_the_limit
 
 
 async def test_a_request_that_says_less_than_it_sends_is_stopped_at_the_limit(
-    on_a_version, hintr, uploads_dir, settings_overrides
+    on_a_version, hintr, uploads_dir, upload_limits
 ):
-    set_limits(settings_overrides, 1000)
+    upload_limits(1000)
     body, content_type = multipart(b"x" * 5000)
     headers = {"content-type": content_type, "content-length": "500"}
     response = await on_a_version.post("/baseline/pjnz", content=body, headers=headers)
@@ -321,8 +304,8 @@ async def test_a_request_that_says_less_than_it_sends_is_stopped_at_the_limit(
     assert files_in(uploads_dir) == []
 
 
-async def test_the_limit_is_said_in_the_language_of_the_request(on_a_version, hintr, settings_overrides):
-    set_limits(settings_overrides, 3 * 1024 * 1024)
+async def test_the_limit_is_said_in_the_language_of_the_request(on_a_version, hintr, upload_limits):
+    upload_limits(3 * 1024 * 1024)
     big = upload_of(b"x" * (4 * 1024 * 1024))
     english = await on_a_version.post("/baseline/pjnz", **big)
     french = await on_a_version.post("/baseline/pjnz", headers={"Accept-Language": "fr"}, **big)
@@ -333,8 +316,8 @@ async def test_the_limit_is_said_in_the_language_of_the_request(on_a_version, hi
     )
 
 
-async def test_the_limit_is_on_the_uploads_and_not_on_other_requests(on_a_version, settings_overrides):
-    set_limits(settings_overrides, 10)
+async def test_the_limit_is_on_the_uploads_and_not_on_other_requests(on_a_version, upload_limits):
+    upload_limits(10)
     response = await on_a_version.post("/session/files", json={"pjnz": None})
     assert response.status_code == 200
 

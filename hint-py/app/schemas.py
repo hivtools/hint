@@ -4,7 +4,7 @@ from datetime import datetime
 from enum import StrEnum
 from typing import Any
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 from pydantic.alias_generators import to_camel
 
 
@@ -56,6 +56,20 @@ class AdrDatasetType(StrEnum):
 
     INPUT = "input"
     OUTPUT = "output"
+
+
+class AdrResource(CamelModel):
+    """A file on ADR that the user imports (Kotlin: AdrResource). The Vue app sends the link of the file, and the ids of
+    its dataset and its resource. The ids can be empty, null or left out, which are all the same: no id."""
+
+    url: str
+    dataset_id: str = ""
+    resource_id: str = ""
+
+    @field_validator("dataset_id", "resource_id", mode="before")
+    @classmethod
+    def _null_is_no_id(cls, value: object) -> object:
+        return "" if value is None else value
 
 
 class FileType(StrEnum):

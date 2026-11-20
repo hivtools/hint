@@ -3,6 +3,7 @@
 These tests are true for every call to ADR, whichever endpoint makes it.
 """
 
+import io
 import json
 import logging
 from typing import Any
@@ -11,11 +12,11 @@ import httpx2
 import pytest
 from pydantic import SecretStr
 
-from app.clients.adr_client import AdrClient, adr_answer, adr_authorization, create_adr_http_client
+from app.clients.adr_client import AdrClient, AdrFile, adr_answer, adr_authorization, create_adr_http_client
 from app.clients.responses import HintResponse
 from app.config import Settings
-from app.errors import NoAdrCredentialsError
-from tests.adr import FakeAdr, ckan_error, ckan_ok
+from app.errors import NoAdrCredentialsError, NotOnAdrError
+from tests.adr import FakeAdr, ckan_error, ckan_ok, file_response
 from tests.support import ADR_KEY, ADR_TOKEN
 
 KEY = SecretStr(ADR_KEY)
@@ -67,11 +68,20 @@ def test_the_settings_do_not_show_the_key():
 
 
 # ------------------------------------------------------------------------------------------------ the address
-@pytest.mark.parametrize("adr_url", ["https://adr.example", "https://adr.example/", "https://adr.example//"])
-def test_the_address_may_or_may_not_end_with_a_slash(adr_url):
+@pytest.mark.parametrize(
+    ("adr_url", "called"),
+    [
+        ("https://adr.example", "https://adr.example/api/3/action/x"),
+        ("https://adr.example/", "https://adr.example/api/3/action/x"),
+        ("http://stub.example:8883/adr", "http://stub.example:8883/adr/api/3/action/x"),
+        ("http://stub.example:8883/adr/", "http://stub.example:8883/adr/api/3/action/x"),
+    ],
+)
+def test_the_address_may_or_may_not_end_with_a_slash(adr_url, called):
     client = create_adr_http_client(Settings(adr_url=adr_url))
 
-    assert str(client.base_url) == "https://adr.example/api/3/action/"
+    assert str(client.build_request("GET", "api/3/action/x").url) == called
+    assert str(client.base_url.join("api/3/action/x")) == called
 
 
 # ------------------------------------------------------------------------------------------------ the call
@@ -171,6 +181,21 @@ async def test_the_failure_is_in_the_language_of_the_request(adr):
     assert answer == failure(500, "Aucune réponse reçue. La requête a peut-être expiré.")
 
 
+async def test_a_cookie_that_adr_sets_does_not_go_with_a_later_call(client, adr):
+    """Every user's calls share one client, so a cookie that ADR sets for one user's call must not go with another's."""
+    link = "https://adr.example/dataset/d/a.csv"
+    set_cookie = {"Set-Cookie": "session=of-the-first-user; Path=/"}
+    adr.answer(link, httpx2.Response(302, headers={"Location": "/back/a.csv", **set_cookie}))
+    adr.answer("https://adr.example/back/a.csv", httpx2.Response(200, content=b"abc", headers=set_cookie))
+    adr.fail("package_show", httpx2.Response(200, json={"success": True, "result": {}}, headers=set_cookie))
+
+    await client.download(client.file_at(link), io.BytesIO(), 10)
+    await client.dataset("d")
+    await client.dataset("d")
+
+    assert [call.headers.get("Cookie") for call in adr.calls] == [None] * 4
+
+
 # ------------------------------------------------------------------------------------------------ the answer
 def test_a_success_of_ckan_is_its_result():
     body = json.dumps({"success": True, "result": [{"id": "a"}], "help": "https://adr.example/help"}).encode()
@@ -255,3 +280,181 @@ async def test_ckan_answers_of_the_fake_are_what_the_client_reads(client, adr):
     assert (await client.dataset("d")).envelope["errors"][0]["detail"] == "No"
     adr.fail("package_show", ckan_ok({"id": "d"}))
     assert (await client.dataset("d")).envelope["data"] == {"id": "d"}
+
+
+# ------------------------------------------------------------------------------------------------ a file to import
+@pytest.mark.parametrize(
+    ("link", "path"),
+    [
+        ("https://adr.example/dataset/d/resource/r/download/a.csv", "dataset/d/resource/r/download/a.csv"),
+        ("https://ADR.example/dataset/d/a.csv?activity_id=1&x=2", "dataset/d/a.csv?activity_id=1&x=2"),
+        ("HTTPS://adr.example/a.csv", "a.csv"),
+        # The host is not used, so a link with another host is a path on ADR too
+        ("https://dev-adr.example/dataset/d/a.csv", "dataset/d/a.csv"),
+        ("http://evil.example:8443/a.csv", "a.csv"),
+        ("https://user@adr.example.evil.example/a.csv", "a.csv"),
+    ],
+)
+def test_the_path_and_query_of_a_link_are_a_file_on_adr_whatever_its_host(adr, link, path):
+    assert AdrClient(adr.http, KEY, "en").file_at(link) == AdrFile(link, httpx2.URL(f"https://adr.example/{path}"))
+
+
+@pytest.mark.parametrize(
+    ("link", "path"),
+    [
+        ("http://127.0.0.1:8883/adr/dataset/d/a.csv", "dataset/d/a.csv"),
+        ("http://stub.example/adr/a.csv?x=1", "a.csv?x=1"),
+    ],
+)
+def test_when_the_address_of_adr_has_a_path_the_path_of_the_link_is_under_it(link, path):
+    http = httpx2.AsyncClient(base_url="http://host.docker.internal:8883/adr/")
+
+    expected = httpx2.URL(f"http://host.docker.internal:8883/adr/{path}")
+    assert AdrClient(http, KEY, "en").file_at(link) == AdrFile(link, expected)
+
+
+@pytest.mark.parametrize(
+    "link",
+    ["http://127.0.0.1:8883/dataset/d/a.csv", "http://127.0.0.1:8883/adrian/a.csv"],
+)
+def test_a_link_with_a_path_that_is_not_under_the_path_of_adr_is_refused(link):
+    http = httpx2.AsyncClient(base_url="http://host.docker.internal:8883/adr/")
+
+    with pytest.raises(NotOnAdrError):
+        AdrClient(http, KEY, "en").file_at(link)
+
+
+@pytest.mark.parametrize(
+    "link",
+    [
+        "ftp://adr.example/a.csv",
+        "not a url",
+        "",
+        "/dataset/d/a.csv",
+        "http://[adr/a.csv",
+        # httpx refuses these as addresses. The ids keep the long link out of the name of the test, which pytest puts in
+        # an environment variable (at most 32767 characters on Windows).
+        pytest.param("https://adr.example/a\x01.csv", id="control character"),
+        pytest.param(f"https://adr.example/{'a' * 70_000}.csv", id="too long"),
+    ],
+)
+def test_a_link_that_is_not_an_http_address_is_refused(adr, link):
+    with pytest.raises(NotOnAdrError):
+        AdrClient(adr.http, KEY, "en").file_at(link)
+
+
+@pytest.mark.parametrize(
+    ("link", "filename"),
+    [
+        ("https://adr.example/dataset/d/resource/r/download/a.PJNZ", "a.PJNZ"),
+        ("https://adr.example/dataset/d/a.csv?next=/b/c.zip", "a.csv"),
+        ("https://adr.example/dataset/d/", ""),
+        ("https://adr.example/my%20file.csv", "my%20file.csv"),
+    ],
+)
+def test_the_name_of_the_file_is_the_last_part_of_the_path_of_its_link(adr, link, filename):
+    assert AdrClient(adr.http, KEY, "en").file_at(link).filename == filename
+
+
+async def test_a_redirect_on_adr_keeps_the_credential_and_one_that_leaves_adr_drops_it_for_good(client, adr):
+    link = "https://adr.example/dataset/d/a.csv"
+    adr.redirect(link, "/elsewhere/a.csv")
+    adr.redirect("https://adr.example/elsewhere/a.csv", "https://blob.example/a.csv")
+    adr.redirect("https://blob.example/a.csv", "https://adr.example/back/a.csv")
+    adr.answer("https://adr.example/back/a.csv", file_response(b"abc"))
+    target = io.BytesIO()
+
+    await client.download(client.file_at(link), target, 10)
+
+    assert target.getvalue() == b"abc"
+    assert [(str(c.url), c.headers.get("Authorization")) for c in adr.downloads()] == [
+        (link, ADR_KEY),
+        ("https://adr.example/elsewhere/a.csv", ADR_KEY),
+        ("https://blob.example/a.csv", None),
+        # Back on ADR, the credential is not sent again
+        ("https://adr.example/back/a.csv", None),
+    ]
+
+
+async def test_a_download_is_a_success_with_no_data(client, adr):
+    link = "https://adr.example/a.csv"
+    adr.answer(link, file_response(b"abc"))
+
+    assert await client.download(client.file_at(link), io.BytesIO(), 10) == HintResponse.success(None)
+
+
+async def test_a_download_stops_as_soon_as_it_passes_the_limit(client, adr):
+    link = "https://adr.example/a.csv"
+    sent = []
+
+    async def pieces():
+        for piece in (b"12345", b"67890", b"x", b"never"):
+            sent.append(piece)
+            yield piece
+
+    adr.answer(link, httpx2.Response(200, content=pieces()))
+    target = io.BytesIO()
+
+    answer = await client.download(client.file_at(link), target, 10)
+
+    assert answer == failure(413, "The file is too large. Files can be up to 0 MB.", "FILE_TOO_LARGE")
+    assert sent == [b"12345", b"67890", b"x"]
+    assert target.getvalue() == b"1234567890"
+
+
+async def test_a_download_that_gets_no_answer_is_the_failure_of_any_call_that_gets_none(client, adr):
+    link = "https://adr.example/a.csv"
+    adr.fail_to_download(link, httpx2.ConnectError("connection refused"))
+    adr.fail_to_connect("package_show", httpx2.ConnectError("connection refused"))
+
+    assert await client.download(client.file_at(link), io.BytesIO(), 10) == await client.dataset("d")
+
+
+async def test_a_download_needs_a_credential(adr):
+    client = AdrClient(adr.http, None, "en")
+
+    with pytest.raises(NoAdrCredentialsError):
+        await client.download(client.file_at("https://adr.example/a.csv"), io.BytesIO(), 10)
+
+    assert adr.calls == []
+
+
+@pytest.mark.parametrize(
+    ("dataset_id", "resource_id", "filename", "link"),
+    [
+        (
+            "d-input-1",
+            "r1",
+            "a.csv",
+            "https://adr.example/dataset/d-input-1/resource/r1/download/a.csv?activity_id=act-new",
+        ),
+        (
+            "d-input-1",
+            "r 1/2",
+            "a b#.csv",
+            "https://adr.example/dataset/d-input-1/resource/r%201%2F2/download/a%20b%23.csv?activity_id=act-new",
+        ),
+    ],
+)
+async def test_the_resource_url_is_the_download_link_at_the_newest_activity(
+    client, adr, dataset_id, resource_id, filename, link
+):
+    assert await client.resource_url(dataset_id, resource_id, filename) == link
+    assert adr.queries("package_activity_list") == [{"id": dataset_id}]
+
+
+async def test_the_activity_id_is_encoded(client, adr):
+    adr.fail("package_activity_list", ckan_ok([{"id": "a&b=c"}]))
+
+    assert (await client.resource_url("d", "r", "a.csv")).endswith("?activity_id=a%26b%3Dc")
+
+
+async def test_an_address_with_no_slash_at_the_end_gives_the_same_download_and_link(adr):
+    client = AdrClient(adr.http_at("https://adr.example"), KEY, "en")
+    link = "https://adr.example/dataset/d-input-1/resource/r1/download/a.csv"
+    adr.answer(link, file_response(b"abc"))
+
+    await client.download(client.file_at(link), io.BytesIO(), 10)
+
+    assert str(adr.downloads()[0].url) == link
+    assert await client.resource_url("d-input-1", "r1", "a.csv") == f"{link}?activity_id=act-new"
