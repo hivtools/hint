@@ -1,8 +1,8 @@
 import axios, {type AxiosRequestConfig} from 'axios';
 import {Service} from 'axios-middleware';
 import {Language} from "../../app/store/translations/locales";
+import NodeFormData from "form-data";
 
-const FormData = require("form-data");
 const service = new Service(axios);
 
 declare let appUrl: string; // configured by jest
@@ -13,7 +13,7 @@ export const rootState = {
 };
 
 export const login = async (username = "test.user@example.com", password = "password") => {
-    const formData = new FormData();
+    const formData = new NodeFormData();
     formData.append('username', username);
     formData.append('password', password);
 
