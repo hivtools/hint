@@ -17,7 +17,7 @@
 </template>
 <script lang="ts">
     import { type PropType, defineComponent } from "vue";
-    import Treeselect from "@reside-ic/vue3-treeselect";
+    import {Treeselect} from "@reside-ic/vue3-treeselect";
 
     // This wrapper was necessary as this third party treeselect was not
     // updating its value when an external update was being made, e.g.
