@@ -31,9 +31,9 @@
                       :plot="'inputComparisonBarchart'"
                       :show-error-bars="false"
                       style="min-height: 500px;"/>
-            <Table class="col-md-9" v-if="activePlot === 'inputComparisonTable'"
-                    :plotName="'inputComparisonTable'"
-                    :download-enabled="false"/>
+            <plot-table class="col-md-9" v-if="activePlot === 'inputComparisonTable'"
+                        :plotName="'inputComparisonTable'"
+                        :download-enabled="false"/>
             <population-grid class="col-md-9" v-if="activePlot === 'population'"/>
         </div>
     </div>
@@ -63,7 +63,7 @@ export default defineComponent({
         ErrorAlert,
         PlotControlSet,
         FilterSet,
-        Table,
+        PlotTable: Table,
         TimeSeries,
         Choropleth,
         LoadingSpinner,

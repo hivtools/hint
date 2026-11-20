@@ -35,7 +35,7 @@ export const getFeatureData = function (data: any[],
         }
         if (row.indicator == colourIndicator.indicator) {
             result[areaId].value = row[colourIndicator.value_column]
-            result[areaId].color = getColour(row[colourIndicator.value_column], colourIndicator, colourRange),
+            result[areaId].color = getColour(row[colourIndicator.value_column], colourIndicator, colourRange)
             result[areaId].lower_value = row['lower']
             result[areaId].upper_value = row['upper']
         }

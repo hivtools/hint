@@ -126,7 +126,11 @@
             },
             toggleErrorReportModal() {
                 this.errorReportOpen = !this.errorReportOpen
-                this.errorReportOpen ? this.projectSection() : this.section = "";
+                if (this.errorReportOpen) {
+                    this.projectSection()
+                } else {
+                    this.section = ""
+                }
             }
         },
         components: {

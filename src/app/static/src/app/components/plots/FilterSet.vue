@@ -6,9 +6,7 @@
                     <span class="font-weight-bold">{{f.label}}</span>
                 </template>
                 <template v-slot:filter>
-                    <!-- For some reason using filter is saying no component registered
-                    with this name, no idea why so using capital Filter -->
-                    <Filter :state-filter-id="f.stateFilterId" :plot="plot"/>
+                    <plot-filter :state-filter-id="f.stateFilterId" :plot="plot"/>
                 </template>
             </filter-with-reset>
         </div>
@@ -25,7 +23,7 @@ import FilterWithReset from './FilterWithReset.vue';
 
 export default defineComponent({
     components: {
-        Filter,
+        PlotFilter: Filter,
         FilterWithReset
     },
     props: {

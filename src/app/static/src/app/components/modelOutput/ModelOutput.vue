@@ -22,9 +22,9 @@
             <barchart class="col-md-9" v-if="selectedPlot === 'comparison'"
                       :plot="selectedPlot"
                       :show-error-bars="true"/>
-            <Table class="col-md-9" v-if="selectedPlot === 'table'"
-                    :plotName="'table'"
-                    :download-enabled="true"/>
+            <plot-table class="col-md-9" v-if="selectedPlot === 'table'"
+                        :plotName="'table'"
+                        :download-enabled="true"/>
             <barchart class="col-md-9" v-if="selectedPlot === 'cascade'"
                       :plot="selectedPlot"
                       :show-error-bars="true"/>
@@ -65,7 +65,7 @@ export default defineComponent({
         Barchart,
         Choropleth,
         Bubble,
-        Table,
+        PlotTable: Table,
         FilterSet,
         PlotControlSet,
         FilterWithReset

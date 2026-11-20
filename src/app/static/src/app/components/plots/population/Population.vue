@@ -80,8 +80,6 @@ const chartData = computed(() => ({
 const chartOptions = computed<ChartOptions<"bar">>(() => {
   // Some logic for nicely setting the min and max values on the x-axis.
   // Round to the nearest 1,000 for small datasets, nearest 10,000 otherwise.
-  let xMin, xMax;
-
   const maxValue = Math.max(...chartData.value.datasets[0].data) || 0;
   const minValue = Math.min(...chartData.value.datasets[1].data) || 0;
 
@@ -98,8 +96,8 @@ const chartOptions = computed<ChartOptions<"bar">>(() => {
   const roundedBoundaryValue =
     Math.ceil(boundaryValue / roundingIncrement) * roundingIncrement;
 
-  xMin = -roundedBoundaryValue;
-  xMax = roundedBoundaryValue;
+  const xMin = -roundedBoundaryValue;
+  const xMax = roundedBoundaryValue;
 
   return {
     maintainAspectRatio: true,

@@ -357,7 +357,7 @@
     export default defineComponent({
         extends: ProjectsMixin,
         data(): Data {
-            let openVersion: Record<number, boolean> = {};
+            const openVersion: Record<number, boolean> = {};
             if (this.projects) {
                 this.projects.forEach(p => {
                     openVersion[p.id] = false
