@@ -238,7 +238,7 @@ then be the same user on ADR.
 
 `POST /rehydrate/zip` (an upload) and `POST /rehydrate/adr` (a zip on ADR, which is downloaded as the user, as an import is)
 give the Vue app the state and the notes of a project from an output zip, so that it can set the project up
-(`app/services/rehydrate.py`). A guest may upload a zip. A zip on ADR needs a login.
+(`app/services/rehydrate_service.py`). A guest may upload a zip. A zip on ADR needs a login.
 
 - Only `info/project_state.json` and `notes.txt` are read. Nothing is extracted and nothing is stored, and the version
   gets no files from it (the Vue app sets them next, with `POST /session/files`).
