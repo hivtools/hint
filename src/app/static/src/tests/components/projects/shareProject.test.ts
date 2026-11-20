@@ -13,8 +13,7 @@ import ErrorAlert from "../../../app/components/ErrorAlert.vue";
 import {Language} from "../../../app/store/translations/locales";
 import {nextTick} from "vue";
 
-declare var currentUser: string;
-currentUser = "test.user@example.com"
+(global as any).currentUser = "test.user@example.com";
 
 describe("ShareProject", () => {
 

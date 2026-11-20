@@ -483,7 +483,7 @@ describe("barchart utils work as expected", () => {
         });
         const tooltipCallback = buildTooltipCallback(metadata, true);
 
-        let renderedLabel = tooltipCallback({
+        const renderedLabel = tooltipCallback({
             datasetIndex: 0,
             raw: 2,
             label: "group2",
@@ -508,7 +508,7 @@ describe("barchart utils work as expected", () => {
             "group2": { plus: null, minus: null }
         }
 
-        let renderedLabel = tooltipCallback({
+        const renderedLabel = tooltipCallback({
             datasetIndex: 0,
             raw: 2,
             label: "group2",
@@ -528,7 +528,7 @@ describe("barchart utils work as expected", () => {
         });
         const tooltipCallback = buildTooltipCallback(metadata, false);
 
-        let renderedLabel = tooltipCallback({
+        const renderedLabel = tooltipCallback({
             datasetIndex: 0,
             raw: 2,
             label: "group2",
@@ -548,7 +548,7 @@ describe("barchart utils work as expected", () => {
         });
         const tooltipCallback = buildTooltipCallback(metadata, false, true);
 
-        let renderedLabel = tooltipCallback({
+        const renderedLabel = tooltipCallback({
             datasetIndex: 0,
             raw: -2,
             label: "group2",

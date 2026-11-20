@@ -13,8 +13,6 @@ import type {Mock, MockInstance} from "vitest";
 import * as plotSelectionsUtils from "../../app/store/plotSelections/utils";
 
 describe("plotSelections itest", () => {
-    let getPlotDataMock: MockInstance;
-
     beforeEach(() => {
         mockAxios.reset();
         // stop apiService logging to console
@@ -26,7 +24,7 @@ describe("plotSelections itest", () => {
         (console.log as Mock).mockClear();
     });
 
-    getPlotDataMock = vi.spyOn(
+    const getPlotDataMock: MockInstance = vi.spyOn(
         plotSelectionsUtils,
         "getPlotData"
     ).mockImplementation(vi.fn());

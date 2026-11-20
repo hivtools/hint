@@ -27,8 +27,8 @@ describe("ApiService", () => {
         try {
             await api({commit: vi.fn(), rootState} as any)
                 .get("/baseline/")
-        } catch (e) {
-
+        } catch {
+            // The request fails. This test checks only the warning.
         }
         expect((console.warn as Mock).mock.calls[0][0])
             .toBe("No error handler registered for request /baseline/.");

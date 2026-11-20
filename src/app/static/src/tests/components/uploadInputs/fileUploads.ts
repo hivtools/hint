@@ -16,7 +16,7 @@ import type {Mocked} from 'vitest';
 export function testUploadComponent(name: string, position: number) {
 
     let actions: Mocked<SurveyAndProgramActions>;
-    let mutations = {};
+    const mutations = {};
 
     let expectedUploadAction: any;
     let expectedDeleteAction: any;

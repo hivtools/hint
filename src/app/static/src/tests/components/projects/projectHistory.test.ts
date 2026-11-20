@@ -269,7 +269,7 @@ describe("Project history component", () => {
 
     const testRendersVersion = (row: any, id: string, updatedIsoDate: string, versionNumber: number) => {
         expect(row.attributes("id")).toBe(`v-${id}`);
-        let cells = row.findAll(".version-cell");
+        const cells = row.findAll(".version-cell");
         expect(cells[0].text()).toBe("");
         expect(cells[1].find("button").exists()).toBe(true);
         expect(cells[2].text()).toBe(`v${versionNumber}`);

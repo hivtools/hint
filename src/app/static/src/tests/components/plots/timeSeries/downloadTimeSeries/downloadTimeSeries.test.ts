@@ -102,7 +102,7 @@ describe("download indicator", () => {
         })
     }
 
-    it('it renders download button props as expected ', async() => {
+    it('renders download button props as expected', async() => {
         const wrapper = getWrapper();
         expect(wrapper.findComponent(DownloadButton).props()).toEqual(
             {

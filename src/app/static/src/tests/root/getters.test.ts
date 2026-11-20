@@ -9,7 +9,6 @@ import {
     mockReviewInputState,
     mockHintrVersionState,
     mockLoadState,
-    mockMetadataState,
     mockModelCalibrateState,
     mockModelOptionsState,
     mockModelRunState,

@@ -66,7 +66,7 @@ describe("Metadata actions", () => {
 
         const mockCommitPlotDefaultSelections = vi
             .spyOn(utils, "commitPlotDefaultSelections")
-            .mockImplementation(async (metadata, commit, rootState) => {});
+            .mockImplementation(async (_metadata, _commit, _rootState) => {});
         const commit = vi.fn();
         await actions.getReviewInputMetadata({commit, rootState} as any);
 
@@ -97,9 +97,9 @@ describe("Metadata actions", () => {
         mockAxios.onPost(`/meta/review-inputs/MWI`)
             .reply(200, mockSuccess(mockMetadata));
 
-        const mockCommitPlotDefaultSelections = vi
+        vi
             .spyOn(utils, "commitPlotDefaultSelections")
-            .mockImplementation(async (metadata, commit, rootState) => {});
+            .mockImplementation(async (_metadata, _commit, _rootState) => {});
         const commit = vi.fn();
         const rState = mockRootState({
             baseline: mockBaselineState({iso3: "MWI"}),

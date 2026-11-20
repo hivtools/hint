@@ -2,6 +2,8 @@ import {globalIgnores} from "eslint/config";
 import js from "@eslint/js";
 import pluginVue from "eslint-plugin-vue";
 import {defineConfigWithVueTs, vueTsConfigs} from "@vue/eslint-config-typescript";
+import pluginPlaywright from "eslint-plugin-playwright";
+import pluginVitest from "@vitest/eslint-plugin";
 
 export default defineConfigWithVueTs(
     {
@@ -9,14 +11,29 @@ export default defineConfigWithVueTs(
         files: ["**/*.{vue,ts,mts,tsx}"]
     },
 
-    // ./public is the build output. We do not lint the tests.
-    // The types in generated.d.ts are made by a script.
-    globalIgnores(["public/**", "coverage/**", "src/tests/**", "src/app/generated.d.ts"]),
+    // ./public is the build output. The types in generated.d.ts are made by a script.
+    globalIgnores(["public/**", "coverage/**", "src/app/generated.d.ts"]),
 
     // create-vue uses Oxlint for these basic rules. We use only ESLint, so we use the ESLint rules.
     js.configs.recommended,
     ...pluginVue.configs["flat/essential"],
     vueTsConfigs.recommended,
+
+    {
+        ...pluginPlaywright.configs["flat/recommended"],
+        files: ["src/tests/e2e/**/*.{test,spec}.{js,ts,jsx,tsx}"]
+    },
+
+    {
+        ...pluginVitest.configs.recommended,
+        files: ["src/tests/**/*"],
+        ignores: ["src/tests/e2e/**"],
+        rules: {
+            ...pluginVitest.configs.recommended.rules,
+            // Many tests call helper functions that call expect, for example expectTranslated.
+            "vitest/expect-expect": ["error", {assertFunctionNames: ["expect", "expect*", "assert*", "check*", "test*"]}]
+        }
+    },
 
     {
         name: "app/rules",

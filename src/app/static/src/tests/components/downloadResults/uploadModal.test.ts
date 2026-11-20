@@ -22,7 +22,7 @@ import type {DownloadResultsState} from "../../../app/store/downloadResults/down
 import type {MetadataState} from "../../../app/store/metadata/metadata";
 import { DownloadType } from '../../../app/store/downloadResults/downloadConfig';
 
-describe(`uploadModal `, () => {
+describe(`uploadModal`, () => {
 
     beforeEach(() => {
         vi.useFakeTimers();
