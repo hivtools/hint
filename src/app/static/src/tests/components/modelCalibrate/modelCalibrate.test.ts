@@ -1,4 +1,4 @@
-import Vuex, {Store} from "vuex";
+import Vuex, {type Store} from "vuex";
 import {
     mockCalibratePlotResponse,
     mockError,
@@ -7,8 +7,8 @@ import {
     mockRootState
 } from "../../mocks";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
-import {RootState} from "../../../app/root";
-import {ModelCalibrateState} from "../../../app/store/modelCalibrate/modelCalibrate";
+import type {RootState} from "../../../app/root";
+import type {ModelCalibrateState} from "../../../app/store/modelCalibrate/modelCalibrate";
 import ModelCalibrate from "../../../app/components/modelCalibrate/ModelCalibrate.vue";
 import CalibrationResults from "../../../app/components/modelCalibrate/CalibrationResults.vue";
 import {DynamicForm} from "@reside-ic/vue-next-dynamic-form";

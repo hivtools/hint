@@ -24,11 +24,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed, PropType } from "vue";
+import { computed, type PropType } from "vue";
 import VueFeather from "vue-feather";
-import { DownloadType, fileTypeUIConfigs, getDownloadTranslationKey, statusUIConfigs, TaskStatus } from "../../store/downloadResults/downloadConfig";
+import { type DownloadType, fileTypeUIConfigs, getDownloadTranslationKey, statusUIConfigs, TaskStatus } from "../../store/downloadResults/downloadConfig";
 import { useStore } from "vuex";
-import { RootState } from "../../root";
+import type { RootState } from "../../root";
 
 const props = defineProps({
     downloadType: { type: String as PropType<DownloadType>, required: true }

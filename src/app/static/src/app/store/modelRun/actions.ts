@@ -1,8 +1,8 @@
-import {ActionContext, ActionTree} from "vuex";
-import {ModelRunState} from "./modelRun";
-import {RootState} from "../../root";
-import {api, APIService} from "../../apiService";
-import {ModelResultResponse, ModelStatusResponse, ModelSubmitResponse} from "../../generated";
+import type {ActionContext, ActionTree} from "vuex";
+import type {ModelRunState} from "./modelRun";
+import type {RootState} from "../../root";
+import {api, type APIService} from "../../apiService";
+import type {ModelResultResponse, ModelStatusResponse, ModelSubmitResponse} from "../../generated";
 import {ModelRunMutation} from "./mutations";
 
 export interface ModelRunActions {

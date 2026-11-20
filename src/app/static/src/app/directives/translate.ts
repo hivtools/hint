@@ -1,8 +1,8 @@
 import i18next from "i18next";
-import {Language} from "../store/translations/locales";
-import { DirectiveBinding } from "vue";
-import { TranslatableState } from "../types";
-import { Store } from "vuex";
+import type {Language} from "../store/translations/locales";
+import type { DirectiveBinding } from "vue";
+import type { TranslatableState } from "../types";
+import type { Store } from "vuex";
 
 const translate = <S extends TranslatableState>(store: Store<S>) => {
 

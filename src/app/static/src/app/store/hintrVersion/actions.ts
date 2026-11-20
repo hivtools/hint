@@ -1,8 +1,8 @@
-import {ActionContext, ActionTree} from "vuex";
+import type {ActionContext, ActionTree} from "vuex";
 import {api} from "../../apiService";
-import {HintrVersionState} from "./hintrVersion";
+import type {HintrVersionState} from "./hintrVersion";
 import {HintrVersionMutation} from "./mutations";
-import {RootState} from "../../root";
+import type {RootState} from "../../root";
 
 export interface HintrVersionActions {
     getHintrVersion: (store: ActionContext<HintrVersionState, RootState>) => void

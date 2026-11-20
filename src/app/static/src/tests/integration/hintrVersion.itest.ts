@@ -1,6 +1,6 @@
 import {actions} from "../../app/store/hintrVersion/actions";
 import {login, rootState} from "./integrationTest";
-import {HintrVersionResponse} from "../../app/generated";
+import type {HintrVersionResponse} from "../../app/generated";
 
 describe("HintrVersion actions", () => {
 

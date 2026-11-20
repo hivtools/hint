@@ -79,15 +79,15 @@
 
 <script lang="ts">
     import Modal from "../Modal.vue";
-    import {Dict, UploadFile} from "../../types";
-    import {BaselineState} from "../../store/baseline/baseline";
+    import type {Dict, UploadFile} from "../../types";
+    import type {BaselineState} from "../../store/baseline/baseline";
     import {mapActionByName, mapStateProp, mapStateProps} from "../../utils";
-    import {ADRUploadState} from "../../store/adrUpload/adrUpload";
+    import type {ADRUploadState} from "../../store/adrUpload/adrUpload";
     import VueFeather from "vue-feather";
     import i18next from "i18next";
-    import {Language} from "../../store/translations/locales";
-    import {RootState} from "../../root";
-    import {DownloadResultsState} from "../../store/downloadResults/downloadResults";
+    import type {Language} from "../../store/translations/locales";
+    import type {RootState} from "../../root";
+    import type {DownloadResultsState} from "../../store/downloadResults/downloadResults";
     import {defineComponent} from "vue";
     import { DownloadType } from "../../store/downloadResults/downloadConfig";
 

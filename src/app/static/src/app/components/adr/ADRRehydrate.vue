@@ -13,7 +13,7 @@ import SelectDataset from "./SelectDatasetModal.vue";
 import {onMounted, ref} from "vue";
 import {AdrDatasetType} from "../../store/adr/adr";
 import {useStore} from "vuex";
-import {RootState} from "../../root";
+import type {RootState} from "../../root";
 
 defineProps({
     openModal: {

@@ -23,7 +23,7 @@
     import { defineComponent } from "vue";
     import Modal from "../Modal.vue";
     import {mapActionByName, mapStateProps} from "../../utils";
-    import {LoadingState, LoadState} from "../../store/load/state";
+    import {LoadingState, type LoadState} from "../../store/load/state";
 
     export default defineComponent({
         name: "LoadErrorModal",

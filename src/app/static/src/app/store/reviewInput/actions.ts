@@ -1,11 +1,11 @@
-import {ActionContext, ActionTree} from 'vuex';
+import type {ActionContext, ActionTree} from 'vuex';
 import {api} from "../../apiService";
-import {ReviewInputState} from "./reviewInput";
+import type {ReviewInputState} from "./reviewInput";
 import {ReviewInputMutation} from "./mutations";
-import {ReviewInputDataset} from "../../types";
-import {RootState} from "../../root";
+import type {ReviewInputDataset} from "../../types";
+import type {RootState} from "../../root";
 import {commitPlotDefaultSelections, filtersAfterUseShapeRegions} from "../plotSelections/utils";
-import {InputComparisonResponse, InputPopulationMetadataResponse} from "../../generated";
+import type {InputComparisonResponse, InputPopulationMetadataResponse} from "../../generated";
 
 export interface ReviewInputActions {
     getDataset: (store: ActionContext<ReviewInputState, RootState>, payload: getDatasetPayload) => void

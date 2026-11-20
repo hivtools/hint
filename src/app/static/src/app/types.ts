@@ -1,6 +1,6 @@
-import {Payload} from "vuex";
-import {DownloadStatusResponse, Error, FilterOption, VersionInfo, Warning} from "./generated";
-import {Language} from "./store/translations/locales";
+import type {Payload} from "vuex";
+import type {DownloadStatusResponse, Error, FilterOption, VersionInfo, Warning} from "./generated";
+import type {Language} from "./store/translations/locales";
 
 export interface PayloadWithType<T> extends Payload {
     payload: T

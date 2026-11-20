@@ -1,7 +1,7 @@
-import {CalibrateMetadataResponse} from "../../generated";
-import {Commit} from "vuex";
-import {initialScaleSettings, Scale, ScaleSettings} from "./plotState";
-import {Dict} from "../../types";
+import type {CalibrateMetadataResponse} from "../../generated";
+import type {Commit} from "vuex";
+import {initialScaleSettings, Scale, type ScaleSettings} from "./plotState";
+import type {Dict} from "../../types";
 import {PlotStateMutations} from "./mutations";
 
 export const commitInitialScaleSelections = (

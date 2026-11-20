@@ -14,7 +14,7 @@
 <script lang="ts">
     import {mapActionByName, mapStateProp} from "../../utils";
     import DropDown from "./DropDown.vue";
-    import { RootState } from "../../root";
+    import type { RootState } from "../../root";
     import { defineComponent } from "vue";
 
     export default defineComponent({

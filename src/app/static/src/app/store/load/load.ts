@@ -1,8 +1,8 @@
 import {actions} from "./actions";
 import {mutations} from "./mutations";
-import {Module} from "vuex";
-import {RootState} from "../../root";
-import {initialLoadState, LoadState} from "./state";
+import type {Module} from "vuex";
+import type {RootState} from "../../root";
+import {initialLoadState, type LoadState} from "./state";
 
 const namespaced = true;
 

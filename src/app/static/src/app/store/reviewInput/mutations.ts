@@ -1,7 +1,7 @@
-import {MutationTree} from 'vuex';
-import {ReviewInputState} from "./reviewInput";
-import {ReviewInputDataset, PayloadWithType} from "../../types";
-import {Error, InputComparisonResponse, InputPopulationMetadataResponse, Warning} from "../../generated";
+import type {MutationTree} from 'vuex';
+import type {ReviewInputState} from "./reviewInput";
+import type {ReviewInputDataset, PayloadWithType} from "../../types";
+import type {Error, InputComparisonResponse, InputPopulationMetadataResponse, Warning} from "../../generated";
 
 export enum ReviewInputMutation {
     SetDataset = "SetDataset",

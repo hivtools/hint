@@ -1,7 +1,7 @@
 // Custom ChartJS plugin for drawing stepped national population outline on input population pyramid plots.
 // Visible when "Population proportion" is selected as the plot type for population pyramids.
 
-import { PopulationChartDataset } from "../../../store/plotSelections/plotSelections";
+import type { PopulationChartDataset } from "../../../store/plotSelections/plotSelections";
 
 export const OutlinePlugin = {
     id: "outlinePlugin",

@@ -35,10 +35,10 @@
     import Modal from "../Modal.vue";
     import {mapMutationByName, mapStateProps} from "../../utils";
     import UploadProgress from "./UploadProgress.vue";
-    import {LoadState} from "../../store/load/state";
+    import type {LoadState} from "../../store/load/state";
     import LoadErrorModal from "./LoadErrorModal.vue";
     import ProjectsMixin from "../projects/ProjectsMixin";
-    import { PropType, defineComponent } from "vue";
+    import { type PropType, defineComponent } from "vue";
 
     export default defineComponent({
         extends: ProjectsMixin,

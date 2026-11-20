@@ -1,11 +1,11 @@
-import {ActionContext, ActionTree} from 'vuex';
+import type {ActionContext, ActionTree} from 'vuex';
 import {api} from "../../apiService";
-import {MetadataState} from "./metadata";
+import type {MetadataState} from "./metadata";
 import {MetadataMutations} from "./mutations";
 import { FileType } from '../surveyAndProgram/surveyAndProgram';
 import { commitPlotDefaultSelections, filtersAfterUseShapeRegions } from '../plotSelections/utils';
-import { ReviewInputFilterMetadataResponse } from '../../generated';
-import { RootState } from '../../root';
+import type { ReviewInputFilterMetadataResponse } from '../../generated';
+import type { RootState } from '../../root';
 import { commitInitialScaleSelections } from '../plotState/utils';
 import { ReviewInputMutation } from '../reviewInput/mutations';
 

@@ -1,10 +1,10 @@
-import {SurveyAndProgramState} from "../../app/store/surveyAndProgram/surveyAndProgram";
+import type {SurveyAndProgramState} from "../../app/store/surveyAndProgram/surveyAndProgram";
 import {getters as surveyAndProgramGetters} from "../../app/store/surveyAndProgram/getters";
 import {mutations, SurveyAndProgramMutation} from "../../app/store/surveyAndProgram/mutations";
 import {mockError, mockRootState, mockSurveyAndProgramState, mockSurveyResponse, mockWarning} from "../mocks";
 
-import {Module} from "vuex";
-import {RootState} from "../../app/root";
+import type {Module} from "vuex";
+import type {RootState} from "../../app/root";
 import {expectAllMutationsDefined} from "../testHelpers";
 
 describe("Survey and programme mutations", () => {

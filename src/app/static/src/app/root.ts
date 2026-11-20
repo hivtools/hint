@@ -1,47 +1,47 @@
-import {MutationPayload, Store, StoreOptions} from "vuex";
-import {baseline, BaselineState, initialBaselineState} from "./store/baseline/baseline";
-import {projects, initialProjectsState, ProjectsState} from "./store/projects/projects";
-import {initialMetadataState, metadata, MetadataState} from "./store/metadata/metadata";
+import type {MutationPayload, Store, StoreOptions} from "vuex";
+import {baseline, type BaselineState, initialBaselineState} from "./store/baseline/baseline";
+import {projects, initialProjectsState, type ProjectsState} from "./store/projects/projects";
+import {initialMetadataState, metadata, type MetadataState} from "./store/metadata/metadata";
 import {
     initialSurveyAndProgramState,
     surveyAndProgram,
-    SurveyAndProgramState,
+    type SurveyAndProgramState,
 } from "./store/surveyAndProgram/surveyAndProgram";
-import {initialModelRunState, modelRun, ModelRunState} from "./store/modelRun/modelRun";
-import {initialStepperState, stepper, StepperState} from "./store/stepper/stepper";
-import {initialLoadState, LoadState} from "./store/load/state";
+import {initialModelRunState, modelRun, type ModelRunState} from "./store/modelRun/modelRun";
+import {initialStepperState, stepper, type StepperState} from "./store/stepper/stepper";
+import {initialLoadState, type LoadState} from "./store/load/state";
 import {load} from "./store/load/load";
-import {initialModelOutputState, modelOutput, ModelOutputState} from "./store/modelOutput/modelOutput";
+import {initialModelOutputState, modelOutput, type ModelOutputState} from "./store/modelOutput/modelOutput";
 import {localStorageManager} from "./localStorageManager";
 import {actions} from "./store/root/actions";
 import {mutations, RootMutation} from "./store/root/mutations";
 import {getters} from "./store/root/getters";
-import {initialModelOptionsState, modelOptions, ModelOptionsState} from "./store/modelOptions/modelOptions";
+import {initialModelOptionsState, modelOptions, type ModelOptionsState} from "./store/modelOptions/modelOptions";
 import {ModelOptionsMutation, ModelOptionsUpdates} from "./store/modelOptions/mutations";
-import {SurveyAndProgramMutation, SurveyAndProgramUpdates} from "./store/surveyAndProgram/mutations";
-import {BaselineDatasetUpdates, BaselineMutation, BaselineUpdates} from "./store/baseline/mutations";
+import {type SurveyAndProgramMutation, SurveyAndProgramUpdates} from "./store/surveyAndProgram/mutations";
+import {BaselineDatasetUpdates, type BaselineMutation, BaselineUpdates} from "./store/baseline/mutations";
 import {stripNamespace} from "./utils";
-import {errors, ErrorsState, initialErrorsState} from "./store/errors/errors";
+import {errors, type ErrorsState, initialErrorsState} from "./store/errors/errors";
 import {Language} from "./store/translations/locales";
-import {modelCalibrate, initialModelCalibrateState, ModelCalibrateState} from "./store/modelCalibrate/modelCalibrate";
-import {initialHintrVersionState, hintrVersion, HintrVersionState} from "./store/hintrVersion/hintrVersion";
+import {modelCalibrate, initialModelCalibrateState, type ModelCalibrateState} from "./store/modelCalibrate/modelCalibrate";
+import {initialHintrVersionState, hintrVersion, type HintrVersionState} from "./store/hintrVersion/hintrVersion";
 import {currentHintVersion} from "./hintVersion";
-import {ModelRunMutation, ModelRunUpdates} from "./store/modelRun/mutations";
-import {adr, ADRState, initialADRState} from "./store/adr/adr";
-import {adrUpload, ADRUploadState, initialADRUploadState} from "./store/adrUpload/adrUpload";
+import {type ModelRunMutation, ModelRunUpdates} from "./store/modelRun/mutations";
+import {adr, type ADRState, initialADRState} from "./store/adr/adr";
+import {adrUpload, type ADRUploadState, initialADRUploadState} from "./store/adrUpload/adrUpload";
 import {
     downloadResults,
-    DownloadResultsState,
+    type DownloadResultsState,
     initialDownloadResultsState
 } from "./store/downloadResults/downloadResults";
-import {ModelCalibrateMutation, ModelCalibrateUpdates} from "./store/modelCalibrate/mutations";
-import {initialReviewInputState, reviewInput, ReviewInputState} from "./store/reviewInput/reviewInput";
-import {Warning} from "./generated";
+import {type ModelCalibrateMutation, ModelCalibrateUpdates} from "./store/modelCalibrate/mutations";
+import {initialReviewInputState, reviewInput, type ReviewInputState} from "./store/reviewInput/reviewInput";
+import type {Warning} from "./generated";
 import {DownloadResultsMutation} from "./store/downloadResults/mutations";
-import { initialPlotSelectionsState, PlotSelectionsState, plotSelections } from "./store/plotSelections/plotSelections";
-import { initialPlotDataState, PlotDataState, plotData } from "./store/plotData/plotData";
-import { initialPlotState, PlotState, plotState } from "./store/plotState/plotState";
-import {TranslatableState} from "./types";
+import { initialPlotSelectionsState, type PlotSelectionsState, plotSelections } from "./store/plotSelections/plotSelections";
+import { initialPlotDataState, type PlotDataState, plotData } from "./store/plotData/plotData";
+import { initialPlotState, type PlotState, plotState } from "./store/plotState/plotState";
+import type {TranslatableState} from "./types";
 
 export interface RootState extends TranslatableState {
     version: string,

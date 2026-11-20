@@ -1,8 +1,8 @@
-import {MutationTree} from 'vuex';
-import {SAPWarnings, SurveyAndProgramState} from "./surveyAndProgram";
-import {PayloadWithType} from "../../types";
-import {AncResponse, ProgrammeResponse, SurveyResponse, Error, Warning} from "../../generated";
-import {ReadyState} from "../../root";
+import type {MutationTree} from 'vuex';
+import type {SAPWarnings, SurveyAndProgramState} from "./surveyAndProgram";
+import type {PayloadWithType} from "../../types";
+import type {AncResponse, ProgrammeResponse, SurveyResponse, Error, Warning} from "../../generated";
+import type {ReadyState} from "../../root";
 
 export enum SurveyAndProgramMutation {
     SurveyUpdated = "SurveyUpdated",

@@ -1,9 +1,9 @@
-import {ActionContext} from "vuex";
+import type {ActionContext} from "vuex";
 import i18next from "i18next";
 import {LanguageMutation} from "./mutations";
-import {Language} from "../translations/locales";
-import {TranslatableState} from "../../types";
-import {RootState} from "../../root";
+import type {Language} from "../translations/locales";
+import type {TranslatableState} from "../../types";
+import type {RootState} from "../../root";
 
 export async function changeLanguage<T extends TranslatableState>({commit}: ActionContext<T, T>, lang: Language) {
     await i18next.changeLanguage(lang);

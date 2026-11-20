@@ -1,4 +1,4 @@
-import {MetadataState} from "./metadata";
+import type {MetadataState} from "./metadata";
 
 export const getters = {
     timeSeriesPlotTypeLabel: (state: MetadataState): Map<string, string> | undefined => {

@@ -17,7 +17,7 @@ import {SurveyAndProgramMutation} from "../../app/store/surveyAndProgram/mutatio
 import {expectEqualsFrozen} from "../testHelpers";
 import {FileType} from "../../app/store/surveyAndProgram/surveyAndProgram";
 import {expectValidAdrImportPayload} from "../baseline/actions.test";
-import {Mock} from "vitest";
+import type {Mock} from "vitest";
 
 const rootState = mockRootState();
 const mockFormData = {

@@ -1,9 +1,9 @@
-import { Commit } from "vuex";
-import { RootState } from "../../root";
-import { FilterSelection, OutputPlotName } from "../plotSelections/plotSelections";
-import { PlotSelectionUpdate, PlotSelectionsMutations } from "../plotSelections/mutations";
+import type { Commit } from "vuex";
+import type { RootState } from "../../root";
+import type { FilterSelection, OutputPlotName } from "../plotSelections/plotSelections";
+import { type PlotSelectionUpdate, PlotSelectionsMutations } from "../plotSelections/mutations";
 import { api } from "../../apiService";
-import {
+import type {
     CalibrateDataResponse,
     CalibratePlotData,
     ComparisonPlotData,
@@ -14,15 +14,15 @@ import {
     PopulationResponseData,
     SurveyResponse
 } from "../../generated";
-import { PlotDataMutations, PlotDataUpdate } from "./mutations";
+import { PlotDataMutations, type PlotDataUpdate } from "./mutations";
 import { ReviewInputMutation } from "../reviewInput/mutations";
-import { ReviewInputDataset } from "../../types";
+import type { ReviewInputDataset } from "../../types";
 import { getMetadataFromPlotName } from "../plotSelections/actions";
-import { InputTimeSeriesKey } from "./plotData";
-import { Dict } from "@reside-ic/vue-next-dynamic-form";
+import type { InputTimeSeriesKey } from "./plotData";
+import type { Dict } from "@reside-ic/vue-next-dynamic-form";
 import {aggregatePopulation} from "./aggregate";
-import {AreaProperties} from "../baseline/baseline";
-import {InputComparisonPlotData} from "../reviewInput/reviewInput";
+import type {AreaProperties} from "../baseline/baseline";
+import type {InputComparisonPlotData} from "../reviewInput/reviewInput";
 
 type FilteredDataContext = {
     commit: Commit,

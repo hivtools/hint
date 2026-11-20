@@ -7,14 +7,14 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, PropType } from 'vue';
+import { computed, defineComponent, type PropType } from 'vue';
 import TableDisplay from './TableDisplay.vue';
 import { useStore } from 'vuex';
-import { RootState } from '../../../root';
-import {FilterOption, TableMetadata} from '../../../generated';
-import { FilterSelection, PlotName } from "../../../store/plotSelections/plotSelections";
-import {getTableValues, TableHeaderDef} from "./utils";
-import {TableData} from "../../../store/plotData/plotData";
+import type { RootState } from '../../../root';
+import type {FilterOption, TableMetadata} from '../../../generated';
+import type { FilterSelection, PlotName } from "../../../store/plotSelections/plotSelections";
+import {getTableValues, type TableHeaderDef} from "./utils";
+import type {TableData} from "../../../store/plotData/plotData";
 
 export default defineComponent({
     components: {

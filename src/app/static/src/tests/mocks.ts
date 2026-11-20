@@ -1,9 +1,9 @@
 import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
-import {BaselineState, initialBaselineState} from "../app/store/baseline/baseline";
-import {initialSurveyAndProgramState, SurveyAndProgramState} from "../app/store/surveyAndProgram/surveyAndProgram"
+import {type BaselineState, initialBaselineState} from "../app/store/baseline/baseline";
+import {initialSurveyAndProgramState, type SurveyAndProgramState} from "../app/store/surveyAndProgram/surveyAndProgram"
 
-import {
+import type {
     AncResponse,
     CalibrateDataResponse,
     CalibrateMetadataResponse,
@@ -28,15 +28,15 @@ import {
     PopulationResponseData,
     InputPopulationMetadataResponse
 } from "../app/generated";
-import {initialModelRunState, ModelRunState} from "../app/store/modelRun/modelRun";
-import {emptyState, RootState} from "../app/root";
-import {initialStepperState, StepperState} from "../app/store/stepper/stepper";
-import {initialMetadataState, MetadataState, PlotMetadataFrame} from "../app/store/metadata/metadata";
-import {initialLoadState, LoadState} from "../app/store/load/state";
-import {initialModelOptionsState, ModelOptionsState} from "../app/store/modelOptions/modelOptions";
-import {initialModelOutputState, ModelOutputState} from "../app/store/modelOutput/modelOutput";
-import {ErrorsState, initialErrorsState} from "../app/store/errors/errors";
-import {
+import {initialModelRunState, type ModelRunState} from "../app/store/modelRun/modelRun";
+import {emptyState, type RootState} from "../app/root";
+import {initialStepperState, type StepperState} from "../app/store/stepper/stepper";
+import {initialMetadataState, type MetadataState, type PlotMetadataFrame} from "../app/store/metadata/metadata";
+import {initialLoadState, type LoadState} from "../app/store/load/state";
+import {initialModelOptionsState, type ModelOptionsState} from "../app/store/modelOptions/modelOptions";
+import {initialModelOutputState, type ModelOutputState} from "../app/store/modelOutput/modelOutput";
+import {type ErrorsState, initialErrorsState} from "../app/store/errors/errors";
+import type {
     Dataset,
     DatasetResource,
     DownloadIndicatorDataset,
@@ -44,22 +44,22 @@ import {
     ReviewInputDataset,
     Release
 } from "../app/types";
-import {initialProjectsState, ProjectsState} from "../app/store/projects/projects";
-import {initialModelCalibrateState, ModelCalibrateState} from "../app/store/modelCalibrate/modelCalibrate";
-import { HintrVersionState, initialHintrVersionState } from "../app/store/hintrVersion/hintrVersion";
-import {ADRDatasetState, ADRState, initialADRState} from "../app/store/adr/adr";
-import {ADRUploadState, initialADRUploadState} from "../app/store/adrUpload/adrUpload";
-import {DownloadResultsState, initialDownloadResultsState} from "../app/store/downloadResults/downloadResults";
-import {ReviewInputState, initialReviewInputState} from "../app/store/reviewInput/reviewInput";
-import {DynamicControlType, DynamicFormMeta} from "@reside-ic/vue-next-dynamic-form";
+import {initialProjectsState, type ProjectsState} from "../app/store/projects/projects";
+import {initialModelCalibrateState, type ModelCalibrateState} from "../app/store/modelCalibrate/modelCalibrate";
+import { type HintrVersionState, initialHintrVersionState } from "../app/store/hintrVersion/hintrVersion";
+import {type ADRDatasetState, type ADRState, initialADRState} from "../app/store/adr/adr";
+import {type ADRUploadState, initialADRUploadState} from "../app/store/adrUpload/adrUpload";
+import {type DownloadResultsState, initialDownloadResultsState} from "../app/store/downloadResults/downloadResults";
+import {type ReviewInputState, initialReviewInputState} from "../app/store/reviewInput/reviewInput";
+import type {DynamicControlType, DynamicFormMeta} from "@reside-ic/vue-next-dynamic-form";
 import {
-    ControlSelection,
-    FilterSelection,
+    type ControlSelection,
+    type FilterSelection,
     initialPlotSelectionsState,
-    PlotSelectionsState
+    type PlotSelectionsState
 } from "../app/store/plotSelections/plotSelections";
-import {PlotDataState, initialPlotDataState, PopulationPyramidData} from "../app/store/plotData/plotData";
-import { PlotState, initialPlotState } from "../app/store/plotState/plotState";
+import {type PlotDataState, initialPlotDataState, type PopulationPyramidData} from "../app/store/plotData/plotData";
+import { type PlotState, initialPlotState } from "../app/store/plotState/plotState";
 
 export const mockAxios = new MockAdapter(axios);
 

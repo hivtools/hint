@@ -1,8 +1,8 @@
-import baseConfig from "../vitest.config.mts";
-import { mergeConfig, defineConfig } from "vitest/config";
+import {defineConfig, mergeConfig} from "vitest/config";
+import vitestConfig from "../vitest.config.ts";
 
-export default mergeConfig(
-    baseConfig,
+export default defineConfig(configEnv => mergeConfig(
+    vitestConfig(configEnv),
     defineConfig({
         test: {
             include: ["**/adr-dataset.itest.ts"],
@@ -10,4 +10,4 @@ export default mergeConfig(
             setupFiles: ["./src/tests/setup.integration.ts"]
         }
     })
-);
+));

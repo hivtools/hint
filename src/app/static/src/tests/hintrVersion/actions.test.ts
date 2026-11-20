@@ -1,6 +1,6 @@
 import {mockAxios, mockRootState, mockSuccess} from "../mocks";
 import {actions} from '../../app/store/hintrVersion/actions';
-import {Mock} from "vitest";
+import type {Mock} from "vitest";
 
 const rootState = mockRootState();
 

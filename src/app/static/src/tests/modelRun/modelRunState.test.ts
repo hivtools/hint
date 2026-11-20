@@ -12,7 +12,7 @@ const existingState = {
     baseline: {}
 } as any;
 
-import {modelRun, ModelRunState} from "../../app/store/modelRun/modelRun";
+import {modelRun, type ModelRunState} from "../../app/store/modelRun/modelRun";
 
 it("loads initial state from existingState, but resets ready to false", () => {
     const state = modelRun(existingState).state as ModelRunState;

@@ -12,8 +12,8 @@
 
     import {BProgress, BProgressBar} from "bootstrap-vue-next";
     import Tick from "../Tick.vue";
-    import {ProgressPhase} from "../../generated";
-    import { PropType, defineComponent } from "vue";
+    import type {ProgressPhase} from "../../generated";
+    import { type PropType, defineComponent } from "vue";
 
     export default defineComponent({
         props: {

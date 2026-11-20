@@ -1,7 +1,7 @@
-import {MutationTree} from "vuex";
-import {DownloadResultsState} from "./downloadResults";
-import {PayloadWithType} from "../../types";
-import {DownloadStatusResponse, DownloadSubmitResponse, Error} from "../../generated";
+import type {MutationTree} from "vuex";
+import type {DownloadResultsState} from "./downloadResults";
+import type {PayloadWithType} from "../../types";
+import type {DownloadStatusResponse, DownloadSubmitResponse, Error} from "../../generated";
 import { DownloadType } from "./downloadConfig";
 
 export enum DownloadResultsMutation {

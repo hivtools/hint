@@ -26,7 +26,7 @@
 
 <script lang="ts">
     import {mapActionByName, mapGetterByName, mapStateProps} from "../../utils";
-    import {ProjectsState} from "../../store/projects/projects";
+    import type {ProjectsState} from "../../store/projects/projects";
     import ErrorAlert from "../ErrorAlert.vue";
     import LoadingSpinner from "../LoadingSpinner.vue";
     import ProjectHistory from "./ProjectHistory.vue";

@@ -11,17 +11,17 @@
 </template>
 
 <script lang="ts">
-import {ref, defineComponent, computed, PropType} from "vue";
+import {ref, defineComponent, computed, type PropType} from "vue";
 import { AgGridVue } from "ag-grid-vue3";
-import { AgGridEvent } from "ag-grid-community";
+import type { AgGridEvent } from "ag-grid-community";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
 import { useStore } from "vuex";
-import { RootState } from "../../../root";
+import type { RootState } from "../../../root";
 import { getIndicatorMetadata } from "../utils";
-import { IndicatorMetadata, TableMetadata } from "../../../generated";
-import {getColumnDefs, TableHeaderDef} from "./utils";
-import {PlotName} from "../../../store/plotSelections/plotSelections";
+import type { IndicatorMetadata, TableMetadata } from "../../../generated";
+import {getColumnDefs, type TableHeaderDef} from "./utils";
+import type {PlotName} from "../../../store/plotSelections/plotSelections";
 
 const defaultColDef = {
     // Set the default filter type

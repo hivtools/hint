@@ -61,16 +61,16 @@
 </template>
 
 <script lang="ts">
-    import {Project} from "../../types";
+    import type {Project} from "../../types";
     import Modal from "../Modal.vue";
     import LoadingSpinner from "../LoadingSpinner.vue";
     import {mapActionByName, mapStatePropByName} from "../../utils";
     import i18next from "i18next";
-    import {Language} from "../../store/translations/locales";
+    import type {Language} from "../../store/translations/locales";
     import ErrorAlert from "../ErrorAlert.vue";
     import VueFeather from "vue-feather";
-    import { PropType, defineComponent } from "vue";
-import { Error } from "../../generated";
+    import { type PropType, defineComponent } from "vue";
+import type { Error } from "../../generated";
 
     interface RecipientEmail {
         value: string

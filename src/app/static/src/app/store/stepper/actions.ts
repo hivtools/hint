@@ -1,6 +1,6 @@
-import {ActionContext, ActionTree} from "vuex";
-import {StepperState} from "./stepper";
-import {RootState} from "../../root";
+import type {ActionContext, ActionTree} from "vuex";
+import type {StepperState} from "./stepper";
+import type {RootState} from "../../root";
 
 export interface StepperActions {
     jump: (store: ActionContext<StepperState, RootState>, step: number) => void,

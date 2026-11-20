@@ -1,4 +1,4 @@
-import Vuex, {ActionTree, Store} from "vuex";
+import Vuex, {type ActionTree, type Store} from "vuex";
 import {nextTick} from "vue";
 import {flushPromises} from "@vue/test-utils";
 import ADRInputDataset from "../../../app/components/adr/ADRInputDataset.vue";
@@ -17,23 +17,23 @@ import {
     mockRootState,
     mockShapeResponse
 } from "../../mocks";
-import {BaselineState} from "../../../app/store/baseline/baseline";
+import type {BaselineState} from "../../../app/store/baseline/baseline";
 import LoadingSpinner from "../../../app/components/LoadingSpinner.vue";
 import {BaselineMutation} from "../../../app/store/baseline/mutations";
 import {ADRMutation} from "../../../app/store/adr/mutations";
-import {BaselineActions} from "../../../app/store/baseline/actions";
-import {SurveyAndProgramActions} from "../../../app/store/surveyAndProgram/actions";
-import {ADRSchemas} from "../../../app/types";
+import type {BaselineActions} from "../../../app/store/baseline/actions";
+import type {SurveyAndProgramActions} from "../../../app/store/surveyAndProgram/actions";
+import type {ADRSchemas} from "../../../app/types";
 import VueFeather from "vue-feather";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {expectTranslatedWithStoreType, mountWithTranslate, shallowMountWithTranslate} from "../../testHelpers";
-import {AdrDatasetType, ADRState} from "../../../app/store/adr/adr";
+import {AdrDatasetType, type ADRState} from "../../../app/store/adr/adr";
 import ResetConfirmation from "../../../app/components/resetConfirmation/ResetConfirmation.vue";
 import HintTreeSelect from "../../../app/components/HintTreeSelect.vue";
 import {getters} from "../../../app/store/root/getters";
-import {Mock} from "vitest";
+import type {Mock} from "vitest";
 import SelectDatasetModal from "../../../app/components/adr/SelectDatasetModal.vue";
-import {RootState} from "../../../app/root";
+import type {RootState} from "../../../app/root";
 
 describe("ADR input dataset", () => {
 

@@ -33,7 +33,7 @@
 </template>
 
 <script lang="ts">
-    import {ModelRunState} from "../../store/modelRun/modelRun";
+    import type {ModelRunState} from "../../store/modelRun/modelRun";
     import Modal from "../Modal.vue";
     import Tick from "../Tick.vue";
     import {

@@ -1,7 +1,7 @@
-import {MutationTree} from "vuex";
-import {ProjectsState} from "./projects";
-import {CurrentProject, DatasetResource, PayloadWithType, Project, Version} from "../../types";
-import {Error} from "../../generated";
+import type {MutationTree} from "vuex";
+import type {ProjectsState} from "./projects";
+import type {CurrentProject, DatasetResource, PayloadWithType, Project, Version} from "../../types";
+import type {Error} from "../../generated";
 import {router} from "../../router";
 
 export enum ProjectsMutations {

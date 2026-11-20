@@ -6,7 +6,7 @@ import {emptyState} from "../../../app/root";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import LoadingSpinner from "../../../app/components/LoadingSpinner.vue";
 import {expectTranslated, mountWithTranslate, shallowMountWithTranslate} from "../../testHelpers";
-import {ProjectsState} from "../../../app/store/projects/projects";
+import type {ProjectsState} from "../../../app/store/projects/projects";
 import {mockProjectsState} from "../../mocks";
 import {mutations, ProjectsMutations} from "../../../app/store/projects/mutations";
 import ErrorAlert from "../../../app/components/ErrorAlert.vue";

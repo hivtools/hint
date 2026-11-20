@@ -10,10 +10,10 @@ import {
     mockSuccess
 } from "../mocks";
 import {actions} from "../../app/store/downloadResults/actions";
-import {DownloadStatusResponse} from "../../app/generated";
+import type {DownloadStatusResponse} from "../../app/generated";
 import {flushPromises} from "@vue/test-utils";
 import { DownloadType, downloadPostConfig } from "../../app/store/downloadResults/downloadConfig";
-import { DownloadResultsState } from "../../app/store/downloadResults/downloadResults";
+import type { DownloadResultsState } from "../../app/store/downloadResults/downloadResults";
 import { DownloadResultsMutation } from "../../app/store/downloadResults/mutations";
 
 const RunningStatusResponse: DownloadStatusResponse = {

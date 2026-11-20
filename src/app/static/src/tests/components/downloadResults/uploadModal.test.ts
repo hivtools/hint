@@ -16,10 +16,10 @@ import {
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {expectTranslated, mountWithTranslate} from "../../testHelpers";
 import {nextTick} from 'vue';
-import {Dict} from "../../../app/types";
+import type {Dict} from "../../../app/types";
 import {Language} from "../../../app/store/translations/locales";
-import {DownloadResultsState} from "../../../app/store/downloadResults/downloadResults";
-import {MetadataState} from "../../../app/store/metadata/metadata";
+import type {DownloadResultsState} from "../../../app/store/downloadResults/downloadResults";
+import type {MetadataState} from "../../../app/store/metadata/metadata";
 import { DownloadType } from '../../../app/store/downloadResults/downloadConfig';
 
 describe(`uploadModal `, () => {

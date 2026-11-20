@@ -1,6 +1,6 @@
-import {Dict} from "../../types";
-import {PopulationResponseData} from "../../generated";
-import {AreaProperties} from "../baseline/baseline";
+import type {Dict} from "../../types";
+import type {PopulationResponseData} from "../../generated";
+import type {AreaProperties} from "../baseline/baseline";
 
 export const aggregatePopulation = (data: PopulationResponseData, areaLevel: number,
                                     areaIdToPropertiesMap: Dict<AreaProperties>,

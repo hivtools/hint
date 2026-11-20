@@ -36,9 +36,9 @@
 import {computed, defineComponent} from "vue";
 import FilterSet from "../plots/FilterSet.vue";
 import PlotControlSet from "../plots/PlotControlSet.vue";
-import {OutputPlotName, outputPlotNames} from "../../store/plotSelections/plotSelections";
+import {type OutputPlotName, outputPlotNames} from "../../store/plotSelections/plotSelections";
 import {useStore} from "vuex";
-import {RootState} from "../../root";
+import type {RootState} from "../../root";
 import { ModelOutputMutation } from "../../store/modelOutput/mutations";
 import Choropleth from "../plots/choropleth/Choropleth.vue";
 import Bubble from "../plots/bubble/Bubble.vue";

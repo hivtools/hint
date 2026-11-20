@@ -1,9 +1,9 @@
-import {ModelCalibrateState} from "./modelCalibrate";
+import type {ModelCalibrateState} from "./modelCalibrate";
 import {getMetadataFromPlotName} from "../plotSelections/actions";
-import {RootState} from "../../root";
-import {PlotName} from "../plotSelections/plotSelections";
-import {FilterOption, TableMetadata} from "../../generated";
-import {PlotMetadataFrame} from "../metadata/metadata";
+import type {RootState} from "../../root";
+import type {PlotName} from "../plotSelections/plotSelections";
+import type {FilterOption, TableMetadata} from "../../generated";
+import type {PlotMetadataFrame} from "../metadata/metadata";
 
 export const getters = {
     // For some filters we have an id in the filters which is different from that

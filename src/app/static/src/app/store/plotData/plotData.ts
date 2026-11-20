@@ -1,4 +1,4 @@
-import {
+import type {
     CalibrateDataResponse,
     CalibratePlotData,
     ComparisonPlotData,
@@ -6,9 +6,9 @@ import {
     InputTimeSeriesRow,
     PopulationResponseData
 } from "../../generated"
-import { PlotName, plotNames } from "../plotSelections/plotSelections"
+import { type PlotName, plotNames } from "../plotSelections/plotSelections"
 import { mutations } from "./mutations"
-import {InputComparisonPlotData} from "../reviewInput/reviewInput";
+import type {InputComparisonPlotData} from "../reviewInput/reviewInput";
 
 export type PopulationPyramidData = {
     data: PopulationResponseData;

@@ -1,10 +1,10 @@
-import axios, {AxiosError, AxiosResponse} from "axios";
+import axios, {type AxiosError, type AxiosResponse} from "axios";
 import {ErrorsMutation} from "./store/errors/mutations";
-import {Commit} from "vuex";
+import type {Commit} from "vuex";
 import {freezer, isHINTResponse, readStream} from "./utils";
-import {Error, Response} from "./generated";
+import type {Error, Response} from "./generated";
 import i18next from "i18next";
-import {GenericResponse, TranslatableState} from "./types";
+import type {GenericResponse, TranslatableState} from "./types";
 
 declare let appUrl: string;
 

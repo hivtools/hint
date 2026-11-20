@@ -48,13 +48,13 @@
 </template>
 
 <script lang="ts">
-    import {PropType, defineComponent} from "vue";
+    import {type PropType, defineComponent} from "vue";
     import Modal from "../Modal.vue";
     import {mapActionByName, mapGetterByName, mapStateProp} from "../../utils";
-    import {StepDescription} from "../../store/stepper/stepper";
+    import type {StepDescription} from "../../store/stepper/stepper";
     import LoadingSpinner from "../LoadingSpinner.vue";
-    import {ProjectsState} from "../../store/projects/projects";
-    import {ErrorsState} from "../../store/errors/errors";
+    import type {ProjectsState} from "../../store/projects/projects";
+    import type {ErrorsState} from "../../store/errors/errors";
 
     let uuid = 0;
 

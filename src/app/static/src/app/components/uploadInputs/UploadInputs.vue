@@ -99,11 +99,11 @@
 
 <script lang="ts">
     import {mapActions, mapGetters} from "vuex";
-    import {BaselineState} from "../../store/baseline/baseline";
+    import type {BaselineState} from "../../store/baseline/baseline";
     import ErrorAlert from "../ErrorAlert.vue";
     import LoadingSpinner from "../LoadingSpinner.vue";
     import ManageFile from "../files/ManageFile.vue";
-    import {SurveyAndProgramState} from "../../store/surveyAndProgram/surveyAndProgram";
+    import type {SurveyAndProgramState} from "../../store/surveyAndProgram/surveyAndProgram";
     import {getFormData, mapRootStateProps, mapStateProps} from "../../utils";
     import { defineComponent } from "vue";
     import VueFeather from "vue-feather";

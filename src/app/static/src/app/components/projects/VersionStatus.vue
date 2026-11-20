@@ -11,7 +11,7 @@
 </template>
 
 <script lang="ts">
-    import {ProjectsState} from "../../store/projects/projects";
+    import type {ProjectsState} from "../../store/projects/projects";
     import {mapStateProp} from "../../utils";
     import VueFeather from "vue-feather";
     import moment from 'moment';

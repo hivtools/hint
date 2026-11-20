@@ -1,5 +1,5 @@
 import {flushPromises, shallowMount} from '@vue/test-utils';
-import Vuex, {Store} from 'vuex';
+import Vuex, {type Store} from 'vuex';
 import {nextTick} from 'vue';
 import {
     mockAxios,
@@ -12,14 +12,14 @@ import {
 } from "../../mocks";
 import {actions} from "../../../app/store/modelRun/actions";
 import {mutations} from "../../../app/store/modelRun/mutations";
-import {modelRunGetters, ModelRunState} from "../../../app/store/modelRun/modelRun";
+import {modelRunGetters, type ModelRunState} from "../../../app/store/modelRun/modelRun";
 import {getters as stepperGetters} from "../../../app/store/stepper/getters";
 import {getters as rootGetters} from "../../../app/store/root/getters";
-import {emptyState, RootState} from "../../../app/root";
+import {emptyState, type RootState} from "../../../app/root";
 import ModelRun from "../../../app/components/modelRun/ModelRun.vue";
 import Modal from "../../../app/components/Modal.vue";
 import Tick from "../../../app/components/Tick.vue";
-import {ModelStatusResponse} from "../../../app/generated";
+import type {ModelStatusResponse} from "../../../app/generated";
 import ErrorAlert from "../../../app/components/ErrorAlert.vue";
 import LoadingSpinner from "../../../app/components/LoadingSpinner.vue";
 import ProgressBar from "../../../app/components/progress/ProgressBar.vue";

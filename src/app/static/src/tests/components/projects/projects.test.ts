@@ -1,4 +1,4 @@
-import {ProjectsState} from "../../../app/store/projects/projects";
+import type {ProjectsState} from "../../../app/store/projects/projects";
 import Vuex from "vuex";
 import {mockProjectsState} from "../../mocks";
 import Projects from "../../../app/components/projects/Projects.vue";

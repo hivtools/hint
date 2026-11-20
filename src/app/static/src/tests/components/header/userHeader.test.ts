@@ -1,8 +1,8 @@
-import Vuex, {Store} from "vuex";
+import Vuex, {type Store} from "vuex";
 import UserHeader from "../../../app/components/header/UserHeader.vue";
 import LanguageMenu from "../../../app/components/header/LanguageMenu.vue";
 import HintrVersionMenu from "../../../app/components/header/HintrVersionMenu.vue";
-import {RootState} from "../../../app/root";
+import type {RootState} from "../../../app/root";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {getters} from "../../../app/store/root/getters";
 import {mockRootState} from "../../mocks";

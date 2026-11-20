@@ -1,9 +1,9 @@
-import {ActionContext, ActionTree, Dispatch} from "vuex";
-import {RootState} from "../../root";
-import {DownloadResultsState} from "./downloadResults";
-import {api, ResponseWithType} from "../../apiService";
+import type {ActionContext, ActionTree, Dispatch} from "vuex";
+import type {RootState} from "../../root";
+import type {DownloadResultsState} from "./downloadResults";
+import {api, type ResponseWithType} from "../../apiService";
 import {DownloadResultsMutation} from "./mutations";
-import {ModelStatusResponse} from "../../generated";
+import type {ModelStatusResponse} from "../../generated";
 import { DownloadType, downloadPostConfig } from "./downloadConfig";
 
 export interface DownloadResultsActions {

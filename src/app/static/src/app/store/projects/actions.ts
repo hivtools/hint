@@ -1,14 +1,14 @@
 import {RootMutation} from "../root/mutations";
 import {ErrorsMutation} from "../errors/mutations";
 import {DownloadResultsMutation} from "../downloadResults/mutations";
-import {ActionContext, ActionTree} from "vuex";
-import {ProjectsState} from "./projects";
-import {RootState} from "../../root";
+import type {ActionContext, ActionTree} from "vuex";
+import type {ProjectsState} from "./projects";
+import type {RootState} from "../../root";
 import {api} from "../../apiService";
 import {ProjectsMutations} from "./mutations";
 import {serialiseState} from "../../localStorageManager";
 import qs from "qs";
-import {CurrentProject, Project, VersionDetails, VersionIds} from "../../types";
+import type {CurrentProject, Project, VersionDetails, VersionIds} from "../../types";
 import {ModelCalibrateMutation} from "../modelCalibrate/mutations";
 import {ModelRunMutation} from "../modelRun/mutations";
 

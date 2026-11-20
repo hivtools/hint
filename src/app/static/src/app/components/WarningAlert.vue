@@ -10,9 +10,9 @@
 </template>
 
 <script lang="ts">
-    import { PropType, defineComponent } from "vue";
-    import { Warning as WarningType } from "../generated";
-    import { Dict } from "../types";
+    import { type PropType, defineComponent } from "vue";
+    import type { Warning as WarningType } from "../generated";
+    import type { Dict } from "../types";
     import Warning from "./Warning.vue"
 
     export default defineComponent({

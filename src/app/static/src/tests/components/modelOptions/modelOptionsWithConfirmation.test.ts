@@ -1,11 +1,11 @@
-import Vuex, {ActionTree, MutationTree} from "vuex";
+import Vuex, {type ActionTree, type MutationTree} from "vuex";
 import {nextTick} from "vue";
 
 import ModelOptions from "../../../app/components/modelOptions/ModelOptions.vue";
 import {ModelOptionsMutation} from "../../../app/store/modelOptions/mutations";
-import {ModelOptionsState} from "../../../app/store/modelOptions/modelOptions";
-import {ModelOptionsActions} from "../../../app/store/modelOptions/actions";
-import {RootState} from "../../../app/root";
+import type {ModelOptionsState} from "../../../app/store/modelOptions/modelOptions";
+import type {ModelOptionsActions} from "../../../app/store/modelOptions/actions";
+import type {RootState} from "../../../app/root";
 import {mockModelOptionsState, mockRootState} from "../../mocks";
 import {DynamicForm} from "@reside-ic/vue-next-dynamic-form";
 import ResetConfirmation from "../../../app/components/resetConfirmation/ResetConfirmation.vue";

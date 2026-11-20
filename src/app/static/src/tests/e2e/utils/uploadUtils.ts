@@ -1,4 +1,4 @@
-import {Locator, Page, Request, expect} from "@playwright/test";
+import {type Locator, type Page, type Request, expect} from "@playwright/test";
 import {translate} from "./translationUtils";
 
 const uploadFileTypes = {

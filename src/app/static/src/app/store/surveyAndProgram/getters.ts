@@ -1,4 +1,4 @@
-import {SurveyAndProgramState} from "./surveyAndProgram";
+import type {SurveyAndProgramState} from "./surveyAndProgram";
 
 export const getters = {
     complete: (state: SurveyAndProgramState) => {

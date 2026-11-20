@@ -14,13 +14,13 @@ import {Bar} from 'vue-chartjs';
 import {BarElement, CategoryScale, Chart as ChartJS, Legend, LinearScale, Title, Tooltip} from 'chart.js';
 import annotationPlugin from "chartjs-plugin-annotation";
 import {useStore} from "vuex";
-import {RootState} from "../../../root";
-import {computed, defineComponent, PropType, ref, watch} from "vue";
-import {PlotData} from "../../../store/plotData/plotData";
-import {BarChartData, buildTooltipCallback, getErrorLineAnnotations,} from "./utils";
+import type {RootState} from "../../../root";
+import {computed, defineComponent, type PropType, ref, watch} from "vue";
+import type {PlotData} from "../../../store/plotData/plotData";
+import {type BarChartData, buildTooltipCallback, getErrorLineAnnotations,} from "./utils";
 import {formatOutput, getIndicatorMetadata} from "../utils";
-import {IndicatorMetadata} from "../../../generated";
-import {PlotName} from "../../../store/plotSelections/plotSelections";
+import type {IndicatorMetadata} from "../../../generated";
+import type {PlotName} from "../../../store/plotSelections/plotSelections";
 
 ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, annotationPlugin);
 

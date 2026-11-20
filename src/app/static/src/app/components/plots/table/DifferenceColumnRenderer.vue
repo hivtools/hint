@@ -11,8 +11,8 @@
 </template>
 
 <script setup lang="ts">
-import {ICellRendererParams} from "ag-grid-community";
-import {computed, PropType} from "vue";
+import type {ICellRendererParams} from "ag-grid-community";
+import {computed, type PropType} from "vue";
 import {DIFFERENCE_POSITIVE_COLOR, DIFFERENCE_NEGATIVE_COLOR} from "./utils";
 
 const props = defineProps({

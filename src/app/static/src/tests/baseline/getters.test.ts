@@ -1,4 +1,4 @@
-import {AreaProperties, baselineGetters} from "../../app/store/baseline/baseline";
+import {type AreaProperties, baselineGetters} from "../../app/store/baseline/baseline";
 import {
     mockADRDatasetState,
     mockADRDataState,
@@ -9,8 +9,8 @@ import {
     mockRootState,
     mockShapeResponse
 } from "../mocks";
-import {ShapeResponse} from "../../app/generated";
-import {Dict} from "../../app/types";
+import type {ShapeResponse} from "../../app/generated";
+import type {Dict} from "../../app/types";
 import {AdrDatasetType} from "../../app/store/adr/adr";
 
 it("is complete iff all files are present", () => {

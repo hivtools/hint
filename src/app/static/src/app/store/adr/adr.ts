@@ -1,9 +1,9 @@
-import {Module} from "vuex";
-import {Error as ErrorType} from "../../generated";
-import {ADRSchemas} from "../../types";
+import type {Module} from "vuex";
+import type {Error as ErrorType} from "../../generated";
+import type {ADRSchemas} from "../../types";
 import {actions} from "./actions";
 import {mutations} from "./mutations";
-import {RootState} from "../../root";
+import type {RootState} from "../../root";
 
 export enum AdrDatasetType {
     Input = "input",

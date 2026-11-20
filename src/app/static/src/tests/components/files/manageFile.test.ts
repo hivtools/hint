@@ -4,11 +4,11 @@ import FileUpload from "../../../app/components/files/FileUpload.vue";
 import ManageFile from "../../../app/components/files/ManageFile.vue";
 import {mockError} from "../../mocks";
 import LoadingSpinner from "../../../app/components/LoadingSpinner.vue";
-import Vuex, {Store} from "vuex";
+import Vuex, {type Store} from "vuex";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {expectTranslated, expectTranslatedWithStoreType, shallowMountWithTranslate} from "../../testHelpers";
 import {nextTick} from 'vue';
-import {emptyState, RootState,} from "../../../app/root";
+import {emptyState, type RootState,} from "../../../app/root";
 
 describe("Manage file component", () => {
 

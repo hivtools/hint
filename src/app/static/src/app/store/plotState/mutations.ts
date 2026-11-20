@@ -1,6 +1,6 @@
-import { MutationTree } from "vuex";
-import { PayloadWithType } from "../../types";
-import {PlotState, Scale, ScaleSelections, ScaleSettings} from "./plotState";
+import type { MutationTree } from "vuex";
+import type { PayloadWithType } from "../../types";
+import {type PlotState, Scale, type ScaleSelections, type ScaleSettings} from "./plotState";
 import {rawDeepClone} from "../../utils";
 
 export interface UpdateScale {

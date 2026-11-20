@@ -1,6 +1,6 @@
-import { ActionContext } from "vuex";
-import { DownloadResultsState } from "./downloadResults";
-import { RootState } from "../../root";
+import type { ActionContext } from "vuex";
+import type { DownloadResultsState } from "./downloadResults";
+import type { RootState } from "../../root";
 import { switches } from "../../featureSwitches";
 
 export enum DownloadType {

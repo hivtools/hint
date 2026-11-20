@@ -30,14 +30,14 @@
 </template>
 
 <script setup lang="ts">
-import {Ref, computed, onMounted, ref, watch} from "vue";
+import {type Ref, computed, onMounted, ref, watch} from "vue";
 import {useStore} from "vuex";
-import {RootState} from "../../../root";
+import type {RootState} from "../../../root";
 import { LMap, LGeoJson, LTileLayer } from "@vue-leaflet/vue-leaflet";
 import type { Feature } from "geojson";
 import {
     getIndicatorMetadata,
-    ScaleLevels,
+    type ScaleLevels,
 } from "../utils";
 import ResetMap from "../ResetMap.vue";
 import MapLegend from "../MapLegend.vue";
@@ -47,11 +47,11 @@ import {
     getColourScaleLevels,
     debounce_leading
 } from "../utils";
-import {BubbleIndicatorValuesDict, NumericRange} from "../../../types";
-import {CalibrateDataResponse, IndicatorMetadata} from "../../../generated";
-import { ScaleSettings } from "../../../store/plotState/plotState";
+import type {BubbleIndicatorValuesDict, NumericRange} from "../../../types";
+import type {CalibrateDataResponse, IndicatorMetadata} from "../../../generated";
+import type { ScaleSettings } from "../../../store/plotState/plotState";
 import SizeLegend from "./SizeLegend.vue";
-import {circleMarker, CircleMarker} from "leaflet";
+import {circleMarker, type CircleMarker} from "leaflet";
 import MapEmptyFeature from "../MapEmptyFeature.vue";
 import {getFeatureData, tooltipContent} from "./utils";
 import BaseMapCheckbox from "../BaseMapCheckbox.vue";

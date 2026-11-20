@@ -45,9 +45,9 @@
     import {defineComponent} from "vue"
     import Modal from "../Modal.vue";
     import {mapActionByName, mapGetterByName, mapStateProp, mapStateProps} from "../../utils";
-    import {RootState} from "../../root";
-    import {ProjectsState} from "../../store/projects/projects";
-    import {StepperState} from "../../store/stepper/stepper";
+    import type {RootState} from "../../root";
+    import type {ProjectsState} from "../../store/projects/projects";
+    import type {StepperState} from "../../store/stepper/stepper";
 
     export default defineComponent({
         name: "LoadInvalidModal",

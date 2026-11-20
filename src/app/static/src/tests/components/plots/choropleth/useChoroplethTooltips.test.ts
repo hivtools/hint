@@ -1,13 +1,13 @@
-import {defineComponent, PropType, Ref, ref} from "vue";
+import {defineComponent, type PropType, type Ref, ref} from "vue";
 import {expect, it, vi} from "vitest";
 import {shallowMount} from "@vue/test-utils";
-import {IndicatorValuesDict} from "../../../../app/types";
-import {IndicatorMetadata} from "../../../../app/generated";
-import {Feature} from "geojson";
-import {LGeoJson} from "@vue-leaflet/vue-leaflet";
+import type {IndicatorValuesDict} from "../../../../app/types";
+import type {IndicatorMetadata} from "../../../../app/generated";
+import type {Feature} from "geojson";
+import type {LGeoJson} from "@vue-leaflet/vue-leaflet";
 import {useChoroplethTooltips} from "../../../../app/components/plots/choropleth/useChoroplethTooltips";
 import {mockIndicatorMetadata} from "../../../mocks";
-import {Layer} from "leaflet";
+import type {Layer} from "leaflet";
 
 describe("useChoroplethTooltips", () => {
     const TestComponent = defineComponent({

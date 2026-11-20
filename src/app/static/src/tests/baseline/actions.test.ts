@@ -16,8 +16,8 @@ import {
 import {actions} from "../../app/store/baseline/actions";
 import {BaselineMutation} from "../../app/store/baseline/mutations";
 import {expectClearReviewInputCommits, expectEqualsFrozen, testUploadErrorCommitted} from "../testHelpers";
-import {ADRSchemas} from "../../app/types";
-import {Mock} from "vitest";
+import type {ADRSchemas} from "../../app/types";
+import type {Mock} from "vitest";
 
 const adrSchemas: ADRSchemas = {
     baseUrl: "adr.com",

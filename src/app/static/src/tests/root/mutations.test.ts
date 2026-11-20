@@ -20,7 +20,7 @@ import {
     mockStepperState,
     mockSurveyAndProgramState
 } from "../mocks";
-import {RootState} from "../../app/root";
+import type {RootState} from "../../app/root";
 import {initialMetadataState} from "../../app/store/metadata/metadata";
 import {initialModelOutputState} from "../../app/store/modelOutput/modelOutput";
 import {initialLoadState} from "../../app/store/load/state";

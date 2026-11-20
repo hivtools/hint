@@ -4,7 +4,7 @@ import {mockCalibratePlotResponse} from "../../mocks";
 import {mutations as modelCalibrateMutations} from "../../../app/store/modelCalibrate/mutations";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {emptyState} from "../../../app/root";
-import {ModelCalibrateState} from "../../../app/store/modelCalibrate/modelCalibrate";
+import type {ModelCalibrateState} from "../../../app/store/modelCalibrate/modelCalibrate";
 import {expectTranslated, shallowMountWithTranslate} from "../../testHelpers";
 import {nextTick} from 'vue';
 import Barchart from "../../../app/components/plots/bar/Barchart.vue";
