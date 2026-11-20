@@ -1,5 +1,5 @@
 import type {Locator, Page} from '@playwright/test';
-import {test as base} from './worker-login';
+import {test as base, expect} from './worker-login';
 import {generateId} from "zoo-ids";
 import {Step} from "../../../app/types";
 import {uploadAllTestFiles} from "../utils/uploadUtils";
@@ -32,6 +32,10 @@ class ProjectPage {
         const projRow = this.findProjectByName(projectName);
         await projRow.locator('.delete-cell button').click();
         await this.page.getByRole('button', { name: 'OK' }).click();
+        // Wait for the delete to finish. Tests in a worker share a session, and the server only clears the
+        // session's current project once the delete has gone through. Otherwise the next test can open
+        // "/" and land in this project instead of on the projects page.
+        await expect(projRow).toHaveCount(0);
         this.deletedProjectNames.push(projectName);
     };
 

@@ -1,5 +1,14 @@
 import {expect, test} from "./fixtures/project-page";
 import {Step} from "../../app/types";
+import type {Page} from "@playwright/test";
+
+// Changing an output plot's controls or filters fetches its data again. toHaveScreenshot compares as soon as two
+// screenshots in a row match, so without this it compares the plot from before the change, which is still showing.
+async function changePlotData(page: Page, change: () => Promise<void>) {
+    const fetched = page.waitForResponse(resp => resp.url().includes("/calibrate/result/filteredData/") && resp.ok());
+    await change();
+    await fetched;
+}
 
 test("can view output plots", async ({ projectPage }) => {
     const page = projectPage.page;
@@ -20,8 +29,10 @@ test("can view output plots", async ({ projectPage }) => {
     await expect(page.locator("#review-output")).toHaveScreenshot("barchart-landing.png");
 
     // When I update barchart x-axis plot control
-    await page.getByRole('button', { name: 'Age' }).click();
-    await page.locator('a').filter({ hasText: 'Area' }).first().click();
+    await changePlotData(page, async () => {
+        await page.getByRole('button', { name: 'Age' }).click();
+        await page.locator('a').filter({ hasText: 'Area' }).first().click();
+    });
     // This can take a little while to redraw the error bars, so give it a second
     await page.waitForTimeout(1000);
 
@@ -29,14 +40,18 @@ test("can view output plots", async ({ projectPage }) => {
     await expect(page.locator("#review-output")).toHaveScreenshot("barchart-x-axis.png");
 
     // When I update disaggregate by plot control
-    await page.getByRole('button', { name: 'Sex' }).click();
-    await page.locator('a').filter({ hasText: 'Age' }).nth(1).click();
+    await changePlotData(page, async () => {
+        await page.getByRole('button', { name: 'Sex' }).click();
+        await page.locator('a').filter({ hasText: 'Age' }).nth(1).click();
+    });
 
     // barchart is rendered as expected
     await expect(page.locator("#review-output")).toHaveScreenshot("barchart-disaggregate-by.png");
 
     // When I update a filter
-    await page.getByRole('button', { name: '55-59', exact: true }).click();
+    await changePlotData(page, async () => {
+        await page.getByRole('button', { name: '55-59', exact: true }).click();
+    });
     // This can take a little while to redraw the error bars, so give it a second
     await page.waitForTimeout(500);
 
@@ -62,15 +77,19 @@ test("can view output plots", async ({ projectPage }) => {
     await expect(page.locator("#review-output")).toHaveScreenshot("table-landing.png");
 
     // When I update a table preset
-    await page.getByRole('button', { name: 'Sex by area' }).click();
-    await page.locator('a').filter({ hasText: 'Sex by 5 year age group' }).click();
+    await changePlotData(page, async () => {
+        await page.getByRole('button', { name: 'Sex by area' }).click();
+        await page.locator('a').filter({ hasText: 'Sex by 5 year age group' }).click();
+    });
 
     // Then table is updated
     await expect(page.locator("#review-output")).toHaveScreenshot("table-sex-by-age.png");
 
     // When I update a filter
-    await page.getByRole('button', { name: 'HIV prevalence' }).click();
-    await page.locator('a').filter({ hasText: /^ART coverage$/ }).click();
+    await changePlotData(page, async () => {
+        await page.getByRole('button', { name: 'HIV prevalence' }).click();
+        await page.locator('a').filter({ hasText: /^ART coverage$/ }).click();
+    });
 
     // Then table is updated
     await expect(page.locator("#review-output")).toHaveScreenshot("table-art-coverage.png");
@@ -124,15 +143,19 @@ test("can view output plots", async ({ projectPage }) => {
     await expect(page.locator("#review-output")).toHaveScreenshot("bubble-size.png");
 
     // When I change the size indicator
-    await page.getByRole('button', { name: 'PLHIV' }).click();
-    await page.locator('a').filter({ hasText: 'Population' }).nth(1).click();
+    await changePlotData(page, async () => {
+        await page.getByRole('button', { name: 'PLHIV' }).click();
+        await page.locator('a').filter({ hasText: 'Population' }).nth(1).click();
+    });
 
     // bubble plot is updated
     await expect(page.locator("#review-output")).toHaveScreenshot("bubble-size-indicator.png");
 
     // When I change colour indicator
-    await page.getByRole('button', { name: 'HIV prevalence' }).click();
-    await page.locator('a').filter({ hasText: 'ART coverage' }).first().click();
+    await changePlotData(page, async () => {
+        await page.getByRole('button', { name: 'HIV prevalence' }).click();
+        await page.locator('a').filter({ hasText: 'ART coverage' }).first().click();
+    });
 
     // bubble plot is updated
     await expect(page.locator("#review-output")).toHaveScreenshot("bubble-colour-indicator.png");
@@ -169,8 +192,10 @@ test("shows empty map if one of the indicators is not available in bubble plot",
     await expect(page.locator("#review-output")).toHaveScreenshot("bubble-landing.png");
 
     // When I change the size indicator to indicator with no data
-    await page.getByRole('button', { name: 'PLHIV' }).click();
-    await page.locator('a').filter({ hasText: 'ANC HIV prevalence' }).nth(1).click();
+    await changePlotData(page, async () => {
+        await page.getByRole('button', { name: 'PLHIV' }).click();
+        await page.locator('a').filter({ hasText: 'ANC HIV prevalence' }).nth(1).click();
+    });
 
     // bubble plot is empty
     await expect(page.locator("#review-output")).toHaveScreenshot("bubble-empty.png");
