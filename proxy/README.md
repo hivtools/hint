@@ -51,6 +51,14 @@ browser --cookie--> nginx --(auth_request, cookie)--> Kotlin GET /internal/whoam
   (`return` is the only safe thing to do in an `if`.) `error_page 418 = @kotlin_release;` catches that error. It sends
   the request to Kotlin from a named location. When you add a path like this, test both methods through the proxy. When
   the POST moves to Python, replace this with one `location`.
+- `GET /model/debug/{id}` (the debug zip of a model run) is for developers, and does not use the hint login. Its
+  `location` (a regular expression) includes `snippets/python-github.conf` instead of `python.conf`. That snippet has
+  no `auth_request`, so a caller with no session is not turned away, and Kotlin is not asked. It passes on the client's
+  `Authorization: Bearer <GitHub token>` as it is. It sends Python no `X-Hint-*` headers (set to empty, which nginx does
+  not send, so a client cannot send its own either) and no `Cookie`. So a hint session cannot take the place of the
+  token: Python checks the token with GitHub (`github_team_member` in `hint-py/app/dependencies.py`). `/model/debug/`
+  with no id stays with Kotlin, as before. To test it through the proxy, call it once with a session cookie and no
+  token (401), and once with `Authorization: Bearer <token>` and no cookie.
 - When login and sessions move to Python, only `current_user` changes and `/internal/whoami` and `auth_request` go.
 
 ## Running it

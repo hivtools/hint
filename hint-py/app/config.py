@@ -83,6 +83,14 @@ class Settings(BaseSettings):
     # Only for development (`environment`). In production, every user would act as the same user on ADR.
     adr_api_key: SecretStr | None = None
 
+    # Who may download the debug zip of a model run (GET /model/debug/{id}). The caller sends a GitHub token, and only a
+    # member of this GitHub team gets in. The team is the slug in the team's URL: github.com/orgs/<org>/teams/<slug>.
+    # If either is empty, nobody gets in.
+    github_auth_org: str = ""
+    github_auth_team_slug: str = ""
+    # The address of the GitHub API. Only tests change it.
+    github_api_url: str = "https://api.github.com"
+
     # The folder hintr writes the results of tasks to. This API does open
     # these: it reads the results database of a calibration and sends the files made by a download. hintr answers with
     # paths relative to its own results folder, which this is the same share as, so the two are mounted differently
