@@ -13,7 +13,7 @@
 <script lang="ts">
 import {ref, defineComponent, computed, type PropType} from "vue";
 import { AgGridVue } from "ag-grid-vue3";
-import type { AgGridEvent } from "ag-grid-community";
+import type { AgGridEvent, GridOptions } from "ag-grid-community";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
 import { useStore } from "vuex";
@@ -43,7 +43,7 @@ const defaultColDef = {
 };
 const ROW_HEIGHT = 35;
 const MAX_TABLE_HEIGHT = 700;
-const gridOptions = {
+const gridOptions: GridOptions = {
     // our auto resize will apply to columns not shown on the screen
     // e.g. if they are off to the side, we won't get auto resize
     // because ag grid does this automatically
