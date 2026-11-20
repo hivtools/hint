@@ -57,7 +57,7 @@ export default defineComponent({
         };
 
         const placeholder = computed(() => {
-            return i18next.t("select", store.state.language);
+            return i18next.t("select", {lng: store.state.language});
         });
 
         return {
