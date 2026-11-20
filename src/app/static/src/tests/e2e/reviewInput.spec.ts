@@ -1,6 +1,14 @@
 import {expect, test} from "./fixtures/project-page";
 import {waitForAnimations} from "./utils/utils";
 import {Step} from "../../app/types";
+import type {Page} from "@playwright/test";
+
+// The ANC data is only fetched when ANC testing is selected, and it takes a while. toHaveScreenshot compares as soon
+// as two screenshots in a row match, so without this it compares the previous plot, which is still showing.
+// Start waiting before the click so a fast response is not missed.
+function waitForAncTimeSeries(page: Page) {
+    return page.waitForResponse(resp => resp.url().includes("/chart-data/input-time-series/anc") && resp.status() === 200);
+}
 
 test("can view time series plot", async ({ projectPage }) => {
     const page = projectPage.page;
@@ -54,13 +62,11 @@ test("can view time series plot", async ({ projectPage }) => {
 
     // When I change data source
     await page.getByRole("button", { name: "ART", exact: true }).click();
+    const ancFetched = waitForAncTimeSeries(page);
     await page.locator("a").filter({ hasText: "ANC testing" }).click();
 
     // Plot has updated
-    // Fetching ANC data takes a while, toHaveScreenshot checks the expectation as soon as 2 sequential screenshots
-    // return the same image. So because ANC data fetch takes a while, this is taking 2 screenshots before the UI
-    // updates, returning and erroring. So wait for response before testing it.
-    await page.waitForResponse(resp => resp.url().includes('/chart-data/input-time-series/anc') && resp.status() === 200)
+    await ancFetched;
     await expect(page.locator("#review-inputs")).toHaveScreenshot("time-series-anc.png")
 
     // When I open expanded plot view
@@ -154,9 +160,11 @@ test("can view input map plot", async ({ projectPage }) => {
     await expect(page.locator("a").filter({ hasText: "ANC testing" })).toBeVisible();
 
     // When I select ANC testing
+    const ancFetched = waitForAncTimeSeries(page);
     await page.locator("a").filter({ hasText: "ANC testing" }).click();
 
     // Updated map is rendered
+    await ancFetched;
     await expect(page.locator("#review-inputs")).toHaveScreenshot("input-map-anc.png");
 
     // When I select a sub-region of the map
