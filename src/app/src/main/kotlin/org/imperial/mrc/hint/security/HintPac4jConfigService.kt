@@ -22,7 +22,12 @@ class HintPac4jConfigService(
 {
     fun getConfig(): Config
     {
-        val clients = Clients("/callback", getFormClient(), getAuth2Client(), getGitHubClient())
+        val formClient = getFormClient()
+        val clients = Clients("/callback", formClient, getAuth2Client(), getGitHubClient())
+        // Initialise up front, not on the first logins: see Pac4jConfig.getProfileService.
+        // The clients first, as that gives the form client its callback URL.
+        clients.init()
+        formClient.init()
         return Config(clients).apply {
             sessionStore = JEESessionStore.INSTANCE
         }

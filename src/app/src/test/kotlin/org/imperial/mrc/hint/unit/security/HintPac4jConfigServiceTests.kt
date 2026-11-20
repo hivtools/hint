@@ -38,6 +38,18 @@ class HintPac4jConfigServiceTests
     }
 
     @Test
+    fun `initialises the clients and the form client up front`()
+    {
+        val clients = configService.getConfig().clients
+
+        // Read the list directly: findClient() would initialise the clients itself
+        val formClient = clients.clients.first() as FormClient
+
+        assertThat(clients.isInitialized).isTrue()
+        assertThat(formClient.isInitialized).isTrue()
+    }
+
+    @Test
     fun `config uses JEESession storage`()
     {
         val config = configService.getConfig()
