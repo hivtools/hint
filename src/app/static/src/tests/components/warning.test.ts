@@ -155,8 +155,12 @@ describe("Warning component", () => {
         await wrapper.setProps(mockPropsModelRun)
         await nextTick()
         expect(wrapper.findAll("li").length).toBe(1);
-        expect(wrapper.find("li > div").attributes("style"))
-            .toBe("height: 48px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2;");
+        const style = (wrapper.find("li > div").element as HTMLElement).style;
+        expect(style.height).toBe("48px");
+        expect(style.overflow).toBe("hidden");
+        expect(style.display).toBe("-webkit-box");
+        expect(style.getPropertyValue("-webkit-line-clamp")).toBe("2");
+        expect(style.getPropertyValue("-webkit-box-orient")).toBe("vertical");
     });
 
 })

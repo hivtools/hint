@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 import {devices} from "@playwright/test";
 
 // Dotenv reads from default ".env" file.
-dotenv.config();
+dotenv.config({quiet: true});
 
 export const baseURL =  process.env.baseURL ? process.env.baseURL : 'http://localhost:8080'
 
