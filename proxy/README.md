@@ -62,7 +62,13 @@ browser --cookie--> nginx --(auth_request, cookie)--> Kotlin GET /internal/whoam
 - Most ported paths are exact (`location = /adr/pjnz`). The same path with a trailing slash still goes to Kotlin,
   which accepts it, where FastAPI would answer with a redirect. So the Vue app calls the ported paths without one: when
   you port a path that the Vue app calls with a trailing slash, change the Vue app too. The ADR imports
-  (`/adr/pjnz`, `/adr/shape`, `/adr/population`, `/adr/survey`, `/adr/programme`, `/adr/anc`) are an example.
+  (`/adr/pjnz`, `/adr/shape`, `/adr/population`, `/adr/survey`, `/adr/programme`, `/adr/anc`) are an example, and so are
+  `/rehydrate/zip` and `/rehydrate/adr`.
+- Both rehydrate paths use `snippets/python.conf`, so they have the identity headers. `/rehydrate/adr` needs them (a
+  logged in user, and the access token to call ADR as them). `/rehydrate/zip` lets a guest in, as Kotlin does (it does not secure
+  `/rehydrate/**`), but Python still reads the identity headers, so it cannot be reached around the proxy. The zip is uploaded through nginx as it arrives (`proxy_request_buffering off`, `client_max_body_size 0`),
+  so the size limit is Python's (500 MB, see D18 in [docs/porting-checklist.md](../docs/porting-checklist.md)), and a
+  request that takes more than 240 seconds is cancelled by Azure's ingress before it gets to nginx's timeouts.
 - When login and sessions move to Python, only `current_user` changes and `/internal/whoami` and `auth_request` go.
 
 ## Running it

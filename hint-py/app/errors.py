@@ -110,6 +110,35 @@ class MissingCalibrateDataError(HintError):
         super().__init__("missingCalibrateData", 400)
 
 
+class FailedZipRehydrateError(HintError):
+    """The zip is not an output zip that this app made: it is not a zip, it has no project state, or the state cannot be
+    read (see `app/services/rehydrate_service.py`)."""
+
+    def __init__(self):
+        super().__init__("failedZipRehydrate", 400)
+
+
+class RehydrateMissingInputFileError(HintError):
+    """An input file that the project state names is not in the uploads folder."""
+
+    def __init__(self):
+        super().__init__("rehydrateMissingInputFile", 400)
+
+
+class RehydrateModelFitIdUnknownError(HintError):
+    """The model fit in the project state is not a task that hintr knows."""
+
+    def __init__(self):
+        super().__init__("rehydrateModelFitIdUnknown", 400)
+
+
+class RehydrateCalibrateIdUnknownError(HintError):
+    """The calibration in the project state is not a task that hintr knows."""
+
+    def __init__(self):
+        super().__init__("rehydrateCalibrateIdUnknown", 400)
+
+
 class MissingResultFileError(Exception):
     """hintr has a download, but its file is not in the results folder. Not for the user to act on, so it is reported as
     an unexpected error, and what is missing is in the log."""

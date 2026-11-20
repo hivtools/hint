@@ -1,11 +1,11 @@
 """Taking in an input file for the version in a request: checking it, storing it, recording it and validating it.
 
 Each file type has a row in `INPUT_FILE_TYPES`, which says all that this API knows about the type: its URL, the
-extensions that hintr accepts and the size limit of an upload. The routers, the size limit middleware and the tests read
-the rows. Nothing else lists the file types. The limits are not settings: a change to one is a change to the code.
+extensions that hintr accepts and the size limit of an upload. The routers, the size limit of the uploads (see
+`UPLOAD_LIMITS` in app/main.py) and the tests read the rows. Nothing else lists the file types. The limits are not settings: a change to one is a change to the code.
 
 `InputFileService.save` is the one way a new file becomes a version's file. An upload and an import from ADR
-(`app/services/adr_imports.py`) call it. A rehydrate will call it too, with the bytes that it got. An import also calls
+(`app/services/adr_imports.py`) call it. An import also calls
 `refuse_wrong_extension` before it downloads the file, so that a file of the wrong type is not downloaded.
 
 The rule that matters most: once the file is stored and recorded, a failed validation is answered and not raised. A
@@ -20,6 +20,7 @@ from typing import IO, Annotated
 from fastapi import Depends, Header
 
 from app import schemas
+from app.byte_limit import MB
 from app.clients.hintr_client import BASELINE_TYPES, Hintr, HintrClient
 from app.clients.responses import HintResponse
 from app.config import Settings, get_settings
@@ -50,12 +51,11 @@ class InputFileType:
         return f"/{'baseline' if self.is_baseline else 'disease'}/{self.file_type.value}"
 
 
-MB = 1024 * 1024
-
 # Each limit is about twice the largest file of its kind that a saved version used in November 2026 (the files of 1,000
 # to 1,800 versions for PJNZ, programme and ANC, and 200 to 300 for the others). A user on a slow connection hits Azure's
 # limit first: a request that takes more than 240 seconds is cancelled by the ingress. These are for the input files, and
-# not for output zips (the largest a version used was 234 MB): the endpoint that loads one will need a limit of its own.
+# not for output zips (the largest a version used was 234 MB): the limit of those is `MAX_OUTPUT_ZIP_BYTES` in
+# app/services/rehydrate_service.py.
 # Each upload in flight also takes its size of ephemeral disk (see app/upload_limit.py: about 10 of the largest fit at
 # 1 vCPU).
 INPUT_FILE_TYPES = {
@@ -75,12 +75,6 @@ INPUT_FILE_TYPES = {
         InputFileType(FileType.ANC, ("csv",), 10 * MB),
     )
 }
-
-
-def upload_limit(path: str) -> int | None:
-    """The size limit of a path that uploads a file, or None if the path does not upload one. The rows are read at each
-    call, so that a test can change a limit."""
-    return next((spec.max_upload_bytes for spec in INPUT_FILE_TYPES.values() if spec.url == path), None)
 
 
 def _wrong_extension(spec: InputFileType, filename: str) -> InvalidFileExtensionError | None:
