@@ -292,7 +292,7 @@ export const mockInputComparisonState = (props?: Partial<ReviewInputState["input
     }
 }
 
-export const mockInputComparisonData = (props?: Partial<InputComparisonData>): InputComparisonData => {
+export const mockInputComparisonData = (): InputComparisonData => {
     return {
         anc: [
             {
@@ -531,7 +531,7 @@ export const mockPopulationResponse = (props: Partial<PopulationResponse> = {}):
     }
 };
 
-export const mockInputPopulationMetadataResponse = (props: Partial<InputPopulationMetadataResponse> = {}): InputPopulationMetadataResponse => {
+export const mockInputPopulationMetadataResponse = (): InputPopulationMetadataResponse => {
     return {
         filterTypes: [],
         indicators: [],

@@ -9,7 +9,6 @@ import {
     mockModelRunState,
     mockRootState,
     mockSuccess,
-    mockWarning
 } from "../mocks";
 import {actions} from "../../app/store/modelCalibrate/actions";
 import {ModelCalibrateMutation} from "../../app/store/modelCalibrate/mutations";
@@ -182,7 +181,7 @@ describe("ModelCalibrate actions", () => {
         const dispatch = vi.fn();
         const getOutputFilteredDataSpy = vi
             .spyOn(filter, "getOutputFilteredData")
-            .mockImplementation(async (payload, commit, rootState) => {});
+            .mockImplementation(async (_payload, _commit, _rootState) => {});
         const state = mockModelCalibrateState({
             calibrateId: "1234",
             status: {
