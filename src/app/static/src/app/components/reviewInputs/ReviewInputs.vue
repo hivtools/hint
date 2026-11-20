@@ -46,29 +46,26 @@ import {RootState} from '../../root';
 import PlotControlSet from '../plots/PlotControlSet.vue';
 import FilterSet from '../plots/FilterSet.vue';
 import {InputPlotName, inputPlotNames, PlotName} from '../../store/plotSelections/plotSelections';
-import TimeSeries from "../plots/timeSeries/TimeSeries.vue";
-import Choropleth from '../plots/choropleth/Choropleth.vue';
 import LoadingSpinner from "../LoadingSpinner.vue";
 import ErrorAlert from "../ErrorAlert.vue";
 import DownloadTimeSeries from "../plots/timeSeries/downloadTimeSeries/DownloadTimeSeries.vue";
-import Barchart from "../plots/bar/Barchart.vue";
-import Table from "../plots/table/Table.vue";
-import PopulationGrid from '../plots/population/PopulationGrid.vue';
+import {lazyComponent} from "../lazyComponent";
 import FilterWithReset from '../plots/FilterWithReset.vue';
 
 export default defineComponent({
     components: {
-        Barchart,
         DownloadTimeSeries,
         ErrorAlert,
         PlotControlSet,
         FilterSet,
-        PlotTable: Table,
-        TimeSeries,
-        Choropleth,
         LoadingSpinner,
         FilterWithReset,
-        PopulationGrid
+        // The plots use large libraries (Plotly, Leaflet, Chart.js, AG Grid), so they load only when the user sees them.
+        Barchart: lazyComponent(() => import("../plots/bar/Barchart.vue")),
+        PlotTable: lazyComponent(() => import("../plots/table/Table.vue")),
+        TimeSeries: lazyComponent(() => import("../plots/timeSeries/TimeSeries.vue")),
+        Choropleth: lazyComponent(() => import("../plots/choropleth/Choropleth.vue")),
+        PopulationGrid: lazyComponent(() => import("../plots/population/PopulationGrid.vue"))
     },
     setup() {
         const store = useStore<RootState>();

@@ -1,4 +1,4 @@
-import { mount } from '@vue/test-utils';
+import { flushPromises, mount } from '@vue/test-utils';
 import { describe, it, expect } from 'vitest';
 import TimeSeriesModal from '../../../../app/components/plots/timeSeries/TimeSeriesModal.vue';
 import Modal from '../../../../app/components/Modal.vue';
@@ -198,8 +198,10 @@ describe('Time series modal works as expected', () => {
         expect(wrapper.emitted('close-modal')).toBeTruthy();
     });
 
-    it('renders the equation with correct formula', () => {
+    it('renders the equation with correct formula', async () => {
         const wrapper = getWrapper({ openModal: true, areaId: 'area-1', plotType: 'anc_prevalence' });
+        // The equation is lazy, so wait until it has loaded.
+        await flushPromises();
 
         expect(wrapper.findComponent(Equation).exists()).toBe(true);
         expect((wrapper.findComponent(Equation).props() as any).formula).toMatch('\\textcolor');

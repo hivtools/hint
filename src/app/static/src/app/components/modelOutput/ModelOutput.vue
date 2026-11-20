@@ -40,10 +40,7 @@ import {OutputPlotName, outputPlotNames} from "../../store/plotSelections/plotSe
 import {useStore} from "vuex";
 import {RootState} from "../../root";
 import { ModelOutputMutation } from "../../store/modelOutput/mutations";
-import Choropleth from "../plots/choropleth/Choropleth.vue";
-import Bubble from "../plots/bubble/Bubble.vue";
-import Barchart from "../plots/bar/Barchart.vue";
-import Table from "../plots/table/Table.vue";
+import {lazyComponent} from "../lazyComponent";
 import FilterWithReset from "../plots/FilterWithReset.vue";
 
 export default defineComponent({
@@ -62,10 +59,11 @@ export default defineComponent({
     },
 
     components: {
-        Barchart,
-        Choropleth,
-        Bubble,
-        PlotTable: Table,
+        // The plots use large libraries (Leaflet, Chart.js, AG Grid), so they load only when the user sees them.
+        Barchart: lazyComponent(() => import("../plots/bar/Barchart.vue")),
+        Choropleth: lazyComponent(() => import("../plots/choropleth/Choropleth.vue")),
+        Bubble: lazyComponent(() => import("../plots/bubble/Bubble.vue")),
+        PlotTable: lazyComponent(() => import("../plots/table/Table.vue")),
         FilterSet,
         PlotControlSet,
         FilterWithReset

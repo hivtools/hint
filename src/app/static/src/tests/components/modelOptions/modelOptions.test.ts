@@ -66,12 +66,15 @@ describe("Model options component", () => {
         return store;
     };
 
+    // ModelOptions loads the form library lazily. Some tests give the real DynamicForm as the stub,
+    // so that the form renders at once and the tests can read its props.
     it("displays dynamic form when fetching is false", () => {
         const store = createStore({optionsFormMeta: {controlSections: []}});
         const rendered = shallowMountWithTranslate(ModelOptions, store, {
             global: {
-                plugins: [store]
-            }, 
+                plugins: [store],
+                stubs: {DynamicForm}
+            },
         });
         expect(rendered.findAllComponents(DynamicForm).length).toBe(1);
         const form = rendered.findComponent(DynamicForm);
@@ -86,8 +89,9 @@ describe("Model options component", () => {
         const store = createStore({}, mockMutations, mockActions, {language: Language.fr});
         const wrapper = shallowMountWithTranslate(ModelOptions, store, {
             global: {
-                plugins: [store]
-            }, 
+                plugins: [store],
+                stubs: {DynamicForm}
+            },
         });
         expect(wrapper.findComponent(DynamicForm).props("requiredText")).toBe("obligatoire");
         expect(wrapper.findComponent(DynamicForm).props("selectText")).toBe("Sélectionner...");
@@ -98,8 +102,9 @@ describe("Model options component", () => {
         const store = createStore({}, mockMutations, mockActions, {language: Language.pt});
         const wrapper = shallowMountWithTranslate(ModelOptions, store, {
             global: {
-                plugins: [store]
-            }, 
+                plugins: [store],
+                stubs: {DynamicForm}
+            },
         });
         expect(wrapper.findComponent(DynamicForm).props("requiredText")).toBe("necessário");
         expect(wrapper.findComponent(DynamicForm).props("selectText")).toBe("Selecionar...");

@@ -50,7 +50,7 @@
 </template>
 <script lang="ts">
     import i18next from "i18next";
-    import { DynamicFormMeta, DynamicForm } from "@reside-ic/vue-next-dynamic-form";
+    import type { DynamicFormMeta } from "@reside-ic/vue-next-dynamic-form";
     import LoadingSpinner from "../LoadingSpinner.vue";
     import Tick from "../Tick.vue";
     import {
@@ -66,6 +66,7 @@
     import ErrorAlert from "../ErrorAlert.vue";
     import CalibrationResults from "./CalibrationResults.vue";
     import { defineComponent } from "vue";
+    import {lazyComponent} from "../lazyComponent";
 
     const namespace = "modelCalibrate";
 
@@ -135,12 +136,14 @@
             resumeCalibrate: mapActionByName(namespace, "resumeCalibrate"),
             fetchOptions: mapActionByName(namespace, "fetchModelCalibrateOptions"),
             submitForm() {
-                (this.$refs.form as any).submit();
+                // The form is lazy, so the ref is null until the form has loaded.
+                (this.$refs.form as any)?.submit();
             },
         },
         components: {
             CalibrationResults,
-            DynamicForm,
+            // The form library is large, so it loads only when the user sees the form.
+            DynamicForm: lazyComponent(() => import("@reside-ic/vue-next-dynamic-form").then(m => m.DynamicForm)),
             LoadingSpinner,
             Tick,
             ErrorAlert,

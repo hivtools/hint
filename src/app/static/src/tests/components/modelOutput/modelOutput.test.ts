@@ -1,4 +1,4 @@
-import {shallowMount} from "@vue/test-utils";
+import {flushPromises, shallowMount} from "@vue/test-utils";
 import ModelOutput from "../../../app/components/modelOutput/ModelOutput.vue";
 import Vuex, {Store} from "vuex";
 import {emptyState, RootState} from "../../../app/root";
@@ -48,9 +48,11 @@ describe("Model Output page", () => {
         return store;
     };
 
-    test("renders as expected", () => {
+    test("renders as expected", async () => {
         const store = createStore();
         const wrapper = getWrapper(store);
+        // The plots are lazy, so wait until they have loaded.
+        await flushPromises();
 
         const plotTabs = wrapper.findAll(".nav-link");
         expect(plotTabs.length).toBe(6);

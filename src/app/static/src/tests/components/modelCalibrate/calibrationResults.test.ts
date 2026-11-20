@@ -7,6 +7,7 @@ import {emptyState} from "../../../app/root";
 import {ModelCalibrateState} from "../../../app/store/modelCalibrate/modelCalibrate";
 import {expectTranslated, shallowMountWithTranslate} from "../../testHelpers";
 import {nextTick} from 'vue';
+import {flushPromises} from '@vue/test-utils';
 import Barchart from "../../../app/components/plots/bar/Barchart.vue";
 
 const defaultSelections = {
@@ -65,9 +66,11 @@ describe("CalibrateResults component", () => {
     it("renders barchart", async () => {
         const store = getStore();
         const wrapper = shallowMountWithTranslate(CalibrationResults, store, {global: {plugins: [store]}});
+        // The bar chart is lazy, so wait until it has loaded. The stub of a lazy component does not know
+        // the props of the component, so the props are attributes of the stub.
+        await flushPromises();
         const barchart = wrapper.findComponent(Barchart);
-        await nextTick();
-        expect(barchart.props().plot).toStrictEqual("calibrate");
-        expect(barchart.props().showErrorBars).toBe(false);
+        expect(barchart.attributes("plot")).toBe("calibrate");
+        expect(barchart.attributes("show-error-bars")).toBe("false");
     });
 });

@@ -19,6 +19,7 @@ import {
     SurveyAndProgramState
 } from "../../../app/store/surveyAndProgram/surveyAndProgram";
 import {nextTick} from "vue";
+import {flushPromises} from "@vue/test-utils";
 import {shallowMountWithTranslate} from "../../testHelpers";
 import ErrorAlert from "../../../app/components/ErrorAlert.vue";
 import LoadingSpinner from "../../../app/components/LoadingSpinner.vue";
@@ -102,12 +103,14 @@ describe("Review inputs page", () => {
         expect(mockDispatch).toHaveBeenNthCalledWith(1, "metadata/getReviewInputMetadata", {}, {root: true})
     });
 
-    test("renders as expected when only survey data fetched", () => {
+    test("renders as expected when only survey data fetched", async () => {
         const sapState = mockSurveyAndProgramState({
             survey: mockSurveyResponse()
         });
         const store = createStore(sapState);
         const wrapper = getWrapper(store);
+        // The plots are lazy, so wait until they have loaded.
+        await flushPromises();
 
         const plotTabs = wrapper.findAll(".nav-link");
         expect(plotTabs.length).toBe(2);
@@ -128,6 +131,8 @@ describe("Review inputs page", () => {
         });
         const store = createStore(sapState);
         const wrapper = getWrapper(store);
+        // The plots are lazy, so wait until they have loaded.
+        await flushPromises();
 
         const plotTabs = wrapper.findAll(".nav-link");
         expect(plotTabs.length).toBe(5);
@@ -154,7 +159,7 @@ describe("Review inputs page", () => {
         expect(mockDispatch).toHaveBeenNthCalledWith(1, "metadata/getReviewInputMetadata", {}, {root: true});
 
         plotTabs[1].trigger("click");
-        await nextTick();
+        await flushPromises();
         expect(plotTabs[0].classes()).not.contains("active");
         expect(plotTabs[1].classes()).contains("active");
         expect(plotTabs[2].classes()).not.contains("active");
@@ -174,7 +179,7 @@ describe("Review inputs page", () => {
         expect(mockDispatch).toHaveBeenCalledTimes(1);
 
         plotTabs[2].trigger("click");
-        await nextTick();
+        await flushPromises();
         expect(plotTabs[0].classes()).not.contains("active");
         expect(plotTabs[1].classes()).not.contains("active");
         expect(plotTabs[2].classes()).contains("active");
@@ -195,7 +200,7 @@ describe("Review inputs page", () => {
         expect(mockDispatch).toHaveBeenNthCalledWith(2, "reviewInput/getInputComparisonDataset", {}, {root: true});
 
         plotTabs[3].trigger("click");
-        await nextTick();
+        await flushPromises();
         expect(plotTabs[0].classes()).not.contains("active");
         expect(plotTabs[1].classes()).not.contains("active");
         expect(plotTabs[2].classes()).not.contains("active");
@@ -215,7 +220,7 @@ describe("Review inputs page", () => {
         expect(mockDispatch).toHaveBeenCalledTimes(3);
 
         plotTabs[4].trigger("click");
-        await nextTick();
+        await flushPromises();
         expect(plotTabs[0].classes()).not.contains("active");
         expect(plotTabs[1].classes()).not.contains("active");
         expect(plotTabs[2].classes()).not.contains("active");

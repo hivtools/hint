@@ -1,5 +1,6 @@
 import Vuex, {ActionTree, MutationTree} from "vuex";
 import {nextTick} from "vue";
+import {flushPromises} from "@vue/test-utils";
 
 import ModelOptions from "../../../app/components/modelOptions/ModelOptions.vue";
 import {ModelOptionsMutation} from "../../../app/store/modelOptions/mutations";
@@ -82,6 +83,8 @@ describe("Model options component when edit confirmation is required", () => {
                 plugins: [store]
             }, 
         });
+        // The form is lazy, so wait until it has loaded.
+        await flushPromises();
         const event = { preventDefault: () => {} };
         (rendered.findComponent(DynamicForm).vm as any).$emit("confirm", event)
         await nextTick();
@@ -94,6 +97,8 @@ describe("Model options component when edit confirmation is required", () => {
                 plugins: [store]
             }, 
         });
+        // The form is lazy, so wait until it has loaded.
+        await flushPromises();
         await rendered.findComponent(DynamicForm).trigger("mousedown");
         await rendered.findComponent(ResetConfirmation).find(".btn-red").trigger("click");
         await nextTick();
@@ -107,6 +112,8 @@ describe("Model options component when edit confirmation is required", () => {
                 plugins: [store]
             }, 
         });
+        // The form is lazy, so wait until it has loaded.
+        await flushPromises();
         await rendered.findComponent(DynamicForm).trigger("mousedown");
         await rendered.findComponent(ResetConfirmation).find(".btn-white").trigger("click");
         await nextTick();

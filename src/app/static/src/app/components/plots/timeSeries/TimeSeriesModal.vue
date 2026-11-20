@@ -38,9 +38,12 @@ import { RootState } from '../../../root';
 import {filterTimeSeriesData} from "../../../store/plotData/filter";
 import {FilterSelection} from "../../../store/plotSelections/plotSelections";
 import {expressionToString, Layout, numeralJsToD3format, timeSeriesExpandedViews} from "./utils";
-import Equation from "../../common/Equation.vue";
 import TimeSeriesLegend from "./TimeSeriesLegend.vue";
 import {ReviewInputDataColumnValue} from "../../../types";
+import {lazyComponent} from "../../lazyComponent";
+
+// The equation uses KaTeX, which is large, so it loads only when the user opens this window.
+const Equation = lazyComponent(() => import("../../common/Equation.vue"));
 
 const props = defineProps({
     openModal: {

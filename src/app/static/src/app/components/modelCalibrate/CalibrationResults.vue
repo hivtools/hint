@@ -14,8 +14,11 @@
 </template>
 
 <script setup lang="ts">
-import Barchart from "../plots/bar/Barchart.vue";
+import {lazyComponent} from "../lazyComponent";
 import {calibratePlotName} from "../../store/plotSelections/plotSelections";
 import FilterSet from "../plots/FilterSet.vue";
 import FilterWithReset from "../plots/FilterWithReset.vue";
+
+// The bar chart uses Chart.js, which is large, so it loads only when the user sees it.
+const Barchart = lazyComponent(() => import("../plots/bar/Barchart.vue"));
 </script>

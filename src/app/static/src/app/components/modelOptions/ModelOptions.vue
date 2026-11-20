@@ -30,7 +30,7 @@
 <script lang="ts">
     import { defineComponent } from "vue";
     import i18next from "i18next";
-    import {DynamicFormData, DynamicFormMeta, DynamicForm} from "@reside-ic/vue-next-dynamic-form";
+    import type {DynamicFormData, DynamicFormMeta} from "@reside-ic/vue-next-dynamic-form";
     import LoadingSpinner from "../LoadingSpinner.vue";
     import Tick from "../Tick.vue";
 
@@ -41,6 +41,7 @@
     import {RootState} from "../../root";
     import {Language} from "../../store/translations/locales";
     import ErrorAlert from "../ErrorAlert.vue";
+    import {lazyComponent} from "../lazyComponent";
 
     const namespace = "modelOptions";
 
@@ -107,7 +108,8 @@
             }
         },
         components: {
-            DynamicForm,
+            // The form library is large, so it loads only when the user sees the form.
+            DynamicForm: lazyComponent(() => import("@reside-ic/vue-next-dynamic-form").then(m => m.DynamicForm)),
             LoadingSpinner,
             Tick,
             ResetConfirmation,

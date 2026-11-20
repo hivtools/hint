@@ -98,20 +98,24 @@ describe("Model calibrate component", () => {
 
     it("translates required text", () => {
         const store = getStore({}, vi.fn(), vi.fn(), vi.fn(), vi.fn(), {language: Language.fr});
+        // The form is lazy. The real DynamicForm as the stub renders at once, so the test can read its props.
         const wrapper = shallowMountWithTranslate(ModelCalibrate, store, {
             global: {
-                plugins: [store]
-            }, 
+                plugins: [store],
+                stubs: {DynamicForm}
+            },
         });
         expect(wrapper.findComponent(DynamicForm).props("requiredText")).toBe("obligatoire");
     });
 
     it("translates select text", () => {
         const store = getStore({}, vi.fn(), vi.fn(), vi.fn(), vi.fn(), {language: Language.fr});
+        // The form is lazy. The real DynamicForm as the stub renders at once, so the test can read its props.
         const wrapper = shallowMountWithTranslate(ModelCalibrate, store, {
             global: {
-                plugins: [store]
-            }, 
+                plugins: [store],
+                stubs: {DynamicForm}
+            },
         });
         expect(wrapper.findComponent(DynamicForm).props("selectText")).toBe("Sélectionner...");
     });
