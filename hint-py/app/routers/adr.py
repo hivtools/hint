@@ -1,8 +1,8 @@
 """Endpoints about ADR, the UNAIDS data repository.
 
 `/adr/schemas` gives the browser the settings for ADR. The other endpoints read from ADR as the user (see
-`app/clients/adr_client.py`), or import an input file from ADR into the user's version (see
-`app/services/adr_imports.py`). Only a logged in user can use them.
+`app/clients/adr_client.py`), import an input file from ADR into the user's version (see `app/services/adr_imports.py`),
+or push a release or a file to ADR (see `app/services/adr_push.py`). Only a logged in user can use them.
 """
 
 from typing import Annotated
@@ -14,10 +14,14 @@ from app.clients.adr_client import Adr
 from app.clients.responses import HintResponse
 from app.config import Settings, get_settings
 from app.dependencies import logged_in_user
+from app.request_parameters import Parameters
 from app.schemas import AdrDatasetType, AdrResource, FileType, SuccessResponse, success
 from app.services.adr_datasets import find_datasets, find_releases_with_output_zip
 from app.services.adr_imports import import_input_file
+from app.services.adr_push import FileToPush, create_release, push_file
 from app.services.input_file_service import INPUT_FILE_TYPES, InputFiles
+from app.services.task_results import Results
+from app.services.version_files import Files
 
 router = APIRouter(prefix="/adr", tags=["adr"])
 
@@ -73,6 +77,43 @@ async def releases(
     if release_type != AdrDatasetType.OUTPUT:
         return (await adr.releases(dataset_id)).response()
     return HintResponse.success(await find_releases_with_output_zip(adr, settings, dataset_id)).response()
+
+
+@router.post("/datasets/{dataset_id}/releases", dependencies=[Depends(logged_in_user)])
+async def new_release(dataset_id: str, adr: Adr, parameters: Parameters) -> Response:
+    """Makes a release of the dataset. The parameter `name` is in the query or in a form body (the Vue app sends a form).
+
+    **A release of the dataset with the same name is deleted first, and that cannot be undone.**"""
+    return (await create_release(adr, dataset_id, parameters.required("name"))).response()
+
+
+@router.post("/datasets/{dataset_id}/resource/{resource_type}/{download_id}", dependencies=[Depends(logged_in_user)])
+async def push_resource(
+    dataset_id: str,
+    resource_type: str,
+    download_id: str,
+    parameters: Parameters,
+    adr: Adr,
+    settings: Annotated[Settings, Depends(get_settings)],
+    results: Results,
+    files: Files,
+) -> Response:
+    """Pushes a file to ADR as a resource of the dataset: an output of the model (the finished download `download_id`),
+    or the version's input file of the type. `resource_type` is the type that ADR gives the resource.
+
+    The parameters are in the query or in a form body (the Vue app sends a form): `resourceFileName` and `resourceName`
+    (both always needed), `resourceId` (the resource to replace: needed for an input file), and `description` (needed for
+    an output). The version is checked for every type, though only an input file uses it."""
+    push = FileToPush(
+        dataset_id=dataset_id,
+        resource_type=resource_type,
+        download_id=download_id,
+        file_name=parameters.required("resourceFileName"),
+        resource_name=parameters.required("resourceName"),
+        resource_id=parameters.get("resourceId"),
+        description=parameters.get("description"),
+    )
+    return (await push_file(push, adr, settings, results, files)).response()
 
 
 @router.get("/orgs", dependencies=[Depends(logged_in_user)])

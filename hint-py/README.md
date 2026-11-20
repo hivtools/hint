@@ -234,6 +234,26 @@ then be the same user on ADR.
 - The HTTP client of ADR, which every user's calls share, keeps no cookies. A cookie that ADR set for one user would
   otherwise go with the calls of the others.
 
+**Pushing to ADR.** `POST /adr/datasets/{id}/releases` makes a release, and
+`POST /adr/datasets/{id}/resource/{resourceType}/{downloadId}` puts a file on ADR as a resource of the dataset
+(`app/services/adr_push.py`). The parameters can be in the query or in a form body: the Vue app sends a form.
+
+- **A release with the name of an old one replaces it, and the old release is deleted first. This cannot be undone.** If
+  the new release then fails, the dataset has lost the old one. The user is told that it failed. See D19 in
+  [docs/porting-checklist.md](../docs/porting-checklist.md).
+- **The file is read from the shared folders and is not copied.** An output is the file of the finished download, found
+  in the results folder as the download endpoint finds it. An input file is the version's file in the uploads folder. It
+  is read in pieces as it is sent, so a large file is not in memory, and nothing is written, so there is no temporary
+  file to clean up. The upload waits up to 220 seconds for ADR's answer (the other calls wait 120), because Azure cancels
+  the browser's request after 240 seconds (`UPLOAD_TIMEOUT` in `app/clients/adr_client.py`).
+- **A resource that ADR has already, with the same file, is not sent again.** The hash (MD5, in upper case) that ADR has
+  is compared with the hash of the file.
+
+**Tests that write to ADR.** `tests/api/test_adr_live_write.py` makes a release and some resources on the real dev ADR.
+It is skipped unless both `ADR_TEST_KEY` and `HINT_ADR_TEST_WRITE_DATASET` (the name of a scratch dataset that nobody
+else uses) are set, and nothing sets them for `make test`, `make test-adr` or CI. Run it by hand, and only on a dataset
+that you can spoil: what the tests make stays on the dataset.
+
 ### Rehydrate (loading a project from an output zip)
 
 `POST /rehydrate/zip` (an upload) and `POST /rehydrate/adr` (a zip on ADR, which is downloaded as the user, as an import is)

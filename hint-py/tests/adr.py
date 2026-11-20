@@ -3,6 +3,10 @@
 It is an HTTP transport, so no call goes over the network. It records each call. By default it answers from a small
 set of datasets. A test can make an action fail, or make a connection fail.
 
+It also takes what a user pushes: a release is made or deleted, and a file is uploaded as a resource. It keeps its own
+releases and resources, so a test sees the effect of one call on the next (a release that was deleted is no longer in the
+list). It records the form of each call that changes something, and each file that is uploaded, with its content.
+
 It also serves files, as ADR does for an import. The real ADR answers a download with a redirect to its storage, which
 is on another address (https://blob.example/ here). A test can serve a file at a link, or redirect a link.
 
@@ -10,10 +14,13 @@ Its answers must look like the answers of the real ADR. The tests in `tests/api/
 they show when the real ADR changes.
 """
 
+import copy
+import hashlib
 import re
 from collections.abc import AsyncIterator, Callable
 from dataclasses import dataclass, field
-from typing import Any
+from typing import Any, cast
+from urllib.parse import parse_qsl
 
 import httpx2
 import pytest
@@ -51,6 +58,10 @@ def dataset(dataset_id: str, dataset_type: str, resources: list[dict]) -> dict:
 
 def ckan_ok(result: object) -> httpx2.Response:
     return httpx2.Response(200, json={"success": True, "result": result})
+
+
+def _not_found() -> httpx2.Response:
+    return ckan_error(404, "Not found", "Not Found Error")
 
 
 def ckan_error(status: int, message: str, error_type: str = "Authorization Error") -> httpx2.Response:
@@ -100,9 +111,69 @@ def file_response(
     return httpx2.Response(200, content=content, headers={"Content-Type": content_type})
 
 
+@dataclass(frozen=True)
+class Upload:
+    """A file that a call uploaded: the part `upload` of a multipart form."""
+
+    action: str
+    # The other parts of the form
+    fields: dict[str, str]
+    filename: str
+    content_type: str
+    content: bytes
+
+    @property
+    def md5(self) -> str:
+        return hashlib.md5(self.content, usedforsecurity=False).hexdigest().upper()
+
+
+def _parts(request: httpx2.Request) -> list[tuple[dict[str, str], bytes]]:
+    """The parts of a multipart body: the headers of each (the names of its parameters in the Content-Disposition), and its
+    content."""
+    boundary = re.search(r"boundary=([^;]+)", request.headers["Content-Type"])
+    assert boundary, "a multipart body has a boundary"
+    parts = []
+    for raw in request.content.split(b"--" + boundary.group(1).encode())[1:-1]:
+        head, _, content = raw.removeprefix(b"\r\n").partition(b"\r\n\r\n")
+        headers = dict(re.findall(r'(\w+)="([^"]*)"', head.decode()))
+        content_type = re.search(r"Content-Type: (\S+)", head.decode())
+        headers["content_type"] = content_type.group(1) if content_type else ""
+        parts.append((headers, content.removesuffix(b"\r\n")))
+    return parts
+
+
+class _Transport(httpx2.AsyncBaseTransport):
+    """Gives each request to the fake as it is. It reads the body in the pieces that the client sends, and notes how big
+    they are, which `httpx2.MockTransport` does not (it reads all of the body at once)."""
+
+    def __init__(self, fake: FakeAdr):
+        self._fake = fake
+
+    async def handle_async_request(self, request: httpx2.Request) -> httpx2.Response:
+        stream = cast(httpx2.AsyncByteStream, request.stream)
+        pieces = [piece async for piece in stream]
+        self._fake.body_pieces.append([len(piece) for piece in pieces])
+        whole = httpx2.Request(
+            request.method,
+            request.url,
+            headers=request.headers,
+            content=b"".join(pieces),
+            extensions=request.extensions,
+        )
+        return self._fake._handler(whole)
+
+
 @dataclass
 class FakeAdr:
     calls: list[httpx2.Request] = field(default_factory=list)
+    # The sizes of the pieces of the body of each call, in the order of `calls`. A body that is read as one piece is not
+    # streamed.
+    body_pieces: list[list[int]] = field(default_factory=list)
+    # The files that were uploaded, in order
+    uploads: list[Upload] = field(default_factory=list)
+    # The releases of each dataset, and the resources that ADR has (by id), which the calls change
+    releases: dict[str, list[dict[str, str]]] = field(default_factory=lambda: copy.deepcopy(RELEASES))
+    resources: dict[str, dict[str, Any]] = field(default_factory=dict)
     # An action that gives a different answer from the normal one
     failures: dict[str, Callable[[httpx2.Request], httpx2.Response]] = field(default_factory=dict)
     # The answer for each link that is not an action (a download), by the link without its query
@@ -115,7 +186,7 @@ class FakeAdr:
     def http_at(self, adr_url: str) -> httpx2.AsyncClient:
         """The client that the app makes for this `adr_url`, which calls this fake. `http` is the one for
         https://adr.example/."""
-        return create_adr_http_client(Settings(adr_url=adr_url), transport=httpx2.MockTransport(self._handler))
+        return create_adr_http_client(Settings(adr_url=adr_url), transport=_Transport(self))
 
     def fail(self, action: str, response: httpx2.Response):
         self.failures[action] = lambda request: response
@@ -152,8 +223,19 @@ class FakeAdr:
         return [call for call in self.calls if "/api/3/action/" not in call.url.path]
 
     def queries(self, action: str) -> list[dict[str, str]]:
-        """The parameters of each call of the action."""
+        """The parameters of each call of the action, in the query."""
         return [dict(call.url.params) for call in self.calls if call.url.path.endswith(f"/{action}")]
+
+    def forms(self, action: str) -> list[dict[str, str]]:
+        """The parameters of each call of the action that has them in its body: a form, or the parts of a multipart form
+        that are not the file."""
+        return [self._body_fields(call) for call in self.calls if call.url.path.endswith(f"/{action}") and call.content]
+
+    @staticmethod
+    def _body_fields(request: httpx2.Request) -> dict[str, str]:
+        if request.headers["Content-Type"].startswith("multipart/form-data"):
+            return {h["name"]: content.decode() for h, content in _parts(request) if "filename" not in h}
+        return dict(parse_qsl(request.content.decode(), keep_blank_values=True))
 
     def _handler(self, request: httpx2.Request) -> httpx2.Response:
         self.calls.append(request)
@@ -164,9 +246,20 @@ class FakeAdr:
         action = request.url.path.rsplit("/", 1)[-1]
         if action in self.failures:
             return self.failures[action](request)
-        return self._world(action, dict(request.url.params))
+        params = dict(request.url.params)
+        if request.content:
+            params |= self._body_fields(request)
+            if request.headers["Content-Type"].startswith("multipart/form-data"):
+                for headers, content in _parts(request):
+                    if "filename" in headers:
+                        self.uploads.append(
+                            Upload(action, params, headers["filename"], headers["content_type"], content)
+                        )
+        return self._world(action, params)
 
     def _world(self, action: str, params: dict[str, str]) -> httpx2.Response:
+        if action in ("version_delete", "dataset_version_create", "resource_show", "resource_create", "resource_patch"):
+            return self._releases_and_resources(action, params)
         if action == "package_search":
             types = set(re.split(r"\s+OR\s+", re.findall(r"type:\(([^)]*)\)", params["q"])[0]))
             results = [d for d in DATASETS if d["type"] in types]
@@ -179,9 +272,40 @@ class FakeAdr:
                 found = next((d for d in DATASETS if d["id"] == params["id"]), None)
             return ckan_ok(found) if found else ckan_error(404, "Not found", "Not Found Error")
         if action == "dataset_version_list":
-            return ckan_ok(RELEASES.get(params["dataset_id"], []))
+            return ckan_ok(self.releases.get(params["dataset_id"], []))
         if action == "organization_list_for_user":
             return ckan_ok(ORGS)
         if action == "package_activity_list":
             return ckan_ok(ACTIVITIES.get(params["id"], []))
+        pytest.fail(f"The fake ADR does not know the action {action}")
+
+    def _releases_and_resources(self, action: str, params: dict[str, str]) -> httpx2.Response:
+        if action == "version_delete":
+            found = [r for releases in self.releases.values() for r in releases if r["id"] == params["version_id"]]
+            for releases in self.releases.values():
+                releases[:] = [r for r in releases if r["id"] != params["version_id"]]
+            return ckan_ok(None) if found else ckan_error(404, "Not found", "Not Found Error")
+        if action == "dataset_version_create":
+            releases = self.releases.setdefault(params["dataset_id"], [])
+            if any(r["name"] == params["name"] for r in releases):
+                return ckan_error(409, "Version names must be unique per dataset", "Validation Error")
+            release = {
+                "id": f"new-release-{len(self.calls)}",
+                "dataset_id": params["dataset_id"],
+                "name": params["name"],
+            }
+            releases.append(release)
+            return ckan_ok(release)
+        if action == "resource_show":
+            return ckan_ok(self.resources[params["id"]]) if params["id"] in self.resources else _not_found()
+        if action == "resource_create":
+            resource = {k: v for k, v in params.items() if k not in ("package_id", "restricted")}
+            resource["id"] = f"new-resource-{len(self.resources) + 1}"
+            self.resources[resource["id"]] = resource
+            return ckan_ok(resource)
+        if action == "resource_patch":
+            if params["id"] not in self.resources:
+                return _not_found()
+            self.resources[params["id"]] |= params
+            return ckan_ok(self.resources[params["id"]])
         pytest.fail(f"The fake ADR does not know the action {action}")

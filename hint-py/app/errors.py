@@ -153,8 +153,23 @@ class HintrFailedError(Exception):
         self.answer = answer
 
 
+class MissingUploadFileError(Exception):
+    """A file of the version is in the database, but not in the uploads folder. Not for the user to act on, so it is
+    reported as an unexpected error, and what is missing is in the log."""
+
+
 class BadRequestError(Exception):
     """The request is malformed in a way that FastAPI does not already check. The message is for the log."""
+
+
+class MissingParameterError(BadRequestError):
+    def __init__(self, name: str):
+        super().__init__(f"Required request parameter '{name}' is not present")
+
+
+class FormTooLargeError(BadRequestError):
+    def __init__(self):
+        super().__init__("The form in the request body is too large")
 
 
 class EmptyBodyError(BadRequestError):
@@ -198,6 +213,42 @@ class NotOnAdrError(HintError):
 
     def __init__(self, link: str):
         super().__init__("notOnAdr", 400, arguments={"resource": link})
+
+
+class InvalidResourceTypeError(HintError):
+    """The resource type to push to ADR is not one that this app has (see `app/services/adr_push.py`)."""
+
+    def __init__(self):
+        super().__init__("invalidResourceType", 400)
+
+
+class DescriptionRequiredError(HintError):
+    """A file of the outputs is pushed without a description."""
+
+    def __init__(self):
+        super().__init__("descriptionRequired", 400)
+
+
+class ResourceIdRequiredError(HintError):
+    """An input file is pushed without the id of the resource that it replaces."""
+
+    def __init__(self):
+        super().__init__("resourceIdRequired", 400)
+
+
+class FileDoesNotExistError(HintError):
+    """The version has no input file of the type to push."""
+
+    def __init__(self):
+        super().__init__("fileDoesNotExist", 400)
+
+
+class AdrHashUnavailableError(HintError):
+    """ADR did not give the hash of the resource, so the file cannot be compared with it. The reason is not shown: it can
+    be any failure of ADR."""
+
+    def __init__(self):
+        super().__init__("adrHashUnavailable", 500)
 
 
 class AdrResourceError(HintError):

@@ -78,6 +78,31 @@ msgstr "Impossible de charger la ressource, vérifiez la ressource dans ADR {res
 msgid "notOnAdr"
 msgstr "Ce lien ne mène pas à ADR, le fichier ne peut donc pas être importé : {resource}"
 
+# New in hint-py: needs review by a translator.
+#, fuzzy
+msgid "invalidResourceType"
+msgstr "Type de ressource non valide (resourceType)."
+
+# New in hint-py: needs review by a translator.
+#, fuzzy
+msgid "descriptionRequired"
+msgstr "Une description (description) doit être fournie pour un type de ressource de sortie (resourceType)."
+
+# New in hint-py: needs review by a translator.
+#, fuzzy
+msgid "resourceIdRequired"
+msgstr "Un identifiant de ressource (resourceId) doit être fourni pour un type de ressource d'entrée (resourceType)."
+
+# New in hint-py: needs review by a translator.
+#, fuzzy
+msgid "fileDoesNotExist"
+msgstr "Le fichier n'existe pas."
+
+# New in hint-py: needs review by a translator.
+#, fuzzy
+msgid "adrHashUnavailable"
+msgstr "Impossible d'obtenir l'empreinte (hash) du fichier à partir d'ADR."
+
 msgid "adrFetchingDatasetsError"
 msgstr "Une erreur s'est produite lors de la récupération des ensembles de données à partir d'ADR"
 
