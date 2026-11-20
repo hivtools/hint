@@ -27,9 +27,9 @@ import {flushPromises, type VueWrapper} from '@vue/test-utils';
 describe("UploadInputs upload component", () => {
 
     let actions: Mocked<BaselineActions>;
-    let mutations = {};
+    const mutations = {};
 
-    let sapMutations = {};
+    const sapMutations = {};
 
     const mockStepperGetters = {
         editsRequireConfirmation: () => true,

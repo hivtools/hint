@@ -43,8 +43,7 @@ function getStore(modelCalibrateState: Partial<ModelCalibrateState> = {}, partia
     return store;
 }
 
-declare let currentUser: string;
-currentUser = "guest";
+(global as any).currentUser = "guest";
 
 describe("CalibrateResults component", () => {
 
