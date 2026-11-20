@@ -9,13 +9,14 @@ on CI for now.
 
 The tests use the dataset `antarctica-country-estimates-2027` in the organisation `naomi-development-team`. It has a
 release called `Version 1.0`, an output zip, and a PJNZ, a shape and a population file. The user of the key can be in
-other organisations too, so the tests look for this one organisation and do not count them. The tests never write to
-ADR. The import tests write to the test database and to a temporary folder, and use the fake hintr.
+other organisations too, so the tests look for this one organisation and do not count them. The tests of rehydrate use
+another dataset (see `OUTPUT_ZIP_DATASET`). The tests never write to ADR. The import tests write to the test database and to a temporary folder, and use the fake hintr.
 """
 
 import hashlib
 import os
 from collections.abc import AsyncIterator
+from dataclasses import replace
 from pathlib import Path
 
 import httpx2
@@ -26,6 +27,7 @@ from app.clients.adr_client import create_adr_http_client
 from app.config import Settings
 from app.main import app
 from app.schemas import FileType
+from app.services import upload_file_types
 from tests.api.helpers import make_client, version_files
 from tests.hintr import FakeHintr
 from tests.support import USER
@@ -42,6 +44,13 @@ OUTPUT_ZIP = "inputs-unaids-naomi-output-zip"
 PJNZ = "inputs-unaids-spectrum-file"
 SHAPE = "inputs-unaids-geographic"
 POPULATION = "inputs-unaids-population"
+
+# The datasets that have an output zip are restricted to the organisation of their country, and the user of the test key is
+# not in them (in November 2026 `antarctica-country-estimates-2027` was not visible to the key at all). This dataset is
+# public. Its zip is from 2020, so it was not made by the web app and has no project state, but it is a real zip of 13 MB
+# that ADR redirects to its storage, which is what the tests of rehydrate need. Its resource type is the old one.
+OUTPUT_ZIP_DATASET = "malawi-naomi-data-2020-1"
+OUTPUT_ZIP_TYPE = "naomi-output-zip"
 
 
 @pytest_asyncio.fixture
@@ -199,3 +208,56 @@ async def test_a_file_bigger_than_the_limit_is_refused_as_it_is_downloaded(live_
     assert r.status_code == 413, r.text
     assert r.json()["errors"][0]["error"] == "FILE_TOO_LARGE"
     assert list(uploads_dir.iterdir()) == []
+
+
+# ---- Rehydrate from an output zip
+
+
+async def an_output_zip(client: httpx2.AsyncClient) -> dict:
+    """The resource of the zip of OUTPUT_ZIP_DATASET, as the Vue app sends it to `/rehydrate/adr`."""
+    r = await client.get(f"/adr/datasets/{OUTPUT_ZIP_DATASET}")
+    if r.status_code != 200:
+        pytest.skip(f"The dev ADR has no dataset {OUTPUT_ZIP_DATASET} that this key can read ({r.status_code})")
+    [found] = [res for res in r.json()["data"]["resources"] if res["resource_type"] == OUTPUT_ZIP_TYPE]
+    return {"id": found["id"], "name": found["name"], "url": found["url"]}
+
+
+async def test_a_zip_on_adr_is_downloaded_and_read_and_is_refused_as_it_has_no_state(live_importer, hintr):
+    r = await live_importer.post("/rehydrate/adr", json=await an_output_zip(live_importer))
+
+    # It is a zip, and its directory was read: the answer is that it has no state of a project, not that it is not a zip
+    assert r.status_code == 400, r.text
+    assert r.json()["errors"][0]["detail"].startswith("Cannot load model outputs.")
+    assert hintr.calls == []
+
+
+async def test_the_credential_goes_to_adr_and_not_to_its_storage_when_a_zip_is_downloaded(live_importer, hintr):
+    resource = await an_output_zip(live_importer)
+    seen: list[tuple[str, bool]] = []
+
+    async def record(request: httpx2.Request) -> None:
+        seen.append((request.url.host, "Authorization" in request.headers))
+
+    app.state.adr_http.event_hooks["request"].append(record)
+
+    r = await live_importer.post("/rehydrate/adr", json=resource)
+
+    assert r.status_code == 400, r.text
+    adr_host = httpx2.URL(Settings().adr_url).host
+    # The download, which ADR redirects to its storage, and no other call
+    assert seen[0] == (adr_host, True)
+    assert any(host != adr_host and not sent for host, sent in seen)
+    assert not any(sent for host, sent in seen if host != adr_host)
+
+
+async def test_a_zip_bigger_than_the_limit_is_refused_as_it_is_downloaded(live_importer, hintr, monkeypatch):
+    # The storage of ADR does not say how big the file is, so the download is counted as it arrives
+    monkeypatch.setattr(
+        upload_file_types, "OUTPUT_ZIP", replace(upload_file_types.OUTPUT_ZIP, max_upload_bytes=100 * 1024)
+    )
+
+    r = await live_importer.post("/rehydrate/adr", json=await an_output_zip(live_importer))
+
+    assert r.status_code == 413, r.text
+    assert r.json()["errors"][0]["error"] == "FILE_TOO_LARGE"
+    assert hintr.calls == []

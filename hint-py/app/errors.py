@@ -15,6 +15,7 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 from app.clients.responses import DEFAULT_ERROR, HintResponse
 from app.config import get_settings
 from app.messages import negotiate_language, t
+from app.utils.byte_limit import MB
 
 log = structlog.get_logger()
 
@@ -81,7 +82,7 @@ class FileTooLargeError(HintError):
     """An uploaded or imported file is bigger than the limit for its kind of file (see `INPUT_FILE_TYPES`)."""
 
     def __init__(self, max_bytes: int):
-        super().__init__("fileTooLarge", 413, "FILE_TOO_LARGE", {"max_size": f"{max_bytes // (1024 * 1024)} MB"})
+        super().__init__("fileTooLarge", 413, "FILE_TOO_LARGE", {"max_size": f"{max_bytes // MB} MB"})
 
 
 class InvalidFileExtensionError(HintError):
@@ -108,6 +109,35 @@ class MissingCalibrateDataError(HintError):
 
     def __init__(self):
         super().__init__("missingCalibrateData", 400)
+
+
+class FailedZipRehydrateError(HintError):
+    """The zip is not an output zip that this app made: it is not a zip, it has no project state, or the state cannot be
+    read (see `app/services/rehydrate_service.py`)."""
+
+    def __init__(self):
+        super().__init__("failedZipRehydrate", 400)
+
+
+class RehydrateMissingInputFileError(HintError):
+    """An input file that the project state names is not in the uploads folder."""
+
+    def __init__(self):
+        super().__init__("rehydrateMissingInputFile", 400)
+
+
+class RehydrateModelFitIdUnknownError(HintError):
+    """The model fit in the project state is not a task that hintr knows."""
+
+    def __init__(self):
+        super().__init__("rehydrateModelFitIdUnknown", 400)
+
+
+class RehydrateCalibrateIdUnknownError(HintError):
+    """The calibration in the project state is not a task that hintr knows."""
+
+    def __init__(self):
+        super().__init__("rehydrateCalibrateIdUnknown", 400)
 
 
 class MissingResultFileError(Exception):

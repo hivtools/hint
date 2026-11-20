@@ -11,7 +11,7 @@ from app.config import Settings, get_settings
 from app.db.database import create_db_session_factory
 from app.main import app
 from app.schemas import FileType
-from app.services.input_file_service import INPUT_FILE_TYPES
+from app.services.upload_file_types import INPUT_FILE_TYPES
 from tests.adr import FakeAdr
 from tests.api.helpers import create_project, make_client
 from tests.github import ORG, TEAM, FakeGitHub
@@ -95,8 +95,8 @@ def settings_overrides() -> Iterator[dict]:
 
 @pytest.fixture
 def upload_limits(monkeypatch: pytest.MonkeyPatch) -> Callable[..., None]:
-    """Sets the size limit of some kinds of file, or of all of them if none is given, for one test. The real limits are
-    tens or hundreds of MB."""
+    """Sets the size limit of some kinds of file, or of all of them if none is given, for one test. It is the limit of the
+    upload and of the import from ADR. The real limits are tens or hundreds of MB."""
 
     def set_limit(limit: int, *file_types: FileType) -> None:
         for file_type in file_types or tuple(INPUT_FILE_TYPES):

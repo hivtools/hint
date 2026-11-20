@@ -23,7 +23,8 @@ from fastapi.responses import Response
 from app import schemas
 from app.clients.hintr_client import BASELINE_TYPES, Hintr
 from app.schemas import FileType, SuccessResponse, empty_success, success
-from app.services.input_file_service import INPUT_FILE_TYPES, InputFiles, InputFileType
+from app.services.input_file_service import InputFiles
+from app.services.upload_file_types import INPUT_FILE_TYPES, InputFileType
 from app.services.version_files import Files
 
 router = APIRouter(tags=["input files"])
