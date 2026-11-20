@@ -113,7 +113,7 @@ const selectedDatasetId = computed(() => {
         return null
     }
 });
-const select = computed(() => i18next.t("select", store.state.language));
+const select = computed(() => i18next.t("select", {lng: store.state.language}));
 const fetchingDatasets = computed(() => store.state.adr.adrData[props.datasetType].fetchingDatasets);
 const fetchingError = computed(() => store.state.adr.adrData[props.datasetType].fetchingError);
 const datasets = computed(() => store.state.adr.adrData[props.datasetType].datasets);
