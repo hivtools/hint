@@ -238,12 +238,12 @@ then be the same user on ADR.
 
 `POST /rehydrate/zip` (an upload) and `POST /rehydrate/adr` (a zip on ADR, which is downloaded as the user, as an import is)
 give the Vue app the state and the notes of a project from an output zip, so that it can set the project up
-(`app/services/rehydrate.py`). A guest may upload a zip. A zip on ADR needs a login.
+(`app/services/rehydrate_service.py`). A guest may upload a zip. A zip on ADR needs a login.
 
 - Only `info/project_state.json` and `notes.txt` are read. Nothing is extracted and nothing is stored, and the version
   gets no files from it (the Vue app sets them next, with `POST /session/files`).
-- A zip is read from a temporary file, in pieces, and each entry has a limit (`MAX_STATE_BYTES`, `MAX_NOTES_BYTES`), so a
-  zip bomb does not fill the memory. So does the list of the entries (`MAX_DIRECTORY_BYTES`). A zip that cannot be read
+- A zip is read from a temporary file, in pieces (`app/zip_files.py`), and each entry has a limit (`MAX_STATE_BYTES`,
+  `MAX_NOTES_BYTES`), so a zip bomb does not fill the memory. So does the list of the entries (`MAX_DIRECTORY_BYTES`). A zip that cannot be read
   has the same answer as a zip with no state: 400 `failedZipRehydrate`.
 - The input files that the state names must be in the uploads folder (matched by the name, the last part of the path), and
   hintr must know the model fit and the calibration (`GET /task/{id}/exists`).
