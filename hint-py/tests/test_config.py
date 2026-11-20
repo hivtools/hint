@@ -81,3 +81,13 @@ def test_a_production_api_does_not_start_with_a_setting_for_development_only():
 
 def test_a_development_api_can_have_the_settings_for_development_only():
     assert Settings(environment="development", adr_api_key="a-key")
+
+
+def test_no_github_team_is_set_by_default_so_nobody_gets_in(monkeypatch):
+    assert (Settings().github_auth_org, Settings().github_auth_team_slug) == ("", "")
+    assert Settings().github_api_url == "https://api.github.com"
+    monkeypatch.setenv("HINT_GITHUB_AUTH_ORG", "hivtools")
+    monkeypatch.setenv("HINT_GITHUB_AUTH_TEAM_SLUG", "naomi-debug")
+    monkeypatch.setenv("HINT_GITHUB_API_URL", "https://github.example")
+    assert (Settings().github_auth_org, Settings().github_auth_team_slug) == ("hivtools", "naomi-debug")
+    assert Settings().github_api_url == "https://github.example"

@@ -12,17 +12,33 @@ The project endpoints name a project or version in their path. `owned_project` a
 user's before the endpoint runs, and give the endpoint an `OwnedProject` or `OwnedVersion`. The repositories do not check
 who owns what, so only pass them ids that have been checked. Whether a version is the user's is decided in one place,
 `find_owned_version`, which `current_version_id` and `GET /project/current` use too.
+
+A few endpoints are for the developers, not for the users of the app. They do not use the hint login at all. The caller
+sends a GitHub token, and `github_team_member` lets them in only if the token's user is in a set GitHub team.
 """
 
 from dataclasses import dataclass
 from typing import Annotated
 
+import structlog
 from fastapi import Depends, Header, HTTPException
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from pydantic import SecretStr
 
 from app import schemas
+from app.clients.github_client import GitHub
+from app.config import Settings, get_settings
 from app.db.project_repository import ProjectRepository, get_project_repository
 from app.db.version_repository import VersionRepository, get_version_repository
-from app.errors import InvalidVersionError, ProjectDoesNotExistError, VersionDoesNotExistError
+from app.errors import (
+    GitHubTokenRequiredError,
+    InvalidVersionError,
+    NotInGitHubTeamError,
+    ProjectDoesNotExistError,
+    VersionDoesNotExistError,
+)
+
+log = structlog.get_logger()
 
 GUEST_USER = "guest"
 
@@ -165,3 +181,55 @@ async def owned_parent_version(
 ProjectOfUser = Annotated[OwnedProject, Depends(owned_project)]
 VersionOfUser = Annotated[OwnedVersion, Depends(owned_version)]
 ParentVersionOfUser = Annotated[OwnedVersion, Depends(owned_parent_version)]
+
+
+@dataclass(frozen=True)
+class GitHubUser:
+    """A member of the GitHub team that may use the developer endpoints."""
+
+    login: str
+
+
+# Reads "Authorization: Bearer <token>". Without auto_error, a missing header or another scheme gives None, so that this
+# API answers with its own error. It also puts the scheme in the API docs.
+_bearer = HTTPBearer(
+    auto_error=False, description="A GitHub token of a member of the team in HINT_GITHUB_AUTH_TEAM_SLUG"
+)
+
+
+async def github_team_member(
+    credentials: Annotated[HTTPAuthorizationCredentials | None, Depends(_bearer)],
+    settings: Annotated[Settings, Depends(get_settings)],
+    github: GitHub,
+) -> GitHubUser:
+    """The caller, if their GitHub token is the token of a member of the team in the settings.
+
+    It does not look at the hint login: a logged in user without a token does not get in. The checks, in order:
+
+    - No token: 401 `githubTokenRequired`.
+    - No team in the settings: 403 `notInGitHubTeam`. Nobody gets in, and GitHub is not called.
+    - GitHub does not accept the token: 401 `githubTokenInvalid`.
+    - The user is not an active member of the team: 403 `notInGitHubTeam`.
+    - GitHub does not answer as expected: 502 `githubFailed`.
+
+    Each check calls GitHub twice (who the user is, then the team). Nothing is kept between requests.
+
+    The token is a secret. It is only sent to GitHub. The log has the outcome and the GitHub login (a public user name),
+    which says who downloaded what.
+    """
+    if credentials is None:
+        raise GitHubTokenRequiredError()
+    token = SecretStr(credentials.credentials)
+    org, team = settings.github_auth_org, settings.github_auth_team_slug
+    if not org or not team:
+        log.warning("No GitHub team is set (HINT_GITHUB_AUTH_ORG, HINT_GITHUB_AUTH_TEAM_SLUG), so nobody gets in")
+        raise NotInGitHubTeamError()
+    login = await github.login(token)
+    if not await github.is_team_member(token, org, team, login):
+        log.warning("GitHub user is not in the team", github_login=login, org=org, team=team)
+        raise NotInGitHubTeamError()
+    log.info("GitHub user is in the team", github_login=login, org=org, team=team)
+    return GitHubUser(login=login)
+
+
+GitHubTeamMember = Annotated[GitHubUser, Depends(github_team_member)]

@@ -11,6 +11,7 @@ from app.db.database import create_db_session_factory
 from app.main import app
 from tests.adr import FakeAdr
 from tests.api.helpers import create_project, make_client
+from tests.github import ORG, TEAM, FakeGitHub
 from tests.hintr import FakeHintr
 from tests.support import ADR_KEY, OTHER_USER, USER
 
@@ -63,6 +64,21 @@ async def adr(adr: FakeAdr) -> FakeAdr:
     """The same ADR, now the one that the app calls."""
     app.state.adr_http = adr.http
     return adr
+
+
+@pytest_asyncio.fixture
+async def github(github: FakeGitHub) -> FakeGitHub:
+    """The same GitHub, now the one that the app calls."""
+    app.state.github_http = github.http
+    return github
+
+
+@pytest.fixture
+def github_team(settings_overrides: dict) -> tuple[str, str]:
+    """The GitHub team whose members may download a debug zip, as in a real deployment."""
+    settings_overrides["github_auth_org"] = ORG
+    settings_overrides["github_auth_team_slug"] = TEAM
+    return ORG, TEAM
 
 
 @pytest.fixture

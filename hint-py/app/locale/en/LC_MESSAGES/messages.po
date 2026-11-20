@@ -111,3 +111,17 @@ msgstr "ADR request timed out"
 
 msgid "adrBadGateway"
 msgstr "Failed to get response from ADR, try again later."
+
+msgid "githubTokenRequired"
+msgstr "A GitHub token is needed. Send it in the Authorization header as \"Bearer <token>\"."
+
+msgid "githubTokenInvalid"
+msgstr "GitHub did not accept the token. Check that it is correct and has not expired."
+
+msgid "notInGitHubTeam"
+msgstr ""
+"You may not download this. Your GitHub user must be a member of the team that may download debug files, and the "
+"token must be able to read the team (a classic token needs the read:org scope)."
+
+msgid "githubFailed"
+msgstr "Could not check the GitHub token, because GitHub did not answer as expected. Try again later."

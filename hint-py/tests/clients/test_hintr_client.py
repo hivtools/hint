@@ -4,9 +4,11 @@ These apply to every call to hintr, whichever endpoint makes it.
 """
 
 import json
+from collections.abc import AsyncIterator
 
 import httpx2
 import pytest
+from fastapi.responses import StreamingResponse
 from pydantic import ValidationError
 
 from app.clients.hintr_client import HintrClient
@@ -271,3 +273,119 @@ async def test_a_task_id_cannot_change_the_path_of_a_result(client, hintr):
         b"/calibrate/result/path/a%3Fb%23c",
         b"/download/result/path/d%2Fe",
     ]
+
+
+# ---- The debug zip of a model run: a file that goes on to the browser in pieces
+
+ZIP_HEADERS = {
+    "Content-Type": "application/octet-stream",
+    "Content-Disposition": 'attachment; filename="t1_2026-11-19-10-00-00_naomi_debug.zip"',
+}
+
+
+async def pieces(*chunks: bytes, then: Exception | None = None) -> AsyncIterator[bytes]:
+    """A body that arrives in pieces, and then stops with `then` if it is given.
+
+    A real answer is always a stream. A fake answer made from bytes is read already, so it cannot be streamed again."""
+    for chunk in chunks:
+        yield chunk
+    if then is not None:
+        raise then
+
+
+async def body(response: StreamingResponse) -> bytes:
+    received = b""
+    async for chunk in response.body_iterator:
+        assert isinstance(chunk, bytes)
+        received += chunk
+    return received
+
+
+async def test_the_debug_zip_is_sent_in_pieces_with_hintrs_headers(client, hintr):
+    hintr.answer(200, content=pieces(b"PK\x03\x04", b"more of the zip"), headers=ZIP_HEADERS)
+
+    response = await client.model_debug("t1")
+
+    assert await body(response) == b"PK\x03\x04more of the zip"
+    assert response.headers["content-type"] == "application/octet-stream"
+    assert response.headers["content-disposition"] == ZIP_HEADERS["Content-Disposition"]
+    [call] = hintr.calls
+    assert (call.method, call.url.path) == ("GET", "/model/debug/t1")
+    # Not compressed, so the bytes and the length go on as they are
+    assert call.headers["Accept-Encoding"] == "identity"
+
+
+async def test_the_length_of_the_zip_goes_on(client, hintr):
+    hintr.answer(200, content=pieces(b"PK the zip"), headers={**ZIP_HEADERS, "Content-Length": "10"})
+    response = await client.model_debug("t1")
+    assert response.headers["content-length"] == "10"
+    assert await body(response) == b"PK the zip"
+
+
+async def test_a_zip_with_no_content_type_is_sent_as_bytes(client, hintr):
+    hintr.answer(200, content=pieces(b"PK"))
+    assert (await client.model_debug("t1")).headers["content-type"] == "application/octet-stream"
+
+
+async def test_other_headers_of_hintr_do_not_go_on(client, hintr):
+    hintr.answer(200, content=pieces(b"PK"), headers={**ZIP_HEADERS, "Set-Cookie": "a=b", "Server": "R"})
+    response = await client.model_debug("t1")
+    assert "set-cookie" not in response.headers
+    assert "server" not in response.headers
+
+
+async def test_a_task_id_cannot_change_the_path_of_the_debug_zip(client, hintr):
+    hintr.answer(200, content=pieces(b"PK"))
+    await client.model_debug("a?b/c")
+    assert hintr.calls[0].url.raw_path == b"/model/debug/a%3Fb%2Fc"
+
+
+async def test_the_answer_of_hintr_is_closed_when_the_zip_is_sent(client, hintr):
+    answers = []
+    hintr.respond = lambda request: answers.append(httpx2.Response(200, content=pieces(b"PK"))) or answers[-1]
+    response = await client.model_debug("t1")
+    await body(response)
+    assert answers[0].is_closed
+
+
+@pytest.mark.parametrize("status", [400, 404, 500])
+async def test_a_failure_of_hintr_is_raised_with_hintrs_own_answer_for_the_debug_zip(client, hintr, status):
+    invalid_task = {
+        "status": "failure",
+        "errors": [{"error": "INVALID_TASK", "detail": "Task 'x' does not exist"}],
+        "data": None,
+    }
+    hintr.answer(status, json=invalid_task)
+
+    with pytest.raises(HintrFailedError) as raised:
+        await client.model_debug("x")
+
+    assert (raised.value.answer.status_code, raised.value.answer.envelope) == (status, invalid_task)
+
+
+async def test_no_answer_from_hintr_is_raised_as_a_failure_for_the_debug_zip(client, hintr):
+    hintr.fail_to_connect(httpx2.ConnectError("refused"))
+
+    with pytest.raises(HintrFailedError) as raised:
+        await client.model_debug("t1")
+
+    assert raised.value.answer == HintResponse(500, failure("No response returned. The request may have timed out."))
+
+
+async def test_a_failure_whose_body_does_not_arrive_is_no_answer(client, hintr):
+    hintr.answer(400, content=pieces(b'{"status": "fail', then=httpx2.ReadError("connection reset")))
+
+    with pytest.raises(HintrFailedError) as raised:
+        await client.model_debug("t1")
+
+    assert raised.value.answer == HintResponse(500, failure("No response returned. The request may have timed out."))
+
+
+async def test_a_zip_that_stops_part_way_cuts_off_the_answer_and_is_logged(client, hintr, caplog):
+    hintr.answer(200, content=pieces(b"PK", then=httpx2.ReadError("connection reset")), headers=ZIP_HEADERS)
+    response = await client.model_debug("t1")
+
+    with pytest.raises(httpx2.ReadError):
+        await body(response)
+
+    assert [r.path for r in caplog.records if r.getMessage() == "hintr stopped sending a file"] == ["/model/debug/t1"]

@@ -123,3 +123,21 @@ msgstr "A solicitação ao ADR expirou."
 
 msgid "adrBadGateway"
 msgstr "Falha ao obter resposta do ADR. Tente novamente mais tarde."
+
+# New in hint-py: needs a check by a translator.
+msgid "githubTokenRequired"
+msgstr "É necessário um token do GitHub. Envie-o no cabeçalho Authorization no formato \"Bearer <token>\"."
+
+# New in hint-py: needs a check by a translator.
+msgid "githubTokenInvalid"
+msgstr "O GitHub não aceitou o token. Verifique se está correto e se não expirou."
+
+# New in hint-py: needs a check by a translator.
+msgid "notInGitHubTeam"
+msgstr ""
+"Não pode descarregar isto. O seu utilizador do GitHub tem de ser membro da equipa autorizada a descarregar ficheiros "
+"de depuração, e o token tem de poder ler a equipa (um token clássico precisa do âmbito read:org)."
+
+# New in hint-py: needs a check by a translator.
+msgid "githubFailed"
+msgstr "Não foi possível verificar o token do GitHub, porque o GitHub não respondeu como esperado. Tente novamente mais tarde."
