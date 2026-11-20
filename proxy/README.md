@@ -45,12 +45,12 @@ browser --cookie--> nginx --(auth_request, cookie)--> Kotlin GET /internal/whoam
   never log it or put it in a response or an error (`/items/whoami` says only whether there is one). It is sized for the
   32k buffer of `/_whoami` (an Auth0 JWT is a few KB, and a user with a token is never a guest with a version list), and
   the Python server also limits the size of a request's headers, so check that if the tokens grow past a few KB.
-- Some paths have more than one method, and only some of the methods have moved to Python. A `location` cannot choose by
-  method. `/adr/datasets/{id}/releases` is an example: GET reads the releases, and POST creates one. Its `location` is a
-  regular expression. It sends every method except GET to Kotlin with `if ($request_method != GET) { return 418; }`.
-  (`return` is the only safe thing to do in an `if`.) `error_page 418 = @kotlin_release;` catches that error. It sends
-  the request to Kotlin from a named location. When you add a path like this, test both methods through the proxy. When
-  the POST moves to Python, replace this with one `location`.
+- A `location` cannot choose by method, so every method of a path goes to the same app. Port the methods of a path
+  together. `/adr/datasets/{id}/releases` has GET (read the releases) and POST (make a release), and both are Python's.
+- The push to ADR, `POST /adr/datasets/{id}/resource/{resourceType}/{downloadId}`, has a regular expression `location`
+  with one part of the path for each `{...}`. Nothing else under `/adr/datasets/` goes to Python because of it. It uses
+  `snippets/python.conf`, so the request has the identity headers (a guest is refused, and the access token calls ADR as
+  the user). The request has a few small form fields and no file: the file is read by Python from the shared folders.
 - `GET /model/debug/{id}` (the debug zip of a model run) is for developers, and does not use the hint login. Its
   `location` (a regular expression) includes `snippets/python-github.conf` instead of `python.conf`. That snippet has
   no `auth_request`, so a caller with no session is not turned away, and Kotlin is not asked. It passes on the client's

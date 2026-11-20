@@ -54,19 +54,17 @@ server {
     # Config only. /adr/schemas/ (trailing slash) stays with Kotlin, as the rest of /adr/ does
     location = /adr/schemas { include snippets/python.conf; }
     # Reading from ADR. Only these exact paths go to Python. Kotlin keeps the same paths with a trailing slash, and
-    # everything else under /adr/ that is not listed here (the key, the VMMC and output zip imports, pushing).
+    # everything else under /adr/ that is not listed here (the key, and the VMMC and output zip imports).
     location = /adr/datasets { include snippets/python.conf; }
     location = /adr/orgs { include snippets/python.conf; }
     location ~ ^/adr/datasets/[^/]+$ { include snippets/python.conf; }
-    # A GET goes to Python. A POST to the same path creates a release, and Kotlin still does that. A `location` cannot
-    # choose by method, so the `if` below sends every other method to Kotlin. `return` is the only safe thing to do in
-    # an `if`. Its error page is a named location that proxies to Kotlin (see proxy/README.md).
-    location ~ ^/adr/datasets/[^/]+/releases$ {
-        error_page 418 = @kotlin_release;
-        if ($request_method != GET) { return 418; }
-        include snippets/python.conf;
-    }
-    location @kotlin_release { include snippets/kotlin.conf; }
+    # The releases of a dataset: GET reads them and POST makes one (and deletes the release with the same name first). Both
+    # are Python's, so every method goes to Python.
+    location ~ ^/adr/datasets/[^/]+/releases$ { include snippets/python.conf; }
+    # Push a file to ADR as a resource of a dataset: an output of the model, or one of the version's input files. Only this
+    # path shape goes to Python (the Vue app calls it without a trailing slash), so nothing else under /adr/datasets/ changes
+    # owner. The id of the dataset, the resource type and the download id are one part of the path each.
+    location ~ ^/adr/datasets/[^/]+/resource/[^/]+/[^/]+$ { include snippets/python.conf; }
     # Import an input file from ADR into the version. Only these exact paths go to Python (the Vue app calls them
     # without a trailing slash). /adr/vmmc and /adr/output stay with Kotlin.
     location = /adr/pjnz { include snippets/python.conf; }
