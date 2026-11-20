@@ -62,6 +62,15 @@ describe("lazyStep", () => {
         expect(wrapper.findComponent(StepLoadError).exists()).toBe(false);
     });
 
+    it("does not retry when a stylesheet failed, as the retry would show the step without its CSS", async () => {
+        const loader = vi.fn().mockRejectedValue(new Error("Unable to preload CSS for http://localhost/assets/Step-abc.css"));
+        const errorHandler = vi.fn();
+        const wrapper = mountStep(loader, errorHandler);
+        await flushPromises(); // no timer: the error shows at once
+        expect(loader).toHaveBeenCalledTimes(1);
+        expect(wrapper.findComponent(StepLoadError).exists()).toBe(true);
+    });
+
     it("shows the error component when the retry fails too", async () => {
         const loader = vi.fn().mockRejectedValue(new Error("Failed to fetch dynamically imported module"));
         const errorHandler = vi.fn();

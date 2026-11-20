@@ -16,6 +16,11 @@ export const stepLoaders: Record<number, () => Promise<unknown>> = {
 
 const RETRY_DELAY_MS = 1000;
 
+// In a production build, Vite loads the stylesheet of a step before its script, and it rejects with
+// this message when the stylesheet fails. Its helper does not add a stylesheet that is already on the
+// page, and the failed one stays. So a retry would show the step without its CSS.
+const isStylesheetError = (error: Error) => /preload css/i.test(error.message);
+
 export const lazyStep = (loader: AsyncComponentLoader) => defineAsyncComponent({
     loader,
     loadingComponent: StepLoading,
@@ -23,9 +28,9 @@ export const lazyStep = (loader: AsyncComponentLoader) => defineAsyncComponent({
     // Show no spinner when the file loads fast (for example when the prefetch has loaded it)
     delay: 200,
     // One retry, for a connection that dropped. It cannot fix a file that a deploy removed. For that,
-    // the error component asks the user to reload.
-    onError(_error, retry, fail, attempts) {
-        if (attempts <= 1) {
+    // and when a stylesheet failed, the error component asks the user to reload.
+    onError(error, retry, fail, attempts) {
+        if (attempts <= 1 && !isStylesheetError(error)) {
             setTimeout(retry, RETRY_DELAY_MS);
         } else {
             fail();
