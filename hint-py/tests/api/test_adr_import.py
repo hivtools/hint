@@ -493,7 +493,7 @@ async def test_a_chunked_file_is_stored_whole(importer, adr, uploads_dir):
 
 
 async def test_a_file_bigger_than_memory_is_stored_whole(importer, adr, uploads_dir, monkeypatch):
-    monkeypatch.setattr("app.services.adr_imports.IN_MEMORY_BYTES", 8)
+    monkeypatch.setattr("app.clients.adr_client.IN_MEMORY_BYTES", 8)
     content = b"0123456789" * 7
     adr.answer(LINK, file_response(content, chunked=True))
 

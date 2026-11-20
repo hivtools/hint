@@ -12,6 +12,7 @@ from app.config import get_settings
 from app.db.database import create_db_session_factory, create_engine
 from app.errors import register_error_handlers
 from app.logging_setup import configure_logging
+from app.middleware.upload_limit import UploadSizeLimitMiddleware
 from app.routers import (
     adr,
     calibrate_results,
@@ -21,11 +22,11 @@ from app.routers import (
     items,
     model,
     projects,
+    rehydrate,
     review_inputs,
 )
-from app.services.input_file_service import upload_limit
+from app.services.upload_file_types import upload_file_types
 from app.telemetry import trace_outgoing_calls
-from app.upload_limit import UploadSizeLimitMiddleware
 
 # pyproject.toml is the one place the version is set. The project is not installed as a package, so there is no
 # package metadata to read it from.
@@ -50,7 +51,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None]:
 
 app = FastAPI(lifespan=lifespan)
 register_error_handlers(app)
-app.add_middleware(UploadSizeLimitMiddleware, limit_of=upload_limit)
+app.add_middleware(UploadSizeLimitMiddleware, file_types=upload_file_types)
 
 app.include_router(items.router)
 app.include_router(projects.router)
@@ -61,6 +62,7 @@ app.include_router(model.router)
 app.include_router(downloads.router)
 app.include_router(calibrate_results.router)
 app.include_router(adr.router)
+app.include_router(rehydrate.router)
 
 
 @app.get("/version")

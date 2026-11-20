@@ -140,3 +140,36 @@ async def test_a_failure_while_writing_leaves_nothing_behind(tmp_path):
     with pytest.raises(DiskFull):
         await UploadStorage(str(tmp_path)).save(Fails(), "a.csv")
     assert list(tmp_path.iterdir()) == []
+
+
+async def test_a_file_that_is_in_the_folder_is_found_by_its_stored_name(tmp_path):
+    storage = UploadStorage(str(tmp_path))
+    name = await storage.save(io.BytesIO(b"abc"), "a.csv")
+
+    assert await storage.has_file(name)
+    assert not await storage.has_file("OTHER.csv")
+
+
+async def test_a_folder_in_the_folder_is_not_a_file(tmp_path):
+    (tmp_path / "folder").mkdir()
+
+    assert not await UploadStorage(str(tmp_path)).has_file("folder")
+
+
+async def test_a_folder_that_is_not_there_has_no_files(tmp_path):
+    assert not await UploadStorage(str(tmp_path / "not-there")).has_file("a.csv")
+
+
+@pytest.mark.parametrize(
+    "name",
+    ["", ".", "..", "sub/ABC.csv", "../outside.txt", "/etc/passwd", "sub\\ABC.csv", "..\\outside.txt", "a\x00.csv"],
+    ids=repr,
+)
+async def test_a_name_that_is_not_the_name_of_a_file_of_the_folder_is_not_found(tmp_path, name):
+    folder = tmp_path / "uploads"
+    (folder / "sub").mkdir(parents=True)
+    (folder / "sub" / "ABC.csv").write_bytes(b"x")
+    (tmp_path / "outside.txt").write_bytes(b"x")
+    (folder / "sub\\ABC.csv").write_bytes(b"x")
+
+    assert not await UploadStorage(str(folder)).has_file(name)

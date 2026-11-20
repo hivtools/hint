@@ -402,6 +402,40 @@ async def test_a_download_stops_as_soon_as_it_passes_the_limit(client, adr):
     assert target.getvalue() == b"1234567890"
 
 
+async def test_a_spooled_download_gives_the_content_in_a_file_that_is_deleted_after_it(client, adr):
+    link = "https://adr.example/a.csv"
+    adr.answer(link, file_response(b"abcdef"))
+
+    async with client.spooled_download(client.file_at(link), 10) as (answer, content):
+        assert answer == HintResponse.success(None)
+        content.seek(0)
+        assert content.read() == b"abcdef"
+
+    assert content.closed
+
+
+async def test_a_spooled_download_that_is_larger_than_memory_is_on_the_disk(client, adr, monkeypatch):
+    monkeypatch.setattr("app.clients.adr_client.IN_MEMORY_BYTES", 4)
+    link = "https://adr.example/a.csv"
+    adr.answer(link, file_response(b"abcdefgh", chunked=True))
+
+    async with client.spooled_download(client.file_at(link), 10) as (answer, content):
+        assert answer.ok
+        assert content._rolled
+        content.seek(0)
+        assert content.read() == b"abcdefgh"
+
+
+async def test_a_spooled_download_that_fails_gives_the_failure(client, adr):
+    link = "https://adr.example/a.csv"
+    adr.answer(link, file_response(b"abcdef"))
+
+    async with client.spooled_download(client.file_at(link), 5) as (answer, content):
+        assert answer == failure(413, "The file is too large. Files can be up to 0 MB.", "FILE_TOO_LARGE")
+
+    assert content.closed
+
+
 async def test_a_download_that_gets_no_answer_is_the_failure_of_any_call_that_gets_none(client, adr):
     link = "https://adr.example/a.csv"
     adr.fail_to_download(link, httpx2.ConnectError("connection refused"))

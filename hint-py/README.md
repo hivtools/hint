@@ -199,6 +199,9 @@ They are skipped if `ADR_TEST_KEY` is not set. The dev ADR only accepts some IP 
 these tests fail on CI for now. They only read from ADR. They use the dataset `antarctica-country-estimates-2027` in the
 organisation `naomi-development-team`, which needs a release called `Version 1.0`, an output zip, and a PJNZ, a shape and
 a population file (the import tests download these three).
+The tests of rehydrate (`POST /rehydrate/adr`) use another dataset, `malawi-naomi-data-2020-1`, which is public. The output
+zips of the other datasets are restricted to the organisation of their country. Its zip was not made by the web app, so
+these tests cannot show a project that is loaded, only that a real zip is downloaded and read and refused.
 
 **Settings.** How the API calls ADR for a user:
 
@@ -226,10 +229,28 @@ then be the same user on ADR.
 - ADR answers with a redirect to its storage, which is on another address. The API follows it, and does not send the
   credential there. The storage does not need it: the redirect has a short-lived token for the file in its query.
 - The extension is checked before the download, and the size limit of the type of file (`INPUT_FILE_TYPES` in
-  `app/services/input_file_service.py`) applies to the download: it stops as soon as it passes the limit, with the same
+  `app/services/upload_file_types.py`) applies to the download: it stops as soon as it passes the limit, with the same
   413 as an upload.
 - The HTTP client of ADR, which every user's calls share, keeps no cookies. A cookie that ADR set for one user would
   otherwise go with the calls of the others.
+
+### Rehydrate (loading a project from an output zip)
+
+`POST /rehydrate/zip` (an upload) and `POST /rehydrate/adr` (a zip on ADR, which is downloaded as the user, as an import is)
+give the Vue app the state and the notes of a project from an output zip, so that it can set the project up
+(`app/services/rehydrate.py`). A guest may upload a zip. A zip on ADR needs a login.
+
+- Only `info/project_state.json` and `notes.txt` are read. Nothing is extracted and nothing is stored, and the version
+  gets no files from it (the Vue app sets them next, with `POST /session/files`).
+- A zip is read from a temporary file, in pieces (`app/utils/zip_files.py`), and each entry has a limit
+  (`MAX_STATE_BYTES`, `MAX_NOTES_BYTES`), so a zip bomb does not fill the memory. So does the list of the entries
+  (`MAX_DIRECTORY_BYTES`). A zip that cannot be read
+  has the same answer as a zip with no state: 400 `failedZipRehydrate`.
+- The input files that the state names must be in the uploads folder (matched by the name, the last part of the path), and
+  hintr must know the model fit and the calibration (`GET /task/{id}/exists`).
+- The zip itself has a size limit of 500 MB (`OUTPUT_ZIP` in `app/services/upload_file_types.py`): the upload is stopped at it, with the same 413
+  `FILE_TOO_LARGE` as an input file, and so is the download from ADR. The reasons for the number are in D18 of
+  [docs/porting-checklist.md](../docs/porting-checklist.md).
 
 ### Debug zips (GitHub)
 

@@ -218,6 +218,44 @@ async def test_the_path_of_the_results_of_a_calibration_is_the_one_hintr_gives(c
     assert [(c.method, c.url.path, c.content) for c in hintr.calls] == [("GET", "/calibrate/result/path/t1", b"")]
 
 
+@pytest.mark.parametrize(("exists", "expected"), [(True, True), (False, False), ("true", False), (None, False)])
+async def test_whether_a_task_exists_is_what_hintr_says(client, hintr, exists, expected):
+    hintr.answer(200, json=success({"exists": exists}))
+
+    assert await client.task_exists("t1") is expected
+    assert [(c.method, c.url.path, c.content) for c in hintr.calls] == [("GET", "/task/t1/exists", b"")]
+
+
+@pytest.mark.parametrize("data", [None, [], "yes", {}])
+async def test_an_answer_without_exists_means_that_the_task_does_not_exist(client, hintr, data):
+    hintr.answer(200, json=success(data))
+
+    assert await client.task_exists("t1") is False
+
+
+@pytest.mark.parametrize("status", [400, 404, 500])
+async def test_a_failure_of_hintr_is_raised_and_is_not_a_task_that_does_not_exist(client, hintr, status):
+    hintr.answer(status, json=HINTR_FAILURE)
+
+    with pytest.raises(HintrFailedError) as raised:
+        await client.task_exists("t1")
+
+    assert raised.value.answer.status_code == (status if status <= 404 else 500)
+
+
+async def test_no_answer_from_hintr_is_raised_when_asking_if_a_task_exists(client, hintr):
+    hintr.fail_to_connect(httpx2.ConnectError("refused"))
+
+    with pytest.raises(HintrFailedError):
+        await client.task_exists("t1")
+
+
+async def test_a_task_id_cannot_change_the_path_when_asking_if_it_exists(client, hintr):
+    await client.task_exists("a?b#c d/e")
+
+    assert hintr.calls[0].url.raw_path == b"/task/a%3Fb%23c%20d%2Fe/exists"
+
+
 async def test_where_a_download_is_comes_with_what_names_it(client, hintr):
     metadata = {"id": "t1", "areas": "MWI", "type": "spectrum", "file_label": "naomi-output", "file_extension": ".zip"}
     hintr.answer(200, json=success({"path": "t1/out.zip", "metadata": metadata}))
