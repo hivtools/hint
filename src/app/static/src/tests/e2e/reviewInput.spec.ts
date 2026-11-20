@@ -21,15 +21,15 @@ test("can view time series plot", async ({ projectPage }) => {
     // and we're on first page
     await expect(page.locator("#page-number-input")).toHaveValue("1");
     await expect(page.getByRole("button", { name: "Previous page" })).toBeDisabled();
-    await expect(page.getByRole("button", { name: "Next page" })).not.toBeDisabled();
+    await expect(page.getByRole("button", { name: "Next page" })).toBeEnabled();
 
     // When I click to open next page
     await page.getByRole("button", { name: "Next page" }).click();
 
     // We're on page 2
     await expect(page.locator("#page-number-input")).toHaveValue("2");
-    await expect(page.getByRole("button", { name: "Previous page" })).not.toBeDisabled();
-    await expect(page.getByRole("button", { name: "Next page" })).not.toBeDisabled();
+    await expect(page.getByRole("button", { name: "Previous page" })).toBeEnabled();
+    await expect(page.getByRole("button", { name: "Next page" })).toBeEnabled();
 
     // Plot has updated
     await expect(page.locator("#review-inputs")).toHaveScreenshot("time-series-page2.png", {timeout: 6000});
@@ -39,7 +39,7 @@ test("can view time series plot", async ({ projectPage }) => {
 
     // Paging is updated
     await expect(page.locator("#page-number-input")).toHaveValue("3");
-    await expect(page.getByRole("button", { name: "Previous page" })).not.toBeDisabled();
+    await expect(page.getByRole("button", { name: "Previous page" })).toBeEnabled();
     await expect(page.getByRole("button", { name: "Next page" })).toBeDisabled();
 
     // When I change area level to region
@@ -94,7 +94,7 @@ test("can view time series plot", async ({ projectPage }) => {
     await page.locator('.modal-backdrop').first().click({position: {x: 10, y: 10}});
 
     // Then dialog has closed
-    await expect(page.locator('div:nth-child(2) > .modal-dialog > .modal-content')).not.toBeVisible();
+    await expect(page.locator('div:nth-child(2) > .modal-dialog > .modal-content')).toBeHidden();
 
     // When I select three checkboxes and click the show selected button
     await page.locator('input:nth-child(6)').check();
