@@ -95,9 +95,19 @@ npm run lint
 ```
 
 CI fails if there are lint errors. The config is `eslint.config.ts`. We use the basic ESLint, TypeScript and Vue
-recommendations. ESLint checks the app and the config files; it does not check the tests. Our only custom rule: you can import
-`rawDeepClone` only in Vuex actions and mutations, because Vue does not track its reads, so a `computed` or `watch`
-that uses it does not update. ESLint does not check the indentation. The IntelliJ style files indent the content of the
+recommendations. ESLint checks the app, the tests and the config files. As in create-vue, the unit and integration tests
+also get the recommended rules of [`@vitest/eslint-plugin`](https://github.com/vitest-dev/eslint-plugin-vitest), and the
+Playwright tests get the recommended rules of
+[`eslint-plugin-playwright`](https://github.com/mskelton/eslint-plugin-playwright).
+
+Our custom rules:
+
+- You can import `rawDeepClone` only in Vuex actions and mutations (and in the tests), because Vue does not track its
+  reads, so a `computed` or `watch` that uses it does not update.
+- `vitest/expect-expect` (a test must call `expect`) also accepts our helper functions whose names start with
+  `expect`, `assert`, `check` or `test`, for example `expectTranslated`.
+
+ESLint does not check the indentation. The IntelliJ style files indent the content of the
 `<template>` and `<script>` blocks of a Vue component by 4 spaces.
 
 ## Types from hintr
