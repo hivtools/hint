@@ -6,7 +6,6 @@ They send a GitHub token, and the `github_team_member` dependency (app/dependenc
 The token is a secret. It goes only in the header of a call to GitHub. Never log it, and never put it in an error.
 """
 
-import time
 from typing import Annotated, NoReturn
 from urllib.parse import quote
 
@@ -78,19 +77,12 @@ class GitHubClient:
 
     async def _get(self, call: str, path: str, token: SecretStr) -> httpx2.Response:
         """A GET with the token. `call` names the call in the log."""
-        started = time.perf_counter()
         try:
             r = await self._http.get(path, headers={"Authorization": f"Bearer {token.get_secret_value()}"})
         except httpx2.RequestError:
             # The message of the library has the address. It does not have the headers, so it does not have the token.
             log.exception("No response from GitHub", call=call)
             raise GitHubFailedError() from None
-        log.info(
-            "GitHub request",
-            call=call,
-            status=r.status_code,
-            duration_ms=round((time.perf_counter() - started) * 1000),
-        )
         return r
 
     @staticmethod

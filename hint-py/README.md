@@ -94,11 +94,14 @@ there is a record of who downloaded a user's files. GitHub tokens are never logg
 
 What does not: a test only catches what the tests do, and the text of an email is easy to miss in free text, so
 redacting by pattern would not be a guarantee. Two known gaps: OpenTelemetry's trace of a request has its URL with the
-query string (`http.url`), and the messages that hintr gives are logged as they are (`hintr failed`).
+query string (`http.url`; in the spans of the calls that the API makes, secrets are redacted, see `app/telemetry.py`), and the messages that hintr gives are logged as they are (`hintr failed`).
 
 ### OpenTelemetry, on your machine
 
 OpenTelemetry sends the logs of the API (with their fields as attributes) and a trace of each request to a collector.
+Each call that the API makes to hintr, ADR or GitHub is a span in the trace of its request, with its status and time,
+so the code does not time or log the calls itself. The value of a secret query parameter in the address of that span is
+replaced by `REDACTED`: ADR's storage gets a token in `jwt` (see `app/telemetry.py`).
 To see them locally there is a dashboard (the [.NET Aspire dashboard](https://learn.microsoft.com/dotnet/aspire/fundamentals/dashboard/standalone), which runs in
 Docker, keeps what it gets in memory, has no login and only listens on this machine):
 

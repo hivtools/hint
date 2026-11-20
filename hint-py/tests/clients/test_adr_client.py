@@ -171,16 +171,6 @@ async def test_the_failure_is_in_the_language_of_the_request(adr):
     assert answer == failure(500, "Aucune réponse reçue. La requête a peut-être expiré.")
 
 
-async def test_a_call_is_logged_with_its_action_and_status_only(client, adr, caplog):
-    caplog.set_level(logging.INFO)
-
-    await client.dataset("d-input-1")
-
-    [record] = [r for r in caplog.records if r.getMessage() == "ADR request"]
-    assert (record.action, record.status) == ("package_show", 200)
-    assert "d-input-1" not in str(record.__dict__)
-
-
 # ------------------------------------------------------------------------------------------------ the answer
 def test_a_success_of_ckan_is_its_result():
     body = json.dumps({"success": True, "result": [{"id": "a"}], "help": "https://adr.example/help"}).encode()
