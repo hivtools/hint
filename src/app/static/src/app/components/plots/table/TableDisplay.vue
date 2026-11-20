@@ -13,7 +13,7 @@
 <script lang="ts">
 import {ref, defineComponent, computed, type PropType} from "vue";
 import { AgGridVue } from "ag-grid-vue3";
-import type { AgGridEvent } from "ag-grid-community";
+import type { AgGridEvent, GridOptions } from "ag-grid-community";
 import {
     ClientSideRowModelModule,
     ColumnApiModule,
@@ -70,7 +70,7 @@ const defaultColDef = {
 };
 const ROW_HEIGHT = 35;
 const MAX_TABLE_HEIGHT = 700;
-const gridOptions = {
+const gridOptions: GridOptions = {
     // Since AG Grid 33, the Theming API is the default. "legacy" keeps the CSS themes
     // that we import above (ag-grid.css and ag-theme-alpine.css), so the tables look the same.
     theme: "legacy" as const,
