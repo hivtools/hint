@@ -13,6 +13,7 @@ import org.springframework.http.*
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory
 import org.springframework.util.LinkedMultiValueMap
 import java.io.File
+import java.util.UUID
 
 
 class HintApplicationTests : SecureIntegrationTests()
@@ -114,6 +115,37 @@ class HintApplicationTests : SecureIntegrationTests()
         val path = testCssFile.path.split("/").drop(1).joinToString("/")
         val response = testRestTemplate.exchange<String>("/$path", HttpMethod.GET, entity)
         assertThat(response.headers["Content-Encoding"]!!.first()).isEqualTo("gzip")
+    }
+
+    @Test
+    fun `hashed assets are gzipped and can be cached for a year`()
+    {
+        disableAutomaticDecompression()
+        val headers = HttpHeaders()
+        headers.set("Accept-Encoding", "gzip")
+        val entity = HttpEntity<String>(headers)
+        // The back end tests do not build the front end, so this test writes its own file to static/public/assets.
+        val assetsFolder = File("static/public/assets")
+        val folderExists = assetsFolder.exists()
+        assetsFolder.mkdirs()
+        val testFile = File(assetsFolder, "test-${UUID.randomUUID()}.js")
+        testFile.writeText("console.log(\"a test file that is big enough to gzip\");\n".repeat(100))
+        try
+        {
+            val url = "/public/assets/${testFile.name}"
+            val response = testRestTemplate.exchange<String>(url, HttpMethod.GET, entity)
+            assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
+            assertThat(response.headers["Content-Encoding"]!!.first()).isEqualTo("gzip")
+            assertThat(response.headers.cacheControl).isEqualTo("public, max-age=31536000, immutable")
+        }
+        finally
+        {
+            testFile.delete()
+            if (!folderExists)
+            {
+                assetsFolder.delete()
+            }
+        }
     }
 
     @Test
