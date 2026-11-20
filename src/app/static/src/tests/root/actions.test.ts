@@ -551,7 +551,7 @@ describe("root actions", () => {
             "baseline/complete": true,
             "surveyAndProgram/complete": false
         };
-        await actions.changeLanguage({commit, dispatch, rootState, rootGetters2} as any, Language.fr);
+        await actions.changeLanguage({commit, dispatch, rootState, rootGetters: rootGetters2} as any, Language.fr);
 
         expectChangeLanguageMutations(commit);
 
