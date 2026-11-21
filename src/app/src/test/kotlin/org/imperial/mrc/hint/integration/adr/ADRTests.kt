@@ -23,7 +23,7 @@ class ADRTests : SecureIntegrationTests()
     val ADR_KEY: String = System.getenv("ADR_TEST_KEY")
         ?: error("ADR_TEST_KEY environment variable must be set to run ADR integration tests. " +
                 "Generate an API token for the test user on ${ConfiguredAppProperties().adrUrl}.")
-    val ADR_TEST_DATASET_NAME = "antarctica-country-estimates-2026"
+    val ADR_TEST_DATASET_NAME = "antarctica-country-estimates-2027"
 
     @ParameterizedTest
     @EnumSource(IsAuthorized::class)
