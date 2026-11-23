@@ -30,6 +30,9 @@ export function numeralJsToD3format(numeralJsFormat: string) {
 export const drawConfig = {
     responsive: true,
     scrollZoom: false,
+    // Since plotly.js 4, the mode bar shows a "Share chart" button by default. It sends the chart data
+    // to cloud.plotly.com. Our data must not go to a third party, so we hide this button.
+    showSendToCloud: false,
     modeBarButtonsToRemove: [
         'zoom2d',
         'pan2d',
