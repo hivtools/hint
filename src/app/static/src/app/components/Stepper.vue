@@ -52,17 +52,12 @@
     import AdrIntegration from "./adr/ADRIntegration.vue";
     import Step from "./Step.vue";
     import UploadInputs from "./uploadInputs/UploadInputs.vue";
-    import ReviewInputs from "./reviewInputs/ReviewInputs.vue";
     import LoadingSpinner from "./LoadingSpinner.vue";
-    import ModelRun from "./modelRun/ModelRun.vue";
-    import ModelCalibrate from "./modelCalibrate/ModelCalibrate.vue";
-    import ModelOutput from "./modelOutput/ModelOutput.vue";
-    import DownloadResults from "./downloadResults/DownloadResults.vue";
+    import {lazyStep, prefetchStep, stepLoaders} from "./lazySteps";
     import WarningAlert from "./WarningAlert.vue";
     import LoadInvalidModal from "./load/LoadInvalidModal.vue";
     import {StepDescription, StepperState} from "../store/stepper/stepper";
     import {LoadingState, LoadState} from "../store/load/state";
-    import ModelOptions from "./modelOptions/ModelOptions.vue";
     import VersionStatus from "./projects/VersionStatus.vue";
     import {mapGettersByNames, mapStateProp, mapStateProps, mapMutationByName, mapGetterByName} from "../utils";
     import {StepperNavigationProps, StepWarnings, Step as StepEnum} from "../types";
@@ -77,6 +72,14 @@
     import { defineComponent } from "vue";
 
     const namespace = 'stepper';
+
+    // Steps 2 to 7 load their files when the user first needs them (or earlier, see prefetchStep)
+    const ReviewInputs = lazyStep(stepLoaders[StepEnum.ReviewInputs]);
+    const ModelOptions = lazyStep(stepLoaders[StepEnum.ModelOptions]);
+    const ModelRun = lazyStep(stepLoaders[StepEnum.FitModel]);
+    const ModelCalibrate = lazyStep(stepLoaders[StepEnum.CalibrateModel]);
+    const ModelOutput = lazyStep(stepLoaders[StepEnum.ReviewOutput]);
+    const DownloadResults = lazyStep(stepLoaders[StepEnum.SaveResults]);
 
     const readyCompleteGetters = ["ready", "complete"] as const
     interface ReadyCompleteGetters {
@@ -119,6 +122,13 @@
             },
             activeStepWarnings(): StepWarnings {
                 return this.warnings(this.activeStepTextKey);
+            },
+            // The user is likely to open the next step soon. We wait until the page shows a step, and
+            // not for a logged in user with no project, who goes to /projects (this component is
+            // created before the redirect).
+            stepToPrefetch(): number | null {
+                const noProject = !this.isGuest && this.currentProject == null;
+                return this.loading || noProject ? null : this.activeStep + 1;
             }
         },
         methods: {
@@ -194,6 +204,15 @@
             WarningAlert
         },
         watch: {
+            stepToPrefetch: {
+                immediate: true,
+                handler(step: number | null) {
+                    if (step) {
+                        // Do not wait for this: it runs when the browser is idle
+                        prefetchStep(step);
+                    }
+                }
+            },
             complete: function (){
                 // auto-progress from modelRun to modelCalibrate if there are no warnings to display
                 if (this.activeStep === StepEnum.FitModel && this.isComplete(StepEnum.FitModel) &&
