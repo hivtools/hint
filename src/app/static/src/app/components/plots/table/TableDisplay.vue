@@ -13,7 +13,17 @@
 <script lang="ts">
 import {ref, defineComponent, computed, PropType} from "vue";
 import { AgGridVue } from "ag-grid-vue3";
-import { AgGridEvent } from "ag-grid-community";
+import {
+    AgGridEvent,
+    ClientSideRowModelModule,
+    ColumnApiModule,
+    ColumnAutoSizeModule,
+    ModuleRegistry,
+    NumberFilterModule,
+    RowApiModule,
+    TextFilterModule,
+    TooltipModule
+} from "ag-grid-community";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
 import { useStore } from "vuex";
@@ -22,6 +32,23 @@ import { getIndicatorMetadata } from "../utils";
 import { IndicatorMetadata, TableMetadata } from "../../../generated";
 import {getColumnDefs, TableHeaderDef} from "./utils";
 import {PlotName} from "../../../store/plotSelections/plotSelections";
+
+// Since AG Grid 33, the grid has only the features of the modules that we register.
+// These are the modules that our tables use (sorting, pinned columns and column groups are in the core):
+// - ColumnApiModule (getAllGridColumns), ColumnAutoSizeModule (autoSizeAllColumns, sizeColumnsToFit,
+//   autoSizeStrategy), RowApiModule (getDisplayedRowCount)
+// - TextFilterModule and NumberFilterModule (the filters in the column headers)
+// - TooltipModule (headerTooltip, tooltipValueGetter, tooltipComponent)
+// If a feature does not work, AllCommunityModule registers all the community features (about 80 KB gzip more).
+ModuleRegistry.registerModules([
+    ClientSideRowModelModule,
+    ColumnApiModule,
+    ColumnAutoSizeModule,
+    NumberFilterModule,
+    RowApiModule,
+    TextFilterModule,
+    TooltipModule
+]);
 
 const defaultColDef = {
     // Set the default filter type
@@ -44,6 +71,9 @@ const defaultColDef = {
 const ROW_HEIGHT = 35;
 const MAX_TABLE_HEIGHT = 700;
 const gridOptions = {
+    // Since AG Grid 33, the Theming API is the default. "legacy" keeps the CSS themes
+    // that we import above (ag-grid.css and ag-theme-alpine.css), so the tables look the same.
+    theme: "legacy" as const,
     // our auto resize will apply to columns not shown on the screen
     // e.g. if they are off to the side, we won't get auto resize
     // because ag grid does this automatically
@@ -157,3 +187,12 @@ export default defineComponent({
     }
 });
 </script>
+
+<style>
+/* AG Grid 36 gives the horizontal scroll bar a background colour. When the browser has overlay scroll bars
+   (for example on macOS), the bar is on top of the last row, so that row was partly hidden.
+   This keeps the bar transparent, as in AG Grid 32. */
+.ag-theme-alpine .ag-body-horizontal-scroll.ag-scrollbar-invisible .ag-body-horizontal-scroll-viewport {
+    background-color: transparent;
+}
+</style>
