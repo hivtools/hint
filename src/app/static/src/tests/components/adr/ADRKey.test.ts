@@ -75,7 +75,9 @@ describe("ADR Key", function () {
         const rendered = shallowMountWithTranslate(ADRKey, store, {
             global: {
                 plugins: [store]
-            }
+            },
+            // isVisible() reads the computed style, which jsdom gives only for elements in the document
+            attachTo: document.body
         });
         const links = rendered.findAll(".btn")
             .filter((link) => link.isVisible());
@@ -88,7 +90,9 @@ describe("ADR Key", function () {
         const rendered = shallowMountWithTranslate(ADRKey, store, {
             global: {
                 plugins: [store]
-            }
+            },
+            // isVisible() reads the computed style, which jsdom gives only for elements in the document
+            attachTo: document.body
         });
         const links = rendered.findAll(".btn")
             .filter((link) => link.isVisible());
@@ -152,7 +156,9 @@ describe("ADR Key", function () {
         const rendered = mountWithTranslate(ADRKey, store, {
             global: {
                 plugins: [store]
-            }
+            },
+            // isVisible() reads the computed style, which jsdom gives only for elements in the document
+            attachTo: document.body
         });
         const input = rendered.findAll(".input-group");
         expect(input.length).toBe(1);
@@ -204,7 +210,9 @@ describe("ADR Key", function () {
         const rendered = shallowMountWithTranslate(ADRKey, store, {
             global: {
                 plugins: [store]
-            }
+            },
+            // isVisible() reads the computed style, which jsdom gives only for elements in the document
+            attachTo: document.body
         });
         const input = rendered.findAll(".input-group");
         expect(input.length).toBe(1);
