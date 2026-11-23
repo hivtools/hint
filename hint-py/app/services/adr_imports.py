@@ -13,15 +13,11 @@ the answer. Either way nothing changes. If the extension is refused, the version
 an upload.
 """
 
-import tempfile
-
 from app.clients.adr_client import AdrClient
 from app.clients.responses import HintResponse
 from app.schemas import AdrResource, FileType
-from app.services.input_file_service import INPUT_FILE_TYPES, InputFileService
-
-# A download is kept in memory up to this size. A larger one goes to a temporary file on the local disk.
-IN_MEMORY_BYTES = 1024 * 1024
+from app.services.input_file_service import InputFileService
+from app.services.upload_file_types import INPUT_FILE_TYPES
 
 
 async def import_input_file(
@@ -35,10 +31,10 @@ async def import_input_file(
     refused = await input_files.refuse_wrong_extension(file_type, file.filename)
     if refused is not None:
         return refused
-    with tempfile.SpooledTemporaryFile(max_size=IN_MEMORY_BYTES) as content:
-        downloaded = await adr.download(file, content, INPUT_FILE_TYPES[file_type].max_upload_bytes)
+    async with adr.spooled_download(file, INPUT_FILE_TYPES[file_type].max_upload_bytes) as (downloaded, content):
         if not downloaded.ok:
             return downloaded
+        # The storage hashes the file from the position it is given
         content.seek(0)
         resource_url = await adr.resource_url(resource.dataset_id, resource.resource_id, file.filename)
         return await input_files.save(file_type, content, file.filename, resource_url=resource_url)

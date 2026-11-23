@@ -17,7 +17,8 @@ from app.dependencies import logged_in_user
 from app.schemas import AdrDatasetType, AdrResource, FileType, SuccessResponse, success
 from app.services.adr_datasets import find_datasets, find_releases_with_output_zip
 from app.services.adr_imports import import_input_file
-from app.services.input_file_service import INPUT_FILE_TYPES, InputFiles
+from app.services.input_file_service import InputFiles
+from app.services.upload_file_types import INPUT_FILE_TYPES
 
 router = APIRouter(prefix="/adr", tags=["adr"])
 
