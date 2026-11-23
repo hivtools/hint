@@ -15,6 +15,9 @@ ADR_TOKEN = "an-auth0-access-token-for-tests"
 GITHUB_TOKEN = "ghp_a-token-of-a-team-member-for-tests"
 GITHUB_OTHER_TOKEN = "ghp_a-token-of-a-user-not-in-the-team"
 
+# The key in the address of the error report flow, made up. No test may find it in a log (see `no_personal_data_in_logs`).
+FLOW_SIG = "a-flow-signature-for-tests"
+
 
 def make_zip(entries: Mapping[str, str | bytes], method: int = zipfile.ZIP_DEFLATED, comment: bytes = b"") -> bytes:
     """A zip with these entries, as bytes."""

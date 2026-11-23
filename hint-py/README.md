@@ -306,6 +306,20 @@ stops working at once.
 **Tests.** `make test` uses a fake GitHub (`tests/github.py`). `make test-github` calls the real GitHub API with the
 token in `HINT_GITHUB_TEST_TOKEN` (`tests/api/test_github_live.py`, skipped without it). It only reads.
 
+### Error reports
+
+`POST /error-report` sends what the user fills in on the "Report an error" form to the support team, and if it names a
+project, gives the support user (`HINT_SUPPORT_EMAIL`) a copy of it. Where the report goes is behind `IssueReporter` in
+`app/clients/issue_reporter.py`. Today it is a Teams flow (Power Automate). To send reports somewhere else, add a class
+with a `send` method there and return it from `get_issue_reporter`. See D20 in `docs/porting-checklist.md`.
+
+| Setting                 | Default                         | What it is                                                                 |
+|-------------------------|---------------------------------|----------------------------------------------------------------------------|
+| `HINT_ISSUE_REPORT_URL` | (none)                          | The address of the Teams flow. A secret: the key of the flow is in its `sig` parameter. Without it, a report is an unexpected error (500). |
+| `HINT_SUPPORT_EMAIL`    | `naomi-support@imperial.ac.uk`  | The user that gets a copy of the project. Also shown in the message for unexpected errors. |
+
+In the dev stack, `scripts/dev.sh` sets `HINT_ISSUE_REPORT_URL` to the stub of the flow.
+
 ### Tests on Postgres
 
 By default the tests use an in memory SQLite database, so they need nothing installed. The same tests can run on a real

@@ -1,4 +1,4 @@
-"""OpenTelemetry for the calls that this API makes to other services (hintr, ADR and GitHub).
+"""OpenTelemetry for the calls that this API makes to other services (hintr, ADR, GitHub and the error report flow).
 
 When the API is started with `opentelemetry-instrument`, each call made with httpx2 is a span in the trace of the
 request that made it. The span has the method, the address, the status and the time that the call took. The code that
@@ -6,7 +6,8 @@ makes a call does not need to time it or log it.
 
 The address in the span keeps its query string, except for the value of a parameter that is a secret (`SECRET_PARAMS`).
 ADR sends a download to its storage with a token in the `jwt` parameter. The token lets anyone read the file for 5
-minutes.
+minutes. The address of the error report flow (`issue_report_url`) has its key in the `sig` parameter: anyone who has it
+can post to the support channel.
 """
 
 import re
@@ -19,7 +20,7 @@ from opentelemetry.trace import Span, TracerProvider
 URL_ATTRIBUTES = ("url.full", "http.url")
 
 # The query parameters whose value is a secret
-SECRET_PARAMS = ("jwt",)
+SECRET_PARAMS = ("jwt", "sig")
 _SECRET_VALUE = re.compile(rf"([?&](?:{'|'.join(map(re.escape, SECRET_PARAMS))})=)[^&#]*")
 
 
