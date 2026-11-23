@@ -156,6 +156,12 @@ class HintrClient:
             raise HintrFailedError(answer)
         return answer.data
 
+    async def task_exists(self, task_id: str) -> bool:
+        """Whether hintr knows the task. A task id that hintr has never seen is not an error: hintr answers that it does
+        not exist."""
+        data = await self._data("GET", "/task/{task_id}/exists", {"task_id": task_id})
+        return isinstance(data, dict) and data.get("exists") is True
+
     async def calibrate_result_path(self, task_id: str) -> str:
         """Where the results database of a calibration is, relative to the results folder."""
         data = await self._data("GET", "/calibrate/result/path/{task_id}", {"task_id": task_id})

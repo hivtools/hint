@@ -15,6 +15,9 @@ is (see `AdrClient.file_at`).
 
 import asyncio
 import json
+import tempfile
+from collections.abc import AsyncGenerator
+from contextlib import asynccontextmanager
 from dataclasses import dataclass
 from http.cookiejar import CookieJar, DefaultCookiePolicy
 from typing import IO, Annotated
@@ -38,8 +41,12 @@ from app.errors import (
     NotOnAdrError,
 )
 from app.messages import negotiate_language, t
+from app.utils.byte_limit import MB, TooMuchData, within_limit_async
 
 log = structlog.get_logger()
+
+# A download is kept in memory up to this size. A larger one goes to a temporary file on the local disk.
+IN_MEMORY_BYTES = 1 * MB
 
 # The characters that stay as they are in a part of the path of a link (RFC 3986: unreserved, sub-delims, ":" and "@")
 PATH_SAFE = "-._~!$&'()*+,;=:@"
@@ -190,18 +197,27 @@ class AdrClient:
                 refused = _refused_download(r, file)
                 if refused is not None:
                     return refused.hint_response(self._language)
-                received = 0
                 # Each piece as it arrives, so the download stops at the first piece past the limit
-                async for chunk in r.aiter_bytes():
-                    received += len(chunk)
-                    if received > max_bytes:
-                        log.warning("ADR file is too large", max_bytes=max_bytes)
-                        return FileTooLargeError(max_bytes).hint_response(self._language)
+                async for chunk in within_limit_async(r.aiter_bytes(), max_bytes):
                     await asyncio.to_thread(target.write, chunk)
+        except TooMuchData:
+            log.warning("ADR file is too large", max_bytes=max_bytes)
+            return FileTooLargeError(max_bytes).hint_response(self._language)
         except httpx2.RequestError:
             log.exception("No response from ADR to a download")
             return NoResponseFromAdrError().hint_response(self._language)
         return HintResponse.success(None)
+
+    @asynccontextmanager
+    async def spooled_download(self, file: AdrFile, max_bytes: int) -> AsyncGenerator[tuple[HintResponse, IO[bytes]]]:
+        """Downloads the file (see `download`) into a temporary file, which is deleted when the block ends. It gives the
+        answer of the download, and the file. If the answer is a failure, the file may have a part of the content.
+
+        The file is in memory up to `IN_MEMORY_BYTES`, and on the local disk above that. It can seek. Its position is at the
+        end of the content.
+        """
+        with tempfile.SpooledTemporaryFile(max_size=IN_MEMORY_BYTES) as content:
+            yield await self.download(file, content, max_bytes), content
 
     async def resource_url(self, dataset_id: str, resource_id: str, filename: str) -> str:
         """The link to the file as it is now, to keep with the imported file: the download link of the resource, at the
