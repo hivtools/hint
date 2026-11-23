@@ -95,7 +95,7 @@ export default defineComponent({
             required: true
         },
         data: {
-            type: Object,
+            type: Array as PropType<Record<string, any>[]>,
             required: true
         },
         tableMetadata: {
