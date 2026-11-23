@@ -25,7 +25,7 @@ from app.routers import (
     rehydrate,
     review_inputs,
 )
-from app.services.upload_file_types import upload_file_types
+from app.services.file_types import upload_file_types
 from app.telemetry import trace_outgoing_calls
 
 # pyproject.toml is the one place the version is set. The project is not installed as a package, so there is no

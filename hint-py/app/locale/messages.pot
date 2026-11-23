@@ -69,6 +69,21 @@ msgstr ""
 msgid "notOnAdr"
 msgstr ""
 
+msgid "invalidResourceType"
+msgstr ""
+
+msgid "descriptionRequired"
+msgstr ""
+
+msgid "resourceIdRequired"
+msgstr ""
+
+msgid "fileDoesNotExist"
+msgstr ""
+
+msgid "adrHashUnavailable"
+msgstr ""
+
 msgid "adrFetchingDatasetsError"
 msgstr ""
 

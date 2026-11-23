@@ -13,8 +13,8 @@ from fastapi.responses import Response
 
 from app.dependencies import current_user, logged_in_user
 from app.schemas import AdrResource
+from app.services.file_types import OUTPUT_ZIP
 from app.services.rehydrate_service import Rehydrate
-from app.services.upload_file_types import OUTPUT_ZIP
 
 router = APIRouter(tags=["rehydrate"])
 

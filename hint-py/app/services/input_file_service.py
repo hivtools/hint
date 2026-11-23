@@ -1,6 +1,6 @@
 """Taking in an input file for the version in a request: checking it, storing it, recording it and validating it.
 
-Each file type has a row in `INPUT_FILE_TYPES` (app/services/upload_file_types.py), which says all that this API knows
+Each file type has a row in `INPUT_FILE_TYPES` (app/services/file_types.py), which says all that this API knows
 about the type: its URL, the extensions that hintr accepts and the size limit of an upload.
 
 `InputFileService.save` is the one way a new file becomes a version's file. An upload and an import from ADR
@@ -23,7 +23,7 @@ from app.clients.responses import HintResponse
 from app.config import Settings, get_settings
 from app.errors import EmptyFileNameError, HintError, InvalidFileExtensionError, MissingShapeFileError
 from app.schemas import FileType
-from app.services.upload_file_types import INPUT_FILE_TYPES, InputFileType
+from app.services.file_types import INPUT_FILE_TYPES, InputFileType
 from app.services.version_files import Files, VersionFiles
 from app.storage.uploads import UploadStorage, file_extension
 
