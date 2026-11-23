@@ -213,6 +213,8 @@ do_up() { # $1 = pull | nopull, then --no-proxy, --rebuild
     PYTHON_ADR_API_KEY=$(sed -n 's/^API_KEY = "\(.*\)"$/\1/p' "$CT/hintcontract/adr.py")
     export PYTHON_ADR_API_KEY
   fi
+  # Error reports go to the stub of the Teams flow, as Kotlin's do (issue_report_url above)
+  export PYTHON_ISSUE_REPORT_URL="http://host.docker.internal:$STUB_PORT/flow"
   if [ "$pull" = pull ] && [ "${NO_PULL:-0}" != 1 ]; then compose pull -q --ignore-buildable; fi
   if [ "$mode" = proxy ]; then compose --profile proxy up -d --build --wait; else compose up -d --wait; fi
   wait_http hintr "http://127.0.0.1:$HINTR_PORT/" 60
