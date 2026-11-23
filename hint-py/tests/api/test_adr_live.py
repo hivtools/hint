@@ -27,7 +27,7 @@ from app.clients.adr_client import create_adr_http_client
 from app.config import Settings
 from app.main import app
 from app.schemas import FileType
-from app.services import upload_file_types
+from app.services import file_types
 from tests.api.helpers import make_client, version_files
 from tests.hintr import FakeHintr
 from tests.support import USER
@@ -252,9 +252,7 @@ async def test_the_credential_goes_to_adr_and_not_to_its_storage_when_a_zip_is_d
 
 async def test_a_zip_bigger_than_the_limit_is_refused_as_it_is_downloaded(live_importer, hintr, monkeypatch):
     # The storage of ADR does not say how big the file is, so the download is counted as it arrives
-    monkeypatch.setattr(
-        upload_file_types, "OUTPUT_ZIP", replace(upload_file_types.OUTPUT_ZIP, max_upload_bytes=100 * 1024)
-    )
+    monkeypatch.setattr(file_types, "OUTPUT_ZIP", replace(file_types.OUTPUT_ZIP, max_upload_bytes=100 * 1024))
 
     r = await live_importer.post("/rehydrate/adr", json=await an_output_zip(live_importer))
 

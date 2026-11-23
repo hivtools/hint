@@ -38,16 +38,8 @@ class Settings(BaseSettings):
     # The address of ADR. This API calls ADR here. The browser also gets it (GET /adr/schemas), and builds the links to
     # the datasets from it.
     adr_url: str = "https://dev.adr.fjelltopp.org/"
-    # The resource type that ADR gives to each kind of file.
-    adr_anc_schema: str = "inputs-unaids-anc"
-    adr_art_schema: str = "inputs-unaids-art"
-    adr_pjnz_schema: str = "inputs-unaids-spectrum-file"
-    adr_pop_schema: str = "inputs-unaids-population"
-    adr_shape_schema: str = "inputs-unaids-geographic"
-    adr_survey_schema: str = "inputs-unaids-survey"
-    adr_output_zip_schema: str = "inputs-unaids-naomi-output-zip"
-    adr_output_summary_schema: str = "inputs-unaids-naomi-report"
-    adr_output_comparison_schema: str = "inputs-unaids-naomi-comparison-report"
+    # The resource type that ADR gives to each kind of file is not a setting: it is in app/services/file_types.py.
+
     # The type of the datasets of this year, and of last year. Each year the datasets have a new type.
     # Datasets for this_year can be imported as model inputs, last_year can be imported to rehydrate an
     # old model fit.
