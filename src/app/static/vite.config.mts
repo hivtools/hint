@@ -36,6 +36,14 @@ const backendUrl = new URL(process.env.HINT_BACKEND_URL || "http://localhost:808
 const vitePaths = /^\/(@vite\/|@id\/|@fs\/|src\/|node_modules\/|__vite_ping|__open-in-editor)/;
 const notVitePaths = "^/(?!@vite/|@id/|@fs/|src/|node_modules/|__vite_ping|__open-in-editor)";
 
+// For codeSplitting.groups: matches the JS files of the npm packages with these names.
+// It does not match CSS files. They stay in the CSS of the chunk that imports them, in the same order as before.
+const packages = (...names: string[]) => {
+    const escaped = names.map(name => name.replace(/[.]/g, "\\.").replace("/", "[\\\\/]"));
+    const packageFile = new RegExp(`[\\\\/]node_modules[\\\\/](${escaped.join("|")})[\\\\/]`);
+    return (id: string) => packageFile.test(id) && !/\.(css|scss)($|\?)/.test(id);
+};
+
 const sourceText = (source: string | Uint8Array) =>
     typeof source === "string" ? source : Buffer.from(source).toString("utf-8");
 
@@ -194,9 +202,42 @@ export default defineConfig(({command}) => ({
         sourcemap: true,
         rolldownOptions: {
             output: {
-                // Put Leaflet in its own chunk.
                 codeSplitting: {
-                    groups: [{name: "leaflet", test: /[\\/]node_modules[\\/]leaflet[\\/]/}]
+                    // Each group puts libraries in a chunk of their own, with a fixed name and no code of ours.
+                    // The libraries change only when we upgrade them. Thus a deploy that changes only our code
+                    // does not change the file names (hashes) of these chunks, and the browser keeps them in its cache.
+                    // A chunk loads only when a chunk that the browser loads imports it. Thus the groups for the
+                    // lazy libraries (see lazyComponent.ts) do not add to the start-up files.
+                    // Use package names, not all of node_modules, so that a lazy library cannot get into a
+                    // start-up chunk. A group also takes the dependencies of its packages.
+                    groups: [
+                        // Start-up libraries. "$initial" takes only the modules that the entry imports
+                        // (not through import()), so that these groups can never take a lazy library.
+                        {
+                            name: "vue",
+                            test: packages("vue", "@vue", "vue-router", "vuex"),
+                            tags: ["$initial"],
+                            priority: 20
+                        },
+                        {
+                            name: "vendor",
+                            test: packages("axios", "bootstrap-vue-next", "d3-scale-chromatic", "feather-icons",
+                                "floating-vue", "i18next", "moment", "numeral", "qs", "vue-feather",
+                                "@reside-ic/vue-nested-multiselect", "@reside-ic/vue3-treeselect"),
+                            tags: ["$initial"],
+                            priority: 10
+                        },
+                        // Lazy libraries. Without these groups, the build puts them in a chunk with our plot code.
+                        {name: "plotly", test: packages("plotly.js-basic-dist")},
+                        {name: "ag-grid", test: packages("ag-grid-community", "ag-grid-vue3")},
+                        {name: "chartjs", test: packages("chart.js", "@kurkle/color", "vue-chartjs")},
+                        // Not @vue-leaflet/vue-leaflet: it has an import(), so it uses Vite's preload helper, which
+                        // the entry also uses. A group takes the dependencies of its packages, so the group would
+                        // take the helper, and then the entry would load the Leaflet chunk at start-up.
+                        {name: "leaflet", test: packages("leaflet")},
+                        {name: "katex", test: packages("katex")},
+                        {name: "dynamic-form", test: packages("@reside-ic/vue-next-dynamic-form")}
+                    ]
                 }
             }
         }
