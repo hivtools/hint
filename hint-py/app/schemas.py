@@ -173,3 +173,39 @@ class ModelOptions(BaseModel):
     options: dict[str, Any]
     version: dict[str, str]
     iso3: str | None = None
+
+
+class ErrorReportError(BaseModel):
+    """One of the errors that the user saw, in an error report. Each field may be missing or null, as in Kotlin, where a
+    missing field is empty text."""
+
+    detail: str | None = ""
+    error: str | None = ""
+    key: str | None = ""
+
+
+class ErrorReport(CamelModel):
+    """What the user fills in (and what the Vue app adds about the project) when they report an error.
+
+    The fields are Kotlin's `ErrorReport`. It is sent on as it is, written with the same names, and fields that are not
+    here are dropped, as in Kotlin.
+    """
+
+    # A number where there should be text is text, as Jackson does
+    model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True, coerce_numbers_to_str=True)
+
+    # The email that the user typed, not who is logged in. It is "guest" for a guest
+    email: str
+    country: str
+    project_id: int | None = None
+    project_name: str
+    section: str
+    model_run_id: str
+    calibrate_id: str
+    download_ids: dict[str, str]
+    errors: list[ErrorReportError]
+    description: str
+    steps_to_reproduce: str
+    browser_agent: str
+    versions: dict[str, str]
+    time_stamp: str

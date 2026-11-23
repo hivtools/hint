@@ -14,6 +14,7 @@ from app.schemas import FileType
 from app.services.file_types import INPUT_FILE_TYPES
 from tests.adr import FakeAdr
 from tests.api.helpers import create_project, make_client
+from tests.flow import FLOW_URL, FakeFlow
 from tests.github import ORG, TEAM, FakeGitHub
 from tests.hintr import FakeHintr
 from tests.support import ADR_KEY, OTHER_USER, USER
@@ -74,6 +75,14 @@ async def github(github: FakeGitHub) -> FakeGitHub:
     """The same GitHub, now the one that the app calls."""
     app.state.github_http = github.http
     return github
+
+
+@pytest_asyncio.fixture
+async def flow(flow: FakeFlow, settings_overrides: dict) -> FakeFlow:
+    """The same flow, now the one that the app sends error reports to."""
+    app.state.issue_report_http = flow.http
+    settings_overrides["issue_report_url"] = FLOW_URL
+    return flow
 
 
 @pytest.fixture

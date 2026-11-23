@@ -1,10 +1,9 @@
 """The hintr API, the R service that validates inputs, builds chart data and runs the model.
 
 hintr answers in the format the Vue app expects, so most answers are passed on as they are. What is not hintr's own
-format is made to look like it (see `_hint_response`). Each call returns a `HintResponse`.
+format is made to look like it (see `service_response` in app/clients/responses.py). Each call returns a `HintResponse`.
 """
 
-import json
 from collections.abc import AsyncIterator, Mapping
 from typing import Annotated, Any
 from urllib.parse import quote
@@ -16,7 +15,7 @@ from fastapi.responses import StreamingResponse
 from pydantic_core import to_jsonable_python
 from starlette.background import BackgroundTask
 
-from app.clients.responses import TIMEOUT_SECONDS, HintResponse, hint_status, parse_json
+from app.clients.responses import TIMEOUT_SECONDS, HintResponse, service_response
 from app.config import Settings
 from app.errors import HintrFailedError
 from app.messages import negotiate_language, t
@@ -37,29 +36,6 @@ FILE_HEADERS = ("content-type", "content-disposition", "content-length")
 def create_hintr_http_client(settings: Settings) -> httpx2.AsyncClient:
     # Does not connect yet, the first request does
     return httpx2.AsyncClient(base_url=settings.hintr_url, timeout=TIMEOUT_SECONDS)
-
-
-def _hint_response(hintr_status: int, body: bytes, language: str) -> HintResponse:
-    """hintr's answer, in the format of every answer of this API.
-
-    An answer that has a `status` field already has that format. It goes to the browser as it is. Any other answer is
-    wrapped: it is a success if hintr said so, and if not, it is a failure that has the answer as its message. An answer
-    that is not JSON is a failure with the message "Could not parse response".
-    """
-    status = hint_status(hintr_status)
-    is_json, parsed = parse_json(body)
-    if not is_json:
-        log.error("hintr answered with something that is not JSON", status=hintr_status, body=repr(body[:200]))
-        return HintResponse.failure(500, t("unparseableResponse", language))
-
-    if isinstance(parsed, dict) and "status" in parsed:
-        return HintResponse(status, body)
-    if status < 400:
-        return HintResponse.success(parsed, status)
-    # A string is the message as it is. Any other JSON becomes text.
-    message = parsed if isinstance(parsed, str) else json.dumps(parsed)
-    log.error("hintr failed", status=hintr_status, message=message)
-    return HintResponse.failure(status, message)
 
 
 class HintrClient:
@@ -92,7 +68,7 @@ class HintrClient:
         except httpx2.RequestError:
             log.exception("No response from hintr", method=method, path=path)
             return HintResponse.failure(500, t("noResponse", negotiate_language(self._language)))
-        return _hint_response(r.status_code, r.content, negotiate_language(self._language))
+        return service_response("hintr", r.status_code, r.content, negotiate_language(self._language))
 
     # The calls that have a body. The files are the ones hint looked up for the version, hintr reads them from the
     # uploads folder. Each of hintr's calls has its own shape: the files are the whole body, or under "data", or in
@@ -207,7 +183,7 @@ class HintrClient:
                 raise HintrFailedError(HintResponse.failure(500, t("noResponse", language))) from None
             finally:
                 await r.aclose()
-            raise HintrFailedError(_hint_response(r.status_code, body, language))
+            raise HintrFailedError(service_response("hintr", r.status_code, body, language))
         headers = {name: r.headers[name] for name in FILE_HEADERS if name in r.headers}
         headers.setdefault("content-type", "application/octet-stream")
         log.info("Sending the debug zip of a task", task=task_id, size=r.headers.get("content-length"))

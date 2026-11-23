@@ -14,9 +14,10 @@ from app.db.database import create_db_session_factory
 from app.db.models import Base, User
 from app.logging_setup import RESERVED_FIELDS, UVICORN_LOGGERS, LogHandler, configure_logging
 from tests.adr import FakeAdr
+from tests.flow import FakeFlow
 from tests.github import INVITED_TOKEN, FakeGitHub
 from tests.hintr import FakeHintr
-from tests.support import ADR_KEY, ADR_TOKEN, GITHUB_OTHER_TOKEN, GITHUB_TOKEN, OTHER_USER, USER
+from tests.support import ADR_KEY, ADR_TOKEN, FLOW_SIG, GITHUB_OTHER_TOKEN, GITHUB_TOKEN, OTHER_USER, USER
 
 # Set this to run the tests on a real Postgres instead of in memory SQLite, for example
 # postgresql+asyncpg://hintuser:changeme@localhost:55432/hint. It has to be a database that the Kotlin migrations have
@@ -90,6 +91,14 @@ async def adr() -> AsyncIterator[FakeAdr]:
 
 
 @pytest_asyncio.fixture
+async def flow() -> AsyncIterator[FakeFlow]:
+    """The Teams flow that error reports go to, which records the reports it gets (see tests/flow.py)."""
+    fake = FakeFlow()
+    yield fake
+    await fake.http.aclose()
+
+
+@pytest_asyncio.fixture
 async def github() -> AsyncIterator[FakeGitHub]:
     """GitHub, which records the calls it gets and knows a few tokens and one team (see tests/github.py)."""
     fake = FakeGitHub()
@@ -108,6 +117,7 @@ def no_adr_settings_in_the_environment(monkeypatch: pytest.MonkeyPatch) -> None:
         "HINT_GITHUB_AUTH_ORG",
         "HINT_GITHUB_AUTH_TEAM_SLUG",
         "HINT_GITHUB_API_URL",
+        "HINT_ISSUE_REPORT_URL",
     ):
         monkeypatch.delenv(name, raising=False)
 
@@ -174,3 +184,4 @@ def no_personal_data_in_logs(isolated_logging: None) -> Iterator[None]:
             assert secret not in shown, f"{record.name} logged a credential for ADR: {shown[:300]}"
         for secret in (GITHUB_TOKEN, GITHUB_OTHER_TOKEN, INVITED_TOKEN):
             assert secret not in shown, f"{record.name} logged a GitHub token: {shown[:300]}"
+        assert FLOW_SIG not in shown, f"{record.name} logged the key of the error report flow: {shown[:300]}"
