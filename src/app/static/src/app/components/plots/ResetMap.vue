@@ -1,7 +1,7 @@
 <template>
     <l-control position="topleft">
         <div class="leaflet-control-zoom leaflet-bar">
-            <a @click.prevent="$emit('reset-view')"
+            <a @click.prevent="$emit('resetView')"
                class="leaflet-control-zoom-in"
                href="#" title="reset"
                role="button"

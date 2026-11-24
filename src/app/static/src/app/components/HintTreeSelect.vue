@@ -68,7 +68,7 @@ export default defineComponent({
     methods: {
         input(value: string) {
             this.lastEmittedValue = value;
-            this.$emit("update:model-value", value)
+            this.$emit("update:modelValue", value)
         }
     },
     watch: {

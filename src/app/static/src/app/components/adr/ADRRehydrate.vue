@@ -4,7 +4,7 @@
         :loading="loading"
         :dataset-type="AdrDatasetType.Output"
         @confirm-import="importOutputZip"
-        @close-modal="$emit('cancel-create')">
+        @close-modal="$emit('cancelCreate')">
     </select-dataset>
 </template>
 
@@ -23,8 +23,8 @@ defineProps({
 });
 
 const emit = defineEmits<{
-    (e: "submit-create"): void
-    (e: "cancel-create"): void
+    (e: "submitCreate"): void
+    (e: "cancelCreate"): void
 }>();
 
 const loading = ref<boolean>(false);
@@ -38,7 +38,7 @@ const importOutputZip = async (datasetId: string, releaseId: string | null) => {
     const fetchingError = store.state.adr.adrData[AdrDatasetType.Output].fetchingError;
     const outputZip = store.state.projects.adrRehydrateOutputZip;
     if (!fetchingError && outputZip) {
-        emit('submit-create');
+        emit('submitCreate');
     }
 };
 

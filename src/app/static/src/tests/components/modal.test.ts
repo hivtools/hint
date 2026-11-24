@@ -84,7 +84,7 @@ describe("modal", () => {
         expect(wrapper.find("#modal-close-button").isVisible()).toBeTruthy();
 
         wrapper.find("#modal-close-button").trigger("click");
-        expect(wrapper.emitted("close-modal")).toBeTruthy()
+        expect(wrapper.emitted("closeModal")).toBeTruthy()
     });
 
     it("emits close-modal event when background clicked", () => {
@@ -95,6 +95,6 @@ describe("modal", () => {
         });
 
         wrapper.find(".modal-backdrop").trigger("click");
-        expect(wrapper.emitted("close-modal")).toBeTruthy();
+        expect(wrapper.emitted("closeModal")).toBeTruthy();
     });
 });

@@ -1,5 +1,5 @@
 <template>
-    <modal :open="openModal" @close-modal="() => $emit('close-modal')">
+    <modal :open="openModal" @close-modal="() => $emit('closeModal')">
         <template v-slot:header>
             <h4>{{areaName}} ({{areaId}})</h4>
         </template>
@@ -57,7 +57,7 @@ const props = defineProps({
     }
 });
 
-defineEmits(["close-modal"]);
+defineEmits(["closeModal"]);
 
 const chart = ref<typeof Plotly | null>(null);
 

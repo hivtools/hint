@@ -1,13 +1,13 @@
 <template>
     <div>
-        <div v-if="open" class="modal-backdrop fade show" @click="$emit('close-modal')"></div>
+        <div v-if="open" class="modal-backdrop fade show" @click="$emit('closeModal')"></div>
         <div class="modal" :class="{show: open}" :style="style">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                     <div class="modal-header" v-if="hasHeaderSlot">
                         <slot name="header"></slot>
                         <a id="modal-close-button"
-                           @click="$emit('close-modal')"
+                           @click="$emit('closeModal')"
                            style="cursor: pointer">
                             <vue-feather type="x" class="align-middle"/>
                         </a>
@@ -36,7 +36,7 @@ export default defineComponent({
             required: true
         }
     },
-    emits: ['close-modal'],
+    emits: ['closeModal'],
     computed: {
         style: function () {
             return {display: this.open ? "block" : "none"}

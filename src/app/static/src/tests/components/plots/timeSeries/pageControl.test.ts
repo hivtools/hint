@@ -46,10 +46,10 @@ describe('PageControls.vue', () => {
         });
 
         await wrapper.find('#previous-page').trigger('click');
-        expect(wrapper.emitted('set-page')![0]).toEqual([4]);
+        expect(wrapper.emitted('setPage')![0]).toEqual([4]);
 
         await wrapper.find('#next-page').trigger('click');
-        await expect(wrapper.emitted('set-page')![1]).toEqual([6]);
+        await expect(wrapper.emitted('setPage')![1]).toEqual([6]);
     });
 
     it('emits "set-page" with the correct value when the number input is changed', async () => {
@@ -59,10 +59,10 @@ describe('PageControls.vue', () => {
         });
 
         const numberInput = wrapper.findComponent(NumberInput);
-        numberInput.vm.$emit('set-value', 7);
+        numberInput.vm.$emit('setValue', 7);
         await wrapper.vm.$nextTick();
 
-        expect(wrapper.emitted('set-page')![0]).toEqual([7]); // Value from the number input
+        expect(wrapper.emitted('setPage')![0]).toEqual([7]); // Value from the number input
     });
 
     it('renders total pages text correctly', () => {

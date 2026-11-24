@@ -194,8 +194,8 @@ describe('Time series modal works as expected', () => {
     it('emits close-modal event when modal close is triggered', () => {
         const wrapper = getWrapper({ openModal: true, areaId: 'area-1', plotType: 'anc_prevalence' });
 
-        wrapper.findComponent(Modal).vm.$emit('close-modal');
-        expect(wrapper.emitted('close-modal')).toBeTruthy();
+        wrapper.findComponent(Modal).vm.$emit('closeModal');
+        expect(wrapper.emitted('closeModal')).toBeTruthy();
     });
 
     it('renders the equation with correct formula', () => {

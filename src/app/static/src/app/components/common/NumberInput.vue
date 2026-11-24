@@ -29,7 +29,7 @@ defineProps({
 })
 
 const emit = defineEmits<{
-    (e: "set-value", newValue: number): void
+    (e: "setValue", newValue: number): void
 }>();
 
 const numberUpdate = (event: any) => {
@@ -47,7 +47,7 @@ const numberUpdate = (event: any) => {
         val = min
     }
     if (!isNaN(val)) {
-        emit("set-value", val)
+        emit("setValue", val)
 
         // Explicitly update the input field if the value differs from what's displayed
         // we do this to prevent the input field being out of sync with the actual value,
