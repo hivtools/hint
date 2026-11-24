@@ -28,9 +28,13 @@ import {
     getTimeSeriesFilteredDataset
 } from "../../app/store/plotData/filter";
 import {PlotDataMutations, type PlotDataUpdate} from "../../app/store/plotData/mutations";
-import type {PlotSelectionUpdate} from "../../app/store/plotSelections/mutations";
+import {
+    type PlotSelectionUpdate,
+    PlotSelectionsMutations,
+    mutations as plotSelectionsMutations
+} from "../../app/store/plotSelections/mutations";
 import {ReviewInputMutation} from "../../app/store/reviewInput/mutations";
-import type {CommitOptions} from "vuex";
+import Vuex, {type CommitOptions} from "vuex";
 import type {
     CalibratePlotResponse,
     ComparisonPlotRow,
@@ -38,7 +42,7 @@ import type {
     ReviewInputFilterMetadataResponse,
     SurveyDataRow
 } from "../../app/generated";
-import type {FilterSelection} from "../../app/store/plotSelections/plotSelections";
+import {type FilterSelection, initialPlotSelectionsState} from "../../app/store/plotSelections/plotSelections";
 import type {Mock} from "vitest";
 
 describe("filter tests", () => {
@@ -100,6 +104,12 @@ describe("filter tests", () => {
 
         const mockData = mockCalibrateDataResponse()
 
+        const expectClearedError = (commit: Mock) => {
+            expect(commit.mock.calls[0][0]).toStrictEqual(`plotSelections/${PlotSelectionsMutations.setError}`);
+            expect(commit.mock.calls[0][1]).toStrictEqual({payload: null});
+            expect(commit.mock.calls[0][2]).toStrictEqual({root: true});
+        };
+
         it("can get output filtered data", async () => {
             mockAxios.onPost(`/calibrate/result/filteredData/id123`)
                 .reply(200, mockSuccess(mockData));
@@ -109,16 +119,17 @@ describe("filter tests", () => {
             expect(mockAxios.history.post.length).toBe(1);
             expect(mockAxios.history.post[0].data).toStrictEqual('{"column1":["detailOptB","detailOptC"]}');
 
-            expect(commit.mock.calls.length).toBe(1);
+            expect(commit.mock.calls.length).toBe(2);
+            expectClearedError(commit);
             const expectedPayload = {
                 plot: "choropleth",
                 data: mockData
             } as PlotDataUpdate
-            expect(commit.mock.calls[0][0]).toStrictEqual(`plotData/${PlotDataMutations.updatePlotData}`);
-            expect(commit.mock.calls[0][1]).toStrictEqual({
+            expect(commit.mock.calls[1][0]).toStrictEqual(`plotData/${PlotDataMutations.updatePlotData}`);
+            expect(commit.mock.calls[1][1]).toStrictEqual({
                 payload: expectedPayload
             });
-            expect(commit.mock.calls[0][2]).toStrictEqual({root: true});
+            expect(commit.mock.calls[1][2]).toStrictEqual({root: true});
         });
 
         it("multiple filters on same column get appended", async () => {
@@ -141,16 +152,17 @@ describe("filter tests", () => {
             expect(mockAxios.history.post.length).toBe(1);
             expect(mockAxios.history.post[0].data).toStrictEqual('{"column1":["detailOptB","detailOptC"]}');
 
-            expect(commit.mock.calls.length).toBe(1);
+            expect(commit.mock.calls.length).toBe(2);
+            expectClearedError(commit);
             const expectedPayload = {
                 plot: "choropleth",
                 data: mockData
             } as PlotDataUpdate
-            expect(commit.mock.calls[0][0]).toStrictEqual(`plotData/${PlotDataMutations.updatePlotData}`);
-            expect(commit.mock.calls[0][1]).toStrictEqual({
+            expect(commit.mock.calls[1][0]).toStrictEqual(`plotData/${PlotDataMutations.updatePlotData}`);
+            expect(commit.mock.calls[1][1]).toStrictEqual({
                 payload: expectedPayload
             });
-            expect(commit.mock.calls[0][2]).toStrictEqual({root: true});
+            expect(commit.mock.calls[1][2]).toStrictEqual({root: true});
         });
 
         it("handles case when selection is not in filter types", async () => {
@@ -178,16 +190,17 @@ describe("filter tests", () => {
             expect(mockAxios.history.post.length).toBe(1);
             expect(mockAxios.history.post[0].data).toStrictEqual('{}');
 
-            expect(commit.mock.calls.length).toBe(1);
+            expect(commit.mock.calls.length).toBe(2);
+            expectClearedError(commit);
             const expectedPayload = {
                 plot: "choropleth",
                 data: mockData
             } as PlotDataUpdate
-            expect(commit.mock.calls[0][0]).toStrictEqual(`plotData/${PlotDataMutations.updatePlotData}`);
-            expect(commit.mock.calls[0][1]).toStrictEqual({
+            expect(commit.mock.calls[1][0]).toStrictEqual(`plotData/${PlotDataMutations.updatePlotData}`);
+            expect(commit.mock.calls[1][1]).toStrictEqual({
                 payload: expectedPayload
             });
-            expect(commit.mock.calls[0][2]).toStrictEqual({root: true});
+            expect(commit.mock.calls[1][2]).toStrictEqual({root: true});
         });
 
         it("commits error if fetch fails", async () => {
@@ -199,8 +212,47 @@ describe("filter tests", () => {
             expect(mockAxios.history.post.length).toBe(1);
             expect(mockAxios.history.post[0].data).toStrictEqual('{"column1":["detailOptB","detailOptC"]}');
 
-            expect(commit.mock.calls.length).toBe(1);
-            expect(commit.mock.calls[0][0].type).toStrictEqual("setError");
+            // The commit can be from another module (for example modelCalibrate), so the error
+            // mutation has the full name and root: true.
+            expect(commit.mock.calls.length).toBe(2);
+            expectClearedError(commit);
+            expect(commit.mock.calls[1][0]).toStrictEqual({
+                type: `plotSelections/${PlotSelectionsMutations.setError}`,
+                payload: {
+                    detail: "failed",
+                    error: "OTHER_ERROR"
+                }
+            });
+            expect(commit.mock.calls[1][1]).toStrictEqual({root: true});
+        });
+
+        it("sets the error in plotSelections when another module fetches the data", async () => {
+            // commitPlotDefaultSelections calls this with the commit of modelCalibrate, metadata or reviewInput.
+            mockAxios.onPost(`/calibrate/result/filteredData/id123`)
+                .reply(400, mockFailure("failed"));
+            const store = new Vuex.Store<any>({
+                state: rootState,
+                modules: {
+                    modelCalibrate: {
+                        namespaced: true,
+                        state: rootState.modelCalibrate,
+                        actions: {
+                            async fetch({commit, rootState}) {
+                                await getOutputFilteredData("choropleth", selections, {commit, rootState});
+                            }
+                        }
+                    },
+                    plotSelections: {
+                        namespaced: true,
+                        state: initialPlotSelectionsState(),
+                        mutations: plotSelectionsMutations
+                    }
+                }
+            });
+
+            await store.dispatch("modelCalibrate/fetch");
+
+            expect(store.state.plotSelections.error).toStrictEqual({detail: "failed", error: "OTHER_ERROR"});
         });
     });
 
@@ -334,12 +386,13 @@ describe("filter tests", () => {
             expect(commit.mock.calls[0][0]).toStrictEqual(`reviewInput/${ReviewInputMutation.SetError}`);
             expect(commit.mock.calls[0][1]).toStrictEqual({payload: null});
             expect(commit.mock.calls[1][0]).toStrictEqual({
-                type: `${ReviewInputMutation.SetError}`,
+                type: `reviewInput/${ReviewInputMutation.SetError}`,
                 payload: {
                     detail: "failed",
                     error: "OTHER_ERROR"
                 }
             });
+            expect(commit.mock.calls[1][1]).toStrictEqual({root: true});
         });
 
         it("converts type when filtering on area level", async () => {

@@ -18,7 +18,7 @@ export const mutations: MutationTree<PlotSelectionsState> = {
         state[action.payload.plot] = action.payload.selections;
     },
 
-    [PlotSelectionsMutations.setError](state: PlotSelectionsState, action: PayloadWithType<Error>) {
+    [PlotSelectionsMutations.setError](state: PlotSelectionsState, action: PayloadWithType<Error | null>) {
         state.error = action.payload;
     }
 };

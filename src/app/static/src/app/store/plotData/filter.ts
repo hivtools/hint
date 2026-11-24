@@ -49,9 +49,12 @@ export const getOutputFilteredData = async (plot: OutputPlotName, selections: Pl
     });
 
     const calibrateId = rootState.modelCalibrate.calibrateId;
-    const response = await api<any, PlotSelectionsMutations>(context as any)
+    // The commit can be from any module (for example modelCalibrate, through commitPlotDefaultSelections),
+    // so the error mutation needs the full name and root: true.
+    commit(`plotSelections/${PlotSelectionsMutations.setError}`, { payload: null }, { root: true });
+    const response = await api<any, string>(context as any)
         .ignoreSuccess()
-        .withError(PlotSelectionsMutations.setError)
+        .withError(`plotSelections/${PlotSelectionsMutations.setError}`, true)
         .freezeResponse()
         .postAndReturn<CalibrateDataResponse["data"]>(`calibrate/result/filteredData/${calibrateId}`, dataFetchPayload);
     
@@ -64,9 +67,10 @@ export const getOutputFilteredData = async (plot: OutputPlotName, selections: Pl
 };
 
 const fetchTimeSeriesDataset = async (dataSource: string, commit: Commit, rootState: RootState) => {
-    const response = await api<ReviewInputMutation, ReviewInputMutation>({commit, rootState})
+    // The commit can be from any module, so the error mutation needs the full name and root: true.
+    const response = await api<any, string>({commit, rootState})
         .ignoreSuccess()
-        .withError(ReviewInputMutation.SetError)
+        .withError(`reviewInput/${ReviewInputMutation.SetError}`, true)
         .freezeResponse()
         .get(`chart-data/input-time-series/${dataSource}`);
     if (response) {

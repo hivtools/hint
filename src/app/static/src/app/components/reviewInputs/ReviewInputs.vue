@@ -8,6 +8,7 @@
                    @click="changePlot(plotName)"></a>
             </li>
         </ul>
+        <error-alert v-if="activePlot === 'timeSeries' && !!timeSeriesError" :error="timeSeriesError!"></error-alert>
         <div id="review-loading" class="d-flex align-items-center justify-content-center" v-if="loading">
             <loading-spinner size="lg"/>
         </div>
@@ -108,6 +109,10 @@ export default defineComponent({
             return store.state.metadata.reviewInputMetadataError
         });
 
+        const timeSeriesError = computed(() => {
+            return store.state.reviewInput.error
+        });
+
         const inputComparisonError = computed(() => {
             return store.state.reviewInput.inputComparison.error
         });
@@ -134,6 +139,7 @@ export default defineComponent({
             loading,
             plotDescription,
             error,
+            timeSeriesError,
             inputComparisonError,
             populationMetadataError
         }
