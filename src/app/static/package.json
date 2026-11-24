@@ -14,7 +14,8 @@
     "test:e2e": "playwright test",
     "test:integration": "vitest --config test-integration-configs/integration.ts --run --coverage",
     "test:adr-integration": "vitest --config test-integration-configs/adr-integration.ts --run",
-    "lint": "eslint . --cache"
+    "lint": "eslint . --fix --cache",
+    "lint:check": "eslint . --cache"
   },
   "author": "",
   "license": "MIT",

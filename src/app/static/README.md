@@ -90,10 +90,11 @@ The type check does not check the `<template>` blocks or the `.d.ts` files of th
 ## Lint
 
 ```sh
-npm run lint
+npm run lint        # fixes what ESLint can fix, and lists the other errors
+npm run lint:check  # only lists the errors, as CI does
 ```
 
-CI fails if there are lint errors. The config is `eslint.config.ts`. We use the basic ESLint, TypeScript and Vue
+CI runs `lint:check` and fails if there are lint errors. The config is `eslint.config.ts`. We use the basic ESLint, TypeScript and Vue
 recommendations. ESLint checks the app and the config files; it does not check the tests. Our only custom rule: you can import
 `rawDeepClone` only in Vuex actions and mutations, because Vue does not track its reads, so a `computed` or `watch`
 that uses it does not update. ESLint does not check the indentation. The IntelliJ style files indent the content of the
