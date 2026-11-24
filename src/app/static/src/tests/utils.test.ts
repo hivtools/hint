@@ -1,7 +1,6 @@
 import {
     constructUploadFile,
     constructUploadFileWithResourceName,
-    extractFilenameFrom,
     flattenOptions,
     flattenOptionsIdsByHierarchy,
     flattenToIdSet,
@@ -11,75 +10,18 @@ import {
     getFilenameFromImportUrl,
     parseAndFillForm,
     rawDeepClone,
-    readStream,
     rootOptionChildren,
     validateEmail,
     versionLabel
 } from "../app/utils";
 import type {NestedFilterOption} from "../app/generated";
 import type {DynamicFormData, DynamicFormMeta} from "@reside-ic/vue-next-dynamic-form";
-import {AxiosHeaders, type AxiosResponse} from "axios";
 import {computed, isProxy, reactive} from "vue";
 
 describe("utils", () => {
 
     beforeEach(() => {
         vi.clearAllMocks()
-    })
-
-    const file = new Blob(["data"], {type: "application/octet-stream"});
-
-    const mockAxiosResponse: AxiosResponse = {
-        data: file,
-        headers: {"content-disposition": "attachment; filename=test.html"},
-        status: 200,
-        config: {headers: new AxiosHeaders()},
-        statusText: ""
-    }
-
-    it("can read and download blob content", () => {
-        const mObjectURL = "blob:https://naomi.unaids.org/download/test";
-        window.URL.createObjectURL = vi.fn().mockReturnValueOnce(mObjectURL);
-        window.URL.revokeObjectURL = vi.fn();
-        document.body.appendChild = vi.fn()
-
-        const mockClick = vi.fn()
-        const mockHref = vi.fn()
-        const mockAttr = vi.fn()
-
-        document.createElement = vi.fn().mockImplementation(() => {
-            return {
-                setAttribute: mockAttr,
-                href: mockHref,
-                click: mockClick
-            }
-        })
-
-        //trigger download
-        readStream(mockAxiosResponse)
-
-        expect(document.body.appendChild).toBeCalledTimes(1)
-        expect(window.URL.createObjectURL).toBeCalledTimes(1)
-        expect(window.URL.createObjectURL).toBeCalledWith(new Blob(["data"]))
-
-        //releases object Url from memory
-        expect(window.URL.revokeObjectURL).toBeCalledTimes(1)
-        expect(window.URL.revokeObjectURL).toBeCalledWith(mObjectURL)
-
-        expect(document.createElement).toBeCalledTimes(1)
-
-        //download link contains correct attributes
-        expect(mockAttr).toBeCalledTimes(1)
-        expect(mockAttr).toHaveBeenCalledWith("download", "test.html")
-
-        //download link has been called
-        expect(mockClick).toBeCalledTimes(1)
-    })
-
-    it("can extract file name from content-disposition", () => {
-        const contentDisposition = 'attachment; filename="MWI_comparison-report_20221116-1328.html"'
-        const filename = extractFilenameFrom(contentDisposition)
-        expect(filename).toBe("MWI_comparison-report_20221116-1328.html")
     })
 
     it("deep freezes an object", () => {

@@ -12,7 +12,6 @@ import type {RootState} from "./root";
 import {initialStepperState} from "./store/stepper/stepper";
 import {initialModelRunState} from "./store/modelRun/modelRun";
 import {initialModelCalibrateState} from "./store/modelCalibrate/modelCalibrate";
-import type {AxiosResponse} from "axios";
 import {type ComputedGetter, toRaw} from 'vue';
 import {isDropdown, isMultiselectControl} from "./store/modelOptions/optionsUtils";
 import type {RehydrateProjectResponse} from "./store/load/state";
@@ -562,25 +561,6 @@ export const flatMapControlSections = (sections: DynamicControlSection[]): Dynam
     return sections.reduce<DynamicControlGroup[]>((groups, group) => groups.concat(group.controlGroups), [])
 }
 
-export const readStream = (response: AxiosResponse) => {
-    const filename = extractFilenameFrom(response.headers["content-disposition"])
-    const fileUrl = URL.createObjectURL(response.data);
-    const fileLink = document.createElement('a');
-    fileLink.href = fileUrl;
-    fileLink.setAttribute('download', filename);
-    document.body.appendChild(fileLink);
-    fileLink.click()
-    URL.revokeObjectURL(fileUrl)
-}
-
-export const extractFilenameFrom = (contentDisposition: string | undefined): string => {
-    if (!contentDisposition) return "";
-    return contentDisposition
-        .split(';')[1]
-        .split('filename=')[1]
-        .replace(/"/g, '')
-        .trim();
-}
 
 export const buildData = (selectedDataset: Dataset | null, url: string, resourceType: DatasetResourceType) => ({
     url,

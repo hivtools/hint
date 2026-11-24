@@ -1,7 +1,7 @@
 import axios, {type AxiosError, type AxiosResponse} from "axios";
 import {ErrorsMutation} from "./store/errors/mutations";
 import type {Commit} from "vuex";
-import {freezer, isHINTResponse, readStream} from "./utils";
+import {freezer, isHINTResponse} from "./utils";
 import type {Error, Response} from "./generated";
 import i18next from "i18next";
 import type {GenericResponse, TranslatableState} from "./types";
@@ -138,29 +138,6 @@ export class APIService<S extends string, E extends string> implements API<S, E>
         return this._handleAxiosResponse(axios.get(fullUrl, {headers: this._headers}));
     }
 
-    private _handleDownloadError = async (e: AxiosError) => {
-        console.log(e.response && e.response.data || e);
-
-        this._handle401Error(e)
-
-        const response = e.response && e.response.data;
-
-        if (response instanceof Blob) {
-
-            const fileReader = new FileReader()
-
-            const data = await response.text()
-
-            fileReader.onload = () => {
-                this._handleCommitError(JSON.parse(data))
-            }
-
-            fileReader.readAsText(response);
-        } else {
-            this._handleCommitError(response)
-        }
-    }
-
     private _handle401Error = (e: AxiosError) => {
         if (e.response && e.response.status == 401) {
 
@@ -180,20 +157,6 @@ export class APIService<S extends string, E extends string> implements API<S, E>
         } else {
             this._commitError(APIService.getFirstErrorFromFailure(error));
         }
-    }
-
-    private _handleDownloadResponse = (response: AxiosResponse) => {
-        readStream(response)
-    }
-
-    //Initiates a download. NB any withSuccess mutation will be ignored for downloads.
-    async download(url: string): Promise<any> {
-        this._verifyHandlers(url);
-        const fullUrl = this._buildFullUrl(url);
-
-        return axios.get(fullUrl, {headers: this._headers, responseType: "blob"})
-            .then((response: AxiosResponse) => this._handleDownloadResponse(response))
-            .catch((e: AxiosError) => this._handleDownloadError(e));
     }
 
     async postAndReturn<T>(url: string, data?: any): Promise<void | ResponseWithType<T>> {

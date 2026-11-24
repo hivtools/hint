@@ -410,23 +410,6 @@ export const mockSuccess = (data: any, version?: any): Response => {
     }
 };
 
-const mockDownloadErrorResponse = () => {
-    const errorResponse = [
-        {
-            error: "FAILED_TO_RETRIEVE_RESULT",
-            detail: "Missing some results",
-            key: "rofah-volil-kivup"
-        }
-    ]
-    const str = JSON.stringify(errorResponse);
-    return new Blob([str], {
-        type: "application/json"
-    });
-}
-
-export const mockDownloadFailure = (errorMessage = mockDownloadErrorResponse) => {
-    return errorMessage
-};
 
 export const mockFailure = (errorMessage: string): Response => {
     return {
