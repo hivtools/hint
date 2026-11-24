@@ -8,6 +8,7 @@
                    @click="switchTab(plotName)"></a>
             </li>
         </ul>
+        <error-alert v-if="plotDataError" :error="plotDataError"></error-alert>
         <div id="review-output" class="row" v-if="outputMetadataFetched">
             <div class="mt-2 col-md-3">
                 <plot-control-set :plot="selectedPlot"/>
@@ -45,6 +46,7 @@ import Bubble from "../plots/bubble/Bubble.vue";
 import Barchart from "../plots/bar/Barchart.vue";
 import Table from "../plots/table/Table.vue";
 import FilterWithReset from "../plots/FilterWithReset.vue";
+import ErrorAlert from "../ErrorAlert.vue";
 
 export default defineComponent({
 
@@ -53,11 +55,13 @@ export default defineComponent({
         const selectedPlot = computed(() => store.state.modelOutput.selectedTab);
         const switchTab = (plotName: OutputPlotName) => store.commit(`modelOutput/${ModelOutputMutation.TabSelected}`, {payload: plotName});
         const outputMetadataFetched = computed(() => store.state.modelCalibrate.metadata)
+        const plotDataError = computed(() => store.state.plotSelections.error)
         return {
             outputPlotNames,
             selectedPlot,
             switchTab,
-            outputMetadataFetched
+            outputMetadataFetched,
+            plotDataError
         }
     },
 
@@ -68,7 +72,8 @@ export default defineComponent({
         PlotTable: Table,
         FilterSet,
         PlotControlSet,
-        FilterWithReset
+        FilterWithReset,
+        ErrorAlert
     }
 })
 </script>

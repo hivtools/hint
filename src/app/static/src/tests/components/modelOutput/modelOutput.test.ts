@@ -2,7 +2,9 @@ import {shallowMount} from "@vue/test-utils";
 import ModelOutput from "../../../app/components/modelOutput/ModelOutput.vue";
 import Vuex, {type Store} from "vuex";
 import {emptyState, type RootState} from "../../../app/root";
-import {mockModelCalibrateState, mockModelOutputState} from "../../mocks";
+import {mockError, mockModelCalibrateState, mockModelOutputState} from "../../mocks";
+import ErrorAlert from "../../../app/components/ErrorAlert.vue";
+import {initialPlotSelectionsState} from "../../../app/store/plotSelections/plotSelections";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import PlotControlSet from "../../../app/components/plots/PlotControlSet.vue";
 import FilterSet from "../../../app/components/plots/FilterSet.vue";
@@ -23,7 +25,7 @@ describe("Model Output page", () => {
 
     const mockTabSelected = vi.fn();
 
-    const createStore = () => {
+    const createStore = (plotDataError: ReturnType<typeof mockError> | null = null) => {
         const store = new Vuex.Store({
             state: emptyState(),
             modules: {
@@ -41,6 +43,10 @@ describe("Model Output page", () => {
                     state: mockModelCalibrateState({
                         metadata: {} as any
                     })
+                },
+                plotSelections: {
+                    namespaced: true,
+                    state: {...initialPlotSelectionsState(), error: plotDataError}
                 }
             }
         });
@@ -72,5 +78,25 @@ describe("Model Output page", () => {
         expect(mockTabSelected.mock.calls[0][1]).toStrictEqual({
             payload: "barchart"
         })
+    });
+
+    test("shows no error when the plot data fetch did not fail", () => {
+        const wrapper = getWrapper(createStore());
+        expect(wrapper.findComponent(ErrorAlert).exists()).toBeFalsy();
+    });
+
+    test("shows the error from the plot data fetch above the plot", () => {
+        const store = createStore(mockError("Plot data failed"));
+        const wrapper = getWrapper(store);
+
+        const errorAlert = wrapper.findComponent(ErrorAlert);
+        expect(errorAlert.exists()).toBeTruthy();
+        expect(errorAlert.props("error")).toStrictEqual({
+            error: "OTHER_ERROR",
+            detail: "Plot data failed"
+        });
+        // The controls stay, so the user can change the selections and try again.
+        expect(wrapper.findComponent(PlotControlSet).exists()).toBeTruthy();
+        expect(wrapper.findComponent(Choropleth).exists()).toBeTruthy();
     });
 });

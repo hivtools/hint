@@ -21,6 +21,7 @@ import {
 import {nextTick} from "vue";
 import {shallowMountWithTranslate} from "../../testHelpers";
 import ErrorAlert from "../../../app/components/ErrorAlert.vue";
+import type {Error} from "../../../app/generated";
 import LoadingSpinner from "../../../app/components/LoadingSpinner.vue";
 import DownloadTimeSeries from "../../../app/components/plots/timeSeries/downloadTimeSeries/DownloadTimeSeries.vue";
 import Barchart from "../../../app/components/plots/bar/Barchart.vue";
@@ -49,7 +50,7 @@ describe("Review inputs page", () => {
         vi.resetAllMocks();
     });
 
-    const createStore = (sapState: SurveyAndProgramState, dataFetched = true, error = false) => {
+    const createStore = (sapState: SurveyAndProgramState, dataFetched = true, error = false, timeSeriesError: Error | null = null) => {
         const store = new Vuex.Store({
             state: emptyState(),
             modules: {
@@ -62,7 +63,7 @@ describe("Review inputs page", () => {
                         getInputComparisonDataset: mockGetInputComparisonDataset,
                         getPopulationDataset: mockGetPopulationDataset
                     },
-                    state: mockReviewInputState({loading: !dataFetched}),
+                    state: mockReviewInputState({loading: !dataFetched, error: timeSeriesError}),
                 },
                 metadata: {
                     namespaced: true,
@@ -257,4 +258,26 @@ describe("Review inputs page", () => {
             detail: "Metadata failed"
         });
     })
+
+    test("shows the time series error above the plot, only on the time series tab", async () => {
+        const sapState = mockSurveyAndProgramState({
+            anc: mockAncResponse(),
+            survey: mockSurveyResponse()
+        });
+        const store = createStore(sapState, true, false, mockError("Time series failed"));
+        const wrapper = getWrapper(store);
+
+        // The time series tab is the first tab. The controls stay, so the user can choose another data source.
+        const errorAlert = wrapper.findComponent(ErrorAlert);
+        expect(errorAlert.exists()).toBeTruthy();
+        expect(errorAlert.props("error")).toStrictEqual({
+            error: "OTHER_ERROR",
+            detail: "Time series failed"
+        });
+        expect(wrapper.findComponent(PlotControlSet).exists()).toBeTruthy();
+        expect(wrapper.findComponent(TimeSeries).exists()).toBeTruthy();
+
+        await wrapper.findAll(".nav-link")[1].trigger("click");
+        expect(wrapper.findComponent(ErrorAlert).exists()).toBeFalsy();
+    });
 });

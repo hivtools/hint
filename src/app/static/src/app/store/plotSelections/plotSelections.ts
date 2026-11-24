@@ -60,7 +60,7 @@ export type PlotSelectionsState = {
         controls: ControlSelection[]
         filters: FilterSelection[]
     }
-} & { error: Error }
+} & { error: Error | null }
 
 export type PopulationChartDataset = {
     label: string,
@@ -78,7 +78,7 @@ export type PopulationChartData = {
 export const initialPlotSelectionsState = (): PlotSelectionsState => {
     const emptySelections: PlotSelectionsState[PlotName] = { controls: [], filters: [] };
     const emptySelectionsArray = plotNames.map(plot => [plot, emptySelections]);
-    return Object.fromEntries([...emptySelectionsArray, ["error", ""]]) as PlotSelectionsState;
+    return Object.fromEntries([...emptySelectionsArray, ["error", null]]) as PlotSelectionsState;
 }
 
 export const plotSelections = {
