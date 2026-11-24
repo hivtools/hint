@@ -23,10 +23,10 @@ import type { PlotName } from "../../../store/plotSelections/plotSelections";
 
 // defines the order of headers on the excel download
 const header = [ "area_id", "area_name", "area_level",
-    "parent_area_id", "indicator", "calendar_quarter",
-    "age_group", "sex", "formatted_mode", "formatted_mean",
-    "formatted_upper", "formatted_lower", "mode",
-    "mean", "upper", "lower" ];
+                 "parent_area_id", "indicator", "calendar_quarter",
+                 "age_group", "sex", "formatted_mode", "formatted_mean",
+                 "formatted_upper", "formatted_lower", "mode",
+                 "mean", "upper", "lower" ];
 
 export default defineComponent({
     components: {
@@ -56,9 +56,9 @@ export default defineComponent({
                 const features = store.state.baseline.shape?.data.features || [];
                 const feature = features.find((f: any) => f.properties.area_id === d.area_id);
                 const format = (value: number) => formatOutput(value,
-                        indicatorMetadata.value.format || "",
-                        indicatorMetadata.value.scale || null,
-                        indicatorMetadata.value.accuracy || null);
+                                                               indicatorMetadata.value.format || "",
+                                                               indicatorMetadata.value.scale || null,
+                                                               indicatorMetadata.value.accuracy || null);
                 return {
                     ...d,
                     area_name: feature?.properties.area_name || "",
@@ -75,8 +75,8 @@ export default defineComponent({
             const data = { filteredData: getDownloadData(), unfilteredData: [] };
             const filename = `${prefix}_naomi_table-data_${appendCurrentDateTime()}.xlsx`;
             exportService({ data, filename, options: { header }})
-                    .addFilteredData()
-                    .download();
+                .addFilteredData()
+                .download();
         };
         return {
             plotData,

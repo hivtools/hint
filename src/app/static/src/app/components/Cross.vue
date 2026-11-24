@@ -6,7 +6,7 @@
 </template>
 
 <script lang="ts">
-    export default {
-        props: ["color"]
-    }
+export default {
+    props: ["color"]
+}
 </script>

@@ -583,7 +583,7 @@ describe("UploadInputs upload component", () => {
     });
 
     const expectUploadToDispatchAction = async (index: number,
-                                          action: () => MockInstance) => {
+                                                action: () => MockInstance) => {
         const store = createSut();
         const wrapper = shallowMountWithTranslate(UploadInputs, store, {
             global: {
@@ -597,7 +597,7 @@ describe("UploadInputs upload component", () => {
     };
 
     const expectDeleteToDispatchAction = async (index: number,
-                                          action: () => MockInstance) => {
+                                                action: () => MockInstance) => {
         const store = createSut();
         const wrapper = shallowMountWithTranslate(UploadInputs, store, {
             global: {

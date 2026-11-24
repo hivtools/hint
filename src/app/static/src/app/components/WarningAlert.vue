@@ -10,42 +10,42 @@
 </template>
 
 <script lang="ts">
-    import { type PropType, defineComponent } from "vue";
-    import type { Warning as WarningType } from "../generated";
-    import type { Dict } from "../types";
-    import Warning from "./Warning.vue"
+import { type PropType, defineComponent } from "vue";
+import type { Warning as WarningType } from "../generated";
+import type { Dict } from "../types";
+import Warning from "./Warning.vue"
 
-    export default defineComponent({
-        name: "WarningAlert",
-        props: {
-            warnings: {
-                type: Object as PropType<Dict<WarningType[]>>,
-                required: true
-            },
-            maxLines: {
-                default: 2,
-                required: false,
-                type: Number
-            },
+export default defineComponent({
+    name: "WarningAlert",
+    props: {
+        warnings: {
+            type: Object as PropType<Dict<WarningType[]>>,
+            required: true
         },
-        computed: {
-            filteredWarnings(){
-                const anObject: Dict<WarningType[]> = {}
-                Object.keys(this.warnings).forEach((k) => {
-                    if (this.warnings[k].length > 0){
-                        anObject[k] = this.warnings[k]
-                    }
-                });
-                return anObject
-            },
-            showAlert(){
-                return Object.keys(this.warnings).some(key => this.warnings[key].length > 0)
-            },
+        maxLines: {
+            default: 2,
+            required: false,
+            type: Number
         },
-        components: {
-            Warning
-        }
-    })
+    },
+    computed: {
+        filteredWarnings(){
+            const anObject: Dict<WarningType[]> = {}
+            Object.keys(this.warnings).forEach((k) => {
+                if (this.warnings[k].length > 0){
+                    anObject[k] = this.warnings[k]
+                }
+            });
+            return anObject
+        },
+        showAlert(){
+            return Object.keys(this.warnings).some(key => this.warnings[key].length > 0)
+        },
+    },
+    components: {
+        Warning
+    }
+})
 </script>
 
 

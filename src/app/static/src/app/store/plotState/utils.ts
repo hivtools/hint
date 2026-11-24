@@ -14,16 +14,16 @@ export const commitInitialScaleSelections = (
         return dict
     }, {} as Dict<ScaleSettings>)
     commit({
-            type: `plotState/${PlotStateMutations.setOutputScale}`,
-            payload: {scale: Scale.Colour, selections: newScaleSettings}
-        },
-        { root: true }
+        type: `plotState/${PlotStateMutations.setOutputScale}`,
+        payload: {scale: Scale.Colour, selections: newScaleSettings}
+    },
+    { root: true }
     );
     commit({
-            type: `plotState/${PlotStateMutations.setOutputScale}`,
-            payload: {scale: Scale.Size, selections: newScaleSettings}
-        },
-        { root: true }
+        type: `plotState/${PlotStateMutations.setOutputScale}`,
+        payload: {scale: Scale.Size, selections: newScaleSettings}
+    },
+    { root: true }
     );
 };
 

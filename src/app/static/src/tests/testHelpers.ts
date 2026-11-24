@@ -85,11 +85,11 @@ export function expectAllMutationsDefined(mutationDefinitions: any, mutationTree
 }
 
 export async function expectTranslatedWithStoreType<T extends TranslatableState>(element: DOMWrapper<any>,
-                                                                           englishText: string,
-                                                                           frenchText: string,
-                                                                           portugueseText: string,
-                                                                           store: Store<T>,
-                                                                           attribute?: string) {
+                                                                                 englishText: string,
+                                                                                 frenchText: string,
+                                                                                 portugueseText: string,
+                                                                                 store: Store<T>,
+                                                                                 attribute?: string) {
     const value = () => attribute ? element.attributes(attribute) : element.text();
     store.state.language = Language.en;
     registerTranslations(store);
@@ -108,11 +108,11 @@ export async function expectTranslatedWithStoreType<T extends TranslatableState>
 }
 
 export const expectTranslated = async (element: DOMWrapper<any>,
-                                 englishText: string,
-                                 frenchText: string,
-                                 portugueseText: string,
-                                 store: Store<RootState>,
-                                 attribute?: string) =>
+                                       englishText: string,
+                                       frenchText: string,
+                                       portugueseText: string,
+                                       store: Store<RootState>,
+                                       attribute?: string) =>
     expectTranslatedWithStoreType<RootState>(element, englishText, frenchText, portugueseText, store, attribute);
 
 export const expectHasTranslationKey = (element: DOMWrapper<any>,

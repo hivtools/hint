@@ -58,7 +58,7 @@ export default defineComponent({
 
         const updateChart = () => {
             chartData.value = chartDataGetter(props.plot, plotData.value, indicatorMetadata.value,
-                    filterSelections.value, currentLanguage.value)
+                                              filterSelections.value, currentLanguage.value)
             if (props.showErrorBars) {
                 /*
                     We hide the error bars when data changes otherwise the animation can get quite wild
@@ -125,9 +125,9 @@ export default defineComponent({
                         ticks: {
                             callback: ((value: number | string) => {
                                 return formatOutput(value,
-                                        indicatorMetadata.value.format,
-                                        indicatorMetadata.value.scale,
-                                        indicatorMetadata.value.accuracy)
+                                                    indicatorMetadata.value.format,
+                                                    indicatorMetadata.value.scale,
+                                                    indicatorMetadata.value.accuracy)
                             })
                         }
                     }
@@ -140,15 +140,15 @@ export default defineComponent({
                 // For ratio indicators, plot a dotted line at 1 and set y-max to 2
                 baseChartOptions.plugins.annotation = {
                     annotations: {
-                            dottedLine: {
-                                type: 'line',
-                                yMin: 1,
-                                yMax: 1,
-                                borderWidth: 2,
-                                borderDash: [5],
-                                drawTime: 'beforeDatasetsDraw'
-                            }
+                        dottedLine: {
+                            type: 'line',
+                            yMin: 1,
+                            yMax: 1,
+                            borderWidth: 2,
+                            borderDash: [5],
+                            drawTime: 'beforeDatasetsDraw'
                         }
+                    }
                 }
                 baseChartOptions.scales.y.max = 2
             }
@@ -183,9 +183,9 @@ export default defineComponent({
                                 callback: ((value: number | string) => {
                                     return value == chartData.value.maxValuePlusError * 1.1 ? "" :
                                         formatOutput(value,
-                                            indicatorMetadata.value.format,
-                                            indicatorMetadata.value.scale,
-                                            indicatorMetadata.value.accuracy).toString()
+                                                     indicatorMetadata.value.format,
+                                                     indicatorMetadata.value.scale,
+                                                     indicatorMetadata.value.accuracy).toString()
                                 })
                             }
                         }

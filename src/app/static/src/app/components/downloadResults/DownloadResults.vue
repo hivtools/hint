@@ -52,99 +52,99 @@
 </template>
 
 <script lang="ts">
-    import {mapActionByName, mapStateProp, mapMutationByName, mapStateProps} from "../../utils";
-    import VueFeather from "vue-feather";
-    import UploadModal from "./UploadModal.vue";
-    import type {ADRState} from "../../store/adr/adr";
-    import LoadingSpinner from "../LoadingSpinner.vue";
-    import Tick from "../Tick.vue";
-    import Cross from "../Cross.vue";
-    import type {Language} from "../../store/translations/locales";
-    import type {RootState} from "../../root";
-    import ErrorAlert from "../ErrorAlert.vue";
-    import i18next from "i18next";
-    import type {ADRUploadState} from "../../store/adrUpload/adrUpload";
-    import { defineComponent } from "vue";
-    import { downloadSwitches, DownloadType, getDownloadTranslationKey } from "../../store/downloadResults/downloadConfig";
-    import DownloadTableRow from "./DownloadTableRow.vue";
-    import DownloadErrorAlert from "./DownloadErrorAlert.vue";
+import {mapActionByName, mapStateProp, mapMutationByName, mapStateProps} from "../../utils";
+import VueFeather from "vue-feather";
+import UploadModal from "./UploadModal.vue";
+import type {ADRState} from "../../store/adr/adr";
+import LoadingSpinner from "../LoadingSpinner.vue";
+import Tick from "../Tick.vue";
+import Cross from "../Cross.vue";
+import type {Language} from "../../store/translations/locales";
+import type {RootState} from "../../root";
+import ErrorAlert from "../ErrorAlert.vue";
+import i18next from "i18next";
+import type {ADRUploadState} from "../../store/adrUpload/adrUpload";
+import { defineComponent } from "vue";
+import { downloadSwitches, DownloadType, getDownloadTranslationKey } from "../../store/downloadResults/downloadConfig";
+import DownloadTableRow from "./DownloadTableRow.vue";
+import DownloadErrorAlert from "./DownloadErrorAlert.vue";
 
-    interface Data {
-        uploadModalOpen: boolean,
-        DownloadType: typeof DownloadType,
-        switches: {
-            [K in DownloadType]: boolean
-        },
-        getDownloadTranslationKey: typeof getDownloadTranslationKey
-    }
+interface Data {
+    uploadModalOpen: boolean,
+    DownloadType: typeof DownloadType,
+    switches: {
+        [K in DownloadType]: boolean
+    },
+    getDownloadTranslationKey: typeof getDownloadTranslationKey
+}
 
-    export default defineComponent({
-        name: "downloadResults",
-        data(): Data {
-            return {
-                uploadModalOpen: false,
-                switches: downloadSwitches,
-                DownloadType,
-                getDownloadTranslationKey
-            }
-        },
-        computed: {
-            hasUploadPermission: mapStateProp<ADRState, boolean>("adr", (state: ADRState) => state.userCanUpload),
-            ...mapStateProps("downloadResults", {
-                state: (state) => state
-            }),
-            ...mapStateProps("adrUpload", {
-                uploading: ((state: ADRUploadState) => state.uploading),
-                uploadComplete: ((state: ADRUploadState) => state.uploadComplete),
-                releaseCreated: ((state: ADRUploadState) => state.releaseCreated),
-                releaseFailed: ((state: ADRUploadState) => state.releaseFailed),
-                uploadError: ((state: ADRUploadState) => state.uploadError),
-                currentFileUploading: ((state: ADRUploadState) => state.currentFileUploading),
-                totalFilesUploading: ((state: ADRUploadState) => state.totalFilesUploading)
-            }),
-            uploadingStatus(): string {
-                return i18next.t("uploadingStatus", {
-                    fileNumber: this.currentFileUploading,
-                    totalFiles: this.totalFilesUploading,
-                    lng: this.currentLanguage,
-                });
-            },
-            currentLanguage: mapStateProp<RootState, Language>(
-                null,
-                (state: RootState) => state.language
-            ),
-            isPreparing(): boolean {
-                return Object.values(DownloadType).some(type => this.state[type].preparing);
-            }
-        },
-        methods: {
-            handleUploadModal() {
-                this.uploadModalOpen = true;
-            },
-            clearStatus: mapMutationByName("adrUpload", "ClearStatus"),
-            getUserCanUpload: mapActionByName("adr", "getUserCanUpload"),
-            getUploadFiles: mapActionByName("adrUpload", "getUploadFiles"),
-            prepareAllOutputs: mapActionByName("downloadResults", "prepareAllOutputs")
-        },
-        mounted() {
-            this.getUserCanUpload();
-            this.getUploadFiles();
-            this.prepareAllOutputs();
-        },
-        beforeMount() {
-            this.clearStatus();
-        },
-        components: {
-            VueFeather,
-            LoadingSpinner,
-            Tick,
-            Cross,
-            ErrorAlert,
-            UploadModal,
-            DownloadTableRow,
-            DownloadErrorAlert
+export default defineComponent({
+    name: "downloadResults",
+    data(): Data {
+        return {
+            uploadModalOpen: false,
+            switches: downloadSwitches,
+            DownloadType,
+            getDownloadTranslationKey
         }
-    });
+    },
+    computed: {
+        hasUploadPermission: mapStateProp<ADRState, boolean>("adr", (state: ADRState) => state.userCanUpload),
+        ...mapStateProps("downloadResults", {
+            state: (state) => state
+        }),
+        ...mapStateProps("adrUpload", {
+            uploading: ((state: ADRUploadState) => state.uploading),
+            uploadComplete: ((state: ADRUploadState) => state.uploadComplete),
+            releaseCreated: ((state: ADRUploadState) => state.releaseCreated),
+            releaseFailed: ((state: ADRUploadState) => state.releaseFailed),
+            uploadError: ((state: ADRUploadState) => state.uploadError),
+            currentFileUploading: ((state: ADRUploadState) => state.currentFileUploading),
+            totalFilesUploading: ((state: ADRUploadState) => state.totalFilesUploading)
+        }),
+        uploadingStatus(): string {
+            return i18next.t("uploadingStatus", {
+                fileNumber: this.currentFileUploading,
+                totalFiles: this.totalFilesUploading,
+                lng: this.currentLanguage,
+            });
+        },
+        currentLanguage: mapStateProp<RootState, Language>(
+            null,
+            (state: RootState) => state.language
+        ),
+        isPreparing(): boolean {
+            return Object.values(DownloadType).some(type => this.state[type].preparing);
+        }
+    },
+    methods: {
+        handleUploadModal() {
+            this.uploadModalOpen = true;
+        },
+        clearStatus: mapMutationByName("adrUpload", "ClearStatus"),
+        getUserCanUpload: mapActionByName("adr", "getUserCanUpload"),
+        getUploadFiles: mapActionByName("adrUpload", "getUploadFiles"),
+        prepareAllOutputs: mapActionByName("downloadResults", "prepareAllOutputs")
+    },
+    mounted() {
+        this.getUserCanUpload();
+        this.getUploadFiles();
+        this.prepareAllOutputs();
+    },
+    beforeMount() {
+        this.clearStatus();
+    },
+    components: {
+        VueFeather,
+        LoadingSpinner,
+        Tick,
+        Cross,
+        ErrorAlert,
+        UploadModal,
+        DownloadTableRow,
+        DownloadErrorAlert
+    }
+});
 </script>
 
 <style lang="css" scoped>

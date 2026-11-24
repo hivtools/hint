@@ -346,7 +346,7 @@ export const datasetFromMetadata = (fullMetaData: any, schemas: ADRSchemas, rele
 };
 
 export const constructUploadFile = (datasetWithResources: any, index: number, resourceType: string,
-    resourceFilename: string, displayName: string): UploadFile | null => {
+                                    resourceFilename: string, displayName: string): UploadFile | null => {
     const resource = findResource(datasetWithResources, resourceType, null);
     // We expect to find resource name on the resource - return null if not found - file should
     // not be uploadable.
@@ -359,14 +359,14 @@ export const constructUploadFile = (datasetWithResources: any, index: number, re
 };
 
 export const constructUploadFileWithResourceName = (datasetWithResources: any, index: number, resourceType: string,
-    resourceFilename: string, displayName: string, resourceName: string): UploadFile => {
+                                                    resourceFilename: string, displayName: string, resourceName: string): UploadFile => {
     const resource = findResource(datasetWithResources, resourceType);
     const name = resource?.name || resourceName;
     return getUploadFileFromResource(resource, name, index, resourceType, resourceFilename, displayName);
 };
 
 function getUploadFileFromResource(resource: DatasetResource | null, resourceName: string, index: number,
-    resourceType: string, resourceFilename: string, displayName: string): UploadFile {
+                                   resourceType: string, resourceFilename: string, displayName: string): UploadFile {
     const resourceId = resource ? resource.id : null;
     const lastModified = resource ? ([resource.lastModified, resource.metadataModified].sort()[1]) : null;
     const resourceUrl = resource ? resource.url : null;

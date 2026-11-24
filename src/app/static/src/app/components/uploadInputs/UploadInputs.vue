@@ -98,103 +98,103 @@
 </template>
 
 <script lang="ts">
-    import {mapActions, mapGetters} from "vuex";
-    import type {BaselineState} from "../../store/baseline/baseline";
-    import ErrorAlert from "../ErrorAlert.vue";
-    import LoadingSpinner from "../LoadingSpinner.vue";
-    import ManageFile from "../files/ManageFile.vue";
-    import type {SurveyAndProgramState} from "../../store/surveyAndProgram/surveyAndProgram";
-    import {getFormData, mapRootStateProps, mapStateProps} from "../../utils";
-    import { defineComponent } from "vue";
-    import VueFeather from "vue-feather";
+import {mapActions, mapGetters} from "vuex";
+import type {BaselineState} from "../../store/baseline/baseline";
+import ErrorAlert from "../ErrorAlert.vue";
+import LoadingSpinner from "../LoadingSpinner.vue";
+import ManageFile from "../files/ManageFile.vue";
+import type {SurveyAndProgramState} from "../../store/surveyAndProgram/surveyAndProgram";
+import {getFormData, mapRootStateProps, mapStateProps} from "../../utils";
+import { defineComponent } from "vue";
+import VueFeather from "vue-feather";
 
-    const namespace = 'baseline';
+const namespace = 'baseline';
 
-    export default defineComponent({
-        name: "UploadInputs",
-        computed: {
-            ...mapGetters(["isGuest"]),
-            ...mapStateProps(namespace, {
-                country: (state: BaselineState) => state.country,
-                pjnz: (state: BaselineState) => ({
-                    valid: !!state.country,
-                    error: state.pjnzError,
-                    fromADR: !!state.pjnz?.fromADR,
-                    existingFileName: (state.pjnz && state.pjnz.filename) || state.pjnzErroredFile
-                }),
-                shape: (state: BaselineState) => ({
-                    valid: state.shape != null,
-                    error: state.shapeError,
-                    fromADR: !!state.shape?.fromADR,
-                    existingFileName: (state.shape && state.shape.filename) || state.shapeErroredFile
-                }),
-                population: (state: BaselineState) => ({
-                    valid: state.population != null,
-                    error: state.populationError,
-                    fromADR: !!state.population?.fromADR,
-                    existingFileName: (state.population && state.population.filename) || state.populationErroredFile
-                }),
-                hasBaselineError: (state: BaselineState) => !!state.baselineError,
-                baselineError: (state: BaselineState) => state.baselineError,
-                validating: (state: BaselineState) => state.validating
+export default defineComponent({
+    name: "UploadInputs",
+    computed: {
+        ...mapGetters(["isGuest"]),
+        ...mapStateProps(namespace, {
+            country: (state: BaselineState) => state.country,
+            pjnz: (state: BaselineState) => ({
+                valid: !!state.country,
+                error: state.pjnzError,
+                fromADR: !!state.pjnz?.fromADR,
+                existingFileName: (state.pjnz && state.pjnz.filename) || state.pjnzErroredFile
             }),
-            ...mapRootStateProps({
-                anc: ({surveyAndProgram}: {surveyAndProgram: SurveyAndProgramState}) => ({
-                    valid: !!surveyAndProgram.anc,
-                    fromADR: !!surveyAndProgram.anc?.fromADR,
-                    error: surveyAndProgram.ancError,
-                    existingFileName: (surveyAndProgram.anc && surveyAndProgram.anc.filename)|| surveyAndProgram.ancErroredFile
-                }),
-                programme: ({surveyAndProgram}: {surveyAndProgram: SurveyAndProgramState}) => ({
-                    valid: surveyAndProgram.program != null,
-                    fromADR: !!surveyAndProgram.program?.fromADR,
-                    error: surveyAndProgram.programError,
-                    existingFileName: (surveyAndProgram.program && surveyAndProgram.program.filename) || surveyAndProgram.programErroredFile
-                }),
-                survey: ({surveyAndProgram}: {surveyAndProgram: SurveyAndProgramState}) => ({
-                    valid: surveyAndProgram.survey != null,
-                    fromADR: !!surveyAndProgram.survey?.fromADR,
-                    error: surveyAndProgram.surveyError,
-                    existingFileName: (surveyAndProgram.survey && surveyAndProgram.survey.filename) || surveyAndProgram.surveyErroredFile
-                })
+            shape: (state: BaselineState) => ({
+                valid: state.shape != null,
+                error: state.shapeError,
+                fromADR: !!state.shape?.fromADR,
+                existingFileName: (state.shape && state.shape.filename) || state.shapeErroredFile
             }),
+            population: (state: BaselineState) => ({
+                valid: state.population != null,
+                error: state.populationError,
+                fromADR: !!state.population?.fromADR,
+                existingFileName: (state.population && state.population.filename) || state.populationErroredFile
+            }),
+            hasBaselineError: (state: BaselineState) => !!state.baselineError,
+            baselineError: (state: BaselineState) => state.baselineError,
+            validating: (state: BaselineState) => state.validating
+        }),
+        ...mapRootStateProps({
+            anc: ({surveyAndProgram}: {surveyAndProgram: SurveyAndProgramState}) => ({
+                valid: !!surveyAndProgram.anc,
+                fromADR: !!surveyAndProgram.anc?.fromADR,
+                error: surveyAndProgram.ancError,
+                existingFileName: (surveyAndProgram.anc && surveyAndProgram.anc.filename)|| surveyAndProgram.ancErroredFile
+            }),
+            programme: ({surveyAndProgram}: {surveyAndProgram: SurveyAndProgramState}) => ({
+                valid: surveyAndProgram.program != null,
+                fromADR: !!surveyAndProgram.program?.fromADR,
+                error: surveyAndProgram.programError,
+                existingFileName: (surveyAndProgram.program && surveyAndProgram.program.filename) || surveyAndProgram.programErroredFile
+            }),
+            survey: ({surveyAndProgram}: {surveyAndProgram: SurveyAndProgramState}) => ({
+                valid: surveyAndProgram.survey != null,
+                fromADR: !!surveyAndProgram.survey?.fromADR,
+                error: surveyAndProgram.surveyError,
+                existingFileName: (surveyAndProgram.survey && surveyAndProgram.survey.filename) || surveyAndProgram.surveyErroredFile
+            })
+        }),
+    },
+    methods: {
+        ...mapActions({
+            uploadPJNZ: 'baseline/uploadPJNZ',
+            uploadShape: 'baseline/uploadShape',
+            uploadPopulation: 'baseline/uploadPopulation',
+            deletePJNZ: 'baseline/deletePJNZ',
+            deleteShape: 'baseline/deleteShape',
+            deletePopulation: 'baseline/deletePopulation',
+            uploadSurvey: 'surveyAndProgram/uploadSurvey',
+            uploadProgram: 'surveyAndProgram/uploadProgram',
+            uploadANC: 'surveyAndProgram/uploadANC',
+            deleteSurvey: 'surveyAndProgram/deleteSurvey',
+            deleteProgram: 'surveyAndProgram/deleteProgram',
+            deleteANC: 'surveyAndProgram/deleteANC',
+            preparingRehydrate: 'load/preparingRehydrate',
+        }),
+        loadZip() {
+            const input = this.$refs.loadZip as HTMLInputElement;
+            if (input.files && input.files.length > 0) {
+                const file = input.files[0];
+                this.clearLoadZipInput();
+                this.preparingRehydrate(getFormData(file));
+            }
         },
-        methods: {
-            ...mapActions({
-                uploadPJNZ: 'baseline/uploadPJNZ',
-                uploadShape: 'baseline/uploadShape',
-                uploadPopulation: 'baseline/uploadPopulation',
-                deletePJNZ: 'baseline/deletePJNZ',
-                deleteShape: 'baseline/deleteShape',
-                deletePopulation: 'baseline/deletePopulation',
-                uploadSurvey: 'surveyAndProgram/uploadSurvey',
-                uploadProgram: 'surveyAndProgram/uploadProgram',
-                uploadANC: 'surveyAndProgram/uploadANC',
-                deleteSurvey: 'surveyAndProgram/deleteSurvey',
-                deleteProgram: 'surveyAndProgram/deleteProgram',
-                deleteANC: 'surveyAndProgram/deleteANC',
-                preparingRehydrate: 'load/preparingRehydrate',
-            }),
-            loadZip() {
-                const input = this.$refs.loadZip as HTMLInputElement;
-                if (input.files && input.files.length > 0) {
-                    const file = input.files[0];
-                    this.clearLoadZipInput();
-                    this.preparingRehydrate(getFormData(file));
-                }
-            },
-            clearLoadZipInput() {
-                // clearing value because browser does not
-                // allow selection of the same file twice
-                const input = this.$refs.loadZip as HTMLInputElement
-                input.value = ""
-            },
+        clearLoadZipInput() {
+            // clearing value because browser does not
+            // allow selection of the same file twice
+            const input = this.$refs.loadZip as HTMLInputElement
+            input.value = ""
         },
-        components: {
-            VueFeather,
-            ErrorAlert,
-            LoadingSpinner,
-            ManageFile
-        }
-    })
+    },
+    components: {
+        VueFeather,
+        ErrorAlert,
+        LoadingSpinner,
+        ManageFile
+    }
+})
 </script>

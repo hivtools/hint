@@ -13,10 +13,10 @@
             </a>
             <span class="color-red">
                 <vue-feather type="info"
-                           size="20"
-                           v-if="outOfDateMessage"
-                           v-tooltip="outOfDateMessage"
-                           class="align-text-bottom">
+                             size="20"
+                             v-if="outOfDateMessage"
+                             v-tooltip="outOfDateMessage"
+                             class="align-text-bottom">
                 </vue-feather>
             </span>
         </div>
@@ -62,268 +62,268 @@ import {defineComponent} from "vue";
 import {AdrDatasetType} from "../../store/adr/adr";
 
 interface Data {
-        open: boolean;
-        showConfirmation: boolean;
-        loading: boolean;
-        newDatasetId: string | null;
-        newDatasetReleaseId: string | null;
-        pollingId: number | null;
-        modelOptions: number;
-        AdrDatasetType: typeof AdrDatasetType;
-    }
+    open: boolean;
+    showConfirmation: boolean;
+    loading: boolean;
+    newDatasetId: string | null;
+    newDatasetReleaseId: string | null;
+    pollingId: number | null;
+    modelOptions: number;
+    AdrDatasetType: typeof AdrDatasetType;
+}
 
-    const names: { [k in keyof DatasetResourceSet]: string } = {
-        pjnz: "PJNZ",
-        pop: "Population",
-        shape: "Shape file",
-        survey: "Household Survey",
-        program: "ART",
-        anc: "ANC",
-    };
+const names: { [k in keyof DatasetResourceSet]: string } = {
+    pjnz: "PJNZ",
+    pop: "Population",
+    shape: "Shape file",
+    survey: "Household Survey",
+    program: "ART",
+    anc: "ANC",
+};
 
-    export default defineComponent({
-        extends: ResetConfirmationMixin,
-        data(): Data {
-            return {
-                open: false,
-                showConfirmation: false,
-                loading: false,
-                newDatasetId: null,
-                pollingId: null,
-                newDatasetReleaseId: null,
-                modelOptions: Step.ModelOptions,
-                AdrDatasetType: AdrDatasetType,
-            };
+export default defineComponent({
+    extends: ResetConfirmationMixin,
+    data(): Data {
+        return {
+            open: false,
+            showConfirmation: false,
+            loading: false,
+            newDatasetId: null,
+            pollingId: null,
+            newDatasetReleaseId: null,
+            modelOptions: Step.ModelOptions,
+            AdrDatasetType: AdrDatasetType,
+        };
+    },
+    components: {
+        VueFeather,
+        ResetConfirmation,
+        SelectDatasetModal,
+    },
+    computed: {
+        hasShapeFile: mapStateProp<BaselineState, boolean>(
+            "baseline",
+            (state: BaselineState) => !!state.shape
+        ),
+        hasPopulationFile: mapStateProp<BaselineState, boolean>(
+            "baseline",
+            (state: BaselineState) => !!state.population
+        ),
+        hasPjnzFile: mapStateProp<BaselineState, boolean>(
+            "baseline",
+            (state: BaselineState) => !!state.pjnz
+        ),
+        selectedDataset: mapStateProp<BaselineState, Dataset | null>(
+            "baseline",
+            (state: BaselineState) => state.selectedDataset
+        ),
+        selectedDatasetIsRefreshed: mapStateProp<BaselineState, boolean>(
+            "baseline",
+            (state: BaselineState) => state.selectedDatasetHasChanged
+        ),
+        selectedRelease: mapStateProp<BaselineState, Release | null>(
+            "baseline",
+            (state: BaselineState) => state.selectedRelease
+        ),
+        selectedDatasetAvailableResources: mapGetterByName("baseline", "selectedDatasetAvailableResources"),
+        releaseName() {
+            return this.selectedRelease?.name || null;
         },
-        components: {
-            VueFeather,
-            ResetConfirmation,
-            SelectDatasetModal,
+        releaseURL() {
+            return new URL(this.selectedDataset!.url).origin + '/dataset/' + this.selectedDataset!.id + '?activity_id=' + this.selectedRelease!.activity_id;
         },
-        computed: {
-            hasShapeFile: mapStateProp<BaselineState, boolean>(
-                "baseline",
-                (state: BaselineState) => !!state.shape
-            ),
-            hasPopulationFile: mapStateProp<BaselineState, boolean>(
-                "baseline",
-                (state: BaselineState) => !!state.population
-            ),
-            hasPjnzFile: mapStateProp<BaselineState, boolean>(
-                "baseline",
-                (state: BaselineState) => !!state.pjnz
-            ),
-            selectedDataset: mapStateProp<BaselineState, Dataset | null>(
-                "baseline",
-                (state: BaselineState) => state.selectedDataset
-            ),
-            selectedDatasetIsRefreshed: mapStateProp<BaselineState, boolean>(
-                "baseline",
-                (state: BaselineState) => state.selectedDatasetHasChanged
-            ),
-            selectedRelease: mapStateProp<BaselineState, Release | null>(
-                "baseline",
-                (state: BaselineState) => state.selectedRelease
-            ),
-            selectedDatasetAvailableResources: mapGetterByName("baseline", "selectedDatasetAvailableResources"),
-            releaseName() {
-                return this.selectedRelease?.name || null;
-            },
-            releaseURL() {
-                return new URL(this.selectedDataset!.url).origin + '/dataset/' + this.selectedDataset!.id + '?activity_id=' + this.selectedRelease!.activity_id;
-            },
-            selectText() {
-                if (this.selectedDataset) {
-                    return i18next.t("editBtn", {lng: this.currentLanguage});
-                } else {
-                    return i18next.t("selectADR", {lng: this.currentLanguage});
-                }
-            },
-            outOfDateResources() {
-                if (!this.selectedDataset) {
-                    return {};
-                }
-                const resources = this.selectedDataset.resources;
-                const outOfDateResources: {
-                    [k in keyof DatasetResourceSet]?: true;
-                } = {};
-                Object.keys(resources).map((k) => {
-                    const key = k as keyof DatasetResourceSet;
-                    if (resources[key] && resources[key]!.outOfDate) {
-                        outOfDateResources[key] = true;
-                    }
-                });
-                return outOfDateResources;
-            },
-            outOfDateMessage() {
-                const updatedNames = Object.keys(this.outOfDateResources)
-                    .map((r) => names[r as keyof DatasetResourceSet])
-                    .join(", ");
-                if (Object.keys(this.outOfDateResources).length == 0) {
-                    return "";
-                }
-                return `The following files have been updated in the ADR: ${updatedNames}. Use the refresh button to import the latest files.`;
-            },
-            currentLanguage: mapStateProp<RootState, Language>(
-                null,
-                (state: RootState) => state.language
-            )
-        },
-        methods: {
-            getDatasets: mapActionByName("adr", "getDatasets"),
-            getDataset: mapActionByName("adr", "getDataset"),
-            refreshDatasetMetadata: mapActionByName(
-                "baseline",
-                "refreshDatasetMetadata"
-            ),
-            markResourcesUpdated: mapMutationByName(
-                "baseline",
-                BaselineMutation.MarkDatasetResourcesUpdated
-            ),
-            importPJNZ: mapActionByName("baseline", "importPJNZ"),
-            importShape: mapActionByName("baseline", "importShape"),
-            importPopulation: mapActionByName("baseline", "importPopulation"),
-            deleteBaselineFiles: mapActionByName("baseline", "deleteAll"),
-            importSurvey: mapActionByName("surveyAndProgram", "importSurvey"),
-            importProgram: mapActionByName("surveyAndProgram", "importProgram"),
-            importANC: mapActionByName("surveyAndProgram", "importANC"),
-            async importDataset() {
-                this.stopPolling();
-
-                this.loading = true;
-
-                if (this.hasShapeFile || this.hasPopulationFile || this.hasPjnzFile) {
-                    await this.deleteBaselineFiles()
-                }
-
-                await this.getDataset({
-                    id: this.newDatasetId!,
-                    release: this.newDatasetReleaseId,
-                    datasetType: AdrDatasetType.Input
-                });
-                const {
-                    pjnz,
-                    pop,
-                    shape,
-                    survey,
-                    program,
-                    anc,
-                } = this.selectedDatasetAvailableResources;
-
-                await Promise.all([
-                    pjnz && this.importPJNZ(pjnz.url),
-                    pop && this.importPopulation(pop.url),
-                    shape && this.importShape(shape.url),
-                ]);
-
-                if (shape || this.hasShapeFile) {
-                    await Promise.all([
-                        survey && this.importSurvey(survey.url),
-                        program && this.importProgram(program.url),
-                        anc && this.importANC(anc.url),
-                    ]);
-                }
-
-                this.loading = false;
-                this.open = false;
-
-                this.startPolling();
-            },
-            async refresh() {
-                this.stopPolling();
-
-                this.loading = true;
-                this.open = true;
-                const {
-                    pjnz,
-                    pop,
-                    shape,
-                    survey,
-                    program,
-                    anc,
-                } = this.selectedDataset!.resources;
-                await Promise.all([
-                    this.outOfDateResources["pjnz"] &&
-                    pjnz &&
-                    this.importPJNZ(pjnz.url),
-                    this.outOfDateResources["pop"] &&
-                    pop &&
-                    this.importPopulation(pop.url),
-                    this.outOfDateResources["shape"] &&
-                    shape &&
-                    this.importShape(shape.url),
-                ]);
-
-                const baselineUpdated =
-                    this.outOfDateResources["pjnz"] ||
-                    this.outOfDateResources["pop"] ||
-                    this.outOfDateResources["shape"];
-
-                // if baseline files are updated, we have to re-import all survey & program files,
-                // regardless of whether they have changed, since updating the baseline files will
-                // have wiped these
-                if (shape || this.hasShapeFile) {
-                    await Promise.all([
-                        (baselineUpdated || this.outOfDateResources["survey"]) &&
-                        survey &&
-                        this.importSurvey(survey.url),
-                        (baselineUpdated || this.outOfDateResources["program"]) &&
-                        program &&
-                        this.importProgram(program.url),
-                        (baselineUpdated || this.outOfDateResources["anc"]) &&
-                        anc &&
-                        this.importANC(anc.url),
-                    ]);
-                }
-
-                this.markResourcesUpdated();
-                this.loading = false;
-                this.open = false;
-
-                this.startPolling();
-            },
-            toggleModal() {
-                this.open = !this.open;
-            },
-            confirmImport(datasetId: string, releaseId: string | null) {
-                this.newDatasetId = datasetId;
-                this.newDatasetReleaseId = releaseId;
-                if (this.editsRequireConfirmation) {
-                    this.open = false
-                    this.showConfirmation = true;
-                } else {
-                    this.importDataset();
-                }
-            },
-            continueEditing() {
-                this.showConfirmation = false;
-                this.importDataset();
-            },
-            cancelEditing() {
-                this.showConfirmation = false;
-                this.open = false;
-            },
-            startPolling() {
-                if (!this.selectedDataset?.release) {
-                    this.pollingId = window.setInterval(
-                        this.refreshDatasetMetadata,
-                        10000
-                    );
-                }
-            },
-            stopPolling() {
-                if (this.pollingId) {
-                    window.clearInterval(this.pollingId);
-                }
+        selectText() {
+            if (this.selectedDataset) {
+                return i18next.t("editBtn", {lng: this.currentLanguage});
+            } else {
+                return i18next.t("selectADR", {lng: this.currentLanguage});
             }
         },
-        mounted() {
-            this.getDatasets(AdrDatasetType.Input);
-            this.refreshDatasetMetadata();
+        outOfDateResources() {
+            if (!this.selectedDataset) {
+                return {};
+            }
+            const resources = this.selectedDataset.resources;
+            const outOfDateResources: {
+                [k in keyof DatasetResourceSet]?: true;
+            } = {};
+            Object.keys(resources).map((k) => {
+                const key = k as keyof DatasetResourceSet;
+                if (resources[key] && resources[key]!.outOfDate) {
+                    outOfDateResources[key] = true;
+                }
+            });
+            return outOfDateResources;
+        },
+        outOfDateMessage() {
+            const updatedNames = Object.keys(this.outOfDateResources)
+                .map((r) => names[r as keyof DatasetResourceSet])
+                .join(", ");
+            if (Object.keys(this.outOfDateResources).length == 0) {
+                return "";
+            }
+            return `The following files have been updated in the ADR: ${updatedNames}. Use the refresh button to import the latest files.`;
+        },
+        currentLanguage: mapStateProp<RootState, Language>(
+            null,
+            (state: RootState) => state.language
+        )
+    },
+    methods: {
+        getDatasets: mapActionByName("adr", "getDatasets"),
+        getDataset: mapActionByName("adr", "getDataset"),
+        refreshDatasetMetadata: mapActionByName(
+            "baseline",
+            "refreshDatasetMetadata"
+        ),
+        markResourcesUpdated: mapMutationByName(
+            "baseline",
+            BaselineMutation.MarkDatasetResourcesUpdated
+        ),
+        importPJNZ: mapActionByName("baseline", "importPJNZ"),
+        importShape: mapActionByName("baseline", "importShape"),
+        importPopulation: mapActionByName("baseline", "importPopulation"),
+        deleteBaselineFiles: mapActionByName("baseline", "deleteAll"),
+        importSurvey: mapActionByName("surveyAndProgram", "importSurvey"),
+        importProgram: mapActionByName("surveyAndProgram", "importProgram"),
+        importANC: mapActionByName("surveyAndProgram", "importANC"),
+        async importDataset() {
+            this.stopPolling();
+
+            this.loading = true;
+
+            if (this.hasShapeFile || this.hasPopulationFile || this.hasPjnzFile) {
+                await this.deleteBaselineFiles()
+            }
+
+            await this.getDataset({
+                id: this.newDatasetId!,
+                release: this.newDatasetReleaseId,
+                datasetType: AdrDatasetType.Input
+            });
+            const {
+                pjnz,
+                pop,
+                shape,
+                survey,
+                program,
+                anc,
+            } = this.selectedDatasetAvailableResources;
+
+            await Promise.all([
+                pjnz && this.importPJNZ(pjnz.url),
+                pop && this.importPopulation(pop.url),
+                shape && this.importShape(shape.url),
+            ]);
+
+            if (shape || this.hasShapeFile) {
+                await Promise.all([
+                    survey && this.importSurvey(survey.url),
+                    program && this.importProgram(program.url),
+                    anc && this.importANC(anc.url),
+                ]);
+            }
+
+            this.loading = false;
+            this.open = false;
+
             this.startPolling();
         },
-        beforeUnmount() {
+        async refresh() {
             this.stopPolling();
+
+            this.loading = true;
+            this.open = true;
+            const {
+                pjnz,
+                pop,
+                shape,
+                survey,
+                program,
+                anc,
+            } = this.selectedDataset!.resources;
+            await Promise.all([
+                this.outOfDateResources["pjnz"] &&
+                    pjnz &&
+                    this.importPJNZ(pjnz.url),
+                this.outOfDateResources["pop"] &&
+                    pop &&
+                    this.importPopulation(pop.url),
+                this.outOfDateResources["shape"] &&
+                    shape &&
+                    this.importShape(shape.url),
+            ]);
+
+            const baselineUpdated =
+                this.outOfDateResources["pjnz"] ||
+                this.outOfDateResources["pop"] ||
+                this.outOfDateResources["shape"];
+
+            // if baseline files are updated, we have to re-import all survey & program files,
+            // regardless of whether they have changed, since updating the baseline files will
+            // have wiped these
+            if (shape || this.hasShapeFile) {
+                await Promise.all([
+                    (baselineUpdated || this.outOfDateResources["survey"]) &&
+                        survey &&
+                        this.importSurvey(survey.url),
+                    (baselineUpdated || this.outOfDateResources["program"]) &&
+                        program &&
+                        this.importProgram(program.url),
+                    (baselineUpdated || this.outOfDateResources["anc"]) &&
+                        anc &&
+                        this.importANC(anc.url),
+                ]);
+            }
+
+            this.markResourcesUpdated();
+            this.loading = false;
+            this.open = false;
+
+            this.startPolling();
         },
-    });
+        toggleModal() {
+            this.open = !this.open;
+        },
+        confirmImport(datasetId: string, releaseId: string | null) {
+            this.newDatasetId = datasetId;
+            this.newDatasetReleaseId = releaseId;
+            if (this.editsRequireConfirmation) {
+                this.open = false
+                this.showConfirmation = true;
+            } else {
+                this.importDataset();
+            }
+        },
+        continueEditing() {
+            this.showConfirmation = false;
+            this.importDataset();
+        },
+        cancelEditing() {
+            this.showConfirmation = false;
+            this.open = false;
+        },
+        startPolling() {
+            if (!this.selectedDataset?.release) {
+                this.pollingId = window.setInterval(
+                    this.refreshDatasetMetadata,
+                    10000
+                );
+            }
+        },
+        stopPolling() {
+            if (this.pollingId) {
+                window.clearInterval(this.pollingId);
+            }
+        }
+    },
+    mounted() {
+        this.getDatasets(AdrDatasetType.Input);
+        this.refreshDatasetMetadata();
+        this.startPolling();
+    },
+    beforeUnmount() {
+        this.stopPolling();
+    },
+});
 </script>

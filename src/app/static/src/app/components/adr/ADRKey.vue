@@ -9,7 +9,7 @@
                 <div class="align-self-center pl-2">
                     <div v-if="!editing">
                         <span class="pr-2 align-middle">
-                          {{ keyText }}
+                            {{ keyText }}
                         </span>
                         <span v-if="!key">
                             <button class="btn btn-red"
@@ -24,12 +24,12 @@
                                v-tooltip="tooltipContent"></a>
                         </span>
                         <span v-if="key">
-                             <button class="btn btn-red"
-                                     type="button"
-                                     @click="remove"
-                                     v-translate="'removeButton'">
+                            <button class="btn btn-red"
+                                    type="button"
+                                    @click="remove"
+                                    v-translate="'removeButton'">
                             </button>
-                         </span>
+                        </span>
                     </div>
                     <div class="input-group"
                          style="margin-top: -8px; min-width: 390px"
@@ -61,75 +61,75 @@
     </div>
 </template>
 <script lang="ts">
-    import {mapActionsByNames, mapStateProp} from "../../utils";
-    import type {Error} from "../../generated"
-    import type {RootState} from "../../root";
-    import type {Language} from "../../store/translations/locales";
-    import i18next from "i18next";
-    import ErrorAlert from "../ErrorAlert.vue";
-    import type {ADRState} from "../../store/adr/adr";
-    import { defineComponent } from "vue";
+import {mapActionsByNames, mapStateProp} from "../../utils";
+import type {Error} from "../../generated"
+import type {RootState} from "../../root";
+import type {Language} from "../../store/translations/locales";
+import i18next from "i18next";
+import ErrorAlert from "../ErrorAlert.vue";
+import type {ADRState} from "../../store/adr/adr";
+import { defineComponent } from "vue";
 
-    const namespace = "adr";
+const namespace = "adr";
 
-    export default defineComponent({
-        data() {
-            return {
-                editableKey: "" as string | null,
-                editing: false
-            }
-        },
-        computed: {
-            key: mapStateProp<ADRState, string | null>(namespace,
-                (state: ADRState) => state.key),
-            adrProfileUrl: mapStateProp<ADRState, string>(namespace,
-                (state: ADRState) => `${state.schemas?.baseUrl}/me`),
-            currentLanguage: mapStateProp<RootState, Language>(null,
-                (state: RootState) => state.language),
-            error: mapStateProp<ADRState, Error | null>(namespace,
-                (state: ADRState) => state.keyError),
-            keyText(): string {
-                if (this.key) {
-                    let str = ""
-                    let count = this.key.length
-                    while (count) {
-                        str += "*";
-                        count--;
-                    }
-                    return str;
-                } else {
-                    return i18next.t("noneProvided", {lng: this.currentLanguage})
+export default defineComponent({
+    data() {
+        return {
+            editableKey: "" as string | null,
+            editing: false
+        }
+    },
+    computed: {
+        key: mapStateProp<ADRState, string | null>(namespace,
+                                                   (state: ADRState) => state.key),
+        adrProfileUrl: mapStateProp<ADRState, string>(namespace,
+                                                      (state: ADRState) => `${state.schemas?.baseUrl}/me`),
+        currentLanguage: mapStateProp<RootState, Language>(null,
+                                                           (state: RootState) => state.language),
+        error: mapStateProp<ADRState, Error | null>(namespace,
+                                                    (state: ADRState) => state.keyError),
+        keyText(): string {
+            if (this.key) {
+                let str = ""
+                let count = this.key.length
+                while (count) {
+                    str += "*";
+                    count--;
                 }
-            },
-            tooltipContent(): string {
-                return i18next.t("adrTooltip", {lng: this.currentLanguage})
+                return str;
+            } else {
+                return i18next.t("noneProvided", {lng: this.currentLanguage})
             }
         },
-        methods: {
-            ...mapActionsByNames(namespace, ["saveKey", "deleteKey"] as const),
-            add(e: Event) {
-                e.preventDefault();
-                this.editing = true;
-                this.editableKey = this.key;
-                this.$nextTick(() => {
-                    (this.$refs["keyInput"] as HTMLInputElement).focus();
-                })
-            },
-            remove(e: Event) {
-                this.deleteKey();
-                e.preventDefault();
-            },
-            save(e: Event) {
-                e.preventDefault();
-                this.saveKey(this.editableKey);
-                this.editing = false;
-            },
-            cancel(e: Event) {
-                e.preventDefault();
-                this.editing = false;
-            }
+        tooltipContent(): string {
+            return i18next.t("adrTooltip", {lng: this.currentLanguage})
+        }
+    },
+    methods: {
+        ...mapActionsByNames(namespace, ["saveKey", "deleteKey"] as const),
+        add(e: Event) {
+            e.preventDefault();
+            this.editing = true;
+            this.editableKey = this.key;
+            this.$nextTick(() => {
+                (this.$refs["keyInput"] as HTMLInputElement).focus();
+            })
         },
-        components: {ErrorAlert}
-    });
+        remove(e: Event) {
+            this.deleteKey();
+            e.preventDefault();
+        },
+        save(e: Event) {
+            e.preventDefault();
+            this.saveKey(this.editableKey);
+            this.editing = false;
+        },
+        cancel(e: Event) {
+            e.preventDefault();
+            this.editing = false;
+        }
+    },
+    components: {ErrorAlert}
+});
 
 </script>

@@ -223,7 +223,7 @@ describe("Model run options mutations", () => {
                                             }
                                         ], "label": "g1"
                                 }, {
-                                "controls":
+                                    "controls":
                                     [
                                         {
                                             "name": "i1",
@@ -231,20 +231,20 @@ describe("Model run options mutations", () => {
                                             "type": "number"
                                         }
                                     ],
-                                "label": "new_group"
-                            }
+                                    "label": "new_group"
+                                }
                             ],
                         "label": "general"
                     }, {
-                    "controlGroups":
+                        "controlGroups":
                         [
                             {
                                 "controls": [],
                                 "label": "g2"
                             }
                         ],
-                    "label": "survey"
-                }]
+                        "label": "survey"
+                    }]
         })
     });
 

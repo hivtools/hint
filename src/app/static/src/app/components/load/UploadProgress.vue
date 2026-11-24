@@ -29,22 +29,22 @@
 </template>
 
 <script lang="ts">
-    import Modal from "../Modal.vue";
-    import LoadingSpinner from "../LoadingSpinner.vue";
-    import { defineComponent, type PropType } from "vue";
+import Modal from "../Modal.vue";
+import LoadingSpinner from "../LoadingSpinner.vue";
+import { defineComponent, type PropType } from "vue";
 
-    export default defineComponent({
-        name: "UploadProgress",
-        props: {
-            openModal: Boolean,
-            cancel: {
-                type: Function as PropType<(payload: MouseEvent) => void>,
-                required: true
-            }
-        },
-        components: {
-            LoadingSpinner,
-            Modal
+export default defineComponent({
+    name: "UploadProgress",
+    props: {
+        openModal: Boolean,
+        cancel: {
+            type: Function as PropType<(payload: MouseEvent) => void>,
+            required: true
         }
-    })
+    },
+    components: {
+        LoadingSpinner,
+        Modal
+    }
+})
 </script>

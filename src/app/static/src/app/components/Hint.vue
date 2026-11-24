@@ -24,49 +24,49 @@ type Computed = {
     baselineReady: (state: RootState) => boolean
 }
 
-    export default defineComponent({
-        props: {
-            title: {
-                type: String,
-                required: true
-            },
-            user: {
-                type: String,
-                required: true
-            }
+export default defineComponent({
+    props: {
+        title: {
+            type: String,
+            required: true
         },
-        components: {
-            UserHeader,
-            Errors,
-            LoadingSpinner
-        },
-        computed: mapState<RootState, Computed>({
-            language: (state: RootState) => state.language,
-            baselineReady: (state: RootState) => state.baseline.ready
-        }),
-        methods: {
+        user: {
+            type: String,
+            required: true
+        }
+    },
+    components: {
+        UserHeader,
+        Errors,
+        LoadingSpinner
+    },
+    computed: mapState<RootState, Computed>({
+        language: (state: RootState) => state.language,
+        baselineReady: (state: RootState) => state.baseline.ready
+    }),
+    methods: {
         ...mapActions({loadBaseline: 'baseline/getBaselineData'}),
         ...mapActions({loadSurveyAndProgram: 'surveyAndProgram/getSurveyAndProgramData'}),
         ...mapActions({loadModelRun: 'modelRun/getResult'}),
         ...mapActions({loadModelCalibrate: 'modelCalibrate/getResult'}),
         ...mapActions({getADRSchemas: 'adr/getSchemas'}),
         ...mapActions({getCurrentProject: 'projects/getCurrentProject'}),
+    },
+    beforeMount: function () {
+        this.loadBaseline();
+    },
+    watch: {
+        language(newVal: Language) {
+            document.documentElement.lang = newVal
         },
-        beforeMount: function () {
-            this.loadBaseline();
-        },
-        watch: {
-            language(newVal: Language) {
-                document.documentElement.lang = newVal
-            },
-            baselineReady(newVal: boolean) {
-                if (!newVal) return;
-                this.loadSurveyAndProgram();
-                this.loadModelRun();
-                this.loadModelCalibrate();
-                this.getADRSchemas();
-                this.getCurrentProject();
-            }
+        baselineReady(newVal: boolean) {
+            if (!newVal) return;
+            this.loadSurveyAndProgram();
+            this.loadModelRun();
+            this.loadModelCalibrate();
+            this.getADRSchemas();
+            this.getCurrentProject();
         }
-    })
+    }
+})
 </script>

@@ -20,27 +20,27 @@
 
 <script lang="ts">
 
-    import {type PropType, defineComponent} from "vue";
+import {type PropType, defineComponent} from "vue";
 
-    export default defineComponent({
-        props: {
-            back: {
-                type: Function as PropType<() => void>,
-                required: true
-            },
-            backDisabled: {
-                type: Boolean,
-                required: true
-            },
-            next: {
-                type: Function as PropType<() => void>,
-                required: true
-            },
-            nextDisabled: {
-                type: Boolean,
-                required: true
-            }
+export default defineComponent({
+    props: {
+        back: {
+            type: Function as PropType<() => void>,
+            required: true
+        },
+        backDisabled: {
+            type: Boolean,
+            required: true
+        },
+        next: {
+            type: Function as PropType<() => void>,
+            required: true
+        },
+        nextDisabled: {
+            type: Boolean,
+            required: true
         }
-    });
+    }
+});
 
 </script>

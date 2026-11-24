@@ -187,7 +187,7 @@ describe("Model calibrate component", () => {
         const wrapper = getWrapper(store);
         expect(wrapper.find("#genCalibResults").findComponent(LoadingSpinner).exists()).toBe(true);
         await expectTranslated(wrapper.find("#genCalibResults span"), "Generating calibration results",
-        "Générer des résultats d'étalonnage", "Gerando resultados de calibração", store);
+            "Générer des résultats d'étalonnage", "Gerando resultados de calibração", store);
     });
 
     it("renders calibration plot and label if calibration is complete", async () => {
@@ -195,7 +195,7 @@ describe("Model calibrate component", () => {
         const wrapper = getWrapper(store);
         expect(wrapper.findComponent(CalibrationResults).exists()).toBe(true);
         await expectTranslated(wrapper.find("#reviewResults"), "(Review results below)",
-        "(Consultez les résultats ci-dessous)", "(Analise os resultados abaixo)", store);
+            "(Consultez les résultats ci-dessous)", "(Analise os resultados abaixo)", store);
     });
 
     it("does not render calibration plot and label if calibration is incomplete", () => {

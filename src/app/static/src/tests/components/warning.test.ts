@@ -62,7 +62,7 @@ describe("Warning component", () => {
             "Model option validation raised the following warning(s)", 
             "La validation de l'option de modèle a généré le(s) avertissement(s) suivant(s)", 
             "A validação da opção de modelo gerou o (s) seguinte (s) aviso (s)", 
-        store)
+            store)
         const alertIcon = wrapper.find("h5").findComponent(VueFeather);
         expect(alertIcon.exists()).toBe(true);
         expect(alertIcon.props("type")).toBe("alert-triangle");
@@ -78,7 +78,7 @@ describe("Warning component", () => {
             "Model fit raised the following warning(s)", 
             "L'ajustement du modèle a soulevé le(s) avertissement(s) suivant(s)", 
             "O ajuste do modelo gerou o seguinte aviso (s)", 
-        store)
+            store)
         const alertIcon1 = wrapper.find("h5").findComponent(VueFeather);
         expect(alertIcon1.exists()).toBe(true);
         expect(alertIcon1.props("type")).toBe("alert-triangle");
@@ -90,7 +90,7 @@ describe("Warning component", () => {
             "Model calibration raised the following warning(s)", 
             "L'étalonnage du modèle a déclenché le(s) avertissement(s) suivant(s)", 
             "A calibração do modelo gerou o (s) seguinte (s) aviso (s)", 
-        store)
+            store)
         const alertIcon2 = wrapper.find("h5").findComponent(VueFeather);
         expect(alertIcon2.exists()).toBe(true);
         expect(alertIcon2.props("type")).toBe("alert-triangle");
@@ -122,14 +122,14 @@ describe("Warning component", () => {
             "Show more", 
             "Montrer plus", 
             "Mostre mais", 
-        store)
+            store)
         await wrapper.find("button").trigger("click")
         await nextTick();
         await expectTranslated(wrapper.find("button"),
             "Show less", 
             "Montrer moins", 
             "Mostre menos", 
-        store)
+            store)
     });
 
     it("does not show more/less buttons if warnings are not lengthy", async () => {

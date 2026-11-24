@@ -71,8 +71,8 @@ export default defineComponent({
                 .then(gd => {
                     gd.on('plotly_clickannotation', (data) => {
                         emit("open-context",
-                            (data.annotation as HintPlotlyAnnotation).areaId,
-                            (data.annotation as HintPlotlyAnnotation).plotType)
+                             (data.annotation as HintPlotlyAnnotation).areaId,
+                             (data.annotation as HintPlotlyAnnotation).plotType)
                     })
                 });
         };
@@ -123,9 +123,9 @@ export default defineComponent({
         });
 
         watch(() => [...props.chartData], (newData, oldData) => {
-          if (newData.length !== oldData.length) {
-               drawChart();
-          }});
+            if (newData.length !== oldData.length) {
+                drawChart();
+            }});
 
         return {
             chart,

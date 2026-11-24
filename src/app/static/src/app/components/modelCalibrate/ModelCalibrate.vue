@@ -49,105 +49,105 @@
     </div>
 </template>
 <script lang="ts">
-    import i18next from "i18next";
-    import { type DynamicFormMeta, DynamicForm } from "@reside-ic/vue-next-dynamic-form";
-    import LoadingSpinner from "../LoadingSpinner.vue";
-    import Tick from "../Tick.vue";
-    import {
-        mapActionByName,
-        mapMutationByName,
-        mapStateProp,
-        mapStateProps,
-    } from "../../utils";
-    import { ModelCalibrateMutation } from "../../store/modelCalibrate/mutations";
-    import type { RootState } from "../../root";
-    import type { Language } from "../../store/translations/locales";
-    import type { ModelCalibrateState } from "../../store/modelCalibrate/modelCalibrate";
-    import ErrorAlert from "../ErrorAlert.vue";
-    import CalibrationResults from "./CalibrationResults.vue";
-    import { defineComponent } from "vue";
+import i18next from "i18next";
+import { type DynamicFormMeta, DynamicForm } from "@reside-ic/vue-next-dynamic-form";
+import LoadingSpinner from "../LoadingSpinner.vue";
+import Tick from "../Tick.vue";
+import {
+    mapActionByName,
+    mapMutationByName,
+    mapStateProp,
+    mapStateProps,
+} from "../../utils";
+import { ModelCalibrateMutation } from "../../store/modelCalibrate/mutations";
+import type { RootState } from "../../root";
+import type { Language } from "../../store/translations/locales";
+import type { ModelCalibrateState } from "../../store/modelCalibrate/modelCalibrate";
+import ErrorAlert from "../ErrorAlert.vue";
+import CalibrationResults from "./CalibrationResults.vue";
+import { defineComponent } from "vue";
 
-    const namespace = "modelCalibrate";
+const namespace = "modelCalibrate";
 
-    export default defineComponent({
-        name: "ModelCalibrate",
-        data() {
-            return {
-                showConfirmation: false,
-            };
-        },
-        computed: {
-            ...mapStateProps(namespace, {
-                loading: (state: ModelCalibrateState) => state.fetching,
-                calibrating: (state: ModelCalibrateState) => state.calibrating,
-                generatingCalibrationPlot: (state: ModelCalibrateState) => state.generatingCalibrationPlot,
-                error: (state: ModelCalibrateState) => state.error,
-                progressMessage: (state: ModelCalibrateState) => {
-                    if (
-                        state.status &&
-                        state.status.progress &&
-                        state.status.progress.length > 0
-                    ) {
-                        const p = state.status.progress[0]; //This may be either a string or ProgressPhase
-                        return typeof p == "string"
-                            ? p
-                            : `${p.name}: ${p.helpText}`;
-                    } else {
-                        return null;
-                    }
+export default defineComponent({
+    name: "ModelCalibrate",
+    data() {
+        return {
+            showConfirmation: false,
+        };
+    },
+    computed: {
+        ...mapStateProps(namespace, {
+            loading: (state: ModelCalibrateState) => state.fetching,
+            calibrating: (state: ModelCalibrateState) => state.calibrating,
+            generatingCalibrationPlot: (state: ModelCalibrateState) => state.generatingCalibrationPlot,
+            error: (state: ModelCalibrateState) => state.error,
+            progressMessage: (state: ModelCalibrateState) => {
+                if (
+                    state.status &&
+                    state.status.progress &&
+                    state.status.progress.length > 0
+                ) {
+                    const p = state.status.progress[0]; //This may be either a string or ProgressPhase
+                    return typeof p == "string"
+                        ? p
+                        : `${p.name}: ${p.helpText}`;
+                } else {
+                    return null;
                 }
-            }),
-            showCalibrateResults(): boolean {
-                return !this.generatingCalibrationPlot && this.complete
+            }
+        }),
+        showCalibrateResults(): boolean {
+            return !this.generatingCalibrationPlot && this.complete
+        },
+        currentLanguage: mapStateProp<RootState, Language>(
+            null,
+            (state: RootState) => state.language
+        ),
+        selectText(): string {
+            return i18next.t("select", { lng: this.currentLanguage });
+        },
+        requiredText(): string {
+            return i18next.t("required", { lng: this.currentLanguage });
+        },
+        submitText(): string {
+            return i18next.t("calibrate", { lng: this.currentLanguage });
+        },
+        complete: mapStateProp<ModelCalibrateState, boolean>(
+            namespace,
+            (state) => state.complete
+        ),
+        calibrateOptions: {
+            get() {
+                return this.$store.state.modelCalibrate.optionsFormMeta;
             },
-            currentLanguage: mapStateProp<RootState, Language>(
-                null,
-                (state: RootState) => state.language
-            ),
-            selectText(): string {
-                return i18next.t("select", { lng: this.currentLanguage });
-            },
-            requiredText(): string {
-                return i18next.t("required", { lng: this.currentLanguage });
-            },
-            submitText(): string {
-                return i18next.t("calibrate", { lng: this.currentLanguage });
-            },
-            complete: mapStateProp<ModelCalibrateState, boolean>(
-                namespace,
-                (state) => state.complete
-            ),
-            calibrateOptions: {
-                get() {
-                    return this.$store.state.modelCalibrate.optionsFormMeta;
-                },
-                set(value: DynamicFormMeta) {
-                    this.update(value);
-                },
-            },
-            hasError(): boolean {
-                return !!this.error;
+            set(value: DynamicFormMeta) {
+                this.update(value);
             },
         },
-        methods: {
-            update: mapMutationByName(namespace, ModelCalibrateMutation.Update),
-            submitCalibrate: mapActionByName(namespace, "submit"),
-            resumeCalibrate: mapActionByName(namespace, "resumeCalibrate"),
-            fetchOptions: mapActionByName(namespace, "fetchModelCalibrateOptions"),
-            submitForm() {
-                (this.$refs.form as any).submit();
-            },
+        hasError(): boolean {
+            return !!this.error;
         },
-        components: {
-            CalibrationResults,
-            DynamicForm,
-            LoadingSpinner,
-            Tick,
-            ErrorAlert,
+    },
+    methods: {
+        update: mapMutationByName(namespace, ModelCalibrateMutation.Update),
+        submitCalibrate: mapActionByName(namespace, "submit"),
+        resumeCalibrate: mapActionByName(namespace, "resumeCalibrate"),
+        fetchOptions: mapActionByName(namespace, "fetchModelCalibrateOptions"),
+        submitForm() {
+            (this.$refs.form as any).submit();
         },
-        mounted() {
-            this.fetchOptions();
-            this.resumeCalibrate();
-        }
-    });
+    },
+    components: {
+        CalibrationResults,
+        DynamicForm,
+        LoadingSpinner,
+        Tick,
+        ErrorAlert,
+    },
+    mounted() {
+        this.fetchOptions();
+        this.resumeCalibrate();
+    }
+});
 </script>

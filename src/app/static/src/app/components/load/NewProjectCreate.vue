@@ -32,57 +32,57 @@
 </template>
 
 <script lang="ts">
-    import Modal from "../Modal.vue";
-    import {mapMutationByName, mapStateProps} from "../../utils";
-    import UploadProgress from "./UploadProgress.vue";
-    import type {LoadState} from "../../store/load/state";
-    import LoadErrorModal from "./LoadErrorModal.vue";
-    import ProjectsMixin from "../projects/ProjectsMixin";
-    import { type PropType, defineComponent } from "vue";
+import Modal from "../Modal.vue";
+import {mapMutationByName, mapStateProps} from "../../utils";
+import UploadProgress from "./UploadProgress.vue";
+import type {LoadState} from "../../store/load/state";
+import LoadErrorModal from "./LoadErrorModal.vue";
+import ProjectsMixin from "../projects/ProjectsMixin";
+import { type PropType, defineComponent } from "vue";
 
-    export default defineComponent({
-        extends: ProjectsMixin,
-        name: "NewProjectCreate",
-        props: {
-            openModal: {
-                type: Boolean,
-                required: true
-            },
-            submitCreate: {
-                type: Function as PropType<() => void>,
-                required: true
-            },
-            cancelCreate: {
-                type: Function as PropType<() => void>,
-                required: true
-            }
+export default defineComponent({
+    extends: ProjectsMixin,
+    name: "NewProjectCreate",
+    props: {
+        openModal: {
+            type: Boolean,
+            required: true
         },
-        data() {
-            return {
-                newProjectName: ""
-            }
+        submitCreate: {
+            type: Function as PropType<() => void>,
+            required: true
         },
-        methods: {
-            cancelRehydration: mapMutationByName("load", "RehydrateCancel"),
-            setNewProjectName: mapMutationByName("load", "SetNewProjectName"),
-        },
-        computed: {
-            ...mapStateProps("load", {
-                preparing: (state: LoadState) => state.preparing
-            }),
-            disableCreate() {
-                return !this.newProjectName || this.invalidName(this.newProjectName)
-            },
-        },
-        components: {
-            Modal,
-            UploadProgress,
-            LoadErrorModal
-        },
-        watch: {
-            newProjectName(newValue) {
-                this.setNewProjectName(newValue)
-            }
+        cancelCreate: {
+            type: Function as PropType<() => void>,
+            required: true
         }
-    })
+    },
+    data() {
+        return {
+            newProjectName: ""
+        }
+    },
+    methods: {
+        cancelRehydration: mapMutationByName("load", "RehydrateCancel"),
+        setNewProjectName: mapMutationByName("load", "SetNewProjectName"),
+    },
+    computed: {
+        ...mapStateProps("load", {
+            preparing: (state: LoadState) => state.preparing
+        }),
+        disableCreate() {
+            return !this.newProjectName || this.invalidName(this.newProjectName)
+        },
+    },
+    components: {
+        Modal,
+        UploadProgress,
+        LoadErrorModal
+    },
+    watch: {
+        newProjectName(newValue) {
+            this.setNewProjectName(newValue)
+        }
+    }
+})
 </script>

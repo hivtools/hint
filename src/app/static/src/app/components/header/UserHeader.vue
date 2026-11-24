@@ -24,30 +24,30 @@
     </header>
 </template>
 <script lang="ts">
-    import {mapGetters} from 'vuex';
-    import LanguageMenu from "./LanguageMenu.vue";
-    import HintrVersionMenu from "./HintrVersionMenu.vue";
-    import OnlineSupportMenu from "./OnlineSupportMenu.vue";
-    import { defineComponent } from "vue";
+import {mapGetters} from 'vuex';
+import LanguageMenu from "./LanguageMenu.vue";
+import HintrVersionMenu from "./HintrVersionMenu.vue";
+import OnlineSupportMenu from "./OnlineSupportMenu.vue";
+import { defineComponent } from "vue";
 
-    export default defineComponent({
-        computed: {
-            ...mapGetters(["isGuest"])
+export default defineComponent({
+    computed: {
+        ...mapGetters(["isGuest"])
+    },
+    props: {
+        title: {
+            type: String,
+            required: false
         },
-        props: {
-            title: {
-                type: String,
-                required: false
-            },
-            user: {
-                type: String,
-                required: false
-            }
-        },
-        components: {
-            LanguageMenu,
-            HintrVersionMenu,
-            OnlineSupportMenu
+        user: {
+            type: String,
+            required: false
         }
-    })
+    },
+    components: {
+        LanguageMenu,
+        HintrVersionMenu,
+        OnlineSupportMenu
+    }
+})
 </script>

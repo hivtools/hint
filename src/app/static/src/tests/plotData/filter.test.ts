@@ -864,7 +864,7 @@ describe("filter tests", () => {
                     population: mockPopulationResponse(
                         {
                             data
-                    })
+                        })
                 }),
                 reviewInput: mockReviewInputState({
                     population: {

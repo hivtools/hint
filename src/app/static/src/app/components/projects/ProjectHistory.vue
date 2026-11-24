@@ -24,14 +24,14 @@
                         class="btn btn-xs bg-transparent shadow-none py-0"
                         @click="toggleVersionMenu(p.id)">
                         <vue-feather v-show="!openVersion[p.id]"
-                            type="chevron-right"
-                            size="20"
-                            class="icon when-closed"
+                                     type="chevron-right"
+                                     size="20"
+                                     class="icon when-closed"
                         ></vue-feather>
                         <vue-feather v-show="openVersion[p.id]"
-                            type="chevron-down"
-                            size="20"
-                            class="icon when-open"
+                                     type="chevron-down"
+                                     size="20"
+                                     class="icon when-open"
                         ></vue-feather>
                     </button>
                 </div>
@@ -41,17 +41,17 @@
                         {{ p.name }}
                     </a>
                     <span class="float-right">
-                    <button v-if="showTooltip" href="#" class="btn btn-sm btn-red-icons"
-                            v-tooltip="getTranslatedValue('editProjectNote')"
-                            @click.prevent="handleEditProjectNote(p.id)"
-                            v-translate:aria-label="'editProjectNote'">
-                        <vue-feather type="file-text" size="20"></vue-feather>
-                    </button>
-                    <button v-else href="#" class="btn btn-sm btn-red-icons"
-                            @click.prevent="handleEditProjectNote(p.id)"
-                            v-translate:aria-label="'editProjectNote'">
-                        <vue-feather type="file-text" size="20"></vue-feather>
-                    </button>
+                        <button v-if="showTooltip" href="#" class="btn btn-sm btn-red-icons"
+                                v-tooltip="getTranslatedValue('editProjectNote')"
+                                @click.prevent="handleEditProjectNote(p.id)"
+                                v-translate:aria-label="'editProjectNote'">
+                            <vue-feather type="file-text" size="20"></vue-feather>
+                        </button>
+                        <button v-else href="#" class="btn btn-sm btn-red-icons"
+                                @click.prevent="handleEditProjectNote(p.id)"
+                                v-translate:aria-label="'editProjectNote'">
+                            <vue-feather type="file-text" size="20"></vue-feather>
+                        </button>
                     </span>
                     <small v-if="p.sharedBy" class="text-muted d-flex">
                         {{ getTranslatedValue("sharedBy") }}: {{ p.sharedBy }}
@@ -144,12 +144,12 @@
                                     v-tooltip="getTranslatedValue('editVersionNote')"
                                     v-translate:aria-label="'editVersionNote'"
                                     @click.prevent="handleEditVersionNote(p.id, v.id, v.versionNumber)">
-                            <vue-feather type="file-text" size="20"></vue-feather>
+                                <vue-feather type="file-text" size="20"></vue-feather>
                             </button>
                             <button v-else href="#" class="btn btn-sm btn-red-icons"
                                     v-translate:aria-label="'editVersionNote'"
                                     @click.prevent="handleEditVersionNote(p.id, v.id, v.versionNumber)">
-                            <vue-feather type="file-text" size="20"></vue-feather>
+                                <vue-feather type="file-text" size="20"></vue-feather>
                             </button>
                         </span>
                     </div>
@@ -179,12 +179,12 @@
                                 v-tooltip="getTranslatedValue('delete')"
                                 v-translate:aria-label="'delete'"
                                 @click="deleteVersion($event, p.id, v.id)">
-                        <vue-feather type="trash-2" size="20"></vue-feather>
+                            <vue-feather type="trash-2" size="20"></vue-feather>
                         </button>
                         <button v-else class=" btn btn-sm btn-red-icons"
                                 v-translate:aria-label="'delete'"
                                 @click="deleteVersion($event, p.id, v.id)">
-                        <vue-feather type="trash-2" size="20"></vue-feather>
+                            <vue-feather type="trash-2" size="20"></vue-feather>
                         </button>
                     </div>
                     <div class="col-md-1 version-cell copy-cell">
@@ -286,7 +286,7 @@
             <div v-if="versionNoteToEdit">
                 <label class="h4" for="edit-note-id"
                        v-html="editVersionNoteHeader"
-                    id="editVersionNoteHeader"></label>
+                       id="editVersionNoteHeader"></label>
                 <div class="pb-3"
                      v-html="editVersionNoteSubHeader"
                      id="editVersionNoteSubHeader"></div>
@@ -321,284 +321,284 @@
 </template>
 
 <script lang="ts">
-    import i18next from "i18next";
-    import type {Project, Version, VersionIds} from "../../types";
-    import {BCollapse} from "bootstrap-vue-next";
-    import VueFeather from "vue-feather";
-    import Modal from "../Modal.vue";
-    import {formatDateTime, mapActionByName, mapStateProp, versionLabel} from "../../utils";
-    import type {projectPayload, versionPayload} from "../../store/projects/actions";
-    import type {Language} from "../../store/translations/locales";
-    import type {RootState} from "../../root";
-    import ProjectsMixin from "./ProjectsMixin";
-    import ShareProject from "./ShareProject.vue";
-    import { defineComponent } from "vue";
+import i18next from "i18next";
+import type {Project, Version, VersionIds} from "../../types";
+import {BCollapse} from "bootstrap-vue-next";
+import VueFeather from "vue-feather";
+import Modal from "../Modal.vue";
+import {formatDateTime, mapActionByName, mapStateProp, versionLabel} from "../../utils";
+import type {projectPayload, versionPayload} from "../../store/projects/actions";
+import type {Language} from "../../store/translations/locales";
+import type {RootState} from "../../root";
+import ProjectsMixin from "./ProjectsMixin";
+import ShareProject from "./ShareProject.vue";
+import { defineComponent } from "vue";
 
-    const namespace = "projects";
+const namespace = "projects";
 
-    interface Data {
-        projectToDelete: number | null;
-        versionToDelete: VersionIds | null;
-        renamedProjectName: string;
-        projectToRename: number | null;
-        versionToPromote: VersionIds | null;
-        newProjectName: string;
-        selectedVersionNumber: string;
-        versionNote: string;
-        versionNoteToEdit: VersionIds | null;
-        editedNote: string;
-        displayProjectName: string;
-        renameProjectNote: string;
-        projectNoteToEdit: number | null;
-        editedProjectNote: string;
-        openVersion: Record<number, boolean>
-    }
+interface Data {
+    projectToDelete: number | null;
+    versionToDelete: VersionIds | null;
+    renamedProjectName: string;
+    projectToRename: number | null;
+    versionToPromote: VersionIds | null;
+    newProjectName: string;
+    selectedVersionNumber: string;
+    versionNote: string;
+    versionNoteToEdit: VersionIds | null;
+    editedNote: string;
+    displayProjectName: string;
+    renameProjectNote: string;
+    projectNoteToEdit: number | null;
+    editedProjectNote: string;
+    openVersion: Record<number, boolean>
+}
 
-    export default defineComponent({
-        extends: ProjectsMixin,
-        data(): Data {
-            const openVersion: Record<number, boolean> = {};
-            if (this.projects) {
-                this.projects.forEach(p => {
-                    openVersion[p.id] = false
-                })
-            }
-            return {
-                projectToDelete: null,
-                versionToDelete: null,
-                versionToPromote: null,
-                newProjectName: "",
-                selectedVersionNumber: "",
-                projectToRename: null,
-                versionNoteToEdit: null,
-                editedNote: "",
-                versionNote: "",
-                displayProjectName: "",
-                renameProjectNote: "",
-                renamedProjectName: "",
-                editedProjectNote: "",
-                projectNoteToEdit: null,
-                openVersion
-            };
+export default defineComponent({
+    extends: ProjectsMixin,
+    data(): Data {
+        const openVersion: Record<number, boolean> = {};
+        if (this.projects) {
+            this.projects.forEach(p => {
+                openVersion[p.id] = false
+            })
+        }
+        return {
+            projectToDelete: null,
+            versionToDelete: null,
+            versionToPromote: null,
+            newProjectName: "",
+            selectedVersionNumber: "",
+            projectToRename: null,
+            versionNoteToEdit: null,
+            editedNote: "",
+            versionNote: "",
+            displayProjectName: "",
+            renameProjectNote: "",
+            renamedProjectName: "",
+            editedProjectNote: "",
+            projectNoteToEdit: null,
+            openVersion
+        };
+    },
+    computed: {
+        disableCreate: function () {
+            return !this.newProjectName;
         },
-        computed: {
-            disableCreate: function () {
-                return !this.newProjectName;
-            },
-            disableRename: function () {
-                return !this.renamedProjectName;
-            },
-            promoteVersionHeader: function () {
-                return i18next.t("promoteVersionHeader", {
-                    version: this.selectedVersionNumber,
-                    lng: this.currentLanguage,
-                });
-            },
-            editVersionNoteHeader: function () {
-                return i18next.t("editVersionNoteHeader", {
-                    version: this.selectedVersionNumber,
-                    lng: this.currentLanguage,
-                });
-            },
-
-            editVersionNoteSubHeader: function () {
-                return i18next.t("editVersionNoteSubHeader", {
-                    projectName: this.displayProjectName,
-                    lng: this.currentLanguage,
-                });
-            },
-            editProjectNoteSubHeader: function () {
-                return i18next.t("editProjectNoteSubHeader", {
-                    projectName: this.displayProjectName,
-                    lng: this.currentLanguage,
-                });
-            },
-            currentLanguage: mapStateProp<RootState, Language>(
-                null,
-                (state: RootState) => state.language
-            ),
-            showTooltip() {
-                return this.projects.length <= 25;
-            }
+        disableRename: function () {
+            return !this.renamedProjectName;
         },
-        methods: {
-            format(date: string) {
-                return formatDateTime(date);
-            },
-            loadVersion(event: Event, projectId: number, versionId: string) {
-                event.preventDefault();
-                this.loadAction({projectId, versionId});
-            },
-            handleEditVersionNote(projectId: number, versionId: string, versionNumber: number) {
-                const project = this.projects.find((project: Project) => project.id === projectId)!
-                this.displayProjectName = project.name;
-                this.editedNote = project.versions
-                    .find((version: Version) => version.versionNumber === versionNumber)!.note || "";
+        promoteVersionHeader: function () {
+            return i18next.t("promoteVersionHeader", {
+                version: this.selectedVersionNumber,
+                lng: this.currentLanguage,
+            });
+        },
+        editVersionNoteHeader: function () {
+            return i18next.t("editVersionNoteHeader", {
+                version: this.selectedVersionNumber,
+                lng: this.currentLanguage,
+            });
+        },
 
-                this.versionNoteToEdit = {projectId, versionId};
-                this.selectedVersionNumber = `v${versionNumber}`;
-            },
-            handleEditProjectNote(projectId: number) {
-                const project = this.projects.find((project: Project) => project.id === projectId)!;
-                this.displayProjectName = project.name;
-                this.editedNote = project.note || "";
+        editVersionNoteSubHeader: function () {
+            return i18next.t("editVersionNoteSubHeader", {
+                projectName: this.displayProjectName,
+                lng: this.currentLanguage,
+            });
+        },
+        editProjectNoteSubHeader: function () {
+            return i18next.t("editProjectNoteSubHeader", {
+                projectName: this.displayProjectName,
+                lng: this.currentLanguage,
+            });
+        },
+        currentLanguage: mapStateProp<RootState, Language>(
+            null,
+            (state: RootState) => state.language
+        ),
+        showTooltip() {
+            return this.projects.length <= 25;
+        }
+    },
+    methods: {
+        format(date: string) {
+            return formatDateTime(date);
+        },
+        loadVersion(event: Event, projectId: number, versionId: string) {
+            event.preventDefault();
+            this.loadAction({projectId, versionId});
+        },
+        handleEditVersionNote(projectId: number, versionId: string, versionNumber: number) {
+            const project = this.projects.find((project: Project) => project.id === projectId)!
+            this.displayProjectName = project.name;
+            this.editedNote = project.versions
+                .find((version: Version) => version.versionNumber === versionNumber)!.note || "";
 
-                this.projectNoteToEdit = projectId;
-            },
-            renameProject(event: Event, projectId: number) {
-                event.preventDefault();
-                this.projects.filter((project: Project) => {
-                    if (project.id === projectId) {
-                        this.renamedProjectName = project.name
-                        this.renameProjectNote = project.note || ""
-                    }
-                })
-                this.projectToRename = projectId;
-            },
-            cancelRename() {
+            this.versionNoteToEdit = {projectId, versionId};
+            this.selectedVersionNumber = `v${versionNumber}`;
+        },
+        handleEditProjectNote(projectId: number) {
+            const project = this.projects.find((project: Project) => project.id === projectId)!;
+            this.displayProjectName = project.name;
+            this.editedNote = project.note || "";
+
+            this.projectNoteToEdit = projectId;
+        },
+        renameProject(event: Event, projectId: number) {
+            event.preventDefault();
+            this.projects.filter((project: Project) => {
+                if (project.id === projectId) {
+                    this.renamedProjectName = project.name
+                    this.renameProjectNote = project.note || ""
+                }
+            })
+            this.projectToRename = projectId;
+        },
+        cancelRename() {
+            this.projectToRename = null;
+            this.renamedProjectName = '';
+        },
+        async confirmRename() {
+            if (this.projectToRename) {
+                const projectPayload: projectPayload = {
+                    projectId: this.projectToRename!,
+                    name: this.renamedProjectName,
+                    note: this.renameProjectNote
+                };
+                this.renameProjectAction(projectPayload);
                 this.projectToRename = null;
-                this.renamedProjectName = '';
-            },
-            async confirmRename() {
-                if (this.projectToRename) {
-                    const projectPayload: projectPayload = {
-                        projectId: this.projectToRename!,
-                        name: this.renamedProjectName,
-                        note: this.renameProjectNote
-                    };
-                    this.renameProjectAction(projectPayload);
-                    this.projectToRename = null;
-                    this.renamedProjectName = "";
-                }
-            },
-            cancelNoteEditing() {
-                if (this.versionNoteToEdit) {
-                    this.versionNoteToEdit = null;
-                    this.editedNote = "";
+                this.renamedProjectName = "";
+            }
+        },
+        cancelNoteEditing() {
+            if (this.versionNoteToEdit) {
+                this.versionNoteToEdit = null;
+                this.editedNote = "";
 
-                } else if (this.projectNoteToEdit) {
-                    this.projectNoteToEdit = null
-                    this.editedNote = "";
-                }
-            },
-            confirmNoteEditing() {
-                if (this.versionNoteToEdit) {
-                    const versionPayload: versionPayload = {
-                        version: this.versionNoteToEdit!,
-                        note: this.editedNote
-                    };
-                    this.updateVersionNoteAction(versionPayload);
-                    this.versionNoteToEdit = null;
-                    this.editedNote = "";
+            } else if (this.projectNoteToEdit) {
+                this.projectNoteToEdit = null
+                this.editedNote = "";
+            }
+        },
+        confirmNoteEditing() {
+            if (this.versionNoteToEdit) {
+                const versionPayload: versionPayload = {
+                    version: this.versionNoteToEdit!,
+                    note: this.editedNote
+                };
+                this.updateVersionNoteAction(versionPayload);
+                this.versionNoteToEdit = null;
+                this.editedNote = "";
 
-                } else if (this.projectNoteToEdit) {
-                    const payload: projectPayload = {
-                        projectId: this.projectNoteToEdit!,
-                        note: this.editedNote
-                    };
-                    this.updateProjectNoteAction(payload);
-                    this.projectNoteToEdit = null;
-                    this.editedNote = "";
+            } else if (this.projectNoteToEdit) {
+                const payload: projectPayload = {
+                    projectId: this.projectNoteToEdit!,
+                    note: this.editedNote
+                };
+                this.updateProjectNoteAction(payload);
+                this.projectNoteToEdit = null;
+                this.editedNote = "";
+            }
+        },
+        deleteProject(event: Event, projectId: number) {
+            event.preventDefault();
+            this.projectToDelete = projectId;
+        },
+        deleteVersion(event: Event, projectId: number, versionId: string) {
+            event.preventDefault();
+            this.versionToDelete = {projectId, versionId};
+        },
+        promoteVersion(
+            event: Event,
+            projectId: number,
+            versionId: string,
+            versionNumber: number
+        ) {
+            event.preventDefault();
+            this.projects.filter((project: Project) => {
+                if (project.id === projectId) {
+                    this.newProjectName = project.name
+                    this.versionNote = project.versions.find(version => version.id === versionId)!.note || "";
                 }
-            },
-            deleteProject(event: Event, projectId: number) {
-                event.preventDefault();
-                this.projectToDelete = projectId;
-            },
-            deleteVersion(event: Event, projectId: number, versionId: string) {
-                event.preventDefault();
-                this.versionToDelete = {projectId, versionId};
-            },
-            promoteVersion(
-                event: Event,
-                projectId: number,
-                versionId: string,
-                versionNumber: number
-            ) {
-                event.preventDefault();
-                this.projects.filter((project: Project) => {
-                    if (project.id === projectId) {
-                        this.newProjectName = project.name
-                        this.versionNote = project.versions.find(version => version.id === versionId)!.note || "";
-                    }
-                })
-                this.versionToPromote = {projectId, versionId};
-                this.selectedVersionNumber = `v${versionNumber}`;
-            },
-            cancelPromotion() {
+            })
+            this.versionToPromote = {projectId, versionId};
+            this.selectedVersionNumber = `v${versionNumber}`;
+        },
+        cancelPromotion() {
+            this.versionToPromote = null;
+            this.newProjectName = "";
+        },
+        cancelDelete() {
+            this.versionToDelete = null;
+            this.projectToDelete = null;
+        },
+        confirmDelete() {
+            if (this.projectToDelete) {
+                this.deleteProjectAction(this.projectToDelete);
+                this.projectToDelete = null;
+            } else if (this.versionToDelete) {
+                this.deleteVersionAction(this.versionToDelete);
+                this.versionToDelete = null;
+            }
+        },
+        async confirmPromotion() {
+            if (this.versionToPromote && this.newProjectName) {
+                const versionPayload: versionPayload = {
+                    version: this.versionToPromote!,
+                    name: this.newProjectName,
+                    note: this.versionNote
+                };
+                this.promoteVersionAction(versionPayload);
                 this.versionToPromote = null;
                 this.newProjectName = "";
-            },
-            cancelDelete() {
-                this.versionToDelete = null;
-                this.projectToDelete = null;
-            },
-            confirmDelete() {
-                if (this.projectToDelete) {
-                    this.deleteProjectAction(this.projectToDelete);
-                    this.projectToDelete = null;
-                } else if (this.versionToDelete) {
-                    this.deleteVersionAction(this.versionToDelete);
-                    this.versionToDelete = null;
-                }
-            },
-            async confirmPromotion() {
-                if (this.versionToPromote && this.newProjectName) {
-                    const versionPayload: versionPayload = {
-                        version: this.versionToPromote!,
-                        name: this.newProjectName,
-                        note: this.versionNote
-                    };
-                    this.promoteVersionAction(versionPayload);
-                    this.versionToPromote = null;
-                    this.newProjectName = "";
-                }
-            },
-            updateVersionNoteAction: mapActionByName<projectPayload>(namespace, "updateVersionNote"),
-            updateProjectNoteAction: mapActionByName<projectPayload>(namespace, "updateProjectNote"),
-            renameProjectAction: mapActionByName<projectPayload>(
-                namespace,
-                "renameProject"
-            ),
-            promoteVersionAction: mapActionByName<versionPayload>(
-                namespace,
-                "promoteVersion"
-            ),
-            versionCountLabel(project: Project) {
-                const lng = this.currentLanguage;
-                return project.versions.length == 1
-                    ? `1 ${i18next.t("versionCountLabelSingle", {lng})}`
-                    : `${project.versions.length} ${i18next.t("versionCountLabelPlural", {lng})}`;
-            },
-            versionLabel(version: Version) {
-                return versionLabel(version);
-            },
-            loadAction: mapActionByName<VersionIds>(namespace, "loadVersion"),
-            deleteProjectAction: mapActionByName<number>(
-                namespace,
-                "deleteProject"
-            ),
-            deleteVersionAction: mapActionByName<VersionIds>(
-                namespace,
-                "deleteVersion"
-            ),
-
-            getTranslatedValue(key: string) {
-                return i18next.t(key, {
-                    lng: this.currentLanguage,
-                });
-            },
-            toggleVersionMenu(pid: number) {
-                this.openVersion[pid] = !this.openVersion[pid]
-            },
+            }
         },
-        components: {
-            BCollapse,
-            VueFeather,
-            Modal,
-            ShareProject,
-        }
-    });
+        updateVersionNoteAction: mapActionByName<projectPayload>(namespace, "updateVersionNote"),
+        updateProjectNoteAction: mapActionByName<projectPayload>(namespace, "updateProjectNote"),
+        renameProjectAction: mapActionByName<projectPayload>(
+            namespace,
+            "renameProject"
+        ),
+        promoteVersionAction: mapActionByName<versionPayload>(
+            namespace,
+            "promoteVersion"
+        ),
+        versionCountLabel(project: Project) {
+            const lng = this.currentLanguage;
+            return project.versions.length == 1
+                ? `1 ${i18next.t("versionCountLabelSingle", {lng})}`
+                : `${project.versions.length} ${i18next.t("versionCountLabelPlural", {lng})}`;
+        },
+        versionLabel(version: Version) {
+            return versionLabel(version);
+        },
+        loadAction: mapActionByName<VersionIds>(namespace, "loadVersion"),
+        deleteProjectAction: mapActionByName<number>(
+            namespace,
+            "deleteProject"
+        ),
+        deleteVersionAction: mapActionByName<VersionIds>(
+            namespace,
+            "deleteVersion"
+        ),
+
+        getTranslatedValue(key: string) {
+            return i18next.t(key, {
+                lng: this.currentLanguage,
+            });
+        },
+        toggleVersionMenu(pid: number) {
+            this.openVersion[pid] = !this.openVersion[pid]
+        },
+    },
+    components: {
+        BCollapse,
+        VueFeather,
+        Modal,
+        ShareProject,
+    }
+});
 </script>
 
 <style>

@@ -61,81 +61,81 @@
     </div>
 </template>
 <script lang="ts">
-    import DropDown from "./DropDown.vue";
-    import i18next from "i18next";
-    import {HelpFile, mapActionByName, mapStateProp} from "../../utils";
-    import type {RootState} from "../../root";
-    import {Language} from "../../store/translations/locales";
-    import ErrorReport from "../ErrorReport.vue";
-    import type {ProjectsState} from "../../store/projects/projects";
-    import type {StepDescription, StepperState} from "../../store/stepper/stepper";
-    import type {ErrorReportManualDetails} from "../../types";
-    import { defineComponent } from "vue";
+import DropDown from "./DropDown.vue";
+import i18next from "i18next";
+import {HelpFile, mapActionByName, mapStateProp} from "../../utils";
+import type {RootState} from "../../root";
+import {Language} from "../../store/translations/locales";
+import ErrorReport from "../ErrorReport.vue";
+import type {ProjectsState} from "../../store/projects/projects";
+import type {StepDescription, StepperState} from "../../store/stepper/stepper";
+import type {ErrorReportManualDetails} from "../../types";
+import { defineComponent } from "vue";
 
-    export default defineComponent({
-        data: function () {
-            return {
-                errorReportOpen: false,
-                section: ""
-            }
-        },
-        computed: {
-            currentSectionKey: mapStateProp<StepperState, string>("stepper", state => {
-                return state.steps[state.activeStep - 1].textKey;
-            }),
-            currentSection: {
-                get(): string {
-                    return this.section || this.currentSectionKey
-                },
-                set(newVal: string) {
-                    this.section = newVal
-                }
-            },
-            steps: mapStateProp<StepperState, StepDescription[]>("stepper", state => state.steps),
-            projectName: mapStateProp<ProjectsState, string | undefined>("projects", state => state.currentProject?.name),
-            currentLanguage: mapStateProp<RootState, Language>(null,
-                (state: RootState) => state.language),
-            support(): string {
-                return i18next.t("support", {lng: this.currentLanguage})
-            },
-            helpVideoLocation(): string {
-                return "https://www.youtube.com/@naomi-unaids"
-            },
-            helpFilename: mapStateProp<RootState, string>(null,
-                (state: RootState) => {
-                    if (state.language == Language.fr) {
-                        return HelpFile.french;
-                    }
-                    return HelpFile.english;
-                }),
-        },
-        methods: {
-            generateErrorReport: mapActionByName(null,
-                "generateErrorReport"),
-            async sendErrorReport(errorReport: ErrorReportManualDetails) {
-                await this.generateErrorReport({
-                    section: this.currentSection,
-                    ...errorReport
-                })
-                this.section = ""
-            },
-            projectSection() {
-                if (this.$route.path.indexOf("projects") > -1) {
-                    this.section = "projects"
-                }
-            },
-            toggleErrorReportModal() {
-                this.errorReportOpen = !this.errorReportOpen
-                if (this.errorReportOpen) {
-                    this.projectSection()
-                } else {
-                    this.section = ""
-                }
-            }
-        },
-        components: {
-            DropDown,
-            ErrorReport
+export default defineComponent({
+    data: function () {
+        return {
+            errorReportOpen: false,
+            section: ""
         }
-    })
+    },
+    computed: {
+        currentSectionKey: mapStateProp<StepperState, string>("stepper", state => {
+            return state.steps[state.activeStep - 1].textKey;
+        }),
+        currentSection: {
+            get(): string {
+                return this.section || this.currentSectionKey
+            },
+            set(newVal: string) {
+                this.section = newVal
+            }
+        },
+        steps: mapStateProp<StepperState, StepDescription[]>("stepper", state => state.steps),
+        projectName: mapStateProp<ProjectsState, string | undefined>("projects", state => state.currentProject?.name),
+        currentLanguage: mapStateProp<RootState, Language>(null,
+                                                           (state: RootState) => state.language),
+        support(): string {
+            return i18next.t("support", {lng: this.currentLanguage})
+        },
+        helpVideoLocation(): string {
+            return "https://www.youtube.com/@naomi-unaids"
+        },
+        helpFilename: mapStateProp<RootState, string>(null,
+                                                      (state: RootState) => {
+                                                          if (state.language == Language.fr) {
+                                                              return HelpFile.french;
+                                                          }
+                                                          return HelpFile.english;
+                                                      }),
+    },
+    methods: {
+        generateErrorReport: mapActionByName(null,
+                                             "generateErrorReport"),
+        async sendErrorReport(errorReport: ErrorReportManualDetails) {
+            await this.generateErrorReport({
+                section: this.currentSection,
+                ...errorReport
+            })
+            this.section = ""
+        },
+        projectSection() {
+            if (this.$route.path.indexOf("projects") > -1) {
+                this.section = "projects"
+            }
+        },
+        toggleErrorReportModal() {
+            this.errorReportOpen = !this.errorReportOpen
+            if (this.errorReportOpen) {
+                this.projectSection()
+            } else {
+                this.section = ""
+            }
+        }
+    },
+    components: {
+        DropDown,
+        ErrorReport
+    }
+})
 </script>

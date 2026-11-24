@@ -6,20 +6,20 @@
 </template>
 
 <script lang="ts">
-    import { type PropType, defineComponent } from "vue";
-    import type {Error} from "../generated";
+import { type PropType, defineComponent } from "vue";
+import type {Error} from "../generated";
 
-    export default defineComponent({
-        props: {
-            error: {
-                type: Object as PropType<Error>,
-                required: true
-            }
-        },
-        computed: {
-            message: function () {
-                return this.error.detail ? this.error.detail : this.error.error
-            }
+export default defineComponent({
+    props: {
+        error: {
+            type: Object as PropType<Error>,
+            required: true
         }
-    });
+    },
+    computed: {
+        message: function () {
+            return this.error.detail ? this.error.detail : this.error.error
+        }
+    }
+});
 </script>

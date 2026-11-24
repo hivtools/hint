@@ -14,36 +14,36 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent } from "vue";
-    import type {ErrorsState} from "../store/errors/errors";
-    import {mapMutationByName, mapStateProps} from "../utils";
-    import {ErrorsMutation} from "../store/errors/mutations";
+import { defineComponent } from "vue";
+import type {ErrorsState} from "../store/errors/errors";
+import {mapMutationByName, mapStateProps} from "../utils";
+import {ErrorsMutation} from "../store/errors/mutations";
 
-    const namespace = "errors";
+const namespace = "errors";
 
-    export default defineComponent({
-        name: "Errors",
-        props: {
-            title: {
-                type: String,
-                required: false
-            }
-        },
-        computed: {
-            ...mapStateProps(namespace, {
-                errors: (state: ErrorsState) => {
-                    const messages = state.errors.map(e => e.detail ? e.detail : e.error);
-                    return Array.from(new Set(messages))
-                }
-            }),
-            hasErrors: function () {
-                return this.errors.length > 0
-            }
-        },
-        methods: {
-            dismissAll: mapMutationByName(namespace, ErrorsMutation.DismissAll)
+export default defineComponent({
+    name: "Errors",
+    props: {
+        title: {
+            type: String,
+            required: false
         }
-    })
+    },
+    computed: {
+        ...mapStateProps(namespace, {
+            errors: (state: ErrorsState) => {
+                const messages = state.errors.map(e => e.detail ? e.detail : e.error);
+                return Array.from(new Set(messages))
+            }
+        }),
+        hasErrors: function () {
+            return this.errors.length > 0
+        }
+    },
+    methods: {
+        dismissAll: mapMutationByName(namespace, ErrorsMutation.DismissAll)
+    }
+})
 </script>
 
 
