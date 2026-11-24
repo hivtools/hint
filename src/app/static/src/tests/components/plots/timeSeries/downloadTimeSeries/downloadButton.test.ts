@@ -20,7 +20,7 @@ describe("download button", () => {
         })
     }
 
-    it('it can render button as expected ', async () => {
+    it('can render button as expected', async () => {
         const wrapper = getWrapper()
         expect(wrapper.props()).toEqual({
             disabled: false,
@@ -31,18 +31,18 @@ describe("download button", () => {
         expect(mockTranslate.mock.calls[0][1].value).toBe("downloadIndicator")
     });
 
-    it('it does not render button when disabled prop is true ', async () => {
+    it('does not render button when disabled prop is true', async () => {
         const wrapper = getWrapper({disabled: true, name: "downloadIndicator"})
         expect((wrapper.find(".btn").element as HTMLButtonElement).disabled).toBe(true)
     });
 
-    it('it can emit click event ', async() => {
+    it('can emit click event', async() => {
         const wrapper = getWrapper()
         await wrapper.find(".btn").trigger("click")
-        expect(wrapper.emitted("click")!?.length).toBe(1)
+        expect(wrapper.emitted("click")?.length).toBe(1)
     });
 
-    it('it can render download icon', () => {
+    it('can render download icon', () => {
         const wrapper = getWrapper()
         expect(wrapper.findComponent(VueFeather).exists()).toBe(true)
         expect(wrapper.findComponent(VueFeather).props("type")).toBe("download")

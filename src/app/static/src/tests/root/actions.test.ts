@@ -551,32 +551,7 @@ describe("root actions", () => {
             "baseline/complete": true,
             "surveyAndProgram/complete": false
         };
-        await actions.changeLanguage({commit, dispatch, rootState, rootGetters2} as any, Language.fr);
-
-        expectChangeLanguageMutations(commit);
-
-        expect(dispatch.mock.calls.length).toBe(0);
-    });
-
-    it("changeLanguage does not fetch input comparison data if baseline or survey not complete", async () => {
-        const commit = vi.fn();
-        const dispatch = vi.fn();
-        const rootState = mockRootState();
-        const rootGetters = {
-            "baseline/complete": false,
-            "surveyAndProgram/complete": true
-        };
-        await actions.changeLanguage({commit, dispatch, rootState, rootGetters} as any, Language.fr);
-
-        expectChangeLanguageMutations(commit);
-
-        expect(dispatch.mock.calls.length).toBe(0);
-
-        const rootGetters2 = {
-            "baseline/complete": true,
-            "surveyAndProgram/complete": false
-        };
-        await actions.changeLanguage({commit, dispatch, rootState, rootGetters2} as any, Language.fr);
+        await actions.changeLanguage({commit, dispatch, rootState, rootGetters: rootGetters2} as any, Language.fr);
 
         expectChangeLanguageMutations(commit);
 

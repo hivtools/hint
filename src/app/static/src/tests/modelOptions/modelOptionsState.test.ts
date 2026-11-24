@@ -15,7 +15,7 @@ it("loads initial state from existingState", () => {
     expect(state.options).toBe("TEST");
 });
 
-it("it has changes if state has changes flag", () => {
+it("has changes if state has changes flag", () => {
     const initialState = modelOptions(existingState).state as ModelOptionsState;
     expect(modelOptionsGetters.hasChanges(initialState)).toBe(false);
 

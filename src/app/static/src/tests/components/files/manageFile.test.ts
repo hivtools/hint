@@ -199,7 +199,7 @@ describe("Manage file component", () => {
             default: '<div class="fake-slot"></div>'
         });
         const slot = wrapper.find(".fake-slot");
-        expect(slot.element!!.nextElementSibling!!.classList[0]).toBe("file-name");
+        expect(slot.element!.nextElementSibling!.classList[0]).toBe("file-name");
     });
 
     it("renders loading spinner while uploading with success", async () => {

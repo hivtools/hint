@@ -198,7 +198,7 @@ describe("Model calibrate component", () => {
         "(Consultez les résultats ci-dessous)", "(Analise os resultados abaixo)", store);
     });
 
-    it("it does not render calibration plot and label if calibration is incomplete", () => {
+    it("does not render calibration plot and label if calibration is incomplete", () => {
         const store = getStore({complete: false, calibratePlotResult: mockCalibratePlotResponse()});
         const wrapper = getWrapper(store);
         expect(wrapper.findComponent(CalibrationResults).exists()).toBe(false);

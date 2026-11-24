@@ -1,9 +1,6 @@
 import {
     mockAxios,
-    mockBaselineState,
     mockFailure,
-    mockInputPopulationMetadataResponse,
-    mockPopulationResponse,
     mockRootState,
     mockSuccess
 } from "../mocks";
@@ -109,7 +106,7 @@ describe("reviewInput actions", () => {
             .mockImplementation(async (_metadata, _commit, _rootState, _rootGetters) => {});
         const mockFiltersAfterUseShapeRegions = vi
             .spyOn(utils, "filtersAfterUseShapeRegions")
-            .mockImplementation((...args) => []);
+            .mockImplementation((..._args) => []);
         await actions.getPopulationDataset({commit, rootState, rootGetters} as any);
 
         expect(commit).toHaveBeenCalledTimes(4);

@@ -28,7 +28,7 @@ describe("population utils", () => {
                     { data: [5, 6], label: "Female", isOutline: true, isMale: false },
                 ] as PopulationChartDataset[],
             },
-            getDatasetMeta: vi.fn((datasetIndex) => ({
+            getDatasetMeta: vi.fn((_datasetIndex) => ({
                 data: [
                     { x: 40, y: 20, height: 30, width: 15 }, // Bar 1
                     { x: 50, y: 60, height: 30, width: 15 }, // Bar 2
@@ -54,7 +54,7 @@ describe("population utils", () => {
                     { data: [-3, -4], label: "Female", isOutline: false, isMale: false },
                 ] as PopulationChartDataset[],
             },
-            getDatasetMeta: vi.fn((datasetIndex) => ({
+            getDatasetMeta: vi.fn((_datasetIndex) => ({
                 data: [
                     { x: 40, y: 20, height: 30, width: 15 }, // Bar 1
                     { x: 50, y: 60, height: 30, width: 15 }, // Bar 2

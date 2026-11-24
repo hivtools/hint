@@ -353,7 +353,7 @@ describe("plot utils", () => {
         expect(roundRange({min: 10, max: 10})).toStrictEqual({min: 10, max: 10});
     });
 
-    it("it can formatOutput correctly", () => {
+    it("can formatOutput correctly", () => {
         expect(formatOutput(11111, '0,0', 1, 10)).toStrictEqual('11,110');
         expect(formatOutput(11111, '0,0', 10, 1)).toStrictEqual('111,110');
         expect(formatOutput(0.01, '0.00%', 1, null)).toStrictEqual('1.00%');
@@ -370,7 +370,7 @@ describe("plot utils", () => {
         expect(formatOutput(-11111, '0,0', 1, 1, false, true)).toStrictEqual('11,111');
     });
 
-    it("it can formatLegend correctly", () => {
+    it("can formatLegend correctly", () => {
         expect(formatLegend(11111, '0,0', 1)).toStrictEqual('11k');
         expect(formatLegend(11111, '0,0', 10)).toStrictEqual('111k');
         expect(formatLegend(11111, '0,0', 0.1)).toStrictEqual('1.1k');

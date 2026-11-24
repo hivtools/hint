@@ -63,7 +63,7 @@ describe("Step component", () => {
         expect(wrapper.find("button").classes()).toStrictEqual(["btn"]);
     });
 
-    it("renders enabled step", async () => {
+    it("renders enabled step with a number, and emits jump on click", async () => {
         const wrapper = shallowMount(Step, {
             props: {
                 textKey: "uploadInputs",

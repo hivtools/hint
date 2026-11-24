@@ -1,4 +1,4 @@
-import {mockAxios, mockCalibrateMetadataResponse} from "../mocks";
+import {mockAxios} from "../mocks";
 import type {Mock} from "vitest";
 import {commitInitialScaleSelections} from "../../app/store/plotState/utils";
 import {PlotStateMutations} from "../../app/store/plotState/mutations";

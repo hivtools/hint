@@ -13,8 +13,7 @@ import registerTranslations from "../../../app/store/translations/registerTransl
 import {getters} from "../../../app/store/root/getters";
 import {mountWithTranslate} from "../../testHelpers";
 
-declare var currentUser: string;
-currentUser = "guest";
+(global as any).currentUser = "guest";
 
 describe("Model options component when edit confirmation is required", () => {
 

@@ -8,8 +8,7 @@ import registerTranslations from "../../../app/store/translations/registerTransl
 import {getters} from "../../../app/store/root/getters";
 import {mountWithTranslate} from "../../testHelpers";
 
-declare let currentUser: string;
-currentUser = "guest";
+(global as any).currentUser = "guest";
 
 describe("File upload component", () => {
 

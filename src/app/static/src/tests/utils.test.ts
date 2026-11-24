@@ -37,7 +37,7 @@ describe("utils", () => {
         statusText: ""
     }
 
-    it("it can read and download blob content", () => {
+    it("can read and download blob content", () => {
         const mObjectURL = "blob:https://naomi.unaids.org/download/test";
         window.URL.createObjectURL = vi.fn().mockReturnValueOnce(mObjectURL);
         window.URL.revokeObjectURL = vi.fn();
@@ -317,7 +317,7 @@ describe("utils", () => {
         expect(result).toStrictEqual(expected);
     });
 
-    it("can format ISO datetime as local semi-iso friendly string ", () => {
+    it("can format ISO datetime as local semi-iso friendly string", () => {
         const isoUTCString = "2022-06-30T15:23:39.280Z";
 
         const millis = Date.UTC(2022, 6, 30, 15, 23, 39, 898);
