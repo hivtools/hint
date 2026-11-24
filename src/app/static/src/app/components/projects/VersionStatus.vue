@@ -14,8 +14,7 @@
 import type {ProjectsState} from "../../store/projects/projects";
 import {mapStateProp} from "../../utils";
 import VueFeather from "vue-feather";
-import moment from 'moment';
-import {versionLabel} from "../../utils";
+import {localDateTimeParts, versionLabel} from "../../utils";
 import { defineComponent } from "vue";
 
 const namespace = "projects";
@@ -26,7 +25,11 @@ export default defineComponent({
             return !!this.projectName;
         },
         formattedTime(): string {
-            return this.time ? moment(this.time).format('HH:mm') : '';
+            if (!this.time) {
+                return '';
+            }
+            const {hour, minute} = localDateTimeParts(this.time);
+            return `${hour}:${minute}`;
         },
         time: mapStateProp<ProjectsState, Date | null>(namespace, state => state.versionTime),
         projectName: mapStateProp<ProjectsState, string | null>(namespace, state =>

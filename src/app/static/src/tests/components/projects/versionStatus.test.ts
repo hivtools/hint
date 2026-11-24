@@ -50,6 +50,16 @@ describe("Version status component", () => {
         expect(feather.props("type")).toBe("check");
     });
 
+    it("shows the hour and minute of versionTime with 2 digits", async () => {
+        const wrapper = getWrapper({
+            currentProject: {name: "Test Project"} as any,
+            currentVersion: {versionNumber: 2} as any,
+            versionTime: new Date(2020, 8, 1, 9, 5, 59)
+        });
+
+        expect(wrapper.findAll(".float-right")[1].text()).toContain("09:05");
+    });
+
     it("renders as expected when currentProject and no versionTime are set", async () => {
         const wrapper = getWrapper({
             currentProject: {name: "Test Project"} as any,

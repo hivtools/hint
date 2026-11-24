@@ -1,4 +1,5 @@
 import {
+    appendCurrentDateTime,
     constructUploadFile,
     constructUploadFileWithResourceName,
     flattenOptions,
@@ -9,6 +10,7 @@ import {
     freezer,
     getFilenameFromImportUrl,
     parseAndFillForm,
+    parseUtcDateTime,
     rawDeepClone,
     rootOptionChildren,
     validateEmail,
@@ -247,29 +249,52 @@ describe("utils", () => {
         expect(result).toStrictEqual(regionOptions);
     });
 
-    it("can format utc datetime as local friendly string", () => {
-        const isoUTCString = "2020-07-30T15:23:39.898939";
+    describe("dates and times", () => {
+        // The tests set the time zone, so that the local times are the same on every computer.
+        // Node reads TZ again when it changes.
+        const originalTimeZone = process.env.TZ;
+        const setTimeZone = (timeZone: string) => {
+            process.env.TZ = timeZone;
+        };
 
-        const millis = Date.UTC(2020, 7, 30, 15, 23, 39, 898);
-        const d = new Date(millis);
-        const expected = `${d.getDate()}/07/2020 ${d.getHours()}:${d.getMinutes()}:39`;
+        afterEach(() => {
+            process.env.TZ = originalTimeZone;
+            vi.useRealTimers();
+        });
 
-        const result = formatDateTime(isoUTCString);
+        it("reads the UTC date-times from the server, which have no time zone, as UTC", () => {
+            expect(parseUtcDateTime("2020-07-30T15:23:39.898939").toISOString()).toBe("2020-07-30T15:23:39.898Z");
+            expect(parseUtcDateTime("2020-07-30T15:23:39").toISOString()).toBe("2020-07-30T15:23:39.000Z");
+            expect(parseUtcDateTime("2020-07-30T15:23").toISOString()).toBe("2020-07-30T15:23:00.000Z");
+        });
 
-        expect(result).toStrictEqual(expected);
-    });
+        it("reads date-times that have a time zone", () => {
+            expect(parseUtcDateTime("2022-06-30T15:23:39.280Z").toISOString()).toBe("2022-06-30T15:23:39.280Z");
+            expect(parseUtcDateTime("2022-06-30T18:23:39+03:00").toISOString()).toBe("2022-06-30T15:23:39.000Z");
+            expect(parseUtcDateTime("Mon, 05 Jan 2026 23:30:09 GMT").toISOString()).toBe("2026-01-05T23:30:09.000Z");
+        });
 
-    it("can format ISO datetime as local semi-iso friendly string", () => {
-        const isoUTCString = "2022-06-30T15:23:39.280Z";
+        it("can format utc datetime as local friendly string", () => {
+            setTimeZone("Africa/Nairobi"); // UTC+3, no summer time
+            expect(formatDateTime("2020-07-30T15:23:39.898939")).toBe("30/07/2020 18:23:39");
+            expect(formatDateTime("2020-07-30T22:05:09.1Z")).toBe("31/07/2020 01:05:09");
 
-        const millis = Date.UTC(2022, 6, 30, 15, 23, 39, 898);
-        const d = new Date(millis);
+            setTimeZone("America/Sao_Paulo"); // UTC-3
+            expect(formatDateTime("2020-07-30T01:02:03")).toBe("29/07/2020 22:02:03");
+        });
 
-        const expected = `2022/06/${d.getDate()} ${d.getHours()}:${d.getMinutes()}:39`;
+        it("can format ISO datetime as local semi-iso friendly string", () => {
+            setTimeZone("Africa/Nairobi");
+            expect(formatToLocalISODateTime("2022-06-30T15:23:39.280Z")).toBe("2022/06/30 18:23:39");
+            expect(formatToLocalISODateTime("2022-12-31T22:00:00")).toBe("2023/01/01 01:00:00");
+        });
 
-        const result = formatToLocalISODateTime(isoUTCString);
-
-        expect(result).toStrictEqual(expected);
+        it("gives the current local date and time for a file name", () => {
+            setTimeZone("Africa/Nairobi");
+            vi.useFakeTimers();
+            vi.setSystemTime(new Date(Date.UTC(2026, 0, 5, 3, 4, 5)));
+            expect(appendCurrentDateTime()).toBe("20260105-060405");
+        });
     });
 
     it("single email addresses are valid", () => {
