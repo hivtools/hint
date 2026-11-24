@@ -82,6 +82,7 @@ export default defineComponent({
             calibrating: (state: ModelCalibrateState) => state.calibrating,
             generatingCalibrationPlot: (state: ModelCalibrateState) => state.generatingCalibrationPlot,
             error: (state: ModelCalibrateState) => state.error,
+            optionsFormMeta: (state: ModelCalibrateState) => state.optionsFormMeta,
             progressMessage: (state: ModelCalibrateState) => {
                 if (
                     state.status &&
@@ -119,7 +120,7 @@ export default defineComponent({
         ),
         calibrateOptions: {
             get() {
-                return this.$store.state.modelCalibrate.optionsFormMeta;
+                return this.optionsFormMeta;
             },
             set(value: DynamicFormMeta) {
                 this.update(value);

@@ -59,7 +59,8 @@ export default defineComponent({
             validateError: (state: ModelOptionsState) => state.validateError,
             hasValidateError: (state: ModelOptionsState) => !!state.validateError,
             hasOptionsError: (state: ModelOptionsState) => !!state.optionsError,
-            optionsError: (state: ModelOptionsState) => state.optionsError
+            optionsError: (state: ModelOptionsState) => state.optionsError,
+            optionsFormMeta: (state: ModelOptionsState) => state.optionsFormMeta
         }),
         currentLanguage: mapStateProp<RootState, Language>(null,
                                                            (state: RootState) => state.language),
@@ -75,7 +76,7 @@ export default defineComponent({
         editsRequireConfirmation: mapGetterByName("stepper", "editsRequireConfirmation"),
         modelOptions: {
             get() {
-                return this.$store.state.modelOptions.optionsFormMeta
+                return this.optionsFormMeta
             },
             set(newVal: DynamicFormMeta) {
                 this.update(newVal)
