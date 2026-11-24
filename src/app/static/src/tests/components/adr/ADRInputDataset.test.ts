@@ -596,7 +596,7 @@ describe("ADR input dataset", () => {
         // dataset is preselected in dropdown and click button to import
         expect(rendered.findComponent(TreeSelect).props("modelValue")).toBe("id2");
         const selectRelease = rendered.findComponent(SelectRelease)
-        await selectRelease.vm.$emit("selected-dataset-release", fakeRelease);
+        await selectRelease.vm.$emit("selectedDatasetRelease", fakeRelease);
         await rendered.findComponent(SelectDatasetModal).find("button").trigger("click");
 
         expect(rendered.find("#loading-dataset").findComponent(LoadingSpinner).exists()).toBe(true);

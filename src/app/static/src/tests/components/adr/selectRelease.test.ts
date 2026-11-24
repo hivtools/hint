@@ -351,7 +351,7 @@ describe("select release", () => {
         const selectRelease = rendered.findAll("input")[1]
         await selectRelease.trigger("click")
         await rendered.setData({releaseId: "releaseId"})
-        expect(rendered.emitted("selected-dataset-release")).toStrictEqual([[undefined], [releasesArray[0].id]])
+        expect(rendered.emitted("selectedDatasetRelease")).toStrictEqual([[undefined], [releasesArray[0].id]])
     });
 
     it("selecting a release emits true valid", async () => {

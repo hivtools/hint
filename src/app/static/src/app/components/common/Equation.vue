@@ -15,8 +15,8 @@ const props = defineProps({
 });
 
 const emit = defineEmits<{
-    (e: "enter-plot-type", plotType: string): void
-    (e: "leave-plot-type", plotType: string): void
+    (e: "enterPlotType", plotType: string): void
+    (e: "leavePlotType", plotType: string): void
 }>();
 
 const equation = ref<HTMLElement | null>(null);
@@ -30,12 +30,12 @@ const renderEquation = () => {
     equation.value!.querySelectorAll(".hoverable").forEach((element) => {
         element.addEventListener("mouseenter", () => {
             if (element.firstElementChild) {
-                emit("enter-plot-type", element.firstElementChild.id);
+                emit("enterPlotType", element.firstElementChild.id);
             }
         });
         element.addEventListener("mouseleave", () => {
             if (element.firstElementChild) {
-                emit("leave-plot-type", element.firstElementChild.id);
+                emit("leavePlotType", element.firstElementChild.id);
             }
         });
     });

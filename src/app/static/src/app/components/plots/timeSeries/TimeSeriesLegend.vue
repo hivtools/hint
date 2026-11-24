@@ -6,8 +6,8 @@
             <div class="legend-grid">
                 <div v-for="plotType in group"
                      :key="plotType"
-                     @mouseenter="$emit('enter-plot-type', plotType)"
-                     @mouseleave="$emit('leave-plot-type', plotType)">
+                     @mouseenter="$emit('enterPlotType', plotType)"
+                     @mouseleave="$emit('leavePlotType', plotType)">
 
                     <!-- Stole the legend stying here from plotly defaults -->
                     <svg width="40" height="10" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">
@@ -55,8 +55,8 @@ const props = defineProps({
 });
 
 defineEmits<{
-    (e: "enter-plot-type", plotType: string): void
-    (e: "leave-plot-type", plotType: string): void
+    (e: "enterPlotType", plotType: string): void
+    (e: "leavePlotType", plotType: string): void
 }>();
 
 const store = useStore<RootState>();

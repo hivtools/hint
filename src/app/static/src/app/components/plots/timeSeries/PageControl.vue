@@ -38,7 +38,7 @@ import type { RootState } from "../../../root";
 import NumberInput from "../../common/NumberInput.vue";
 
 export default defineComponent({
-    emits: ["set-page"],
+    emits: ["setPage"],
     components: {
         NumberInput,
         VueFeather
@@ -62,7 +62,7 @@ export default defineComponent({
             })
         })
         const pageUpdate = (newValue: number) => {
-            emit("set-page", newValue)
+            emit("setPage", newValue)
         }
         return { totalPagesText, pageUpdate };
     }

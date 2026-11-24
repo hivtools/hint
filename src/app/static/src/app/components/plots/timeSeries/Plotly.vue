@@ -35,7 +35,7 @@ export default defineComponent({
             required: true
         },
     },
-    emits: ['open-context'],
+    emits: ['openContext'],
     expose: ['highlightTrace', 'resetStyle'],
     setup(props, { emit }) {
         const store = useStore<RootState>();
@@ -70,7 +70,7 @@ export default defineComponent({
             await Plotly.newPlot(chart.value!, data, layout.value, drawConfig as any)
                 .then(gd => {
                     gd.on('plotly_clickannotation', (data) => {
-                        emit("open-context",
+                        emit("openContext",
                              (data.annotation as HintPlotlyAnnotation).areaId,
                              (data.annotation as HintPlotlyAnnotation).plotType)
                     })

@@ -334,7 +334,7 @@ describe("select dataset modal", () => {
         const wrapper = mountSelectDataset(store);
 
         const selectRelease = wrapper.findComponent(SelectRelease)
-        await selectRelease.vm.$emit("selected-dataset-release", fakeRelease);
+        await selectRelease.vm.$emit("selectedDatasetRelease", fakeRelease);
 
         const button = wrapper.find("#importBtn");
         await button.trigger("click");

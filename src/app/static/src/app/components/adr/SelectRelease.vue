@@ -162,7 +162,7 @@ export default defineComponent({
             }
         },
         releaseId() {
-            this.$emit("selected-dataset-release", this.releaseId)
+            this.$emit("selectedDatasetRelease", this.releaseId)
         },
         valid() {
             this.$emit("valid", this.valid);
@@ -178,7 +178,7 @@ export default defineComponent({
     },
     mounted(){
         this.preSelectRelease();
-        this.$emit("selected-dataset-release", this.releaseId);
+        this.$emit("selectedDatasetRelease", this.releaseId);
         this.$emit("valid", this.valid);
     }
 });

@@ -84,7 +84,7 @@ describe("ADRRehydrate", () => {
         const wrapper = getWrapper();
 
         const selectDataset = wrapper.findComponent(SelectDatasetModal);
-        await selectDataset.vm.$emit("confirm-import", "123", null);
+        await selectDataset.vm.$emit("confirmImport", "123", null);
         await nextTick();
 
         expect(mockGetDataset).toHaveBeenCalledTimes(1);
@@ -93,7 +93,7 @@ describe("ADRRehydrate", () => {
             release: null,
             datasetType: AdrDatasetType.Output
         });
-        expect(wrapper.emitted()["submit-create"].length).toBe(1);
+        expect(wrapper.emitted()["submitCreate"].length).toBe(1);
     });
 
     it("importOutputZip doesn't submitCreate if error from fetching", async () => {
@@ -104,7 +104,7 @@ describe("ADRRehydrate", () => {
         const wrapper = getWrapper(store);
 
         const selectDataset = wrapper.findComponent(SelectDatasetModal);
-        await selectDataset.vm.$emit("confirm-import", "123", null);
+        await selectDataset.vm.$emit("confirmImport", "123", null);
         await nextTick();
 
         expect(mockGetDataset).toHaveBeenCalledTimes(1);
@@ -120,8 +120,8 @@ describe("ADRRehydrate", () => {
         const wrapper = getWrapper();
 
         const selectDataset = wrapper.findComponent(SelectDatasetModal);
-        await selectDataset.vm.$emit("close-modal");
+        await selectDataset.vm.$emit("closeModal");
 
-        expect(wrapper.emitted()["cancel-create"].length).toBe(1);
+        expect(wrapper.emitted()["cancelCreate"].length).toBe(1);
     });
 });

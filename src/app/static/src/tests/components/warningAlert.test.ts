@@ -52,7 +52,7 @@ describe("Warning alert component", () => {
     it("clicking close triggers clear warnings emit", async () => {
         const wrapper = createWrapper()
         await wrapper.find("button").trigger("click")
-        expect(wrapper.emitted("clear-warnings")!.length).toBe(1);
+        expect(wrapper.emitted("clearWarnings")!.length).toBe(1);
     });
 
     it("close button has correct aria-label translations", async () => {

@@ -972,37 +972,37 @@ describe("Stepper component", () => {
 
     it("clear-warnings emit when in modelOptions triggers clear warnings mutation in modelOptions store", async () => {
         const wrapper = createWarningAlertWrapper(3)
-        await wrapper.findComponent(WarningAlert).vm.$emit("clear-warnings")
+        await wrapper.findComponent(WarningAlert).vm.$emit("clearWarnings")
         expect(clearOptionsWarnings.mock.calls.length).toBe(1);
     });
 
     it("clear-warnings emit when in modelRun triggers clear warnings mutation in modelRun store", async () => {
         const wrapper = createWarningAlertWrapper(4)
-        await wrapper.findComponent(WarningAlert).vm.$emit("clear-warnings")
+        await wrapper.findComponent(WarningAlert).vm.$emit("clearWarnings")
         expect(clearRunWarnings.mock.calls.length).toBe(1);
     });
 
     it("clear-warnings emit when in modelCalibrate triggers clear warnings mutation in modelCalibrate store", async () => {
         const wrapper = createWarningAlertWrapper(5)
-        await wrapper.findComponent(WarningAlert).vm.$emit("clear-warnings")
+        await wrapper.findComponent(WarningAlert).vm.$emit("clearWarnings")
         expect(clearCalibrateWarnings.mock.calls.length).toBe(1);
     });
 
     it("clear-warnings emit when in reviewOutput triggers clear warnings mutation in modelCalibrate store", async () => {
         const wrapper = createWarningAlertWrapper(6)
-        await wrapper.findComponent(WarningAlert).vm.$emit("clear-warnings")
+        await wrapper.findComponent(WarningAlert).vm.$emit("clearWarnings")
         expect(clearCalibrateWarnings.mock.calls.length).toBe(1);
     });
 
     it("clear-warnings emit when in reviewInputs triggers clear warnings mutation in reviewInput store", async () => {
         const wrapper = createWarningAlertWrapper(2)
-        await wrapper.findComponent(WarningAlert).vm.$emit("clear-warnings")
+        await wrapper.findComponent(WarningAlert).vm.$emit("clearWarnings")
         expect(clearReviewInputsWarnings.mock.calls.length).toBe(1);
     });
 
     it("clear-warnings emit when in downloadResults triggers clear warnings mutation in modelCalibrate store", async () => {
         const wrapper = createWarningAlertWrapper(7)
-        await wrapper.findComponent(WarningAlert).vm.$emit("clear-warnings")
+        await wrapper.findComponent(WarningAlert).vm.$emit("clearWarnings")
         expect(clearCalibrateWarnings.mock.calls.length).toBe(1);
     });
 });

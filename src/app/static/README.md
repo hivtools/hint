@@ -107,6 +107,8 @@ Our custom rules:
   reads, so a `computed` or `watch` that uses it does not update.
 - `vitest/expect-expect` (a test must call `expect`) also accepts our helper functions whose names start with
   `expect`, `assert`, `check` or `test`, for example `expectTranslated`.
+- A component emits events with camelCase names (`emit("setValue")`), as the Vue docs do
+  (`vue/custom-event-name-casing`). A parent template still listens with kebab-case (`@set-value`).
 
 ESLint checks the indentation: 4 spaces. In a `.vue` file the content of `<template>` is indented by one level and the
 content of `<script>` is not, as in the Vue docs (`vue/html-indent` with `baseIndent: 1` and `vue/script-indent` with

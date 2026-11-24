@@ -94,6 +94,16 @@ export default defineConfigWithVueTs(
     },
 
     {
+        // Emit events with camelCase names (emit("setValue")), as the Vue docs do. A parent template
+        // still listens with kebab-case (@set-value): Vue matches the two.
+        name: "app/event-names",
+        files: ["**/*.vue"],
+        rules: {
+            "vue/custom-event-name-casing": ["error", "camelCase"]
+        }
+    },
+
+    {
         // A Node.js script. The TypeScript files do not need this, because TypeScript checks the names.
         name: "app/node-scripts",
         files: ["generateTypes.js"],

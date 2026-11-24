@@ -17,10 +17,10 @@ defineProps({
     },
 })
 
-const emit = defineEmits(['toggle-base-map'])
+const emit = defineEmits(['toggleBaseMap'])
 
 const toggleBaseMap = () => {
-    emit('toggle-base-map')
+    emit('toggleBaseMap')
 }
 </script>
 
