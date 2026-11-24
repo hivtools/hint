@@ -1,0 +1,5 @@
+# Commits that change only formatting. GitHub skips them in the blame view.
+# To skip them locally: git config blame.ignoreRevsFile .git-blame-ignore-revs
+
+# Fix the indentation with eslint --fix (front end)
+616309ee0aaad6b0f2a5467f49479733a1eb5d6f

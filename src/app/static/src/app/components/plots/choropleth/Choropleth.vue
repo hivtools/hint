@@ -134,7 +134,7 @@ const updateBounds = debounce_leading(() => {
         .filter(f => selectedAreaIds.value.includes(f.geojson?.properties?.area_id))
     if (visibleRefs.length > 0) {
         map.value?.leafletObject.fitBounds(visibleRefs
-                .map(f => f.leafletObject.getBounds()));
+            .map(f => f.leafletObject.getBounds()));
     }
 }, 50);
 

@@ -611,7 +611,7 @@ describe("root actions", () => {
             {
                 baseline: mockBaselineState({iso3: "MWI"}),
                 reviewInput: mockReviewInputState({datasets: {dataset1: "TEST"}} as any)
-        });
+            });
         const rootGetters = {
             "baseline/complete": true,
             "surveyAndProgram/complete": true

@@ -15,60 +15,60 @@
     </div>
 </template>
 <script lang="ts">
-    import { defineComponent } from "vue";
+import { defineComponent } from "vue";
 
-    export default defineComponent({
-        props: {
-            text: {
-                type: String,
-                required: true
-            },
-            right: {
-                type: Boolean,
-                required: false
-            },
-            delay: {
-                type: Boolean,
-                required: false
-            }
+export default defineComponent({
+    props: {
+        text: {
+            type: String,
+            required: true
         },
-        data() {
-            return {
-                show: false,
-                menuFocus: false
-            }
+        right: {
+            type: Boolean,
+            required: false
         },
-        methods: {
-            toggle() {
-                this.show = !this.show;
-            },
-            close: function() {
-                if (this.menuFocus) {
-                    return
-                }
-                if (this.delay) {
-                    setTimeout(() => {
-                        this.show = false;
-                    }, 100);
-                } else {
-                    this.show = false;
-                }
-            },
-            menuFocused() {
-                this.menuFocus = true
-            },
-            menuUnfocused() {
-                this.menuFocus = false
-                if (this.delay) {
-                    setTimeout(() => {
-                        this.show = false;
-                    }, 100);
-                } else {
-                    this.show = false;
-                }
-            },
+        delay: {
+            type: Boolean,
+            required: false
         }
-    })
+    },
+    data() {
+        return {
+            show: false,
+            menuFocus: false
+        }
+    },
+    methods: {
+        toggle() {
+            this.show = !this.show;
+        },
+        close: function() {
+            if (this.menuFocus) {
+                return
+            }
+            if (this.delay) {
+                setTimeout(() => {
+                    this.show = false;
+                }, 100);
+            } else {
+                this.show = false;
+            }
+        },
+        menuFocused() {
+            this.menuFocus = true
+        },
+        menuUnfocused() {
+            this.menuFocus = false
+            if (this.delay) {
+                setTimeout(() => {
+                    this.show = false;
+                }, 100);
+            } else {
+                this.show = false;
+            }
+        },
+    }
+})
 </script>
 <style scoped>
 p {

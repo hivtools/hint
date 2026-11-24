@@ -1,9 +1,9 @@
 <template>
     <div :key="`${plot}.${plotControlId}`">
         <single-select :options="controlOptions"
-                   :model-value="selected"
-                   :placeholder="placeholder"
-                   @update:model-value="updateControlSelection"/>
+                       :model-value="selected"
+                       :placeholder="placeholder"
+                       @update:model-value="updateControlSelection"/>
     </div>
 </template>
 

@@ -21,123 +21,123 @@
 </template>
 
 <script lang="ts">
-    import VueFeather from "vue-feather";
-    import i18next from "i18next";
-    import { mapStateProp } from "../utils";
-    import type { RootState } from "../root";
-    import type { Language } from "../store/translations/locales";
-    import type { Warning } from "../generated";
-    import { type PropType, defineComponent, nextTick, type StyleValue } from "vue";
+import VueFeather from "vue-feather";
+import i18next from "i18next";
+import { mapStateProp } from "../utils";
+import type { RootState } from "../root";
+import type { Language } from "../store/translations/locales";
+import type { Warning } from "../generated";
+import { type PropType, defineComponent, nextTick, type StyleValue } from "vue";
 
-    export default defineComponent({
-        name: "Warning",
-        props: {
-            origin: {
-                type: String,
-                required: true
-            },
-            warnings: {
-                type: Array as PropType<Warning[]>,
-                required: true
-            },
-            maxLines: {
-                default: 2,
-                required: false,
-                type: Number
+export default defineComponent({
+    name: "Warning",
+    props: {
+        origin: {
+            type: String,
+            required: true
+        },
+        warnings: {
+            type: Array as PropType<Warning[]>,
+            required: true
+        },
+        maxLines: {
+            default: 2,
+            required: false,
+            type: Number
+        }
+    },
+    data() {
+        return {
+            showFullBox: false,
+            fullBoxHeight: 0,
+            lineHeight: 0
+        };
+    },
+    computed: {
+        renderedBoxHeight(){
+            if (!this.warningsLengthy){
+                return this.fullBoxHeight
+            } else {
+                return this.showFullBox ? this.fullBoxHeight : this.maxBoxHeight
             }
         },
-        data() {
-            return {
-                showFullBox: false,
-                fullBoxHeight: 0,
-                lineHeight: 0
-            };
+        maxBoxHeight(){
+            const maxLinesDefault = this.maxLines || 2
+            return maxLinesDefault * this.lineHeight
         },
-        computed: {
-            renderedBoxHeight(){
-                if (!this.warningsLengthy){
-                    return this.fullBoxHeight
-                } else {
-                    return this.showFullBox ? this.fullBoxHeight : this.maxBoxHeight
-                }
-            },
-            maxBoxHeight(){
-                const maxLinesDefault = this.maxLines || 2
-                return maxLinesDefault * this.lineHeight
-            },
-            warningsLengthy(){
-                return this.fullBoxHeight > this.maxBoxHeight
-            },
-            currentLanguage: mapStateProp<RootState, Language>(
-                null,
-                (state: RootState) => state.language
-            ),
-            buttonText(){
-                return i18next.t(this.showFullBox ? "showLess" : "showMore", { lng: this.currentLanguage });
-            },
-            // The user has the option to configure the number of lines that will be displayed. 
-            // If the height of the warnings rendered are more than this number, each warning 
-            // will be truncated to one line and the show more button will appear. If there is 
-            // only one warning message, it will be truncated after the max number of lines
-            lineStyling(): StyleValue {
-                if (this.warningsLengthy && !this.showFullBox) {
-                    if (this.warnings.length === 1) {
-                        return {
-                            height: `${this.maxBoxHeight}px`,
-                            overflow: "hidden",
-                            "display": "-webkit-box",
-                            "-webkit-line-clamp": this.maxLines,
-                            "-webkit-box-orient": "vertical"
-                        }
-                    } else {
-                        return {
-                            height: `${this.lineHeight}px`,
-                            whiteSpace: "nowrap",
-                            overflow: "hidden",
-                            textOverflow: "ellipsis"
-                        }
+        warningsLengthy(){
+            return this.fullBoxHeight > this.maxBoxHeight
+        },
+        currentLanguage: mapStateProp<RootState, Language>(
+            null,
+            (state: RootState) => state.language
+        ),
+        buttonText(){
+            return i18next.t(this.showFullBox ? "showLess" : "showMore", { lng: this.currentLanguage });
+        },
+        // The user has the option to configure the number of lines that will be displayed. 
+        // If the height of the warnings rendered are more than this number, each warning 
+        // will be truncated to one line and the show more button will appear. If there is 
+        // only one warning message, it will be truncated after the max number of lines
+        lineStyling(): StyleValue {
+            if (this.warningsLengthy && !this.showFullBox) {
+                if (this.warnings.length === 1) {
+                    return {
+                        height: `${this.maxBoxHeight}px`,
+                        overflow: "hidden",
+                        "display": "-webkit-box",
+                        "-webkit-line-clamp": this.maxLines,
+                        "-webkit-box-orient": "vertical"
                     }
                 } else {
-                    return {}
+                    return {
+                        height: `${this.lineHeight}px`,
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis"
+                    }
                 }
+            } else {
+                return {}
             }
-        },
-        methods: {
-            toggleShowFullBox(){
-                this.showFullBox = !this.showFullBox;
-                if (this.showFullBox){
-                    this.updateDimensions();
-                }
-            },
-            async updateDimensions(){
-                this.fullBoxHeight = 0;
-                await nextTick();
-                if (this.$refs.warningBox) {
-                    this.lineHeight = (this.$refs.line as HTMLElement).clientHeight;
-                    this.fullBoxHeight = (this.$refs.warningBox as HTMLElement).clientHeight;
-                }
-            },
-            headerText(key: string){
-                const headers: { [key: string]: string } = {
-                    modelOptions: "warningsHeaderModelOptions",
-                    modelRun: "warningsHeaderModelRun",
-                    modelCalibrate: "warningsHeaderModelCalibrate",
-                    reviewInputs: "warningsHeaderReviewInputs"
-                }
-                return key in headers ? headers[key] : ""
-            }
-        },
-        watch: {
-            warnings(){
-                this.updateDimensions()
-            }
-        },
-        mounted(){
-            this.updateDimensions()
-        },
-        components: {
-            VueFeather
-            // AlertTriangleIcon
         }
-    })
+    },
+    methods: {
+        toggleShowFullBox(){
+            this.showFullBox = !this.showFullBox;
+            if (this.showFullBox){
+                this.updateDimensions();
+            }
+        },
+        async updateDimensions(){
+            this.fullBoxHeight = 0;
+            await nextTick();
+            if (this.$refs.warningBox) {
+                this.lineHeight = (this.$refs.line as HTMLElement).clientHeight;
+                this.fullBoxHeight = (this.$refs.warningBox as HTMLElement).clientHeight;
+            }
+        },
+        headerText(key: string){
+            const headers: { [key: string]: string } = {
+                modelOptions: "warningsHeaderModelOptions",
+                modelRun: "warningsHeaderModelRun",
+                modelCalibrate: "warningsHeaderModelCalibrate",
+                reviewInputs: "warningsHeaderReviewInputs"
+            }
+            return key in headers ? headers[key] : ""
+        }
+    },
+    watch: {
+        warnings(){
+            this.updateDimensions()
+        }
+    },
+    mounted(){
+        this.updateDimensions()
+    },
+    components: {
+        VueFeather
+        // AlertTriangleIcon
+    }
+})
 </script>

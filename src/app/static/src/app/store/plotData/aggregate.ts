@@ -18,10 +18,10 @@ export const aggregatePopulation = (data: PopulationResponseData, areaLevel: num
     const existingIndicators: PopulationResponseData = data
         .filter(ind=> areaIdToPropertiesMap[ind.area_id].area_level === areaLevel)
         .map(ind => {
-                return {
-                    ...ind,
-                    area_name: areaIdToPropertiesMap[ind.area_id].area_name
-                }
+            return {
+                ...ind,
+                area_name: areaIdToPropertiesMap[ind.area_id].area_name
+            }
         })
 
     const aggregatePopulationIndicators = () => {

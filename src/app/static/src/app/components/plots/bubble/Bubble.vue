@@ -100,7 +100,7 @@ const sizeScales = computed(() => {
 });
 
 const features = store.state.baseline.shape ?
-        store.state.baseline.shape.data.features as Feature[] : [] as Feature[];
+    store.state.baseline.shape.data.features as Feature[] : [] as Feature[];
 const currentFeatures = ref<Feature[]>([]);
 const featureData = ref<BubbleIndicatorValuesDict>({});
 const baseMapVisible = ref(true);
@@ -135,19 +135,19 @@ const updateSizeScales = () => {
 
 const updateFeatures = () => {
     const selectedLevel = store.state.plotSelections[plotName].filters
-            .find(f => f.stateFilterId === "detail")!.selection;
+        .find(f => f.stateFilterId === "detail")!.selection;
     currentFeatures.value = getVisibleFeatures(features, selectedLevel);
 };
 
 const updateFeatureData = () => {
     featureData.value = getFeatureData(
-            plotData.value,
-            sizeIndicatorMetadata.value,
-            colourIndicatorMetadata.value,
-            sizeRange.value ? sizeRange.value : {max: 1, min: 0},
-            colourRange.value ? colourRange.value : {max: 1, min: 0},
-            10,
-            70
+        plotData.value,
+        sizeIndicatorMetadata.value,
+        colourIndicatorMetadata.value,
+        sizeRange.value ? sizeRange.value : {max: 1, min: 0},
+        colourRange.value ? colourRange.value : {max: 1, min: 0},
+        10,
+        70
     );
 };
 
@@ -179,10 +179,10 @@ const buildBubbles = () => {
                 color: getColour(feature),
                 fillColor: getColour(feature),
             }).bindTooltip(tooltipContent(
-                    feature,
-                    featureData.value,
-                    colourIndicatorMetadata.value,
-                    sizeIndicatorMetadata.value))
+                feature,
+                featureData.value,
+                colourIndicatorMetadata.value,
+                sizeIndicatorMetadata.value))
             circlesArray.push(circle)
         })
         circles.value = circlesArray

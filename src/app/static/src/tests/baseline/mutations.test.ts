@@ -281,9 +281,9 @@ describe("Baseline mutations", () => {
 
     it("UpdateDatasetResources does nothing if modified values both  match", () => {
         const oldResource = mockDatasetResource({lastModified: "2020-11-03T00:00:00",
-                                                        metadataModified: "2020-11-04T00:00:00",outOfDate: false});
+            metadataModified: "2020-11-04T00:00:00",outOfDate: false});
         const newResource = mockDatasetResource({lastModified: "2020-11-03T00:00:00",
-                                                        metadataModified: "2020-11-04T00:00:00"});
+            metadataModified: "2020-11-04T00:00:00"});
         const fakeDataset = mockDataset();
         fakeDataset.resources.pjnz = oldResource;
         const testState = mockBaselineState({selectedDataset: fakeDataset});

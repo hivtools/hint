@@ -149,7 +149,7 @@ export default defineComponent({
         });
         const columnDefs = computed(() => {
             return getColumnDefs(props.plot, dataSource.value, indicatorMetadata.value, props.tableMetadata,
-                filterSelections.value, props.headerDefs, store.state.language)
+                                 filterSelections.value, props.headerDefs, store.state.language)
         });
 
         // We have to handle table sizing a little carefully.

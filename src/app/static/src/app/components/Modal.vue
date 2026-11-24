@@ -24,26 +24,26 @@
     </div>
 </template>
 <script lang="ts">
-    import { defineComponent } from "vue";
-    import VueFeather from "vue-feather";
+import { defineComponent } from "vue";
+import VueFeather from "vue-feather";
 
-    export default defineComponent({
-        name: "Modal",
-        components: {VueFeather},
-        props: {
-            open: {
-                type: Boolean,
-                required: true
-            }
-        },
-        emits: ['close-modal'],
-        computed: {
-            style: function () {
-                return {display: this.open ? "block" : "none"}
-            },
-            hasHeaderSlot: function() {
-                return !!this.$slots.header;
-            }
+export default defineComponent({
+    name: "Modal",
+    components: {VueFeather},
+    props: {
+        open: {
+            type: Boolean,
+            required: true
         }
-    })
+    },
+    emits: ['close-modal'],
+    computed: {
+        style: function () {
+            return {display: this.open ? "block" : "none"}
+        },
+        hasHeaderSlot: function() {
+            return !!this.$slots.header;
+        }
+    }
+})
 </script>

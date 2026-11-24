@@ -21,9 +21,9 @@
                     @open-context="() => {}"/>
 
             <equation class="equation text-center pb-3"
-                    :formula="formula"
-                    @enter-plot-type="chart?.highlightTrace"
-                    @leave-plot-type="chart?.resetStyle"/>
+                      :formula="formula"
+                      @enter-plot-type="chart?.highlightTrace"
+                      @leave-plot-type="chart?.resetStyle"/>
         </div>
     </modal>
 </template>

@@ -177,17 +177,17 @@ describe("Stepper component", () => {
     };
 
     const createReadySut = (baselineState?: Partial<BaselineState>,
-                       surveyAndProgramState?: Partial<SurveyAndProgramState>,
-                       metadataState?: Partial<MetadataState>,
-                       modelRunState?: Partial<ModelRunState>,
-                       stepperState?: Partial<StepperState>,
-                       loadState?: Partial<LoadState>,
-                       projectsState?: Partial<ProjectsState>,
-                       mockRouterPush = vi.fn(),
-                       partialRootState: Partial<RootState> = {},
-                       modelOptionsState: Partial<ModelOptionsState> = {},
-                       modelCalibrateState: Partial<ModelCalibrateState> = {},
-                       reviewInputState: Partial<ReviewInputState> = {}) => {
+                            surveyAndProgramState?: Partial<SurveyAndProgramState>,
+                            metadataState?: Partial<MetadataState>,
+                            modelRunState?: Partial<ModelRunState>,
+                            stepperState?: Partial<StepperState>,
+                            loadState?: Partial<LoadState>,
+                            projectsState?: Partial<ProjectsState>,
+                            mockRouterPush = vi.fn(),
+                            partialRootState: Partial<RootState> = {},
+                            modelOptionsState: Partial<ModelOptionsState> = {},
+                            modelCalibrateState: Partial<ModelCalibrateState> = {},
+                            reviewInputState: Partial<ReviewInputState> = {}) => {
         return createSut(
             {...baselineState, ready: true},
             {...surveyAndProgramState, ready: true},
@@ -425,15 +425,15 @@ describe("Stepper component", () => {
 
     it("can go back from later steps", async () => {
         const wrapper = createReadySut({
-                country: "testCountry",
-                iso3: "TTT",
-                shape: mockShapeResponse(),
-                population: mockPopulationResponse()
-            },
-            {},
-            {},
-            {},
-            {activeStep: 2});
+            country: "testCountry",
+            iso3: "TTT",
+            shape: mockShapeResponse(),
+            population: mockPopulationResponse()
+        },
+        {},
+        {},
+        {},
+        {activeStep: 2});
 
         const vm = wrapper.vm as any;
         expect(vm.navigationProps.backDisabled).toBe(false);
@@ -800,7 +800,7 @@ describe("Stepper component", () => {
             {},
             {valid: true},
             {complete: true}
-            );
+        );
 
         let steps = wrapper.findAllComponents(Step);
         expect(steps.filter(s => s.props().active).length).toBe(0);

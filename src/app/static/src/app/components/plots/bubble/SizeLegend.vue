@@ -108,12 +108,12 @@ export default defineComponent({
 
         const valueScalePointFromRadius = (r: number) => {
             return (Math.pow(r, 2) - Math.pow(minRadius, 2)) /
-                    (Math.pow(maxRadius, 2) - Math.pow(minRadius, 2));
+                (Math.pow(maxRadius, 2) - Math.pow(minRadius, 2));
         }
 
         const valueFromValueScalePoint = (valueScalePoint: number) => {
             return (valueScalePoint * (props.indicatorRange.max - props.indicatorRange.min))
-                    + props.indicatorRange.min;
+                + props.indicatorRange.min;
         }
 
         const showAdjust = ref<boolean>(false);

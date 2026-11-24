@@ -108,8 +108,10 @@ Our custom rules:
 - `vitest/expect-expect` (a test must call `expect`) also accepts our helper functions whose names start with
   `expect`, `assert`, `check` or `test`, for example `expectTranslated`.
 
-ESLint does not check the indentation. The IntelliJ style files indent the content of the
-`<template>` and `<script>` blocks of a Vue component by 4 spaces.
+ESLint checks the indentation: 4 spaces. In a `.vue` file the content of `<template>` is indented by one level and the
+content of `<script>` is not, as in the Vue docs (`vue/html-indent` with `baseIndent: 1` and `vue/script-indent` with
+`baseIndent: 0`, and `@stylistic/indent` for the other files). The IntelliJ style files use the same indentation.
+`npm run lint` corrects it.
 
 ## Types from hintr
 

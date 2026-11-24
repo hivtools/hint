@@ -12,7 +12,7 @@ describe("File upload component", () => {
     global.FormData = class MockFormData {
         files: Record<string, File>;
         constructor(_key?: string, _file?: File) {
-          this.files = {}
+            this.files = {}
         }
         append(key: string, file: File) {
             this.files[key] = file;

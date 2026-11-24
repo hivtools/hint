@@ -15,34 +15,34 @@
 </template>
 
 <script lang="ts">
-    import type {HintrVersionResponse} from "../../generated";
-    import type {RootState} from "../../root";
-    import {mapActionByName, mapStateProp} from "../../utils";
-    import DropDown from "./DropDown.vue";
-    import {currentHintVersion} from "../../hintVersion";
-    import { defineComponent } from "vue";
+import type {HintrVersionResponse} from "../../generated";
+import type {RootState} from "../../root";
+import {mapActionByName, mapStateProp} from "../../utils";
+import DropDown from "./DropDown.vue";
+import {currentHintVersion} from "../../hintVersion";
+import { defineComponent } from "vue";
 
-    const namespace = "hintrVersion";
-    export default defineComponent({
+const namespace = "hintrVersion";
+export default defineComponent({
 
-        computed: {
-            hintrVersions: mapStateProp<RootState, HintrVersionResponse>(
-                null,
-                (state: RootState) => state.hintrVersion.hintrVersion
-            ),
-            hintVersion: () => currentHintVersion
-        },
+    computed: {
+        hintrVersions: mapStateProp<RootState, HintrVersionResponse>(
+            null,
+            (state: RootState) => state.hintrVersion.hintrVersion
+        ),
+        hintVersion: () => currentHintVersion
+    },
 
-        methods: {
-            showHintrVersion: mapActionByName(namespace, "getHintrVersion"),
-        },
+    methods: {
+        showHintrVersion: mapActionByName(namespace, "getHintrVersion"),
+    },
 
-        mounted() {
-            this.showHintrVersion();
-        },
+    mounted() {
+        this.showHintrVersion();
+    },
 
-        components: {
-            DropDown,
-        },
-    });
+    components: {
+        DropDown,
+    },
+});
 </script>

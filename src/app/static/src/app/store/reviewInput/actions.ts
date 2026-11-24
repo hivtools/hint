@@ -64,12 +64,12 @@ export const actions: ActionTree<ReviewInputState, RootState> & ReviewInputActio
             .freezeResponse()
             .get<InputComparisonResponse>("/chart-data/input-comparison")
             .then(async (response) => {
-                    if (response) {
-                        const metadata = response.data.metadata;
-                        await commitPlotDefaultSelections(metadata, commit, rootState, rootGetters);
-                    }
-                    commit({type: ReviewInputMutation.SetInputComparisonLoading, payload: false});
+                if (response) {
+                    const metadata = response.data.metadata;
+                    await commitPlotDefaultSelections(metadata, commit, rootState, rootGetters);
                 }
+                commit({type: ReviewInputMutation.SetInputComparisonLoading, payload: false});
+            }
             )
     },
 

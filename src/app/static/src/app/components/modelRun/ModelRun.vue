@@ -33,81 +33,81 @@
 </template>
 
 <script lang="ts">
-    import type {ModelRunState} from "../../store/modelRun/modelRun";
-    import Modal from "../Modal.vue";
-    import Tick from "../Tick.vue";
-    import {
-        mapActionsByNames,
-        mapGettersByNames,
-        mapStateProps,
-        mapGetterByName,
-        mapMutationByName
-    } from "../../utils";
-    import ErrorAlert from "../ErrorAlert.vue";
-    import ProgressBar from "../progress/ProgressBar.vue";
-    import LoadingSpinner from "../LoadingSpinner.vue";
-    import ResetConfirmation from "../resetConfirmation/ResetConfirmation.vue";
-    import {ModelRunMutation} from "../../store/modelRun/mutations";
-    import { defineComponent } from "vue";
+import type {ModelRunState} from "../../store/modelRun/modelRun";
+import Modal from "../Modal.vue";
+import Tick from "../Tick.vue";
+import {
+    mapActionsByNames,
+    mapGettersByNames,
+    mapStateProps,
+    mapGetterByName,
+    mapMutationByName
+} from "../../utils";
+import ErrorAlert from "../ErrorAlert.vue";
+import ProgressBar from "../progress/ProgressBar.vue";
+import LoadingSpinner from "../LoadingSpinner.vue";
+import ResetConfirmation from "../resetConfirmation/ResetConfirmation.vue";
+import {ModelRunMutation} from "../../store/modelRun/mutations";
+import { defineComponent } from "vue";
 
-    const namespace = 'modelRun';
+const namespace = 'modelRun';
 
-    export default defineComponent({
-        name: "ModelRun",
-        data() {
-            return {
-                showReRunConfirmation: false
-            }
-        },
-        computed: {
-            editsRequireConfirmation: mapGetterByName("stepper", "editsRequireConfirmation"),
-            ...mapStateProps(namespace, {
-                runId: (state: ModelRunState) => state.modelRunId,
-                pollId: (state: ModelRunState) => state.statusPollId,
-                errors: (state: ModelRunState) => state.errors,
-                phases: (state: ModelRunState) => {
-                    const progress = state.status.progress || [];
-                    return progress.map((item, index) => ({...item, name: `${index + 1}. ${item.name}`}))
-                }
-            }),
-            ...mapGettersByNames(namespace, ["running", "complete"] as const)
-        },
-        methods: {
-            ...mapActionsByNames(namespace, ["run", "poll", "cancelRun"] as const),
-            clearResult: mapMutationByName(namespace, ModelRunMutation.ClearResult),
-            handleRun(){
-                if (this.editsRequireConfirmation){
-                    this.showReRunConfirmation = true
-                } else this.run()
-            },
-            confirmReRun() {
-                this.clearResult();
-                this.run();
-                this.showReRunConfirmation = false;
-            },
-            cancelReRun() {
-                this.showReRunConfirmation = false
-            }
-        },
-        watch: {
-            runId: function (newVal) {
-                if (newVal) {
-                    this.poll(newVal)
-                }
-            }
-        },
-        beforeMount() {
-            if (this.runId && this.pollId == -1 && this.running) {
-                this.poll(this.runId);
-            }
-        },
-        components: {
-            ResetConfirmation,
-            Modal,
-            Tick,
-            ErrorAlert,
-            ProgressBar,
-            LoadingSpinner
+export default defineComponent({
+    name: "ModelRun",
+    data() {
+        return {
+            showReRunConfirmation: false
         }
-    });
+    },
+    computed: {
+        editsRequireConfirmation: mapGetterByName("stepper", "editsRequireConfirmation"),
+        ...mapStateProps(namespace, {
+            runId: (state: ModelRunState) => state.modelRunId,
+            pollId: (state: ModelRunState) => state.statusPollId,
+            errors: (state: ModelRunState) => state.errors,
+            phases: (state: ModelRunState) => {
+                const progress = state.status.progress || [];
+                return progress.map((item, index) => ({...item, name: `${index + 1}. ${item.name}`}))
+            }
+        }),
+        ...mapGettersByNames(namespace, ["running", "complete"] as const)
+    },
+    methods: {
+        ...mapActionsByNames(namespace, ["run", "poll", "cancelRun"] as const),
+        clearResult: mapMutationByName(namespace, ModelRunMutation.ClearResult),
+        handleRun(){
+            if (this.editsRequireConfirmation){
+                this.showReRunConfirmation = true
+            } else this.run()
+        },
+        confirmReRun() {
+            this.clearResult();
+            this.run();
+            this.showReRunConfirmation = false;
+        },
+        cancelReRun() {
+            this.showReRunConfirmation = false
+        }
+    },
+    watch: {
+        runId: function (newVal) {
+            if (newVal) {
+                this.poll(newVal)
+            }
+        }
+    },
+    beforeMount() {
+        if (this.runId && this.pollId == -1 && this.running) {
+            this.poll(this.runId);
+        }
+    },
+    components: {
+        ResetConfirmation,
+        Modal,
+        Tick,
+        ErrorAlert,
+        ProgressBar,
+        LoadingSpinner
+    }
+});
 </script>

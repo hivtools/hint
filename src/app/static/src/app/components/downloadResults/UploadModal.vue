@@ -7,7 +7,7 @@
                     <span v-translate="'uploadFileDataset'"></span>
                     <span>{{ dataset }}</span></div>
                 <div class="pt-3 text-danger" id="output-file-error" v-if="outputFileError"
-                v-translate="isOutputFileErrorKey ? outputFileError : ''">
+                     v-translate="isOutputFileErrorKey ? outputFileError : ''">
                     {{ isOutputFileErrorKey ? '' : outputFileError }}
                 </div>
                 <div class="pt-3 form-check form-check-inline">
@@ -78,152 +78,152 @@
 </template>
 
 <script lang="ts">
-    import Modal from "../Modal.vue";
-    import type {Dict, UploadFile} from "../../types";
-    import type {BaselineState} from "../../store/baseline/baseline";
-    import {mapActionByName, mapStateProp, mapStateProps} from "../../utils";
-    import type {ADRUploadState} from "../../store/adrUpload/adrUpload";
-    import VueFeather from "vue-feather";
-    import i18next from "i18next";
-    import type {Language} from "../../store/translations/locales";
-    import type {RootState} from "../../root";
-    import type {DownloadResultsState} from "../../store/downloadResults/downloadResults";
-    import {defineComponent} from "vue";
-    import { DownloadType } from "../../store/downloadResults/downloadConfig";
+import Modal from "../Modal.vue";
+import type {Dict, UploadFile} from "../../types";
+import type {BaselineState} from "../../store/baseline/baseline";
+import {mapActionByName, mapStateProp, mapStateProps} from "../../utils";
+import type {ADRUploadState} from "../../store/adrUpload/adrUpload";
+import VueFeather from "vue-feather";
+import i18next from "i18next";
+import type {Language} from "../../store/translations/locales";
+import type {RootState} from "../../root";
+import type {DownloadResultsState} from "../../store/downloadResults/downloadResults";
+import {defineComponent} from "vue";
+import { DownloadType } from "../../store/downloadResults/downloadConfig";
 
-    interface Data {
-        uploadFilesToAdr: string[]
-        choiceUpload: "createRelease" | "uploadFiles"
-        selectedUploadFiles: UploadFile[]
-    }
+interface Data {
+    uploadFilesToAdr: string[]
+    choiceUpload: "createRelease" | "uploadFiles"
+    selectedUploadFiles: UploadFile[]
+}
 
-    const outputFileTypes = ["outputZip", "outputSummary", "outputComparison"];
-    const inputFileTypes = ["anc", "programme", "pjnz", "population", "shape", "survey"];
+const outputFileTypes = ["outputZip", "outputSummary", "outputComparison"];
+const inputFileTypes = ["anc", "programme", "pjnz", "population", "shape", "survey"];
 
-    export default defineComponent({
-        name: "UploadModal",
-        data(): Data {
-            return {
-                uploadFilesToAdr: [],
-                choiceUpload: "createRelease",
-                selectedUploadFiles: []
-            }
-        },
-        methods: {
-            uploadFilesToADRAction: mapActionByName<UploadFile[]>(
-                "adrUpload",
-                "uploadFilesToADR"
-            ),
-            confirmUpload() {
-                this.selectedUploadFiles = this.uploadFilesToAdr.map((value: string) => this.uploadableFiles[value]);
-                this.sendUploadFilesToADR();
-            },
-            sendUploadFilesToADR() {
-                this.uploadFilesToADRAction({uploadFiles: this.selectedUploadFiles, createRelease: this.createRelease});
-                this.selectedUploadFiles = [];
-
-                this.$emit("close");
-            },
-            handleCancel() {
-                this.$emit("close")
-            },
-            translate(text: string) {
-                return i18next.t(text, {lng: this.currentLanguage});
-            },
-            setDefaultCheckedItems: function () {
-                this.uploadFilesToAdr = [...outputFileTypes, ...inputFileTypes]
-                    .filter(key => this.uploadableFiles.hasOwnProperty(key))
-            },
-            //show and upload only successfully downloaded outputFiles in upload modal
-            outputFileIsAvailable: function (key: string) {
-                if (key === "outputZip" && !(this.spectrum.error || this.spectrum.metadataError)) {
-                    return true
-                } else if (key === "outputSummary" && !(this.summary.error || this.summary.metadataError)) {
-                    return true
-                } else if (key === "outputComparison" && !(this.comparison.error || this.comparison.metadataError)) {
-                    return true
-                }
-
-                return false
-            },
-            getSectionHeading: function (sectionIndex: number) {
-                const hasOutputFile = Object.keys(this.uploadFileSections[0]).length > 0
-                return sectionIndex === 0 ? (hasOutputFile ? 'outputFiles' : '') : 'inputFiles';
-            },
-            translatedOutputFileError: function (key: string) {
-                return i18next.t("downloadOutputsError", {
-                    outputFileType: this.translate(key),
-                    lng: this.currentLanguage,
-                });
-            }
-        },
-        computed: {
-            ...mapStateProps("downloadResults", {
-                summary: (state: DownloadResultsState) => state[DownloadType.SUMMARY],
-                spectrum: (state: DownloadResultsState) => state[DownloadType.SPECTRUM],
-                comparison: (state: DownloadResultsState) => state[DownloadType.COMPARISON]
-            }),
-            outputFileError(): string | null {
-                if ((this.summary.error || this.summary.metadataError) &&
-                    (this.spectrum.error || this.spectrum.metadataError)) {
-                    return "downloadSpectrumAndSummaryError"
-                } else if (this.summary.error || this.summary.metadataError) {
-                    return this.translatedOutputFileError("downloadSummary")
-                } else if (this.spectrum.error || this.spectrum.metadataError) {
-                    return this.translatedOutputFileError("downloadSpectrum")
-                } else if (this.comparison.error || this.comparison.metadataError) {
-                    return this.translatedOutputFileError("downloadComparison")
-                }
-                return null
-            },
-            dataset: mapStateProp<BaselineState, string | undefined>("baseline",
-                (state: BaselineState) => state.selectedDataset?.title),
-            createRelease(): boolean {
-                return this.choiceUpload === 'createRelease';
-            },
-            currentLanguage: mapStateProp<RootState, Language>(
-                null,
-                (state: RootState) => state.language
-            ),
-            uploadableFiles: mapStateProp<ADRUploadState, Dict<UploadFile>>("adrUpload",
-                (state) => state.uploadFiles!
-            ),
-            uploadFileSections(): any[] {
-                if (this.uploadableFiles) {
-                    return Object.keys(this.uploadableFiles).reduce((sections, key) => {
-                        if (outputFileTypes.includes(key)) {
-                            if (this.outputFileIsAvailable(key)) {
-                                sections[0][key] = this.uploadableFiles[key];
-                            }
-                        } else {
-                            sections[1][key] = this.uploadableFiles[key];
-                        }
-                        return sections;
-                    }, [{} as any, {} as any]);
-                } else {
-                    return [];
-                }
-            },
-            isOutputFileErrorKey(): boolean {
-                return this.outputFileError === "downloadSpectrumAndSummaryError"
-            }
-        },
-        components: {
-            Modal,
-            VueFeather
-        },
-        watch: {
-            choiceUpload() {
-                if (this.createRelease) {
-                    this.setDefaultCheckedItems()
-                }
-            }
-        },
-        mounted() {
-            if (this.outputFileError) {
-                this.choiceUpload = "uploadFiles";
-            }
-            this.setDefaultCheckedItems()
+export default defineComponent({
+    name: "UploadModal",
+    data(): Data {
+        return {
+            uploadFilesToAdr: [],
+            choiceUpload: "createRelease",
+            selectedUploadFiles: []
         }
-    });
+    },
+    methods: {
+        uploadFilesToADRAction: mapActionByName<UploadFile[]>(
+            "adrUpload",
+            "uploadFilesToADR"
+        ),
+        confirmUpload() {
+            this.selectedUploadFiles = this.uploadFilesToAdr.map((value: string) => this.uploadableFiles[value]);
+            this.sendUploadFilesToADR();
+        },
+        sendUploadFilesToADR() {
+            this.uploadFilesToADRAction({uploadFiles: this.selectedUploadFiles, createRelease: this.createRelease});
+            this.selectedUploadFiles = [];
+
+            this.$emit("close");
+        },
+        handleCancel() {
+            this.$emit("close")
+        },
+        translate(text: string) {
+            return i18next.t(text, {lng: this.currentLanguage});
+        },
+        setDefaultCheckedItems: function () {
+            this.uploadFilesToAdr = [...outputFileTypes, ...inputFileTypes]
+                .filter(key => this.uploadableFiles.hasOwnProperty(key))
+        },
+        //show and upload only successfully downloaded outputFiles in upload modal
+        outputFileIsAvailable: function (key: string) {
+            if (key === "outputZip" && !(this.spectrum.error || this.spectrum.metadataError)) {
+                return true
+            } else if (key === "outputSummary" && !(this.summary.error || this.summary.metadataError)) {
+                return true
+            } else if (key === "outputComparison" && !(this.comparison.error || this.comparison.metadataError)) {
+                return true
+            }
+
+            return false
+        },
+        getSectionHeading: function (sectionIndex: number) {
+            const hasOutputFile = Object.keys(this.uploadFileSections[0]).length > 0
+            return sectionIndex === 0 ? (hasOutputFile ? 'outputFiles' : '') : 'inputFiles';
+        },
+        translatedOutputFileError: function (key: string) {
+            return i18next.t("downloadOutputsError", {
+                outputFileType: this.translate(key),
+                lng: this.currentLanguage,
+            });
+        }
+    },
+    computed: {
+        ...mapStateProps("downloadResults", {
+            summary: (state: DownloadResultsState) => state[DownloadType.SUMMARY],
+            spectrum: (state: DownloadResultsState) => state[DownloadType.SPECTRUM],
+            comparison: (state: DownloadResultsState) => state[DownloadType.COMPARISON]
+        }),
+        outputFileError(): string | null {
+            if ((this.summary.error || this.summary.metadataError) &&
+                (this.spectrum.error || this.spectrum.metadataError)) {
+                return "downloadSpectrumAndSummaryError"
+            } else if (this.summary.error || this.summary.metadataError) {
+                return this.translatedOutputFileError("downloadSummary")
+            } else if (this.spectrum.error || this.spectrum.metadataError) {
+                return this.translatedOutputFileError("downloadSpectrum")
+            } else if (this.comparison.error || this.comparison.metadataError) {
+                return this.translatedOutputFileError("downloadComparison")
+            }
+            return null
+        },
+        dataset: mapStateProp<BaselineState, string | undefined>("baseline",
+                                                                 (state: BaselineState) => state.selectedDataset?.title),
+        createRelease(): boolean {
+            return this.choiceUpload === 'createRelease';
+        },
+        currentLanguage: mapStateProp<RootState, Language>(
+            null,
+            (state: RootState) => state.language
+        ),
+        uploadableFiles: mapStateProp<ADRUploadState, Dict<UploadFile>>("adrUpload",
+                                                                        (state) => state.uploadFiles!
+        ),
+        uploadFileSections(): any[] {
+            if (this.uploadableFiles) {
+                return Object.keys(this.uploadableFiles).reduce((sections, key) => {
+                    if (outputFileTypes.includes(key)) {
+                        if (this.outputFileIsAvailable(key)) {
+                            sections[0][key] = this.uploadableFiles[key];
+                        }
+                    } else {
+                        sections[1][key] = this.uploadableFiles[key];
+                    }
+                    return sections;
+                }, [{} as any, {} as any]);
+            } else {
+                return [];
+            }
+        },
+        isOutputFileErrorKey(): boolean {
+            return this.outputFileError === "downloadSpectrumAndSummaryError"
+        }
+    },
+    components: {
+        Modal,
+        VueFeather
+    },
+    watch: {
+        choiceUpload() {
+            if (this.createRelease) {
+                this.setDefaultCheckedItems()
+            }
+        }
+    },
+    mounted() {
+        if (this.outputFileError) {
+            this.choiceUpload = "uploadFiles";
+        }
+        this.setDefaultCheckedItems()
+    }
+});
 </script>

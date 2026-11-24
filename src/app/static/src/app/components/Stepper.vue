@@ -37,7 +37,7 @@
             </div>
             <load-invalid-modal></load-invalid-modal>
             <template v-if="activeStep === 3">
-              <warning-alert :warnings="activeStepWarnings" @clear-warnings="clearWarnings"></warning-alert>
+                <warning-alert :warnings="activeStepWarnings" @clear-warnings="clearWarnings"></warning-alert>
             </template>
         </div>
         <template v-if="activeStep !== 4">
@@ -48,185 +48,185 @@
 </template>
 
 <script lang="ts">
-    import {mapActions} from "vuex";
-    import AdrIntegration from "./adr/ADRIntegration.vue";
-    import Step from "./Step.vue";
-    import UploadInputs from "./uploadInputs/UploadInputs.vue";
-    import LoadingSpinner from "./LoadingSpinner.vue";
-    import {lazyStep, prefetchStep, stepLoaders} from "./lazySteps";
-    import WarningAlert from "./WarningAlert.vue";
-    import LoadInvalidModal from "./load/LoadInvalidModal.vue";
-    import type {StepDescription, StepperState} from "../store/stepper/stepper";
-    import {LoadingState, type LoadState} from "../store/load/state";
-    import VersionStatus from "./projects/VersionStatus.vue";
-    import {mapGettersByNames, mapStateProp, mapStateProps, mapMutationByName, mapGetterByName} from "../utils";
-    import {type StepperNavigationProps, type StepWarnings, Step as StepEnum} from "../types";
-    import type {ProjectsState} from "../store/projects/projects";
-    import type {RootState} from "../root";
-    import StepperNavigation from "./StepperNavigation.vue";
-    import {ModelRunMutation} from "../store/modelRun/mutations";
-    import {ModelOptionsMutation} from "../store/modelOptions/mutations";
-    import {ModelCalibrateMutation} from "../store/modelCalibrate/mutations";
-    import {ReviewInputMutation} from "../store/reviewInput/mutations";
-    import {SurveyAndProgramMutation} from "../store/surveyAndProgram/mutations";
-    import { defineComponent } from "vue";
+import {mapActions} from "vuex";
+import AdrIntegration from "./adr/ADRIntegration.vue";
+import Step from "./Step.vue";
+import UploadInputs from "./uploadInputs/UploadInputs.vue";
+import LoadingSpinner from "./LoadingSpinner.vue";
+import {lazyStep, prefetchStep, stepLoaders} from "./lazySteps";
+import WarningAlert from "./WarningAlert.vue";
+import LoadInvalidModal from "./load/LoadInvalidModal.vue";
+import type {StepDescription, StepperState} from "../store/stepper/stepper";
+import {LoadingState, type LoadState} from "../store/load/state";
+import VersionStatus from "./projects/VersionStatus.vue";
+import {mapGettersByNames, mapStateProp, mapStateProps, mapMutationByName, mapGetterByName} from "../utils";
+import {type StepperNavigationProps, type StepWarnings, Step as StepEnum} from "../types";
+import type {ProjectsState} from "../store/projects/projects";
+import type {RootState} from "../root";
+import StepperNavigation from "./StepperNavigation.vue";
+import {ModelRunMutation} from "../store/modelRun/mutations";
+import {ModelOptionsMutation} from "../store/modelOptions/mutations";
+import {ModelCalibrateMutation} from "../store/modelCalibrate/mutations";
+import {ReviewInputMutation} from "../store/reviewInput/mutations";
+import {SurveyAndProgramMutation} from "../store/surveyAndProgram/mutations";
+import { defineComponent } from "vue";
 
-    const namespace = 'stepper';
+const namespace = 'stepper';
 
-    // Steps 2 to 7 load their files when the user first needs them (or earlier, see prefetchStep)
-    const ReviewInputs = lazyStep(stepLoaders[StepEnum.ReviewInputs]);
-    const ModelOptions = lazyStep(stepLoaders[StepEnum.ModelOptions]);
-    const ModelRun = lazyStep(stepLoaders[StepEnum.FitModel]);
-    const ModelCalibrate = lazyStep(stepLoaders[StepEnum.CalibrateModel]);
-    const ModelOutput = lazyStep(stepLoaders[StepEnum.ReviewOutput]);
-    const DownloadResults = lazyStep(stepLoaders[StepEnum.SaveResults]);
+// Steps 2 to 7 load their files when the user first needs them (or earlier, see prefetchStep)
+const ReviewInputs = lazyStep(stepLoaders[StepEnum.ReviewInputs]);
+const ModelOptions = lazyStep(stepLoaders[StepEnum.ModelOptions]);
+const ModelRun = lazyStep(stepLoaders[StepEnum.FitModel]);
+const ModelCalibrate = lazyStep(stepLoaders[StepEnum.CalibrateModel]);
+const ModelOutput = lazyStep(stepLoaders[StepEnum.ReviewOutput]);
+const DownloadResults = lazyStep(stepLoaders[StepEnum.SaveResults]);
 
-    const readyCompleteGetters = ["ready", "complete"] as const
-    interface ReadyCompleteGetters {
-        ready: boolean,
-        complete: boolean[]
-    }
+const readyCompleteGetters = ["ready", "complete"] as const
+interface ReadyCompleteGetters {
+    ready: boolean,
+    complete: boolean[]
+}
 
-    export default defineComponent({
-        computed: {
-            ...mapStateProps(namespace, {
-                activeStep: (state: StepperState) => state.activeStep,
-                steps: (state: StepperState) => state.steps
-            }),
-            ...mapStateProps("load", {
-                loadingFromFile: (state: LoadState) => [LoadingState.SettingFiles, LoadingState.UpdatingState].includes(state.loadingState)
-            }),
-            ...mapStateProps("projects", {
-                currentProject: (state: ProjectsState) => state.currentProject,
-                projectLoading: (state: ProjectsState) => state.loading
-            }),
-            updatingLanguage: mapStateProp<RootState, boolean>(null,
-                (state: RootState) => state.updatingLanguage
-            ),
-            ...mapGettersByNames<typeof readyCompleteGetters, ReadyCompleteGetters>(namespace, readyCompleteGetters),
-            loading: function (): boolean {
-                return this.loadingFromFile || this.updatingLanguage || !this.ready;
-            },
-            isGuest: mapGetterByName<boolean>(null, "isGuest"),
-            warnings: mapGetterByName<(stepName: string) => StepWarnings>(null, "warnings"),
-            navigationProps(): StepperNavigationProps {
-                return {
-                    back: this.back,
-                    backDisabled: this.activeStep === 1,
-                    next: this.next,
-                    nextDisabled: this.activeContinue(this.activeStep)
-                };
-            },
-            activeStepTextKey(): string {
-                return this.steps.find((step: StepDescription) => step.number === this.activeStep)!.textKey;
-            },
-            activeStepWarnings(): StepWarnings {
-                return this.warnings(this.activeStepTextKey);
-            },
-            // The user is likely to open the next step soon. We wait until the page shows a step, and
-            // not for a logged in user with no project, who goes to /projects (this component is
-            // created before the redirect).
-            stepToPrefetch(): number | null {
-                const noProject = !this.isGuest && this.currentProject == null;
-                return this.loading || noProject ? null : this.activeStep + 1;
+export default defineComponent({
+    computed: {
+        ...mapStateProps(namespace, {
+            activeStep: (state: StepperState) => state.activeStep,
+            steps: (state: StepperState) => state.steps
+        }),
+        ...mapStateProps("load", {
+            loadingFromFile: (state: LoadState) => [LoadingState.SettingFiles, LoadingState.UpdatingState].includes(state.loadingState)
+        }),
+        ...mapStateProps("projects", {
+            currentProject: (state: ProjectsState) => state.currentProject,
+            projectLoading: (state: ProjectsState) => state.loading
+        }),
+        updatingLanguage: mapStateProp<RootState, boolean>(null,
+                                                           (state: RootState) => state.updatingLanguage
+        ),
+        ...mapGettersByNames<typeof readyCompleteGetters, ReadyCompleteGetters>(namespace, readyCompleteGetters),
+        loading: function (): boolean {
+            return this.loadingFromFile || this.updatingLanguage || !this.ready;
+        },
+        isGuest: mapGetterByName<boolean>(null, "isGuest"),
+        warnings: mapGetterByName<(stepName: string) => StepWarnings>(null, "warnings"),
+        navigationProps(): StepperNavigationProps {
+            return {
+                back: this.back,
+                backDisabled: this.activeStep === 1,
+                next: this.next,
+                nextDisabled: this.activeContinue(this.activeStep)
+            };
+        },
+        activeStepTextKey(): string {
+            return this.steps.find((step: StepDescription) => step.number === this.activeStep)!.textKey;
+        },
+        activeStepWarnings(): StepWarnings {
+            return this.warnings(this.activeStepTextKey);
+        },
+        // The user is likely to open the next step soon. We wait until the page shows a step, and
+        // not for a logged in user with no project, who goes to /projects (this component is
+        // created before the redirect).
+        stepToPrefetch(): number | null {
+            const noProject = !this.isGuest && this.currentProject == null;
+            return this.loading || noProject ? null : this.activeStep + 1;
+        }
+    },
+    methods: {
+        ...mapActions(namespace, ["jump", "next"]),
+        ...mapActions(["validate"]),
+        back() {
+            this.jump(this.activeStep - 1);
+        },
+        isActive(num: number) {
+            return !this.loading && this.activeStep == num;
+        },
+        isEnabled(num: number) {
+            return !this.loading && this.steps.slice(0, num)
+                .filter((s: { number: number }) => this.complete[s.number])
+                .length >= num - 1
+        },
+        isComplete(num: number) {
+            if (this.isActive(7)) {
+                this.complete[num] = true
+                return !this.loading;
+            }
+            return !this.loading && this.complete[num];
+        },
+        activeContinue(activeStep: number) {
+            if(activeStep === 7) {
+                return true
+            }
+            return !this.isComplete(activeStep)
+        },
+        clearReviewInputsWarnings() {
+            this.clearSurveyAndProgramWarnings()
+            this.clearReviewInputWarnings()
+        },
+        clearWarnings(){
+            const mutationMethods: { [key: number]: () => void; } = {
+                2: this.clearReviewInputsWarnings,
+                3: this.clearModelOptionsWarnings,
+                4: this.clearModelRunWarnings,
+                5: this.clearModelCalibrateWarnings,
+                6: this.clearModelCalibrateWarnings,
+                7: this.clearModelCalibrateWarnings
+            }
+            if (this.activeStep in mutationMethods){
+                mutationMethods[this.activeStep]()
             }
         },
-        methods: {
-            ...mapActions(namespace, ["jump", "next"]),
-            ...mapActions(["validate"]),
-            back() {
-                this.jump(this.activeStep - 1);
-            },
-            isActive(num: number) {
-                return !this.loading && this.activeStep == num;
-            },
-            isEnabled(num: number) {
-                return !this.loading && this.steps.slice(0, num)
-                    .filter((s: { number: number }) => this.complete[s.number])
-                    .length >= num - 1
-            },
-            isComplete(num: number) {
-                if (this.isActive(7)) {
-                    this.complete[num] = true
-                    return !this.loading;
+        clearModelRunWarnings: mapMutationByName("modelRun", ModelRunMutation.ClearWarnings),
+        clearModelCalibrateWarnings: mapMutationByName("modelCalibrate", ModelCalibrateMutation.ClearWarnings),
+        clearModelOptionsWarnings: mapMutationByName("modelOptions", ModelOptionsMutation.ClearWarnings),
+        clearReviewInputWarnings: mapMutationByName("reviewInput", ReviewInputMutation.ClearWarnings),
+        clearSurveyAndProgramWarnings: mapMutationByName("surveyAndProgram", SurveyAndProgramMutation.ClearWarnings)
+    },
+    beforeMount() {
+        //redirect to Projects if logged in with no currentProject
+        if ((!this.isGuest) && (this.currentProject == null) && (!this.projectLoading)) {
+            this.$router.push('/projects');
+        }
+    },
+    components: {
+        AdrIntegration,
+        Step,
+        UploadInputs,
+        ReviewInputs,
+        LoadingSpinner,
+        LoadInvalidModal,
+        ModelRun,
+        ModelCalibrate,
+        ModelOutput,
+        ModelOptions,
+        DownloadResults,
+        VersionStatus,
+        StepperNavigation,
+        WarningAlert
+    },
+    watch: {
+        stepToPrefetch: {
+            immediate: true,
+            handler(step: number | null) {
+                if (step) {
+                    // Do not wait for this: it runs when the browser is idle
+                    prefetchStep(step);
                 }
-                return !this.loading && this.complete[num];
-            },
-            activeContinue(activeStep: number) {
-                if(activeStep === 7) {
-                    return true
-                }
-                return !this.isComplete(activeStep)
-            },
-            clearReviewInputsWarnings() {
-                this.clearSurveyAndProgramWarnings()
-                this.clearReviewInputWarnings()
-            },
-            clearWarnings(){
-                const mutationMethods: { [key: number]: () => void; } = {
-                    2: this.clearReviewInputsWarnings,
-                    3: this.clearModelOptionsWarnings,
-                    4: this.clearModelRunWarnings,
-                    5: this.clearModelCalibrateWarnings,
-                    6: this.clearModelCalibrateWarnings,
-                    7: this.clearModelCalibrateWarnings
-                }
-                if (this.activeStep in mutationMethods){
-                    mutationMethods[this.activeStep]()
-                }
-            },
-            clearModelRunWarnings: mapMutationByName("modelRun", ModelRunMutation.ClearWarnings),
-            clearModelCalibrateWarnings: mapMutationByName("modelCalibrate", ModelCalibrateMutation.ClearWarnings),
-            clearModelOptionsWarnings: mapMutationByName("modelOptions", ModelOptionsMutation.ClearWarnings),
-            clearReviewInputWarnings: mapMutationByName("reviewInput", ReviewInputMutation.ClearWarnings),
-            clearSurveyAndProgramWarnings: mapMutationByName("surveyAndProgram", SurveyAndProgramMutation.ClearWarnings)
-        },
-        beforeMount() {
-            //redirect to Projects if logged in with no currentProject
-            if ((!this.isGuest) && (this.currentProject == null) && (!this.projectLoading)) {
-                this.$router.push('/projects');
             }
         },
-        components: {
-            AdrIntegration,
-            Step,
-            UploadInputs,
-            ReviewInputs,
-            LoadingSpinner,
-            LoadInvalidModal,
-            ModelRun,
-            ModelCalibrate,
-            ModelOutput,
-            ModelOptions,
-            DownloadResults,
-            VersionStatus,
-            StepperNavigation,
-            WarningAlert
+        complete: function (){
+            // auto-progress from modelRun to modelCalibrate if there are no warnings to display
+            if (this.activeStep === StepEnum.FitModel && this.isComplete(StepEnum.FitModel) &&
+                this.isEnabled(StepEnum.CalibrateModel) &&
+                this.activeStepWarnings.modelRun.length === 0) {
+                this.next();
+            }
         },
-        watch: {
-            stepToPrefetch: {
-                immediate: true,
-                handler(step: number | null) {
-                    if (step) {
-                        // Do not wait for this: it runs when the browser is idle
-                        prefetchStep(step);
-                    }
-                }
-            },
-            complete: function (){
-                // auto-progress from modelRun to modelCalibrate if there are no warnings to display
-                if (this.activeStep === StepEnum.FitModel && this.isComplete(StepEnum.FitModel) &&
-                    this.isEnabled(StepEnum.CalibrateModel) &&
-                        this.activeStepWarnings.modelRun.length === 0) {
-                    this.next();
-                }
-            },
-            ready: function (newVal) {
-                if (newVal) {
-                    this.validate()
-                }
+        ready: function (newVal) {
+            if (newVal) {
+                this.validate()
             }
         }
-    });
+    }
+});
 
 </script>

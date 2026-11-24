@@ -94,93 +94,93 @@
 </template>
 
 <script lang="ts">
-    import {mapGetterByName, mapStateProp, validateEmail, emailRegex} from "../utils";
-    import Modal from "./Modal.vue";
-    import ErrorAlert from "./ErrorAlert.vue";
-    import i18next from "i18next";
-    import type {Language} from "../store/translations/locales";
-    import type {Error} from "../generated";
-    import type { ErrorsState } from "../store/errors/errors";
-    import LoadingSpinner from "./LoadingSpinner.vue";
-    import { defineComponent } from "vue";
-    import type { RootState } from '../root';
+import {mapGetterByName, mapStateProp, validateEmail, emailRegex} from "../utils";
+import Modal from "./Modal.vue";
+import ErrorAlert from "./ErrorAlert.vue";
+import i18next from "i18next";
+import type {Language} from "../store/translations/locales";
+import type {Error} from "../generated";
+import type { ErrorsState } from "../store/errors/errors";
+import LoadingSpinner from "./LoadingSpinner.vue";
+import { defineComponent } from "vue";
+import type { RootState } from '../root';
 
-    export default defineComponent({
-        components: {
-            ErrorAlert,
-            Modal,
-            LoadingSpinner
+export default defineComponent({
+    components: {
+        ErrorAlert,
+        Modal,
+        LoadingSpinner
+    },
+    props: {
+        open: {
+            type: Boolean,
+            required: true
+        }
+    },
+    name: "ErrorReport",
+    data: function () {
+        return {
+            description: "",
+            stepsToReproduce: "",
+            email: "",
+            showFeedback: false,
+            validEmail: false
+        }
+    },
+    computed: {
+        currentLanguage: mapStateProp<RootState, Language>(null,
+                                                           (state: RootState) => state.language),
+        errorReportError: mapStateProp<ErrorsState, Error | null>(
+            "errors",
+            (state: ErrorsState) => state.errorReportError),
+        sendingErrorReport: mapStateProp<ErrorsState, boolean>(
+            "errors",
+            (state: ErrorsState) => state.sendingErrorReport),
+        isGuest: mapGetterByName(null, "isGuest"),
+        disabled() {
+            return !this.description || !this.stepsToReproduce || (this.isGuest && !this.validEmail);
         },
-        props: {
-            open: {
-                type: Boolean,
-                required: true
-            }
+        tooltipText() {
+            return i18next.t("allFieldsRequired", {lng: this.currentLanguage});
         },
-        name: "ErrorReport",
-        data: function () {
-            return {
-                description: "",
-                stepsToReproduce: "",
-                email: "",
-                showFeedback: false,
-                validEmail: false
-            }
+        pattern() {
+            return emailRegex;
+        }
+    },
+    methods: {
+        cancelErrorReport() {
+            this.resetData();
+            this.$emit("close");
         },
-        computed: {
-            currentLanguage: mapStateProp<RootState, Language>(null,
-                (state: RootState) => state.language),
-            errorReportError: mapStateProp<ErrorsState, Error | null>(
-                "errors",
-                (state: ErrorsState) => state.errorReportError),
-            sendingErrorReport: mapStateProp<ErrorsState, boolean>(
-                "errors",
-                (state: ErrorsState) => state.sendingErrorReport),
-            isGuest: mapGetterByName(null, "isGuest"),
-            disabled() {
-                return !this.description || !this.stepsToReproduce || (this.isGuest && !this.validEmail);
-            },
-            tooltipText() {
-                return i18next.t("allFieldsRequired", {lng: this.currentLanguage});
-            },
-            pattern() {
-                return emailRegex;
-            }
-        },
-        methods: {
-            cancelErrorReport() {
-                this.resetData();
-                this.$emit("close");
-            },
-            async sendErrorReport() {
-                this.$emit("send", {
-                    description: this.description,
-                    stepsToReproduce: this.stepsToReproduce,
-                    email: this.email
-                });
+        async sendErrorReport() {
+            this.$emit("send", {
+                description: this.description,
+                stepsToReproduce: this.stepsToReproduce,
+                email: this.email
+            });
 
-                this.resetData();
-                this.showFeedback = true;
-            },
-            resetData() {
-                this.description = "";
-                this.stepsToReproduce = "";
-                this.email = "";
-            },
-            close() {
-                this.$emit("close");
-            },
-            checkValidEmail() {
-                this.email = this.email.replace(/\s*/g, "");
-                this.validEmail = validateEmail(this.email);
-            }
+            this.resetData();
+            this.showFeedback = true;
         },
-        watch: {
-            open(newVal) {
-                if (newVal === true) {
-                    this.showFeedback = false;
-                }
+        resetData() {
+            this.description = "";
+            this.stepsToReproduce = "";
+            this.email = "";
+        },
+        close() {
+            this.$emit("close");
+        },
+        checkValidEmail() {
+            this.email = this.email.replace(/\s*/g, "");
+            this.validEmail = validateEmail(this.email);
+        }
+    },
+    watch: {
+        open(newVal) {
+            if (newVal === true) {
+                this.showFeedback = false;
             }
         }
-    })
+    }
+})
 </script>

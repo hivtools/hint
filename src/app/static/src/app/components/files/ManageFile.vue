@@ -33,116 +33,116 @@
     </div>
 </template>
 <script lang="ts">
-    import FileUpload from "./FileUpload.vue";
-    import LoadingSpinner from "../LoadingSpinner.vue";
-    import Tick from "../Tick.vue";
-    import ErrorAlert from "../ErrorAlert.vue";
-    import ResetConfirmation from "../resetConfirmation/ResetConfirmation.vue";
-    import type {Error} from "../../generated";
-    import ResetConfirmationMixin from "../resetConfirmation/ResetConfirmationMixin";
-    import {Step} from "../../types";
-    import { type PropType, defineComponent } from "vue";
+import FileUpload from "./FileUpload.vue";
+import LoadingSpinner from "../LoadingSpinner.vue";
+import Tick from "../Tick.vue";
+import ErrorAlert from "../ErrorAlert.vue";
+import ResetConfirmation from "../resetConfirmation/ResetConfirmation.vue";
+import type {Error} from "../../generated";
+import ResetConfirmationMixin from "../resetConfirmation/ResetConfirmationMixin";
+import {Step} from "../../types";
+import { type PropType, defineComponent } from "vue";
 
-    interface Data {
-        uploading: boolean
-        showDeleteConfirmation: boolean
-        modelOptions: number
-    }
+interface Data {
+    uploading: boolean
+    showDeleteConfirmation: boolean
+    modelOptions: number
+}
 
-    export default defineComponent({
-        extends: ResetConfirmationMixin,
-        name: "FileSelect",
-        props: {
-            upload: {
-                type: Function as PropType<(formData: FormData) => void>,
-                required: true
-            },
-            deleteFile: {
-                type: Function as PropType<() => void>,
-                required: true
-            },
-            accept: {
-                type: String,
-                required: true
-            },
-            label: {
-                type: String,
-                required: true
-            },
-            valid: {
-                type: Boolean,
-                required: true
-            },
-            error: {
-                type: [Object, null] as PropType<Error | null>,
-                required: false
-            },
-            existingFileName: {
-                type: [String, null] as PropType<string | null>,
-                required: true
-            },
-            fromADR: {
-                type: Boolean,
-                required: false
-            },
-            name: {
-                type: String,
-                required: true
-            },
-            required: {
-                type: Boolean,
-                required: false
+export default defineComponent({
+    extends: ResetConfirmationMixin,
+    name: "FileSelect",
+    props: {
+        upload: {
+            type: Function as PropType<(formData: FormData) => void>,
+            required: true
+        },
+        deleteFile: {
+            type: Function as PropType<() => void>,
+            required: true
+        },
+        accept: {
+            type: String,
+            required: true
+        },
+        label: {
+            type: String,
+            required: true
+        },
+        valid: {
+            type: Boolean,
+            required: true
+        },
+        error: {
+            type: [Object, null] as PropType<Error | null>,
+            required: false
+        },
+        existingFileName: {
+            type: [String, null] as PropType<string | null>,
+            required: true
+        },
+        fromADR: {
+            type: Boolean,
+            required: false
+        },
+        name: {
+            type: String,
+            required: true
+        },
+        required: {
+            type: Boolean,
+            required: false
+        }
+    },
+    data(): Data {
+        return {
+            uploading: false,
+            showDeleteConfirmation: false,
+            modelOptions: Step.ModelOptions
+        }
+    },
+    computed: {
+        hasError: function () {
+            return !!this.error
+        }
+    },
+    components: {
+        FileUpload,
+        LoadingSpinner,
+        Tick,
+        ErrorAlert,
+        ResetConfirmation
+    },
+    methods: {
+        handleUploading() {
+            this.uploading = true;
+        },
+        handleFileDelete() {
+            if (this.editsRequireConfirmation) {
+                this.showDeleteConfirmation = true;
+            } else {
+                this.deleteSelectedFile();
             }
         },
-        data(): Data {
-            return {
-                uploading: false,
-                showDeleteConfirmation: false,
-                modelOptions: Step.ModelOptions
+        deleteSelectedFile() {
+            this.deleteFile();
+            this.showDeleteConfirmation = false;
+        },
+        cancelEdit() {
+            this.showDeleteConfirmation = false;
+        }
+    },
+    watch: {
+        valid: function (newVal: boolean) {
+            if (newVal) {
+                this.uploading = false;
             }
         },
-        computed: {
-            hasError: function () {
-                return !!this.error
-            }
-        },
-        components: {
-            FileUpload,
-            LoadingSpinner,
-            Tick,
-            ErrorAlert,
-            ResetConfirmation
-        },
-        methods: {
-            handleUploading() {
-                this.uploading = true;
-            },
-            handleFileDelete() {
-                if (this.editsRequireConfirmation) {
-                    this.showDeleteConfirmation = true;
-                } else {
-                    this.deleteSelectedFile();
-                }
-            },
-            deleteSelectedFile() {
-                this.deleteFile();
-                this.showDeleteConfirmation = false;
-            },
-            cancelEdit() {
-                this.showDeleteConfirmation = false;
-            }
-        },
-        watch: {
-            valid: function (newVal: boolean) {
-                if (newVal) {
-                    this.uploading = false;
-                }
-            },
-            error: function (newVal: string) {
-                if (newVal) {
-                    this.uploading = false;
-                }
+        error: function (newVal: string) {
+            if (newVal) {
+                this.uploading = false;
             }
         }
-    });
+    }
+});
 </script>

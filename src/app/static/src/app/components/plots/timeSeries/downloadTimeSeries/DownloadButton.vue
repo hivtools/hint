@@ -11,23 +11,23 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent } from "vue";
-    import VueFeather from "vue-feather";
+import { defineComponent } from "vue";
+import VueFeather from "vue-feather";
 
-    export default defineComponent({
-        name: "downloadButton",
-        components: {
-            VueFeather
+export default defineComponent({
+    name: "downloadButton",
+    components: {
+        VueFeather
+    },
+    props: {
+        name: {
+            type: String,
+            required: true
         },
-        props: {
-            name: {
-                type: String,
-                required: true
-            },
-            disabled: {
-                type: Boolean,
-                required: true
-            }
+        disabled: {
+            type: Boolean,
+            required: true
         }
-    });
+    }
+});
 </script>

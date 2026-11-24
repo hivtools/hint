@@ -20,24 +20,24 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent } from "vue";
-    import Modal from "../Modal.vue";
-    import {mapActionByName, mapStateProps} from "../../utils";
-    import {LoadingState, type LoadState} from "../../store/load/state";
+import { defineComponent } from "vue";
+import Modal from "../Modal.vue";
+import {mapActionByName, mapStateProps} from "../../utils";
+import {LoadingState, type LoadState} from "../../store/load/state";
 
-    export default defineComponent({
-        name: "LoadErrorModal",
-        computed: {
-            ...mapStateProps("load", {
-              hasError: (state: LoadState) => state.loadingState === LoadingState.LoadFailed,
-              loadError: (state: LoadState) => state.loadError && state.loadError.detail
-            })
-        },
-        methods: {
-            clearLoadError: mapActionByName("load", "clearLoadState")
-        },
-        components: {
-            Modal
-        }
-    })
+export default defineComponent({
+    name: "LoadErrorModal",
+    computed: {
+        ...mapStateProps("load", {
+            hasError: (state: LoadState) => state.loadingState === LoadingState.LoadFailed,
+            loadError: (state: LoadState) => state.loadError && state.loadError.detail
+        })
+    },
+    methods: {
+        clearLoadError: mapActionByName("load", "clearLoadState")
+    },
+    components: {
+        Modal
+    }
+})
 </script>

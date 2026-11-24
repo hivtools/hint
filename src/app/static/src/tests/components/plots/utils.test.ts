@@ -44,60 +44,60 @@ describe("plot utils", () => {
 
     it("getColour calculates colour string", () => {
         const result = getColour(0.5, {
-                min: 0,
-                max: 1,
-                colour: "interpolateGreys",
-                invert_scale: false,
-                indicator: "test",
-                value_column: "",
-                name: "",
-                format: "0.00%",
-                scale: 1,
-                accuracy: null
-            },
-            {
-                min: 0,
-                max: 1
-            });
+            min: 0,
+            max: 1,
+            colour: "interpolateGreys",
+            invert_scale: false,
+            indicator: "test",
+            value_column: "",
+            name: "",
+            format: "0.00%",
+            scale: 1,
+            accuracy: null
+        },
+        {
+            min: 0,
+            max: 1
+        });
 
         expect(result).toEqual("rgb(151, 151, 151)");
     });
 
     it("getColour avoids dividing by zero if min equals max", () => {
         const result = getColour(0.5, {
-                min: 0.5,
-                max: 0.5,
-                colour: "interpolateGreys",
-                invert_scale: false,
-                indicator: "test",
-                value_column: "",
-                name: "",
-                format: "0.00%",
-                scale: 1,
-                accuracy: null
-            },
-            {
-                min: 0.5,
-                max: 0.5
-            });
+            min: 0.5,
+            max: 0.5,
+            colour: "interpolateGreys",
+            invert_scale: false,
+            indicator: "test",
+            value_column: "",
+            name: "",
+            format: "0.00%",
+            scale: 1,
+            accuracy: null
+        },
+        {
+            min: 0.5,
+            max: 0.5
+        });
 
         expect(result).toEqual("rgb(255, 255, 255)");
     });
 
     it("getColour can invert color function", () => {
         const result = getColour(0, {
-                min: 0,
-                max: 1,
-                colour: "interpolateGreys",
-                invert_scale: false,
-                indicator: "test",
-                value_column: "",
-                name: "",
-                format: "0.00%",
-                scale: 1,
-                accuracy: null
-            },
-            {min: 0, max: 1});
+            min: 0,
+            max: 1,
+            colour: "interpolateGreys",
+            invert_scale: false,
+            indicator: "test",
+            value_column: "",
+            name: "",
+            format: "0.00%",
+            scale: 1,
+            accuracy: null
+        },
+        {min: 0, max: 1});
 
         expect(result).toEqual("rgb(255, 255, 255)"); //0 = white in interpolateGreys
 

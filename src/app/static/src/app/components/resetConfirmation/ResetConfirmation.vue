@@ -48,102 +48,102 @@
 </template>
 
 <script lang="ts">
-    import {type PropType, defineComponent} from "vue";
-    import Modal from "../Modal.vue";
-    import {mapActionByName, mapGetterByName, mapStateProp} from "../../utils";
-    import type {StepDescription} from "../../store/stepper/stepper";
-    import LoadingSpinner from "../LoadingSpinner.vue";
-    import type {ProjectsState} from "../../store/projects/projects";
-    import type {ErrorsState} from "../../store/errors/errors";
+import {type PropType, defineComponent} from "vue";
+import Modal from "../Modal.vue";
+import {mapActionByName, mapGetterByName, mapStateProp} from "../../utils";
+import type {StepDescription} from "../../store/stepper/stepper";
+import LoadingSpinner from "../LoadingSpinner.vue";
+import type {ProjectsState} from "../../store/projects/projects";
+import type {ErrorsState} from "../../store/errors/errors";
 
-    let uuid = 0;
+let uuid = 0;
 
-    export default defineComponent({
-        props: {
-            open: {
-                type: Boolean,
-                required: true
-            },
-            continueEditing: {
-                type: Function as PropType<() => void>,
-                required: true
-            },
-            cancelEditing: {
-                type: Function as PropType<() => void>,
-                required: true
-            },
-            discardStepWarning: {
-                type: Number as PropType<number | null>,
-                required: false
-            }
+export default defineComponent({
+    props: {
+        open: {
+            type: Boolean,
+            required: true
         },
-        data: function () {
-            return {
-                waitingForVersion: false,
-                versionNote: "",
-                uuid: ""
-            }
+        continueEditing: {
+            type: Function as PropType<() => void>,
+            required: true
         },
-        computed: {
-            changesToRelevantSteps: mapGetterByName<StepDescription[]>("stepper", "changesToRelevantSteps"),
-            currentVersionId: mapStateProp<ProjectsState, string | null>("projects", state => {
-                return state.currentVersion && state.currentVersion.id;
-            }),
-            currentVersionNote: mapStateProp<ProjectsState, string>("projects", state => {
-                return state.currentVersion?.note || "";
-            }),
-            isGuest: mapGetterByName(null, "isGuest"),
-            errorsCount: mapStateProp<ErrorsState, number>("errors", state => {
-                return state.errors ? state.errors.length : 0;
-            }),
-            showRelevantSteps() {
-                // In special cases when data for a downstream step can be retained, remove the warning for that step
-                return this.changesToRelevantSteps.filter((step: StepDescription) => step.number !== this.discardStepWarning)
-            },
-            showWarning() {
-                return this.showRelevantSteps.length > 0
-            }
+        cancelEditing: {
+            type: Function as PropType<() => void>,
+            required: true
         },
-        methods: {
-            handleConfirm: function () {
-                if (this.isGuest) {
-                    this.continueEditing();
-                } else {
-                    this.waitingForVersion = true;
-                    this.newVersion(encodeURIComponent(this.versionNote));
-                }
-            },
-            newVersion: mapActionByName("projects", "newVersion")
-        },
-        watch: {
-            currentVersionId: function () {
-                if (this.waitingForVersion) {
-                    this.waitingForVersion = false;
-                    this.continueEditing();
-                }
-            },
-            errorsCount: function (newVal, oldVal) {
-                if (this.waitingForVersion && (newVal > oldVal)) {
-                    this.waitingForVersion = false;
-                    this.cancelEditing();
-                }
-            },
-            open: function () {
-                if (this.open) {
-                    this.versionNote = this.currentVersionNote;
-                }
-            }
-        },
-        beforeMount() {
-            // There are multiple instances of this component on the page
-            // This is appended to the textarea id to avoid duplicate input ids
-            this.uuid = uuid.toString()
-            uuid += 1
-        },
-        components: {
-            Modal,
-            LoadingSpinner
+        discardStepWarning: {
+            type: Number as PropType<number | null>,
+            required: false
         }
-    });
+    },
+    data: function () {
+        return {
+            waitingForVersion: false,
+            versionNote: "",
+            uuid: ""
+        }
+    },
+    computed: {
+        changesToRelevantSteps: mapGetterByName<StepDescription[]>("stepper", "changesToRelevantSteps"),
+        currentVersionId: mapStateProp<ProjectsState, string | null>("projects", state => {
+            return state.currentVersion && state.currentVersion.id;
+        }),
+        currentVersionNote: mapStateProp<ProjectsState, string>("projects", state => {
+            return state.currentVersion?.note || "";
+        }),
+        isGuest: mapGetterByName(null, "isGuest"),
+        errorsCount: mapStateProp<ErrorsState, number>("errors", state => {
+            return state.errors ? state.errors.length : 0;
+        }),
+        showRelevantSteps() {
+            // In special cases when data for a downstream step can be retained, remove the warning for that step
+            return this.changesToRelevantSteps.filter((step: StepDescription) => step.number !== this.discardStepWarning)
+        },
+        showWarning() {
+            return this.showRelevantSteps.length > 0
+        }
+    },
+    methods: {
+        handleConfirm: function () {
+            if (this.isGuest) {
+                this.continueEditing();
+            } else {
+                this.waitingForVersion = true;
+                this.newVersion(encodeURIComponent(this.versionNote));
+            }
+        },
+        newVersion: mapActionByName("projects", "newVersion")
+    },
+    watch: {
+        currentVersionId: function () {
+            if (this.waitingForVersion) {
+                this.waitingForVersion = false;
+                this.continueEditing();
+            }
+        },
+        errorsCount: function (newVal, oldVal) {
+            if (this.waitingForVersion && (newVal > oldVal)) {
+                this.waitingForVersion = false;
+                this.cancelEditing();
+            }
+        },
+        open: function () {
+            if (this.open) {
+                this.versionNote = this.currentVersionNote;
+            }
+        }
+    },
+    beforeMount() {
+        // There are multiple instances of this component on the page
+        // This is appended to the textarea id to avoid duplicate input ids
+        this.uuid = uuid.toString()
+        uuid += 1
+    },
+    components: {
+        Modal,
+        LoadingSpinner
+    }
+});
 
 </script>

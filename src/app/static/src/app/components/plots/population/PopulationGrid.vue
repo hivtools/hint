@@ -1,28 +1,28 @@
 <template>
-  <div class="wrapper" v-if="chartData.length > 0">
-    <div class="chart-grid">
-      <population
-        v-for="(item, index) in visiblePlots"
-        :key="index"
-        :title="item.title"
-        :datasets="item.datasets"
-      />
+    <div class="wrapper" v-if="chartData.length > 0">
+        <div class="chart-grid">
+            <population
+                v-for="(item, index) in visiblePlots"
+                :key="index"
+                :title="item.title"
+                :datasets="item.datasets"
+            />
+        </div>
+        <page-control
+            v-if="totalPages > 1"
+            class="page-controls"
+            :page-number="pageNumber"
+            :total-pages="totalPages"
+            @set-page="(newPageNumber: number) => pageNumber = newPageNumber"
+        />
     </div>
-    <page-control
-      v-if="totalPages > 1"
-      class="page-controls"
-      :page-number="pageNumber"
-      :total-pages="totalPages"
-      @set-page="(newPageNumber: number) => pageNumber = newPageNumber"
-    />
-  </div>
-  <div v-else class="mt-5" id="empty-generic-chart-data">
-    <div class="empty-chart-message px-3 py-2">
-      <span class="lead">
-        <strong v-translate="'noChartData'"></strong>
-      </span>
+    <div v-else class="mt-5" id="empty-generic-chart-data">
+        <div class="empty-chart-message px-3 py-2">
+            <span class="lead">
+                <strong v-translate="'noChartData'"></strong>
+            </span>
+        </div>
     </div>
-  </div>
 </template>
 
 <script setup lang="ts">
@@ -36,8 +36,8 @@ import type {PlotSelectionsState, PopulationChartData} from "../../../store/plot
 import type {PopulationPyramidData} from "../../../store/plotData/plotData";
 
 const subplotsConfig = {
-  columns: 3,
-  rows: 3,
+    columns: 3,
+    rows: 3,
 };
 
 const plotName = "population"
@@ -63,11 +63,11 @@ watch(
 );
 
 const data = computed(
-  () => store.state.plotData.population as PopulationPyramidData
+    () => store.state.plotData.population as PopulationPyramidData
 );
 
 const ageGroups = computed(
-  () => store.getters["reviewInput/ageGroupOptions"] as FilterOption[]
+    () => store.getters["reviewInput/ageGroupOptions"] as FilterOption[]
 );
 
 const chartDataGetter = store.getters["plotSelections/populationChartData"];
@@ -75,16 +75,16 @@ const chartDataGetter = store.getters["plotSelections/populationChartData"];
 const chartData = computed<PopulationChartData>(() => chartDataGetter(plotName, data.value, ageGroups.value));
 
 const totalPages = computed(() => {
-  return Math.ceil(
-    chartData.value.length / (subplotsConfig.columns * subplotsConfig.rows)
-  );
+    return Math.ceil(
+        chartData.value.length / (subplotsConfig.columns * subplotsConfig.rows)
+    );
 });
 
 const visiblePlots = computed(() => {
-  const subplotsPerPage = subplotsConfig.columns * subplotsConfig.rows;
-  const startIndex = (pageNumber.value - 1) * subplotsPerPage;
-  const endIndex = pageNumber.value * subplotsPerPage;
-  return chartData.value.slice(startIndex, endIndex);
+    const subplotsPerPage = subplotsConfig.columns * subplotsConfig.rows;
+    const startIndex = (pageNumber.value - 1) * subplotsPerPage;
+    const endIndex = pageNumber.value * subplotsPerPage;
+    return chartData.value.slice(startIndex, endIndex);
 });
 </script>
 

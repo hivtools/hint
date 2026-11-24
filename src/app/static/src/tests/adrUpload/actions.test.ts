@@ -255,14 +255,14 @@ describe("ADR upload actions", () => {
                         type: "spectrum",
                         description: "zip"
                     },
-                        {
-                            type: "summary",
-                            description: "summary"
-                        },
-                        {
-                            type: "comparison",
-                            description: "comparison"
-                        }
+                    {
+                        type: "summary",
+                        description: "summary"
+                    },
+                    {
+                        type: "comparison",
+                        description: "comparison"
+                    }
                     ]
             } as any),
 
@@ -478,10 +478,10 @@ describe("ADR upload actions", () => {
                         type: "spectrum",
                         description: "zip"
                     },
-                        {
-                            type: "summary",
-                            description: "summary"
-                        }
+                    {
+                        type: "summary",
+                        description: "summary"
+                    }
                     ]
             } as any),
 
