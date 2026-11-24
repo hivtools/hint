@@ -15,11 +15,11 @@ import {
   BarElement,
   CategoryScale,
   LinearScale,
-  ChartOptions,
+  type ChartOptions,
 } from "chart.js";
 import { useStore } from "vuex";
-import { RootState } from "../../../root";
-import { FilterOption, IndicatorMetadata } from "../../../generated";
+import type { RootState } from "../../../root";
+import type { FilterOption, IndicatorMetadata } from "../../../generated";
 import { formatOutput, getIndicatorMetadata } from "../utils";
 import { buildTooltipCallback } from "../bar/utils";
 import { OutlinePlugin } from "./utils";

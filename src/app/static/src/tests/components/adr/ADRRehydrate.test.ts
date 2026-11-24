@@ -1,4 +1,4 @@
-import Vuex, {ActionTree} from "vuex";
+import Vuex, {type ActionTree} from "vuex";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {
     mockADRDatasetState,
@@ -10,11 +10,11 @@ import {
     mockRootState
 } from "../../mocks";
 import {shallowMountWithTranslate} from "../../testHelpers";
-import {ADRDatasetState, AdrDatasetType, ADRState} from "../../../app/store/adr/adr";
+import {type ADRDatasetState, AdrDatasetType, type ADRState} from "../../../app/store/adr/adr";
 import ADRRehydrate from "../../../app/components/adr/ADRRehydrate.vue";
 import SelectDatasetModal from "../../../app/components/adr/SelectDatasetModal.vue";
-import {ADRActions} from "../../../app/store/adr/actions";
-import {RootState} from "../../../app/root";
+import type {ADRActions} from "../../../app/store/adr/actions";
+import type {RootState} from "../../../app/root";
 import {nextTick} from "vue";
 
 describe("ADRRehydrate", () => {

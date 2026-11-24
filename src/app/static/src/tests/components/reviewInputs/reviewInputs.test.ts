@@ -1,5 +1,5 @@
-import Vuex, {Store} from "vuex";
-import {emptyState, RootState} from "../../../app/root";
+import Vuex, {type Store} from "vuex";
+import {emptyState, type RootState} from "../../../app/root";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import PlotControlSet from "../../../app/components/plots/PlotControlSet.vue";
 import FilterSet from "../../../app/components/plots/FilterSet.vue";
@@ -16,7 +16,7 @@ import {
 } from "../../mocks";
 import {
     initialSurveyAndProgramState,
-    SurveyAndProgramState
+    type SurveyAndProgramState
 } from "../../../app/store/surveyAndProgram/surveyAndProgram";
 import {nextTick} from "vue";
 import {shallowMountWithTranslate} from "../../testHelpers";

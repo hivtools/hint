@@ -15,8 +15,8 @@ import {defineComponent} from 'vue';
 import UserHeader from "./header/UserHeader.vue";
 import Errors from "./Errors.vue";
 import {mapActions, mapState} from "vuex";
-import { RootState } from '../root';
-import { Language } from '../store/translations/locales';
+import type { RootState } from '../root';
+import type { Language } from '../store/translations/locales';
 import LoadingSpinner from './LoadingSpinner.vue';
 
 type Computed = {

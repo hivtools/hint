@@ -8,7 +8,7 @@ const existingState = {
     baseline: {}
 } as any;
 
-import {modelOptions, modelOptionsGetters, ModelOptionsState} from "../../app/store/modelOptions/modelOptions";
+import {modelOptions, modelOptionsGetters, type ModelOptionsState} from "../../app/store/modelOptions/modelOptions";
 
 it("loads initial state from existingState", () => {
     const state = modelOptions(existingState).state as ModelOptionsState;

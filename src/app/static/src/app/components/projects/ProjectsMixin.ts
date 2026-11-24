@@ -1,6 +1,6 @@
 import { defineComponent } from "vue";
 import {mapStatePropByName} from "../../utils";
-import {Project} from "../../types";
+import type {Project} from "../../types";
 
 export default defineComponent({
     data() {

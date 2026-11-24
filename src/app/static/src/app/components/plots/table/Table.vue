@@ -9,17 +9,17 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, PropType } from 'vue';
-import { RootState } from '../../../root';
+import { computed, defineComponent, type PropType } from 'vue';
+import type { RootState } from '../../../root';
 import { useStore } from 'vuex';
-import { IndicatorMetadata } from '../../../generated';
+import type { IndicatorMetadata } from '../../../generated';
 import TableReshapeData from './TableReshapeData.vue';
 import DownloadButton from '../timeSeries/downloadTimeSeries/DownloadButton.vue';
 import { exportService } from '../../../dataExportService';
 import { appendCurrentDateTime } from '../../../utils';
 import { formatOutput, getIndicatorMetadata} from '../utils';
-import {TableData} from "../../../store/plotData/plotData";
-import { PlotName } from "../../../store/plotSelections/plotSelections";
+import type {TableData} from "../../../store/plotData/plotData";
+import type { PlotName } from "../../../store/plotSelections/plotSelections";
 
 // defines the order of headers on the excel download
 const header = [ "area_id", "area_name", "area_level",

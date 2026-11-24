@@ -1,7 +1,7 @@
 import {mount, RouterLinkStub} from "@vue/test-utils";
 import LoadInvalidModal from "../../../app/components/load/LoadInvalidModal.vue"
 import Vuex from "vuex";
-import {emptyState, RootState} from "../../../app/root";
+import {emptyState, type RootState} from "../../../app/root";
 import {initialStepperState} from "../../../app/store/stepper/stepper";
 import {expectHasTranslationKey, expectTranslated, mountWithTranslate} from "../../testHelpers";
 import registerTranslations from "../../../app/store/translations/registerTranslations";

@@ -1,21 +1,21 @@
-import {ActionMethod, CustomVue, mapActions, mapGetters, mapMutations, mapState, MutationMethod} from "vuex";
-import {ADRSchemas, Dataset, DatasetResource, DatasetResourceType, Dict, UploadFile, Version} from "./types";
-import {Error, FilterOption, NestedFilterOption, Response} from "./generated";
+import {type ActionMethod, type CustomVue, mapActions, mapGetters, mapMutations, mapState, type MutationMethod} from "vuex";
+import type {ADRSchemas, Dataset, DatasetResource, DatasetResourceType, Dict, UploadFile, Version} from "./types";
+import type {Error, FilterOption, NestedFilterOption, Response} from "./generated";
 import moment from 'moment';
-import {
+import type {
     DynamicControlGroup,
     DynamicControlSection,
     DynamicFormData,
     DynamicFormMeta
 } from "@reside-ic/vue-next-dynamic-form";
-import {RootState} from "./root";
+import type {RootState} from "./root";
 import {initialStepperState} from "./store/stepper/stepper";
 import {initialModelRunState} from "./store/modelRun/modelRun";
 import {initialModelCalibrateState} from "./store/modelCalibrate/modelCalibrate";
-import {AxiosResponse} from "axios";
-import {ComputedGetter, toRaw} from 'vue';
+import type {AxiosResponse} from "axios";
+import {type ComputedGetter, toRaw} from 'vue';
 import {isDropdown, isMultiselectControl} from "./store/modelOptions/optionsUtils";
-import {RehydrateProjectResponse} from "./store/load/state";
+import type {RehydrateProjectResponse} from "./store/load/state";
 
 export type ComputedWithType<T> = () => T;
 

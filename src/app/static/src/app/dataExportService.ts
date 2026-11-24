@@ -1,5 +1,5 @@
 import type {JSON2SheetOpts} from "xlsx";
-import {DownloadIndicatorPayload, DownloadIndicatorDataset} from "./types";
+import type {DownloadIndicatorPayload, DownloadIndicatorDataset} from "./types";
 
 export interface ExportService {
     download: () => Promise<void>

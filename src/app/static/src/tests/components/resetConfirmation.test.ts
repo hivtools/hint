@@ -2,7 +2,7 @@ import ResetConfirmation from "../../app/components/resetConfirmation/ResetConfi
 import LoadingSpinner from "../../app/components/LoadingSpinner.vue";
 import Vuex from "vuex";
 import registerTranslations from "../../app/store/translations/registerTranslations";
-import {RootState} from "../../app/root";
+import type {RootState} from "../../app/root";
 import {mockErrorsState, mockProjectsState, mockRootState} from "../mocks";
 import {mutations as versionsMutations} from "../../app/store/projects/mutations";
 import {mutations as errorMutations} from "../../app/store/errors/mutations";

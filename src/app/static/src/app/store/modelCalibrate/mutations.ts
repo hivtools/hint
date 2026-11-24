@@ -1,9 +1,9 @@
-import {MutationTree} from 'vuex';
-import {ModelCalibrateState} from "./modelCalibrate";
-import {DynamicFormData, DynamicFormMeta} from "@reside-ic/vue-next-dynamic-form";
-import {PayloadWithType} from "../../types";
+import type {MutationTree} from 'vuex';
+import type {ModelCalibrateState} from "./modelCalibrate";
+import type {DynamicFormData, DynamicFormMeta} from "@reside-ic/vue-next-dynamic-form";
+import type {PayloadWithType} from "../../types";
 import {parseAndFillForm} from "../../utils";
-import {
+import type {
     CalibrateMetadataResponse,
     CalibratePlotResponse,
     CalibrateStatusResponse,

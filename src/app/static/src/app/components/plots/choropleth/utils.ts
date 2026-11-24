@@ -1,5 +1,5 @@
-import {IndicatorValuesDict, NumericRange} from "../../../types";
-import {IndicatorMetadata} from "../../../generated";
+import type {IndicatorValuesDict, NumericRange} from "../../../types";
+import type {IndicatorMetadata} from "../../../generated";
 import {getColour} from "../utils";
 
 export const getFeatureData = function (data: any[],

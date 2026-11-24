@@ -8,7 +8,7 @@ const existingState = {
     baseline: {}
 } as any;
 
-import {stepper, StepperState} from "../../app/store/stepper/stepper";
+import {stepper, type StepperState} from "../../app/store/stepper/stepper";
 
 it("loads initial state from local storage", () => {
     const state = stepper(existingState).state as StepperState;

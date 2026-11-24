@@ -1,10 +1,10 @@
-import {MutationTree} from 'vuex';
-import {ModelOptionsState} from "./modelOptions";
-import {DynamicFormData, DynamicFormMeta} from "@reside-ic/vue-next-dynamic-form";
-import {PayloadWithType} from "../../types";
+import type {MutationTree} from 'vuex';
+import type {ModelOptionsState} from "./modelOptions";
+import type {DynamicFormData, DynamicFormMeta} from "@reside-ic/vue-next-dynamic-form";
+import type {PayloadWithType} from "../../types";
 import {parseAndFillForm} from "../../utils";
 import {checkOptionsValid} from "./optionsUtils";
-import {VersionInfo, Error, ModelOptionsValidate} from "../../generated";
+import type {VersionInfo, Error, ModelOptionsValidate} from "../../generated";
 
 
 export enum ModelOptionsMutation {

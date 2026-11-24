@@ -4,7 +4,7 @@ import registerTranslations from "../../../app/store/translations/registerTransl
 import Vuex from "vuex";
 import {nextTick} from "vue";
 import {emptyState} from "../../../app/root";
-import {Project} from "../../../app/types";
+import type {Project} from "../../../app/types";
 import {mockProjectsState} from "../../mocks";
 import {expectTranslated, mountWithTranslate} from "../../testHelpers";
 import ShareProject from "../../../app/components/projects/ShareProject.vue";

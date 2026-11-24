@@ -1,10 +1,10 @@
 import {actions, makeCancelRunRequest} from "../../app/store/modelRun/actions";
 import {login, rootState} from "./integrationTest";
-import {ModelSubmitResponse} from "../../app/generated";
-import {RootState} from "../../app/root";
-import {ModelRunState} from "../../app/store/modelRun/modelRun";
+import type {ModelSubmitResponse} from "../../app/generated";
+import type {RootState} from "../../app/root";
+import type {ModelRunState} from "../../app/store/modelRun/modelRun";
 import {api} from "../../app/apiService";
-import {ModelRunMutation} from "../../app/store/modelRun/mutations";
+import type {ModelRunMutation} from "../../app/store/modelRun/mutations";
 import {Language} from "../../app/store/translations/locales";
 
 describe("Model run actions", () => {

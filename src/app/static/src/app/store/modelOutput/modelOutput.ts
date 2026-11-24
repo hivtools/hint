@@ -1,8 +1,8 @@
-import {Module} from "vuex";
-import {RootState} from "../../root";
+import type {Module} from "vuex";
+import type {RootState} from "../../root";
 import {ModelOutputTabs} from "../../types";
 import {mutations} from "./mutations";
-import {OutputPlotName, outputPlotNames} from "../plotSelections/plotSelections";
+import {type OutputPlotName, outputPlotNames} from "../plotSelections/plotSelections";
 
 const namespaced = true;
 

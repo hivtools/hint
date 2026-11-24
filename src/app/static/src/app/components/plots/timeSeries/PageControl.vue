@@ -34,7 +34,7 @@ import i18next from "i18next";
 import {computed, defineComponent} from "vue";
 import VueFeather from "vue-feather";
 import { useStore } from "vuex";
-import { RootState } from "../../../root";
+import type { RootState } from "../../../root";
 import NumberInput from "../../common/NumberInput.vue";
 
 export default defineComponent({

@@ -1,7 +1,7 @@
-import {Module} from "vuex";
-import {Error} from "../../generated";
+import type {Module} from "vuex";
+import type {Error} from "../../generated";
 import {mutations} from "./mutations";
-import {RootState} from "../../root";
+import type {RootState} from "../../root";
 
 export interface ErrorsState {
     errors: Error[],

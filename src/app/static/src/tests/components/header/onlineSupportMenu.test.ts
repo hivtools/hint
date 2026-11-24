@@ -10,7 +10,7 @@ import DropDown from "../../../app/components/header/DropDown.vue";
 import {createRouter, createWebHashHistory} from 'vue-router'
 import ErrorReport from "../../../app/components/ErrorReport.vue";
 import {mockErrorsState, mockProjectsState, mockStepperState} from "../../mocks";
-import {StepperState} from "../../../app/store/stepper/stepper";
+import type {StepperState} from "../../../app/store/stepper/stepper";
 
 const router = createRouter({
     routes: [],

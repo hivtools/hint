@@ -1,6 +1,6 @@
-import {MutationTree} from "vuex";
-import {PayloadWithType, TranslatableState} from "../../types";
-import {Language} from "../translations/locales";
+import type {MutationTree} from "vuex";
+import type {PayloadWithType, TranslatableState} from "../../types";
+import type {Language} from "../translations/locales";
 import {localStorageManager} from "../../localStorageManager";
 
 export enum LanguageMutation {

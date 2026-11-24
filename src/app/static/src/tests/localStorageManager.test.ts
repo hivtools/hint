@@ -26,7 +26,7 @@ import {
     mockSurveyAndProgramState
 } from "./mocks";
 import {localStorageManager, serialiseState} from "../app/localStorageManager";
-import {RootState} from "../app/root";
+import type {RootState} from "../app/root";
 import {currentHintVersion} from "../app/hintVersion";
 import {Language} from "../app/store/translations/locales";
 import registerTranslations from "../app/store/translations/registerTranslations";

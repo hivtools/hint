@@ -1,19 +1,21 @@
-import { globalIgnores } from "eslint/config";
+import {globalIgnores} from "eslint/config";
 import js from "@eslint/js";
 import pluginVue from "eslint-plugin-vue";
-import { withVueTs, vueTsConfigs } from "@vue/eslint-config-typescript";
+import {defineConfigWithVueTs, vueTsConfigs} from "@vue/eslint-config-typescript";
 
-export default withVueTs(
+export default defineConfigWithVueTs(
     {
         name: "app/files-to-lint",
         files: ["**/*.{vue,ts,mts,tsx}"]
     },
 
-    // We do not lint the tests. The types in generated.d.ts are made by a script.
-    globalIgnores(["src/tests/**", "src/app/generated.d.ts"]),
+    // ./public is the build output. We do not lint the tests.
+    // The types in generated.d.ts are made by a script.
+    globalIgnores(["public/**", "coverage/**", "src/tests/**", "src/app/generated.d.ts"]),
 
+    // create-vue uses Oxlint for these basic rules. We use only ESLint, so we use the ESLint rules.
     js.configs.recommended,
-    pluginVue.configs["flat/essential"],
+    ...pluginVue.configs["flat/essential"],
     vueTsConfigs.recommended,
 
     {
@@ -44,6 +46,15 @@ export default withVueTs(
                     ]
                 }
             ]
+        }
+    },
+
+    {
+        // A Node.js script. The TypeScript files do not need this, because TypeScript checks the names.
+        name: "app/node-scripts",
+        files: ["generateTypes.js"],
+        languageOptions: {
+            globals: {console: "readonly", process: "readonly"}
         }
     },
 

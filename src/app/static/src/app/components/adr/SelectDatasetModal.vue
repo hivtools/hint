@@ -68,9 +68,9 @@ import LoadingSpinner from "../LoadingSpinner.vue";
 import SelectRelease from "./SelectRelease.vue";
 import Modal from "../Modal.vue";
 import {useStore} from "vuex";
-import {RootState} from "../../root";
+import type {RootState} from "../../root";
 import i18next from "i18next";
-import {computed, PropType, ref, watch, watchEffect} from "vue";
+import {computed, type PropType, ref, watch, watchEffect} from "vue";
 import {AdrDatasetType} from "../../store/adr/adr";
 
 defineEmits<{

@@ -1,6 +1,6 @@
 import Vuex from 'vuex';
 import VersionStatus from "../../../app/components/projects/VersionStatus.vue";
-import {ProjectsState} from "../../../app/store/projects/projects";
+import type {ProjectsState} from "../../../app/store/projects/projects";
 import {mockProjectsState} from "../../mocks";
 import VueFeather from "vue-feather";
 import registerTranslations from "../../../app/store/translations/registerTranslations";

@@ -29,6 +29,6 @@ jobs:
               run: scripts/run-kotlin-server.sh
 
             - name: Test front end (ADR)
-              run: npm run adr-integration-test --prefix=src/app/static
+              run: npm run test:adr-integration --prefix=src/app/static
               env:
                 ADR_TEST_KEY: ${{ secrets.ADR_TEST_KEY }}

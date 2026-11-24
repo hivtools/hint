@@ -28,19 +28,19 @@ import {
     getPopulationFilteredData,
     getTimeSeriesFilteredDataset
 } from "../../app/store/plotData/filter";
-import {PlotDataMutations, PlotDataUpdate} from "../../app/store/plotData/mutations";
-import {PlotSelectionUpdate} from "../../app/store/plotSelections/mutations";
+import {PlotDataMutations, type PlotDataUpdate} from "../../app/store/plotData/mutations";
+import type {PlotSelectionUpdate} from "../../app/store/plotSelections/mutations";
 import {ReviewInputMutation} from "../../app/store/reviewInput/mutations";
-import {CommitOptions} from "vuex";
-import {
+import type {CommitOptions} from "vuex";
+import type {
     CalibratePlotResponse,
     ComparisonPlotRow,
     PopulationResponseData,
     ReviewInputFilterMetadataResponse,
     SurveyDataRow
 } from "../../app/generated";
-import {FilterSelection} from "../../app/store/plotSelections/plotSelections";
-import {Mock} from "vitest";
+import type {FilterSelection} from "../../app/store/plotSelections/plotSelections";
+import type {Mock} from "vitest";
 
 describe("filter tests", () => {
 

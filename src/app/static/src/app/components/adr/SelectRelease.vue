@@ -53,15 +53,15 @@
 <script lang="ts">
     import { mapActionByName, mapStateProp, mapMutationByName } from "../../utils";
     import HintTreeSelect from "../HintTreeSelect.vue";
-    import {AdrDatasetType, ADRState} from "../../store/adr/adr";
+    import type {AdrDatasetType, ADRState} from "../../store/adr/adr";
     import VueFeather from "vue-feather";
     import i18next from "i18next";
-    import { Language } from "../../store/translations/locales";
-    import { RootState } from "../../root";
+    import type { Language } from "../../store/translations/locales";
+    import type { RootState } from "../../root";
     import {ADRMutation} from "../../store/adr/mutations";
-    import { BaselineState } from "../../store/baseline/baseline";
-    import { PropType, defineComponent } from "vue";
-    import { Release } from "../../types";
+    import type { BaselineState } from "../../store/baseline/baseline";
+    import { type PropType, defineComponent } from "vue";
+    import type { Release } from "../../types";
 
     interface Data {
         releaseId: string | undefined;

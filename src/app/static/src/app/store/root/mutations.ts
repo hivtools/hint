@@ -1,5 +1,5 @@
-import {MutationTree} from "vuex";
-import {emptyState, RootState} from "../../root";
+import type {MutationTree} from "vuex";
+import {emptyState, type RootState} from "../../root";
 import {initialModelOptionsState} from "../modelOptions/modelOptions";
 import {initialModelRunState} from "../modelRun/modelRun";
 import {initialModelOutputState} from "../modelOutput/modelOutput";
@@ -8,7 +8,7 @@ import {initialMetadataState} from "../metadata/metadata";
 import {initialErrorsState} from "../errors/errors";
 import {initialBaselineState} from "../baseline/baseline";
 import {initialSurveyAndProgramState} from "../surveyAndProgram/surveyAndProgram";
-import {PayloadWithType, PollingState, Project} from "../../types";
+import type {PayloadWithType, PollingState, Project} from "../../types";
 import {mutations as languageMutations} from "../language/mutations";
 import {initialProjectsState} from "../projects/projects";
 import {router} from "../../router"

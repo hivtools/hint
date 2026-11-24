@@ -1,7 +1,7 @@
-import {MutationTree, Payload} from "vuex";
-import {AdrDatasetType, ADRState} from "./adr";
-import {ADRSchemas, PayloadWithType} from "../../types";
-import {Error} from "../../generated";
+import type {MutationTree, Payload} from "vuex";
+import type {AdrDatasetType, ADRState} from "./adr";
+import type {ADRSchemas, PayloadWithType} from "../../types";
+import type {Error} from "../../generated";
 
 export enum ADRMutation {
     UpdateKey = "UpdateKey",

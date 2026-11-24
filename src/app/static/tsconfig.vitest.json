@@ -1,0 +1,19 @@
+{
+  "extends": "./tsconfig.app.json",
+
+  // Include only the test files and the global type declarations.
+  // The app code that the tests import is included through module resolution.
+  "include": ["src/tests/**/*", "src/app/**/*.d.ts", "env.d.ts", "vuex-shims.d.ts"],
+  // The Playwright tests have their own tsconfig.json.
+  "exclude": ["src/tests/e2e/**"],
+
+  "compilerOptions": {
+    // We keep "lib" from tsconfig.app.json (create-vue sets it to []), because the tests check the app code
+    // that they import, and the app code uses ES2022 (for example Array.prototype.at).
+    "types": ["node", "vitest/globals"],
+
+    // `vue-tsc --build` produces a .tsbuildinfo file for incremental type-checking.
+    // Specified here to keep it out of the root directory.
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.vitest.tsbuildinfo"
+  }
+}

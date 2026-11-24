@@ -1,14 +1,14 @@
-import {IndicatorValues, NumericRange} from "../../types";
-import {CalibrateDataResponse, IndicatorMetadata, FilterOption, InputTimeSeriesRow} from "../../generated";
+import type {IndicatorValues, NumericRange} from "../../types";
+import type {CalibrateDataResponse, IndicatorMetadata, FilterOption, InputTimeSeriesRow} from "../../generated";
 import * as d3ScaleChromatic from "d3-scale-chromatic";
-import {ScaleSettings, ScaleType} from "../../store/plotState/plotState";
-import {Feature} from "geojson";
+import {type ScaleSettings, ScaleType} from "../../store/plotState/plotState";
+import type {Feature} from "geojson";
 import numeral from "numeral";
-import {Store} from "vuex";
-import {RootState} from "../../root";
+import type {Store} from "vuex";
+import type {RootState} from "../../root";
 import {getMetadataFromPlotName} from "../../store/plotSelections/actions";
-import {PlotName} from "../../store/plotSelections/plotSelections";
-import { StyleValue } from "vue";
+import type {PlotName} from "../../store/plotSelections/plotSelections";
+import type { StyleValue } from "vue";
 import i18next from "i18next";
 
 export const getIndicatorMetadata = (store: Store<RootState>, plotName: PlotName, selectedIndicator: string): IndicatorMetadata => {

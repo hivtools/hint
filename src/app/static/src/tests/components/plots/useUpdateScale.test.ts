@@ -1,9 +1,9 @@
 import {describe, expect, it, vi} from 'vitest';
 import {createStore} from 'vuex';
-import {RootState} from "../../../app/root";
+import type {RootState} from "../../../app/root";
 import {PlotStateMutations} from "../../../app/store/plotState/mutations";
 import {useUpdateScale} from "../../../app/components/plots/useUpdateScale";
-import {Scale, ScaleSettings, ScaleType} from "../../../app/store/plotState/plotState";
+import {Scale, type ScaleSettings, ScaleType} from "../../../app/store/plotState/plotState";
 import {defineComponent} from "vue";
 import {shallowMount} from "@vue/test-utils";
 

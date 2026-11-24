@@ -1,0 +1,20 @@
+{
+  "extends": "@vue/tsconfig/tsconfig.dom.json",
+  "include": ["env.d.ts", "vuex-shims.d.ts", "src/app/**/*", "src/app/**/*.vue"],
+  "compilerOptions": {
+    "paths": {
+      // Vuex 4.1 has no "types" in the "exports" of its package.json, so "bundler" resolution cannot find its types.
+      "vuex": ["./node_modules/vuex/types/index.d.ts"],
+      // The types of the package import its .vue source files. See the comment in this file.
+      "@reside-ic/vue-next-dynamic-form": ["./src/app/vue-next-dynamic-form.d.ts"]
+    },
+
+    // `vue-tsc --build` produces a .tsbuildinfo file for incremental type-checking.
+    // Specified here to keep it out of the root directory.
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo"
+  },
+  "vueCompilerOptions": {
+    // Do not check the <template> blocks yet. The old type check did not check them, and they have type errors.
+    "skipTemplateCodegen": true
+  }
+}

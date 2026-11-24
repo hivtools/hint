@@ -1,16 +1,16 @@
 import {
     buildTooltipCallback,
-    ErrorBars,
+    type ErrorBars,
     getErrorLineAnnotations,
     inputComparisonPlotDataToChartData,
     plotDataToChartData
 } from "../../../../app/components/plots/bar/utils";
-import {PlotData} from "../../../../app/store/plotData/plotData";
-import {IndicatorMetadata, FilterOption, InputComparisonData} from "../../../../app/generated";
+import type {PlotData} from "../../../../app/store/plotData/plotData";
+import type {IndicatorMetadata, FilterOption} from "../../../../app/generated";
 import {mockIndicatorMetadata, mockInputComparisonData} from "../../../mocks";
 import {Language} from "../../../../app/store/translations/locales";
-import {AreaProperties} from "../../../../app/store/baseline/baseline";
-import {Dict} from "../../../../app/types";
+import type {AreaProperties} from "../../../../app/store/baseline/baseline";
+import type {Dict} from "../../../../app/types";
 
 describe("barchart utils work as expected", () => {
     const indicator = mockIndicatorMetadata()

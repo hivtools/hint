@@ -1,7 +1,7 @@
-import {Mutation, MutationTree} from 'vuex';
-import {LoadingState, LoadState, RehydrateProjectResponse} from "./state";
-import {PayloadWithType} from "../../types";
-import {Error} from "../../generated";
+import type {Mutation, MutationTree} from 'vuex';
+import {LoadingState, type LoadState, type RehydrateProjectResponse} from "./state";
+import type {PayloadWithType} from "../../types";
+import type {Error} from "../../generated";
 
 type LoadMutation = Mutation<LoadState>
 

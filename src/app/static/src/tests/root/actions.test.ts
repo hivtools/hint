@@ -1,5 +1,5 @@
 import {actions} from "../../app/store/root/actions";
-import {ErrorReport, ErrorReportManualDetails} from "../../app/types";
+import type {ErrorReport, ErrorReportManualDetails} from "../../app/types";
 import {
     mockAxios,
     mockBaselineState,

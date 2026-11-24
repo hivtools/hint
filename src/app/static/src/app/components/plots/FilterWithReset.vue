@@ -22,10 +22,10 @@
 <script setup lang="ts">
 import VueFeather from "vue-feather";
 import { useStore } from "vuex";
-import { RootState } from "../../root";
-import { computed, PropType, ref } from "vue";
-import { PlotName } from "../../store/plotSelections/plotSelections";
-import { getDefaultFilterSelections, PlotSelectionActionUpdate } from "../../store/plotSelections/actions";
+import type { RootState } from "../../root";
+import { computed, type PropType, ref } from "vue";
+import type { PlotName } from "../../store/plotSelections/plotSelections";
+import { getDefaultFilterSelections, type PlotSelectionActionUpdate } from "../../store/plotSelections/actions";
 import i18next from "i18next";
 
 const props = defineProps({

@@ -1,7 +1,7 @@
-import {IndicatorMetadata} from "../../../generated";
-import {BubbleIndicatorValues, BubbleIndicatorValuesDict, NumericRange} from "../../../types";
+import type {IndicatorMetadata} from "../../../generated";
+import type {BubbleIndicatorValues, BubbleIndicatorValuesDict, NumericRange} from "../../../types";
 import {formatOutput, getColour} from "../utils";
-import {Feature} from "geojson";
+import type {Feature} from "geojson";
 
 export const getRadius = function (value: number, minValue: number, maxValue: number, minRadius: number, maxRadius: number) {
     //if range is a single value, just return max radius as no interpolation possible

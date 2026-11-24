@@ -18,11 +18,11 @@ import {
 } from "../mocks";
 import {actions} from "../../app/store/adrUpload/actions";
 import {mutations} from "../../app/store/adrUpload/mutations";
-import {UploadFile} from "../../app/types";
+import type {UploadFile} from "../../app/types";
 import Vuex from "vuex";
-import {RootState} from "../../app/root";
+import type {RootState} from "../../app/root";
 import {mutations as baselineMutations} from "../../app/store/baseline/mutations";
-import {Mock} from "vitest";
+import type {Mock} from "vitest";
 import { DownloadType } from "../../app/store/downloadResults/downloadConfig";
 
 describe("ADR upload actions", () => {

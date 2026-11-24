@@ -1,4 +1,4 @@
-import {
+import type {
     ControlSelection,
     FilterSelection,
     PlotName,
@@ -6,19 +6,19 @@ import {
     PopulationChartData,
     PopulationChartDataset
 } from "./plotSelections";
-import {IndicatorMetadata, FilterOption, PopulationResponseData} from "../../generated";
+import type {IndicatorMetadata, FilterOption, PopulationResponseData} from "../../generated";
 import {
-    BarChartData,
+    type BarChartData,
     inputComparisonPlotDataToChartData,
     plotDataToChartData,
     sortDatasets
 } from "../../components/plots/bar/utils";
-import {RootState} from "../../root";
-import {PlotData, PopulationPyramidData} from "../plotData/plotData";
-import {Dict} from "../../types";
+import type {RootState} from "../../root";
+import type {PlotData, PopulationPyramidData} from "../plotData/plotData";
+import type {Dict} from "../../types";
 import {getMetadataFromPlotName} from "./actions";
-import {AreaProperties} from "../baseline/baseline";
-import {InputComparisonPlotData} from "../reviewInput/reviewInput";
+import type {AreaProperties} from "../baseline/baseline";
+import type {InputComparisonPlotData} from "../reviewInput/reviewInput";
 
 export const getters = {
     controlSelectionFromId: (state: PlotSelectionsState) => (plotName: PlotName, controlId: string): FilterOption | undefined => {

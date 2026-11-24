@@ -30,16 +30,16 @@
 <script lang="ts">
     import { defineComponent } from "vue";
     import i18next from "i18next";
-    import {DynamicFormData, DynamicFormMeta, DynamicForm} from "@reside-ic/vue-next-dynamic-form";
+    import {type DynamicFormData, type DynamicFormMeta, DynamicForm} from "@reside-ic/vue-next-dynamic-form";
     import LoadingSpinner from "../LoadingSpinner.vue";
     import Tick from "../Tick.vue";
 
     import {mapActionByName, mapGetterByName, mapMutationByName, mapStateProp, mapStateProps} from "../../utils";
     import {ModelOptionsMutation} from "../../store/modelOptions/mutations";
-    import {ModelOptionsState} from "../../store/modelOptions/modelOptions";
+    import type {ModelOptionsState} from "../../store/modelOptions/modelOptions";
     import ResetConfirmation from "../resetConfirmation/ResetConfirmation.vue";
-    import {RootState} from "../../root";
-    import {Language} from "../../store/translations/locales";
+    import type {RootState} from "../../root";
+    import type {Language} from "../../store/translations/locales";
     import ErrorAlert from "../ErrorAlert.vue";
 
     const namespace = "modelOptions";

@@ -1,8 +1,8 @@
-import {Module} from "vuex";
+import type {Module} from "vuex";
 import {getters} from "./getters";
 import {actions} from "./actions";
 import {mutations} from "./mutations";
-import {RootState} from "../../root";
+import type {RootState} from "../../root";
 import {Step} from "../../types";
 
 export interface StepDescription {

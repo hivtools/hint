@@ -9,14 +9,13 @@ import {
 import DownloadButton from "../../../../../app/components/plots/timeSeries/downloadTimeSeries/DownloadButton.vue";
 import registerTranslations from "../../../../../app/store/translations/registerTranslations";
 import {expectTranslated, mountWithTranslate} from "../../../../testHelpers";
-import {BaselineState} from "../../../../../app/store/baseline/baseline";
+import type {BaselineState} from "../../../../../app/store/baseline/baseline";
 import DownloadTimeSeries
     from "../../../../../app/components/plots/timeSeries/downloadTimeSeries/DownloadTimeSeries.vue";
-import {InputTimeSeriesData} from "../../../../../app/generated";
+import type {InputTimeSeriesData} from "../../../../../app/generated";
 import {exportService} from "../../../../../app/dataExportService";
-import {Mock} from "vitest";
-import {PlotData} from "../../../../../app/store/plotData/plotData";
-import {ReviewInputState} from "../../../../../app/store/reviewInput/reviewInput";
+import type {Mock} from "vitest";
+import type {ReviewInputState} from "../../../../../app/store/reviewInput/reviewInput";
 
 vi.mock("../../../../../app/dataExportService", () => ({
     exportService: vi.fn(() => ({

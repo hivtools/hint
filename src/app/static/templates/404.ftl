@@ -4,7 +4,7 @@
     <title> 404 Error Page</title>
     <link rel="shortcut icon" href="/public/favicon.ico"/>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <#-- The front-end build writes app.css (a fixed name) for this page. See vite.config.mts. -->
+    <#-- The front-end build writes app.css (a fixed name) for this page. See vite.config.ts. -->
     <link rel="stylesheet" href="/public/css/app.css">
 </head>
 <body>

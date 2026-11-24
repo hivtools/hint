@@ -1,11 +1,11 @@
-import {ActionContext, ActionTree} from "vuex"
-import {ControlSelection, PlotDataType, PlotName, plotNameToDataType, PlotSelectionsState} from "./plotSelections"
-import {RootState} from "../../root"
-import {Dict, PayloadWithType} from "../../types"
-import {FilterOption, PlotSettingEffect, PlotSettingOption,} from "../../generated"
-import {PlotSelectionsMutations, PlotSelectionUpdate} from "./mutations"
+import type {ActionContext, ActionTree} from "vuex"
+import {type ControlSelection, PlotDataType, type PlotName, plotNameToDataType, type PlotSelectionsState} from "./plotSelections"
+import type {RootState} from "../../root"
+import type {Dict, PayloadWithType} from "../../types"
+import type {FilterOption, PlotSettingEffect, PlotSettingOption,} from "../../generated"
+import {PlotSelectionsMutations, type PlotSelectionUpdate} from "./mutations"
 import {filtersInfoFromEffects, getPlotData} from "./utils"
-import {PlotMetadataFrame} from "../metadata/metadata"
+import type {PlotMetadataFrame} from "../metadata/metadata"
 import {rawDeepClone} from "../../utils"
 
 type IdOptions = {

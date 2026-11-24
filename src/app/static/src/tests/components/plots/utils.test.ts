@@ -10,14 +10,14 @@ import {
     roundRange,
     roundToContext
 } from "../../../app/components/plots/utils";
-import {Mock} from "vitest";
+import type {Mock} from "vitest";
 import {interpolateMagma, interpolateWarm} from "d3-scale-chromatic";
-import {ScaleSettings, ScaleType} from "../../../app/store/plotState/plotState";
-import {CalibrateDataResponse, IndicatorMetadata} from "../../../app/generated";
-import {Store} from "vuex";
+import {type ScaleSettings, ScaleType} from "../../../app/store/plotState/plotState";
+import type {CalibrateDataResponse, IndicatorMetadata} from "../../../app/generated";
+import type {Store} from "vuex";
 import {mockCalibrateMetadataResponse, mockModelCalibrateState, mockRootState} from "../../mocks";
-import {RootState} from "../../../app/root";
-import {Feature} from "geojson";
+import type {RootState} from "../../../app/root";
+import type {Feature} from "geojson";
 
 describe("plot utils", () => {
 

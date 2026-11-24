@@ -1,6 +1,6 @@
-import {StepperState} from "./stepper";
-import {Mutation, MutationTree} from "vuex";
-import {PayloadWithType} from "../../types";
+import type {StepperState} from "./stepper";
+import type {Mutation, MutationTree} from "vuex";
+import type {PayloadWithType} from "../../types";
 
 type StepperMutation = Mutation<StepperState>
 

@@ -1,4 +1,4 @@
-import {IndicatorValuesDict, NumericRange} from "../../../../app/types";
+import type {IndicatorValuesDict, NumericRange} from "../../../../app/types";
 import {getFeatureData} from "../../../../app/components/plots/choropleth/utils";
 import {getColour} from "../../../../app/components/plots/utils";
 import {mockIndicatorMetadata} from "../../../mocks";

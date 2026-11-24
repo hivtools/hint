@@ -1,4 +1,4 @@
-import {PopulationResponseData} from "../../app/generated";
+import type {PopulationResponseData} from "../../app/generated";
 import {aggregatePopulation} from "../../app/store/plotData/aggregate";
 
 describe("aggregate data", () => {

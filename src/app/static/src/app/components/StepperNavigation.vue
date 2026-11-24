@@ -20,7 +20,7 @@
 
 <script lang="ts">
 
-    import {PropType, defineComponent} from "vue";
+    import {type PropType, defineComponent} from "vue";
 
     export default defineComponent({
         props: {

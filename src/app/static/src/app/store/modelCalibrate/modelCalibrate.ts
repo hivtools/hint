@@ -1,10 +1,10 @@
-import {Module} from "vuex";
-import {ReadyState, RootState, WarningsState} from "../../root";
-import {DynamicFormData, DynamicFormMeta} from "@reside-ic/vue-next-dynamic-form";
+import type {Module} from "vuex";
+import type {ReadyState, RootState, WarningsState} from "../../root";
+import type {DynamicFormData, DynamicFormMeta} from "@reside-ic/vue-next-dynamic-form";
 import {mutations} from "./mutations";
 import {actions} from "./actions";
 import {getters} from "./getters";
-import {
+import type {
     VersionInfo,
     Error,
     CalibrateStatusResponse,

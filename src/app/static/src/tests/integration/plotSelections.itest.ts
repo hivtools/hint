@@ -6,10 +6,10 @@ import {
     mockModelCalibrateState, mockPlotSelections,
     mockRootState
 } from "../mocks";
-import {actions, PlotSelectionActionUpdate, Selection} from "../../app/store/plotSelections/actions";
-import {PayloadWithType} from "../../app/types";
+import {actions, type PlotSelectionActionUpdate, type Selection} from "../../app/store/plotSelections/actions";
+import type {PayloadWithType} from "../../app/types";
 import {PlotSelectionsMutations} from "../../app/store/plotSelections/mutations";
-import {Mock, MockInstance} from "vitest";
+import type {Mock, MockInstance} from "vitest";
 import * as plotSelectionsUtils from "../../app/store/plotSelections/utils";
 
 describe("plotSelections itest", () => {

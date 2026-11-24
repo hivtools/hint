@@ -1,5 +1,5 @@
 import {OutlinePlugin} from "../../../../app/components/plots/population/utils";
-import {PopulationChartDataset} from "../../../../app/store/plotSelections/plotSelections";
+import type {PopulationChartDataset} from "../../../../app/store/plotSelections/plotSelections";
 
 describe("population utils", () => {
     afterEach(() => {
