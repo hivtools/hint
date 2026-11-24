@@ -1,7 +1,6 @@
 import {type ActionMethod, type CustomVue, mapActions, mapGetters, mapMutations, mapState, type MutationMethod} from "vuex";
 import type {ADRSchemas, Dataset, DatasetResource, DatasetResourceType, Dict, UploadFile, Version} from "./types";
 import type {Error, FilterOption, NestedFilterOption, Response} from "./generated";
-import moment from 'moment';
 import type {
     DynamicControlGroup,
     DynamicControlSection,
@@ -295,16 +294,49 @@ export const rootOptionChildren = (filterOptions: FilterOption[]) => {
     return (rootOption && (rootOption as any).children) || [];
 };
 
-export const formatDateTime = (isoUTCString: string) => {
-    return moment.utc(isoUTCString).local().format('DD/MM/YYYY HH:mm:ss');
+// An ISO date-time without a time zone, for example "2020-07-30T15:23:39.898939" (as the server sends them).
+const isoWithoutZone = /^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2})?)(\.\d+)?$/;
+
+// Reads a UTC date-time. The server sends UTC date-times without a time zone, but new Date() reads
+// those as local time, so we add the "Z". JavaScript dates have milliseconds, so we keep only
+// 3 digits of the fraction (Date.parse does not have to accept more).
+export const parseUtcDateTime = (utcDateTime: string): Date => {
+    const match = isoWithoutZone.exec(utcDateTime);
+    if (match) {
+        const fraction = match[2] ? match[2].slice(0, 4) : "";
+        return new Date(`${match[1]}${fraction}Z`);
+    }
+    return new Date(utcDateTime);
 };
 
-export const formatToLocalISODateTime = (isoUTCString: string) => {
-    return moment.utc(isoUTCString).local().format('YYYY/MM/DD HH:mm:ss');
+const twoDigits = (n: number) => String(n).padStart(2, "0");
+
+// The parts of a date in local time, with 2 digits (4 for the year).
+export const localDateTimeParts = (date: Date) => ({
+    year: String(date.getFullYear()),
+    month: twoDigits(date.getMonth() + 1),
+    day: twoDigits(date.getDate()),
+    hour: twoDigits(date.getHours()),
+    minute: twoDigits(date.getMinutes()),
+    second: twoDigits(date.getSeconds())
+});
+
+// For example "30/07/2020 18:23:39" (local time).
+export const formatDateTime = (utcDateTime: string) => {
+    const {year, month, day, hour, minute, second} = localDateTimeParts(parseUtcDateTime(utcDateTime));
+    return `${day}/${month}/${year} ${hour}:${minute}:${second}`;
 };
 
+// For example "2020/07/30 18:23:39" (local time).
+export const formatToLocalISODateTime = (utcDateTime: string) => {
+    const {year, month, day, hour, minute, second} = localDateTimeParts(parseUtcDateTime(utcDateTime));
+    return `${year}/${month}/${day} ${hour}:${minute}:${second}`;
+};
+
+// The current local time for a file name, for example "20200730-182339".
 export const appendCurrentDateTime = () => {
-    return moment.utc().local().format("YMMDD-HHmmss");
+    const {year, month, day, hour, minute, second} = localDateTimeParts(new Date());
+    return `${year}${month}${day}-${hour}${minute}${second}`;
 }
 
 export const findResource = (datasetWithResources: any, resourceType: string, resourceName?: string | null): DatasetResource | null => {

@@ -426,13 +426,13 @@ describe("root getters", () => {
 
         const rootState = projectStates()
 
+        const originalTimeZone = process.env.TZ;
+        process.env.TZ = "Africa/Nairobi"; // UTC+3
         const result = getters.projectState(rootState, null, projectStates() as any, null)
+        process.env.TZ = originalTimeZone;
 
-        const millis = Date.UTC(2022, 6, 19, 13, 56, 19)
-
-        const date = new Date(millis)
-
-        const updated = `2022/06/${date.getDate()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
+        // The versions were updated at 2022-06-19T13:56:19 (UTC).
+        const updated = "2022/06/19 16:56:19"
 
         expect(result).toStrictEqual(mockProjectOutputState({
             notes: {
@@ -466,23 +466,22 @@ describe("root getters", () => {
 
         const rootState = projectStates()
 
-        const millis = Date.UTC(2023, 1, 23, 17, 35, 19)
-
-        const mockDate = vi.spyOn(Date, 'UTC').mockImplementation(() => millis)
+        // A guest has no versions, so the project notes have the current time (local time).
+        const originalTimeZone = process.env.TZ;
+        process.env.TZ = "Africa/Nairobi"; // UTC+3
+        vi.useFakeTimers();
+        vi.setSystemTime(new Date(Date.UTC(2023, 1, 23, 17, 35, 19)));
 
         const result = getters.projectState(rootState, null, projectStates() as any, null)
 
-        const date = new Date(millis)
-
-        const updated = `2023/02/${date.getDate()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
-
-        expect(mockDate).toHaveBeenCalled()
+        vi.useRealTimers();
+        process.env.TZ = originalTimeZone;
 
         expect(result).toStrictEqual(mockProjectOutputState({
             notes: {
                 project_notes: {
                     name: "",
-                    updated: updated,
+                    updated: "2023/02/23 20:35:19",
                     note: ""
                 },
                 version_notes: []

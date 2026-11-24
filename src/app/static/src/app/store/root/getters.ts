@@ -28,7 +28,7 @@ export const getters: RootGetters & GetterTree<RootState, RootState> = {
     projectState: (rootState: RootState): DownloadSubmitRequest => {
         const versions = rootState.projects.currentProject?.versions || []
         const name = rootState.projects.currentProject?.name || ""
-        const getUpdatedDate = versions.length > 0 ? versions[0].updated : new Date().toUTCString()
+        const getUpdatedDate = versions.length > 0 ? versions[0].updated : new Date().toISOString()
 
         return {
             state: {
