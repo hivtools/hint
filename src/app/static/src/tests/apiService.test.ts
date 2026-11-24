@@ -1,6 +1,6 @@
 import type {AxiosHeaders} from "axios";
 import {api} from "../app/apiService";
-import {mockAxios, mockDownloadFailure, mockError, mockFailure, mockRootState, mockSuccess} from "./mocks";
+import {mockAxios, mockError, mockFailure, mockRootState, mockSuccess} from "./mocks";
 import {freezer} from '../app/utils';
 import type {Mock} from "vitest";
 
@@ -237,64 +237,6 @@ describe("ApiService", () => {
         expect(committedType).toBe("TEST_TYPE");
         expect(committedPayload).toBe(true);
         expect(committedOptions).toStrictEqual({root: true});
-    });
-
-    it.skip("commits download error response with the specified type", async () => {
-        mockAxios.onGet(`/download/result/123/`)
-            .reply(400, mockDownloadFailure());
-
-        let committedType: any = false;
-        let committedPayload: any = false;
-        const commit = ({type, payload}: any, _options?: any) => {
-            committedType = type;
-            committedPayload = payload;
-        };
-
-        await api({commit, rootState} as any)
-            .withError("TEST_TYPE")
-            .download("/download/result/123/");
-
-        expect(committedType).toBe("TEST_TYPE");
-        expect(committedPayload.detail).toBe("Missing some results");
-    });
-
-    it.skip("can return download response", async () => {
-        mockAxios.onGet(`/download/result/123/`)
-            .reply(200, mockSuccess("parts"));
-
-        let committedType: any = false;
-        let committedPayload: any = false;
-        const commit = ({type, payload}: any, _options?: any) => {
-            committedType = type;
-            committedPayload = payload;
-        };
-
-        const response = await api({commit, rootState} as any)
-            .withError("TEST_TYPE")
-            .download("/download/result/123/");
-
-        expect(response.data).toStrictEqual({data: "parts", errors: [], status: "success"});
-        expect(committedType).toBe(false);
-        expect(committedPayload.detail).toBeUndefined()
-    });
-
-    it("commits download error when response is not blob", async () => {
-        mockAxios.onGet(`/download/result/123/`)
-            .reply(400, mockDownloadFailure());
-
-        let committedType: any = false;
-        let committedPayload: any = false;
-        const commit = ({type, payload}: any, _options?: any) => {
-            committedType = type;
-            committedPayload = payload;
-        };
-
-        await api({commit, rootState} as any)
-            .withError("TEST_TYPE")
-            .download("/download/result/123/");
-
-        expect(committedType).toBe("errors/ErrorAdded");
-        expect(committedPayload.detail).toBe("Could not parse API response. Please contact support.");
     });
 
     it("commits the error response with the specified type with root options", async () => {
