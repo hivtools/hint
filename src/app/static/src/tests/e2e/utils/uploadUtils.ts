@@ -33,7 +33,8 @@ const uploadFileTypes = {
 // and when it lands it un-validates the model options.
 const baselineUploads = ["spectrum", "shape", "population"];
 const revalidatedDatasets = ["survey", "programme", "anc"];
-const revalidationUrl = new RegExp(`/disease/(${revalidatedDatasets.join("|")})/\\?strict=true$`);
+// The project's first load gets the same paths, but tracking starts after that, once the project is open.
+const revalidationPath = new RegExp(`^/disease/(${revalidatedDatasets.join("|")})$`);
 
 export async function uploadAllTestFiles(page: Page) {
     const revalidation = trackRevalidation(page);
@@ -53,7 +54,7 @@ function trackRevalidation(page: Page) {
     const started = new Set<Request>();
     let finished = 0;
     const onRequest = (request: Request) => {
-        if (request.method() === "GET" && revalidationUrl.test(request.url())) {
+        if (request.method() === "GET" && revalidationPath.test(new URL(request.url()).pathname)) {
             started.add(request);
         }
     };
