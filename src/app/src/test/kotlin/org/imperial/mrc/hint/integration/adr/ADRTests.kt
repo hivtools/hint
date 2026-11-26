@@ -5,6 +5,7 @@ import com.github.kittinunf.fuel.httpPost
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.imperial.mrc.hint.ConfiguredAppProperties
+import org.imperial.mrc.hint.clients.ADRFuelClient
 import org.imperial.mrc.hint.helpers.JSONValidator
 import org.imperial.mrc.hint.integration.SecureIntegrationTests
 import org.imperial.mrc.hint.models.AdrResource
@@ -279,7 +280,7 @@ class ADRTests : SecureIntegrationTests()
             assertThat(data["name"].textValue()).isEqualTo(releaseName)
 
             "${ConfiguredAppProperties().adrUrl}api/3/action/version_delete".httpPost(listOf("version_id" to data["id"].textValue()))
-                    .header("Authorization" to ADR_KEY)
+                    .header(adrHeaders())
                     .response()
         }
     }
@@ -312,9 +313,18 @@ class ADRTests : SecureIntegrationTests()
             assertThat(data2["id"].textValue()).isNotEqualTo(data["id"].textValue())
 
             "${ConfiguredAppProperties().adrUrl}api/3/action/version_delete".httpPost(listOf("version_id" to data2["id"].textValue()))
-                    .header("Authorization" to ADR_KEY)
+                    .header(adrHeaders())
                     .response()
         }
+    }
+
+    // Direct calls to the ADR need the same headers HINT's ADR client sends,
+    // including the CI-only header that gets past the dev ADR's IP filter
+    private fun adrHeaders(): Map<String, Any>
+    {
+        val headers = mutableMapOf<String, Any>("Authorization" to ADR_KEY)
+        ConfiguredAppProperties().adrWafBypassSecret?.let { headers[ADRFuelClient.WAF_BYPASS_HEADER] = it }
+        return headers
     }
 
     private fun saveFileFromADR(resourceType: String, isAuthorized: IsAuthorized, adrPath: String)
@@ -391,7 +401,7 @@ class ADRTests : SecureIntegrationTests()
                 .timeout(60000)
                 .timeoutRead(60000)
                 .header("Content-Type" to "application/json")
-                .header("Authorization" to ADR_KEY)
+                .header(adrHeaders())
                 .body("""{"package_id": "hint_test", "resource_type": "$resourceType"}""")
                 .response()
                 .second

@@ -4,6 +4,7 @@ import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
 import org.assertj.core.api.Assertions
+import org.imperial.mrc.hint.AppProperties
 import org.imperial.mrc.hint.ConfiguredAppProperties
 import org.imperial.mrc.hint.clients.ADRClientBuilder
 import org.imperial.mrc.hint.clients.ADRFuelClient
@@ -89,4 +90,34 @@ class ADRClientBuilderTests
         Assertions.assertThat(headers["Authorization"]).isEqualTo("Bearer ")
     }
 
+    @Test
+    fun `clients send WAF bypass header when secret is configured`()
+    {
+        val props = mock<AppProperties> {
+            on { adrUrl } doReturn "https://adr.example/"
+            on { oauth2ClientAdrServerUrl } doReturn "https://adr.example/"
+            on { adrWafBypassSecret } doReturn "waf-secret"
+        }
+        val sut = ADRClientBuilder(props, encryption, mockSession, mockRepo, mock())
+
+        val basicHeaders = (sut.build() as ADRFuelClient).standardHeaders()
+        Assertions.assertThat(basicHeaders["X-Naomi-CI"]).isEqualTo("waf-secret")
+        Assertions.assertThat(basicHeaders["Authorization"]).isEqualTo(TEST_KEY)
+
+        val ssoHeaders = (sut.buildSSO() as ADRFuelClient).standardHeaders()
+        Assertions.assertThat(ssoHeaders["X-Naomi-CI"]).isEqualTo("waf-secret")
+    }
+
+    @Test
+    fun `clients do not send WAF bypass header when secret is not configured`()
+    {
+        val props = mock<AppProperties> {
+            on { adrUrl } doReturn "https://adr.example/"
+            on { adrWafBypassSecret } doReturn null
+        }
+        val sut = ADRClientBuilder(props, encryption, mockSession, mockRepo, mock())
+
+        val headers = (sut.build() as ADRFuelClient).standardHeaders()
+        Assertions.assertThat(headers).containsOnlyKeys("Authorization")
+    }
 }
