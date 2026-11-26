@@ -18,7 +18,8 @@ def with_baseline(scn, user=True):
     return a
 
 
-@pytest.mark.parametrize("kind", list(DISEASE))
+# No vmmc: Kotlin no longer has it (PR 1144). test_vmmc_errors records that its endpoint is gone.
+@pytest.mark.parametrize("kind", [k for k in DISEASE if k != "vmmc"])
 @pytest.mark.parametrize("user", ["guest", "user"])
 def test_upload_get_delete_cycle(scn, kind, user):
     a = with_baseline(scn, user == "user")

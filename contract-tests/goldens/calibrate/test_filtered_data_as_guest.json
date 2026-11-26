@@ -43,7 +43,7 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2020Q3",
                 "indicator": "prevalence",
-                "lower": 0.0024011408,
+                "lower": 0.0024011421,
                 "mean": 0.0024926378,
                 "mode": 0.0024859637,
                 "sex": "female",
@@ -55,9 +55,9 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2020Q3",
                 "indicator": "prevalence",
-                "lower": 0.0024058167,
+                "lower": 0.0024058183,
                 "mean": 0.0024965238,
-                "mode": 0.0024898846,
+                "mode": 0.0024898848,
                 "sex": "both",
                 "upper": 0.00258785
               },
@@ -67,11 +67,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2020Q3",
                 "indicator": "prevalence",
-                "lower": 0.0024104365,
+                "lower": 0.0024104381,
                 "mean": 0.002500381,
                 "mode": 0.0024937764,
                 "sex": "male",
-                "upper": 0.0025912626
+                "upper": 0.0025912628
               },
               {
                 "age_group": "Y000_000",
@@ -79,11 +79,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2023Q4",
                 "indicator": "prevalence",
-                "lower": 0.0018334555,
-                "mean": 0.0018966345,
-                "mode": 0.001891696,
+                "lower": 0.0018334554,
+                "mean": 0.0018966343,
+                "mode": 0.0018916958,
                 "sex": "male",
-                "upper": 0.0019643474
+                "upper": 0.001964347
               },
               {
                 "age_group": "Y000_000",
@@ -91,11 +91,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2023Q4",
                 "indicator": "prevalence",
-                "lower": 0.001834041,
-                "mean": 0.0018974838,
-                "mode": 0.0018925304,
+                "lower": 0.0018340407,
+                "mean": 0.0018974837,
+                "mode": 0.0018925302,
                 "sex": "both",
-                "upper": 0.0019655372
+                "upper": 0.001965537
               },
               {
                 "age_group": "Y000_000",
@@ -103,11 +103,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2023Q4",
                 "indicator": "prevalence",
-                "lower": 0.0018346296,
-                "mean": 0.0018983406,
-                "mode": 0.001893372,
+                "lower": 0.0018346293,
+                "mean": 0.0018983405,
+                "mode": 0.0018933719,
                 "sex": "female",
-                "upper": 0.0019667402
+                "upper": 0.0019667398
               },
               {
                 "age_group": "Y000_000",
@@ -115,11 +115,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2024Q3",
                 "indicator": "prevalence",
-                "lower": 0.0016010769,
-                "mean": 0.0016559709,
+                "lower": 0.0016010776,
+                "mean": 0.001655971,
                 "mode": 0.0016510611,
                 "sex": "male",
-                "upper": 0.0017153068
+                "upper": 0.0017153067
               },
               {
                 "age_group": "Y000_000",
@@ -127,11 +127,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2024Q3",
                 "indicator": "prevalence",
-                "lower": 0.0016016688,
+                "lower": 0.0016016695,
                 "mean": 0.0016567004,
-                "mode": 0.0016517781,
+                "mode": 0.001651778,
                 "sex": "both",
-                "upper": 0.0017161442
+                "upper": 0.001716144
               },
               {
                 "age_group": "Y000_000",
@@ -139,11 +139,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2024Q3",
                 "indicator": "prevalence",
-                "lower": 0.001602265,
+                "lower": 0.0016022658,
                 "mean": 0.0016574363,
                 "mode": 0.0016525012,
                 "sex": "female",
-                "upper": 0.0017170233
+                "upper": 0.0017170236
               },
               {
                 "age_group": "Y000_004",
@@ -151,8 +151,8 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2020Q3",
                 "indicator": "prevalence",
-                "lower": 0.0038341647,
-                "mean": 0.003980268,
+                "lower": 0.003834167,
+                "mean": 0.0039802683,
                 "mode": 0.0039696107,
                 "sex": "female",
                 "upper": 0.004126996
@@ -163,11 +163,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2020Q3",
                 "indicator": "prevalence",
-                "lower": 0.003841631,
+                "lower": 0.0038416337,
                 "mean": 0.003986473,
                 "mode": 0.003975872,
                 "sex": "both",
-                "upper": 0.0041323034
+                "upper": 0.004132304
               },
               {
                 "age_group": "Y000_004",
@@ -175,11 +175,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2020Q3",
                 "indicator": "prevalence",
-                "lower": 0.0038490084,
+                "lower": 0.0038490107,
                 "mean": 0.0039926325,
                 "mode": 0.003982086,
                 "sex": "male",
-                "upper": 0.004137753
+                "upper": 0.0041377535
               },
               {
                 "age_group": "Y000_004",
@@ -187,11 +187,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2023Q4",
                 "indicator": "prevalence",
-                "lower": 0.0026925316,
+                "lower": 0.0026925313,
                 "mean": 0.0027853132,
-                "mode": 0.0027780607,
+                "mode": 0.0027780605,
                 "sex": "male",
-                "upper": 0.0028847533
+                "upper": 0.0028847528
               },
               {
                 "age_group": "Y000_004",
@@ -199,11 +199,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2023Q4",
                 "indicator": "prevalence",
-                "lower": 0.0026933912,
+                "lower": 0.002693391,
                 "mean": 0.0027865604,
-                "mode": 0.0027792861,
+                "mode": 0.002779286,
                 "sex": "both",
-                "upper": 0.0028865007
+                "upper": 0.0028865002
               },
               {
                 "age_group": "Y000_004",
@@ -211,11 +211,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2023Q4",
                 "indicator": "prevalence",
-                "lower": 0.0026942557,
-                "mean": 0.002787819,
-                "mode": 0.0027805222,
+                "lower": 0.0026942554,
+                "mean": 0.0027878187,
+                "mode": 0.002780522,
                 "sex": "female",
-                "upper": 0.0028882674
+                "upper": 0.002888267
               },
               {
                 "age_group": "Y000_004",
@@ -223,11 +223,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2024Q3",
                 "indicator": "prevalence",
-                "lower": 0.002486393,
+                "lower": 0.0024863943,
                 "mean": 0.002571641,
                 "mode": 0.0025640163,
                 "sex": "male",
-                "upper": 0.0026637865
+                "upper": 0.0026637863
               },
               {
                 "age_group": "Y000_004",
@@ -235,11 +235,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2024Q3",
                 "indicator": "prevalence",
-                "lower": 0.0024873123,
+                "lower": 0.0024873135,
                 "mean": 0.0025727737,
                 "mode": 0.0025651297,
                 "sex": "both",
-                "upper": 0.0026650869
+                "upper": 0.0026650866
               },
               {
                 "age_group": "Y000_004",
@@ -247,11 +247,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2024Q3",
                 "indicator": "prevalence",
-                "lower": 0.0024882383,
+                "lower": 0.0024882394,
                 "mean": 0.0025739165,
                 "mode": 0.0025662526,
                 "sex": "female",
-                "upper": 0.0026664522
+                "upper": 0.0026664527
               },
               {
                 "age_group": "Y000_014",
@@ -259,7 +259,7 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2020Q3",
                 "indicator": "prevalence",
-                "lower": 0.007906252,
+                "lower": 0.007906256,
                 "mean": 0.008197172,
                 "mode": 0.008174668,
                 "sex": "female",
@@ -271,7 +271,7 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2020Q3",
                 "indicator": "prevalence",
-                "lower": 0.007912047,
+                "lower": 0.007912052,
                 "mean": 0.0082013095,
                 "mode": 0.008178918,
                 "sex": "both",
@@ -283,11 +283,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2020Q3",
                 "indicator": "prevalence",
-                "lower": 0.007917695,
+                "lower": 0.0079176985,
                 "mean": 0.008205455,
                 "mode": 0.008183175,
                 "sex": "male",
-                "upper": 0.008503716
+                "upper": 0.008503717
               },
               {
                 "age_group": "Y000_014",
@@ -295,11 +295,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2023Q4",
                 "indicator": "prevalence",
-                "lower": 0.005481841,
+                "lower": 0.005481844,
                 "mean": 0.0056858705,
-                "mode": 0.005670415,
+                "mode": 0.0056704143,
                 "sex": "female",
-                "upper": 0.0058905575
+                "upper": 0.005890556
               },
               {
                 "age_group": "Y000_014",
@@ -307,11 +307,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2023Q4",
                 "indicator": "prevalence",
-                "lower": 0.005487471,
+                "lower": 0.005487474,
                 "mean": 0.005689989,
-                "mode": 0.0056746076,
+                "mode": 0.005674607,
                 "sex": "both",
-                "upper": 0.005893473
+                "upper": 0.005893472
               },
               {
                 "age_group": "Y000_014",
@@ -319,11 +319,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2023Q4",
                 "indicator": "prevalence",
-                "lower": 0.00549307,
+                "lower": 0.0054930733,
                 "mean": 0.0056940936,
                 "mode": 0.0056787864,
                 "sex": "male",
-                "upper": 0.00589639
+                "upper": 0.005896389
               },
               {
                 "age_group": "Y000_014",
@@ -331,11 +331,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2024Q3",
                 "indicator": "prevalence",
-                "lower": 0.0049642995,
+                "lower": 0.0049643023,
                 "mean": 0.005150888,
-                "mode": 0.005136586,
+                "mode": 0.0051365853,
                 "sex": "female",
-                "upper": 0.005337119
+                "upper": 0.0053371186
               },
               {
                 "age_group": "Y000_014",
@@ -343,11 +343,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2024Q3",
                 "indicator": "prevalence",
-                "lower": 0.004970097,
+                "lower": 0.0049701,
                 "mean": 0.0051553836,
                 "mode": 0.0051411446,
                 "sex": "both",
-                "upper": 0.0053403485
+                "upper": 0.005340348
               },
               {
                 "age_group": "Y000_014",
@@ -355,11 +355,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2024Q3",
                 "indicator": "prevalence",
-                "lower": 0.0049758595,
+                "lower": 0.0049758623,
                 "mean": 0.0051598614,
                 "mode": 0.005145685,
                 "sex": "male",
-                "upper": 0.005343576
+                "upper": 0.0053435755
               },
               {
                 "age_group": "Y000_064",
@@ -367,11 +367,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2020Q3",
                 "indicator": "prevalence",
-                "lower": 0.038918573,
+                "lower": 0.03891857,
                 "mean": 0.041154604,
                 "mode": 0.04090423,
                 "sex": "male",
-                "upper": 0.043879095
+                "upper": 0.04387909
               },
               {
                 "age_group": "Y000_064",
@@ -380,10 +380,10 @@
                 "calendar_quarter": "CY2020Q3",
                 "indicator": "prevalence",
                 "lower": 0.05067192,
-                "mean": 0.051920958,
+                "mean": 0.05192096,
                 "mode": 0.05171236,
                 "sex": "both",
-                "upper": 0.053126585
+                "upper": 0.053126596
               },
               {
                 "age_group": "Y000_064",
@@ -391,9 +391,9 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2020Q3",
                 "indicator": "prevalence",
-                "lower": 0.060163304,
-                "mean": 0.06221634,
-                "mode": 0.062042043,
+                "lower": 0.060163327,
+                "mean": 0.06221635,
+                "mode": 0.06204205,
                 "sex": "female",
                 "upper": 0.064261645
               },
@@ -403,11 +403,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2023Q4",
                 "indicator": "prevalence",
-                "lower": 0.03287165,
+                "lower": 0.032871626,
                 "mean": 0.03571308,
                 "mode": 0.035203952,
                 "sex": "male",
-                "upper": 0.03929755
+                "upper": 0.03929758
               },
               {
                 "age_group": "Y000_064",
@@ -415,11 +415,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2023Q4",
                 "indicator": "prevalence",
-                "lower": 0.044580564,
-                "mean": 0.04635519,
+                "lower": 0.044580556,
+                "mean": 0.046355195,
                 "mode": 0.045961395,
                 "sex": "both",
-                "upper": 0.048543654
+                "upper": 0.04854367
               },
               {
                 "age_group": "Y000_064",
@@ -427,11 +427,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2023Q4",
                 "indicator": "prevalence",
-                "lower": 0.053656157,
-                "mean": 0.056552827,
-                "mode": 0.056260623,
+                "lower": 0.053656172,
+                "mean": 0.056552835,
+                "mode": 0.056260627,
                 "sex": "female",
-                "upper": 0.060208444
+                "upper": 0.060208447
               },
               {
                 "age_group": "Y000_064",
@@ -439,11 +439,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2024Q3",
                 "indicator": "prevalence",
-                "lower": 0.031500045,
+                "lower": 0.031500034,
                 "mean": 0.034597345,
-                "mode": 0.03402633,
+                "mode": 0.034026325,
                 "sex": "male",
-                "upper": 0.038651627
+                "upper": 0.03865166
               },
               {
                 "age_group": "Y000_064",
@@ -451,11 +451,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2024Q3",
                 "indicator": "prevalence",
-                "lower": 0.04315627,
-                "mean": 0.04518287,
+                "lower": 0.043156274,
+                "mean": 0.045182873,
                 "mode": 0.04473647,
                 "sex": "both",
-                "upper": 0.047926955
+                "upper": 0.04792697
               },
               {
                 "age_group": "Y000_064",
@@ -463,11 +463,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2024Q3",
                 "indicator": "prevalence",
-                "lower": 0.05213612,
-                "mean": 0.055331223,
-                "mode": 0.05499541,
+                "lower": 0.052136138,
+                "mean": 0.05533123,
+                "mode": 0.054995414,
                 "sex": "female",
-                "upper": 0.05951604
+                "upper": 0.059516046
               },
               {
                 "age_group": "Y000_999",
@@ -475,9 +475,9 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2020Q3",
                 "indicator": "prevalence",
-                "lower": 0.039141957,
+                "lower": 0.039141946,
                 "mean": 0.041352794,
-                "mode": 0.041071046,
+                "mode": 0.041071042,
                 "sex": "male",
                 "upper": 0.04412819
               },
@@ -491,7 +491,7 @@
                 "mean": 0.05166697,
                 "mode": 0.051435404,
                 "sex": "both",
-                "upper": 0.052871507
+                "upper": 0.05287151
               },
               {
                 "age_group": "Y000_999",
@@ -499,11 +499,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2020Q3",
                 "indicator": "prevalence",
-                "lower": 0.059425145,
+                "lower": 0.059425157,
                 "mean": 0.06143126,
                 "mode": 0.061240807,
                 "sex": "female",
-                "upper": 0.063518666
+                "upper": 0.06351866
               },
               {
                 "age_group": "Y000_999",
@@ -511,9 +511,9 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2023Q4",
                 "indicator": "prevalence",
-                "lower": 0.03335991,
+                "lower": 0.03335988,
                 "mean": 0.036116406,
-                "mode": 0.035580453,
+                "mode": 0.03558045,
                 "sex": "male",
                 "upper": 0.039825805
               },
@@ -523,11 +523,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2023Q4",
                 "indicator": "prevalence",
-                "lower": 0.04460615,
+                "lower": 0.044606138,
                 "mean": 0.04642395,
-                "mode": 0.046010837,
+                "mode": 0.046010833,
                 "sex": "both",
-                "upper": 0.04872834
+                "upper": 0.048728343
               },
               {
                 "age_group": "Y000_999",
@@ -535,11 +535,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2023Q4",
                 "indicator": "prevalence",
-                "lower": 0.053369593,
+                "lower": 0.05336957,
                 "mean": 0.05620353,
-                "mode": 0.05589761,
+                "mode": 0.055897605,
                 "sex": "female",
-                "upper": 0.059710864
+                "upper": 0.05971088
               },
               {
                 "age_group": "Y000_999",
@@ -547,11 +547,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2024Q3",
                 "indicator": "prevalence",
-                "lower": 0.032036334,
+                "lower": 0.032036312,
                 "mean": 0.035040904,
-                "mode": 0.034444917,
+                "mode": 0.03444491,
                 "sex": "male",
-                "upper": 0.03903652
+                "upper": 0.03903653
               },
               {
                 "age_group": "Y000_999",
@@ -559,11 +559,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2024Q3",
                 "indicator": "prevalence",
-                "lower": 0.043233555,
+                "lower": 0.04323354,
                 "mean": 0.045310766,
-                "mode": 0.04484669,
+                "mode": 0.044846687,
                 "sex": "both",
-                "upper": 0.04814817
+                "upper": 0.048148185
               },
               {
                 "age_group": "Y000_999",
@@ -571,11 +571,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2024Q3",
                 "indicator": "prevalence",
-                "lower": 0.051870495,
+                "lower": 0.051870473,
                 "mean": 0.05505899,
-                "mode": 0.05471086,
+                "mode": 0.054710858,
                 "sex": "female",
-                "upper": 0.059295796
+                "upper": 0.059295803
               },
               {
                 "age_group": "Y001_004",
@@ -583,7 +583,7 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2020Q3",
                 "indicator": "prevalence",
-                "lower": 0.0042124405,
+                "lower": 0.0042124433,
                 "mean": 0.0043729586,
                 "mode": 0.0043612495,
                 "sex": "female",
@@ -595,11 +595,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2020Q3",
                 "indicator": "prevalence",
-                "lower": 0.004220644,
+                "lower": 0.0042206463,
                 "mean": 0.004379776,
-                "mode": 0.0043681283,
+                "mode": 0.0043681287,
                 "sex": "both",
-                "upper": 0.0045399936
+                "upper": 0.004539994
               },
               {
                 "age_group": "Y001_004",
@@ -607,11 +607,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2020Q3",
                 "indicator": "prevalence",
-                "lower": 0.004228749,
+                "lower": 0.004228751,
                 "mean": 0.004386543,
                 "mode": 0.004374956,
                 "sex": "male",
-                "upper": 0.0045459806
+                "upper": 0.004545981
               },
               {
                 "age_group": "Y001_004",
@@ -619,11 +619,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2023Q4",
                 "indicator": "prevalence",
-                "lower": 0.0029192108,
-                "mean": 0.0030198037,
-                "mode": 0.0030119407,
+                "lower": 0.0029192106,
+                "mean": 0.0030198034,
+                "mode": 0.0030119405,
                 "sex": "male",
-                "upper": 0.0031276154
+                "upper": 0.003127615
               },
               {
                 "age_group": "Y001_004",
@@ -631,11 +631,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2023Q4",
                 "indicator": "prevalence",
-                "lower": 0.0029201428,
-                "mean": 0.003021156,
-                "mode": 0.0030132693,
+                "lower": 0.0029201426,
+                "mean": 0.0030211557,
+                "mode": 0.003013269,
                 "sex": "both",
-                "upper": 0.00312951
+                "upper": 0.0031295095
               },
               {
                 "age_group": "Y001_004",
@@ -643,11 +643,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2023Q4",
                 "indicator": "prevalence",
-                "lower": 0.0029210802,
-                "mean": 0.0030225203,
-                "mode": 0.0030146095,
+                "lower": 0.0029210798,
+                "mean": 0.00302252,
+                "mode": 0.003014609,
                 "sex": "female",
-                "upper": 0.0031314255
+                "upper": 0.0031314248
               },
               {
                 "age_group": "Y001_004",
@@ -655,11 +655,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2024Q3",
                 "indicator": "prevalence",
-                "lower": 0.0027193064,
-                "mean": 0.0028125397,
+                "lower": 0.0027193076,
+                "mean": 0.00281254,
                 "mode": 0.0028042009,
                 "sex": "male",
-                "upper": 0.0029133172
+                "upper": 0.002913317
               },
               {
                 "age_group": "Y001_004",
@@ -667,11 +667,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2024Q3",
                 "indicator": "prevalence",
-                "lower": 0.0027203117,
-                "mean": 0.0028137786,
-                "mode": 0.0028054186,
+                "lower": 0.002720313,
+                "mean": 0.0028137788,
+                "mode": 0.0028054183,
                 "sex": "both",
-                "upper": 0.0029147393
+                "upper": 0.002914739
               },
               {
                 "age_group": "Y001_004",
@@ -679,11 +679,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2024Q3",
                 "indicator": "prevalence",
-                "lower": 0.0027213243,
+                "lower": 0.0027213255,
                 "mean": 0.0028150284,
-                "mode": 0.0028066467,
+                "mode": 0.0028066465,
                 "sex": "female",
-                "upper": 0.0029162324
+                "upper": 0.002916233
               },
               {
                 "age_group": "Y005_009",
@@ -691,7 +691,7 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2020Q3",
                 "indicator": "prevalence",
-                "lower": 0.008286201,
+                "lower": 0.008286206,
                 "mean": 0.008601973,
                 "mode": 0.008578284,
                 "sex": "female",
@@ -703,11 +703,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2020Q3",
                 "indicator": "prevalence",
-                "lower": 0.008300028,
+                "lower": 0.008300033,
                 "mean": 0.008613196,
                 "mode": 0.008589638,
                 "sex": "both",
-                "upper": 0.008931079
+                "upper": 0.00893108
               },
               {
                 "age_group": "Y005_009",
@@ -715,7 +715,7 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2020Q3",
                 "indicator": "prevalence",
-                "lower": 0.008313804,
+                "lower": 0.008313809,
                 "mean": 0.00862443,
                 "mode": 0.008601001,
                 "sex": "male",
@@ -727,8 +727,8 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2023Q4",
                 "indicator": "prevalence",
-                "lower": 0.0049127126,
-                "mean": 0.0050998665,
+                "lower": 0.0049127154,
+                "mean": 0.005099867,
                 "mode": 0.0050860406,
                 "sex": "female",
                 "upper": 0.005288694
@@ -739,9 +739,9 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2023Q4",
                 "indicator": "prevalence",
-                "lower": 0.004925507,
+                "lower": 0.0049255104,
                 "mean": 0.00511122,
-                "mode": 0.0050974577,
+                "mode": 0.005097458,
                 "sex": "both",
                 "upper": 0.005298573
               },
@@ -751,11 +751,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2023Q4",
                 "indicator": "prevalence",
-                "lower": 0.004938193,
+                "lower": 0.004938196,
                 "mean": 0.0051225093,
                 "mode": 0.0051088105,
                 "sex": "male",
-                "upper": 0.005308934
+                "upper": 0.0053089345
               },
               {
                 "age_group": "Y005_009",
@@ -763,11 +763,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2024Q3",
                 "indicator": "prevalence",
-                "lower": 0.004273773,
+                "lower": 0.004273776,
                 "mean": 0.004435668,
                 "mode": 0.004423693,
                 "sex": "female",
-                "upper": 0.0045966646
+                "upper": 0.004596664
               },
               {
                 "age_group": "Y005_009",
@@ -775,11 +775,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2024Q3",
                 "indicator": "prevalence",
-                "lower": 0.0042839586,
+                "lower": 0.0042839614,
                 "mean": 0.004444704,
                 "mode": 0.0044327807,
                 "sex": "both",
-                "upper": 0.0046049994
+                "upper": 0.004605
               },
               {
                 "age_group": "Y005_009",
@@ -787,11 +787,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2024Q3",
                 "indicator": "prevalence",
-                "lower": 0.004294068,
+                "lower": 0.0042940704,
                 "mean": 0.004453682,
-                "mode": 0.0044418103,
+                "mode": 0.00444181,
                 "sex": "male",
-                "upper": 0.0046134084
+                "upper": 0.004613409
               },
               {
                 "age_group": "Y010_014",
@@ -799,7 +799,7 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2020Q3",
                 "indicator": "prevalence",
-                "lower": 0.012069488,
+                "lower": 0.0120694935,
                 "mean": 0.0125061935,
                 "mode": 0.0124715995,
                 "sex": "female",
@@ -811,11 +811,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2020Q3",
                 "indicator": "prevalence",
-                "lower": 0.012113705,
-                "mean": 0.012549054,
-                "mode": 0.012514478,
+                "lower": 0.012113711,
+                "mean": 0.012549053,
+                "mode": 0.012514477,
                 "sex": "both",
-                "upper": 0.013006099
+                "upper": 0.0130060995
               },
               {
                 "age_group": "Y010_014",
@@ -823,11 +823,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2020Q3",
                 "indicator": "prevalence",
-                "lower": 0.012158481,
+                "lower": 0.012158486,
                 "mean": 0.01259253,
-                "mode": 0.012557971,
+                "mode": 0.01255797,
                 "sex": "male",
-                "upper": 0.013046202
+                "upper": 0.013046203
               },
               {
                 "age_group": "Y010_014",
@@ -835,7 +835,7 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2023Q4",
                 "indicator": "prevalence",
-                "lower": 0.009247503,
+                "lower": 0.009247509,
                 "mean": 0.009590192,
                 "mode": 0.009563739,
                 "sex": "female",
@@ -847,9 +847,9 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2023Q4",
                 "indicator": "prevalence",
-                "lower": 0.0092798695,
+                "lower": 0.009279874,
                 "mean": 0.009620701,
-                "mode": 0.009594317,
+                "mode": 0.009594316,
                 "sex": "both",
                 "upper": 0.009975499
               },
@@ -859,7 +859,7 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2023Q4",
                 "indicator": "prevalence",
-                "lower": 0.009311834,
+                "lower": 0.009311839,
                 "mean": 0.00965139,
                 "mode": 0.009625072,
                 "sex": "male",
@@ -871,7 +871,7 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2024Q3",
                 "indicator": "prevalence",
-                "lower": 0.008526356,
+                "lower": 0.008526361,
                 "mean": 0.008843416,
                 "mode": 0.008819077,
                 "sex": "female",
@@ -883,7 +883,7 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2024Q3",
                 "indicator": "prevalence",
-                "lower": 0.008556901,
+                "lower": 0.008556906,
                 "mean": 0.00887222,
                 "mode": 0.008847944,
                 "sex": "both",
@@ -895,9 +895,9 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2024Q3",
                 "indicator": "prevalence",
-                "lower": 0.008587468,
+                "lower": 0.008587472,
                 "mean": 0.008901137,
-                "mode": 0.008876925,
+                "mode": 0.008876924,
                 "sex": "male",
                 "upper": 0.009226477
               },
@@ -907,11 +907,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2020Q3",
                 "indicator": "prevalence",
-                "lower": 0.009239753,
+                "lower": 0.009239757,
                 "mean": 0.010468323,
                 "mode": 0.010372522,
                 "sex": "male",
-                "upper": 0.012010582
+                "upper": 0.012010585
               },
               {
                 "age_group": "Y010_019",
@@ -919,11 +919,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2020Q3",
                 "indicator": "prevalence",
-                "lower": 0.011538555,
-                "mean": 0.013109081,
-                "mode": 0.013036831,
+                "lower": 0.01153856,
+                "mean": 0.013109092,
+                "mode": 0.013036841,
                 "sex": "both",
-                "upper": 0.014916664
+                "upper": 0.014916677
               },
               {
                 "age_group": "Y010_019",
@@ -931,11 +931,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2020Q3",
                 "indicator": "prevalence",
-                "lower": 0.013114869,
-                "mean": 0.01569712,
-                "mode": 0.015646232,
+                "lower": 0.013114877,
+                "mean": 0.01569714,
+                "mode": 0.01564625,
                 "sex": "female",
-                "upper": 0.018734472
+                "upper": 0.018734487
               },
               {
                 "age_group": "Y010_019",
@@ -943,11 +943,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2023Q4",
                 "indicator": "prevalence",
-                "lower": 0.009546978,
-                "mean": 0.010022867,
-                "mode": 0.009966337,
+                "lower": 0.009546983,
+                "mean": 0.010022872,
+                "mode": 0.009966343,
                 "sex": "male",
-                "upper": 0.010557122
+                "upper": 0.01055713
               },
               {
                 "age_group": "Y010_019",
@@ -955,11 +955,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2023Q4",
                 "indicator": "prevalence",
-                "lower": 0.0109730065,
-                "mean": 0.01180936,
-                "mode": 0.01172254,
+                "lower": 0.01097302,
+                "mean": 0.011809374,
+                "mode": 0.011722553,
                 "sex": "both",
-                "upper": 0.012855784
+                "upper": 0.012855804
               },
               {
                 "age_group": "Y010_019",
@@ -967,11 +967,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2023Q4",
                 "indicator": "prevalence",
-                "lower": 0.012190801,
-                "mean": 0.013573388,
-                "mode": 0.013457583,
+                "lower": 0.012190816,
+                "mean": 0.013573409,
+                "mode": 0.013457603,
                 "sex": "female",
-                "upper": 0.015328533
+                "upper": 0.015328568
               },
               {
                 "age_group": "Y010_019",
@@ -979,11 +979,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2024Q3",
                 "indicator": "prevalence",
-                "lower": 0.0090778675,
-                "mean": 0.009523246,
-                "mode": 0.009465919,
+                "lower": 0.009077871,
+                "mean": 0.009523252,
+                "mode": 0.009465924,
                 "sex": "male",
-                "upper": 0.009993306
+                "upper": 0.00999331
               },
               {
                 "age_group": "Y010_019",
@@ -991,11 +991,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2024Q3",
                 "indicator": "prevalence",
-                "lower": 0.010434011,
-                "mean": 0.011312321,
-                "mode": 0.011211602,
+                "lower": 0.010434019,
+                "mean": 0.011312335,
+                "mode": 0.011211615,
                 "sex": "both",
-                "upper": 0.012472021
+                "upper": 0.012472047
               },
               {
                 "age_group": "Y010_019",
@@ -1003,11 +1003,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2024Q3",
                 "indicator": "prevalence",
-                "lower": 0.011607257,
-                "mean": 0.013082118,
-                "mode": 0.01294,
+                "lower": 0.011607271,
+                "mean": 0.013082142,
+                "mode": 0.012940021,
                 "sex": "female",
-                "upper": 0.015100178
+                "upper": 0.015100217
               },
               {
                 "age_group": "Y015_019",
@@ -1015,11 +1015,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2020Q3",
                 "indicator": "prevalence",
-                "lower": 0.0051658195,
+                "lower": 0.00516582,
                 "mean": 0.0079721175,
-                "mode": 0.007797849,
+                "mode": 0.0077978484,
                 "sex": "male",
-                "upper": 0.011507291
+                "upper": 0.011507273
               },
               {
                 "age_group": "Y015_019",
@@ -1027,11 +1027,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2020Q3",
                 "indicator": "prevalence",
-                "lower": 0.010409344,
-                "mean": 0.013762951,
-                "mode": 0.013647599,
+                "lower": 0.010409354,
+                "mean": 0.013762973,
+                "mode": 0.013647621,
                 "sex": "both",
-                "upper": 0.017348625
+                "upper": 0.017348653
               },
               {
                 "age_group": "Y015_019",
@@ -1039,11 +1039,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2020Q3",
                 "indicator": "prevalence",
-                "lower": 0.013971043,
-                "mean": 0.01939927,
-                "mode": 0.019329805,
+                "lower": 0.013971076,
+                "mean": 0.019399313,
+                "mode": 0.019329848,
                 "sex": "female",
-                "upper": 0.025609648
+                "upper": 0.025609689
               },
               {
                 "age_group": "Y015_019",
@@ -1051,11 +1051,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2023Q4",
                 "indicator": "prevalence",
-                "lower": 0.009625065,
-                "mean": 0.010433169,
-                "mode": 0.010344254,
+                "lower": 0.009625079,
+                "mean": 0.010433181,
+                "mode": 0.010344266,
                 "sex": "male",
-                "upper": 0.011421588
+                "upper": 0.011421603
               },
               {
                 "age_group": "Y015_019",
@@ -1063,11 +1063,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2023Q4",
                 "indicator": "prevalence",
-                "lower": 0.012627432,
-                "mean": 0.014209558,
-                "mode": 0.014060685,
+                "lower": 0.012627456,
+                "mean": 0.014209587,
+                "mode": 0.014060712,
                 "sex": "both",
-                "upper": 0.01607553
+                "upper": 0.016075578
               },
               {
                 "age_group": "Y015_019",
@@ -1075,11 +1075,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2023Q4",
                 "indicator": "prevalence",
-                "lower": 0.015179761,
-                "mean": 0.017910864,
-                "mode": 0.017704636,
+                "lower": 0.015179804,
+                "mean": 0.017910909,
+                "mode": 0.017704677,
                 "sex": "female",
-                "upper": 0.021346055
+                "upper": 0.021346105
               },
               {
                 "age_group": "Y015_019",
@@ -1087,11 +1087,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2024Q3",
                 "indicator": "prevalence",
-                "lower": 0.009495386,
-                "mean": 0.010203357,
-                "mode": 0.010111471,
+                "lower": 0.009495394,
+                "mean": 0.010203368,
+                "mode": 0.010111482,
                 "sex": "male",
-                "upper": 0.010993977
+                "upper": 0.010993992
               },
               {
                 "age_group": "Y015_019",
@@ -1099,11 +1099,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2024Q3",
                 "indicator": "prevalence",
-                "lower": 0.012311089,
-                "mean": 0.013960712,
-                "mode": 0.013783048,
+                "lower": 0.012311109,
+                "mean": 0.013960742,
+                "mode": 0.013783076,
                 "sex": "both",
-                "upper": 0.016081462
+                "upper": 0.01608151
               },
               {
                 "age_group": "Y015_019",
@@ -1111,11 +1111,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2024Q3",
                 "indicator": "prevalence",
-                "lower": 0.014804111,
-                "mean": 0.017649876,
-                "mode": 0.017390568,
+                "lower": 0.014804141,
+                "mean": 0.017649926,
+                "mode": 0.017390613,
                 "sex": "female",
-                "upper": 0.021698777
+                "upper": 0.02169885
               },
               {
                 "age_group": "Y015_024",
@@ -1123,11 +1123,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2020Q3",
                 "indicator": "prevalence",
-                "lower": 0.009686241,
-                "mean": 0.012587954,
-                "mode": 0.012375295,
+                "lower": 0.00968624,
+                "mean": 0.012587948,
+                "mode": 0.012375288,
                 "sex": "male",
-                "upper": 0.016335007
+                "upper": 0.016335003
               },
               {
                 "age_group": "Y015_024",
@@ -1135,11 +1135,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2020Q3",
                 "indicator": "prevalence",
-                "lower": 0.019933272,
-                "mean": 0.022640035,
-                "mode": 0.022400897,
+                "lower": 0.019933285,
+                "mean": 0.022640051,
+                "mode": 0.02240091,
                 "sex": "both",
-                "upper": 0.02540467
+                "upper": 0.025404688
               },
               {
                 "age_group": "Y015_024",
@@ -1147,11 +1147,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2020Q3",
                 "indicator": "prevalence",
-                "lower": 0.028199824,
-                "mean": 0.03234703,
-                "mode": 0.032073904,
+                "lower": 0.028199846,
+                "mean": 0.032347064,
+                "mode": 0.03207394,
                 "sex": "female",
-                "upper": 0.03713427
+                "upper": 0.03713431
               },
               {
                 "age_group": "Y015_024",
@@ -1159,11 +1159,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2023Q4",
                 "indicator": "prevalence",
-                "lower": 0.010308468,
-                "mean": 0.0125270765,
-                "mode": 0.012182933,
+                "lower": 0.0103084715,
+                "mean": 0.012527093,
+                "mode": 0.012182946,
                 "sex": "male",
-                "upper": 0.014959892
+                "upper": 0.014959927
               },
               {
                 "age_group": "Y015_024",
@@ -1171,11 +1171,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2023Q4",
                 "indicator": "prevalence",
-                "lower": 0.017224496,
-                "mean": 0.019884326,
-                "mode": 0.019533692,
+                "lower": 0.017224524,
+                "mean": 0.019884374,
+                "mode": 0.019533737,
                 "sex": "both",
-                "upper": 0.023097416
+                "upper": 0.023097478
               },
               {
                 "age_group": "Y015_024",
@@ -1183,11 +1183,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2023Q4",
                 "indicator": "prevalence",
-                "lower": 0.022242133,
-                "mean": 0.027046591,
-                "mode": 0.026679825,
+                "lower": 0.022242196,
+                "mean": 0.027046671,
+                "mode": 0.026679901,
                 "sex": "female",
-                "upper": 0.03291608
+                "upper": 0.032916192
               },
               {
                 "age_group": "Y015_024",
@@ -1195,11 +1195,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2024Q3",
                 "indicator": "prevalence",
-                "lower": 0.010354909,
-                "mean": 0.012616141,
-                "mode": 0.012242682,
+                "lower": 0.010354915,
+                "mean": 0.012616159,
+                "mode": 0.012242698,
                 "sex": "male",
-                "upper": 0.015283507
+                "upper": 0.015283535
               },
               {
                 "age_group": "Y015_024",
@@ -1207,11 +1207,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2024Q3",
                 "indicator": "prevalence",
-                "lower": 0.016679913,
-                "mean": 0.019480495,
-                "mode": 0.019087078,
+                "lower": 0.016679944,
+                "mean": 0.019480547,
+                "mode": 0.019087125,
                 "sex": "both",
-                "upper": 0.022952072
+                "upper": 0.022952145
               },
               {
                 "age_group": "Y015_024",
@@ -1219,11 +1219,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2024Q3",
                 "indicator": "prevalence",
-                "lower": 0.021348786,
-                "mean": 0.026174378,
-                "mode": 0.025752455,
+                "lower": 0.021348858,
+                "mean": 0.026174463,
+                "mode": 0.025752533,
                 "sex": "female",
-                "upper": 0.032518905
+                "upper": 0.032518994
               },
               {
                 "age_group": "Y015_049",
@@ -1231,11 +1231,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2020Q3",
                 "indicator": "prevalence",
-                "lower": 0.059286192,
+                "lower": 0.059286166,
                 "mean": 0.06384899,
-                "mode": 0.06349226,
+                "mode": 0.06349225,
                 "sex": "male",
-                "upper": 0.06890185
+                "upper": 0.06890181
               },
               {
                 "age_group": "Y015_049",
@@ -1243,11 +1243,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2020Q3",
                 "indicator": "prevalence",
-                "lower": 0.08251167,
-                "mean": 0.08496694,
-                "mode": 0.08465529,
+                "lower": 0.0825117,
+                "mean": 0.084966965,
+                "mode": 0.084655315,
                 "sex": "both",
-                "upper": 0.08746342
+                "upper": 0.08746344
               },
               {
                 "age_group": "Y015_049",
@@ -1255,11 +1255,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2020Q3",
                 "indicator": "prevalence",
-                "lower": 0.10125341,
-                "mean": 0.10470904,
-                "mode": 0.10443085,
+                "lower": 0.10125349,
+                "mean": 0.104709074,
+                "mode": 0.10443088,
                 "sex": "female",
-                "upper": 0.10835749
+                "upper": 0.10835754
               },
               {
                 "age_group": "Y015_049",
@@ -1267,11 +1267,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2023Q4",
                 "indicator": "prevalence",
-                "lower": 0.04697068,
-                "mean": 0.05209833,
-                "mode": 0.051253695,
+                "lower": 0.04697069,
+                "mean": 0.052098338,
+                "mode": 0.05125369,
                 "sex": "male",
-                "upper": 0.058790937
+                "upper": 0.05879095
               },
               {
                 "age_group": "Y015_049",
@@ -1280,10 +1280,10 @@
                 "calendar_quarter": "CY2023Q4",
                 "indicator": "prevalence",
                 "lower": 0.06882655,
-                "mean": 0.07218854,
-                "mode": 0.07152647,
+                "mean": 0.07218856,
+                "mode": 0.07152648,
                 "sex": "both",
-                "upper": 0.0765804
+                "upper": 0.076580435
               },
               {
                 "age_group": "Y015_049",
@@ -1292,10 +1292,10 @@
                 "calendar_quarter": "CY2023Q4",
                 "indicator": "prevalence",
                 "lower": 0.086015716,
-                "mean": 0.09092756,
-                "mode": 0.090421855,
+                "mean": 0.0909276,
+                "mode": 0.090421885,
                 "sex": "female",
-                "upper": 0.09748
+                "upper": 0.097480096
               },
               {
                 "age_group": "Y015_049",
@@ -1303,11 +1303,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2024Q3",
                 "indicator": "prevalence",
-                "lower": 0.044253092,
-                "mean": 0.049696155,
+                "lower": 0.044253074,
+                "mean": 0.049696162,
                 "mode": 0.048739452,
                 "sex": "male",
-                "upper": 0.05717539
+                "upper": 0.057175457
               },
               {
                 "age_group": "Y015_049",
@@ -1316,10 +1316,10 @@
                 "calendar_quarter": "CY2024Q3",
                 "indicator": "prevalence",
                 "lower": 0.06561078,
-                "mean": 0.06938219,
-                "mode": 0.06862371,
+                "mean": 0.06938221,
+                "mode": 0.06862372,
                 "sex": "both",
-                "upper": 0.07461996
+                "upper": 0.07461999
               },
               {
                 "age_group": "Y015_049",
@@ -1327,11 +1327,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2024Q3",
                 "indicator": "prevalence",
-                "lower": 0.08213699,
-                "mean": 0.087735035,
-                "mode": 0.0871479,
+                "lower": 0.08213697,
+                "mean": 0.08773507,
+                "mode": 0.087147936,
                 "sex": "female",
-                "upper": 0.09551
+                "upper": 0.09551011
               },
               {
                 "age_group": "Y015_064",
@@ -1339,11 +1339,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2020Q3",
                 "indicator": "prevalence",
-                "lower": 0.06473032,
+                "lower": 0.064730324,
                 "mean": 0.06905981,
                 "mode": 0.06861125,
                 "sex": "male",
-                "upper": 0.0741935
+                "upper": 0.07419348
               },
               {
                 "age_group": "Y015_064",
@@ -1351,11 +1351,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2020Q3",
                 "indicator": "prevalence",
-                "lower": 0.08533976,
-                "mean": 0.08751546,
+                "lower": 0.08533977,
+                "mean": 0.087515466,
                 "mode": 0.087151065,
                 "sex": "both",
-                "upper": 0.089648016
+                "upper": 0.08964802
               },
               {
                 "age_group": "Y015_064",
@@ -1363,11 +1363,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2020Q3",
                 "indicator": "prevalence",
-                "lower": 0.10110515,
-                "mean": 0.10456153,
-                "mode": 0.10426377,
+                "lower": 0.10110519,
+                "mean": 0.104561545,
+                "mode": 0.104263775,
                 "sex": "female",
-                "upper": 0.10803869
+                "upper": 0.108038746
               },
               {
                 "age_group": "Y015_064",
@@ -1375,11 +1375,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2023Q4",
                 "indicator": "prevalence",
-                "lower": 0.054300707,
-                "mean": 0.059290264,
-                "mode": 0.058385327,
+                "lower": 0.05430068,
+                "mean": 0.059290268,
+                "mode": 0.058385324,
                 "sex": "male",
-                "upper": 0.065754704
+                "upper": 0.06575473
               },
               {
                 "age_group": "Y015_064",
@@ -1388,8 +1388,8 @@
                 "calendar_quarter": "CY2023Q4",
                 "indicator": "prevalence",
                 "lower": 0.073860735,
-                "mean": 0.077012844,
-                "mode": 0.076325595,
+                "mean": 0.07701285,
+                "mode": 0.0763256,
                 "sex": "both",
                 "upper": 0.080857605
               },
@@ -1399,11 +1399,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2023Q4",
                 "indicator": "prevalence",
-                "lower": 0.088484816,
-                "mean": 0.09341816,
+                "lower": 0.08848484,
+                "mean": 0.093418166,
                 "mode": 0.092917256,
                 "sex": "female",
-                "upper": 0.09971537
+                "upper": 0.09971538
               },
               {
                 "age_group": "Y015_064",
@@ -1411,11 +1411,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2024Q3",
                 "indicator": "prevalence",
-                "lower": 0.05178744,
-                "mean": 0.05733101,
-                "mode": 0.056321673,
+                "lower": 0.051787436,
+                "mean": 0.057331014,
+                "mode": 0.056321666,
                 "sex": "male",
-                "upper": 0.06455009
+                "upper": 0.064550154
               },
               {
                 "age_group": "Y015_064",
@@ -1423,11 +1423,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2024Q3",
                 "indicator": "prevalence",
-                "lower": 0.071218595,
-                "mean": 0.07485489,
+                "lower": 0.0712186,
+                "mean": 0.0748549,
                 "mode": 0.07407895,
                 "sex": "both",
-                "upper": 0.07969065
+                "upper": 0.07969067
               },
               {
                 "age_group": "Y015_064",
@@ -1435,11 +1435,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2024Q3",
                 "indicator": "prevalence",
-                "lower": 0.08563632,
-                "mean": 0.091089346,
-                "mode": 0.090515025,
+                "lower": 0.08563634,
+                "mean": 0.09108936,
+                "mode": 0.09051503,
                 "sex": "female",
-                "upper": 0.09839255
+                "upper": 0.09839253
               },
               {
                 "age_group": "Y015_999",
@@ -1451,7 +1451,7 @@
                 "mean": 0.06824593,
                 "mode": 0.06774807,
                 "sex": "male",
-                "upper": 0.07327305
+                "upper": 0.07327302
               },
               {
                 "age_group": "Y015_999",
@@ -1475,7 +1475,7 @@
                 "mean": 0.100767866,
                 "mode": 0.10044883,
                 "sex": "female",
-                "upper": 0.1043136
+                "upper": 0.10431359
               },
               {
                 "age_group": "Y015_999",
@@ -1483,9 +1483,9 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2023Q4",
                 "indicator": "prevalence",
-                "lower": 0.05429401,
+                "lower": 0.054293983,
                 "mean": 0.05914604,
-                "mode": 0.058207907,
+                "mode": 0.0582079,
                 "sex": "male",
                 "upper": 0.06575005
               },
@@ -1495,11 +1495,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2023Q4",
                 "indicator": "prevalence",
-                "lower": 0.07267417,
+                "lower": 0.07267416,
                 "mean": 0.07578343,
-                "mode": 0.07507563,
+                "mode": 0.07507562,
                 "sex": "both",
-                "upper": 0.079782486
+                "upper": 0.079782516
               },
               {
                 "age_group": "Y015_999",
@@ -1507,11 +1507,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2023Q4",
                 "indicator": "prevalence",
-                "lower": 0.086173184,
+                "lower": 0.08617321,
                 "mean": 0.090946384,
-                "mode": 0.09043289,
+                "mode": 0.09043288,
                 "sex": "female",
-                "upper": 0.09692989
+                "upper": 0.09692992
               },
               {
                 "age_group": "Y015_999",
@@ -1519,11 +1519,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2024Q3",
                 "indicator": "prevalence",
-                "lower": 0.052033957,
+                "lower": 0.052033953,
                 "mean": 0.057298318,
-                "mode": 0.056260616,
+                "mode": 0.056260604,
                 "sex": "male",
-                "upper": 0.06441541
+                "upper": 0.06441543
               },
               {
                 "age_group": "Y015_999",
@@ -1531,11 +1531,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2024Q3",
                 "indicator": "prevalence",
-                "lower": 0.07023482,
+                "lower": 0.07023479,
                 "mean": 0.07378974,
-                "mode": 0.07299765,
+                "mode": 0.072997645,
                 "sex": "both",
-                "upper": 0.07867751
+                "upper": 0.07867754
               },
               {
                 "age_group": "Y015_999",
@@ -1543,11 +1543,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2024Q3",
                 "indicator": "prevalence",
-                "lower": 0.08347355,
+                "lower": 0.08347352,
                 "mean": 0.08883199,
-                "mode": 0.08824898,
+                "mode": 0.088248976,
                 "sex": "female",
-                "upper": 0.096092984
+                "upper": 0.096093
               },
               {
                 "age_group": "Y020_024",
@@ -1555,11 +1555,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2020Q3",
                 "indicator": "prevalence",
-                "lower": 0.013329484,
-                "mean": 0.018342497,
-                "mode": 0.018082008,
+                "lower": 0.013329464,
+                "mean": 0.018342482,
+                "mode": 0.018081993,
                 "sex": "male",
-                "upper": 0.024646543
+                "upper": 0.024646567
               },
               {
                 "age_group": "Y020_024",
@@ -1567,11 +1567,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2020Q3",
                 "indicator": "prevalence",
-                "lower": 0.0292256,
-                "mean": 0.03360817,
-                "mode": 0.0332146,
+                "lower": 0.029225608,
+                "mean": 0.033608172,
+                "mode": 0.033214603,
                 "sex": "both",
-                "upper": 0.038516026
+                "upper": 0.03851603
               },
               {
                 "age_group": "Y020_024",
@@ -1579,11 +1579,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2020Q3",
                 "indicator": "prevalence",
-                "lower": 0.041231323,
-                "mean": 0.048206776,
-                "mode": 0.047679383,
+                "lower": 0.041231357,
+                "mean": 0.048206802,
+                "mode": 0.04767941,
                 "sex": "female",
-                "upper": 0.05701988
+                "upper": 0.057019923
               },
               {
                 "age_group": "Y020_024",
@@ -1591,11 +1591,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2023Q4",
                 "indicator": "prevalence",
-                "lower": 0.010854172,
-                "mean": 0.0150856795,
-                "mode": 0.014428654,
+                "lower": 0.01085417,
+                "mean": 0.0150857,
+                "mode": 0.01442867,
                 "sex": "male",
-                "upper": 0.020078756
+                "upper": 0.020078804
               },
               {
                 "age_group": "Y020_024",
@@ -1603,11 +1603,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2023Q4",
                 "indicator": "prevalence",
-                "lower": 0.022448666,
-                "mean": 0.026765965,
-                "mode": 0.026168792,
+                "lower": 0.022448711,
+                "mean": 0.026766038,
+                "mode": 0.026168859,
                 "sex": "both",
-                "upper": 0.03170803
+                "upper": 0.03170813
               },
               {
                 "age_group": "Y020_024",
@@ -1615,11 +1615,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2023Q4",
                 "indicator": "prevalence",
-                "lower": 0.030729407,
-                "mean": 0.038043622,
-                "mode": 0.037480988,
+                "lower": 0.030729499,
+                "mean": 0.038043745,
+                "mode": 0.037481103,
                 "sex": "female",
-                "upper": 0.04683139
+                "upper": 0.04683157
               },
               {
                 "age_group": "Y020_024",
@@ -1627,11 +1627,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2024Q3",
                 "indicator": "prevalence",
-                "lower": 0.011195527,
-                "mean": 0.015529075,
-                "mode": 0.014814333,
+                "lower": 0.011195534,
+                "mean": 0.015529103,
+                "mode": 0.0148143545,
                 "sex": "male",
-                "upper": 0.020980742
+                "upper": 0.020980785
               },
               {
                 "age_group": "Y020_024",
@@ -1639,11 +1639,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2024Q3",
                 "indicator": "prevalence",
-                "lower": 0.021535503,
-                "mean": 0.026093982,
-                "mode": 0.025439912,
+                "lower": 0.021535547,
+                "mean": 0.02609406,
+                "mode": 0.025439981,
                 "sex": "both",
-                "upper": 0.031511765
+                "upper": 0.031511866
               },
               {
                 "age_group": "Y020_024",
@@ -1651,11 +1651,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2024Q3",
                 "indicator": "prevalence",
-                "lower": 0.02907874,
-                "mean": 0.03631251,
-                "mode": 0.035694838,
+                "lower": 0.029078834,
+                "mean": 0.036312636,
+                "mode": 0.035694957,
                 "sex": "female",
-                "upper": 0.04560665
+                "upper": 0.04560683
               },
               {
                 "age_group": "Y025_029",
@@ -1663,11 +1663,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2020Q3",
                 "indicator": "prevalence",
-                "lower": 0.03428855,
-                "mean": 0.043715905,
-                "mode": 0.04329533,
+                "lower": 0.03428852,
+                "mean": 0.043715876,
+                "mode": 0.0432953,
                 "sex": "male",
-                "upper": 0.054722834
+                "upper": 0.0547228
               },
               {
                 "age_group": "Y025_029",
@@ -1675,11 +1675,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2020Q3",
                 "indicator": "prevalence",
-                "lower": 0.06637258,
-                "mean": 0.0739796,
-                "mode": 0.07377134,
+                "lower": 0.0663726,
+                "mean": 0.073979616,
+                "mode": 0.07377136,
                 "sex": "both",
-                "upper": 0.08183414
+                "upper": 0.081834175
               },
               {
                 "age_group": "Y025_029",
@@ -1687,11 +1687,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2020Q3",
                 "indicator": "prevalence",
-                "lower": 0.09046414,
-                "mean": 0.10172708,
-                "mode": 0.101695985,
+                "lower": 0.090464145,
+                "mean": 0.10172713,
+                "mode": 0.10169603,
                 "sex": "female",
-                "upper": 0.112217605
+                "upper": 0.11221761
               },
               {
                 "age_group": "Y025_029",
@@ -1700,10 +1700,10 @@
                 "calendar_quarter": "CY2023Q4",
                 "indicator": "prevalence",
                 "lower": 0.02587692,
-                "mean": 0.033808306,
-                "mode": 0.032535393,
+                "mean": 0.033808336,
+                "mode": 0.032535415,
                 "sex": "male",
-                "upper": 0.04506976
+                "upper": 0.04506982
               },
               {
                 "age_group": "Y025_029",
@@ -1711,11 +1711,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2023Q4",
                 "indicator": "prevalence",
-                "lower": 0.047928162,
-                "mean": 0.053778008,
-                "mode": 0.05277888,
+                "lower": 0.047928184,
+                "mean": 0.053778067,
+                "mode": 0.052778933,
                 "sex": "both",
-                "upper": 0.06127184
+                "upper": 0.061271936
               },
               {
                 "age_group": "Y025_029",
@@ -1723,11 +1723,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2023Q4",
                 "indicator": "prevalence",
-                "lower": 0.06399329,
-                "mean": 0.072599314,
-                "mode": 0.071825765,
+                "lower": 0.06399335,
+                "mean": 0.072599396,
+                "mode": 0.07182585,
                 "sex": "female",
-                "upper": 0.082161024
+                "upper": 0.0821611
               },
               {
                 "age_group": "Y025_029",
@@ -1735,11 +1735,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2024Q3",
                 "indicator": "prevalence",
-                "lower": 0.023790639,
-                "mean": 0.031858563,
-                "mode": 0.030472204,
+                "lower": 0.023790646,
+                "mean": 0.031858604,
+                "mode": 0.030472234,
                 "sex": "male",
-                "upper": 0.04380738
+                "upper": 0.043807488
               },
               {
                 "age_group": "Y025_029",
@@ -1747,11 +1747,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2024Q3",
                 "indicator": "prevalence",
-                "lower": 0.04396319,
-                "mean": 0.050441295,
-                "mode": 0.049343582,
+                "lower": 0.04396325,
+                "mean": 0.050441373,
+                "mode": 0.049343646,
                 "sex": "both",
-                "upper": 0.058819123
+                "upper": 0.058819212
               },
               {
                 "age_group": "Y025_029",
@@ -1759,11 +1759,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2024Q3",
                 "indicator": "prevalence",
-                "lower": 0.059274185,
-                "mean": 0.06802065,
-                "mode": 0.0671636,
+                "lower": 0.059274234,
+                "mean": 0.06802075,
+                "mode": 0.0671637,
                 "sex": "female",
-                "upper": 0.07877461
+                "upper": 0.07877474
               },
               {
                 "age_group": "Y025_034",
@@ -1771,11 +1771,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2020Q3",
                 "indicator": "prevalence",
-                "lower": 0.05490758,
-                "mean": 0.064632006,
-                "mode": 0.064088546,
+                "lower": 0.054907575,
+                "mean": 0.06463202,
+                "mode": 0.06408855,
                 "sex": "male",
-                "upper": 0.07454604
+                "upper": 0.07454603
               },
               {
                 "age_group": "Y025_034",
@@ -1783,11 +1783,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2020Q3",
                 "indicator": "prevalence",
-                "lower": 0.08914405,
-                "mean": 0.09574003,
-                "mode": 0.0953306,
+                "lower": 0.089144066,
+                "mean": 0.09574004,
+                "mode": 0.09533062,
                 "sex": "both",
-                "upper": 0.10195629
+                "upper": 0.1019563
               },
               {
                 "age_group": "Y025_034",
@@ -1795,11 +1795,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2020Q3",
                 "indicator": "prevalence",
-                "lower": 0.11488552,
-                "mean": 0.12324794,
-                "mode": 0.12294115,
+                "lower": 0.114885524,
+                "mean": 0.123247966,
+                "mode": 0.12294117,
                 "sex": "female",
-                "upper": 0.1327753
+                "upper": 0.13277537
               },
               {
                 "age_group": "Y025_034",
@@ -1807,11 +1807,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2023Q4",
                 "indicator": "prevalence",
-                "lower": 0.038178444,
-                "mean": 0.046577398,
-                "mode": 0.045197427,
+                "lower": 0.03817845,
+                "mean": 0.046577428,
+                "mode": 0.045197442,
                 "sex": "male",
-                "upper": 0.058706824
+                "upper": 0.058706854
               },
               {
                 "age_group": "Y025_034",
@@ -1819,11 +1819,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2023Q4",
                 "indicator": "prevalence",
-                "lower": 0.06564131,
-                "mean": 0.07122181,
-                "mode": 0.07023238,
+                "lower": 0.06564132,
+                "mean": 0.07122186,
+                "mode": 0.07023241,
                 "sex": "both",
-                "upper": 0.0783209
+                "upper": 0.078320965
               },
               {
                 "age_group": "Y025_034",
@@ -1831,11 +1831,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2023Q4",
                 "indicator": "prevalence",
-                "lower": 0.08590836,
-                "mean": 0.09382192,
-                "mode": 0.09316447,
+                "lower": 0.0859084,
+                "mean": 0.09382198,
+                "mode": 0.09316452,
                 "sex": "female",
-                "upper": 0.10304531
+                "upper": 0.103045404
               },
               {
                 "age_group": "Y025_034",
@@ -1843,11 +1843,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2024Q3",
                 "indicator": "prevalence",
-                "lower": 0.034755662,
-                "mean": 0.04354229,
-                "mode": 0.04201521,
+                "lower": 0.03475566,
+                "mean": 0.043542325,
+                "mode": 0.042015232,
                 "sex": "male",
-                "upper": 0.056928236
+                "upper": 0.05692839
               },
               {
                 "age_group": "Y025_034",
@@ -1855,11 +1855,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2024Q3",
                 "indicator": "prevalence",
-                "lower": 0.06048887,
-                "mean": 0.066622965,
-                "mode": 0.065500274,
+                "lower": 0.060488883,
+                "mean": 0.06662302,
+                "mode": 0.06550032,
                 "sex": "both",
-                "upper": 0.07480869
+                "upper": 0.07480878
               },
               {
                 "age_group": "Y025_034",
@@ -1867,11 +1867,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2024Q3",
                 "indicator": "prevalence",
-                "lower": 0.07952084,
-                "mean": 0.08793526,
-                "mode": 0.08716019,
+                "lower": 0.07952087,
+                "mean": 0.08793534,
+                "mode": 0.08716025,
                 "sex": "female",
-                "upper": 0.09826525
+                "upper": 0.09826539
               },
               {
                 "age_group": "Y025_049",
@@ -1879,11 +1879,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2020Q3",
                 "indicator": "prevalence",
-                "lower": 0.09649106,
-                "mean": 0.10407445,
+                "lower": 0.09649111,
+                "mean": 0.104074456,
                 "mode": 0.103605576,
                 "sex": "male",
-                "upper": 0.11227703
+                "upper": 0.11227707
               },
               {
                 "age_group": "Y025_049",
@@ -1891,11 +1891,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2020Q3",
                 "indicator": "prevalence",
-                "lower": 0.12815146,
-                "mean": 0.13245448,
-                "mode": 0.1320933,
+                "lower": 0.12815149,
+                "mean": 0.13245451,
+                "mode": 0.13209331,
                 "sex": "both",
-                "upper": 0.136779
+                "upper": 0.13677901
               },
               {
                 "age_group": "Y025_049",
@@ -1903,11 +1903,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2020Q3",
                 "indicator": "prevalence",
-                "lower": 0.15195994,
-                "mean": 0.15833728,
-                "mode": 0.15806407,
+                "lower": 0.15196,
+                "mean": 0.15833731,
+                "mode": 0.1580641,
                 "sex": "female",
-                "upper": 0.1644926
+                "upper": 0.16449264
               },
               {
                 "age_group": "Y025_049",
@@ -1915,11 +1915,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2023Q4",
                 "indicator": "prevalence",
-                "lower": 0.07502959,
-                "mean": 0.083415024,
-                "mode": 0.08216855,
+                "lower": 0.07502956,
+                "mean": 0.08341502,
+                "mode": 0.082168534,
                 "sex": "male",
-                "upper": 0.093609765
+                "upper": 0.09360977
               },
               {
                 "age_group": "Y025_049",
@@ -1927,11 +1927,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2023Q4",
                 "indicator": "prevalence",
-                "lower": 0.107241414,
-                "mean": 0.11200302,
-                "mode": 0.11110367,
+                "lower": 0.10724143,
+                "mean": 0.11200303,
+                "mode": 0.11110366,
                 "sex": "both",
-                "upper": 0.11780697
+                "upper": 0.11780701
               },
               {
                 "age_group": "Y025_049",
@@ -1939,8 +1939,8 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2023Q4",
                 "indicator": "prevalence",
-                "lower": 0.13164333,
-                "mean": 0.1378132,
+                "lower": 0.13164334,
+                "mean": 0.13781321,
                 "mode": 0.13721313,
                 "sex": "female",
                 "upper": 0.14536996
@@ -1951,11 +1951,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2024Q3",
                 "indicator": "prevalence",
-                "lower": 0.07038824,
+                "lower": 0.070388235,
                 "mean": 0.07898365,
-                "mode": 0.07755853,
+                "mode": 0.07755852,
                 "sex": "male",
-                "upper": 0.09057184
+                "upper": 0.09057189
               },
               {
                 "age_group": "Y025_049",
@@ -1963,11 +1963,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2024Q3",
                 "indicator": "prevalence",
-                "lower": 0.10199214,
+                "lower": 0.10199213,
                 "mean": 0.107219495,
-                "mode": 0.10618314,
+                "mode": 0.106183134,
                 "sex": "both",
-                "upper": 0.114161916
+                "upper": 0.114161946
               },
               {
                 "age_group": "Y025_049",
@@ -1975,11 +1975,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2024Q3",
                 "indicator": "prevalence",
-                "lower": 0.12577286,
+                "lower": 0.12577283,
                 "mean": 0.1326594,
                 "mode": 0.13196063,
                 "sex": "female",
-                "upper": 0.1416619
+                "upper": 0.14166191
               },
               {
                 "age_group": "Y030_034",
@@ -1987,11 +1987,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2020Q3",
                 "indicator": "prevalence",
-                "lower": 0.07529141,
-                "mean": 0.09014764,
-                "mode": 0.08945337,
+                "lower": 0.0752915,
+                "mean": 0.0901477,
+                "mode": 0.089453414,
                 "sex": "male",
-                "upper": 0.10689474
+                "upper": 0.10689485
               },
               {
                 "age_group": "Y030_034",
@@ -1999,11 +1999,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2020Q3",
                 "indicator": "prevalence",
-                "lower": 0.110413074,
-                "mean": 0.12119914,
-                "mode": 0.1205478,
+                "lower": 0.11041309,
+                "mean": 0.12119917,
+                "mode": 0.12054783,
                 "sex": "both",
-                "upper": 0.13177425
+                "upper": 0.13177429
               },
               {
                 "age_group": "Y030_034",
@@ -2013,9 +2013,9 @@
                 "indicator": "prevalence",
                 "lower": 0.13313612,
                 "mean": 0.14751607,
-                "mode": 0.14688765,
+                "mode": 0.14688766,
                 "sex": "female",
-                "upper": 0.16216628
+                "upper": 0.16216631
               },
               {
                 "age_group": "Y030_034",
@@ -2023,11 +2023,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2023Q4",
                 "indicator": "prevalence",
-                "lower": 0.052197274,
-                "mean": 0.06247934,
-                "mode": 0.06096917,
+                "lower": 0.05219724,
+                "mean": 0.062479362,
+                "mode": 0.060969178,
                 "sex": "male",
-                "upper": 0.07699041
+                "upper": 0.07699053
               },
               {
                 "age_group": "Y030_034",
@@ -2035,11 +2035,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2023Q4",
                 "indicator": "prevalence",
-                "lower": 0.08546658,
-                "mean": 0.0922703,
-                "mode": 0.09130101,
+                "lower": 0.08546659,
+                "mean": 0.09227033,
+                "mode": 0.091301024,
                 "sex": "both",
-                "upper": 0.10039905
+                "upper": 0.10039911
               },
               {
                 "age_group": "Y030_034",
@@ -2047,11 +2047,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2023Q4",
                 "indicator": "prevalence",
-                "lower": 0.109371625,
-                "mean": 0.1187014,
-                "mode": 0.11819287,
+                "lower": 0.109371595,
+                "mean": 0.11870143,
+                "mode": 0.11819289,
                 "sex": "female",
-                "upper": 0.129979
+                "upper": 0.12997906
               },
               {
                 "age_group": "Y030_034",
@@ -2059,11 +2059,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2024Q3",
                 "indicator": "prevalence",
-                "lower": 0.04790191,
-                "mean": 0.058125317,
-                "mode": 0.05642537,
+                "lower": 0.04790188,
+                "mean": 0.058125347,
+                "mode": 0.056425385,
                 "sex": "male",
-                "upper": 0.073575154
+                "upper": 0.07357521
               },
               {
                 "age_group": "Y030_034",
@@ -2071,11 +2071,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2024Q3",
                 "indicator": "prevalence",
-                "lower": 0.07948891,
-                "mean": 0.08626419,
-                "mode": 0.085118994,
+                "lower": 0.079488926,
+                "mean": 0.08626423,
+                "mode": 0.085119024,
                 "sex": "both",
-                "upper": 0.094906814
+                "upper": 0.09490686
               },
               {
                 "age_group": "Y030_034",
@@ -2083,11 +2083,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2024Q3",
                 "indicator": "prevalence",
-                "lower": 0.1020828,
-                "mean": 0.11149413,
-                "mode": 0.11082806,
+                "lower": 0.10208285,
+                "mean": 0.111494176,
+                "mode": 0.11082808,
                 "sex": "female",
-                "upper": 0.122531354
+                "upper": 0.12253144
               },
               {
                 "age_group": "Y035_039",
@@ -2095,11 +2095,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2020Q3",
                 "indicator": "prevalence",
-                "lower": 0.102255076,
-                "mean": 0.12170007,
-                "mode": 0.12164084,
+                "lower": 0.102255,
+                "mean": 0.121700026,
+                "mode": 0.121640794,
                 "sex": "male",
-                "upper": 0.14356615
+                "upper": 0.14356607
               },
               {
                 "age_group": "Y035_039",
@@ -2108,10 +2108,10 @@
                 "calendar_quarter": "CY2020Q3",
                 "indicator": "prevalence",
                 "lower": 0.15081155,
-                "mean": 0.16416857,
-                "mode": 0.16389261,
+                "mean": 0.16416858,
+                "mode": 0.16389263,
                 "sex": "both",
-                "upper": 0.17864956
+                "upper": 0.1786496
               },
               {
                 "age_group": "Y035_039",
@@ -2119,11 +2119,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2020Q3",
                 "indicator": "prevalence",
-                "lower": 0.18371737,
-                "mean": 0.20047258,
-                "mode": 0.20000999,
+                "lower": 0.18371738,
+                "mean": 0.20047264,
+                "mode": 0.20001005,
                 "sex": "female",
-                "upper": 0.21986757
+                "upper": 0.2198676
               },
               {
                 "age_group": "Y035_039",
@@ -2131,11 +2131,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2023Q4",
                 "indicator": "prevalence",
-                "lower": 0.08701973,
-                "mean": 0.09931539,
-                "mode": 0.097927675,
+                "lower": 0.08701972,
+                "mean": 0.099315405,
+                "mode": 0.09792767,
                 "sex": "male",
-                "upper": 0.11568256
+                "upper": 0.11568254
               },
               {
                 "age_group": "Y035_039",
@@ -2143,11 +2143,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2023Q4",
                 "indicator": "prevalence",
-                "lower": 0.1242803,
-                "mean": 0.13285212,
-                "mode": 0.1317968,
+                "lower": 0.12428031,
+                "mean": 0.1328521,
+                "mode": 0.13179679,
                 "sex": "both",
-                "upper": 0.14113972
+                "upper": 0.1411397
               },
               {
                 "age_group": "Y035_039",
@@ -2155,11 +2155,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2023Q4",
                 "indicator": "prevalence",
-                "lower": 0.14944793,
-                "mean": 0.16056176,
-                "mode": 0.15977046,
+                "lower": 0.14944789,
+                "mean": 0.16056171,
+                "mode": 0.15977041,
                 "sex": "female",
-                "upper": 0.17201503
+                "upper": 0.17201501
               },
               {
                 "age_group": "Y035_039",
@@ -2167,11 +2167,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2024Q3",
                 "indicator": "prevalence",
-                "lower": 0.080430344,
-                "mean": 0.092421226,
-                "mode": 0.09081212,
+                "lower": 0.08043033,
+                "mean": 0.09242123,
+                "mode": 0.09081211,
                 "sex": "male",
-                "upper": 0.10765418
+                "upper": 0.10765424
               },
               {
                 "age_group": "Y035_039",
@@ -2179,9 +2179,9 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2024Q3",
                 "indicator": "prevalence",
-                "lower": 0.11729061,
-                "mean": 0.12534642,
-                "mode": 0.124178566,
+                "lower": 0.11729057,
+                "mean": 0.1253464,
+                "mode": 0.124178536,
                 "sex": "both",
                 "upper": 0.13354863
               },
@@ -2191,11 +2191,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2024Q3",
                 "indicator": "prevalence",
-                "lower": 0.14245653,
-                "mean": 0.15264142,
-                "mode": 0.1518309,
+                "lower": 0.14245646,
+                "mean": 0.15264137,
+                "mode": 0.15183084,
                 "sex": "female",
-                "upper": 0.16331424
+                "upper": 0.16331421
               },
               {
                 "age_group": "Y035_049",
@@ -2203,11 +2203,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2020Q3",
                 "indicator": "prevalence",
-                "lower": 0.13331664,
-                "mean": 0.14543287,
+                "lower": 0.13331662,
+                "mean": 0.14543289,
                 "mode": 0.145049,
                 "sex": "male",
-                "upper": 0.1584005
+                "upper": 0.15840049
               },
               {
                 "age_group": "Y035_049",
@@ -2215,11 +2215,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2020Q3",
                 "indicator": "prevalence",
-                "lower": 0.16403505,
-                "mean": 0.17226884,
-                "mode": 0.17196661,
+                "lower": 0.16403508,
+                "mean": 0.17226885,
+                "mode": 0.17196663,
                 "sex": "both",
-                "upper": 0.18019126
+                "upper": 0.18019128
               },
               {
                 "age_group": "Y035_049",
@@ -2227,11 +2227,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2020Q3",
                 "indicator": "prevalence",
-                "lower": 0.18603328,
-                "mean": 0.19757573,
-                "mode": 0.19734424,
+                "lower": 0.1860333,
+                "mean": 0.19757578,
+                "mode": 0.19734427,
                 "sex": "female",
-                "upper": 0.21007256
+                "upper": 0.21007262
               },
               {
                 "age_group": "Y035_049",
@@ -2239,11 +2239,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2023Q4",
                 "indicator": "prevalence",
-                "lower": 0.1115666,
-                "mean": 0.12217282,
-                "mode": 0.12109413,
+                "lower": 0.11156645,
+                "mean": 0.12217278,
+                "mode": 0.12109408,
                 "sex": "male",
-                "upper": 0.13414249
+                "upper": 0.13414243
               },
               {
                 "age_group": "Y035_049",
@@ -2251,11 +2251,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2023Q4",
                 "indicator": "prevalence",
-                "lower": 0.14779848,
-                "mean": 0.15419877,
-                "mode": 0.15341546,
+                "lower": 0.14779845,
+                "mean": 0.15419874,
+                "mode": 0.1534154,
                 "sex": "both",
-                "upper": 0.1605261
+                "upper": 0.16052607
               },
               {
                 "age_group": "Y035_049",
@@ -2264,10 +2264,10 @@
                 "calendar_quarter": "CY2023Q4",
                 "indicator": "prevalence",
                 "lower": 0.17445587,
-                "mean": 0.18264884,
-                "mode": 0.18212156,
+                "mean": 0.1826488,
+                "mode": 0.18212152,
                 "sex": "female",
-                "upper": 0.19195338
+                "upper": 0.19195336
               },
               {
                 "age_group": "Y035_049",
@@ -2275,11 +2275,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2024Q3",
                 "indicator": "prevalence",
-                "lower": 0.10617665,
-                "mean": 0.116536595,
-                "mode": 0.11525013,
+                "lower": 0.10617657,
+                "mean": 0.11653655,
+                "mode": 0.11525008,
                 "sex": "male",
-                "upper": 0.12905057
+                "upper": 0.12905054
               },
               {
                 "age_group": "Y035_049",
@@ -2287,11 +2287,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2024Q3",
                 "indicator": "prevalence",
-                "lower": 0.14265777,
-                "mean": 0.1491191,
-                "mode": 0.14819908,
+                "lower": 0.1426577,
+                "mean": 0.14911903,
+                "mode": 0.14819902,
                 "sex": "both",
-                "upper": 0.15655275
+                "upper": 0.1565527
               },
               {
                 "age_group": "Y035_049",
@@ -2299,11 +2299,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2024Q3",
                 "indicator": "prevalence",
-                "lower": 0.16963959,
-                "mean": 0.17773947,
-                "mode": 0.17713717,
+                "lower": 0.16963957,
+                "mean": 0.1777394,
+                "mode": 0.17713709,
                 "sex": "female",
-                "upper": 0.18707925
+                "upper": 0.18707924
               },
               {
                 "age_group": "Y040_044",
@@ -2311,11 +2311,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2020Q3",
                 "indicator": "prevalence",
-                "lower": 0.1330825,
-                "mean": 0.15293327,
-                "mode": 0.15286554,
+                "lower": 0.1330823,
+                "mean": 0.15293325,
+                "mode": 0.15286551,
                 "sex": "male",
-                "upper": 0.17658348
+                "upper": 0.17658345
               },
               {
                 "age_group": "Y040_044",
@@ -2323,11 +2323,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2020Q3",
                 "indicator": "prevalence",
-                "lower": 0.16748933,
-                "mean": 0.18274394,
-                "mode": 0.18282096,
+                "lower": 0.16748936,
+                "mean": 0.18274397,
+                "mode": 0.18282098,
                 "sex": "both",
-                "upper": 0.19812666
+                "upper": 0.19812669
               },
               {
                 "age_group": "Y040_044",
@@ -2335,11 +2335,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2020Q3",
                 "indicator": "prevalence",
-                "lower": 0.19283232,
-                "mean": 0.21211964,
-                "mode": 0.21233688,
+                "lower": 0.19283237,
+                "mean": 0.21211973,
+                "mode": 0.21233696,
                 "sex": "female",
-                "upper": 0.23613647
+                "upper": 0.23613654
               },
               {
                 "age_group": "Y040_044",
@@ -2347,11 +2347,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2023Q4",
                 "indicator": "prevalence",
-                "lower": 0.11180068,
-                "mean": 0.1259038,
-                "mode": 0.12511794,
+                "lower": 0.11180058,
+                "mean": 0.12590373,
+                "mode": 0.12511785,
                 "sex": "male",
-                "upper": 0.14249304
+                "upper": 0.14249294
               },
               {
                 "age_group": "Y040_044",
@@ -2359,11 +2359,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2023Q4",
                 "indicator": "prevalence",
-                "lower": 0.15497983,
-                "mean": 0.16511178,
-                "mode": 0.16450433,
+                "lower": 0.15497978,
+                "mean": 0.16511172,
+                "mode": 0.16450426,
                 "sex": "both",
-                "upper": 0.17473812
+                "upper": 0.17473808
               },
               {
                 "age_group": "Y040_044",
@@ -2371,11 +2371,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2023Q4",
                 "indicator": "prevalence",
-                "lower": 0.18762779,
-                "mean": 0.19953401,
-                "mode": 0.19907992,
+                "lower": 0.18762767,
+                "mean": 0.19953398,
+                "mode": 0.19907987,
                 "sex": "female",
-                "upper": 0.21327843
+                "upper": 0.21327835
               },
               {
                 "age_group": "Y040_044",
@@ -2383,11 +2383,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2024Q3",
                 "indicator": "prevalence",
-                "lower": 0.107746586,
-                "mean": 0.12057766,
-                "mode": 0.11951363,
+                "lower": 0.10774653,
+                "mean": 0.12057759,
+                "mode": 0.11951354,
                 "sex": "male",
-                "upper": 0.13559562
+                "upper": 0.1355956
               },
               {
                 "age_group": "Y040_044",
@@ -2395,11 +2395,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2024Q3",
                 "indicator": "prevalence",
-                "lower": 0.15043655,
-                "mean": 0.15902981,
-                "mode": 0.158227,
+                "lower": 0.15043645,
+                "mean": 0.15902974,
+                "mode": 0.1582269,
                 "sex": "both",
-                "upper": 0.16741024
+                "upper": 0.16741015
               },
               {
                 "age_group": "Y040_044",
@@ -2407,11 +2407,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2024Q3",
                 "indicator": "prevalence",
-                "lower": 0.18151443,
-                "mean": 0.19205333,
-                "mode": 0.19147278,
+                "lower": 0.18151441,
+                "mean": 0.19205326,
+                "mode": 0.19147271,
                 "sex": "female",
-                "upper": 0.20432964
+                "upper": 0.20432968
               },
               {
                 "age_group": "Y045_049",
@@ -2419,11 +2419,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2020Q3",
                 "indicator": "prevalence",
-                "lower": 0.14299092,
-                "mean": 0.16773103,
-                "mode": 0.16730845,
+                "lower": 0.14299087,
+                "mean": 0.16773096,
+                "mode": 0.16730838,
                 "sex": "female",
-                "upper": 0.19596417
+                "upper": 0.19596413
               },
               {
                 "age_group": "Y045_049",
@@ -2431,11 +2431,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2020Q3",
                 "indicator": "prevalence",
-                "lower": 0.14763589,
-                "mean": 0.17674527,
-                "mode": 0.17529562,
+                "lower": 0.147636,
+                "mean": 0.17674541,
+                "mode": 0.17529576,
                 "sex": "male",
-                "upper": 0.20584142
+                "upper": 0.20584159
               },
               {
                 "age_group": "Y045_049",
@@ -2443,11 +2443,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2020Q3",
                 "indicator": "prevalence",
-                "lower": 0.15172087,
-                "mean": 0.17239581,
-                "mode": 0.17145884,
+                "lower": 0.15172091,
+                "mean": 0.17239586,
+                "mode": 0.17145887,
                 "sex": "both",
-                "upper": 0.1943208
+                "upper": 0.19432086
               },
               {
                 "age_group": "Y045_049",
@@ -2455,11 +2455,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2023Q4",
                 "indicator": "prevalence",
-                "lower": 0.1347861,
-                "mean": 0.15136082,
-                "mode": 0.1503731,
+                "lower": 0.13478601,
+                "mean": 0.15136078,
+                "mode": 0.15037304,
                 "sex": "male",
-                "upper": 0.16923445
+                "upper": 0.16923437
               },
               {
                 "age_group": "Y045_049",
@@ -2467,11 +2467,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2023Q4",
                 "indicator": "prevalence",
-                "lower": 0.16279337,
-                "mean": 0.17415628,
-                "mode": 0.17359434,
+                "lower": 0.16279332,
+                "mean": 0.17415622,
+                "mode": 0.17359427,
                 "sex": "both",
-                "upper": 0.18561743
+                "upper": 0.18561739
               },
               {
                 "age_group": "Y045_049",
@@ -2479,11 +2479,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2023Q4",
                 "indicator": "prevalence",
-                "lower": 0.18090431,
-                "mean": 0.19737603,
-                "mode": 0.1972426,
+                "lower": 0.18090428,
+                "mean": 0.19737595,
+                "mode": 0.19724251,
                 "sex": "female",
-                "upper": 0.21555376
+                "upper": 0.21555364
               },
               {
                 "age_group": "Y045_049",
@@ -2491,11 +2491,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2024Q3",
                 "indicator": "prevalence",
-                "lower": 0.13137975,
-                "mean": 0.14631073,
-                "mode": 0.14523083,
+                "lower": 0.13137965,
+                "mean": 0.14631066,
+                "mode": 0.14523074,
                 "sex": "male",
-                "upper": 0.16171713
+                "upper": 0.16171704
               },
               {
                 "age_group": "Y045_049",
@@ -2503,11 +2503,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2024Q3",
                 "indicator": "prevalence",
-                "lower": 0.16361108,
-                "mean": 0.1733009,
-                "mode": 0.17263655,
+                "lower": 0.163611,
+                "mean": 0.17330082,
+                "mode": 0.17263645,
                 "sex": "both",
-                "upper": 0.18369529
+                "upper": 0.18369521
               },
               {
                 "age_group": "Y045_049",
@@ -2515,11 +2515,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2024Q3",
                 "indicator": "prevalence",
-                "lower": 0.18584675,
-                "mean": 0.20010717,
-                "mode": 0.19985533,
+                "lower": 0.1858466,
+                "mean": 0.20010707,
+                "mode": 0.19985522,
                 "sex": "female",
-                "upper": 0.21667694
+                "upper": 0.21667686
               },
               {
                 "age_group": "Y050_054",
@@ -2527,11 +2527,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2020Q3",
                 "indicator": "prevalence",
-                "lower": 0.09715063,
-                "mean": 0.11619629,
-                "mode": 0.1163639,
+                "lower": 0.09715041,
+                "mean": 0.116196096,
+                "mode": 0.116363704,
                 "sex": "female",
-                "upper": 0.13883695
+                "upper": 0.13883677
               },
               {
                 "age_group": "Y050_054",
@@ -2539,11 +2539,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2020Q3",
                 "indicator": "prevalence",
-                "lower": 0.11158368,
-                "mean": 0.12838295,
-                "mode": 0.12822352,
+                "lower": 0.11158361,
+                "mean": 0.12838289,
+                "mode": 0.12822345,
                 "sex": "both",
-                "upper": 0.1481047
+                "upper": 0.14810462
               },
               {
                 "age_group": "Y050_054",
@@ -2551,11 +2551,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2020Q3",
                 "indicator": "prevalence",
-                "lower": 0.11627738,
-                "mean": 0.14226872,
-                "mode": 0.14170173,
+                "lower": 0.1162773,
+                "mean": 0.14226878,
+                "mode": 0.14170179,
                 "sex": "male",
-                "upper": 0.16949391
+                "upper": 0.16949397
               },
               {
                 "age_group": "Y050_054",
@@ -2563,11 +2563,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2023Q4",
                 "indicator": "prevalence",
-                "lower": 0.1270252,
-                "mean": 0.14480244,
-                "mode": 0.14447291,
+                "lower": 0.12702502,
+                "mean": 0.14480224,
+                "mode": 0.1444727,
                 "sex": "female",
-                "upper": 0.16330513
+                "upper": 0.16330497
               },
               {
                 "age_group": "Y050_054",
@@ -2575,11 +2575,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2023Q4",
                 "indicator": "prevalence",
-                "lower": 0.13307385,
-                "mean": 0.1551718,
-                "mode": 0.15364113,
+                "lower": 0.13307382,
+                "mean": 0.15517183,
+                "mode": 0.15364116,
                 "sex": "male",
-                "upper": 0.17687994
+                "upper": 0.17687996
               },
               {
                 "age_group": "Y050_054",
@@ -2587,11 +2587,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2023Q4",
                 "indicator": "prevalence",
-                "lower": 0.1365554,
-                "mean": 0.14998962,
-                "mode": 0.1490751,
+                "lower": 0.13655533,
+                "mean": 0.14998953,
+                "mode": 0.14907502,
                 "sex": "both",
-                "upper": 0.16392314
+                "upper": 0.16392301
               },
               {
                 "age_group": "Y050_054",
@@ -2601,9 +2601,9 @@
                 "indicator": "prevalence",
                 "lower": 0.13385227,
                 "mean": 0.154005,
-                "mode": 0.15248305,
+                "mode": 0.15248303,
                 "sex": "male",
-                "upper": 0.17338568
+                "upper": 0.1733858
               },
               {
                 "age_group": "Y050_054",
@@ -2611,11 +2611,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2024Q3",
                 "indicator": "prevalence",
-                "lower": 0.13757712,
-                "mean": 0.15436696,
-                "mode": 0.15403076,
+                "lower": 0.13757683,
+                "mean": 0.15436675,
+                "mode": 0.15403053,
                 "sex": "female",
-                "upper": 0.17234963
+                "upper": 0.17234936
               },
               {
                 "age_group": "Y050_054",
@@ -2623,11 +2623,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2024Q3",
                 "indicator": "prevalence",
-                "lower": 0.14162679,
-                "mean": 0.15418422,
-                "mode": 0.15326172,
+                "lower": 0.14162669,
+                "mean": 0.15418412,
+                "mode": 0.1532616,
                 "sex": "both",
-                "upper": 0.1665424
+                "upper": 0.1665423
               },
               {
                 "age_group": "Y050_064",
@@ -2635,11 +2635,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2020Q3",
                 "indicator": "prevalence",
-                "lower": 0.088371016,
-                "mean": 0.10316739,
-                "mode": 0.10268801,
+                "lower": 0.08837087,
+                "mean": 0.10316717,
+                "mode": 0.10268778,
                 "sex": "female",
-                "upper": 0.118165255
+                "upper": 0.11816503
               },
               {
                 "age_group": "Y050_064",
@@ -2647,11 +2647,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2020Q3",
                 "indicator": "prevalence",
-                "lower": 0.10249676,
-                "mean": 0.1131572,
-                "mode": 0.11225601,
+                "lower": 0.10249666,
+                "mean": 0.113157086,
+                "mode": 0.11225589,
                 "sex": "both",
-                "upper": 0.12415983
+                "upper": 0.12415973
               },
               {
                 "age_group": "Y050_064",
@@ -2659,11 +2659,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2020Q3",
                 "indicator": "prevalence",
-                "lower": 0.109240875,
-                "mean": 0.12537669,
-                "mode": 0.123917595,
+                "lower": 0.10924092,
+                "mean": 0.1253767,
+                "mode": 0.1239176,
                 "sex": "male",
-                "upper": 0.14312674
+                "upper": 0.14312688
               },
               {
                 "age_group": "Y050_064",
@@ -2671,11 +2671,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2023Q4",
                 "indicator": "prevalence",
-                "lower": 0.105108514,
-                "mean": 0.11730429,
-                "mode": 0.11684879,
+                "lower": 0.10510828,
+                "mean": 0.11730405,
+                "mode": 0.11684855,
                 "sex": "female",
-                "upper": 0.13047543
+                "upper": 0.1304752
               },
               {
                 "age_group": "Y050_064",
@@ -2683,11 +2683,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2023Q4",
                 "indicator": "prevalence",
-                "lower": 0.11582215,
-                "mean": 0.1251455,
-                "mode": 0.12420303,
+                "lower": 0.11582202,
+                "mean": 0.12514538,
+                "mode": 0.124202885,
                 "sex": "both",
-                "upper": 0.1347581
+                "upper": 0.13475795
               },
               {
                 "age_group": "Y050_064",
@@ -2695,11 +2695,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2023Q4",
                 "indicator": "prevalence",
-                "lower": 0.119565204,
+                "lower": 0.11956518,
                 "mean": 0.13428597,
-                "mode": 0.1327411,
+                "mode": 0.13274108,
                 "sex": "male",
-                "upper": 0.15022376
+                "upper": 0.1502237
               },
               {
                 "age_group": "Y050_064",
@@ -2707,11 +2707,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2024Q3",
                 "indicator": "prevalence",
-                "lower": 0.11150981,
-                "mean": 0.12312692,
-                "mode": 0.12267716,
+                "lower": 0.111509584,
+                "mean": 0.12312668,
+                "mode": 0.12267692,
                 "sex": "female",
-                "upper": 0.13631108
+                "upper": 0.13631082
               },
               {
                 "age_group": "Y050_064",
@@ -2719,11 +2719,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2024Q3",
                 "indicator": "prevalence",
-                "lower": 0.12005689,
-                "mean": 0.12885286,
-                "mode": 0.12790585,
+                "lower": 0.12005675,
+                "mean": 0.12885271,
+                "mode": 0.1279057,
                 "sex": "both",
-                "upper": 0.13759111
+                "upper": 0.13759096
               },
               {
                 "age_group": "Y050_064",
@@ -2731,11 +2731,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2024Q3",
                 "indicator": "prevalence",
-                "lower": 0.12129601,
-                "mean": 0.13543087,
-                "mode": 0.13388169,
+                "lower": 0.12129594,
+                "mean": 0.13543084,
+                "mode": 0.13388166,
                 "sex": "male",
-                "upper": 0.15013188
+                "upper": 0.15013176
               },
               {
                 "age_group": "Y050_999",
@@ -2743,11 +2743,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2020Q3",
                 "indicator": "prevalence",
-                "lower": 0.06612737,
-                "mean": 0.07799702,
-                "mode": 0.0774518,
+                "lower": 0.06612719,
+                "mean": 0.07799681,
+                "mode": 0.0774516,
                 "sex": "female",
-                "upper": 0.090628915
+                "upper": 0.09062864
               },
               {
                 "age_group": "Y050_999",
@@ -2755,11 +2755,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2020Q3",
                 "indicator": "prevalence",
-                "lower": 0.07831727,
-                "mean": 0.08729457,
-                "mode": 0.08635047,
+                "lower": 0.07831719,
+                "mean": 0.087294444,
+                "mode": 0.086350344,
                 "sex": "both",
-                "upper": 0.096252486
+                "upper": 0.096252374
               },
               {
                 "age_group": "Y050_999",
@@ -2767,11 +2767,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2020Q3",
                 "indicator": "prevalence",
-                "lower": 0.08611999,
-                "mean": 0.09954975,
-                "mode": 0.09803771,
+                "lower": 0.08611989,
+                "mean": 0.09954973,
+                "mode": 0.09803769,
                 "sex": "male",
-                "upper": 0.11367546
+                "upper": 0.113675416
               },
               {
                 "age_group": "Y050_999",
@@ -2779,11 +2779,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2023Q4",
                 "indicator": "prevalence",
-                "lower": 0.08087223,
-                "mean": 0.09106136,
-                "mode": 0.090500854,
+                "lower": 0.08087203,
+                "mean": 0.09106112,
+                "mode": 0.090500616,
                 "sex": "female",
-                "upper": 0.102457576
+                "upper": 0.10245729
               },
               {
                 "age_group": "Y050_999",
@@ -2791,11 +2791,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2023Q4",
                 "indicator": "prevalence",
-                "lower": 0.09257733,
-                "mean": 0.09961909,
-                "mode": 0.09860386,
+                "lower": 0.09257718,
+                "mean": 0.09961894,
+                "mode": 0.0986037,
                 "sex": "both",
-                "upper": 0.10646955
+                "upper": 0.1064694
               },
               {
                 "age_group": "Y050_999",
@@ -2803,11 +2803,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2023Q4",
                 "indicator": "prevalence",
-                "lower": 0.09849451,
-                "mean": 0.11057864,
-                "mode": 0.10894466,
+                "lower": 0.09849454,
+                "mean": 0.110578604,
+                "mode": 0.10894462,
                 "sex": "male",
-                "upper": 0.12224439
+                "upper": 0.12224441
               },
               {
                 "age_group": "Y050_999",
@@ -2815,11 +2815,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2024Q3",
                 "indicator": "prevalence",
-                "lower": 0.08561191,
-                "mean": 0.095549956,
-                "mode": 0.094991714,
+                "lower": 0.0856117,
+                "mean": 0.09554971,
+                "mode": 0.09499147,
                 "sex": "female",
-                "upper": 0.1063073
+                "upper": 0.10630698
               },
               {
                 "age_group": "Y050_999",
@@ -2827,11 +2827,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2024Q3",
                 "indicator": "prevalence",
-                "lower": 0.09605162,
-                "mean": 0.102948904,
-                "mode": 0.10193169,
+                "lower": 0.096051455,
+                "mean": 0.10294875,
+                "mode": 0.10193153,
                 "sex": "both",
-                "upper": 0.10943794
+                "upper": 0.10943776
               },
               {
                 "age_group": "Y050_999",
@@ -2839,11 +2839,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2024Q3",
                 "indicator": "prevalence",
-                "lower": 0.10038961,
-                "mean": 0.112329945,
-                "mode": 0.11069753,
+                "lower": 0.10038966,
+                "mean": 0.11232989,
+                "mode": 0.11069746,
                 "sex": "male",
-                "upper": 0.12365625
+                "upper": 0.12365628
               },
               {
                 "age_group": "Y055_059",
@@ -2851,11 +2851,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2020Q3",
                 "indicator": "prevalence",
-                "lower": 0.08204973,
-                "mean": 0.1032043,
-                "mode": 0.102435656,
+                "lower": 0.08204959,
+                "mean": 0.10320414,
+                "mode": 0.102435485,
                 "sex": "female",
-                "upper": 0.12907878
+                "upper": 0.12907866
               },
               {
                 "age_group": "Y055_059",
@@ -2863,11 +2863,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2020Q3",
                 "indicator": "prevalence",
-                "lower": 0.0931043,
-                "mean": 0.11253458,
-                "mode": 0.11138823,
+                "lower": 0.09310421,
+                "mean": 0.112534516,
+                "mode": 0.111388154,
                 "sex": "both",
-                "upper": 0.13495228
+                "upper": 0.13495219
               },
               {
                 "age_group": "Y055_059",
@@ -2875,11 +2875,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2020Q3",
                 "indicator": "prevalence",
-                "lower": 0.098736204,
-                "mean": 0.12487405,
-                "mode": 0.12319098,
+                "lower": 0.098736286,
+                "mean": 0.12487411,
+                "mode": 0.12319102,
                 "sex": "male",
-                "upper": 0.15687492
+                "upper": 0.15687504
               },
               {
                 "age_group": "Y055_059",
@@ -2887,11 +2887,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2023Q4",
                 "indicator": "prevalence",
-                "lower": 0.09103253,
-                "mean": 0.10564838,
-                "mode": 0.1053949,
+                "lower": 0.091032274,
+                "mean": 0.10564814,
+                "mode": 0.10539466,
                 "sex": "female",
-                "upper": 0.122925416
+                "upper": 0.12292517
               },
               {
                 "age_group": "Y055_059",
@@ -2899,11 +2899,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2023Q4",
                 "indicator": "prevalence",
-                "lower": 0.1014344,
-                "mean": 0.11405134,
-                "mode": 0.11340616,
+                "lower": 0.10143426,
+                "mean": 0.1140512,
+                "mode": 0.11340601,
                 "sex": "both",
-                "upper": 0.12791711
+                "upper": 0.12791696
               },
               {
                 "age_group": "Y055_059",
@@ -2911,11 +2911,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2023Q4",
                 "indicator": "prevalence",
-                "lower": 0.10611255,
-                "mean": 0.1247763,
-                "mode": 0.12359791,
+                "lower": 0.10611253,
+                "mean": 0.12477628,
+                "mode": 0.12359788,
                 "sex": "male",
-                "upper": 0.14462261
+                "upper": 0.14462256
               },
               {
                 "age_group": "Y055_059",
@@ -2923,11 +2923,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2024Q3",
                 "indicator": "prevalence",
-                "lower": 0.096702814,
-                "mean": 0.110308215,
-                "mode": 0.110016674,
+                "lower": 0.09670259,
+                "mean": 0.11030796,
+                "mode": 0.11001642,
                 "sex": "female",
-                "upper": 0.1260599
+                "upper": 0.1260596
               },
               {
                 "age_group": "Y055_059",
@@ -2935,11 +2935,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2024Q3",
                 "indicator": "prevalence",
-                "lower": 0.107230574,
-                "mean": 0.11847522,
-                "mode": 0.11774742,
+                "lower": 0.10723045,
+                "mean": 0.11847507,
+                "mode": 0.11774726,
                 "sex": "both",
-                "upper": 0.1308915
+                "upper": 0.13089135
               },
               {
                 "age_group": "Y055_059",
@@ -2947,9 +2947,9 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2024Q3",
                 "indicator": "prevalence",
-                "lower": 0.11227591,
-                "mean": 0.12863147,
-                "mode": 0.12732792,
+                "lower": 0.112275876,
+                "mean": 0.12863144,
+                "mode": 0.12732789,
                 "sex": "male",
                 "upper": 0.14684103
               },
@@ -2959,11 +2959,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2020Q3",
                 "indicator": "prevalence",
-                "lower": 0.061465383,
-                "mean": 0.08167106,
-                "mode": 0.08055073,
+                "lower": 0.061465066,
+                "mean": 0.081670694,
+                "mode": 0.08055038,
                 "sex": "female",
-                "upper": 0.10880452
+                "upper": 0.1088038
               },
               {
                 "age_group": "Y060_064",
@@ -2971,11 +2971,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2020Q3",
                 "indicator": "prevalence",
-                "lower": 0.070939325,
-                "mean": 0.08789381,
-                "mode": 0.08608634,
+                "lower": 0.07093904,
+                "mean": 0.08789355,
+                "mode": 0.08608609,
                 "sex": "both",
-                "upper": 0.10917726
+                "upper": 0.10917691
               },
               {
                 "age_group": "Y060_064",
@@ -2983,11 +2983,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2020Q3",
                 "indicator": "prevalence",
-                "lower": 0.07205309,
-                "mean": 0.095642395,
-                "mode": 0.092906035,
+                "lower": 0.07205285,
+                "mean": 0.095642276,
+                "mode": 0.092905894,
                 "sex": "male",
-                "upper": 0.1233812
+                "upper": 0.12338134
               },
               {
                 "age_group": "Y060_064",
@@ -2995,11 +2995,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2023Q4",
                 "indicator": "prevalence",
-                "lower": 0.07379467,
-                "mean": 0.08911223,
-                "mode": 0.08822576,
+                "lower": 0.073794454,
+                "mean": 0.089111954,
+                "mode": 0.088225484,
                 "sex": "female",
-                "upper": 0.10631235
+                "upper": 0.1063121
               },
               {
                 "age_group": "Y060_064",
@@ -3007,11 +3007,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2023Q4",
                 "indicator": "prevalence",
-                "lower": 0.08192812,
-                "mean": 0.09471677,
-                "mode": 0.09335532,
+                "lower": 0.08192798,
+                "mean": 0.09471658,
+                "mode": 0.09335513,
                 "sex": "both",
-                "upper": 0.10902387
+                "upper": 0.10902359
               },
               {
                 "age_group": "Y060_064",
@@ -3020,10 +3020,10 @@
                 "calendar_quarter": "CY2023Q4",
                 "indicator": "prevalence",
                 "lower": 0.08486355,
-                "mean": 0.10241003,
-                "mode": 0.10035386,
+                "mean": 0.10240996,
+                "mode": 0.10035378,
                 "sex": "male",
-                "upper": 0.1247554
+                "upper": 0.124755405
               },
               {
                 "age_group": "Y060_064",
@@ -3031,11 +3031,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2024Q3",
                 "indicator": "prevalence",
-                "lower": 0.07587417,
-                "mean": 0.08990856,
-                "mode": 0.08910691,
+                "lower": 0.0758739,
+                "mean": 0.08990828,
+                "mode": 0.08910663,
                 "sex": "female",
-                "upper": 0.10665555
+                "upper": 0.10665517
               },
               {
                 "age_group": "Y060_064",
@@ -3043,11 +3043,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2024Q3",
                 "indicator": "prevalence",
-                "lower": 0.08437021,
-                "mean": 0.09554937,
-                "mode": 0.09429069,
+                "lower": 0.08437002,
+                "mean": 0.09554917,
+                "mode": 0.09429049,
                 "sex": "both",
-                "upper": 0.10827465
+                "upper": 0.10827443
               },
               {
                 "age_group": "Y060_064",
@@ -3055,11 +3055,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2024Q3",
                 "indicator": "prevalence",
-                "lower": 0.08732033,
-                "mean": 0.10340176,
-                "mode": 0.1014671,
+                "lower": 0.08732038,
+                "mean": 0.10340168,
+                "mode": 0.10146701,
                 "sex": "male",
-                "upper": 0.12295453
+                "upper": 0.1229544
               },
               {
                 "age_group": "Y065_069",
@@ -3067,11 +3067,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2020Q3",
                 "indicator": "prevalence",
-                "lower": 0.042922657,
-                "mean": 0.05759758,
-                "mode": 0.05670724,
+                "lower": 0.04292244,
+                "mean": 0.057597313,
+                "mode": 0.056706984,
                 "sex": "female",
-                "upper": 0.07760893
+                "upper": 0.07760839
               },
               {
                 "age_group": "Y065_069",
@@ -3079,11 +3079,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2020Q3",
                 "indicator": "prevalence",
-                "lower": 0.050505336,
-                "mean": 0.06302602,
-                "mode": 0.061595537,
+                "lower": 0.050505202,
+                "mean": 0.063025825,
+                "mode": 0.06159535,
                 "sex": "both",
-                "upper": 0.07897309
+                "upper": 0.07897283
               },
               {
                 "age_group": "Y065_069",
@@ -3091,11 +3091,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2020Q3",
                 "indicator": "prevalence",
-                "lower": 0.05202713,
-                "mean": 0.06965484,
-                "mode": 0.0675063,
+                "lower": 0.052027017,
+                "mean": 0.06965474,
+                "mode": 0.067506194,
                 "sex": "male",
-                "upper": 0.09101663
+                "upper": 0.0910166
               },
               {
                 "age_group": "Y065_069",
@@ -3103,11 +3103,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2023Q4",
                 "indicator": "prevalence",
-                "lower": 0.051360693,
-                "mean": 0.06790186,
-                "mode": 0.06690213,
+                "lower": 0.051360417,
+                "mean": 0.06790151,
+                "mode": 0.066901796,
                 "sex": "female",
-                "upper": 0.09075095
+                "upper": 0.09075029
               },
               {
                 "age_group": "Y065_069",
@@ -3115,11 +3115,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2023Q4",
                 "indicator": "prevalence",
-                "lower": 0.05749557,
-                "mean": 0.0765184,
-                "mode": 0.074129865,
+                "lower": 0.05749544,
+                "mean": 0.07651825,
+                "mode": 0.07412971,
                 "sex": "male",
-                "upper": 0.09852259
+                "upper": 0.09852244
               },
               {
                 "age_group": "Y065_069",
@@ -3127,11 +3127,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2023Q4",
                 "indicator": "prevalence",
-                "lower": 0.05788934,
-                "mean": 0.07166048,
-                "mode": 0.07007762,
+                "lower": 0.057889085,
+                "mean": 0.07166022,
+                "mode": 0.07007736,
                 "sex": "both",
-                "upper": 0.088553116
+                "upper": 0.08855276
               },
               {
                 "age_group": "Y065_069",
@@ -3139,11 +3139,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2024Q3",
                 "indicator": "prevalence",
-                "lower": 0.054012917,
-                "mean": 0.069334425,
-                "mode": 0.06836064,
+                "lower": 0.05401263,
+                "mean": 0.06933408,
+                "mode": 0.06836031,
                 "sex": "female",
-                "upper": 0.08986495
+                "upper": 0.08986436
               },
               {
                 "age_group": "Y065_069",
@@ -3151,11 +3151,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2024Q3",
                 "indicator": "prevalence",
-                "lower": 0.060831603,
-                "mean": 0.07302003,
-                "mode": 0.071492046,
+                "lower": 0.06083141,
+                "mean": 0.07301978,
+                "mode": 0.071491785,
                 "sex": "both",
-                "upper": 0.087649755
+                "upper": 0.08764949
               },
               {
                 "age_group": "Y065_069",
@@ -3163,11 +3163,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2024Q3",
                 "indicator": "prevalence",
-                "lower": 0.061423294,
-                "mean": 0.07787051,
-                "mode": 0.07556613,
+                "lower": 0.061423104,
+                "mean": 0.07787037,
+                "mode": 0.07556597,
                 "sex": "male",
-                "upper": 0.09734842
+                "upper": 0.097348355
               },
               {
                 "age_group": "Y065_999",
@@ -3175,11 +3175,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2020Q3",
                 "indicator": "prevalence",
-                "lower": 0.028459236,
-                "mean": 0.038411126,
-                "mode": 0.03777647,
+                "lower": 0.02845909,
+                "mean": 0.038410943,
+                "mode": 0.037776295,
                 "sex": "female",
-                "upper": 0.052090447
+                "upper": 0.05209008
               },
               {
                 "age_group": "Y065_999",
@@ -3187,11 +3187,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2020Q3",
                 "indicator": "prevalence",
-                "lower": 0.034112606,
-                "mean": 0.04292258,
-                "mode": 0.04192245,
+                "lower": 0.034112502,
+                "mean": 0.04292244,
+                "mode": 0.041922312,
                 "sex": "both",
-                "upper": 0.0539921
+                "upper": 0.053991843
               },
               {
                 "age_group": "Y065_999",
@@ -3199,11 +3199,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2020Q3",
                 "indicator": "prevalence",
-                "lower": 0.036924984,
-                "mean": 0.049695704,
-                "mode": 0.04809925,
+                "lower": 0.0369249,
+                "mean": 0.049695633,
+                "mode": 0.04809917,
                 "sex": "male",
-                "upper": 0.06524078
+                "upper": 0.06524079
               },
               {
                 "age_group": "Y065_999",
@@ -3211,11 +3211,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2023Q4",
                 "indicator": "prevalence",
-                "lower": 0.033821475,
-                "mean": 0.045006525,
-                "mode": 0.044287544,
+                "lower": 0.033821292,
+                "mean": 0.04500629,
+                "mode": 0.044287313,
                 "sex": "female",
-                "upper": 0.06059337
+                "upper": 0.060592916
               },
               {
                 "age_group": "Y065_999",
@@ -3223,11 +3223,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2023Q4",
                 "indicator": "prevalence",
-                "lower": 0.03933675,
-                "mean": 0.049046528,
-                "mode": 0.047918275,
+                "lower": 0.039336573,
+                "mean": 0.04904634,
+                "mode": 0.047918092,
                 "sex": "both",
-                "upper": 0.061143912
+                "upper": 0.061143603
               },
               {
                 "age_group": "Y065_999",
@@ -3235,11 +3235,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2023Q4",
                 "indicator": "prevalence",
-                "lower": 0.041329633,
-                "mean": 0.055303324,
-                "mode": 0.053497273,
+                "lower": 0.04132945,
+                "mean": 0.055303216,
+                "mode": 0.053497154,
                 "sex": "male",
-                "upper": 0.07167266
+                "upper": 0.07167256
               },
               {
                 "age_group": "Y065_999",
@@ -3247,11 +3247,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2024Q3",
                 "indicator": "prevalence",
-                "lower": 0.0353911,
-                "mean": 0.046268117,
-                "mode": 0.04554602,
+                "lower": 0.0353909,
+                "mean": 0.046267875,
+                "mode": 0.045545787,
                 "sex": "female",
-                "upper": 0.061291013
+                "upper": 0.061290573
               },
               {
                 "age_group": "Y065_999",
@@ -3259,11 +3259,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2024Q3",
                 "indicator": "prevalence",
-                "lower": 0.041049168,
-                "mean": 0.050235614,
-                "mode": 0.04910947,
+                "lower": 0.041048955,
+                "mean": 0.050235424,
+                "mode": 0.04910928,
                 "sex": "both",
-                "upper": 0.06143363
+                "upper": 0.061433304
               },
               {
                 "age_group": "Y065_999",
@@ -3271,11 +3271,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2024Q3",
                 "indicator": "prevalence",
-                "lower": 0.043551043,
-                "mean": 0.056409597,
-                "mode": 0.054613527,
+                "lower": 0.043550983,
+                "mean": 0.056409486,
+                "mode": 0.054613404,
                 "sex": "male",
-                "upper": 0.071991436
+                "upper": 0.071991526
               },
               {
                 "age_group": "Y070_074",
@@ -3283,11 +3283,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2020Q3",
                 "indicator": "prevalence",
-                "lower": 0.031037614,
-                "mean": 0.04193605,
-                "mode": 0.041236676,
+                "lower": 0.031037452,
+                "mean": 0.04193585,
+                "mode": 0.041236483,
                 "sex": "female",
-                "upper": 0.056990232
+                "upper": 0.056989826
               },
               {
                 "age_group": "Y070_074",
@@ -3295,11 +3295,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2020Q3",
                 "indicator": "prevalence",
-                "lower": 0.03598767,
-                "mean": 0.04535208,
-                "mode": 0.044284213,
+                "lower": 0.03598756,
+                "mean": 0.045351934,
+                "mode": 0.044284068,
                 "sex": "both",
-                "upper": 0.057148047
+                "upper": 0.05714777
               },
               {
                 "age_group": "Y070_074",
@@ -3307,11 +3307,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2020Q3",
                 "indicator": "prevalence",
-                "lower": 0.03716828,
-                "mean": 0.05014941,
-                "mode": 0.04851546,
+                "lower": 0.037168197,
+                "mean": 0.05014934,
+                "mode": 0.048515383,
                 "sex": "male",
-                "upper": 0.06598876
+                "upper": 0.06598877
               },
               {
                 "age_group": "Y070_074",
@@ -3319,11 +3319,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2023Q4",
                 "indicator": "prevalence",
-                "lower": 0.035763882,
-                "mean": 0.047669925,
-                "mode": 0.046890583,
+                "lower": 0.035763767,
+                "mean": 0.047669675,
+                "mode": 0.04689034,
                 "sex": "female",
-                "upper": 0.06436433
+                "upper": 0.064363845
               },
               {
                 "age_group": "Y070_074",
@@ -3331,11 +3331,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2023Q4",
                 "indicator": "prevalence",
-                "lower": 0.04075046,
-                "mean": 0.050899915,
-                "mode": 0.049689338,
+                "lower": 0.040750276,
+                "mean": 0.05089972,
+                "mode": 0.049689148,
                 "sex": "both",
-                "upper": 0.06328658
+                "upper": 0.06328631
               },
               {
                 "age_group": "Y070_074",
@@ -3343,11 +3343,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2023Q4",
                 "indicator": "prevalence",
-                "lower": 0.04127099,
-                "mean": 0.055366706,
-                "mode": 0.053515747,
+                "lower": 0.041270845,
+                "mean": 0.055366598,
+                "mode": 0.053515628,
                 "sex": "male",
-                "upper": 0.07197093
+                "upper": 0.07197098
               },
               {
                 "age_group": "Y070_074",
@@ -3355,11 +3355,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2024Q3",
                 "indicator": "prevalence",
-                "lower": 0.037284486,
-                "mean": 0.04948678,
-                "mode": 0.048681572,
+                "lower": 0.03728435,
+                "mean": 0.04948651,
+                "mode": 0.048681315,
                 "sex": "female",
-                "upper": 0.06670478
+                "upper": 0.06670427
               },
               {
                 "age_group": "Y070_074",
@@ -3367,11 +3367,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2024Q3",
                 "indicator": "prevalence",
-                "lower": 0.04212056,
-                "mean": 0.0524757,
-                "mode": 0.0512277,
+                "lower": 0.042120386,
+                "mean": 0.052475493,
+                "mode": 0.0512275,
                 "sex": "both",
-                "upper": 0.06507168
+                "upper": 0.06507139
               },
               {
                 "age_group": "Y070_074",
@@ -3379,11 +3379,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2024Q3",
                 "indicator": "prevalence",
-                "lower": 0.0422973,
-                "mean": 0.056555517,
-                "mode": 0.054660887,
+                "lower": 0.04229709,
+                "mean": 0.056555394,
+                "mode": 0.054660756,
                 "sex": "male",
-                "upper": 0.07321634
+                "upper": 0.073216245
               },
               {
                 "age_group": "Y075_079",
@@ -3391,11 +3391,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2020Q3",
                 "indicator": "prevalence",
-                "lower": 0.023251224,
-                "mean": 0.031635158,
-                "mode": 0.031083018,
+                "lower": 0.02325113,
+                "mean": 0.031635005,
+                "mode": 0.031082874,
                 "sex": "female",
-                "upper": 0.04322536
+                "upper": 0.0432252
               },
               {
                 "age_group": "Y075_079",
@@ -3403,11 +3403,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2020Q3",
                 "indicator": "prevalence",
-                "lower": 0.026801875,
-                "mean": 0.03399586,
-                "mode": 0.03317525,
+                "lower": 0.026801761,
+                "mean": 0.033995744,
+                "mode": 0.033175137,
                 "sex": "both",
-                "upper": 0.043470986
+                "upper": 0.043470785
               },
               {
                 "age_group": "Y075_079",
@@ -3415,11 +3415,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2020Q3",
                 "indicator": "prevalence",
-                "lower": 0.027776137,
-                "mean": 0.03768462,
-                "mode": 0.036403555,
+                "lower": 0.02777607,
+                "mean": 0.03768456,
+                "mode": 0.036403492,
                 "sex": "male",
-                "upper": 0.04986222
+                "upper": 0.049862176
               },
               {
                 "age_group": "Y075_079",
@@ -3427,11 +3427,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2023Q4",
                 "indicator": "prevalence",
-                "lower": 0.027016355,
-                "mean": 0.036191598,
-                "mode": 0.035560656,
+                "lower": 0.02701626,
+                "mean": 0.036191408,
+                "mode": 0.03556047,
                 "sex": "female",
-                "upper": 0.049202755
+                "upper": 0.049202386
               },
               {
                 "age_group": "Y075_079",
@@ -3439,11 +3439,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2023Q4",
                 "indicator": "prevalence",
-                "lower": 0.030079978,
-                "mean": 0.037891824,
-                "mode": 0.036970604,
+                "lower": 0.030079838,
+                "mean": 0.037891675,
+                "mode": 0.036970455,
                 "sex": "both",
-                "upper": 0.048027825
+                "upper": 0.048027623
               },
               {
                 "age_group": "Y075_079",
@@ -3451,11 +3451,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2023Q4",
                 "indicator": "prevalence",
-                "lower": 0.03017169,
-                "mean": 0.040659044,
-                "mode": 0.039228704,
+                "lower": 0.030171579,
+                "mean": 0.04065896,
+                "mode": 0.039228614,
                 "sex": "male",
-                "upper": 0.05306422
+                "upper": 0.053064294
               },
               {
                 "age_group": "Y075_079",
@@ -3463,11 +3463,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2024Q3",
                 "indicator": "prevalence",
-                "lower": 0.027468348,
-                "mean": 0.03667574,
-                "mode": 0.036035135,
+                "lower": 0.027468227,
+                "mean": 0.03667554,
+                "mode": 0.03603494,
                 "sex": "female",
-                "upper": 0.04975275
+                "upper": 0.049752373
               },
               {
                 "age_group": "Y075_079",
@@ -3475,11 +3475,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2024Q3",
                 "indicator": "prevalence",
-                "lower": 0.030481428,
-                "mean": 0.038333867,
-                "mode": 0.03739961,
+                "lower": 0.030481283,
+                "mean": 0.03833371,
+                "mode": 0.037399452,
                 "sex": "both",
-                "upper": 0.048452824
+                "upper": 0.04845261
               },
               {
                 "age_group": "Y075_079",
@@ -3487,11 +3487,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2024Q3",
                 "indicator": "prevalence",
-                "lower": 0.030501308,
-                "mean": 0.041058946,
-                "mode": 0.039606858,
+                "lower": 0.030501219,
+                "mean": 0.041058857,
+                "mode": 0.03960676,
                 "sex": "male",
-                "upper": 0.053458355
+                "upper": 0.053458318
               },
               {
                 "age_group": "Y080_999",
@@ -3499,11 +3499,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2020Q3",
                 "indicator": "prevalence",
-                "lower": 0.013462676,
-                "mean": 0.018442275,
-                "mode": 0.018095015,
+                "lower": 0.013462619,
+                "mean": 0.018442186,
+                "mode": 0.018094927,
                 "sex": "female",
-                "upper": 0.025367677
+                "upper": 0.025367578
               },
               {
                 "age_group": "Y080_999",
@@ -3511,11 +3511,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2020Q3",
                 "indicator": "prevalence",
-                "lower": 0.0153344,
-                "mean": 0.019727679,
-                "mode": 0.019247053,
+                "lower": 0.015334351,
+                "mean": 0.019727606,
+                "mode": 0.019246982,
                 "sex": "both",
-                "upper": 0.025578387
+                "upper": 0.025578322
               },
               {
                 "age_group": "Y080_999",
@@ -3523,11 +3523,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2020Q3",
                 "indicator": "prevalence",
-                "lower": 0.016491037,
-                "mean": 0.022486577,
-                "mode": 0.021691354,
+                "lower": 0.016490998,
+                "mean": 0.022486543,
+                "mode": 0.021691317,
                 "sex": "male",
-                "upper": 0.029861435
+                "upper": 0.029861508
               },
               {
                 "age_group": "Y080_999",
@@ -3535,11 +3535,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2023Q4",
                 "indicator": "prevalence",
-                "lower": 0.015321405,
-                "mean": 0.020852791,
-                "mode": 0.020467514,
+                "lower": 0.015321328,
+                "mean": 0.020852672,
+                "mode": 0.020467399,
                 "sex": "female",
-                "upper": 0.028588401
+                "upper": 0.028588165
               },
               {
                 "age_group": "Y080_999",
@@ -3547,11 +3547,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2023Q4",
                 "indicator": "prevalence",
-                "lower": 0.01715201,
-                "mean": 0.02203474,
-                "mode": 0.021504788,
+                "lower": 0.017151933,
+                "mean": 0.02203464,
+                "mode": 0.021504689,
                 "sex": "both",
-                "upper": 0.028484298
+                "upper": 0.028484192
               },
               {
                 "age_group": "Y080_999",
@@ -3559,11 +3559,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2023Q4",
                 "indicator": "prevalence",
-                "lower": 0.018188331,
-                "mean": 0.024742855,
-                "mode": 0.023855528,
+                "lower": 0.018188242,
+                "mean": 0.024742797,
+                "mode": 0.023855466,
                 "sex": "male",
-                "upper": 0.03269892
+                "upper": 0.03269895
               },
               {
                 "age_group": "Y080_999",
@@ -3571,11 +3571,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2024Q3",
                 "indicator": "prevalence",
-                "lower": 0.015619315,
-                "mean": 0.021215962,
-                "mode": 0.020826092,
+                "lower": 0.015619235,
+                "mean": 0.021215836,
+                "mode": 0.02082597,
                 "sex": "female",
-                "upper": 0.029058572
+                "upper": 0.029058326
               },
               {
                 "age_group": "Y080_999",
@@ -3583,11 +3583,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2024Q3",
                 "indicator": "prevalence",
-                "lower": 0.017452693,
-                "mean": 0.022402065,
-                "mode": 0.021864837,
+                "lower": 0.017452613,
+                "mean": 0.022401957,
+                "mode": 0.021864733,
                 "sex": "both",
-                "upper": 0.02890301
+                "upper": 0.028902894
               },
               {
                 "age_group": "Y080_999",
@@ -3595,11 +3595,11 @@
                 "area_level": 0,
                 "calendar_quarter": "CY2024Q3",
                 "indicator": "prevalence",
-                "lower": 0.0184849,
-                "mean": 0.025128834,
-                "mode": 0.024227932,
+                "lower": 0.018484803,
+                "mean": 0.02512877,
+                "mode": 0.024227865,
                 "sex": "male",
-                "upper": 0.03314331
+                "upper": 0.033143338
               }
             ],
             "errors": [],

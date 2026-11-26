@@ -11,7 +11,7 @@ from dataclasses import dataclass, field
 from .flows import CALIBRATE_OPTIONS, MODEL_OPTIONS, download_payload, login_and_open, upload, upload_minimal
 from .scenario import Scenario
 
-DOWNLOAD_TYPES = ["spectrum", "coarse-output", "summary", "comparison", "agyw", "datapack"]
+DOWNLOAD_TYPES = ["spectrum", "coarse-output", "summary", "comparison", "datapack"]
 
 
 @dataclass

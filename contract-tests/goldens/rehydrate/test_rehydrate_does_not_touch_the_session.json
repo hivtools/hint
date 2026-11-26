@@ -187,12 +187,12 @@
                   "pjnz": {
                     "filename": "Malawi2024.PJNZ",
                     "hash": "46E4A725064B0E287F573A8F11389895.PJNZ",
-                    "path": "<UPLOADS>/46E4A725064B0E287F573A8F11389895.PJNZ"
+                    "path": "uploads/46E4A725064B0E287F573A8F11389895.PJNZ"
                   },
                   "shape": {
                     "filename": "malawi.geojson",
                     "hash": "EBE533976BFAF0CABCA2C2E1B611B9C7.geojson",
-                    "path": "<UPLOADS>/EBE533976BFAF0CABCA2C2E1B611B9C7.geojson"
+                    "path": "uploads/EBE533976BFAF0CABCA2C2E1B611B9C7.geojson"
                   }
                 },
                 "model_fit": {
@@ -200,9 +200,9 @@
                   "options": {}
                 },
                 "version": {
-                  "hintr": "1.2.23",
+                  "hintr": "1.2.25",
                   "naomi": "2.10.23",
-                  "rrq": "0.7.23",
+                  "rrq": "0.7.24",
                   "traduire": "0.1.1"
                 }
               }

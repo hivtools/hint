@@ -65,7 +65,7 @@
             "data": {},
             "errors": [
               {
-                "detail": "You must upload a Spectrum file before uploading survey or programme data.",
+                "detail": "An unexpected error occurred. If you see this message while you are using Naomi at a workshop, please contact your workshop technical support and show them this code: <ERROR_CODE>. Otherwise please contact support at naomi-support@imperial.ac.uk and quote this code: <ERROR_CODE>. No handler found for POST /disease/vmmc",
                 "error": "OTHER_ERROR"
               }
             ],
@@ -75,7 +75,7 @@
         "headers": {
           "content-type": "application/json"
         },
-        "status": 400
+        "status": 404
       }
     },
     {
@@ -104,7 +104,7 @@
             "data": {},
             "errors": [
               {
-                "detail": "You must upload a shape file before uploading survey or programme data.",
+                "detail": "An unexpected error occurred. If you see this message while you are using Naomi at a workshop, please contact your workshop technical support and show them this code: <ERROR_CODE>. Otherwise please contact support at naomi-support@imperial.ac.uk and quote this code: <ERROR_CODE>. No handler found for POST /disease/vmmc",
                 "error": "OTHER_ERROR"
               }
             ],
@@ -114,7 +114,7 @@
         "headers": {
           "content-type": "application/json"
         },
-        "status": 400
+        "status": 404
       }
     },
     {
@@ -188,7 +188,7 @@
             "data": {},
             "errors": [
               {
-                "detail": "You must upload a Spectrum file before uploading survey or programme data.",
+                "detail": "An unexpected error occurred. If you see this message while you are using Naomi at a workshop, please contact your workshop technical support and show them this code: <ERROR_CODE>. Otherwise please contact support at naomi-support@imperial.ac.uk and quote this code: <ERROR_CODE>. No handler found for POST /disease/vmmc",
                 "error": "OTHER_ERROR"
               }
             ],
@@ -198,35 +198,12 @@
         "headers": {
           "content-type": "application/json"
         },
-        "status": 400
+        "status": 404
       }
     },
     {
       "client": "A",
       "name": "shape only, lax",
-      "outbound": [
-        {
-          "headers": {
-            "accept-language": "en"
-          },
-          "json": {
-            "file": {
-              "filename": "vmmc.xlsx",
-              "fromADR": false,
-              "hash": "B7C376E240D6E17D5D3EAFBF4539B771.xlsx",
-              "path": "<UPLOADS>/B7C376E240D6E17D5D3EAFBF4539B771.xlsx",
-              "resource_url": null
-            },
-            "shape": "<UPLOADS>/EBE533976BFAF0CABCA2C2E1B611B9C7.geojson",
-            "type": "vmmc"
-          },
-          "method": "POST",
-          "path": "/validate/survey-and-programme",
-          "query": "strict=false",
-          "status": 200,
-          "to": "hintr"
-        }
-      ],
       "request": {
         "body": {
           "multipart": {
@@ -246,12 +223,21 @@
       },
       "response": {
         "body": {
-          "same_as_upstream": "hintr"
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "An unexpected error occurred. If you see this message while you are using Naomi at a workshop, please contact your workshop technical support and show them this code: <ERROR_CODE>. Otherwise please contact support at naomi-support@imperial.ac.uk and quote this code: <ERROR_CODE>. No handler found for POST /disease/vmmc",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
         },
         "headers": {
           "content-type": "application/json"
         },
-        "status": 200
+        "status": 404
       }
     },
     {
@@ -267,7 +253,7 @@
             "data": {},
             "errors": [
               {
-                "detail": "You must upload a Spectrum file before uploading survey or programme data.",
+                "detail": "An unexpected error occurred. If you see this message while you are using Naomi at a workshop, please contact your workshop technical support and show them this code: <ERROR_CODE>. Otherwise please contact support at naomi-support@imperial.ac.uk and quote this code: <ERROR_CODE>. No handler found for GET /disease/vmmc",
                 "error": "OTHER_ERROR"
               }
             ],
@@ -277,35 +263,12 @@
         "headers": {
           "content-type": "application/json"
         },
-        "status": 400
+        "status": 404
       }
     },
     {
       "client": "A",
       "name": "GET lax works",
-      "outbound": [
-        {
-          "headers": {
-            "accept-language": "en"
-          },
-          "json": {
-            "file": {
-              "filename": "vmmc.xlsx",
-              "fromADR": false,
-              "hash": "B7C376E240D6E17D5D3EAFBF4539B771.xlsx",
-              "path": "<UPLOADS>/B7C376E240D6E17D5D3EAFBF4539B771.xlsx",
-              "resource_url": null
-            },
-            "shape": "<UPLOADS>/EBE533976BFAF0CABCA2C2E1B611B9C7.geojson",
-            "type": "vmmc"
-          },
-          "method": "POST",
-          "path": "/validate/survey-and-programme",
-          "query": "strict=false",
-          "status": 200,
-          "to": "hintr"
-        }
-      ],
       "request": {
         "method": "GET",
         "path": "/disease/vmmc",
@@ -315,12 +278,21 @@
       },
       "response": {
         "body": {
-          "same_as_upstream": "hintr"
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "An unexpected error occurred. If you see this message while you are using Naomi at a workshop, please contact your workshop technical support and show them this code: <ERROR_CODE>. Otherwise please contact support at naomi-support@imperial.ac.uk and quote this code: <ERROR_CODE>. No handler found for GET /disease/vmmc",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
         },
         "headers": {
           "content-type": "application/json"
         },
-        "status": 200
+        "status": 404
       }
     },
     {
@@ -415,7 +387,7 @@
             "data": {},
             "errors": [
               {
-                "detail": "You must upload a shape file before uploading survey or programme data.",
+                "detail": "An unexpected error occurred. If you see this message while you are using Naomi at a workshop, please contact your workshop technical support and show them this code: <ERROR_CODE>. Otherwise please contact support at naomi-support@imperial.ac.uk and quote this code: <ERROR_CODE>. No handler found for POST /disease/vmmc",
                 "error": "OTHER_ERROR"
               }
             ],
@@ -425,7 +397,7 @@
         "headers": {
           "content-type": "application/json"
         },
-        "status": 400
+        "status": 404
       }
     },
     {
@@ -444,7 +416,7 @@
             "data": {},
             "errors": [
               {
-                "detail": "You must upload a shape file before uploading survey or programme data.",
+                "detail": "An unexpected error occurred. If you see this message while you are using Naomi at a workshop, please contact your workshop technical support and show them this code: <ERROR_CODE>. Otherwise please contact support at naomi-support@imperial.ac.uk and quote this code: <ERROR_CODE>. No handler found for GET /disease/vmmc",
                 "error": "OTHER_ERROR"
               }
             ],
@@ -454,7 +426,7 @@
         "headers": {
           "content-type": "application/json"
         },
-        "status": 400
+        "status": 404
       }
     },
     {
@@ -483,7 +455,7 @@
             "data": {},
             "errors": [
               {
-                "detail": "Vous devez télécharger un fichier de formes avant de télécharger des données d’enquête ou de programme.",
+                "detail": "Une erreur inattendue s'est produite. Si vous voyez ce message pendant que vous utilisez Naomi dans un atelier, veuillez contacter le support technique de votre atelier et leur indiquer ce code : <ERROR_CODE>. Sinon, veuillez contacter le support à naomi-support@imperial.ac.uk et citer ce code : <ERROR_CODE>",
                 "error": "OTHER_ERROR"
               }
             ],
@@ -493,7 +465,7 @@
         "headers": {
           "content-type": "application/json"
         },
-        "status": 400
+        "status": 404
       }
     },
     {
@@ -522,7 +494,7 @@
             "data": {},
             "errors": [
               {
-                "detail": "Você deve fazer upload de um arquivo de forma antes de fazer upload de dados de pesquisa ou programa.",
+                "detail": "Um erro inesperado ocorreu. Se você vir esta mensagem enquanto estiver usando Naomi em um workshop, entre em contato com o suporte técnico do workshop e mostre a eles este código: <ERROR_CODE>. Caso contrário, entre em contato com o suporte em naomi-support@imperial.ac.uk e cite este código: <ERROR_CODE>",
                 "error": "OTHER_ERROR"
               }
             ],
@@ -532,7 +504,7 @@
         "headers": {
           "content-type": "application/json"
         },
-        "status": 400
+        "status": 404
       }
     },
     {
@@ -544,14 +516,6 @@
           "hash": "46E4A725064B0E287F573A8F11389895.PJNZ",
           "resource_url": null,
           "type": "pjnz",
-          "version": "<UUID:1>"
-        },
-        {
-          "filename": "vmmc.xlsx",
-          "from_adr": false,
-          "hash": "B7C376E240D6E17D5D3EAFBF4539B771.xlsx",
-          "resource_url": null,
-          "type": "vmmc",
           "version": "<UUID:1>"
         }
       ],
