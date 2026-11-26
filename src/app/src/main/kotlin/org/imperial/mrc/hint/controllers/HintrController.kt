@@ -60,6 +60,7 @@ open class HintrController(protected val fileManager: FileManager,
             {
                 val files = fileManager.getFiles(FileType.PJNZ, FileType.Shape)
 
+                // hint's own check: hintr no longer takes a strict parameter
                 if (strict && files[FileType.PJNZ.toString()]?.path.isNullOrBlank())
                 {
                     throw HintException("missingPjnzFile",
@@ -74,7 +75,7 @@ open class HintrController(protected val fileManager: FileManager,
 
                 val shapePath = files[FileType.Shape.toString()]?.path
 
-                apiClient.validateSurveyAndProgramme(file, shapePath, type, strict)
+                apiClient.validateSurveyAndProgramme(file, shapePath, type)
             }
         }
     }

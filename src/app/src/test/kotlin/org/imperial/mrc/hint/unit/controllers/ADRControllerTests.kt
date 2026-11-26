@@ -561,52 +561,6 @@ class ADRControllerTests : HintrControllerTests()
     }
 
     @Test
-    fun `requests strict validation by default`()
-    {
-        val mockApiClient = getMockAPIClient(FileType.Survey)
-        val mockRequest = mock<HttpServletRequest>()
-        val mockFileManager = getMockFileManager(FileType.Survey)
-        val sut = getSut(mockFileManager, mockApiClient, mock(), mock(), mockRequest) as ADRController
-        sut.importSurvey(adrResource)
-        verify(mockApiClient)
-                .validateSurveyAndProgramme(
-                        VersionFileWithPath("test-path", "hash", "some-file-name.csv", false),
-                        "shape-path", FileType.Survey, true)
-    }
-
-    @Test
-    fun `requests lax validation when query param is false`()
-    {
-        val mockApiClient = getMockAPIClient(FileType.Survey)
-        val mockRequest = mock<HttpServletRequest> {
-            on { getParameter("strict") } doReturn "false"
-        }
-        val mockFileManager = getMockFileManager(FileType.Survey)
-        val sut = getSut(mockFileManager, mockApiClient, mock(), mock(), mockRequest) as ADRController
-        sut.importSurvey(adrResource)
-        verify(mockApiClient)
-                .validateSurveyAndProgramme(
-                        VersionFileWithPath("test-path", "hash", "some-file-name.csv", false),
-                        "shape-path", FileType.Survey, false)
-    }
-
-    @Test
-    fun `requests strict validation when query param is true`()
-    {
-        val mockApiClient = getMockAPIClient(FileType.Survey)
-        val mockRequest = mock<HttpServletRequest> {
-            on { getParameter("strict") } doReturn "true"
-        }
-        val mockFileManager = getMockFileManager(FileType.Survey)
-        val sut = getSut(mockFileManager, mockApiClient, mock(), mock(), mockRequest) as ADRController
-        sut.importSurvey(adrResource)
-        verify(mockApiClient)
-                .validateSurveyAndProgramme(
-                        VersionFileWithPath("test-path", "hash", "some-file-name.csv", false),
-                        "shape-path", FileType.Survey, true)
-    }
-
-    @Test
     fun `gets orgs with permission`()
     {
         val expectedUrl = "organization_list_for_user?permission=test_perm"
