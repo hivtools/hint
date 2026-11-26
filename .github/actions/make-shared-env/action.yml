@@ -67,7 +67,3 @@ runs:
       if: steps.npm-cache.outputs.cache-hit != 'true' && inputs.install-packages == 'true'
       run: npm ci --silent --prefix=src/app/static
       shell: bash
-
-    - name: Compile kotlin
-      run: src/gradlew -p src app:compileKotlin
-      shell: bash

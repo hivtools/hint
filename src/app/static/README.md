@@ -30,7 +30,7 @@ npm run dev
 
 Open http://localhost:5173, not port 8080. The dev server sends the page of the app itself (`./index.html`, with the
 code from `./src`). It sends all other requests to the dev stack's proxy, with your cookies: the API, `GET /me`, and
-the login page (still Kotlin). If the proxy is not at http://localhost:8080, set `HINT_BACKEND_URL`, for example
+the login page. If the proxy is not at http://localhost:8080, set `HINT_BACKEND_URL`, for example
 `HINT_BACKEND_URL=http://localhost:18080 npm run dev`.
 
 The dev server also adds the [Vue DevTools](https://devtools.vuejs.org/) to the page. Press <kbd>alt + shift + d</kbd>
@@ -53,11 +53,11 @@ The build writes:
   old file after a deploy. The `.map` files are the source maps.
 - `./public/index.html`: the page of the app, with the `<script>` and `<link>` tags for the current build. It has
   nothing in it for one user: the app asks `GET /me` who the user is before it starts (`src/app/me.ts`).
-- `./public/vite-assets.ftl`: the same tags, for Kotlin's `index.ftl`, which nothing routes to any more. It goes when
-  the Kotlin app goes.
-- `./public/css/app.css`: a copy of the CSS with a fixed name, for `login.ftl` and `404.ftl`.
+- `./public/vite-assets.ftl`: the same tags, for the old Kotlin app's `index.ftl`, which nothing routes to any more. It
+  goes when the Kotlin app goes.
+- `./public/css/app.css`: a copy of the CSS with a fixed name, for the login and 404 pages of the Python API.
 
-`npm run copy` copies the templates (Kotlin's login page) and the images to `./public`. Gradle and `scripts/dev.sh` run
+`npm run copy` copies the images (and the old Kotlin templates) to `./public`. Gradle and `scripts/dev.sh` run
 it after the build.
 
 The type check is `vue-tsc --build`. It checks the projects in `tsconfig.json`, as in a new

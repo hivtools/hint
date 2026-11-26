@@ -5,11 +5,12 @@ user should see; anything else that goes wrong is reported as an "unexpected err
 """
 
 import secrets
+from pathlib import Path
 
 import structlog
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
-from fastapi.responses import Response
+from fastapi.responses import FileResponse, Response
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from app.clients.responses import DEFAULT_ERROR, HintResponse
@@ -18,6 +19,10 @@ from app.messages import negotiate_language, t
 from app.utils.byte_limit import MB
 
 log = structlog.get_logger()
+
+
+# The page a browser gets for a page that does not exist (a static file, as the login page)
+NOT_FOUND_PAGE = Path(__file__).parent / "pages" / "404.html"
 
 
 class HintError(Exception):
@@ -380,6 +385,10 @@ def unexpected_error(request: Request, status_code: int, reason: str, exc_info: 
 def register_error_handlers(app: FastAPI) -> None:
     @app.exception_handler(StarletteHTTPException)
     async def http_error(request: Request, exc: StarletteHTTPException) -> Response:
+        if exc.status_code == 404 and "text/html" in request.headers.get("accept", ""):
+            # A browser that opens a page that does not exist gets a page that says so (Kotlin's 404.ftl). The API's
+            # callers ask for JSON, and get JSON
+            return FileResponse(NOT_FOUND_PAGE, status_code=404, media_type="text/html")
         # Errors FastAPI raises itself (401 from logged_in_user, 404, 405...) get the same shape as all the others
         response = HintResponse.failure(exc.status_code, str(exc.detail)).response()
         response.headers.update(exc.headers or {})
