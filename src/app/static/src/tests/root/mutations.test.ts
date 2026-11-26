@@ -50,7 +50,7 @@ describe("Root mutations", () => {
             adr: mockADRState({
                 adrData: mockADRDataState(),
                 schemas: ["TEST SCHEMAS"] as any,
-                key: "TEST KEY"
+                userCanUpload: true
             }),
             reviewInput: mockReviewInputState({
                 datasets: {
@@ -99,7 +99,7 @@ describe("Root mutations", () => {
         expect(state.adr).toStrictEqual(mockADRState({
             adrData: mockADRDataState(),
             schemas: ["TEST SCHEMAS"] as any,
-            key: "TEST KEY"
+            userCanUpload: true
         }));
 
         expect(state.downloadResults).toStrictEqual(initialDownloadResultsState());
@@ -190,7 +190,7 @@ describe("Root mutations", () => {
 
         state.adrUpload.uploadComplete = true;
 
-        state.adr.key = "abc";
+        state.adr.userCanUpload = true;
 
         mutations.ResetOutputs(state);
         expect(state.modelRun).toStrictEqual({...initialModelRunState(), ready: true});
@@ -199,7 +199,7 @@ describe("Root mutations", () => {
         expect(state.modelCalibrate).toStrictEqual({...initialModelCalibrateState(), ready: true})
 
         expect(state.adrUpload.uploadComplete).toBe(false);
-        expect(state.adr.key).toBe("abc")
+        expect(state.adr.userCanUpload).toBe(true)
     });
 
     it("can change language", () => {

@@ -5,6 +5,7 @@ import {actions as projectsActions} from "../../app/store/projects/actions";
 import {initialProjectsState} from "../../app/store/projects/projects";
 import {sessionStorageManager} from "../../app/sessionStorageManager";
 import NodeFormData from "form-data";
+import qs from "qs";
 
 const service = new Service(axios);
 
@@ -65,6 +66,12 @@ export const login = async (username = "test.user@example.com", password = "pass
     // GET the homepage to save the session
     await request("GET / (the homepage, after login)", () => axios.get(appUrl));
 
+};
+
+// The app does not send an ADR key any more: every deployed login is single sign-on (D11). The Kotlin server still
+// needs a stored key to call ADR for a password login, as the tests use, so a test that talks to ADR saves one first.
+export const saveADRKey = async (key: string) => {
+    await request("POST adr/key/ (save the ADR key)", () => axios.post(appUrl + "adr/key/", qs.stringify({key})));
 };
 
 // A browser tab sends the id of its open version with every request for files. A tab with no open version does not

@@ -25,7 +25,7 @@
                        style="display: none;" ref="loadZip"
                        @change="showLoadZipModal" accept=".zip">
             </b-dropdown-item>
-            <b-dropdown-item v-if="ssoLogin"
+            <b-dropdown-item v-if="!isGuest"
                              id="adr-import-button"
                              @click="showImportFromAdrModal = true">
                 <vue-feather type="archive" size="20" class="icon align-middle"></vue-feather>
@@ -36,7 +36,7 @@
         <new-project-create :open-modal="showUploadProjectModal"
                             :submit-create="handleCreateProject"
                             :cancel-create="cancelCreateProject"/>
-        <adr-rehydrate v-if="ssoLogin"
+        <adr-rehydrate v-if="!isGuest"
                        :open-modal="showImportFromAdrModal"
                        @submit-create="handleAdrRehydrate"
                        @cancel-create="showImportFromAdrModal = false"/>
@@ -63,7 +63,7 @@ enum NewProjectType {
 
 export default defineComponent({
     setup() {
-        const {ssoLogin} = useADR();
+        const {isGuest} = useADR();
         const showUploadProjectModal = ref(false);
         const showImportFromAdrModal = ref(false);
         const newProjectType = ref<NewProjectType | null>(null);
@@ -129,7 +129,7 @@ export default defineComponent({
         };
 
         return {
-            ssoLogin,
+            isGuest,
             showUploadProjectModal,
             showCreateProjectModal,
             showLoadZipModal,

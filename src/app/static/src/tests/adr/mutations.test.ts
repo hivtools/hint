@@ -3,30 +3,6 @@ import {ADRMutation, mutations} from "../../app/store/adr/mutations";
 import {AdrDatasetType} from "../../app/store/adr/adr";
 
 describe("ADR mutations", () => {
-    it("can update key", () => {
-        const state = mockADRState();
-        mutations[ADRMutation.UpdateKey](state, {payload: "new-key"});
-        expect(state.key).toBe("new-key");
-
-        mutations[ADRMutation.UpdateKey](state, {payload: null});
-        expect(state.key).toBe(null);
-    });
-
-    it("can set ssoLogin", () => {
-        const state = mockADRState();
-        mutations[ADRMutation.SetSSOLogin](state, {payload: true});
-        expect(state.ssoLogin).toBe(true);
-    });
-
-    it("can set key error", () => {
-        const state = mockADRState();
-        mutations[ADRMutation.SetKeyError](state, {payload: mockError("whatevs")});
-        expect(state.keyError!.detail).toBe("whatevs");
-
-        mutations[ADRMutation.SetKeyError](state, {payload: null});
-        expect(state.keyError).toBe(null);
-    });
-
     it.each(Object.values(AdrDatasetType))("can set adr error", (datasetType: AdrDatasetType) => {
         const state = mockADRState();
         mutations[ADRMutation.SetADRError](state, {payload: {data: mockError("whatevs"), datasetType}});

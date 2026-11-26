@@ -67,7 +67,6 @@ describe("root getters", () => {
 
     it("gets adr errors", async () => {
 
-        const keyError = mockError("key something else went wrong");
         const inputFetchError = mockError("input something went wrong");
         const outputFetchError = mockError("output something went wrong");
         const adrData = mockADRDataState({
@@ -80,12 +79,11 @@ describe("root getters", () => {
         });
 
         const stateWithErrors = mockADRState({
-            adrData: adrData,
-            keyError: keyError
+            adrData: adrData
         });
 
         const result = getResult({adr: stateWithErrors});
-        expectArraysEqual(result, [inputFetchError, outputFetchError, keyError]);
+        expectArraysEqual(result, [inputFetchError, outputFetchError]);
     });
 
     it("gets adr upload errors", async () => {
