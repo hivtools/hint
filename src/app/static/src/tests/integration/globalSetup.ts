@@ -1,7 +1,6 @@
 import axios from "axios";
+import FormData from "form-data";
 import {integrationAppUrl} from "../integrationAppUrl";
-
-const FormData = require("form-data");
 
 const ATTEMPTS = 10;
 

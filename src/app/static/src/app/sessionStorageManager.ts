@@ -1,4 +1,4 @@
-import {RootState} from "./root";
+import type {RootState} from "./root";
 import {currentHintVersion} from "./hintVersion";
 import {localStorageManager} from "./localStorageManager";
 

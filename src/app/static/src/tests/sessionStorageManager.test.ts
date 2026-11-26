@@ -28,7 +28,7 @@ import {
 } from "./mocks";
 import {serialiseState, sessionStorageManager} from "../app/sessionStorageManager";
 import {localStorageManager} from "../app/localStorageManager";
-import {RootState} from "../app/root";
+import type {RootState} from "../app/root";
 import {currentHintVersion} from "../app/hintVersion";
 import {Language} from "../app/store/translations/locales";
 
