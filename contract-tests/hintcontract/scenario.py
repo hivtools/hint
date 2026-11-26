@@ -213,14 +213,6 @@ class Scenario:
             self.add_step({"type": "emails", "name": name or "emails", "emails": [self.norm.string(t) for t in texts]})
         return texts
 
-    def last_email_token(self) -> str:
-        """Token in the most recent reset-password email."""
-        texts = self.emails(quiet=True)
-        assert texts, "no email was written"
-        m = re.search(r"token=([^\s]+)", texts[-1])
-        assert m, texts[-1]
-        return m.group(1)
-
     def set_stub(self, **state):
         assert self.stub, "no --stub-control-url configured"
         self.stub.set_state(state)

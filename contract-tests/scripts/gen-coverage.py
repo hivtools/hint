@@ -23,8 +23,6 @@ ENDPOINTS = [
     ("pages", "GET", "/"), ("pages", "GET", "/projects"), ("pages", "GET", "/accessibility"), ("pages", "GET", "/privacy"),
     ("auth", "GET", "/login"), ("auth", "GET", "/oauth2"), ("auth", "GET", "/register"), ("auth", "GET", "/sso"),
     ("auth", "POST", "/callback/formClient"), ("auth", "GET", "/callback/oauth2Client"), ("auth", "GET", "/logout"),
-    ("auth", "GET", "/password/forgot-password"), ("auth", "POST", "/password/request-reset-link"),
-    ("auth", "GET", "/password/reset-password"), ("auth", "POST", "/password/reset-password"),
     ("users", "GET", "/user/{email}/exists"), ("monitoring", "GET", "/metrics"),
     ("projects", "GET", "/projects/"), ("projects", "GET", "/project/current"), ("projects", "POST", "/project"),
     ("projects", "POST", "/project/{id}/rename"), ("projects", "POST", "/project/{id}/note"),

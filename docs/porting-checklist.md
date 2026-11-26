@@ -14,10 +14,10 @@ Every endpoint of the Kotlin app, in the order of the [endpoint index](endpoint-
 | POST | `/callback/formClient` | Password login (pac4j) | [ ] | Not going to be ported: no password login ([D11](#differences-from-kotlin)). Kotlin still serves it until it is removed. Replaced by `POST /dev-login` in dev only |
 | GET | `/callback/oauth2Client` | Auth0 login callback: exchanges the code for a token (pac4j) | [ ] | |
 | GET | `/logout` | Logs out and ends the session; Auth0 central logout (pac4j) | [ ] | |
-| GET | `/password/forgot-password` | Serves the forgot password page | [ ] | Not going to be ported: no password login ([D11](#differences-from-kotlin)). Kotlin still serves it until it is removed |
-| POST | `/password/request-reset-link` | Emails a password reset link | [ ] | Not going to be ported: no password login ([D11](#differences-from-kotlin)). Kotlin still serves it until it is removed |
-| GET | `/password/reset-password` | Serves the reset password page for a token | [ ] | Not going to be ported: no password login ([D11](#differences-from-kotlin)). Kotlin still serves it until it is removed |
-| POST | `/password/reset-password` | Sets a new password using a reset token | [ ] | Not going to be ported: no password login ([D11](#differences-from-kotlin)). Kotlin still serves it until it is removed |
+| GET | `/password/forgot-password` | Serves the forgot password page | [ ] | Not going to be ported: no password login ([D11](#differences-from-kotlin)). Removed from Kotlin too (PR 1175), and its contract tests are gone |
+| POST | `/password/request-reset-link` | Emails a password reset link | [ ] | Not going to be ported: no password login ([D11](#differences-from-kotlin)). Removed from Kotlin too (PR 1175), and its contract tests are gone |
+| GET | `/password/reset-password` | Serves the reset password page for a token | [ ] | Not going to be ported: no password login ([D11](#differences-from-kotlin)). Removed from Kotlin too (PR 1175), and its contract tests are gone |
+| POST | `/password/reset-password` | Sets a new password using a reset token | [ ] | Not going to be ported: no password login ([D11](#differences-from-kotlin)). Removed from Kotlin too (PR 1175), and its contract tests are gone |
 | GET | `/user/{email}/exists` | Whether a user with this email exists | [ ] | To be ported with the users table (step 4 or earlier). Keep it: `ShareProject.vue` calls it when sharing or cloning a project |
 | GET | `/metrics` | Plain text hintr worker counts (busy, idle, ...) for monitoring | [ ] | Not going to be ported for now: nothing uses it any more. Kotlin still serves it |
 | GET | `/projects/` | Lists the user's projects and their versions | [x] | [D1](#differences-from-kotlin): for a guest Kotlin answers 401 with an empty body |
