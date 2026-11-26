@@ -11,14 +11,12 @@ before ends.
 """
 
 import secrets
-from pathlib import Path
 from typing import Annotated
 from urllib.parse import urlencode
 
 import structlog
 from fastapi import APIRouter, Depends, Form, Request, Response
 from fastapi.responses import HTMLResponse, RedirectResponse
-from fastapi.templating import Jinja2Templates
 
 from app.clients.auth0_client import Auth0Client
 from app.config import Settings, get_settings
@@ -31,12 +29,11 @@ from app.errors import (
     LoginStateMissingError,
 )
 from app.services.web_sessions import CurrentWebSession, Sessions
+from app.templating import templates
 
 log = structlog.get_logger()
 
 router = APIRouter(tags=["login"], include_in_schema=False)
-
-templates = Jinja2Templates(directory=Path(__file__).parent.parent / "templates")
 
 SettingsDep = Annotated[Settings, Depends(get_settings)]
 Users = Annotated[UserRepository, Depends(get_user_repository)]

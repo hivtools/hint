@@ -1,6 +1,6 @@
 import {actions as baselineActions} from "../../app/store/baseline/actions";
 import {actions as surveyAndProgramActions} from "../../app/store/surveyAndProgram/actions";
-import {login, rootState, saveADRKey} from "./integrationTest";
+import {login, openVersion, rootState} from "./integrationTest";
 import {BaselineMutation} from "../../app/store/baseline/mutations";
 import {actions as adrActions} from "../../app/store/adr/actions";
 import {actions as adrUploadActions} from "../../app/store/adrUpload/actions";
@@ -24,13 +24,10 @@ describe("ADR dataset-related actions", () => {
     };
 
     beforeAll(async () => {
+        // The dev stack calls ADR with its HINT_ADR_API_KEY (the dev login has no Auth0 token): CI sets it to the
+        // ADR_TEST_KEY secret, an API token of the test user on the dev ADR
         await login();
-        const adrKey = process.env.ADR_TEST_KEY;
-        if (!adrKey) {
-            throw new Error("ADR_TEST_KEY environment variable must be set to run ADR integration tests. " +
-                "Generate an API token for the test user on the dev ADR.");
-        }
-        await saveADRKey(adrKey);
+        await openVersion();
 
         const commit = vi.fn();
         const dispatch = vi.fn();

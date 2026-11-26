@@ -20,11 +20,20 @@ jobs:
                 ghcr-username: ${{ github.actor }}
                 ghcr-password: ${{ secrets.GITHUB_TOKEN }}
 
-            - name: Run deps
-              run: scripts/run-dependencies.sh
+            # scripts/dev.sh runs the stubs of the contract tests, in this environment
+            - uses: ./.github/actions/setup-python-env
+              with:
+                working-directory: contract-tests
 
-            - name: Start Kotlin server
-              run: scripts/run-kotlin-server.sh
+            - name: Build the front end
+              run: npm run build --prefix=src/app/static && npm run copy --prefix=src/app/static
+
+            # The dev stack: nginx on :8080 in front of the Python API, with hintr (mock model), postgres and redis
+            - name: Start the dev stack
+              run: scripts/dev.sh up
+              env:
+                OTEL: 0
+                REAL_ADR: 0
 
             - name: Integration tests
               run: npm run test:integration --prefix=src/app/static

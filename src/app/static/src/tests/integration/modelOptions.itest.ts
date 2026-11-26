@@ -1,5 +1,5 @@
 import {actions} from "../../app/store/modelOptions/actions";
-import {login, rootState} from "./integrationTest";
+import {closeVersion, login, openVersion, rootState} from "./integrationTest";
 import {actions as baselineActions} from "../../app/store/baseline/actions";
 import {actions as surveyActions} from "../../app/store/surveyAndProgram/actions";
 import {ModelOptionsMutation} from "../../app/store/modelOptions/mutations";
@@ -8,9 +8,12 @@ import {getFormData} from "./helpers";
 import {isDynamicFormMeta} from "@reside-ic/vue-next-dynamic-form";
 
 describe("model options actions integration", () => {
+    afterAll(() => closeVersion());
 
     beforeAll(async () => {
         await login();
+        // The Python API works only on the version the tab sends (Kotlin fell back to the session's version)
+        await openVersion();
 
         const commit = vi.fn();
         const dispatch = vi.fn();

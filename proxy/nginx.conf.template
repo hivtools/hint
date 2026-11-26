@@ -1,19 +1,13 @@
-# Front door for hint while endpoints are migrated from Kotlin to Python.
+# Front door for hint. Everything goes to the Python API (hint-py). The Kotlin app is no longer routed: its code is
+# still in src/app until it is deleted, and `scripts/dev.sh up --no-proxy` runs it alone, for comparison.
 #
-# Everything goes to Kotlin unless it is listed below. To migrate an endpoint, add a `location` that includes
-# snippets/python.conf (most specific prefix wins). Python logs users in and keeps the sessions.
-#
-# KOTLIN_UPSTREAM and PYTHON_UPSTREAM (host:port) are substituted from the environment on container start by the nginx
-# image's envsubst templating.
+# PYTHON_UPSTREAM (host:port) is substituted from the environment on container start by the nginx image's envsubst
+# templating.
 
 # Trust X-Forwarded-Proto from an upstream TLS terminator, else use our own scheme.
 map $http_x_forwarded_proto $forwarded_proto {
     default $http_x_forwarded_proto;
     ''      $scheme;
-}
-
-upstream kotlin {
-    server ${KOTLIN_UPSTREAM};
 }
 
 upstream python {
@@ -31,99 +25,18 @@ server {
     proxy_read_timeout 300s;
     proxy_send_timeout 300s;
 
-    # ---- Migrated to Python ----
-    # The Vue app: its page (for each of its routes) and the built files. Nobody needs to be logged in for these
+    # The Vue app: its page (for each of its routes) and the built files. These never read a session, so the cookie is
+    # not sent (see snippets/python-public.conf)
     location = / { include snippets/python-public.conf; }
-    # Without this nginx redirects /projects to /projects/ (the list of projects)
     location = /projects { include snippets/python-public.conf; }
     location = /accessibility { include snippets/python-public.conf; }
     location = /privacy { include snippets/python-public.conf; }
     location /public/ { include snippets/python-public.conf; }
-    # Who the user is, which the app asks before it starts
-    location = /me { include snippets/python.conf; }
-    # Logging in and out, and the sessions (Auth0, or the dev login in development)
-    location = /login { include snippets/python.conf; }
-    location = /oauth2 { include snippets/python.conf; }
-    location = /register { include snippets/python.conf; }
-    location = /callback/oauth2Client { include snippets/python.conf; }
-    location = /logout { include snippets/python.conf; }
-    location = /dev-login { include snippets/python.conf; }
-    location = /guest/version { include snippets/python.conf; }
-    location /user/ { include snippets/python.conf; }
-    location /items/ { include snippets/python.conf; }
-    # Projects and their versions. /projects (no slash) is the page
-    location = /project { include snippets/python.conf; }
-    location /project/ { include snippets/python.conf; }
-    location /projects/ { include snippets/python.conf; }
-    # Calls that only pass on to hintr and need no files and no version
-    location = /meta/hintr/version { include snippets/python.conf; }
-    location /meta/adr/ { include snippets/python.conf; }
-    location /model/status/ { include snippets/python.conf; }
-    location /model/result/ { include snippets/python.conf; }
-    location /model/cancel/ { include snippets/python.conf; }
-    location /model/comparison/plot/ { include snippets/python.conf; }
-    location /calibrate/options/ { include snippets/python.conf; }
-    location /calibrate/status/ { include snippets/python.conf; }
-    location /calibrate/result/metadata/ { include snippets/python.conf; }
-    location /calibrate/plot/ { include snippets/python.conf; }
-    location /download/status/ { include snippets/python.conf; }
-    # Config only. /adr/schemas/ (trailing slash) stays with Kotlin, as the rest of /adr/ does
-    location = /adr/schemas { include snippets/python.conf; }
-    # Reading from ADR. Only these exact paths go to Python. Kotlin keeps the same paths with a trailing slash, and
-    # everything else under /adr/ that is not listed here (the key, and the VMMC and output zip imports).
-    location = /adr/datasets { include snippets/python.conf; }
-    location = /adr/orgs { include snippets/python.conf; }
-    location ~ ^/adr/datasets/[^/]+$ { include snippets/python.conf; }
-    # The releases of a dataset: GET reads them and POST makes one (and deletes the release with the same name first). Both
-    # are Python's, so every method goes to Python.
-    location ~ ^/adr/datasets/[^/]+/releases$ { include snippets/python.conf; }
-    # Push a file to ADR as a resource of a dataset: an output of the model, or one of the version's input files. Only this
-    # path shape goes to Python (the Vue app calls it without a trailing slash), so nothing else under /adr/datasets/ changes
-    # owner. The id of the dataset, the resource type and the download id are one part of the path each.
-    location ~ ^/adr/datasets/[^/]+/resource/[^/]+/[^/]+$ { include snippets/python.conf; }
-    # Import an input file from ADR into the version. Only these exact paths go to Python (the Vue app calls them
-    # without a trailing slash). /adr/vmmc and /adr/output stay with Kotlin.
-    location = /adr/pjnz { include snippets/python.conf; }
-    location = /adr/shape { include snippets/python.conf; }
-    location = /adr/population { include snippets/python.conf; }
-    location = /adr/survey { include snippets/python.conf; }
-    location = /adr/programme { include snippets/python.conf; }
-    location = /adr/anc { include snippets/python.conf; }
-    # Load a project from an output zip, uploaded or on ADR. Only these exact paths go to Python (the Vue app calls them
-    # without a trailing slash). The upload is not buffered by nginx (see above), and Python stops it at its size limit.
-    location = /rehydrate/zip { include snippets/python.conf; }
-    location = /rehydrate/adr { include snippets/python.conf; }
-    # Report an error to the support team (a guest may too)
-    location = /error-report { include snippets/python.conf; }
-    # Calls that add the files of the version to the call
-    location /chart-data/ { include snippets/python.conf; }
-    location /meta/review-inputs/ { include snippets/python.conf; }
-    location = /model/options { include snippets/python.conf; }
-    location = /model/validate/options { include snippets/python.conf; }
-    location = /model/run { include snippets/python.conf; }
-    location /calibrate/submit/ { include snippets/python.conf; }
-    location /download/submit/ { include snippets/python.conf; }
-    # Upload, validate and remove the input files, and set all the files. Each URL is listed. The proxy does not send all
-    # of /baseline/ and /disease/ to Python, for two reasons. `/disease/vmmc` is not ported, because nothing uses it now.
-    # A path with a trailing slash goes to Kotlin, which accepts it. FastAPI would redirect it.
-    location = /baseline/pjnz { include snippets/python.conf; }
-    location = /baseline/shape { include snippets/python.conf; }
-    location = /baseline/population { include snippets/python.conf; }
-    location = /baseline/validate { include snippets/python.conf; }
-    location = /disease/survey { include snippets/python.conf; }
-    location = /disease/programme { include snippets/python.conf; }
-    location = /disease/anc { include snippets/python.conf; }
-    location = /session/files { include snippets/python.conf; }
-    # Calls that read the results folder. `/calibrate/result/data/` is not ported, so it stays with Kotlin
-    location /calibrate/result/filteredData/ { include snippets/python.conf; }
-    location /download/result/ { include snippets/python.conf; }
-    # The debug zip of a model run, for developers. The caller sends a GitHub token and no hint login, so this location
-    # does not send Python the session cookie (see snippets/python-github.conf). `/model/debug/` (no id) stays with Kotlin.
+
+    # The debug zip of a model run, for developers. The caller sends a GitHub token and no hint login, so the session
+    # cookie is not sent (see snippets/python-github.conf)
     location ~ ^/model/debug/[^/]+$ { include snippets/python-github.conf; }
 
-    # Kotlin's /internal/ endpoints were for this proxy only, and nothing uses them now
-    location ^~ /internal/ { return 404; }
-
-    # ---- Everything else is still Kotlin ----
-    location / { include snippets/kotlin.conf; }
+    # Everything else, with the session cookie
+    location / { include snippets/python.conf; }
 }

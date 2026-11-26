@@ -84,7 +84,8 @@ services:
       db-users:
         condition: service_completed_successfully
 
-  # ---- Migration to Python: only started with --profile proxy ----
+  # ---- The Python API and its front door: only started with --profile proxy (`scripts/dev.sh up`; `up --no-proxy` runs the
+  # old Kotlin app alone instead, to compare with it) ----
 
   python:
     profiles: [proxy]
@@ -112,6 +113,8 @@ services:
       # - Contract tests: the key that the ADR stub accepts.
       # - Otherwise: HINT_ADR_API_KEY from your shell (the key of a user on the real ADR).
       HINT_ADR_API_KEY: ${PYTHON_ADR_API_KEY:-${HINT_ADR_API_KEY:-}}
+      # Only in CI: lets the runner past the IP filter of the dev ADR (see hint-py/app/config.py)
+      HINT_ADR_WAF_BYPASS_SECRET: ${ADR_WAF_BYPASS_SECRET:-}
       # Where error reports are sent. `scripts/dev.sh` sets it to the stub of the Teams flow. Without it, a report
       # is an unexpected error.
       HINT_ISSUE_REPORT_URL: ${PYTHON_ISSUE_REPORT_URL:-}
@@ -171,18 +174,14 @@ services:
       DASHBOARD__TELEMETRYLIMITS__MAXLOGCOUNT: 5000
       DASHBOARD__TELEMETRYLIMITS__MAXMETRICSCOUNT: 10000
 
-  # The front door, on the port Kotlin normally uses (application_url is http://localhost:8080) so that redirects
-  # and cookies keep working. Kotlin has to be moved aside to KOTLIN_PORT.
+  # The front door, on the port of the app (HINT_APPLICATION_URL is http://localhost:8080), in front of the Python API
   proxy:
     profiles: [proxy]
     build: ./proxy
     ports:
       - "127.0.0.1:${PROXY_PORT:-8080}:80"
     environment:
-      KOTLIN_UPSTREAM: host.docker.internal:${KOTLIN_PORT:-8081}
       PYTHON_UPSTREAM: python:8000
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
     depends_on:
       python:
         condition: service_healthy

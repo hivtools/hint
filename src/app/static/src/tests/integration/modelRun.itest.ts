@@ -1,5 +1,5 @@
 import {actions, makeCancelRunRequest} from "../../app/store/modelRun/actions";
-import {login, rootState} from "./integrationTest";
+import {closeVersion, login, openVersion, rootState} from "./integrationTest";
 import type {ModelSubmitResponse} from "../../app/generated";
 import type {RootState} from "../../app/root";
 import type {ModelRunState} from "../../app/store/modelRun/modelRun";
@@ -8,10 +8,13 @@ import type {ModelRunMutation} from "../../app/store/modelRun/mutations";
 import {Language} from "../../app/store/translations/locales";
 
 describe("Model run actions", () => {
+    afterAll(() => closeVersion());
 
     let runId = "";
     beforeAll(async () => {
         await login();
+        // The Python API works only on the version the tab sends (Kotlin fell back to the session's version)
+        await openVersion();
         const commit = vi.fn();
         const mockState = {
             language: Language.en,

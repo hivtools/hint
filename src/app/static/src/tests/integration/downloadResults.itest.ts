@@ -1,11 +1,19 @@
 import {actions} from "../../app/store/downloadResults/actions";
-import {rootState} from "./integrationTest";
+import {closeVersion, login, openVersion, rootState} from "./integrationTest";
 import {formatToLocalISODateTime} from "../../app/utils";
 import { DownloadType } from "../../app/store/downloadResults/downloadConfig";
 import type { DownloadResultsState } from "../../app/store/downloadResults/downloadResults";
 import { DownloadResultsMutation } from "../../app/store/downloadResults/mutations";
 
 describe(`download results actions integration`, () => {
+    // The Python API needs a login for these, and works only on the version the tab sends (Kotlin fell back to the
+    // session's version, even for a guest)
+    beforeAll(async () => {
+        await login();
+        await openVersion();
+    });
+
+    afterAll(() => closeVersion());
     Object.values(DownloadType).forEach(type => testDownloadIntegration(type));
 })
 

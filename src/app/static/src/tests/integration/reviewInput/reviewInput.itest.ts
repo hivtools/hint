@@ -1,5 +1,5 @@
 import {actions} from "../../../app/store/reviewInput/actions";
-import {login, rootState} from "../integrationTest";
+import {closeVersion, login, openVersion, rootState} from "../integrationTest";
 import type {ReviewInputDataset} from "../../../app/types";
 import {ReviewInputMutation} from "../../../app/store/reviewInput/mutations";
 import {getFormData} from "../helpers";
@@ -7,8 +7,11 @@ import {actions as baselineActions} from "../../../app/store/baseline/actions";
 import {actions as sapActions} from "../../../app/store/surveyAndProgram/actions"
 
 describe("reviewInput actions", () => {
+    afterAll(() => closeVersion());
     beforeAll(async () => {
         await login();
+        // The Python API works only on the version the tab sends (Kotlin fell back to the session's version)
+        await openVersion();
     });
 
     const uploadInputFiles = async() => {

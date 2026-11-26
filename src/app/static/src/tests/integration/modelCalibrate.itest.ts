@@ -1,9 +1,17 @@
 import {actions, getCalibrateStatus} from "../../app/store/modelCalibrate/actions";
-import {rootState} from "./integrationTest";
+import {closeVersion, login, openVersion, rootState} from "./integrationTest";
 import {Language} from "../../app/store/translations/locales";
 import {isDynamicFormMeta} from "@reside-ic/vue-next-dynamic-form";
 
 describe("model calibrate actions integration", () => {
+    // The Python API needs a login for these, and works only on the version the tab sends (Kotlin fell back to the
+    // session's version, even for a guest)
+    beforeAll(async () => {
+        await login();
+        await openVersion();
+    });
+
+    afterAll(() => closeVersion());
 
     it("can get model calibrate options", async () => {
         const commit = vi.fn();

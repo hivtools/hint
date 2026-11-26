@@ -1,3 +1,4 @@
+import {closeVersion, login, openVersion} from "./integrationTest";
 import {
     mockAxios,
     mockComparisonPlotResponse,
@@ -13,6 +14,14 @@ import type {Mock, MockInstance} from "vitest";
 import * as plotSelectionsUtils from "../../app/store/plotSelections/utils";
 
 describe("plotSelections itest", () => {
+    // The Python API needs a login for these, and works only on the version the tab sends (Kotlin fell back to the
+    // session's version, even for a guest)
+    beforeAll(async () => {
+        await login();
+        await openVersion();
+    });
+
+    afterAll(() => closeVersion());
     beforeEach(() => {
         mockAxios.reset();
         // stop apiService logging to console
