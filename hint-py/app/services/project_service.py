@@ -52,7 +52,7 @@ class ProjectService:
         """Gives the support user a copy of a project of user_id, for an error report. The project is checked here: it
         comes from the body of the report.
 
-        As in Kotlin, the support user is looked up first, so a missing support user is userDoesNotExist even when the
+        The support user is looked up first, so a missing support user is userDoesNotExist even when the
         project is not user_id's. A project that is not user_id's (or does not exist) is projectDoesNotExist. A guest
         has no projects."""
         log.info("Copying project to the support user", project=project_id)

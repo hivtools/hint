@@ -167,7 +167,7 @@ class DownloadResult(BaseModel):
 class ModelOptions(BaseModel):
     """The body of a request to run, validate or calibrate a model. What is in `options` is up to hintr."""
 
-    # A number where there should be text is text, as Jackson does (`"iso3": 5` is "5")
+    # A number where there should be text is taken as text (`"iso3": 5` is "5")
     model_config = ConfigDict(coerce_numbers_to_str=True)
 
     options: dict[str, Any]
@@ -176,8 +176,8 @@ class ModelOptions(BaseModel):
 
 
 class ErrorReportError(BaseModel):
-    """One of the errors that the user saw, in an error report. Each field may be missing or null, as in Kotlin, where a
-    missing field is empty text."""
+    """One of the errors that the user saw, in an error report. Each field may be missing or null. A missing field is
+    empty text."""
 
     detail: str | None = ""
     error: str | None = ""
@@ -187,11 +187,10 @@ class ErrorReportError(BaseModel):
 class ErrorReport(CamelModel):
     """What the user fills in (and what the Vue app adds about the project) when they report an error.
 
-    The fields are Kotlin's `ErrorReport`. It is sent on as it is, written with the same names, and fields that are not
-    here are dropped, as in Kotlin.
+    It is sent on as it is, written with the same names. Fields that are not here are dropped.
     """
 
-    # A number where there should be text is text, as Jackson does
+    # A number where there should be text is taken as text
     model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True, coerce_numbers_to_str=True)
 
     # The email that the user typed, not who is logged in. It is "guest" for a guest

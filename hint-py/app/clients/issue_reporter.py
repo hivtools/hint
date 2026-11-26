@@ -13,7 +13,7 @@ from fastapi import Depends, Header, Request
 from pydantic import SecretStr
 from pydantic_core import to_jsonable_python
 
-from app.clients.responses import TIMEOUT_SECONDS, HintResponse, service_response
+from app.clients.responses import TIMEOUT_SECONDS, HintResponse
 from app.config import Settings, get_settings
 from app.messages import negotiate_language, t
 from app.schemas import ErrorReport
@@ -35,8 +35,8 @@ class IssueReporter(Protocol):
 
 class TeamsFlowReporter:
     """Posts the report, as JSON, to the Teams flow. The flow's answer is made into an answer of this API in the same
-    way as hintr's (see `service_response`), as Kotlin did: the success has the flow's JSON as its data, which the Vue
-    app does not read.
+    way as hintr's (see `HintResponse.from_service`): the success has the flow's JSON as its data, which the Vue app
+    does not read.
     """
 
     def __init__(self, http: httpx2.AsyncClient, url: SecretStr, language: str):
@@ -59,7 +59,7 @@ class TeamsFlowReporter:
         if r.is_success and not r.content:
             # A flow with no Response action answers 202 with no body
             return HintResponse.success(None, r.status_code)
-        return service_response("issue report flow", r.status_code, r.content, self._language)
+        return HintResponse.from_service(r, self._language)
 
 
 def get_issue_reporter(

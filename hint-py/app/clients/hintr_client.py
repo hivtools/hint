@@ -1,7 +1,7 @@
 """The hintr API, the R service that validates inputs, builds chart data and runs the model.
 
 hintr answers in the format the Vue app expects, so most answers are passed on as they are. What is not hintr's own
-format is made to look like it (see `service_response` in app/clients/responses.py). Each call returns a `HintResponse`.
+format is made to look like it (see `HintResponse.from_service`). Each call returns a `HintResponse`.
 """
 
 from collections.abc import AsyncIterator, Mapping
@@ -15,7 +15,7 @@ from fastapi.responses import StreamingResponse
 from pydantic_core import to_jsonable_python
 from starlette.background import BackgroundTask
 
-from app.clients.responses import TIMEOUT_SECONDS, HintResponse, service_response
+from app.clients.responses import TIMEOUT_SECONDS, HintResponse
 from app.config import Settings
 from app.errors import HintrFailedError
 from app.messages import negotiate_language, t
@@ -68,7 +68,7 @@ class HintrClient:
         except httpx2.RequestError:
             log.exception("No response from hintr", method=method, path=path)
             return HintResponse.failure(500, t("noResponse", negotiate_language(self._language)))
-        return service_response("hintr", r.status_code, r.content, negotiate_language(self._language))
+        return HintResponse.from_service(r, negotiate_language(self._language))
 
     # The calls that have a body. The files are the ones hint looked up for the version, hintr reads them from the
     # uploads folder. Each of hintr's calls has its own shape: the files are the whole body, or under "data", or in
@@ -177,13 +177,13 @@ class HintrClient:
             raise HintrFailedError(HintResponse.failure(500, t("noResponse", language))) from None
         if not r.is_success:
             try:
-                body = await r.aread()
+                await r.aread()
             except httpx2.RequestError:
                 log.exception("No response from hintr", method="GET", path=path)
                 raise HintrFailedError(HintResponse.failure(500, t("noResponse", language))) from None
             finally:
                 await r.aclose()
-            raise HintrFailedError(service_response("hintr", r.status_code, body, language))
+            raise HintrFailedError(HintResponse.from_service(r, language))
         headers = {name: r.headers[name] for name in FILE_HEADERS if name in r.headers}
         headers.setdefault("content-type", "application/octet-stream")
         log.info("Sending the debug zip of a task", task=task_id, size=r.headers.get("content-length"))

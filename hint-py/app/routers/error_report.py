@@ -1,10 +1,9 @@
-"""POST /error-report: the user reports an error to the support team (Kotlin: ErrorReportController).
+"""POST /error-report: the user reports an error to the support team.
 
 The report is sent on (`IssueReporter`, app/clients/issue_reporter.py), and the browser gets the answer. If the report
 was taken, and it names a project, the support user gets a copy of the project, so that they can look at it. A guest
 may report too, but has no project to copy.
 
-As in Kotlin:
 - The report is sent first. A project that cannot be copied (not the user's, or the support user does not exist) is an
   error after the report has gone.
 - Whether the reporter is the support user (who gets no copy of their own project) is decided by the email in the body,
