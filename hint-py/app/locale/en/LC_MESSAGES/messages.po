@@ -144,3 +144,15 @@ msgstr ""
 
 msgid "githubFailed"
 msgstr "Could not check the GitHub token, because GitHub did not answer as expected. Try again later."
+
+# Kotlin's message (it was not translated).
+msgid "auth0StateMissing"
+msgstr "Auth0 state parameter must be provided"
+
+# Kotlin's message (it was not translated).
+msgid "auth0StateMismatch"
+msgstr "Auth0 State parameter mismatch possible threat of cross-site request forgery"
+
+# New in hint-py.
+msgid "auth0CodeMissing"
+msgstr "Auth0 did not send a login code. Please try to log in again."

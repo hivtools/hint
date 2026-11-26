@@ -1,17 +1,17 @@
-from fastapi.testclient import TestClient
+"""Who the API takes a request to be from, through the whole app: the session cookie (app/services/web_sessions.py)."""
 
-from app.main import app
+import httpx2
 
-client = TestClient(app)
+from tests.api.helpers import make_client
+from tests.support import ADR_TOKEN, USER
 
-IDENTITY = {"X-Hint-User": "test.user@example.com"}
 
-
-def test_whoami_reads_identity_headers():
-    r = client.get("/items/whoami", headers=IDENTITY)
+async def test_whoami_reads_the_session():
+    async with make_client(USER) as client:
+        r = await client.get("/items/whoami")
     assert r.status_code == 200
     assert r.json() == {
-        "user": "test.user@example.com",
+        "user": USER,
         "version_id": None,
         "is_guest": False,
         "guest_version_ids": [],
@@ -19,54 +19,62 @@ def test_whoami_reads_identity_headers():
     }
 
 
-def test_whoami_reads_the_version_the_tab_is_working_on():
-    r = client.get("/items/whoami", headers={**IDENTITY, "X-Version-Id": "v1"})
+async def test_whoami_reads_the_version_the_tab_is_working_on():
+    async with make_client(USER, "v1") as client:
+        r = await client.get("/items/whoami")
     assert r.json()["version_id"] == "v1"
 
 
-def test_a_blank_version_header_means_no_version():
-    r = client.get("/items/whoami", headers={**IDENTITY, "X-Version-Id": ""})
+async def test_a_blank_version_header_means_no_version():
+    async with make_client(USER) as client:
+        r = await client.get("/items/whoami", headers={"X-Version-Id": ""})
     assert r.json()["version_id"] is None
 
 
-def test_guest_is_identified():
-    r = client.get("/items/whoami", headers={**IDENTITY, "X-Hint-User": "guest"})
+async def test_a_visitor_with_no_session_is_a_guest(anonymous_client: httpx2.AsyncClient):
+    r = await anonymous_client.get("/items/whoami")
+    assert r.json()["user"] == "guest"
+    assert r.json()["is_guest"] is True
+    assert r.json()["guest_version_ids"] == []
+
+
+async def test_a_cookie_that_is_no_session_is_a_guest(anonymous_client: httpx2.AsyncClient):
+    anonymous_client.cookies.set("hint_session", "made-up")
+    r = await anonymous_client.get("/items/whoami")
     assert r.json()["is_guest"] is True
 
 
-def test_guest_versions_are_the_ones_the_server_gave_to_the_guest():
-    headers = {"X-Hint-User": "guest", "X-Hint-Guest-Versions": "v1, v2,,v3 "}
-    r = client.get("/items/whoami", headers=headers)
-    assert r.json()["guest_version_ids"] == ["v1", "v2", "v3"]
+async def test_guest_versions_are_the_ones_the_server_gave_to_the_guest():
+    async with make_client("guest", guest_versions=["v1", "v2"]) as guest:
+        r = await guest.get("/items/whoami")
+    assert r.json()["is_guest"] is True
+    assert r.json()["guest_version_ids"] == ["v1", "v2"]
 
 
-def test_guest_without_versions():
-    r = client.get("/items/whoami", headers={"X-Hint-User": "guest"})
-    assert r.json()["guest_version_ids"] == []
+async def test_the_identity_headers_of_the_old_proxy_are_ignored(anonymous_client: httpx2.AsyncClient):
+    # nginx used to ask Kotlin who the user was and send it in these. Now a client could send them itself
+    r = await anonymous_client.get(
+        "/items/whoami",
+        headers={"X-Hint-User": USER, "X-Hint-Guest-Versions": "v1", "X-Hint-Access-Token": "a.b.c"},
+    )
+    assert r.json() == {
+        "user": "guest",
+        "version_id": None,
+        "is_guest": True,
+        "guest_version_ids": [],
+        "has_access_token": False,
+    }
 
 
-def test_a_logged_in_user_has_no_guest_versions_whatever_the_header_says():
-    r = client.get("/items/whoami", headers={**IDENTITY, "X-Hint-Guest-Versions": "v1"})
-    assert r.json()["guest_version_ids"] == []
-
-
-def test_the_access_token_of_an_sso_user_is_read_but_never_returned():
-    r = client.get("/items/whoami", headers={**IDENTITY, "X-Hint-Access-Token": "an.auth0.token"})
+async def test_the_access_token_of_an_sso_user_is_read_but_never_returned():
+    async with make_client(USER, access_token=ADR_TOKEN) as client:
+        r = await client.get("/items/whoami")
     assert r.json()["has_access_token"] is True
-    assert "an.auth0.token" not in r.text
+    assert ADR_TOKEN not in r.text
 
 
-def test_a_blank_access_token_header_means_no_token():
-    r = client.get("/items/whoami", headers={**IDENTITY, "X-Hint-Access-Token": ""})
-    assert r.json()["has_access_token"] is False
-
-
-def test_missing_identity_is_rejected():
-    assert client.get("/items/whoami").status_code == 401
-    assert client.get("/items/1").status_code == 401
-
-
-def test_item_with_identity():
-    r = client.get("/items/1", headers=IDENTITY)
+async def test_item_with_identity():
+    async with make_client(USER) as client:
+        r = await client.get("/items/1")
     assert r.status_code == 200
     assert r.json() == {"item_id": 1}

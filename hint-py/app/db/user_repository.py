@@ -1,4 +1,4 @@
-from sqlalchemy import func, select
+from sqlalchemy import func, insert, select
 
 from app.db.database import DbSession
 from app.db.models import User
@@ -20,6 +20,16 @@ class UserRepository:
         return await self.db_session.scalar(
             select(User.id).where(func.lower(User.username) == email.lower()).order_by(User.id).limit(1)
         )
+
+    async def find_or_add_user(self, email: str) -> str:
+        """The id of the user with this email (ignoring case), after adding them if there is none. As Kotlin did for a
+        first login with Auth0 (`addOAuth2User`): the new user's id and username are the email, and they have no
+        password."""
+        user_id = await self.find_user_id(email)
+        if user_id is not None:
+            return user_id
+        await self.db_session.execute(insert(User).values(id=email, username=email))
+        return email
 
 
 def get_user_repository(db_session: DbSession) -> UserRepository:

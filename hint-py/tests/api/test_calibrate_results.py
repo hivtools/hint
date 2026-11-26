@@ -81,7 +81,7 @@ async def test_the_area_level_can_be_text_or_a_number(anonymous_client, results,
 
 
 async def test_no_identity_or_version_is_needed(anonymous_client, results):
-    # Guests use this, and there are no X-Hint-User or X-Version-Id headers on the request
+    # Guests use this, and the request has no session cookie and no X-Version-Id header
     assert (await anonymous_client.post(URL, json=NO_FILTER)).status_code == 200
 
 

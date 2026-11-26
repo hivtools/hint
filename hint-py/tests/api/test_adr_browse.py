@@ -6,10 +6,9 @@ These tests use a fake ADR (see tests/adr.py). The same calls to the real ADR ar
 import httpx2
 import pytest
 
-from app.main import app
 from tests.adr import LAST_YEAR, THIS_YEAR, ckan_error, ckan_ok
 from tests.api.helpers import make_client
-from tests.support import ADR_KEY, ADR_TOKEN
+from tests.support import ADR_KEY, ADR_TOKEN, USER
 
 UNEXPECTED = "An unexpected error occurred."
 
@@ -365,7 +364,7 @@ ENDPOINTS = {
 
 @pytest.fixture
 async def anonymous_user(adr, settings_overrides):
-    """USER, with no credential for ADR: the proxy sent no access token, and the settings have no API key."""
+    """USER, with no credential for ADR: no access token in their session, and the settings have no API key."""
     async with make_client("test.user@example.com") as client:
         yield client
 
@@ -402,44 +401,39 @@ async def test_the_message_for_no_credentials_is_in_the_language_of_the_request(
 
 
 @pytest.mark.parametrize("path", ENDPOINTS.values(), ids=ENDPOINTS.keys())
-async def test_with_a_token_adr_is_called_as_the_user(anonymous_user, adr, path):
-    r = await anonymous_user.get(path, headers={"X-Hint-Access-Token": ADR_TOKEN})
+async def test_with_a_token_adr_is_called_as_the_user(adr, settings_overrides, path):
+    async with make_client(USER, access_token=ADR_TOKEN) as sso_user:
+        r = await sso_user.get(path)
 
     assert r.status_code == 200
     [call, *_] = adr.calls
     assert call.headers["Authorization"] == f"Bearer {ADR_TOKEN}"
 
 
-async def test_a_token_is_used_before_a_key(adr_user, adr):
-    await adr_user.get(ENDPOINTS["orgs"], headers={"X-Hint-Access-Token": ADR_TOKEN})
+async def test_a_token_is_used_before_a_key(adr, settings_overrides):
+    settings_overrides["environment"] = "development"
+    settings_overrides["adr_api_key"] = ADR_KEY
+    async with make_client(USER, access_token=ADR_TOKEN) as sso_user:
+        await sso_user.get(ENDPOINTS["orgs"])
 
     assert adr.calls[0].headers["Authorization"] == f"Bearer {ADR_TOKEN}"
 
 
-async def test_the_token_is_not_in_an_answer_when_adr_cannot_be_reached(anonymous_user, adr):
+async def test_the_token_is_not_in_an_answer_when_adr_cannot_be_reached(adr, settings_overrides):
     adr.fail_to_connect("organization_list_for_user", httpx2.ConnectError("refused"))
 
-    r = await anonymous_user.get(ENDPOINTS["orgs"], headers={"X-Hint-Access-Token": ADR_TOKEN})
+    async with make_client(USER, access_token=ADR_TOKEN) as sso_user:
+        r = await sso_user.get(ENDPOINTS["orgs"])
 
     assert ADR_TOKEN not in r.text
 
 
 @pytest.mark.parametrize("path", ENDPOINTS.values(), ids=ENDPOINTS.keys())
 async def test_a_guest_may_not_use_them(adr, settings_overrides, path):
+    settings_overrides["environment"] = "development"
     settings_overrides["adr_api_key"] = ADR_KEY
     async with make_client("guest") as guest:
         r = await guest.get(path)
-
-    assert r.status_code == 401
-    assert adr.calls == []
-
-
-@pytest.mark.parametrize("path", ENDPOINTS.values(), ids=ENDPOINTS.keys())
-async def test_they_need_the_identity_headers_of_the_proxy(adr, settings_overrides, path):
-    settings_overrides["adr_api_key"] = ADR_KEY
-    transport = httpx2.ASGITransport(app=app, raise_app_exceptions=False)
-    async with httpx2.AsyncClient(transport=transport, base_url="http://test") as client:
-        r = await client.get(path)
 
     assert r.status_code == 401
     assert adr.calls == []

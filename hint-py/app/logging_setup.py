@@ -25,6 +25,7 @@ Level
 """
 
 import logging
+import re
 import sys
 
 import structlog
@@ -85,7 +86,7 @@ def _drop_color_message(record: logging.LogRecord) -> bool:
 
 
 def _drop_query_string(record: logging.LogRecord) -> bool:
-    """Remove the query string from the request line in the access log of uvicorn.
+    """Remove the query string, and any email in the path, from the request line in the access log of uvicorn.
 
     The line has the whole path of the request: `GET /download/result/abc?token=...`. A query string can have anything
     in it (a token, an email), and the access log is not the place for it. This is a filter on the logger, so it runs
@@ -94,8 +95,15 @@ def _drop_query_string(record: logging.LogRecord) -> bool:
     args = record.args
     # uvicorn logs: client address, method, path with query string, HTTP version, status
     if isinstance(args, tuple) and len(args) == 5 and isinstance(args[2], str):
-        record.args = (*args[:2], args[2].partition("?")[0], *args[3:])
+        path = args[2].partition("?")[0]
+        # A path can have an email in it too (`GET /user/{email}/exists`)
+        path = _EMAIL_IN_PATH.sub("<email>", path)
+        record.args = (*args[:2], path, *args[3:])
     return True
+
+
+# A part of a path, between two "/", that has an "@" in it
+_EMAIL_IN_PATH = re.compile(r"[^/]*@[^/]*")
 
 
 def _redact_outgoing_url(record: logging.LogRecord) -> bool:

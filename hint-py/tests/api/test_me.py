@@ -36,7 +36,8 @@ async def test_me_gives_the_title_of_this_deployment(api: httpx2.AsyncClient, se
     assert r.json()["data"]["title"] == "Naomi (test)"
 
 
-async def test_me_needs_the_identity_from_the_proxy(anonymous_client: httpx2.AsyncClient):
+async def test_a_visitor_with_no_session_is_a_guest(anonymous_client: httpx2.AsyncClient):
     r = await anonymous_client.get("/me")
 
-    assert r.status_code == 401
+    assert r.status_code == 200
+    assert r.json()["data"]["user"] == "guest"
