@@ -23,6 +23,7 @@ interface AppProperties
     val adrDatasetsThisYearSchema: String
     val adrDatasetsLastYearSchema: String
     val adrUrl: String
+    val adrWafBypassSecret: String?
     val apiUrl: String
     val applicationTitle: String
     val applicationUrl: String
@@ -67,6 +68,8 @@ class ConfiguredAppProperties(
     final override val adrDatasetsThisYearSchema = propString("adr_schema_this_year")
     final override val adrDatasetsLastYearSchema = propString("adr_schema_last_year")
     final override val adrUrl = propString("adr_url")
+    // Only set in CI: lets GitHub Actions runners past the dev ADR's IP filter
+    final override val adrWafBypassSecret = System.getenv("ADR_WAF_BYPASS_SECRET")?.takeIf { it.isNotBlank() }
     final override val apiUrl = propString("hintr_url")
     final override val applicationTitle = propString("application_title")
     final override val applicationUrl = propString("application_url")

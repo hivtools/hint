@@ -17,8 +17,6 @@ jobs:
             - name: Make shared env
               uses: ./.github/actions/make-shared-env
               with:
-                dh-username: ${{ secrets.DOCKERHUB_USERNAME }}
-                dh-password: ${{ secrets.DOCKERHUB_TOKEN }}
                 ghcr-username: ${{ github.actor }}
                 ghcr-password: ${{ secrets.GITHUB_TOKEN }}
 
@@ -27,6 +25,9 @@ jobs:
 
             - name: Start Kotlin server
               run: scripts/run-kotlin-server.sh
+              env:
+                # The server makes the ADR calls, so it needs the header secret
+                ADR_WAF_BYPASS_SECRET: ${{ secrets.ADR_WAF_BYPASS_SECRET }}
 
             - name: Test front end (ADR)
               run: npm run test:adr-integration --prefix=src/app/static

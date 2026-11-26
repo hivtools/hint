@@ -26,7 +26,7 @@ class ADRClientBuilder(val appProperties: AppProperties,
         val userId = this.session.getUserProfile().id
         val encryptedKey = this.userRepository.getADRKey(userId) ?: throw UserException("noADRKey")
         val apiKey = this.encryption.decrypt(encryptedKey)
-        return ADRFuelClient(this.appProperties.adrUrl, apiKey, this.logger)
+        return ADRFuelClient(this.appProperties.adrUrl, apiKey, this.logger, this.appProperties.adrWafBypassSecret)
     }
 
     fun buildSSO(): ADRClient
@@ -44,7 +44,8 @@ class ADRClientBuilder(val appProperties: AppProperties,
         return ADRFuelClient(
             this.appProperties.oauth2ClientAdrServerUrl,
             "Bearer $token",
-            this.logger
+            this.logger,
+            this.appProperties.adrWafBypassSecret
         )
     }
 }
@@ -59,10 +60,14 @@ interface ADRClient
 
 class ADRFuelClient(baseUrl: String,
                     private val apiKey: String,
-                    private val logger: GenericLogger)
+                    private val logger: GenericLogger,
+                    private val wafBypassSecret: String? = null)
     : FuelClient(baseUrl + "api/3/action"), ADRClient
 {
-    private val header = Pair("Authorization", apiKey)
+    companion object
+    {
+        const val WAF_BYPASS_HEADER = "X-Naomi-CI"
+    }
 
     override fun get(url: String): ResponseEntity<String>
     {
@@ -85,7 +90,12 @@ class ADRFuelClient(baseUrl: String,
 
     override fun standardHeaders(): Map<String, Any>
     {
-        return mapOf(header.first to header.second)
+        val headers = mutableMapOf<String, Any>("Authorization" to apiKey)
+        if (wafBypassSecret != null)
+        {
+            headers[WAF_BYPASS_HEADER] = wafBypassSecret
+        }
+        return headers
     }
 
     override fun getInputStream(url: String): HttpResponse<InputStream>

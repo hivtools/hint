@@ -18,8 +18,6 @@ jobs:
               uses: ./.github/actions/make-shared-env
               with:
                 install-packages: 'false'
-                dh-username: ${{ secrets.DOCKERHUB_USERNAME }}
-                dh-password: ${{ secrets.DOCKERHUB_TOKEN }}
                 ghcr-username: ${{ github.actor }}
                 ghcr-password: ${{ secrets.GITHUB_TOKEN }}
 
@@ -30,3 +28,4 @@ jobs:
               run: src/gradlew -p src :app:test --tests org.imperial.mrc.hint.integration.adr* --parallel -x app:compileFrontEnd -x app:copyAssets
               env:
                 ADR_TEST_KEY: ${{ secrets.ADR_TEST_KEY }}
+                ADR_WAF_BYPASS_SECRET: ${{ secrets.ADR_WAF_BYPASS_SECRET }}
