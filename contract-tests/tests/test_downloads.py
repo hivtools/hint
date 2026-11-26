@@ -8,20 +8,19 @@ from hintcontract.pipeline import DOWNLOAD_TYPES, done
 
 
 def test_submit_with_and_without_vmmc_and_pjnz(scn, pipeline):
-    """spectrum/datapack add the session's VMMC file when there is one; agyw always adds the PJNZ entry."""
+    """spectrum/datapack add the session's VMMC file when there is one. (agyw is not here: nothing uses it, and hintr
+    1.2.25 has no queue for it.)"""
     pipeline.bind(scn)
     a = login_and_open(scn)
     cid, fid = pipeline.calibrate_id, pipeline.fit_id
     payload = download_payload(fid, cid)
     for t in ("spectrum", "datapack"):
         a.post(f"/download/submit/{t}/{cid}", json=payload, name=f"{t}: session without vmmc", bind_task=f"s-{t}-novmmc")
-    a.post(f"/download/submit/agyw/{cid}", json=payload, name="agyw: session without pjnz")
     with scn.quiet():
         upload(a, "vmmc", name="vmmc")
         upload(a, "pjnz", name="pjnz")
     for t in ("spectrum", "datapack"):
         a.post(f"/download/submit/{t}/{cid}", json=payload, name=f"{t}: session with vmmc", bind_task=f"s-{t}-vmmc")
-    a.post(f"/download/submit/agyw/{cid}", json=payload, name="agyw: session with pjnz", bind_task="s-agyw")
     for t in ("summary", "comparison", "coarse-output"):
         a.post(f"/download/submit/{t}/{cid}", json=payload, name=f"{t}: nothing added", bind_task=f"s-{t}")
 

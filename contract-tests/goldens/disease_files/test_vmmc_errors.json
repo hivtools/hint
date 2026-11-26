@@ -45,29 +45,6 @@
     {
       "client": "A",
       "name": "vmmc: csv instead of xlsx",
-      "outbound": [
-        {
-          "headers": {
-            "accept-language": "en"
-          },
-          "json": {
-            "file": {
-              "filename": "survey.csv",
-              "fromADR": false,
-              "hash": "2D229A4507FECFE5471C2CC90431CB3C.csv",
-              "path": "<UPLOADS>/2D229A4507FECFE5471C2CC90431CB3C.csv",
-              "resource_url": null
-            },
-            "shape": "<UPLOADS>/EBE533976BFAF0CABCA2C2E1B611B9C7.geojson",
-            "type": "vmmc"
-          },
-          "method": "POST",
-          "path": "/validate/survey-and-programme",
-          "query": "strict=true",
-          "status": 400,
-          "to": "hintr"
-        }
-      ],
       "request": {
         "body": {
           "multipart": {
@@ -84,40 +61,26 @@
       },
       "response": {
         "body": {
-          "same_as_upstream": "hintr"
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "An unexpected error occurred. If you see this message while you are using Naomi at a workshop, please contact your workshop technical support and show them this code: <ERROR_CODE>. Otherwise please contact support at naomi-support@imperial.ac.uk and quote this code: <ERROR_CODE>. No handler found for POST /disease/vmmc",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
         },
         "headers": {
           "content-type": "application/json"
         },
-        "status": 400
+        "status": 404
       }
     },
     {
       "client": "A",
       "name": "vmmc: geojson",
-      "outbound": [
-        {
-          "headers": {
-            "accept-language": "en"
-          },
-          "json": {
-            "file": {
-              "filename": "malawi.geojson",
-              "fromADR": false,
-              "hash": "EBE533976BFAF0CABCA2C2E1B611B9C7.geojson",
-              "path": "<UPLOADS>/EBE533976BFAF0CABCA2C2E1B611B9C7.geojson",
-              "resource_url": null
-            },
-            "shape": "<UPLOADS>/EBE533976BFAF0CABCA2C2E1B611B9C7.geojson",
-            "type": "vmmc"
-          },
-          "method": "POST",
-          "path": "/validate/survey-and-programme",
-          "query": "strict=true",
-          "status": 400,
-          "to": "hintr"
-        }
-      ],
       "request": {
         "body": {
           "multipart": {
@@ -134,40 +97,26 @@
       },
       "response": {
         "body": {
-          "same_as_upstream": "hintr"
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "An unexpected error occurred. If you see this message while you are using Naomi at a workshop, please contact your workshop technical support and show them this code: <ERROR_CODE>. Otherwise please contact support at naomi-support@imperial.ac.uk and quote this code: <ERROR_CODE>. No handler found for POST /disease/vmmc",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
         },
         "headers": {
           "content-type": "application/json"
         },
-        "status": 400
+        "status": 404
       }
     },
     {
       "client": "A",
       "name": "vmmc: pjnz",
-      "outbound": [
-        {
-          "headers": {
-            "accept-language": "en"
-          },
-          "json": {
-            "file": {
-              "filename": "Malawi2024.PJNZ",
-              "fromADR": false,
-              "hash": "46E4A725064B0E287F573A8F11389895.PJNZ",
-              "path": "<UPLOADS>/46E4A725064B0E287F573A8F11389895.PJNZ",
-              "resource_url": null
-            },
-            "shape": "<UPLOADS>/EBE533976BFAF0CABCA2C2E1B611B9C7.geojson",
-            "type": "vmmc"
-          },
-          "method": "POST",
-          "path": "/validate/survey-and-programme",
-          "query": "strict=true",
-          "status": 400,
-          "to": "hintr"
-        }
-      ],
       "request": {
         "body": {
           "multipart": {
@@ -184,40 +133,26 @@
       },
       "response": {
         "body": {
-          "same_as_upstream": "hintr"
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "An unexpected error occurred. If you see this message while you are using Naomi at a workshop, please contact your workshop technical support and show them this code: <ERROR_CODE>. Otherwise please contact support at naomi-support@imperial.ac.uk and quote this code: <ERROR_CODE>. No handler found for POST /disease/vmmc",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
         },
         "headers": {
           "content-type": "application/json"
         },
-        "status": 400
+        "status": 404
       }
     },
     {
       "client": "A",
       "name": "vmmc: empty file",
-      "outbound": [
-        {
-          "headers": {
-            "accept-language": "en"
-          },
-          "json": {
-            "file": {
-              "filename": "empty.xlsx",
-              "fromADR": false,
-              "hash": "D41D8CD98F00B204E9800998ECF8427E.xlsx",
-              "path": "<UPLOADS>/D41D8CD98F00B204E9800998ECF8427E.xlsx",
-              "resource_url": null
-            },
-            "shape": "<UPLOADS>/EBE533976BFAF0CABCA2C2E1B611B9C7.geojson",
-            "type": "vmmc"
-          },
-          "method": "POST",
-          "path": "/validate/survey-and-programme",
-          "query": "strict=true",
-          "status": 400,
-          "to": "hintr"
-        }
-      ],
       "request": {
         "body": {
           "multipart": {
@@ -233,40 +168,26 @@
       },
       "response": {
         "body": {
-          "same_as_upstream": "hintr"
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "An unexpected error occurred. If you see this message while you are using Naomi at a workshop, please contact your workshop technical support and show them this code: <ERROR_CODE>. Otherwise please contact support at naomi-support@imperial.ac.uk and quote this code: <ERROR_CODE>. No handler found for POST /disease/vmmc",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
         },
         "headers": {
           "content-type": "application/json"
         },
-        "status": 400
+        "status": 404
       }
     },
     {
       "client": "A",
       "name": "vmmc: garbage named .xlsx",
-      "outbound": [
-        {
-          "headers": {
-            "accept-language": "en"
-          },
-          "json": {
-            "file": {
-              "filename": "garbage.xlsx",
-              "fromADR": false,
-              "hash": "12BD1FE9EBDC3CA32BD6765A4B0D7759.xlsx",
-              "path": "<UPLOADS>/12BD1FE9EBDC3CA32BD6765A4B0D7759.xlsx",
-              "resource_url": null
-            },
-            "shape": "<UPLOADS>/EBE533976BFAF0CABCA2C2E1B611B9C7.geojson",
-            "type": "vmmc"
-          },
-          "method": "POST",
-          "path": "/validate/survey-and-programme",
-          "query": "strict=true",
-          "status": 400,
-          "to": "hintr"
-        }
-      ],
       "request": {
         "body": {
           "multipart": {
@@ -282,12 +203,21 @@
       },
       "response": {
         "body": {
-          "same_as_upstream": "hintr"
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "An unexpected error occurred. If you see this message while you are using Naomi at a workshop, please contact your workshop technical support and show them this code: <ERROR_CODE>. Otherwise please contact support at naomi-support@imperial.ac.uk and quote this code: <ERROR_CODE>. No handler found for POST /disease/vmmc",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
         },
         "headers": {
           "content-type": "application/json"
         },
-        "status": 400
+        "status": 404
       }
     }
   ]

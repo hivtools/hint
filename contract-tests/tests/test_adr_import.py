@@ -13,8 +13,7 @@ from hintcontract.scenario import Upload
 IMPORTS = {  # slot -> (fixture, needs shape+pjnz first)
     "pjnz": ("Malawi2024.PJNZ", False), "shape": ("malawi.geojson", False), "population": ("population.csv", False),
     "survey": ("survey.csv", True), "programme": ("programme.csv", True), "anc": ("anc.csv", True),
-    "vmmc": ("vmmc.xlsx", True),
-}
+}  # no vmmc: Kotlin no longer has it (PR 1144)
 
 
 def session_with_key(scn, needs_baseline=False):

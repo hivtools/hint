@@ -477,9 +477,9 @@
               "survey_recently_infected": "DEMO2020PHIA"
             },
             "version": {
-              "hintr": "1.2.23",
+              "hintr": "1.2.25",
               "naomi": "2.10.23",
-              "rrq": "0.7.23",
+              "rrq": "0.7.24",
               "traduire": "0.1.1"
             }
           },
@@ -524,9 +524,9 @@
               "survey_recently_infected": "DEMO2020PHIA"
             },
             "version": {
-              "hintr": "1.2.23",
+              "hintr": "1.2.25",
               "naomi": "2.10.23",
-              "rrq": "0.7.23",
+              "rrq": "0.7.24",
               "traduire": "0.1.1"
             }
           }
@@ -616,9 +616,9 @@
               "survey_recently_infected": "DEMO2020PHIA"
             },
             "version": {
-              "hintr": "1.2.23",
+              "hintr": "1.2.25",
               "naomi": "2.10.23",
-              "rrq": "0.7.23",
+              "rrq": "0.7.24",
               "traduire": "0.1.1"
             }
           },
@@ -664,9 +664,9 @@
               "survey_recently_infected": "DEMO2020PHIA"
             },
             "version": {
-              "hintr": "1.2.23",
+              "hintr": "1.2.25",
               "naomi": "2.10.23",
-              "rrq": "0.7.23",
+              "rrq": "0.7.24",
               "traduire": "0.1.1"
             }
           }
@@ -824,9 +824,9 @@
               "spectrum_plhiv_calibration_strat": "sex_age_coarse"
             },
             "version": {
-              "hintr": "1.2.23",
+              "hintr": "1.2.25",
               "naomi": "2.10.23",
-              "rrq": "0.7.23",
+              "rrq": "0.7.24",
               "traduire": "0.1.1"
             }
           },
@@ -852,9 +852,9 @@
               "spectrum_plhiv_calibration_strat": "sex_age_coarse"
             },
             "version": {
-              "hintr": "1.2.23",
+              "hintr": "1.2.25",
               "naomi": "2.10.23",
-              "rrq": "0.7.23",
+              "rrq": "0.7.24",
               "traduire": "0.1.1"
             }
           }
@@ -894,9 +894,9 @@
               "spectrum_plhiv_calibration_strat": "sex_age_coarse"
             },
             "version": {
-              "hintr": "1.2.23",
+              "hintr": "1.2.25",
               "naomi": "2.10.23",
-              "rrq": "0.7.23",
+              "rrq": "0.7.24",
               "traduire": "0.1.1"
             }
           },
@@ -922,9 +922,9 @@
               "spectrum_plhiv_calibration_strat": "sex_age_coarse"
             },
             "version": {
-              "hintr": "1.2.23",
+              "hintr": "1.2.25",
               "naomi": "2.10.23",
-              "rrq": "0.7.23",
+              "rrq": "0.7.24",
               "traduire": "0.1.1"
             }
           }
@@ -1135,29 +1135,6 @@
     {
       "client": "A",
       "name": "upload vmmc",
-      "outbound": [
-        {
-          "headers": {
-            "accept-language": "en"
-          },
-          "json": {
-            "file": {
-              "filename": "vmmc.xlsx",
-              "fromADR": false,
-              "hash": "B7C376E240D6E17D5D3EAFBF4539B771.xlsx",
-              "path": "<UPLOADS>/B7C376E240D6E17D5D3EAFBF4539B771.xlsx",
-              "resource_url": null
-            },
-            "shape": "<UPLOADS>/EBE533976BFAF0CABCA2C2E1B611B9C7.geojson",
-            "type": "vmmc"
-          },
-          "method": "POST",
-          "path": "/validate/survey-and-programme",
-          "query": "strict=true",
-          "status": 200,
-          "to": "hintr"
-        }
-      ],
       "request": {
         "body": {
           "multipart": {
@@ -1174,12 +1151,21 @@
       },
       "response": {
         "body": {
-          "same_as_upstream": "hintr"
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "An unexpected error occurred. If you see this message while you are using Naomi at a workshop, please contact your workshop technical support and show them this code: <ERROR_CODE>. Otherwise please contact support at naomi-support@imperial.ac.uk and quote this code: <ERROR_CODE>. No handler found for POST /disease/vmmc",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
         },
         "headers": {
           "content-type": "application/json"
         },
-        "status": 200
+        "status": 404
       }
     },
     {
@@ -1255,13 +1241,6 @@
                 "naomi": "1",
                 "rrq": "1"
               }
-            },
-            "vmmc": {
-              "filename": "vmmc.xlsx",
-              "fromADR": false,
-              "hash": "B7C376E240D6E17D5D3EAFBF4539B771.xlsx",
-              "path": "<UPLOADS>/B7C376E240D6E17D5D3EAFBF4539B771.xlsx",
-              "resource_url": null
             }
           },
           "method": "POST",
@@ -1847,177 +1826,6 @@
     },
     {
       "client": "A",
-      "name": "submit download agyw",
-      "outbound": [
-        {
-          "headers": {
-            "accept-language": "en"
-          },
-          "json": {
-            "iso3": "MWI",
-            "notes": {
-              "project_notes": {
-                "name": "projectName",
-                "note": "test notes",
-                "updated": "2022/05/17 12:34:21"
-              },
-              "version_notes": [
-                {
-                  "name": "projectName",
-                  "note": "test notes",
-                  "updated": "2022/05/17 12:34:21"
-                },
-                {
-                  "name": "projectName",
-                  "note": "test notes",
-                  "updated": "2022/05/17 12:34:21"
-                }
-              ]
-            },
-            "pjnz": {
-              "filename": "Malawi2024.PJNZ",
-              "fromADR": false,
-              "hash": "46E4A725064B0E287F573A8F11389895.PJNZ",
-              "path": "<UPLOADS>/46E4A725064B0E287F573A8F11389895.PJNZ",
-              "resource_url": null
-            },
-            "state": {
-              "calibrate": {
-                "id": "<TASK:calibrate>",
-                "options": {
-                  "": ""
-                }
-              },
-              "datasets": {
-                "anc": {
-                  "filename": "anc",
-                  "path": "uploads/anc"
-                },
-                "pjnz": {
-                  "filename": "pjnz",
-                  "path": "uploads/pjnz"
-                },
-                "population": {
-                  "filename": "population",
-                  "path": "uploads/population"
-                },
-                "programme": {
-                  "filename": "programme",
-                  "path": "uploads/programme"
-                },
-                "shape": {
-                  "filename": "shape",
-                  "path": "uploads/shape"
-                },
-                "survey": {
-                  "filename": "survey",
-                  "path": "uploads/survey"
-                }
-              },
-              "model_fit": {
-                "id": "<TASK:fit>",
-                "options": {
-                  "": ""
-                }
-              },
-              "version": {
-                "hintr": "1",
-                "naomi": "1",
-                "rrq": "1"
-              }
-            }
-          },
-          "method": "POST",
-          "path": "/download/submit/agyw/<TASK:calibrate>",
-          "status": 200,
-          "to": "hintr"
-        }
-      ],
-      "request": {
-        "body": {
-          "json": {
-            "iso3": "MWI",
-            "notes": {
-              "project_notes": {
-                "name": "projectName",
-                "note": "test notes",
-                "updated": "2022/05/17 12:34:21"
-              },
-              "version_notes": [
-                {
-                  "name": "projectName",
-                  "note": "test notes",
-                  "updated": "2022/05/17 12:34:21"
-                },
-                {
-                  "name": "projectName",
-                  "note": "test notes",
-                  "updated": "2022/05/17 12:34:21"
-                }
-              ]
-            },
-            "state": {
-              "calibrate": {
-                "id": "<TASK:calibrate>",
-                "options": {
-                  "": ""
-                }
-              },
-              "datasets": {
-                "anc": {
-                  "filename": "anc",
-                  "path": "uploads/anc"
-                },
-                "pjnz": {
-                  "filename": "pjnz",
-                  "path": "uploads/pjnz"
-                },
-                "population": {
-                  "filename": "population",
-                  "path": "uploads/population"
-                },
-                "programme": {
-                  "filename": "programme",
-                  "path": "uploads/programme"
-                },
-                "shape": {
-                  "filename": "shape",
-                  "path": "uploads/shape"
-                },
-                "survey": {
-                  "filename": "survey",
-                  "path": "uploads/survey"
-                }
-              },
-              "model_fit": {
-                "id": "<TASK:fit>",
-                "options": {
-                  "": ""
-                }
-              },
-              "version": {
-                "hintr": "1",
-                "naomi": "1",
-                "rrq": "1"
-              }
-            }
-          }
-        },
-        "method": "POST",
-        "path": "/download/submit/agyw/<TASK:calibrate>"
-      },
-      "response": {
-        "body": {
-          "same_as_upstream": "hintr"
-        },
-        "headers": {
-          "content-type": "application/json"
-        },
-        "status": 200
-      }
-    },
-    {
-      "client": "A",
       "name": "submit download datapack",
       "outbound": [
         {
@@ -2089,13 +1897,6 @@
                 "naomi": "1",
                 "rrq": "1"
               }
-            },
-            "vmmc": {
-              "filename": "vmmc.xlsx",
-              "fromADR": false,
-              "hash": "B7C376E240D6E17D5D3EAFBF4539B771.xlsx",
-              "path": "<UPLOADS>/B7C376E240D6E17D5D3EAFBF4539B771.xlsx",
-              "resource_url": null
             }
           },
           "method": "POST",
@@ -2300,37 +2101,6 @@
       "request": {
         "method": "GET",
         "path": "/download/status/<TASK:download-comparison>"
-      },
-      "response": {
-        "body": {
-          "same_as_upstream": "hintr"
-        },
-        "headers": {
-          "content-type": "application/json"
-        },
-        "status": 200
-      }
-    },
-    {
-      "client": "A",
-      "name": "download agyw finished",
-      "outbound": [
-        {
-          "headers": {
-            "accept-language": "en"
-          },
-          "method": "GET",
-          "path": "/download/status/<TASK:download-agyw>",
-          "status": 200,
-          "to": "hintr"
-        }
-      ],
-      "poll": {
-        "until": "data.done == true"
-      },
-      "request": {
-        "method": "GET",
-        "path": "/download/status/<TASK:download-agyw>"
       },
       "response": {
         "body": {
