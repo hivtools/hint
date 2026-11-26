@@ -12,7 +12,7 @@ describe("Hintr Menu Version", () => {
     const mockGetHinrVersion = vi.fn();
     const createStore = () => {
         const store = new Vuex.Store({
-            state: emptyState(),
+            state: emptyState("some.user@example.com"),
             modules: {
                 hintrVersion: {
                     namespaced: true,

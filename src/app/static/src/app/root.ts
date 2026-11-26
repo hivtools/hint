@@ -151,9 +151,7 @@ const resetState = (store: Store<RootState>): void => {
     })
 };
 
-declare const currentUser: string;
-
-export const emptyState = (): RootState => {
+export const emptyState = (currentUser: string): RootState => {
     return {
         language: Language.en,
         version: currentHintVersion,
@@ -182,34 +180,39 @@ export const emptyState = (): RootState => {
     }
 };
 
-localStorageManager.removeLegacyState();
-const existingState = sessionStorageManager.getState();
-
-export const storeOptions: StoreOptions<RootState> = {
-    state: {...emptyState(), ...existingState},
-    modules: {
-        adr,
-        reviewInput,
-        adrUpload,
-        baseline: baseline(existingState),
-        metadata: metadata(existingState),
-        surveyAndProgram: surveyAndProgram(existingState),
-        modelCalibrate: modelCalibrate(existingState),
-        modelOptions: modelOptions(existingState),
-        modelRun: modelRun(existingState),
-        modelOutput: modelOutput(existingState),
-        plotData,
-        plotSelections,
-        plotState,
-        stepper: stepper(existingState),
-        load,
-        errors,
-        projects,
-        hintrVersion: hintrVersion(existingState),
-        downloadResults,
-    },
-    actions: actions,
-    mutations: mutations,
-    getters: getters,
-    plugins: [persistState, resetState]
+/**
+ * The store of the app, for `currentUser` (from GET /me). The tab's saved state is read here, not when this file is
+ * loaded, because it belongs to one user (see sessionStorageManager.getState).
+ */
+export const createStoreOptions = (currentUser: string): StoreOptions<RootState> => {
+    localStorageManager.removeLegacyState();
+    const existingState = sessionStorageManager.getState(currentUser);
+    return {
+        state: {...emptyState(currentUser), ...existingState},
+        modules: {
+            adr,
+            reviewInput,
+            adrUpload,
+            baseline: baseline(existingState),
+            metadata: metadata(existingState),
+            surveyAndProgram: surveyAndProgram(existingState),
+            modelCalibrate: modelCalibrate(existingState),
+            modelOptions: modelOptions(existingState),
+            modelRun: modelRun(existingState),
+            modelOutput: modelOutput(existingState),
+            plotData,
+            plotSelections,
+            plotState,
+            stepper: stepper(existingState),
+            load,
+            errors,
+            projects,
+            hintrVersion: hintrVersion(existingState),
+            downloadResults,
+        },
+        actions: actions,
+        mutations: mutations,
+        getters: getters,
+        plugins: [persistState, resetState]
+    };
 };

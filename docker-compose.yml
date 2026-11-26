@@ -114,6 +114,9 @@ services:
       # Where this container sees the results hintr writes. The path hintr gives for a result is relative to its own
       # results folder, so this is mounted at the same place as in hintr
       HINT_RESULTS_DIR: /${RESULTS_NAME:-results}
+      # The built front end, which this container serves: the page of the app, and the files at /public/. It is the
+      # build output in src/app/static, so a new `npm run build && npm run copy` is served at once.
+      HINT_STATIC_DIR: /static
       # What the logs look like: "console" is one line for each message, "json" one object for each (for machines).
       # (Run by hand in a terminal, the API picks one itself: see HINT_LOG_FORMAT in hint-py/README.md.)
       HINT_LOG_FORMAT: ${HINT_LOG_FORMAT:-console}
@@ -130,6 +133,7 @@ services:
       - ./src/app/${UPLOADS_NAME:-uploads}:/${UPLOADS_NAME:-uploads}
       # Only read, never written
       - ./src/app/${RESULTS_NAME:-results}:/${RESULTS_NAME:-results}:ro
+      - ./src/app/static/public:/static:ro
     # sh, so that OTEL_LAUNCHER (empty unless OTEL=1) can go in front of fastapi
     command: ["sh", "-c", "exec uv run --frozen --no-dev $${OTEL_LAUNCHER} fastapi dev app/main.py --host 0.0.0.0 --port 8000"]
     healthcheck:

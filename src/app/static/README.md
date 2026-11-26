@@ -1,7 +1,8 @@
 # HINT front end
 
 A Vue 3 app with Vuex, built with [Vite](https://vite.dev). The source and the tests are in `./src`.
-The build writes to `./public`, and Kotlin serves that folder at `/public/`.
+The build writes to `./public`. The Python API (`hint-py`) sends `./public/index.html` for the pages of the app, and
+serves the folder at `/public/`.
 
 ## Editor
 
@@ -20,18 +21,17 @@ npm install
 
 ## Dev server with hot reload
 
-Start Kotlin without a front-end build, then start the Vite dev server. See the [main README](../../../README.md).
+Start the dev stack (`./scripts/dev.sh up` from the root, see the [main README](../../../README.md)), then start the
+Vite dev server:
 
 ```sh
-# from the root of the repository
-src/gradlew -PhotReload=true -p src app:bootRun
-# from this folder, in another terminal
 npm run dev
 ```
 
-Open http://localhost:5173, not port 8080. The dev server gets each page from Kotlin (with your cookies) and adds the
-code from `./src`. It sends all other requests to Kotlin. If Kotlin is not at http://localhost:8080, set
-`HINT_BACKEND_URL`, for example `HINT_BACKEND_URL=http://localhost:8081 npm run dev`.
+Open http://localhost:5173, not port 8080. The dev server sends the page of the app itself (`./index.html`, with the
+code from `./src`). It sends all other requests to the dev stack's proxy, with your cookies: the API, `GET /me`, and
+the login page (still Kotlin). If the proxy is not at http://localhost:8080, set `HINT_BACKEND_URL`, for example
+`HINT_BACKEND_URL=http://localhost:18080 npm run dev`.
 
 The dev server also adds the [Vue DevTools](https://devtools.vuejs.org/) to the page. Press <kbd>alt + shift + d</kbd>
 to open them. The production build does not include them.
@@ -44,17 +44,21 @@ npm run build-only  # build only
 npm run type-check  # type check only (CI runs this too)
 ```
 
-To see the production build in a browser, run `npm run build`, start Kotlin without `-PhotReload=true`, and open
-http://localhost:8080.
+To see the production build in a browser, run `npm run build && npm run copy` with the dev stack running, and open
+http://localhost:8080. The Python API serves the new build at once.
 
 The build writes:
 
 - `./public/assets/`: the JavaScript and CSS files. Each name contains a hash of the content, so a browser never uses an
   old file after a deploy. The `.map` files are the source maps.
-- `./public/vite-assets.ftl`: the `<script>` and `<link>` tags for the current build. `index.ftl` includes it.
+- `./public/index.html`: the page of the app, with the `<script>` and `<link>` tags for the current build. It has
+  nothing in it for one user: the app asks `GET /me` who the user is before it starts (`src/app/me.ts`).
+- `./public/vite-assets.ftl`: the same tags, for Kotlin's `index.ftl`, which nothing routes to any more. It goes when
+  the Kotlin app goes.
 - `./public/css/app.css`: a copy of the CSS with a fixed name, for `login.ftl` and `404.ftl`.
 
-`npm run copy` copies the templates and the images to `./public`. Gradle runs it after the build.
+`npm run copy` copies the templates (Kotlin's login page) and the images to `./public`. Gradle and `scripts/dev.sh` run
+it after the build.
 
 The type check is `vue-tsc --build`. It checks the projects in `tsconfig.json`, as in a new
 [create-vue](https://github.com/vuejs/create-vue) app:
@@ -83,7 +87,7 @@ packages (`skipLibCheck`).
 
 - The integration tests need the app and its dependencies. Start them with
   `./scripts/run-dev-dependencies-for-integration-tests.sh` from this folder.
-- The browser tests need a running app at http://localhost:8080 (set `baseURL` to use another address). The first time,
+- The browser tests need the dev stack at http://localhost:8080 (set `baseURL` to use another address). The first time,
   install the browsers with `npx playwright install`.
 - Some useful Playwright options: `npm run test:e2e -- smoke.spec.ts` runs one file, and `-- --debug` opens the
   inspector.

@@ -107,7 +107,7 @@ describe(`uploadModal`, () => {
                          downloadResults: Partial<DownloadResultsState> = mockDownloadResults,
                          downloadMetadataError: Partial<MetadataState> = {}) => {
         const store = new Vuex.Store({
-            state: emptyState(),
+            state: emptyState("some.user@example.com"),
             modules: {
                 baseline: {
                     namespaced: true,

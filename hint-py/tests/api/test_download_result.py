@@ -79,6 +79,16 @@ async def test_a_big_file_is_sent_whole(anonymous_client, download):
     assert r.content == big
 
 
+async def test_a_download_is_not_gzipped(anonymous_client, download):
+    """The API gzips its answers, but not the downloads: they can be large, and many are zip files already."""
+    (download / "t1" / "summary.html").write_bytes(b"0123456789abcdef" * 1024)
+
+    r = await anonymous_client.get("/download/result/t1", headers={"Accept-Encoding": "gzip"})
+
+    assert "content-encoding" not in r.headers
+    assert r.headers["content-length"] == str(16 * 1024)
+
+
 @pytest.mark.parametrize(("status", "body"), [(400, HINTR_FAILURE), (404, HINTR_FAILURE)])
 async def test_a_failure_of_hintr_comes_back_as_it_is(anonymous_client, download, hintr, status, body):
     # The task does not exist, did not finish, or is not a download

@@ -1,7 +1,10 @@
 import Vuex from 'vuex';
-import {type RootState, storeOptions} from "./root";
+import {createStoreOptions, type RootState} from "./root";
 import registerTranslations from "./store/translations/registerTranslations";
 
-// Main app
-export const store = new Vuex.Store<RootState>(storeOptions);
-registerTranslations(store);
+// Main app. Made once the app knows who the user is (see index.ts).
+export const createStore = (currentUser: string) => {
+    const store = new Vuex.Store<RootState>(createStoreOptions(currentUser));
+    registerTranslations(store);
+    return store;
+};

@@ -107,7 +107,7 @@ const rehydrateFromState = async (context: ActionContext<LoadState, RootState>, 
         savedState.projects!.currentProject = rootState.projects.currentProject
         savedState.projects!.currentVersion = rootState.projects.currentVersion
 
-        const newRootState = {...emptyState(), ...savedState}
+        const newRootState = {...emptyState(rootState.currentUser), ...savedState}
 
         Object.assign(rootState, newRootState);
     }

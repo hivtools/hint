@@ -16,7 +16,7 @@ const stubs = {
 const getStore = (invalidSteps: number[], isGuest: boolean) => {
     const store = new Vuex.Store<RootState>({
         state: {
-            ...emptyState(),
+            ...emptyState("some.user@example.com"),
             invalidSteps
         } as any,
         actions: {

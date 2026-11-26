@@ -29,7 +29,7 @@ describe("Online support menu", () => {
                          language: Language = Language.en) => {
         const store = new Vuex.Store({
             state: {
-                ...emptyState(),
+                ...emptyState("some.user@example.com"),
                 language
             },
             actions: {

@@ -14,7 +14,7 @@ describe("Download Table Row tests", () => {
     const getWrapper = (downloadDepState: Partial<DownloadResultsDependency> = {}) => {
         const mockState = mockDownloadResultsState()[downloadType];
         const store = new Vuex.Store({
-            state: emptyState(),
+            state: emptyState("some.user@example.com"),
             modules: {
                 downloadResults: {
                     namespaced: true,

@@ -10,7 +10,7 @@ import {expectTranslated, shallowMountWithTranslate} from "../../testHelpers";
 describe("Version status component", () => {
     const getWrapper = (projectsState: Partial<ProjectsState> = {}) => {
         const store = new Vuex.Store({
-            state: emptyState(),
+            state: emptyState("some.user@example.com"),
             modules: {
                 projects: {
                     namespaced: true,

@@ -41,8 +41,6 @@ export const serialiseState = (state: RootState): Partial<RootState> => {
     }
 };
 
-declare const currentUser: string;
-
 /**
  * What a browser tab is working on: its working state and the id of the project version it has open. Each tab has
  * its own copy, so two tabs can work on different projects. A refresh keeps it. Closing the tab forgets it.
@@ -59,7 +57,8 @@ export class SessionStorageManager {
         window.sessionStorage.setItem(appStateKey, JSON.stringify(partialState));
     };
 
-    getState = (): Partial<RootState> | null => {
+    // The saved state of another user (who used this tab before) is cleared, not given to this one
+    getState = (currentUser: string): Partial<RootState> | null => {
         if (currentUser != window.sessionStorage.getItem(userKey)) {
             this.clear();
             window.sessionStorage.setItem(userKey, currentUser);

@@ -27,24 +27,22 @@ apt-get install adoptopenjdk-11-hotspot -y
 
 1. Clone this repo
 1. Run `npm install` from `src/app/static`
-1. Run `./scripts/dev.sh deps` (a wrapper around `docker compose up`, see `docker-compose.yml`) to start docker instances
-of [hint-db](https://github.com/hivtools/hint-db/) and [hintr](https://github.com/hivtools/hintr) and add a test user
-with username `test.user@example.com` and password `password`. `./scripts/dev.sh down` stops them.
-1. Run `npm run build` from `src/app/static` to build the front end.
-1. Run app from your IDE or by `./src/gradlew -p src :app:bootRun` to serve the app on port 8080
+1. Run `./scripts/dev.sh up`. It builds the front end the first time, and starts everything in docker and on your
+machine: [hint-db](https://github.com/hivtools/hint-db/), [hintr](https://github.com/hivtools/hintr) (mock model), the
+Python API (`hint-py`), the Kotlin app on port 8081, and an nginx proxy on port 8080 in front of the two apps. It adds
+a test user with username `test.user@example.com` and password `password`. Open http://localhost:8080.
+`./scripts/dev.sh down` stops it. See [proxy/README.md](proxy/README.md).
 
-To work on the endpoints being migrated to Python (`hint-py`) run `./scripts/dev.sh up` instead of the last two steps. It
-also starts the Python API and an nginx proxy on port 8080 that sends the migrated endpoints to Python and everything
-else to the Kotlin app, which `dev.sh` starts on port 8081. See [proxy/README.md](proxy/README.md).
+The app needs the Python API and the proxy: the Python API sends the page and asks who the user is (`GET /me`), and the
+proxy sends the endpoints that have moved to Python there and everything else to Kotlin. Kotlin on its own (for example
+`./src/gradlew -p src :app:bootRun`, with `./scripts/dev.sh deps` for the database and hintr) still answers its
+endpoints, but the app does not start without `GET /me`.
 
-To run the front end with hot reload, first install the npm packages and start the development dependencies. Then:
-1. From the root, run `src/gradlew -PhotReload=true -p src app:bootRun`. This starts Kotlin on port 8080. It does not build the front end.
-1. In another terminal, go to `src/app/static` and run `npm run dev`. This starts the Vite dev server.
-1. Open the URL that Vite shows (usually http://localhost:5173).
-
-The Vite dev server gets each page from Kotlin and adds the front-end code from `src/app/static/src`.
-It sends all other requests to Kotlin. If Kotlin is not at http://localhost:8080, set `HINT_BACKEND_URL`.
-For example: `HINT_BACKEND_URL=http://localhost:8081 npm run dev`.
+After a change to the front end, run `npm run build && npm run copy` in `src/app/static`: the Python API serves the
+new build at once. To run the front end with hot reload instead, run `npm run dev` in `src/app/static` and open the URL
+that Vite shows (usually http://localhost:5173). The Vite dev server sends the page of the app itself, with the code
+from `src/app/static/src`. It sends all other requests (and the login page) to the proxy. If the proxy is not at
+http://localhost:8080, set `HINT_BACKEND_URL`. For example: `HINT_BACKEND_URL=http://localhost:18080 npm run dev`.
 
 For more information about developing the front-end see [src/app/static/README](https://github.com/hivtools/hint/blob/main/src/app/static/README.md)
 

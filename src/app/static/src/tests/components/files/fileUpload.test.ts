@@ -22,7 +22,7 @@ describe("File upload component", () => {
         }
     } as any
 
-    const createStore = (state = emptyState(), requireConfirmation = false) => {
+    const createStore = (state = emptyState("some.user@example.com"), requireConfirmation = false) => {
         const mockStepperGetters = {
             editsRequireConfirmation: () => requireConfirmation,
             changesToRelevantSteps: () => [{number: 4, textKey: "fitModel"}]
@@ -145,7 +145,7 @@ describe("File upload component", () => {
     });
 
     it("can trigger confirmation dialog", async () => {
-        const store = createStore(emptyState(), true);
+        const store = createStore(emptyState("some.user@example.com"), true);
         const wrapper = shallowMountWithTranslate(FileUpload, store, {
             global: {
                 plugins: [store]

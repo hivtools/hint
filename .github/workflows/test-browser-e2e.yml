@@ -27,11 +27,23 @@ jobs:
                 ghcr-username: ${{ github.actor }}
                 ghcr-password: ${{ secrets.GITHUB_TOKEN }}
 
-            - name: Run deps
-              run: scripts/run-dependencies.sh
+            # scripts/dev.sh runs the stubs of the contract tests, in this environment
+            - uses: ./.github/actions/setup-python-env
+              with:
+                working-directory: contract-tests
 
-            - name: Start Kotlin server
-              run: scripts/run-kotlin-server.sh
+            # The Python API serves the page of the app and the built files (src/app/static/public)
+            - name: Build the front end
+              run: npm run build --prefix=src/app/static && npm run copy --prefix=src/app/static
+
+            # The whole stack, as in development: nginx on :8080 in front of the Python API and Kotlin, with hintr
+            # (mock model), postgres and redis. The app needs all of it: it asks the Python API who the user is
+            # (GET /me) before it starts. The ADR stub, not the real dev ADR, which only accepts some IP addresses.
+            - name: Start the dev stack
+              run: scripts/dev.sh up
+              env:
+                OTEL: 0
+                REAL_ADR: 0
 
             # Playwright itself comes from package-lock.json (make-shared-env
             # installs it). Here we install only the browser for that version.
@@ -45,6 +57,21 @@ jobs:
 
             - name: Test browser e2e
               run: npm run test:e2e --prefix=src/app/static -- --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
+
+            - name: Save the logs of the dev stack
+              if: ${{ failure() }}
+              run: |
+                  mkdir -p dev-logs
+                  cp .dev/*.log dev-logs/ || true
+                  docker compose -p hint --profile proxy logs --no-color > dev-logs/containers.log 2>&1 || true
+
+            - name: Upload the logs of the dev stack
+              uses: actions/upload-artifact@v4
+              if: ${{ failure() }}
+              with:
+                name: dev-logs-${{ matrix.shardIndex }}
+                path: dev-logs/
+                retention-days: 7
 
             - name: Upload blob report
               uses: actions/upload-artifact@v4

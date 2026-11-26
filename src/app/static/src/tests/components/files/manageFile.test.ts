@@ -12,7 +12,7 @@ import {emptyState, type RootState,} from "../../../app/root";
 
 describe("Manage file component", () => {
 
-    const createStore = (customStore = emptyState(), requireConfirmation = false) => {
+    const createStore = (customStore = emptyState("some.user@example.com"), requireConfirmation = false) => {
         const store = new Vuex.Store({
             state: customStore,
             modules: {

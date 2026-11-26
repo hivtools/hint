@@ -155,12 +155,17 @@ open(dst, "w").write("\n".join(out) + "\n")
 PY
 }
 
+# The Python API serves the built front end (src/app/static/public), and Kotlin the login page from it. Built once;
+# after that, `npm run build && npm run copy` in src/app/static, or `npm run dev` for hot reload.
+ensure_frontend() {
+  if [ -f "$APP_DIR/static/public/index.html" ] && [ -f "$APP_DIR/static/public/login.ftl" ]; then return 0; fi
+  echo "building the frontend (first run)"
+  if [ ! -d "$APP_DIR/static/node_modules" ]; then (cd "$APP_DIR/static" && npm ci); fi
+  (cd "$APP_DIR/static" && npm run build && npm run copy)
+}
+
 resolve_classpath() { # compiles the app if needed
-  if [ ! -f "$APP_DIR/static/public/index.ftl" ]; then
-    echo "building the frontend (first run)"
-    if [ ! -d "$APP_DIR/static/node_modules" ]; then (cd "$APP_DIR/static" && npm ci); fi
-    (cd "$ROOT/src" && ./gradlew -q app:compileFrontEnd app:copyAssets)
-  fi
+  ensure_frontend
   echo "resolving the app classpath with gradle (compiles the app if needed)"
   (cd "$ROOT/src" && CONTRACT_CLASSPATH_OUT="$STATE/classpath.txt" ./gradlew -q -I "$CT/scripts/classpath.init.gradle" \
       -PhotReload=true app:contractPrintClasspath -x copyAssets -x compileFrontEnd)
@@ -220,6 +225,9 @@ do_up() { # $1 = pull | nopull, then --no-proxy, --rebuild
   # Error reports go to the stub of the Teams flow
   export PYTHON_ISSUE_REPORT_URL="http://host.docker.internal:$STUB_PORT/flow"
   if [ "$pull" = pull ] && [ "${NO_PULL:-0}" != 1 ]; then compose pull -q --ignore-buildable; fi
+  # Before the containers start: the Python container mounts the build output, and docker would make a missing folder
+  # (as root)
+  ensure_frontend
   if [ "$mode" = proxy ]; then compose --profile proxy up -d --build --wait; else compose up -d --wait; fi
   wait_http hintr "http://127.0.0.1:$HINTR_PORT/" 60
 

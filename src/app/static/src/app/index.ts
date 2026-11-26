@@ -1,6 +1,7 @@
 import {createApp} from "vue";
-import {store} from "./main"
-import {router} from "./router"
+import {createStore} from "./main"
+import {guardAgainstGuests, router} from "./router"
+import {getMe} from "./me";
 import translate from "./directives/translate";
 import FloatingVue from "floating-vue";
 import Hint from "./components/Hint.vue"
@@ -8,8 +9,6 @@ import 'floating-vue/dist/style.css';
 import "../scss/style.scss";
 import "bootstrap/scss/bootstrap-grid.scss";
 import "@reside-ic/vue-nested-multiselect/style.css";
-
-const mountEl = document.querySelector("#app");
 
 // tooltip options
 const options = {
@@ -28,23 +27,47 @@ const options = {
     }
 }
 
-const getApp = () => {
-    if (mountEl) {
-        const app = createApp(Hint, {...(mountEl as HTMLDivElement).dataset});
-        app.use(store);
-        app.use(router);
+// Shown when the app cannot find out who the user is. The visitor is not taken to be a guest: a logged in user who
+// was shown the guest app could lose their work.
+const showStartError = (mountEl: Element) => {
+    const message = document.createElement("p");
+    message.id = "start-error";
+    message.className = "text-center mt-5";
+    message.textContent = "Naomi could not start. Please check your connection and reload the page.";
+    mountEl.replaceChildren(message);
+};
 
-        app.use(FloatingVue, options);
-
-        app.directive("translate", translate(store));
-        app.config.globalProperties.$store = store;
-
-        app.mount('#app');
-
-        return app
-    } else {
-        return {}
+export const startApp = async () => {
+    const mountEl = document.querySelector("#app");
+    if (!mountEl) {
+        return null;
     }
+
+    let me;
+    try {
+        me = await getMe();
+    } catch (error) {
+        console.error(error);
+        showStartError(mountEl);
+        return null;
+    }
+
+    document.title = me.title;
+    const store = createStore(me.user);
+    guardAgainstGuests(store);
+
+    const app = createApp(Hint, {title: me.title, user: me.user});
+    app.use(store);
+    app.use(router);
+
+    app.use(FloatingVue, options);
+
+    app.directive("translate", translate(store));
+    app.config.globalProperties.$store = store;
+
+    app.mount('#app');
+
+    return app
 }
 
-export default getApp();
+export default startApp();

@@ -13,7 +13,6 @@ import registerTranslations from "../../../app/store/translations/registerTransl
 import {getters} from "../../../app/store/root/getters";
 import {mountWithTranslate} from "../../testHelpers";
 
-(global as any).currentUser = "guest";
 
 describe("Model options component when edit confirmation is required", () => {
 
@@ -40,7 +39,7 @@ describe("Model options component when edit confirmation is required", () => {
                          actions: ModelOptionsActions & ActionTree<ModelOptionsState, RootState> = mockActions) => {
         const store = new Vuex.Store({
             getters: getters,
-            state: mockRootState(),
+            state: mockRootState({currentUser: "guest"}),
             modules: {
                 modelOptions: {
                     namespaced: true,

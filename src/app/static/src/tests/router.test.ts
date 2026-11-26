@@ -1,36 +1,15 @@
-import {storeOptions} from "../app/root";
 import type {RouteLocationNormalized} from "vue-router";
 import {mount} from '@vue/test-utils'
 import Vuex from "vuex";
 import {mockRootState} from "./mocks";
-import {store} from "../app/main";
 import Hint from "../app/components/Hint.vue";
 import type {Mock} from "vitest";
-import {beforeEnter, router} from '../app/router';
+import {beforeEnter, guardAgainstGuests, router} from '../app/router';
+import type {RootState} from "../app/root";
 
-// Mock the actions before import the router as the app will call
-// these actions on import
-const baselineActions = {
-    getBaselineData: vi.fn()
+const guardWithUser = (currentUser: string) => {
+    guardAgainstGuests(new Vuex.Store<RootState>({state: mockRootState({currentUser})}));
 };
-const surveyAndProgramActions = {
-    getSurveyAndProgramData: vi.fn()
-};
-const modelRunActions = {
-    getResult: vi.fn()
-};
-const projectActions = {
-    getCurrentProject: vi.fn()
-};
-const actions = {
-    getADRSchemas: vi.fn()
-};
-
-storeOptions.modules!.baseline!.actions = baselineActions;
-storeOptions.modules!.surveyAndProgram!.actions = surveyAndProgramActions;
-storeOptions.modules!.modelRun!.actions = modelRunActions;
-storeOptions.modules!.projects!.actions = projectActions;
-storeOptions.actions = actions
 
 console.error = vi.fn();
 
@@ -104,7 +83,7 @@ describe("Router", () => {
         delete (window as any).location
         window.location = {...realLocation, assign: vi.fn()} as any;
 
-        store.state.currentUser = "guest";
+        guardWithUser("guest");
         Storage.prototype.getItem = vi.fn((key) => key === "asGuest" ? "continueAsGuest" : null);
 
         beforeEnter({} as RouteLocationNormalized, {} as RouteLocationNormalized);
@@ -119,7 +98,7 @@ describe("Router", () => {
         delete (window as any).location
         window.location = {...realLocation, assign: vi.fn()} as any;
 
-        store.state.currentUser = "guest";
+        guardWithUser("guest");
         Storage.prototype.getItem = vi.fn();
 
         beforeEnter({} as RouteLocationNormalized, {} as RouteLocationNormalized);
@@ -135,7 +114,7 @@ describe("Router", () => {
         delete (window as any).location
         window.location = {...realLocation, assign: vi.fn()} as any;
 
-        store.state.currentUser = "test.user@example.com";
+        guardWithUser("test.user@example.com");
 
         beforeEnter({} as RouteLocationNormalized, {} as RouteLocationNormalized);
 

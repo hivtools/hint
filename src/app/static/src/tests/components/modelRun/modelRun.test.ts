@@ -30,7 +30,7 @@ describe("Model run component", () => {
 
     const createStore = (state: Partial<ModelRunState> = {}, testActions: any = actions, sGetters = stepperGetters): Store<RootState> => {
         const store = new Vuex.Store({
-            state: emptyState(),
+            state: emptyState("some.user@example.com"),
             getters: rootGetters,
             modules: {
                 modelRun: {

@@ -6,7 +6,7 @@ import {shallowMountWithTranslate} from "../../testHelpers";
 
 describe("Drop down", () => {
     const store = new Vuex.Store({
-        state: emptyState()
+        state: emptyState("some.user@example.com")
     });
     registerTranslations(store);
 

@@ -72,6 +72,11 @@ class Settings(BaseSettings):
     # only if the path here is set to where this API sees it.
     results_dir: str = "results"
 
+    # The folder of the built front end (src/app/static/public after `npm run build && npm run copy`): the page of the
+    # app (index.html) and the files at /public/ (see app/routers/pages.py). The default is that folder in this
+    # repository, for `make run`. A container sets it to where the files are in it.
+    static_dir: str = "../src/app/static/public"
+
     # The lowest level that is logged, in any case. It applies to what this API logs and to what the libraries it uses
     # log (uvicorn, httpx, SQLAlchemy...).
     log_level: LogLevel = "INFO"

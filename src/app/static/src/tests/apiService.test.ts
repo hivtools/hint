@@ -169,7 +169,7 @@ describe("ApiService", () => {
 
         expect(window.location.assign).toHaveBeenCalledWith("/");
         expect(sessionStorageManager.getVersionId()).toBe(null);
-        expect(sessionStorageManager.getState()).toBe(null);
+        expect(sessionStorageManager.getState("some.user@example.com")).toBe(null);
         // no error is shown, as the page is about to reload
         expect(commit).not.toHaveBeenCalled();
     });

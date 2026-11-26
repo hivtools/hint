@@ -48,7 +48,7 @@ describe("download indicator", () => {
     const createStore = (baseline: Partial<BaselineState> = baselineData,
                          datasets: ReviewInputState["datasets"] = reviewInputDatasets) => {
         const store = new Vuex.Store({
-            state: emptyState(),
+            state: emptyState("some.user@example.com"),
             modules: {
                 baseline: {
                     namespaced: true,

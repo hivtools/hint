@@ -27,7 +27,7 @@ describe("Model Output page", () => {
 
     const createStore = (plotDataError: ReturnType<typeof mockError> | null = null) => {
         const store = new Vuex.Store({
-            state: emptyState(),
+            state: emptyState("some.user@example.com"),
             modules: {
                 modelOutput: {
                     namespaced: true,

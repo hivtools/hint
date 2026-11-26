@@ -4,6 +4,7 @@ from contextlib import asynccontextmanager
 from pathlib import Path
 
 from fastapi import FastAPI
+from starlette.middleware.gzip import DEFAULT_EXCLUDED_CONTENT_TYPES, GZipMiddleware
 
 from app.clients.adr_client import create_adr_http_client
 from app.clients.github_client import create_github_http_client
@@ -22,7 +23,9 @@ from app.routers import (
     hintr_forwards,
     input_files,
     items,
+    me,
     model,
+    pages,
     projects,
     rehydrate,
     review_inputs,
@@ -56,6 +59,16 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None]:
 app = FastAPI(lifespan=lifespan)
 register_error_handlers(app)
 app.add_middleware(UploadSizeLimitMiddleware, file_types=upload_file_types)
+# Compress the answers as Kotlin did (Spring Boot's server.compression): those of 1 KB or more, at zlib's default level,
+# if the browser accepts gzip. That is the JSON of the API, and the page and the JavaScript and CSS of the front end.
+# Not what is compressed already (zip files, images: Starlette's default list), and not the file downloads, which are
+# sent as application/octet-stream and can be large.
+app.add_middleware(
+    GZipMiddleware,
+    minimum_size=1024,
+    compresslevel=6,
+    exclude_content_types=(*DEFAULT_EXCLUDED_CONTENT_TYPES, "application/octet-stream"),
+)
 
 app.include_router(items.router)
 app.include_router(projects.router)
@@ -68,6 +81,8 @@ app.include_router(calibrate_results.router)
 app.include_router(adr.router)
 app.include_router(rehydrate.router)
 app.include_router(error_report.router)
+app.include_router(me.router)
+app.include_router(pages.router)
 
 
 @app.get("/version")
