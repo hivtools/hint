@@ -9,7 +9,6 @@ on:
 name: Build and Push CLI
 
 env:
-  TAG_DH: mrcide/hint-user-cli
   TAG_GHCR: hivtools/hint-user-cli
 
 jobs:
@@ -22,8 +21,6 @@ jobs:
               id: ci-env
               uses: ./.github/actions/make-shared-env
               with:
-                dh-username: ${{ secrets.DOCKERHUB_USERNAME }}
-                dh-password: ${{ secrets.DOCKERHUB_TOKEN }}
                 ghcr-username: ${{ github.actor }}
                 ghcr-password: ${{ secrets.GITHUB_TOKEN }}
 
@@ -39,18 +36,12 @@ jobs:
                 src/gradlew -p src :userCLI:docker -i -Pdocker_version=$CI_SHA -x app:compileFrontEnd -x app:copyAssets
               env:
                 CI_SHA: ${{steps.ci-env.outputs.CI_SHA}}
-            
+
             - name: Push image
               run: |
-                docker tag "$TAG_DH_SHA" "$TAG_DH_BRANCH"
-                docker tag "$TAG_DH_SHA" "$TAG_GHCR_SHA"
-                docker tag "$TAG_DH_SHA" "$TAG_GHCR_BRANCH"
-                docker push "$TAG_DH_SHA"
-                docker push "$TAG_DH_BRANCH"
+                docker tag "$TAG_GHCR_SHA" "$TAG_GHCR_BRANCH"
                 docker push "$TAG_GHCR_SHA"
                 docker push "$TAG_GHCR_BRANCH"
               env:
-                TAG_DH_SHA: ${{env.TAG_DH}}:${{steps.ci-env.outputs.CI_SHA}}
-                TAG_DH_BRANCH: ${{env.TAG_DH}}:${{steps.ci-env.outputs.CI_BRANCH}}
                 TAG_GHCR_SHA: ghcr.io/${{env.TAG_GHCR}}:${{steps.ci-env.outputs.CI_SHA}}
                 TAG_GHCR_BRANCH: ghcr.io/${{env.TAG_GHCR}}:${{steps.ci-env.outputs.CI_BRANCH}}

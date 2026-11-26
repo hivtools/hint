@@ -9,7 +9,6 @@ on:
 name: Build and Push App
 
 env:
-  TAG_DH: mrcide/hint
   TAG_GHCR: hivtools/hint
 
 jobs:
@@ -22,8 +21,6 @@ jobs:
               id: ci-env
               uses: ./.github/actions/make-shared-env
               with:
-                dh-username: ${{ secrets.DOCKERHUB_USERNAME }}
-                dh-password: ${{ secrets.DOCKERHUB_TOKEN }}
                 ghcr-username: ${{ github.actor }}
                 ghcr-password: ${{ secrets.GITHUB_TOKEN }}
 
@@ -39,7 +36,5 @@ jobs:
                 file: ./Dockerfile
                 push: true
                 tags: |
-                  ${{env.TAG_DH}}:${{steps.ci-env.outputs.CI_SHA}}
-                  ${{env.TAG_DH}}:${{steps.ci-env.outputs.CI_BRANCH}}
                   ghcr.io/${{env.TAG_GHCR}}:${{steps.ci-env.outputs.CI_SHA}}
                   ghcr.io/${{env.TAG_GHCR}}:${{steps.ci-env.outputs.CI_BRANCH}}
