@@ -14,10 +14,10 @@ from app.schemas import FileType
 from app.services.file_types import INPUT_FILE_TYPES
 from tests.adr import FakeAdr
 from tests.api.helpers import create_project, make_client
-from tests.flow import FLOW_URL, FakeFlow
 from tests.github import ORG, TEAM, FakeGitHub
 from tests.hintr import FakeHintr
 from tests.support import ADR_KEY, OTHER_USER, USER
+from tests.teams_flow import TEAMS_FLOW_URL, FakeTeamsFlow
 
 
 @pytest_asyncio.fixture
@@ -78,11 +78,13 @@ async def github(github: FakeGitHub) -> FakeGitHub:
 
 
 @pytest_asyncio.fixture
-async def flow(flow: FakeFlow, settings_overrides: dict) -> FakeFlow:
-    """The same flow, now the one that the app sends error reports to."""
-    app.state.issue_report_http = flow.http
-    settings_overrides["issue_report_url"] = FLOW_URL
-    return flow
+async def teams_flow(settings_overrides: dict) -> AsyncIterator[FakeTeamsFlow]:
+    """The Teams flow that the app sends error reports to, which records the reports it gets (see tests/teams_flow.py)."""
+    fake = FakeTeamsFlow()
+    app.state.issue_report_http = fake.http
+    settings_overrides["issue_report_url"] = TEAMS_FLOW_URL
+    yield fake
+    await fake.http.aclose()
 
 
 @pytest.fixture

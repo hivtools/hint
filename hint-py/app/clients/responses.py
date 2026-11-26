@@ -9,6 +9,7 @@ from dataclasses import dataclass
 from http import HTTPStatus
 from typing import Any
 
+import httpx2
 import structlog
 from fastapi.responses import JSONResponse, Response
 
@@ -51,6 +52,32 @@ class HintResponse:
         """A failure with one error. Every failure of this API has this format."""
         return cls(status_code, {"data": {}, "errors": [{"error": code, "detail": detail}], "status": "failure"})
 
+    @classmethod
+    def from_service(cls, answer: httpx2.Response, language: str) -> HintResponse:
+        """The answer of a service (hintr, or the error report flow), in the format of every answer of this API.
+
+        An answer that has a `status` field already has that format. It goes to the browser as it is. Any other answer
+        is wrapped: it is a success if the service said so, and if not, it is a failure that has the answer as its
+        message. An answer that is not JSON is a failure with the message "Could not parse response".
+
+        The body must have been read. The log names the service by the host and path that were called.
+        """
+        status = hint_status(answer.status_code)
+        is_json, parsed = parse_json(answer.content)
+        called = {"host": answer.request.url.host, "path": answer.request.url.path, "status": answer.status_code}
+        if not is_json:
+            log.error("A service answered with something that is not JSON", **called, body=repr(answer.content[:200]))
+            return cls.failure(500, t("unparseableResponse", language))
+
+        if isinstance(parsed, dict) and "status" in parsed:
+            return cls(status, answer.content)
+        if status < HTTPStatus.BAD_REQUEST:
+            return cls.success(parsed, status)
+        # A string is the message as it is. Any other JSON becomes text.
+        message = parsed if isinstance(parsed, str) else json.dumps(parsed)
+        log.error("A service failed", **called, message=message)
+        return cls.failure(status, message)
+
     @property
     def ok(self) -> bool:
         return self.status_code < HTTPStatus.BAD_REQUEST
@@ -89,32 +116,3 @@ def parse_json(body: bytes) -> tuple[bool, Any]:
         return True, json.loads(body.decode("utf-8"))
     except ValueError:  # This includes a body that is not UTF-8.
         return False, None
-
-
-def service_response(service: str, service_status: int, body: bytes, language: str) -> HintResponse:
-    """The answer of a service (hintr, or the error report flow), in the format of every answer of this API. `service`
-    names it in the log.
-
-    An answer that has a `status` field already has that format. It goes to the browser as it is. Any other answer is
-    wrapped: it is a success if the service said so, and if not, it is a failure that has the answer as its message. An
-    answer that is not JSON is a failure with the message "Could not parse response".
-    """
-    status = hint_status(service_status)
-    is_json, parsed = parse_json(body)
-    if not is_json:
-        log.error(
-            "A service answered with something that is not JSON",
-            service=service,
-            status=service_status,
-            body=repr(body[:200]),
-        )
-        return HintResponse.failure(500, t("unparseableResponse", language))
-
-    if isinstance(parsed, dict) and "status" in parsed:
-        return HintResponse(status, body)
-    if status < 400:
-        return HintResponse.success(parsed, status)
-    # A string is the message as it is. Any other JSON becomes text.
-    message = parsed if isinstance(parsed, str) else json.dumps(parsed)
-    log.error("A service failed", service=service, status=service_status, message=message)
-    return HintResponse.failure(status, message)

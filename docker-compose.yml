@@ -99,8 +99,8 @@ services:
       # - Contract tests: the key that the ADR stub accepts.
       # - Otherwise: HINT_ADR_API_KEY from your shell (the key of a user on the real ADR).
       HINT_ADR_API_KEY: ${PYTHON_ADR_API_KEY:-${HINT_ADR_API_KEY:-}}
-      # Where error reports are sent. `scripts/dev.sh` sets it to the stub of the Teams flow, as it does for Kotlin
-      # (issue_report_url). Without it, a report is an unexpected error.
+      # Where error reports are sent. `scripts/dev.sh` sets it to the stub of the Teams flow. Without it, a report
+      # is an unexpected error.
       HINT_ISSUE_REPORT_URL: ${PYTHON_ISSUE_REPORT_URL:-}
       # The folder where this container writes the uploaded files. It tells hintr that the files are in this folder.
       # The share is at the same path in both containers.

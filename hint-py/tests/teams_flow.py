@@ -11,15 +11,15 @@ from typing import Any
 
 import httpx2
 
-from tests.support import FLOW_SIG
+from tests.support import TEAMS_FLOW_SIG
 
 # The address of the flow, with its key in it, as a real Power Automate address has
-FLOW_URL = f"https://flow.example/workflows/abc/triggers/manual/paths/invoke?api-version=1&sig={FLOW_SIG}"
+TEAMS_FLOW_URL = f"https://flow.example/workflows/abc/triggers/manual/paths/invoke?api-version=1&sig={TEAMS_FLOW_SIG}"
 OK = {"statusCode": 200, "description": "OK"}
 
 
 @dataclass
-class FakeFlow:
+class FakeTeamsFlow:
     calls: list[httpx2.Request] = field(default_factory=list)
     answer: httpx2.Response | Exception = field(default_factory=lambda: httpx2.Response(200, json=OK))
     http: httpx2.AsyncClient = field(init=False)

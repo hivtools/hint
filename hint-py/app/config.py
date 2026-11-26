@@ -81,7 +81,7 @@ class Settings(BaseSettings):
     # Also the user that gets a copy of the project of an error report (POST /error-report)
     support_email: str = "naomi-support@imperial.ac.uk"
 
-    # Where an error report is sent: the address of the Teams flow (issue_report_url in the Kotlin config.properties).
+    # Where an error report is sent: the address of the Teams flow.
     # It is a secret, because the key of the flow is in it (`sig`). If it is not set, no report can be sent.
     issue_report_url: SecretStr = SecretStr("")
 
