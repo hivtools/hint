@@ -207,7 +207,6 @@
           },
           "method": "POST",
           "path": "/validate/survey-and-programme",
-          "query": "strict=true",
           "status": 200,
           "to": "hintr"
         }
@@ -477,7 +476,7 @@
               "survey_recently_infected": "DEMO2020PHIA"
             },
             "version": {
-              "hintr": "1.2.25",
+              "hintr": "1.2.27",
               "naomi": "2.10.23",
               "rrq": "0.7.24",
               "traduire": "0.1.1"
@@ -524,7 +523,7 @@
               "survey_recently_infected": "DEMO2020PHIA"
             },
             "version": {
-              "hintr": "1.2.25",
+              "hintr": "1.2.27",
               "naomi": "2.10.23",
               "rrq": "0.7.24",
               "traduire": "0.1.1"
@@ -616,7 +615,7 @@
               "survey_recently_infected": "DEMO2020PHIA"
             },
             "version": {
-              "hintr": "1.2.25",
+              "hintr": "1.2.27",
               "naomi": "2.10.23",
               "rrq": "0.7.24",
               "traduire": "0.1.1"
@@ -664,7 +663,7 @@
               "survey_recently_infected": "DEMO2020PHIA"
             },
             "version": {
-              "hintr": "1.2.25",
+              "hintr": "1.2.27",
               "naomi": "2.10.23",
               "rrq": "0.7.24",
               "traduire": "0.1.1"
@@ -824,7 +823,7 @@
               "spectrum_plhiv_calibration_strat": "sex_age_coarse"
             },
             "version": {
-              "hintr": "1.2.25",
+              "hintr": "1.2.27",
               "naomi": "2.10.23",
               "rrq": "0.7.24",
               "traduire": "0.1.1"
@@ -852,7 +851,7 @@
               "spectrum_plhiv_calibration_strat": "sex_age_coarse"
             },
             "version": {
-              "hintr": "1.2.25",
+              "hintr": "1.2.27",
               "naomi": "2.10.23",
               "rrq": "0.7.24",
               "traduire": "0.1.1"
@@ -894,7 +893,7 @@
               "spectrum_plhiv_calibration_strat": "sex_age_coarse"
             },
             "version": {
-              "hintr": "1.2.25",
+              "hintr": "1.2.27",
               "naomi": "2.10.23",
               "rrq": "0.7.24",
               "traduire": "0.1.1"
@@ -922,7 +921,7 @@
               "spectrum_plhiv_calibration_strat": "sex_age_coarse"
             },
             "version": {
-              "hintr": "1.2.25",
+              "hintr": "1.2.27",
               "naomi": "2.10.23",
               "rrq": "0.7.24",
               "traduire": "0.1.1"
@@ -1053,7 +1052,6 @@
           },
           "method": "POST",
           "path": "/validate/survey-and-programme",
-          "query": "strict=true",
           "status": 200,
           "to": "hintr"
         }
@@ -1103,7 +1101,6 @@
           },
           "method": "POST",
           "path": "/validate/survey-and-programme",
-          "query": "strict=true",
           "status": 200,
           "to": "hintr"
         }

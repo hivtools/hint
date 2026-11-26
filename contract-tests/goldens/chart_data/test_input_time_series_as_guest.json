@@ -40,7 +40,6 @@
           },
           "method": "POST",
           "path": "/validate/survey-and-programme",
-          "query": "strict=true",
           "status": 200,
           "to": "hintr"
         }
