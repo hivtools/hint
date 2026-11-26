@@ -117,13 +117,14 @@ async def test_a_path_out_of_assets_is_not_kept_for_a_year(anonymous_client: htt
 
 async def test_the_built_files_are_gzipped(anonymous_client: httpx2.AsyncClient, static_dir: Path):
     # As Kotlin did (Spring Boot's server.compression). The JavaScript of the app is most of what a first visit downloads
-    (static_dir / "assets" / "vendor-abc123.js").write_text("var x = 1;\n" * 1000)
+    # Bytes, not text: Windows would write "\r\n"
+    (static_dir / "assets" / "vendor-abc123.js").write_bytes(b"var x = 1;\n" * 1000)
 
     r = await anonymous_client.get("/public/assets/vendor-abc123.js", headers={"Accept-Encoding": "gzip"})
 
     assert r.headers["content-encoding"] == "gzip"
     assert int(r.headers["content-length"]) < 11000
-    assert r.text == "var x = 1;\n" * 1000
+    assert r.content == b"var x = 1;\n" * 1000
 
 
 async def test_small_files_are_not_gzipped(anonymous_client: httpx2.AsyncClient, static_dir: Path):
