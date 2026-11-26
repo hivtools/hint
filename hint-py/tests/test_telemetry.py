@@ -1,16 +1,19 @@
 """The spans of the calls that this API makes. The calls go to a small server on this machine: OpenTelemetry traces the
 real transports of httpx2, not the fake ones that the other tests use."""
 
+import os
 import threading
 from collections.abc import Iterator
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 import httpx2
 import pytest
+from opentelemetry.instrumentation.asyncpg import AsyncPGInstrumentor
 from opentelemetry.instrumentation.httpx import HTTPX2ClientInstrumentor
 from opentelemetry.sdk.trace import ReadableSpan, TracerProvider
 from opentelemetry.sdk.trace.export import SimpleSpanProcessor
 from opentelemetry.sdk.trace.export.in_memory_span_exporter import InMemorySpanExporter
+from sqlalchemy import text
 
 from app.telemetry import URL_ATTRIBUTES, redact_span_url, redact_url, trace_outgoing_calls
 
@@ -105,3 +108,23 @@ def test_a_span_that_is_not_recorded_is_left_alone():
 )
 def test_only_the_value_of_a_secret_parameter_is_redacted(url, redacted):
     assert redact_url(url) == redacted
+
+
+@pytest.mark.skipif(
+    not os.environ.get("HINT_TEST_DB_URL"), reason="asyncpg is the Postgres driver: set HINT_TEST_DB_URL"
+)
+async def test_a_query_is_a_span_without_the_values_it_was_run_with(engine):
+    exporter = InMemorySpanExporter()
+    provider = TracerProvider()
+    provider.add_span_processor(SimpleSpanProcessor(exporter))
+    # As `opentelemetry-instrument` does before the app starts
+    AsyncPGInstrumentor().instrument(tracer_provider=provider)
+    try:
+        async with engine.connect() as conn:
+            await conn.execute(text("SELECT :email AS email"), {"email": "someone@example.com"})
+    finally:
+        AsyncPGInstrumentor().uninstrument()
+
+    [span] = [s for s in exporter.get_finished_spans() if "email" in str(dict(s.attributes or {}))]
+    assert span.name.startswith("SELECT")
+    assert "someone@example.com" not in str(dict(span.attributes or {}))

@@ -12,6 +12,7 @@ dependencies = [
     "httpx2>=2.16.0",
     "opentelemetry-distro>=0.66b1",
     "opentelemetry-exporter-otlp>=1.45.1",
+    "opentelemetry-instrumentation-asyncpg>=0.66b1",
     "opentelemetry-instrumentation-fastapi>=0.66b1",
     "opentelemetry-instrumentation-httpx>=0.66b1",
     "pydantic-settings>=2.16.1",

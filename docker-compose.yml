@@ -69,6 +69,12 @@ services:
     environment:
       REDIS_URL: redis://redis:6379
       USE_MOCK_MODEL: "true"
+      # hintr's traces (a span for each request), to the `otel` service below. scripts/dev.sh sets this to "otlp" when it
+      # starts the dashboard. By hand: HINTR_TRACES_EXPORTER=otlp. "none" is off (an empty value is an error in otel).
+      # Only a hintr image built with tracing reads these (it sets OTEL_SERVICE_NAME=hintr itself). hintr sends OTLP
+      # over HTTP only, so it uses the dashboard's HTTP port, not the gRPC one that the Python API uses.
+      OTEL_TRACES_EXPORTER: ${HINTR_TRACES_EXPORTER:-none}
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel:18890
     depends_on:
       redis:
         condition: service_healthy
@@ -131,7 +137,7 @@ services:
       interval: 1s
       retries: 60
 
-  # Somewhere to see the logs and traces of the Python API (OpenTelemetry), with nothing to set up. Not started unless
+  # Somewhere to see the logs and traces of the Python API and the traces of hintr (OpenTelemetry), with nothing to set up. Not started unless
   # asked for. scripts/dev.sh asks for it (and for the API to send to it) unless you run it with OTEL=0. By hand:
   # `OTEL=1 docker compose --profile proxy --profile otel up -d`, or `make otel-up` in hint-py (to use with
   # `make run-otel`). Then browse to http://localhost:18888. It keeps what it gets in memory only, and has no login, so
@@ -142,9 +148,17 @@ services:
     ports:
       - "127.0.0.1:${OTEL_UI_PORT:-18888}:18888"   # the web page
       - "127.0.0.1:${OTEL_PORT:-4317}:18889"       # where an API on this machine sends (OTLP over gRPC)
+      - "127.0.0.1:${OTEL_HTTP_PORT:-4318}:18890"  # the same over HTTP, e.g. for hintr run from R on this machine
+    # It keeps everything in memory. Recent versions keep up to 100,000 logs and traces, which slows the page down until
+    # the browser stops answering. These keep the last few hours of a dev session. The oldest go first. .NET sizes its
+    # heap to the container's limit, so mem_limit makes it collect sooner rather than be killed.
+    mem_limit: 1g
     environment:
       DASHBOARD__FRONTEND__AUTHMODE: Unsecured
       DASHBOARD__OTLP__AUTHMODE: Unsecured
+      DASHBOARD__TELEMETRYLIMITS__MAXTRACECOUNT: 2000
+      DASHBOARD__TELEMETRYLIMITS__MAXLOGCOUNT: 5000
+      DASHBOARD__TELEMETRYLIMITS__MAXMETRICSCOUNT: 10000
 
   # The front door, on the port Kotlin normally uses (application_url is http://localhost:8080) so that redirects
   # and cookies keep working. Kotlin has to be moved aside to KOTLIN_PORT.

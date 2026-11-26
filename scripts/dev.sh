@@ -9,8 +9,9 @@
 #   scripts/dev.sh logs [name]                    follow the logs. Without a name: the Kotlin app, the stubs and all the
 #                                                 containers. With one: kotlin (or app), kotlin-sso, stubs, or a
 #                                                 container (db, redis, hintr, python, proxy, ...)
-#                                                 The logs and traces of the Python API go to a local OpenTelemetry
-#                                                 dashboard, http://127.0.0.1:18888 (OTEL=0 scripts/dev.sh up: no dashboard)
+#                                                 The logs and traces of the Python API, and hintr's traces, go to a
+#                                                 local OpenTelemetry dashboard, http://127.0.0.1:18888
+#                                                 (OTEL=0 scripts/dev.sh up: no dashboard)
 #   scripts/dev.sh deps                           only postgres, redis and hintr (run Kotlin yourself, e.g. in the IDE)
 #   scripts/dev.sh test [pytest args]             run the contract tests (starts the stack first if needed)
 #                                                 e.g. test --record, test -k projects, test -x, test --run-slow
@@ -25,6 +26,7 @@
 #     --reset-db.
 #   * PORT_OFFSET=10000 scripts/dev.sh up starts a second, independent stack (ports and folders shifted by the offset).
 #   * up pulls the latest images (hintr included). NO_PULL=1 skips that.
+#   * HINTR_VERSION=<tag> runs that hintr image (e.g. a branch) instead of the one in src/config/hintr_version.
 set -eEuo pipefail
 # say where it stopped: several steps hide their output
 trap 'echo "dev.sh: failed (exit $?) at line $LINENO: $BASH_COMMAND" >&2' ERR
@@ -58,7 +60,7 @@ STUB_PORT=${STUB_PORT:-$((8883 + PORT_OFFSET))}               # stub ADR (/adr/,
 IDP_PORT=${IDP_PORT:-$((8884 + PORT_OFFSET))}                 # stub OAuth2 identity provider (TLS)
 # WriteToDiskEmailManager writes to /tmp/hint_emails, which on Windows is on the drive the app runs from
 if [ "$WINDOWS" = 1 ]; then EMAILS_DIR=${APP_DIR:0:2}/tmp/hint_emails; else EMAILS_DIR=/tmp/hint_emails; fi
-HINTR_VERSION=$(<"$ROOT/src/config/hintr_version")
+HINTR_VERSION=${HINTR_VERSION:-$(<"$ROOT/src/config/hintr_version")}
 export HINTR_VERSION
 
 # The Python API sends its logs and traces to a local OpenTelemetry dashboard (the `otel` service in docker-compose.yml),
@@ -66,12 +68,14 @@ export HINTR_VERSION
 if [ "${OTEL:-1}" = 1 ]; then export OTEL=1; else unset OTEL; fi
 export OTEL_UI_PORT=${OTEL_UI_PORT:-$((18888 + PORT_OFFSET))}
 export OTEL_PORT=${OTEL_PORT:-$((4317 + PORT_OFFSET))}
+export OTEL_HTTP_PORT=${OTEL_HTTP_PORT:-$((4318 + PORT_OFFSET))}
 # Only with the proxy: that is the mode that runs the Python API (see `up --no-proxy`)
 otel_on() { [ "${OTEL:-}" = 1 ] && [ "$(cat "$STATE/mode" 2>/dev/null || echo proxy)" = proxy ]; }
 compose() {
-  local profile=()
-  if otel_on; then profile=(--profile otel); fi
-  docker compose -p "$PROJECT" -f "$ROOT/docker-compose.yml" ${profile[@]+"${profile[@]}"} "$@"
+  # hintr sends its traces to the dashboard when there is one
+  local profile=() exporter=none
+  if otel_on; then profile=(--profile otel); exporter=otlp; fi
+  HINTR_TRACES_EXPORTER=$exporter docker compose -p "$PROJECT" -f "$ROOT/docker-compose.yml" ${profile[@]+"${profile[@]}"} "$@"
 }
 
 # ---- small helpers
@@ -239,7 +243,7 @@ Db(e).snapshot_seed_users()")
   fi
   echo "Ready: http://127.0.0.1:$PROXY_PORT  (Kotlin :$(app_port), hintr :$HINTR_PORT, postgres :$DB_PORT;" \
        "test user test.user@example.com / password)"
-  if otel_on; then echo "OpenTelemetry dashboard (logs and traces of the Python API): http://127.0.0.1:$OTEL_UI_PORT"; fi
+  if otel_on; then echo "OpenTelemetry dashboard (the Python API and hintr): http://127.0.0.1:$OTEL_UI_PORT"; fi
 }
 
 do_down() {
