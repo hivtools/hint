@@ -1,6 +1,6 @@
 import {actions as baselineActions} from "../../app/store/baseline/actions";
 import {actions as surveyAndProgramActions} from "../../app/store/surveyAndProgram/actions";
-import {login, rootState} from "./integrationTest";
+import {login, rootState, saveADRKey} from "./integrationTest";
 import {BaselineMutation} from "../../app/store/baseline/mutations";
 import {actions as adrActions} from "../../app/store/adr/actions";
 import {actions as adrUploadActions} from "../../app/store/adrUpload/actions";
@@ -30,7 +30,7 @@ describe("ADR dataset-related actions", () => {
             throw new Error("ADR_TEST_KEY environment variable must be set to run ADR integration tests. " +
                 "Generate an API token for the test user on the dev ADR.");
         }
-        await adrActions.saveKey({commit: vi.fn(), rootState} as any, adrKey)
+        await saveADRKey(adrKey);
 
         const commit = vi.fn();
         const dispatch = vi.fn();

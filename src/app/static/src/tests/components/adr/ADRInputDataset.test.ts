@@ -334,6 +334,13 @@ describe("ADR input dataset", () => {
         expect((baselineActions.refreshDatasetMetadata as Mock).mock.calls.length).toBe(2);
     });
 
+    it("fetches the input datasets on mount", () => {
+        const store = getStore();
+        mountADRDataset(store);
+        expect(getDatasetsMock.mock.calls.length).toBe(1);
+        expect(getDatasetsMock.mock.calls[0][1]).toBe(AdrDatasetType.Input);
+    });
+
     it("renders select dataset button when no dataset is selected", async () => {
         const store = getStore()
         const rendered = mountADRDataset(store);

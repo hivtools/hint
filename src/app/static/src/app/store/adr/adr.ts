@@ -43,11 +43,8 @@ export interface ADRState {
     adrData: {
         [key in AdrDatasetType]: ADRDatasetState
     },
-    key: string | null,
-    keyError: ErrorType | null,
     schemas: ADRSchemas | null,
-    userCanUpload: boolean,
-    ssoLogin: boolean
+    userCanUpload: boolean
 }
 
 export const initialADRState = (): ADRState => {
@@ -66,11 +63,8 @@ export const initialADRState = (): ADRState => {
                 fetchingError: null
             }
         },
-        key: null,
-        keyError: null,
         schemas: null,
-        userCanUpload: false,
-        ssoLogin: false
+        userCanUpload: false
     }
 };
 
