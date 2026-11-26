@@ -59,3 +59,17 @@ jobs:
           flags: hint-py
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+  # The ADR endpoints against the real dev ADR (tests/api/test_adr_live.py). These do not write to ADR. The dev ADR only
+  # accepts some IP addresses, so the app sends ADR_WAF_BYPASS_SECRET in a header to get the runner in, as Kotlin does.
+  test-adr:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: ./.github/actions/setup-python-env
+
+      - run: make test-adr
+        env:
+          ADR_TEST_KEY: ${{ secrets.ADR_TEST_KEY }}
+          ADR_WAF_BYPASS_SECRET: ${{ secrets.ADR_WAF_BYPASS_SECRET }}

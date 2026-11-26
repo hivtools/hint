@@ -13,7 +13,7 @@ test: ## Run the tests with coverage
 	@uv run pytest --cov --cov-report=term-missing --cov-report=xml
 
 .PHONY: test-adr
-test-adr: ## Run the tests that call the real dev ADR (needs ADR_TEST_KEY, and an IP address that the dev ADR accepts)
+test-adr: ## Run the tests that call the real dev ADR (needs ADR_TEST_KEY, and an IP address that the dev ADR accepts or ADR_WAF_BYPASS_SECRET)
 	@uv run pytest -m adr_live
 
 .PHONY: test-github

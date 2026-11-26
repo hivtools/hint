@@ -54,6 +54,9 @@ class Settings(BaseSettings):
     # If a request has neither, it cannot call ADR.
     # Only for development (`environment`). In production, every user would act as the same user on ADR.
     adr_api_key: SecretStr | None = None
+    # Only set in CI. The dev ADR only accepts some IP addresses, and GitHub's runners are not among them. Its firewall
+    # lets a call in if it has this value in the header `X-Naomi-CI`. The value is a secret, and it goes only to ADR.
+    adr_waf_bypass_secret: SecretStr | None = None
 
     # Who may download the debug zip of a model run (GET /model/debug/{id}). The caller sends a GitHub token, and only a
     # member of this GitHub team gets in. The team is the slug in the team's URL: github.com/orgs/<org>/teams/<slug>.

@@ -186,7 +186,12 @@ class FakeAdr:
     def http_at(self, adr_url: str) -> httpx2.AsyncClient:
         """The client that the app makes for this `adr_url`, which calls this fake. `http` is the one for
         https://adr.example/."""
-        return create_adr_http_client(Settings(adr_url=adr_url), transport=_Transport(self))
+        return create_adr_http_client(Settings(adr_url=adr_url), transport=self.transport)
+
+    @property
+    def transport(self) -> httpx2.AsyncBaseTransport:
+        """What a client calls to reach this fake, for a test that makes its own client."""
+        return _Transport(self)
 
     def fail(self, action: str, response: httpx2.Response):
         self.failures[action] = lambda request: response
