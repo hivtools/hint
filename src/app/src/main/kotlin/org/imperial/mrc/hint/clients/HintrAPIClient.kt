@@ -36,8 +36,7 @@ interface HintrAPIClient
     fun validateSurveyAndProgramme(
         file: VersionFileWithPath,
         shapePath: String?,
-        type: FileType,
-        strict: Boolean
+        type: FileType
     ): ResponseEntity<String>
 
     fun submit(data: Map<String, VersionFileWithPath>, modelRunOptions: ModelOptions): ResponseEntity<String>
@@ -108,8 +107,7 @@ class HintrFuelAPIClient(
 
     override fun validateSurveyAndProgramme(file: VersionFileWithPath,
                                             shapePath: String?,
-                                            type: FileType,
-                                            strict: Boolean): ResponseEntity<String>
+                                            type: FileType): ResponseEntity<String>
     {
 
         val json = objectMapper.writeValueAsString(
@@ -117,7 +115,7 @@ class HintrFuelAPIClient(
                         "file" to file,
                         "shape" to shapePath.orEmpty()))
 
-        return postJson("validate/survey-and-programme?strict=$strict", json)
+        return postJson("validate/survey-and-programme", json)
     }
 
     override fun submit(data: Map<String, VersionFileWithPath>, modelRunOptions: ModelOptions)
