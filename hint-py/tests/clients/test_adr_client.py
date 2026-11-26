@@ -15,6 +15,7 @@ import pytest
 from pydantic import SecretStr
 
 from app.clients.adr_client import (
+    WAF_BYPASS_HEADER,
     AdrClient,
     AdrFile,
     ResourceUpload,
@@ -27,7 +28,7 @@ from app.config import Settings
 from app.errors import NoAdrCredentialsError, NotOnAdrError
 from app.utils import http_streams
 from tests.adr import FakeAdr, ckan_error, ckan_ok, file_response
-from tests.support import ADR_KEY, ADR_TOKEN
+from tests.support import ADR_KEY, ADR_TOKEN, ADR_WAF_SECRET
 
 KEY = SecretStr(ADR_KEY)
 
@@ -384,6 +385,49 @@ async def test_a_redirect_on_adr_keeps_the_credential_and_one_that_leaves_adr_dr
         # Back on ADR, the credential is not sent again
         ("https://adr.example/back/a.csv", None),
     ]
+
+
+# ------------------------------------------------------------------------------------------------ the CI header
+async def test_without_the_bypass_secret_no_header_is_sent(client, adr):
+    await client.organisations("read")
+
+    assert WAF_BYPASS_HEADER not in adr.calls[0].headers
+
+
+async def test_the_bypass_secret_is_sent_with_each_call(adr):
+    http = create_adr_http_client(
+        Settings(adr_url="https://adr.example/", adr_waf_bypass_secret=ADR_WAF_SECRET), transport=adr.transport
+    )
+
+    await AdrClient(http, KEY, "en").organisations("read")
+
+    [call] = adr.calls
+    assert call.headers[WAF_BYPASS_HEADER] == ADR_WAF_SECRET
+    assert call.headers["Authorization"] == ADR_KEY
+
+
+async def test_the_bypass_secret_goes_only_to_adr_through_redirects(adr):
+    http = create_adr_http_client(
+        Settings(adr_url="https://adr.example/", adr_waf_bypass_secret=ADR_WAF_SECRET), transport=adr.transport
+    )
+    client = AdrClient(http, KEY, "en")
+    link = "https://adr.example/dataset/d/a.csv"
+    adr.redirect(link, "https://blob.example/a.csv")
+    adr.redirect("https://blob.example/a.csv", "https://adr.example/back/a.csv")
+    adr.answer("https://adr.example/back/a.csv", file_response(b"abc"))
+
+    await client.download(client.file_at(link), io.BytesIO(), 10)
+
+    assert [(str(c.url), c.headers.get(WAF_BYPASS_HEADER)) for c in adr.downloads()] == [
+        (link, ADR_WAF_SECRET),
+        ("https://blob.example/a.csv", None),
+        # Unlike the credential, it is sent again back on ADR: the firewall is in front of every address of ADR
+        ("https://adr.example/back/a.csv", ADR_WAF_SECRET),
+    ]
+
+
+def test_the_settings_do_not_show_the_bypass_secret():
+    assert ADR_WAF_SECRET not in repr(Settings(adr_waf_bypass_secret=ADR_WAF_SECRET))
 
 
 async def test_a_download_is_a_success_with_no_data(client, adr):

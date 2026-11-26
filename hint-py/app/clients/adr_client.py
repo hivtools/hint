@@ -18,7 +18,7 @@ is (see `AdrClient.file_at`).
 import asyncio
 import json
 import tempfile
-from collections.abc import AsyncGenerator
+from collections.abc import AsyncGenerator, Awaitable, Callable
 from contextlib import asynccontextmanager
 from dataclasses import dataclass
 from http.cookiejar import CookieJar, DefaultCookiePolicy
@@ -72,6 +72,9 @@ RESTRICTED_TO_UNAIDS = '{"allowed_organizations":"unaids","allowed_users":"","le
 UPLOAD_ANSWER_SECONDS = 220
 UPLOAD_TIMEOUT = httpx2.Timeout(TIMEOUT_SECONDS, read=UPLOAD_ANSWER_SECONDS)
 
+# The header that gets CI past the firewall of the dev ADR (`adr_waf_bypass_secret`). Kotlin sends the same one.
+WAF_BYPASS_HEADER = "X-Naomi-CI"
+
 
 def create_adr_http_client(
     settings: Settings, transport: httpx2.AsyncBaseTransport | None = None
@@ -85,9 +88,33 @@ def create_adr_http_client(
     cookie that ADR, its gateway or its storage set on the answer to one user's call would otherwise go with the calls of
     every other user. Kotlin keeps no cookies either.
     """
+    hooks = []
+    if settings.adr_waf_bypass_secret and settings.adr_waf_bypass_secret.get_secret_value():
+        hooks.append(_waf_bypass_header(httpx2.URL(settings.adr_url), settings.adr_waf_bypass_secret))
     return httpx2.AsyncClient(
-        base_url=settings.adr_url, timeout=TIMEOUT_SECONDS, cookies=_no_cookies(), transport=transport
+        base_url=settings.adr_url,
+        timeout=TIMEOUT_SECONDS,
+        cookies=_no_cookies(),
+        transport=transport,
+        event_hooks={"request": hooks},
     )
+
+
+def _waf_bypass_header(adr_url: httpx2.URL, secret: SecretStr) -> Callable[[httpx2.Request], Awaitable[None]]:
+    """A hook that puts the header `WAF_BYPASS_HEADER` on each request to ADR's address, and takes it off any other.
+
+    httpx runs the hook again before each redirect it follows. A redirect keeps the headers of the request before it,
+    so a download that ADR sends on to its storage would take the secret there too. httpx only drops `Authorization`.
+    """
+
+    async def hook(request: httpx2.Request) -> None:
+        url = request.url
+        if (url.scheme, url.host, url.port) == (adr_url.scheme, adr_url.host, adr_url.port):
+            request.headers[WAF_BYPASS_HEADER] = secret.get_secret_value()
+        else:
+            request.headers.pop(WAF_BYPASS_HEADER, None)
+
+    return hook
 
 
 def _no_cookies() -> CookieJar:

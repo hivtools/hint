@@ -4,8 +4,8 @@ A fake ADR cannot show that the real ADR still answers in the way that the clien
 
 `make test` does not run them. Run them with `make test-adr`. They are skipped if ADR_TEST_KEY is not set. This is the
 API key of a test user on the dev ADR. The Kotlin ADR tests and the front end ADR tests use the same variable. The dev
-ADR must also accept your IP address: its Front Door only accepts some addresses, because of bots. So these tests fail
-on CI for now.
+ADR must also accept your IP address: its Front Door only accepts some addresses, because of bots. CI gets in with the
+secret in ADR_WAF_BYPASS_SECRET, which the app sends in the header `X-Naomi-CI` (as Kotlin does).
 
 The tests use the dataset `antarctica-country-estimates-2027` in the organisation `naomi-development-team`. It has a
 release called `Version 1.0`, an output zip, and a PJNZ, a shape and a population file. The user of the key can be in
@@ -59,11 +59,16 @@ async def live(settings_overrides: dict, caplog: pytest.LogCaptureFixture) -> As
     key = os.environ["ADR_TEST_KEY"]
     settings_overrides["environment"] = "development"
     settings_overrides["adr_api_key"] = key
-    app.state.adr_http = create_adr_http_client(Settings(environment="development"))
+    # On CI, the dev ADR lets the runner in only with this secret (see `adr_waf_bypass_secret`)
+    waf_secret = os.environ.get("ADR_WAF_BYPASS_SECRET")
+    app.state.adr_http = create_adr_http_client(
+        Settings(environment="development", adr_waf_bypass_secret=waf_secret or None)
+    )
     async with make_client(USER) as client:
         yield client
     await app.state.adr_http.aclose()
     assert key not in caplog.text, "the key of ADR is in the log"
+    assert not waf_secret or waf_secret not in caplog.text, "the bypass secret of ADR is in the log"
 
 
 def datasets_named(response: httpx2.Response, name: str) -> list[dict]:

@@ -39,7 +39,7 @@ asyncio_mode = "auto"
 # `make test-github`.
 addopts = "-m 'not adr_live and not github_live'"
 markers = [
-    "adr_live: calls the real dev ADR with the key in ADR_TEST_KEY. Skipped if there is no key. The dev ADR only accepts some IP addresses (its Front Door blocks bots), so these tests fail on CI for now.",
+    "adr_live: calls the real dev ADR with the key in ADR_TEST_KEY. Skipped if there is no key. The dev ADR only accepts some IP addresses (its Front Door blocks bots); CI gets in with ADR_WAF_BYPASS_SECRET.",
     "github_live: calls the real GitHub API with the token in HINT_GITHUB_TEST_TOKEN. Skipped if there is no token.",
 ]
 

@@ -105,6 +105,7 @@ def no_adr_settings_in_the_environment(monkeypatch: pytest.MonkeyPatch) -> None:
         "HINT_ENVIRONMENT",
         "HINT_ADR_URL",
         "HINT_ADR_API_KEY",
+        "HINT_ADR_WAF_BYPASS_SECRET",
         "HINT_GITHUB_AUTH_ORG",
         "HINT_GITHUB_AUTH_TEAM_SLUG",
         "HINT_GITHUB_API_URL",

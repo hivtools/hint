@@ -63,13 +63,18 @@ async def live(
     key = os.environ["ADR_TEST_KEY"]
     settings_overrides["environment"] = "development"
     settings_overrides["adr_api_key"] = key
-    app.state.adr_http = create_adr_http_client(Settings(environment="development"))
+    # On CI, the dev ADR lets the runner in only with this secret (see `adr_waf_bypass_secret`)
+    waf_secret = os.environ.get("ADR_WAF_BYPASS_SECRET")
+    app.state.adr_http = create_adr_http_client(
+        Settings(environment="development", adr_waf_bypass_secret=waf_secret or None)
+    )
     await add_files(engine, version_id, "pjnz")
     (uploads_dir / "pjnz123").write_bytes(f"a test file made at {time.time()}".encode())
     async with make_client(USER, version_id) as client:
         yield client
     await app.state.adr_http.aclose()
     assert key not in caplog.text, "the key of ADR is in the log"
+    assert not waf_secret or waf_secret not in caplog.text, "the bypass secret of ADR is in the log"
 
 
 async def test_a_release_with_a_name_that_is_used_replaces_the_old_release(live):
