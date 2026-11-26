@@ -48,7 +48,7 @@ class HintrApiClientTests
     {
         val sut = HintrFuelAPIClient(ConfiguredAppProperties(), ObjectMapper())
         val file = VersionFileWithPath("fakepath", "hash", "filename", false)
-        val result = sut.validateSurveyAndProgramme(file, "fakepath", FileType.ANC, true)
+        val result = sut.validateSurveyAndProgramme(file, "fakepath", FileType.ANC)
         assertThat(result.statusCodeValue).isEqualTo(400)
         JSONValidator().validateError(result.body!!, "INVALID_FILE")
     }
