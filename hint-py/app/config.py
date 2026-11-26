@@ -78,7 +78,12 @@ class Settings(BaseSettings):
 
     # Shown in the message for unexpected errors (application_title and support_email in the Kotlin config.properties)
     application_title: str = "Naomi"
+    # Also the user that gets a copy of the project of an error report (POST /error-report)
     support_email: str = "naomi-support@imperial.ac.uk"
+
+    # Where an error report is sent: the address of the Teams flow.
+    # It is a secret, because the key of the flow is in it (`sig`). If it is not set, no report can be sent.
+    issue_report_url: SecretStr = SecretStr("")
 
     @model_validator(mode="after")
     def _only_in_development(self) -> Settings:

@@ -90,6 +90,10 @@ def test_a_span_that_is_not_recorded_is_left_alone():
         ("https://s/a.csv?filename=a.csv&jwt=t.u.v&x=1", "https://s/a.csv?filename=a.csv&jwt=REDACTED&x=1"),
         ("https://s/a.csv?jwt=&x=1", "https://s/a.csv?jwt=REDACTED&x=1"),
         ("https://s/a.csv?jwt=t#part", "https://s/a.csv?jwt=REDACTED#part"),
+        (
+            "https://flow.example/workflows/abc/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers&sig=key",
+            "https://flow.example/workflows/abc/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers&sig=REDACTED",
+        ),
         # Only a parameter of that name, and only in the query
         ("https://s/a.csv?xjwt=t&jwtx=u", "https://s/a.csv?xjwt=t&jwtx=u"),
         ("https://s/jwt=t/a.csv?id=d", "https://s/jwt=t/a.csv?id=d"),

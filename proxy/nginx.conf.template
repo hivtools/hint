@@ -77,6 +77,8 @@ server {
     # without a trailing slash). The upload is not buffered by nginx (see above), and Python stops it at its size limit.
     location = /rehydrate/zip { include snippets/python.conf; }
     location = /rehydrate/adr { include snippets/python.conf; }
+    # Report an error to the support team (a guest may too)
+    location = /error-report { include snippets/python.conf; }
     # Calls that add the files of the version to the call
     location /chart-data/ { include snippets/python.conf; }
     location /meta/review-inputs/ { include snippets/python.conf; }

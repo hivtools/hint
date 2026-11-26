@@ -1,7 +1,7 @@
-"""What the clients of hintr and ADR have in common.
+"""What the clients of hintr, ADR and the error report flow have in common.
 
-Both services answer in their own way. Each client turns what its service sent into a `HintResponse`, an answer in the
-format of this API. The helpers here are what both clients use to do that.
+Each service answers in its own way. Each client turns what its service sent into a `HintResponse`, an answer in the
+format of this API. The helpers here are what the clients use to do that.
 """
 
 import json
@@ -9,7 +9,13 @@ from dataclasses import dataclass
 from http import HTTPStatus
 from typing import Any
 
+import httpx2
+import structlog
 from fastapi.responses import JSONResponse, Response
+
+from app.messages import t
+
+log = structlog.get_logger()
 
 # How long to wait, in seconds. It applies to the connection, and to each wait for the next part of an answer.
 TIMEOUT_SECONDS = 120
@@ -45,6 +51,32 @@ class HintResponse:
     def failure(cls, status_code: int, detail: str, code: str = DEFAULT_ERROR) -> HintResponse:
         """A failure with one error. Every failure of this API has this format."""
         return cls(status_code, {"data": {}, "errors": [{"error": code, "detail": detail}], "status": "failure"})
+
+    @classmethod
+    def from_service(cls, answer: httpx2.Response, language: str) -> HintResponse:
+        """The answer of a service (hintr, or the error report flow), in the format of every answer of this API.
+
+        An answer that has a `status` field already has that format. It goes to the browser as it is. Any other answer
+        is wrapped: it is a success if the service said so, and if not, it is a failure that has the answer as its
+        message. An answer that is not JSON is a failure with the message "Could not parse response".
+
+        The body must have been read. The log names the service by the host and path that were called.
+        """
+        status = hint_status(answer.status_code)
+        is_json, parsed = parse_json(answer.content)
+        called = {"host": answer.request.url.host, "path": answer.request.url.path, "status": answer.status_code}
+        if not is_json:
+            log.error("A service answered with something that is not JSON", **called, body=repr(answer.content[:200]))
+            return cls.failure(500, t("unparseableResponse", language))
+
+        if isinstance(parsed, dict) and "status" in parsed:
+            return cls(status, answer.content)
+        if status < HTTPStatus.BAD_REQUEST:
+            return cls.success(parsed, status)
+        # A string is the message as it is. Any other JSON becomes text.
+        message = parsed if isinstance(parsed, str) else json.dumps(parsed)
+        log.error("A service failed", **called, message=message)
+        return cls.failure(status, message)
 
     @property
     def ok(self) -> bool:
