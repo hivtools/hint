@@ -104,6 +104,34 @@ class InvalidEmailError(HintError):
         super().__init__("invalidEmail", 400)
 
 
+class GuestsOnlyError(HintError):
+    """POST /guest/version, by a user who is logged in."""
+
+    def __init__(self):
+        super().__init__("guestsOnly", 403)
+
+
+class LoginStateMissingError(HintError):
+    """The callback from Auth0 has no state, so it cannot be matched to a login that this browser started."""
+
+    def __init__(self):
+        super().__init__("auth0StateMissing", 400)
+
+
+class LoginStateMismatchError(HintError):
+    """The callback from Auth0 has a state that this browser's session did not ask for: possibly someone else's login."""
+
+    def __init__(self):
+        super().__init__("auth0StateMismatch", 400)
+
+
+class LoginCodeMissingError(HintError):
+    """The callback from Auth0 has the right state but no code (the user cancelled, or Auth0 sent an error)."""
+
+    def __init__(self):
+        super().__init__("auth0CodeMissing", 400)
+
+
 class MissingCalibrateDataError(HintError):
     """hintr has a calibration, but its results database is not in the results folder."""
 

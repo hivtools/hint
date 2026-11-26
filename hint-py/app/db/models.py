@@ -7,7 +7,7 @@ out, the database still enforces them.
 
 from datetime import datetime
 
-from sqlalchemy import DateTime, ForeignKey, false
+from sqlalchemy import DateTime, ForeignKey, LargeBinary, false
 from sqlalchemy.ext.compiler import compiles
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from sqlalchemy.sql import expression
@@ -83,3 +83,30 @@ class VersionFile(Base):
     filename: Mapped[str]
     from_adr: Mapped[bool] = mapped_column(server_default=false())
     resource_url: Mapped[str | None]
+
+
+class WebSession(Base):
+    """A login, or a guest's visit (migration V2026.11.26.1900 in hint-db). The cookie holds a random id, and this table
+    only the SHA-256 of it. See app/services/web_sessions.py."""
+
+    __tablename__ = "web_session"
+
+    id_hash: Mapped[bytes] = mapped_column(LargeBinary, primary_key=True)
+    # None for someone who has not logged in (a guest)
+    user_id: Mapped[str | None]
+    access_token: Mapped[str | None]
+    oauth_state: Mapped[str | None]
+    redirect_to: Mapped[str | None]
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+
+
+class WebSessionGuestVersion(Base):
+    """A version that the server gave to a guest (POST /guest/version): the only record of which versions are theirs."""
+
+    __tablename__ = "web_session_guest_version"
+
+    session_id_hash: Mapped[bytes] = mapped_column(
+        LargeBinary, ForeignKey("web_session.id_hash", ondelete="CASCADE"), primary_key=True
+    )
+    version_id: Mapped[str] = mapped_column(ForeignKey("project_version.id", ondelete="CASCADE"), primary_key=True)

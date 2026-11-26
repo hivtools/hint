@@ -40,7 +40,7 @@ async def test_the_call_is_passed_to_hintr_and_the_answer_comes_back_as_it_is(
 
 @pytest.mark.parametrize(("hint_call", "hintr_call"), ENDPOINTS.values(), ids=ENDPOINTS.keys())
 async def test_no_identity_or_version_is_needed(anonymous_client, hintr, hint_call, hintr_call):
-    # Guests may use these, and there are no X-Hint-User or X-Version-Id headers on the request
+    # Guests may use these, and the request has no session cookie and no X-Version-Id header
     assert (await anonymous_client.request(*hint_call)).status_code == 200
 
 

@@ -16,60 +16,23 @@ nginx sits in front of both apps. Everything goes to Kotlin (`src/app`) unless i
 
 ## How Python knows who is calling
 
-Authentication and sessions stay in Kotlin until login moves. For each request to a Python location:
+Python logs users in and keeps the sessions in Postgres (`hint-py/app/services/web_sessions.py`, table `web_session`).
+The browser's `hint_session` cookie goes to Python as it is, through `snippets/python.conf`, and Python reads the user
+from it. Kotlin is no longer asked, and its own session (`JSESSIONID`) knows nobody: the endpoints still on Kotlin answer
+as for a guest.
 
-```
-browser --cookie--> nginx --(auth_request, cookie)--> Kotlin GET /internal/whoami
-                      |                                   returns 204 + X-Hint-User (+ X-Hint-Guest-Versions, X-Hint-Access-Token)
-                      +--(no cookie, X-Hint-* headers)--> Python
-```
-
-- nginx overwrites any `X-Hint-*` headers sent by the client, so they cannot be forged, as long as Python is only
-  reachable through nginx (in docker-compose it is not published to the host).
-- `/internal/` (Kotlin) and `/_whoami` (nginx) are not reachable from outside.
-- whoami does not start a Kotlin session. A visitor gets their `JSESSIONID` from the first Kotlin page or endpoint they
-  use, and nginx passes any `Set-Cookie` from whoami on.
+- Login: `/login` (the page), `/oauth2` and `/register` (start a login with Auth0), `/callback/oauth2Client` (where
+  Auth0 sends the browser back), `/logout`, and in development `/dev-login`. All go to Python.
 - The version a request works on is not part of the identity. The browser tab sends it in `X-Version-Id` on every
-  request, nginx passes it on, and each app checks that the user may use it (in Python, the `current_version_id`
-  dependency). A logged in user may use a version of one of their projects, which Python checks in Postgres. A guest has
-  no projects: the versions Kotlin gave them (`POST /guest/version`) are in the Kotlin session, so whoami passes them to
-  Python in `X-Hint-Guest-Versions` (comma separated, only for guests who have some). Anything else Python needs to
-  *change* in the Kotlin session would need another `/internal/` endpoint.
-- The guest versions grow by 37 bytes for each tab a guest opens, and the auth_request response headers must fit in one
-  nginx buffer, so the `/_whoami` location sets `proxy_buffer_size 32k` (about 800 versions).
-- A single sign-on user's Auth0 access token is in the Kotlin session, and Python needs it to call ADR as them, so
-  whoami passes it on in `X-Hint-Access-Token` (only when the user has one: no header for a guest or a password login).
-  The token is a credential. It travels only on the internal hop: `python.conf` hands it to Python and nothing else
-  (the browser gets only the `Set-Cookie` of the whoami answer, and `kotlin.conf` does not set it), and nginx replaces
-  any such header the browser sends. Python reads it with `current_adr_access_token`, uses it only to call ADR, and must
-  never log it or put it in a response or an error (`/items/whoami` says only whether there is one). It is sized for the
-  32k buffer of `/_whoami` (an Auth0 JWT is a few KB, and a user with a token is never a guest with a version list), and
-  the Python server also limits the size of a request's headers, so check that if the tokens grow past a few KB.
+  request, nginx passes it on, and Python checks that the user may use it (`current_version_id`). A guest may use the
+  versions that `POST /guest/version` gave to their session.
+- A single sign-on user's Auth0 access token is kept in their session row, never in the cookie, and Python calls ADR as
+  them with it.
+- `snippets/python-public.conf` (the page and `/public/`) and `snippets/python-github.conf` (`/model/debug/{id}`) do not
+  send the `Cookie` header, so those requests never read a session. For the debug zip that means a hint session cannot
+  take the place of the GitHub token.
 - A `location` cannot choose by method, so every method of a path goes to the same app. Port the methods of a path
-  together. `/adr/datasets/{id}/releases` has GET (read the releases) and POST (make a release), and both are Python's.
-- The push to ADR, `POST /adr/datasets/{id}/resource/{resourceType}/{downloadId}`, has a regular expression `location`
-  with one part of the path for each `{...}`. Nothing else under `/adr/datasets/` goes to Python because of it. It uses
-  `snippets/python.conf`, so the request has the identity headers (a guest is refused, and the access token calls ADR as
-  the user). The request has a few small form fields and no file: the file is read by Python from the shared folders.
-- `GET /model/debug/{id}` (the debug zip of a model run) is for developers, and does not use the hint login. Its
-  `location` (a regular expression) includes `snippets/python-github.conf` instead of `python.conf`. That snippet has
-  no `auth_request`, so a caller with no session is not turned away, and Kotlin is not asked. It passes on the client's
-  `Authorization: Bearer <GitHub token>` as it is. It sends Python no `X-Hint-*` headers (set to empty, which nginx does
-  not send, so a client cannot send its own either) and no `Cookie`. So a hint session cannot take the place of the
-  token: Python checks the token with GitHub (`github_team_member` in `hint-py/app/dependencies.py`). `/model/debug/`
-  with no id stays with Kotlin, as before. To test it through the proxy, call it once with a session cookie and no
-  token (401), and once with `Authorization: Bearer <token>` and no cookie.
-- Most ported paths are exact (`location = /adr/pjnz`). The same path with a trailing slash still goes to Kotlin,
-  which accepts it, where FastAPI would answer with a redirect. So the Vue app calls the ported paths without one: when
-  you port a path that the Vue app calls with a trailing slash, change the Vue app too. The ADR imports
-  (`/adr/pjnz`, `/adr/shape`, `/adr/population`, `/adr/survey`, `/adr/programme`, `/adr/anc`) are an example, and so are
-  `/rehydrate/zip` and `/rehydrate/adr`.
-- Both rehydrate paths use `snippets/python.conf`, so they have the identity headers. `/rehydrate/adr` needs them (a
-  logged in user, and the access token to call ADR as them). `/rehydrate/zip` lets a guest in, as Kotlin does (it does not secure
-  `/rehydrate/**`), but Python still reads the identity headers, so it cannot be reached around the proxy. The zip is uploaded through nginx as it arrives (`proxy_request_buffering off`, `client_max_body_size 0`),
-  so the size limit is Python's (500 MB, see D18 in [docs/porting-checklist.md](../docs/porting-checklist.md)), and a
-  request that takes more than 240 seconds is cancelled by Azure's ingress before it gets to nginx's timeouts.
-- When login and sessions move to Python, only `current_user` changes and `/internal/whoami` and `auth_request` go.
+  together.
 
 ## Running it
 

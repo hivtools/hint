@@ -7,6 +7,7 @@ from fastapi import FastAPI
 from starlette.middleware.gzip import DEFAULT_EXCLUDED_CONTENT_TYPES, GZipMiddleware
 
 from app.clients.adr_client import create_adr_http_client
+from app.clients.auth0_client import create_auth0_http_client
 from app.clients.github_client import create_github_http_client
 from app.clients.hintr_client import create_hintr_http_client
 from app.clients.issue_reporter import create_issue_report_http_client
@@ -23,12 +24,14 @@ from app.routers import (
     hintr_forwards,
     input_files,
     items,
+    login,
     me,
     model,
     pages,
     projects,
     rehydrate,
     review_inputs,
+    users,
 )
 from app.services.file_types import upload_file_types
 from app.telemetry import trace_outgoing_calls
@@ -48,7 +51,9 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None]:
     app.state.adr_http = create_adr_http_client(get_settings())
     app.state.github_http = create_github_http_client(get_settings())
     app.state.issue_report_http = create_issue_report_http_client()
+    app.state.auth0_http = create_auth0_http_client(get_settings())
     yield
+    await app.state.auth0_http.aclose()
     await app.state.issue_report_http.aclose()
     await app.state.github_http.aclose()
     await app.state.adr_http.aclose()
@@ -82,6 +87,8 @@ app.include_router(adr.router)
 app.include_router(rehydrate.router)
 app.include_router(error_report.router)
 app.include_router(me.router)
+app.include_router(login.router)
+app.include_router(users.router)
 app.include_router(pages.router)
 
 

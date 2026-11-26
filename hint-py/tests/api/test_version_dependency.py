@@ -6,7 +6,6 @@ No endpoint uses it yet, so this tests it on a route of its own, on the same dat
 from collections.abc import AsyncIterator
 from typing import Annotated
 
-import httpx2
 import pytest
 import pytest_asyncio
 from fastapi import Depends, FastAPI
@@ -16,7 +15,7 @@ from app.db.database import create_db_session_factory
 from app.db.version_repository import VersionRepository
 from app.dependencies import current_version_id
 from app.errors import register_error_handlers
-from tests.api.helpers import create_project
+from tests.api.helpers import create_project, make_client
 from tests.support import OTHER_USER, USER
 
 INVALID_VERSION = {
@@ -40,13 +39,8 @@ async def version_app(engine: AsyncEngine) -> AsyncIterator[FastAPI]:
 
 
 def client_of(app: FastAPI, user: str, version_id: str | None = None, guest_versions: str | None = None):
-    headers = {"X-Hint-User": user}
-    if version_id is not None:
-        headers["X-Version-Id"] = version_id
-    if guest_versions is not None:
-        headers["X-Hint-Guest-Versions"] = guest_versions
-    transport = httpx2.ASGITransport(app=app, raise_app_exceptions=False)
-    return httpx2.AsyncClient(transport=transport, base_url="http://test", headers=headers)
+    versions = [v.strip() for v in guest_versions.split(",") if v.strip()] if guest_versions else []
+    return make_client(user, version_id, guest_versions=versions, to=app)
 
 
 async def test_a_user_may_use_a_version_of_their_project(api, version_app):

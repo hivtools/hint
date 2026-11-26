@@ -139,6 +139,18 @@ def test_the_query_string_of_a_request_is_not_in_the_access_log(capsys, otel):
     assert "a@b.c" not in otel.records[0].getMessage()
 
 
+def test_an_email_in_the_path_of_a_request_is_not_in_the_access_log(capsys, otel):
+    configure()
+
+    logging.getLogger("uvicorn.access").info(
+        '%s - "%s %s HTTP/%s" %d', "127.0.0.1:1234", "GET", "/user/someone%40b.c@x.org/exists?a=b", "1.1", 200
+    )
+
+    [line] = lines(capsys)
+    assert '"GET /user/<email>/exists HTTP/1.1" 200' in line
+    assert "x.org" not in otel.records[0].getMessage()
+
+
 def test_a_secret_in_the_address_of_a_call_that_the_api_makes_is_not_in_the_log(capsys, otel):
     configure()
 

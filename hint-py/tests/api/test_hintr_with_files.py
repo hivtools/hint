@@ -82,8 +82,7 @@ async def test_hintr_is_not_called_without_a_version(api, hintr, method, path, b
 
 
 async def test_a_guest_may_use_the_versions_the_server_gave_them(api, hintr):
-    async with make_client("guest", "g1") as guest:
-        guest.headers["X-Hint-Guest-Versions"] = "g1,g2"
+    async with make_client("guest", "g1", guest_versions=["g1", "g2"]) as guest:
         r = await guest.get("/model/options")
     # g1 is allowed, but it is not a version in the database, so it has no files
     assert r.status_code == 200
@@ -91,8 +90,7 @@ async def test_a_guest_may_use_the_versions_the_server_gave_them(api, hintr):
 
 
 async def test_a_guest_may_not_use_any_other_version(api, hintr):
-    async with make_client("guest", "g3") as guest:
-        guest.headers["X-Hint-Guest-Versions"] = "g1,g2"
+    async with make_client("guest", "g3", guest_versions=["g1", "g2"]) as guest:
         r = await guest.get("/model/options")
     assert r.status_code == 403
     assert hintr.calls == []

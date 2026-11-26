@@ -11,7 +11,6 @@ import {locales} from "../../app/store/translations/locales";
 import {translate} from "./utils/translationUtils";
 
 const TEST_USER = "test.user@example.com";
-const TEST_PASSWORD = "password";
 
 // Collects what a user would never see but a developer should: errors thrown in the page, errors written to the
 // console and failed requests to our own server. Call before the first navigation.
@@ -32,9 +31,8 @@ function trackProblems(page: Page): string[] {
 
 async function logInThroughTheLoginPage(page: Page) {
     await page.goto("/login");
-    await page.getByPlaceholder("Email").fill(TEST_USER);
-    await page.getByPlaceholder("Password").fill(TEST_PASSWORD);
-    await page.getByText("Log In").click();
+    // The dev login (HINT_DEV_USERS in docker-compose.yml): one button for each user, no password
+    await page.getByRole("button", {name: `Log in as ${TEST_USER}`}).click();
     // A longer wait than usual: with no cache the whole script has to be downloaded and started
     await expect(page.getByRole("heading", {name: "Projects", exact: true})).toBeVisible({timeout: 20_000});
 }
@@ -119,17 +117,19 @@ test.describe("logged in", () => {
 // ---- Not logged in (each test starts with no cookies) ----
 
 plainTest.describe("not logged in", () => {
-    plainTest("the login page rejects a wrong password", async ({page}) => {
-        // The password form is only shown when single sign-on is off, as it is in development
+    plainTest("the login page has the dev login, and no password form", async ({page}) => {
+        // In development there is no Auth0: the page has one button for each dev user (deployed, the Auth0 button)
         await page.goto("/login");
         await plainExpect(page).toHaveTitle("Login");
         await plainExpect(page.locator("#continue-as-guest")).toBeVisible();
+        await plainExpect(page.getByRole("button", {name: `Log in as ${TEST_USER}`})).toBeVisible();
+        await plainExpect(page.locator('input[type="password"]')).toHaveCount(0);
+    });
 
-        await page.getByPlaceholder("Email").fill(TEST_USER);
-        await page.getByPlaceholder("Password").fill("not the password");
-        await page.getByText("Log In").click();
-
-        await plainExpect(page.locator("#error")).toHaveText("Username or password is incorrect");
+    plainTest("the login page says when a session has expired", async ({page}) => {
+        // Where the app sends a user whose request got a 401 (apiService.ts)
+        await page.goto("/login?error=SessionExpired");
+        await plainExpect(page.locator("#error")).toHaveText("Your session expired. Please log in again");
     });
 
     plainTest("a visitor is sent to the login page, and can continue as a guest", async ({page}) => {

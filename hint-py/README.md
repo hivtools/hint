@@ -320,6 +320,27 @@ with a `send` method there and return it from `get_issue_reporter`. See D20 in `
 
 In the dev stack, `scripts/dev.sh` sets `HINT_ISSUE_REPORT_URL` to the stub of the flow.
 
+### Login and sessions
+
+The API logs users in (`app/routers/login.py`) and keeps the sessions in Postgres (`app/services/web_sessions.py`, the
+tables `web_session` and `web_session_guest_version` from hint-db). The browser has a `hint_session` cookie with a random
+id, and the table only its SHA-256. Every endpoint gets the user from `Depends(current_user)` (`app/dependencies.py`).
+A visitor with no session is the guest user. A login lasts 7 days after its last use (30 days at most), a guest's
+session 24 hours. See D22 in `docs/porting-checklist.md`.
+
+Deployed, users log in with Auth0. In development there is no Auth0: the login page has a button for each user in
+`HINT_DEV_USERS` (`POST /dev-login`), and the dev stack sets two.
+
+| Setting                     | Default                           | What it is                                                     |
+|-----------------------------|-----------------------------------|----------------------------------------------------------------|
+| `HINT_APPLICATION_URL`      | `http://localhost:8080`           | The app as the browser sees it. Auth0 sends the browser back to `<this>/callback/oauth2Client`, and to `<this>/login` after a logout. The cookie is `Secure` if it is https. |
+| `HINT_AUTH0_DOMAIN`         | (none)                            | The Auth0 domain, without `https://` (Kotlin: `oauth2_client_url`). Without it there is no Auth0 button. |
+| `HINT_AUTH0_CLIENT_ID`      | (none)                            | Kotlin: `oauth2_client_id`.                                    |
+| `HINT_AUTH0_CLIENT_SECRET`  | (none)                            | A secret. Kotlin: `oauth2_client_secret`.                      |
+| `HINT_AUTH0_AUDIENCE`       | `naomi`                           | Kotlin: `oauth2_client_audience`.                              |
+| `HINT_AUTH0_SCOPE`          | `openid profile email access:adr` | `access:adr` gives a token that ADR accepts, to call ADR as the user. |
+| `HINT_DEV_USERS`            | (none)                            | Development only, comma separated. Refused with Auth0, with an https address, or without `HINT_ENVIRONMENT=development`. |
+
 ### The page of the app
 
 The Vue app is built in `src/app/static` (`npm run build && npm run copy`) to `src/app/static/public`. This API serves
