@@ -62,19 +62,14 @@ def current_user(session: CurrentWebSession) -> User:
 
 def current_adr_access_token(session: CurrentWebSession) -> str | None:
     """The user's Auth0 access token, kept in the session of a single sign-on user so that ADR can be called as them. It
-    is None for everyone else (a guest, a dev login), and once the token has expired (`adr_login_expired`).
+    is None for everyone else (a guest, a dev login). The session ends when the token expires
+    (app/services/web_sessions.py), so a token here still works.
 
     The token is a credential. Use it only to call ADR, never put it in a response, a log line or an error message.
     """
     if session is None or session.user_id is None:
         return None
     return session.access_token or None
-
-
-def adr_login_expired(session: CurrentWebSession) -> bool:
-    """The user logged in with Auth0, and the access token they got then no longer works. Auth0 sets how long a token
-    works, and it is usually shorter than a session, so they must log in again to call ADR."""
-    return session is not None and session.access_token_expired
 
 
 def requested_version_id(x_version_id: Annotated[str | None, Header()] = None) -> str | None:

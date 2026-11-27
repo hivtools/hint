@@ -12,6 +12,7 @@ from pydantic import SecretStr
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncEngine
 
+from app import clock
 from app.clock import as_utc
 from app.db.models import User, WebSession
 from app.main import app
@@ -236,6 +237,20 @@ async def test_the_access_token_is_encrypted_in_the_database(browser, auth0, eng
     assert row.access_token is not None
     assert TOKEN not in row.access_token
     assert TokenEncryption([SecretStr(SESSION_ENCRYPTION_KEY)]).decrypt(row.access_token) == TOKEN
+
+
+async def test_the_session_ends_when_the_token_expires(browser, auth0, monkeypatch):
+    # Used every few minutes, so it is never idle: the token's expiry is what ends it
+    auth0.token_body = {"access_token": TOKEN, "token_type": "Bearer", "expires_in": 3600}
+    await browser.get("/callback/oauth2Client", params={"state": await start_login(browser), "code": CODE})
+    login = datetime.now(UTC)
+
+    for minutes in range(0, 60, 4):
+        monkeypatch.setattr(clock, "utc_now", lambda minutes=minutes: login + timedelta(minutes=minutes))
+        assert (await browser.get("/me")).json()["data"]["user"] == SSO_USER
+
+    monkeypatch.setattr(clock, "utc_now", lambda: login + timedelta(minutes=61))
+    assert (await browser.get("/me")).json()["data"]["user"] == "guest"
 
 
 async def test_the_session_keeps_when_auth0_says_the_token_expires(browser, auth0, engine):

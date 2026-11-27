@@ -34,9 +34,8 @@ from pydantic import SecretStr
 
 from app.clients.responses import TIMEOUT_SECONDS, HintResponse, hint_status, parse_json
 from app.config import Settings, get_settings
-from app.dependencies import adr_login_expired, current_adr_access_token
+from app.dependencies import current_adr_access_token
 from app.errors import (
-    AdrLoginExpiredError,
     AdrResourceError,
     FileTooLargeError,
     HintError,
@@ -224,15 +223,11 @@ class AdrClient:
     parameter is reported before the user hears that ADR cannot be called.
     """
 
-    def __init__(
-        self, http: httpx2.AsyncClient, authorization: SecretStr | None, language: str, *, login_expired: bool = False
-    ):
-        """`http` has the address of ADR as its base. `login_expired`: the user's Auth0 token has expired, so a call
-        asks them to log in again rather than saying they have no credential."""
+    def __init__(self, http: httpx2.AsyncClient, authorization: SecretStr | None, language: str):
+        """`http` has the address of ADR as its base."""
         self._http = http
         self._authorization = authorization
         self._language = language
-        self._login_expired = login_expired
 
     def file_at(self, link: str) -> AdrFile:
         """The file of ADR that the link leads to. Its path and query are downloaded from the address of ADR.
@@ -429,9 +424,6 @@ class AdrClient:
         """The header that makes a call as the user. Raises `NoAdrCredentialsError` if there is no credential, so that
         nothing is sent."""
         if self._authorization is None:
-            if self._login_expired:
-                log.info("The Auth0 access token has expired, so the user must log in again to call ADR")
-                raise AdrLoginExpiredError()
             log.warning("No credential to call ADR: there is no single sign-on token, and HINT_ADR_API_KEY is not set")
             raise NoAdrCredentialsError()
         return {"Authorization": self._authorization.get_secret_value()}
@@ -483,14 +475,12 @@ def get_adr_client(
     request: Request,
     settings: Annotated[Settings, Depends(get_settings)],
     access_token: Annotated[str | None, Depends(current_adr_access_token)],
-    login_expired: Annotated[bool, Depends(adr_login_expired)],
     accept_language: Annotated[str | None, Header()] = None,
 ) -> AdrClient:
     return AdrClient(
         request.app.state.adr_http,
         adr_authorization(settings, access_token),
         negotiate_language(accept_language),
-        login_expired=login_expired,
     )
 
 

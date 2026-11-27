@@ -13,8 +13,6 @@ def a_session(user_id: str | None, access_token: str | None = None, guest_versio
         id_hash=b"x",
         user_id=user_id,
         access_token=access_token,
-        logged_in_with_auth0=access_token is not None,
-        access_token_expired=False,
         guest_version_ids=frozenset(guest_versions),
     )
 

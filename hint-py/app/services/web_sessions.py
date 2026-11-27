@@ -9,15 +9,17 @@ How long a session lasts:
 
 - A logged in user gets a cookie that stays when the browser closes. The session ends 7 days after its last use
   (`USER_IDLE_TIMEOUT`), and 30 days after the login in any case (`MAX_SESSION_AGE`).
+- A user who logged in with Auth0 has an access token, with which ADR is called as them. The session ends when Auth0
+  says the token stops working (`expires_in`, 24 hours in our tenant), if that is sooner: they log in again, and get a
+  new token. Auth0 usually still has its own session, so that is one click.
 - A guest gets a cookie that the browser forgets when it closes, and the session ends 24 hours after its last use
   (`GUEST_IDLE_TIMEOUT`).
 - `expires_at` is moved on only when the last move is more than 5 minutes old (`EXPIRY_REFRESH_INTERVAL`), so most
   requests do not write. Only then does a logged in user get a new `Set-Cookie`.
-- Every read checks `expires_at` and the 30 days, so a row that is still in the table lets nobody in after that.
+- Every read checks all of these, so a row that is still in the table lets nobody in after its end.
 
-The Auth0 access token of a single sign-on user is kept encrypted (app/services/token_encryption.py). It has its own
-expiry, set by Auth0 and usually shorter than the session's: after it, the user is still logged in, but a call to ADR
-asks them to log in again (`WebSession.access_token_expired`).
+The access token is kept encrypted (app/services/token_encryption.py). A session whose token no key decrypts (the key
+was removed) has ended too.
 
 A visitor with no session, or a session that has ended, is the guest user. Nothing is written for them until they need a
 row: a guest version (`POST /guest/version`).
@@ -57,13 +59,14 @@ class WebSession:
 
     id_hash: bytes
     user_id: str | None
-    # The Auth0 access token, decrypted, while it works. None for a guest, a dev login, or a token that has expired
+    # The Auth0 access token, decrypted. None for a guest and a dev login
     access_token: str | None
-    # The user logged in with Auth0, so a logout ends their Auth0 session too
-    logged_in_with_auth0: bool
-    # They logged in with Auth0, and their token no longer works: ADR cannot be called until they log in again
-    access_token_expired: bool
     guest_version_ids: frozenset[str]
+
+    @property
+    def logged_in_with_auth0(self) -> bool:
+        """A logout then ends their Auth0 session too."""
+        return self.access_token is not None
 
 
 class WebSessions:
@@ -85,14 +88,17 @@ class WebSessions:
         row = await self.session_repository.get_session(_hash(session_id))
         # Every rule about how long a session lasts is here. A row that has ended stays in the table until the clean-up,
         # and lets nobody in
-        if row is None or row.expires_at <= now or row.created_at <= now - MAX_SESSION_AGE:
+        if row is None or row.expires_at <= now or _latest_end(row) <= now:
+            return None
+        session = self._from_row(row)
+        if session is None:
             return None
         idle_timeout = USER_IDLE_TIMEOUT if row.user_id else GUEST_IDLE_TIMEOUT
         if row.expires_at - idle_timeout < now - EXPIRY_REFRESH_INTERVAL:
             await self.session_repository.extend_session(row.id_hash, now + idle_timeout)
             if row.user_id:
                 self._set_cookie(response, session_id, persistent=True)
-        return self._from_row(row, now)
+        return session
 
     async def start_guest(self, response: Response) -> WebSession:
         """A new session for a visitor who has not logged in."""
@@ -129,8 +135,6 @@ class WebSessions:
             id_hash=id_hash,
             user_id=user_id,
             access_token=token.access_token if token else None,
-            logged_in_with_auth0=token is not None,
-            access_token_expired=False,
             guest_version_ids=frozenset(),
         )
 
@@ -141,20 +145,18 @@ class WebSessions:
             raise RuntimeError(message)
         return self._encryption.encrypt(token)
 
-    def _from_row(self, row: WebSessionRow, now: datetime) -> WebSession:
+    def _from_row(self, row: WebSessionRow) -> WebSession | None:
         access_token = None
-        token_live = row.access_token_expires_at is None or row.access_token_expires_at > now
-        if row.access_token is not None and token_live:
+        if row.access_token is not None:
             access_token = self._encryption.decrypt(row.access_token) if self._encryption else None
             if access_token is None:
                 # The key that encrypted it has been removed. The user logs in again to get a new token
-                log.warning("No key decrypts the access token of a session")
+                log.warning("No key decrypts the access token of a session, so it has ended")
+                return None
         return WebSession(
             id_hash=row.id_hash,
             user_id=row.user_id,
             access_token=access_token,
-            logged_in_with_auth0=row.access_token is not None,
-            access_token_expired=row.access_token is not None and access_token is None,
             guest_version_ids=row.guest_version_ids,
         )
 
@@ -174,6 +176,15 @@ class WebSessions:
     @property
     def secure_cookies(self) -> bool:
         return self.settings.application_url.startswith("https://")
+
+
+def _latest_end(row: WebSessionRow) -> datetime:
+    """When the session ends, however often it is used: 30 days after the login, or when Auth0 says the access token
+    stops working, if that is sooner."""
+    end = row.created_at + MAX_SESSION_AGE
+    if row.access_token_expires_at is not None:
+        end = min(end, row.access_token_expires_at)
+    return end
 
 
 def get_web_sessions(

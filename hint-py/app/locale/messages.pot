@@ -143,7 +143,3 @@ msgstr ""
 
 msgid "auth0CodeMissing"
 msgstr ""
-
-
-msgid "adrLoginExpired"
-msgstr ""

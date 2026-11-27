@@ -2,7 +2,7 @@
 
 How the Python API knows who is using the app: guests, logged in users, the cookies, the timeouts, and the Auth0 token
 used to call ADR. The code is in `hint-py/app/routers/login.py`, `hint-py/app/services/web_sessions.py` and
-`hint-py/app/clients/auth0_client.py`. D22 in `porting-checklist.md` lists the differences from Kotlin.
+`hint-py/app/clients/auth0_client.py`.
 
 ## Who is who
 
@@ -10,12 +10,11 @@ used to call ADR. The code is in `hint-py/app/routers/login.py`, `hint-py/app/se
 |---|---|---|---|---|
 | New visitor, or one whose session has ended | none | none | n/a | nothing (ADR needs a login) |
 | Guest who has started work (`POST /guest/version`) | yes, `user_id` NULL, plus one `web_session_guest_version` row per version | browser-session cookie: deleted when the browser closes | 24 h after its last use, or when the browser closes | nothing |
-| User logged in with Auth0 (deployed) | yes, with the encrypted access token and when it expires | persistent, `Max-Age` 7 days, sent again when the expiry moves | 7 days after its last use, 30 days after the login at most, or at logout | their Auth0 access token, until Auth0's expiry |
-| User logged in with the dev login (development) | yes, no token | persistent, as above | as above | `HINT_ADR_API_KEY` (or `ADR_TEST_KEY`) |
+| User logged in with Auth0 (deployed) | yes, with the encrypted access token and when it expires | persistent, `Max-Age` 7 days, sent again when the expiry moves | when Auth0's access token expires (24 h after the login), 7 days after its last use, 30 days after the login at most, or at logout | their Auth0 access token |
+| User logged in with the dev login (development) | yes, no token | persistent, as above | 7 days after its last use, 30 days after the login at most, or at logout | `HINT_ADR_API_KEY` (or `ADR_TEST_KEY`) |
 
 The cookie holds a random id (`secrets.token_urlsafe(32)`). The table holds only its SHA-256, so a copy of the table cannot
-be used to log in. The cookie is `HttpOnly` (no script can read it), `SameSite=Lax`, and `Secure` on https. A cookie is
-not localStorage or sessionStorage: the browser keeps it in its own store and sends it with every request to the site.
+be used to log in. The cookie is `HttpOnly` (no script can read it), `SameSite=Lax`, and `Secure` on https.
 
 ```mermaid
 stateDiagram-v2
@@ -29,7 +28,7 @@ stateDiagram-v2
     Guest --> LoggedIn: login (new id, guest row deleted)
     LoggedIn --> LoggedIn: login again (new id, old row deleted)
     Guest --> Visitor: 24 h idle, or browser closed
-    LoggedIn --> Visitor: logout (row deleted), 7 days idle, or 30 days
+    LoggedIn --> Visitor: logout (row deleted), token expired, 7 days idle, or 30 days
 ```
 
 ## A request
@@ -40,8 +39,9 @@ sequenceDiagram
     participant A as Python API
     participant DB as Postgres
     B->>A: GET /projects (Cookie: hint_session=ID)
-    A->>DB: web_session where id_hash = sha256(ID)<br/>and expires_at > now and created_at > now - 30 days
-    alt no row (no cookie, unknown id, ended)
+    A->>DB: web_session where id_hash = sha256(ID)
+    A->>A: expires_at > now, created_at > now - 30 days,<br/>access_token_expires_at > now, and the token decrypts?
+    alt no row, or it has ended
         A-->>B: answered as the guest user
     else live row
         opt the expiry was last moved more than 5 minutes ago
@@ -96,37 +96,31 @@ In development there is no Auth0: the login page has a button for each user in `
 
 ## The Auth0 token and ADR
 
-The access token is stored encrypted (Fernet, keys in `HINT_SESSION_ENCRYPTION_KEYS`, never in the database). Auth0 sets
-how long it works (`expires_in`, often 24 hours), which is usually shorter than the session.
+The access token is stored encrypted (Fernet, keys in `HINT_SESSION_ENCRYPTION_KEYS`, never in the database). ADR is
+called with it as the user. Auth0 sets how long it works (`expires_in`): the tenant's "Maximum Access Token Lifetime" of
+the API, 24 hours. (The "Implicit / Hybrid Flow Access Token Lifetime" is for tokens that `/authorize` gives straight to
+the browser. This app gets its token from `/oauth/token`, so that setting does not apply.)
 
-```mermaid
-sequenceDiagram
-    participant B as Browser (Vue app)
-    participant A as Python API
-    participant R as ADR
-    B->>A: GET /adr/datasets
-    alt token has not expired
-        A->>R: Authorization: Bearer T
-        R-->>A: datasets
-        A-->>B: 200
-    else token has expired (or no key decrypts it)
-        A-->>B: 401 adrLoginExpired (ADR is not called)
-        B->>B: go to /login?error=SessionExpired
-        Note over B: logging in again gives a new session and a new token.<br/>Auth0 usually still has its own session, so it is one click
-    end
-```
+**The session ends when the token expires**, whatever the idle and 30 day limits say. The user is then a guest: an
+endpoint that needs a login answers 401, and the Vue app sends them to `/login?error=SessionExpired`. Auth0 usually still
+has its own session, so logging in again is one click, and gives a new session and a new token. A token that no key
+decrypts (its key was removed from `HINT_SESSION_ENCRYPTION_KEYS`) ends the session the same way.
 
-The user stays logged in to the app after the token expires: only ADR needs them to log in again.
+So a single sign-on user logs in once a day. The limit is Auth0's setting, not a number in this app: a longer token
+lifetime in Auth0 makes longer sessions, up to the 7 day idle and 30 day limits. Sessions that last longer than the
+token, without a new login, would need refresh tokens (`offline_access`), which this app does not ask for.
 
 ## The timeouts, in examples
 
-- **Idle for 5 hours, browser left open or closed and opened again:** a logged in user is still logged in (the cookie is
+- **Idle for 5 hours, browser left open or closed and opened again:** a logged in user is still logged in (within the
+  token's 24 hours for single sign-on) (the cookie is
   persistent, the row lasts 7 days after the last use). The same row is used, and its expiry moves on at the next
   request. A guest who closed the browser has lost the cookie, so starts as a new visitor.
 - **Not used for 7 days:** the row has expired. The user is a guest until they log in, which makes a new row, a new id
   and (with Auth0) a new token.
 - **Used every day for a month:** the session ends 30 days after the login anyway.
-- **The token expires while the session lives:** see above, ADR asks them to log in again.
+- **A single sign-on user, 24 hours after the login:** the token has expired, so the session has ended, even if they
+  used it a minute ago. They log in again.
 - **Logout:** the row is deleted and the cookie is removed. A user who logged in with Auth0 is sent to Auth0's logout
   too, or Auth0 would log them straight back in.
 - **User A logs out and user B logs in on the same browser:** A's row is gone at the logout. B's login makes a new row

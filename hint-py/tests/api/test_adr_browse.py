@@ -413,14 +413,14 @@ async def test_with_a_token_adr_is_called_as_the_user(adr, settings_overrides, p
     assert call.headers["Authorization"] == f"Bearer {ADR_TOKEN}"
 
 
-async def test_an_expired_token_asks_the_user_to_log_in_again(adr, settings_overrides):
+async def test_when_the_token_expires_the_session_ends(adr, settings_overrides):
     # A 401, so that the Vue app sends them to the login page. ADR is not called with a token that no longer works
     expired = datetime.now(UTC) - timedelta(minutes=1)
     async with make_client(USER, access_token=ADR_TOKEN, access_token_expires_at=expired) as sso_user:
         r = await sso_user.get(ENDPOINTS["orgs"])
+        assert (await sso_user.get("/me")).json()["data"]["user"] == "guest"
 
     assert r.status_code == 401
-    assert failure_of(r)["detail"] == "Your login to ADR has expired. Please log in again."
     assert adr.calls == []
 
 
@@ -441,12 +441,12 @@ async def test_a_token_is_still_read_after_a_new_key_is_added_before_the_old_one
     assert r.status_code == 200
 
 
-async def test_a_token_that_no_key_decrypts_counts_as_expired(adr, settings_overrides):
+async def test_a_token_that_no_key_decrypts_ends_the_session(adr, settings_overrides):
     # Its key was removed: the user logs in again for a new token
     settings_overrides["session_encryption_keys"] = Fernet.generate_key().decode()
     async with make_client(USER, access_token=ADR_TOKEN) as sso_user:
         r = await sso_user.get(ENDPOINTS["orgs"])
-        assert (await sso_user.get("/me")).json()["data"]["user"] == USER
+        assert (await sso_user.get("/me")).json()["data"]["user"] == "guest"
 
     assert r.status_code == 401
     assert adr.calls == []

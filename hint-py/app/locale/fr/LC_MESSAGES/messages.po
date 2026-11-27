@@ -182,7 +182,3 @@ msgstr "Le paramètre state d'Auth0 ne correspond pas : possible attaque par fal
 # New in hint-py: needs a check by a translator.
 msgid "auth0CodeMissing"
 msgstr "Auth0 n'a pas envoyé de code de connexion. Veuillez réessayer de vous connecter."
-
-
-msgid "adrLoginExpired"
-msgstr "Votre connexion à ADR a expiré. Veuillez vous reconnecter."
