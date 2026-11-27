@@ -165,7 +165,6 @@
           },
           "method": "POST",
           "path": "/validate/survey-and-programme",
-          "query": "strict=true",
           "status": null,
           "to": "hintr"
         }

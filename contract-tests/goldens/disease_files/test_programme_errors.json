@@ -63,7 +63,6 @@
           },
           "method": "POST",
           "path": "/validate/survey-and-programme",
-          "query": "strict=true",
           "status": 400,
           "to": "hintr"
         }
@@ -113,7 +112,6 @@
           },
           "method": "POST",
           "path": "/validate/survey-and-programme",
-          "query": "strict=true",
           "status": 400,
           "to": "hintr"
         }
@@ -163,7 +161,6 @@
           },
           "method": "POST",
           "path": "/validate/survey-and-programme",
-          "query": "strict=true",
           "status": 400,
           "to": "hintr"
         }
@@ -213,7 +210,6 @@
           },
           "method": "POST",
           "path": "/validate/survey-and-programme",
-          "query": "strict=true",
           "status": 400,
           "to": "hintr"
         }
@@ -263,7 +259,6 @@
           },
           "method": "POST",
           "path": "/validate/survey-and-programme",
-          "query": "strict=true",
           "status": 400,
           "to": "hintr"
         }
@@ -313,7 +308,6 @@
           },
           "method": "POST",
           "path": "/validate/survey-and-programme",
-          "query": "strict=true",
           "status": 400,
           "to": "hintr"
         }
@@ -363,7 +357,6 @@
           },
           "method": "POST",
           "path": "/validate/survey-and-programme",
-          "query": "strict=true",
           "status": 400,
           "to": "hintr"
         }
@@ -412,7 +405,6 @@
           },
           "method": "POST",
           "path": "/validate/survey-and-programme",
-          "query": "strict=true",
           "status": 400,
           "to": "hintr"
         }

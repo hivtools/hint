@@ -222,7 +222,6 @@
           },
           "method": "POST",
           "path": "/validate/survey-and-programme",
-          "query": "strict=false",
           "status": 200,
           "to": "hintr"
         }
@@ -301,7 +300,6 @@
           },
           "method": "POST",
           "path": "/validate/survey-and-programme",
-          "query": "strict=false",
           "status": 200,
           "to": "hintr"
         }
