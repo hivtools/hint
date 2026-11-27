@@ -168,7 +168,10 @@ def pytest_sessionfinish(session, exitstatus):
 def pytest_collection_modifyitems(config, items):
     env: Env = config._hint_env
     skip_slow = pytest.mark.skip(reason="slow test: use --run-slow")
+    skip_kotlin_login = pytest.mark.skip(reason="Kotlin's login: only run when recording (see RecordedClient.login)")
     for item in items:
+        if "kotlin_login" in item.keywords and not env.record:
+            item.add_marker(skip_kotlin_login)
         if "slow" in item.keywords and not env.run_slow:
             item.add_marker(skip_slow)
         if "needs_db" in item.keywords and not env.has_db:

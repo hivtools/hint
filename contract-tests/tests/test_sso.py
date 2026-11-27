@@ -8,6 +8,9 @@ import urllib.parse
 
 import pytest
 
+# Kotlin's SSO login (pac4j). The Python API's is tested in hint-py/tests/api/test_login.py
+pytestmark = pytest.mark.kotlin_login
+
 from hintcontract.controls import fault
 from hintcontract.flows import TEST_USER, create_project, upload
 

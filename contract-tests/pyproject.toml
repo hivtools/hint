@@ -15,6 +15,7 @@ testpaths = ["tests"]
 addopts = "-p no:cacheprovider"
 markers = [
     "quirk: records current (possibly surprising) behaviour of the Kotlin app as-is",
+    "kotlin_login: about Kotlin's own login (the password form, pac4j, its SSO); only run when recording against Kotlin. The Python API's login is tested in hint-py/tests/api/test_login.py",
     "slow: takes more than ~30s (opt in with --run-slow)",
     "sso: needs the SUT started in SSO mode (oauth2_login_method=true), see README",
     "legacy_session: the temporary fallback, a request without X-Version-Id uses the version in the session (the port does not need it)",
