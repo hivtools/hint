@@ -92,12 +92,12 @@ class Auth0:
         )
         return LoginStart(url=url, state=state, code_verifier=code_verifier)
 
-    def logout_url(self) -> str:
+    def get_logout_url(self) -> str:
         """Ends the user's Auth0 session too, then Auth0 sends the browser to the login page."""
         params = {"client_id": self.settings.auth0_client_id, "returnTo": f"{self.settings.application_url}/login"}
         return f"https://{self.settings.auth0_domain}/v2/logout?{urlencode(params)}"
 
-    async def access_token(self, code: str, code_verifier: str) -> Auth0Token:
+    async def get_access_token(self, code: str, code_verifier: str) -> Auth0Token:
         try:
             token = await self.client.fetch_token("/oauth/token", code=code, code_verifier=code_verifier)
         except OAuthError as e:
@@ -118,7 +118,7 @@ class Auth0:
             expires_at=datetime.fromtimestamp(expires_at, UTC) if isinstance(expires_at, int | float) else None,
         )
 
-    async def email(self, access_token: str) -> str | None:
+    async def get_email(self, access_token: str) -> str | None:
         """The email of the user, as Auth0 has it, or None if Auth0 has none."""
         try:
             r = await self.client.request(

@@ -45,7 +45,7 @@ async def create_web_session(
         await repository.create_session(
             id_hash,
             user_id=None if user == GUEST_USER else user,
-            encrypted_access_token=TokenEncryption([SecretStr(SESSION_ENCRYPTION_KEY)]).encrypt(access_token)
+            access_token=TokenEncryption([SecretStr(SESSION_ENCRYPTION_KEY)]).encrypt(access_token)
             if access_token
             else None,
             access_token_expires_at=access_token_expires_at,

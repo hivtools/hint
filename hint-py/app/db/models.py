@@ -95,7 +95,7 @@ class WebSession(Base):
     # None for someone who has not logged in (a guest)
     user_id: Mapped[str | None]
     # Encrypted (app/services/token_encryption.py)
-    encrypted_access_token: Mapped[str | None]
+    access_token: Mapped[str | None]
     access_token_expires_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
     expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))

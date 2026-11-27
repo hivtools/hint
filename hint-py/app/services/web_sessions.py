@@ -82,10 +82,10 @@ class WebSessions:
         if not session_id:
             return None
         now = clock.utc_now()
-        row = await self.session_repository.get_live_session(
-            _hash(session_id), now, created_after=now - MAX_SESSION_AGE
-        )
-        if row is None:
+        row = await self.session_repository.get_session(_hash(session_id))
+        # Every rule about how long a session lasts is here. A row that has ended stays in the table until the clean-up,
+        # and lets nobody in
+        if row is None or row.expires_at <= now or row.created_at <= now - MAX_SESSION_AGE:
             return None
         idle_timeout = USER_IDLE_TIMEOUT if row.user_id else GUEST_IDLE_TIMEOUT
         if row.expires_at - idle_timeout < now - EXPIRY_REFRESH_INTERVAL:
@@ -119,7 +119,7 @@ class WebSessions:
         await self.session_repository.create_session(
             id_hash,
             user_id=user_id,
-            encrypted_access_token=self._encrypt(token.access_token) if token else None,
+            access_token=self._encrypt(token.access_token) if token else None,
             access_token_expires_at=token.expires_at if token else None,
             created_at=now,
             expires_at=now + (USER_IDLE_TIMEOUT if user_id else GUEST_IDLE_TIMEOUT),
@@ -144,8 +144,8 @@ class WebSessions:
     def _from_row(self, row: WebSessionRow, now: datetime) -> WebSession:
         access_token = None
         token_live = row.access_token_expires_at is None or row.access_token_expires_at > now
-        if row.encrypted_access_token is not None and token_live:
-            access_token = self._encryption.decrypt(row.encrypted_access_token) if self._encryption else None
+        if row.access_token is not None and token_live:
+            access_token = self._encryption.decrypt(row.access_token) if self._encryption else None
             if access_token is None:
                 # The key that encrypted it has been removed. The user logs in again to get a new token
                 log.warning("No key decrypts the access token of a session")
@@ -153,8 +153,8 @@ class WebSessions:
             id_hash=row.id_hash,
             user_id=row.user_id,
             access_token=access_token,
-            logged_in_with_auth0=row.encrypted_access_token is not None,
-            access_token_expired=row.encrypted_access_token is not None and access_token is None,
+            logged_in_with_auth0=row.access_token is not None,
+            access_token_expired=row.access_token is not None and access_token is None,
             guest_version_ids=row.guest_version_ids,
         )
 

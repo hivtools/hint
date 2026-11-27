@@ -233,9 +233,9 @@ async def test_the_access_token_is_encrypted_in_the_database(browser, auth0, eng
     await browser.get("/callback/oauth2Client", params={"state": await start_login(browser), "code": CODE})
 
     [row] = await sessions_in_db(engine)
-    assert row.encrypted_access_token is not None
-    assert TOKEN not in row.encrypted_access_token
-    assert TokenEncryption([SecretStr(SESSION_ENCRYPTION_KEY)]).decrypt(row.encrypted_access_token) == TOKEN
+    assert row.access_token is not None
+    assert TOKEN not in row.access_token
+    assert TokenEncryption([SecretStr(SESSION_ENCRYPTION_KEY)]).decrypt(row.access_token) == TOKEN
 
 
 async def test_the_session_keeps_when_auth0_says_the_token_expires(browser, auth0, engine):

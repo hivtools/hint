@@ -121,8 +121,8 @@ async def auth0_callback(
     if not code:
         raise LoginCodeMissingError
     # Auth0Error, if Auth0 gives no token or no user, is an unexpected error (500): the user can only try again
-    token = await auth0.access_token(code, code_verifier)
-    email = await auth0.email(token.access_token)
+    token = await auth0.get_access_token(code, code_verifier)
+    email = await auth0.get_email(token.access_token)
     if not email or "@" not in email:
         raise InvalidEmailError
     user_id = await users.find_or_add_user(email)
@@ -154,6 +154,6 @@ async def logout(settings: SettingsDep, sessions: Sessions, session: CurrentWebS
     # A user who logged in with Auth0 is logged out of Auth0 too or Auth0 would log
     # them straight back in. Auth0 then sends the browser to the login page.
     with_auth0 = session is not None and session.logged_in_with_auth0 and settings.auth0_configured
-    response = RedirectResponse(auth0.logout_url() if with_auth0 else "/login", status_code=302)
+    response = RedirectResponse(auth0.get_logout_url() if with_auth0 else "/login", status_code=302)
     await sessions.log_out(response, session)
     return response
