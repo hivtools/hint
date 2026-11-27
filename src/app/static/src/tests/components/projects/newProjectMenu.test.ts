@@ -15,6 +15,7 @@ import UploadNewProject from "../../../app/components/load/NewProjectCreate.vue"
 import type {Translations} from "../../../app/store/translations/locales";
 import ADRRehydrate from "../../../app/components/adr/ADRRehydrate.vue";
 import {nextTick} from "vue";
+import {getters} from "../../../app/store/root/getters";
 
 describe("New project menu component", () => {
 
@@ -38,9 +39,10 @@ describe("New project menu component", () => {
         vi.resetAllMocks()
     })
 
-    const createStore = (ssoLogin = true) => {
+    const createStore = (currentUser = "some.user@example.com") => {
         return new Vuex.Store({
-            state: mockRootState(),
+            state: mockRootState({currentUser}),
+            getters,
             modules: {
                 projects: {
                     namespaced: true,
@@ -65,12 +67,8 @@ describe("New project menu component", () => {
                 },
                 adr: {
                     namespaced: true,
-                    state: mockADRState({
-                        ssoLogin
-                    }),
+                    state: mockADRState(),
                     actions: {
-                        fetchKey: vi.fn(),
-                        ssoLoginMethod: vi.fn(),
                         getDatasets: vi.fn(),
                     }
                 },
@@ -125,8 +123,8 @@ describe("New project menu component", () => {
         expect(adrRehydrate.attributes("open")).toBeFalsy();
     });
 
-    it("ADR import option not shown when not logged in via sso", async () => {
-        const store = createStore(false);
+    it("ADR import option not shown to a guest", async () => {
+        const store = createStore("guest");
         const wrapper = getWrapper(store);
 
         expect(wrapper.find("#adr-import-button span").exists()).toBeFalsy();
