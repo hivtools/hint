@@ -136,7 +136,7 @@ async def test_a_browser_that_opens_a_page_that_does_not_exist_gets_the_404_page
 
 @pytest.mark.parametrize("path", ["/no-such-page", "/sso", "/adr/key", "/metrics", "/callback/formClient"])
 async def test_an_api_call_to_a_path_that_does_not_exist_gets_json(anonymous_client: httpx2.AsyncClient, path: str):
-    # Including what only Kotlin served, which nothing routes to any more
+    # Including paths that the app called once and that no longer exist
     r = await anonymous_client.get(path, headers={"Accept": "application/json"})
 
     assert r.status_code == 404

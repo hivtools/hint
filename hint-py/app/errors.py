@@ -386,7 +386,7 @@ def register_error_handlers(app: FastAPI) -> None:
     @app.exception_handler(StarletteHTTPException)
     async def http_error(request: Request, exc: StarletteHTTPException) -> Response:
         if exc.status_code == 404 and "text/html" in request.headers.get("accept", ""):
-            # A browser that opens a page that does not exist gets a page that says so (Kotlin's 404.ftl). The API's
+            # A browser that opens a page that does not exist gets a page that says so. The API's
             # callers ask for JSON, and get JSON
             return FileResponse(NOT_FOUND_PAGE, status_code=404, media_type="text/html")
         # Errors FastAPI raises itself (401 from logged_in_user, 404, 405...) get the same shape as all the others
