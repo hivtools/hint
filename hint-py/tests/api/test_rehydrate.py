@@ -19,7 +19,6 @@ import httpx2
 import pytest
 import pytest_asyncio
 
-from app.main import app
 from app.services import file_types
 from app.services.file_types import OUTPUT_ZIP
 from tests.adr import STORAGE, FakeAdr, download_link, file_response
@@ -185,15 +184,6 @@ async def test_a_guest_may_load_a_zip(hintr, adr, uploads_dir):
         r = await rehydrate(guest, output_zip())
 
     assert r.status_code == 200
-
-
-async def test_without_the_identity_headers_of_the_proxy_the_answer_is_401(hintr, adr, uploads_dir):
-    transport = httpx2.ASGITransport(app=app, raise_app_exceptions=False)
-    async with httpx2.AsyncClient(transport=transport, base_url="http://test") as client:
-        r = await rehydrate(client, output_zip())
-
-    assert_failure(r, 401, "Missing identity header")
-    assert hintr.calls == []
 
 
 # ---- A zip that cannot be used
@@ -876,7 +866,8 @@ async def test_the_zip_is_downloaded_as_the_user_and_the_credential_stays_with_a
 async def test_with_a_token_the_zip_is_downloaded_as_the_user_of_the_token(from_adr, adr):
     adr.serve(LINK, output_zip())
 
-    r = await rehydrate_from(from_adr, headers={"X-Hint-Access-Token": ADR_TOKEN})
+    async with make_client(USER, access_token=ADR_TOKEN) as sso_user:
+        r = await rehydrate_from(sso_user)
 
     assert r.status_code == 200
     assert adr.downloads()[0].headers["Authorization"] == f"Bearer {ADR_TOKEN}"
@@ -885,8 +876,8 @@ async def test_with_a_token_the_zip_is_downloaded_as_the_user_of_the_token(from_
 async def test_with_a_token_and_no_key_the_zip_is_downloaded(adr, hintr, uploads_dir):
     adr.serve(LINK, output_zip())
     knows(hintr, FIT, CALIBRATE)
-    async with make_client(USER) as client:
-        r = await rehydrate_from(client, headers={"X-Hint-Access-Token": ADR_TOKEN})
+    async with make_client(USER, access_token=ADR_TOKEN) as client:
+        r = await rehydrate_from(client)
 
     assert r.status_code == 200
     assert adr.downloads()[0].headers["Authorization"] == f"Bearer {ADR_TOKEN}"
@@ -912,22 +903,11 @@ async def test_without_a_credential_the_user_is_told_in_the_language_of_the_requ
 async def test_a_guest_may_not_load_a_zip_from_adr(from_adr, adr, hintr):
     adr.serve(LINK, output_zip())
     async with make_client("guest") as guest:
-        r = await rehydrate_from(guest, headers={"X-Hint-Access-Token": ADR_TOKEN})
+        r = await rehydrate_from(guest)
 
     assert_failure(r, 401, "Login required")
     assert adr.calls == []
     assert hintr.calls == []
-
-
-async def test_without_the_identity_headers_of_the_proxy_adr_is_not_called(adr, settings_overrides):
-    settings_overrides["environment"] = "development"
-    settings_overrides["adr_api_key"] = ADR_KEY
-    transport = httpx2.ASGITransport(app=app, raise_app_exceptions=False)
-    async with httpx2.AsyncClient(transport=transport, base_url="http://test") as client:
-        r = await rehydrate_from(client)
-
-    assert_failure(r, 401, "Missing identity header")
-    assert adr.calls == []
 
 
 @pytest.mark.parametrize(

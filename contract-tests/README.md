@@ -39,8 +39,14 @@ In this stack Kotlin talks to the stubs (ADR, the SSO identity provider and the 
 services. The ADR is the exception for manual work: `scripts/dev.sh up` keeps the real ADR (`REAL_ADR=0` for the stub),
 and `scripts/dev.sh test` switches the running app to the stub first.
 
-With the proxy in front (the default) the whole suite runs through nginx, and `tests/test_python_bridge.py` additionally
-checks the identity bridge to the Python API (skipped with `up --no-proxy`). See `../proxy/README.md`.
+With the proxy in front (the default) the whole suite runs through nginx. See `../proxy/README.md`.
+
+**Logging in.** The goldens were recorded against Kotlin, which logged in with its password form
+(`POST /callback/formClient`), and they are kept as they are: they are the baseline the Python API is compared with. The
+Python API has no password form. So on a replay a login is setup, not a step: `RecordedClient.login` logs in with the
+dev login (`POST /dev-login`, the users must be in `HINT_DEV_USERS`, which the dev stack sets) without recording it, and
+the golden's login steps are left out of the comparison. Every step after a login is compared as before. The tests of
+Kotlin's login itself (the password form, pac4j, its SSO) are marked `kotlin_login` and run only with `--record`.
 
 Ports (each shifted by `PORT_OFFSET`): postgres 5432, hintr 8888, the front door 8080, Kotlin 8081, Kotlin in SSO mode 8085
 (started by `test`), recording/faulting proxy in front of hintr 8882, stubs 8883, stub identity provider 8884. `up`

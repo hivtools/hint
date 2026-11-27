@@ -70,9 +70,12 @@ class Scenario:
             self.expected = self._applicable(json.loads(golden_path.read_text())["steps"])
 
     def _applicable(self, steps: list[dict]) -> list[dict]:
-        """Drop golden parts that need side channels this run does not have (db / uploads / outbound capture)."""
+        """Drop golden parts that need side channels this run does not have (db / uploads / outbound capture), and the
+        login steps (see `RecordedClient.login`)."""
         out = []
         for s in steps:
+            if is_login_step(s):
+                continue
             if s.get("type") == "db" and not self.db:
                 continue
             if s.get("type") == "uploads" and not self.env.uploads_dir:
@@ -299,6 +302,12 @@ class Scenario:
 
 
 VERSION_HEADER = "X-Version-Id"
+# Kotlin's password login, which the goldens recorded
+LOGIN_PATH = "/callback/formClient"
+
+
+def is_login_step(step: dict) -> bool:
+    return step.get("request", {}).get("method") == "POST" and step.get("request", {}).get("path") == LOGIN_PATH
 
 
 class RecordedClient:
@@ -326,8 +335,20 @@ class RecordedClient:
     def put(self, path, **kw): return self.request("PUT", path, **kw)
 
     def login(self, username="test.user@example.com", password="password", **kw) -> Response:
-        return self.post("/callback/formClient", form={"username": username, "password": password},
-                         name=kw.pop("name", f"login {username}"), **kw)
+        """Log in as `username`.
+
+        Recording (against Kotlin): Kotlin's password form, recorded as a step like any other.
+        Replaying (against Python): the login is setup, not behaviour to compare. Python has no password form, so this
+        logs in with the dev login (`POST /dev-login`, the user must be in HINT_DEV_USERS) and records nothing, and
+        `Scenario._applicable` drops the golden's login step. The goldens stay as Kotlin recorded them, and every step
+        after the login is still compared with them. The tests of Kotlin's login itself are marked `kotlin_login` and
+        are only run when recording.
+        """
+        name = kw.pop("name", f"login {username}")
+        if self.scn.record:
+            return self.post(LOGIN_PATH, form={"username": username, "password": password}, name=name, **kw)
+        with self.scn.quiet():
+            return self.post("/dev-login", form={"user": username}, name=name)
 
     def open_app(self, path="/", **kw) -> Response:
         """GET / : creates the session's version row (needed before any upload)."""

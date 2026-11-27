@@ -170,3 +170,15 @@ msgstr ""
 # New in hint-py: needs a check by a translator.
 msgid "githubFailed"
 msgstr "Impossible de vérifier le jeton GitHub, car GitHub n'a pas répondu comme prévu. Réessayez plus tard."
+
+# New in hint-py: needs a check by a translator.
+msgid "auth0StateMissing"
+msgstr "Le paramètre state d'Auth0 doit être fourni"
+
+# New in hint-py: needs a check by a translator.
+msgid "auth0StateMismatch"
+msgstr "Le paramètre state d'Auth0 ne correspond pas : possible attaque par falsification de requête intersite"
+
+# New in hint-py: needs a check by a translator.
+msgid "auth0CodeMissing"
+msgstr "Auth0 n'a pas envoyé de code de connexion. Veuillez réessayer de vous connecter."

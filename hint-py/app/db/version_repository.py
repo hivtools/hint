@@ -222,6 +222,10 @@ class VersionRepository:
         await self.set_files_for_version(new_version_id, await self.get_version_files(parent_version_id))
 
     async def _next_version_number(self, project_id: int | None) -> int:
+        if project_id is None:
+            # A guest's version is in no project, so it is the first. Counting all the versions with no project would
+            # number one guest's version after every other guest's (Kotlin's `PROJECT_ID.eq(null)` matched no row)
+            return 1
         highest = await self.db_session.scalar(
             select(func.max(ProjectVersion.version_number)).where(ProjectVersion.project_id == project_id)
         )

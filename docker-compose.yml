@@ -24,7 +24,9 @@ services:
       retries: 60
 
   db-migrate:
-    image: ghcr.io/hivtools/hint-db-migrate:main
+    # web-session: the tag of hivtools/hint-db#26, which adds the session tables of the Python API. Back to main once
+    # that is merged.
+    image: ghcr.io/hivtools/hint-db-migrate:${HINT_DB_MIGRATE_TAG:-web-session}
     command: ["-url=jdbc:postgresql://db/hint"]
     depends_on:
       db:
@@ -101,10 +103,17 @@ services:
       HINT_ADR_URL: ${PYTHON_ADR_URL:-https://dev.adr.fjelltopp.org/}
       # This file is for development. The settings below are only allowed in development.
       HINT_ENVIRONMENT: development
+      # The address of the app as the browser sees it (the proxy). On http, so the session cookie is not `Secure`
+      HINT_APPLICATION_URL: http://localhost:${PROXY_PORT:-8080}
+      # In development there is no Auth0: the login page has a button for each of these users (POST /dev-login), so
+      # that sharing a project between two users can be tried. A user who does not exist yet is made at the first login.
+      # The contract tests log in as these two.
+      HINT_DEV_USERS: ${HINT_DEV_USERS:-test.user@example.com,naomi-support@imperial.ac.uk}
       # In development, the users have no Auth0 access token. The API calls ADR for all of them with one API key:
       # - Contract tests: the key that the ADR stub accepts.
-      # - Otherwise: HINT_ADR_API_KEY from your shell (the key of a user on the real ADR).
-      HINT_ADR_API_KEY: ${PYTHON_ADR_API_KEY:-${HINT_ADR_API_KEY:-}}
+      # - Otherwise: HINT_ADR_API_KEY from your shell, or else ADR_TEST_KEY (the key the ADR tests use). It is the key of
+      #   a user on the real ADR. Without either, ADR says "Could not find your ADR credentials".
+      HINT_ADR_API_KEY: ${PYTHON_ADR_API_KEY:-${HINT_ADR_API_KEY:-${ADR_TEST_KEY:-}}}
       # Where error reports are sent. `scripts/dev.sh` sets it to the stub of the Teams flow. Without it, a report
       # is an unexpected error.
       HINT_ISSUE_REPORT_URL: ${PYTHON_ISSUE_REPORT_URL:-}

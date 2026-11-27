@@ -11,7 +11,8 @@ from hintcontract.adr import SCHEMAS, THIS_YEAR, dataset, resource
 from hintcontract.controls import fault
 from hintcontract.flows import make_zip
 
-pytestmark = pytest.mark.sso
+# Kotlin's SSO login (pac4j). The Python API's is tested in hint-py/tests/api/test_login.py
+pytestmark = [pytest.mark.sso, pytest.mark.kotlin_login]
 
 SSO_USER = "sso.user@example.com"
 TOKEN = "stub-access-token"

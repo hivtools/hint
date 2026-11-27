@@ -125,8 +125,8 @@ def _no_cookies() -> CookieJar:
 def adr_authorization(settings: Settings, access_token: str | None) -> SecretStr | None:
     """The value of the `Authorization` header for a call to ADR, or None if there is none.
 
-    - In a real deployment, every user logs in with single sign-on. The proxy passes their Auth0 access token to this
-      API. Their calls go to ADR as them, with that token.
+    - In a real deployment, every user logs in with single sign-on. Their session keeps their Auth0 access token, and
+      their calls go to ADR as them, with that token.
     - In development, the users have no token. If `adr_api_key` is set, every call uses that key. The key is the key of
       one user on ADR.
 

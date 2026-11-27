@@ -134,3 +134,12 @@ msgstr ""
 
 msgid "githubFailed"
 msgstr ""
+
+msgid "auth0StateMissing"
+msgstr ""
+
+msgid "auth0StateMismatch"
+msgstr ""
+
+msgid "auth0CodeMissing"
+msgstr ""

@@ -14,16 +14,26 @@ from app.schemas import FileType
 from app.services.file_types import INPUT_FILE_TYPES
 from tests.adr import FakeAdr
 from tests.api.helpers import create_project, make_client
+from tests.auth0 import CLIENT_ID as AUTH0_CLIENT_ID
+from tests.auth0 import CLIENT_SECRET as AUTH0_CLIENT_SECRET
+from tests.auth0 import DOMAIN as AUTH0_DOMAIN
+from tests.auth0 import FakeAuth0
 from tests.github import ORG, TEAM, FakeGitHub
 from tests.hintr import FakeHintr
 from tests.support import ADR_KEY, OTHER_USER, USER
 from tests.teams_flow import TEAMS_FLOW_URL, FakeTeamsFlow
 
 
-@pytest_asyncio.fixture
-async def api(engine: AsyncEngine) -> AsyncIterator[httpx2.AsyncClient]:
-    """The app (on the test database) as USER."""
+@pytest_asyncio.fixture(autouse=True)
+async def database(engine: AsyncEngine) -> AsyncEngine:
+    """Every API test has the test database: who is making a request comes from their session, which is in it."""
     app.state.db_session_factory = create_db_session_factory(engine)
+    return engine
+
+
+@pytest_asyncio.fixture
+async def api(database: AsyncEngine) -> AsyncIterator[httpx2.AsyncClient]:
+    """The app (on the test database) as USER."""
     async with make_client(USER) as client:
         yield client
 
@@ -50,7 +60,7 @@ async def other_api(api: httpx2.AsyncClient) -> AsyncIterator[httpx2.AsyncClient
 
 @pytest_asyncio.fixture
 async def anonymous_client() -> AsyncIterator[httpx2.AsyncClient]:
-    """The app with no identity headers and no database, for endpoints that need neither."""
+    """The app with no session cookie: a new visitor, who is a guest."""
     transport = httpx2.ASGITransport(app=app, raise_app_exceptions=False)
     async with httpx2.AsyncClient(transport=transport, base_url="http://test") as client:
         yield client
@@ -68,6 +78,21 @@ async def adr(adr: FakeAdr) -> FakeAdr:
     """The same ADR, now the one that the app calls."""
     app.state.adr_http = adr.http
     return adr
+
+
+@pytest_asyncio.fixture
+async def auth0(settings_overrides: dict) -> AsyncIterator[FakeAuth0]:
+    """Auth0, as a deployment has it: the settings name it, and the app calls the fake (see tests/auth0.py)."""
+    fake = FakeAuth0()
+    app.state.auth0_oauth = fake.http
+    settings_overrides.update(
+        auth0_domain=AUTH0_DOMAIN,
+        auth0_client_id=AUTH0_CLIENT_ID,
+        auth0_client_secret=AUTH0_CLIENT_SECRET,
+        application_url="https://naomi.example",
+    )
+    yield fake
+    await fake.http.aclose()
 
 
 @pytest_asyncio.fixture
@@ -137,7 +162,7 @@ def uploads_dir(tmp_path: Path, settings_overrides: dict) -> Path:
 
 @pytest_asyncio.fixture
 async def adr_user(adr: FakeAdr, settings_overrides: dict) -> AsyncIterator[httpx2.AsyncClient]:
-    """USER in development, where ADR is called with the API key of the settings. Needs no database."""
+    """USER in development, where ADR is called with the API key of the settings."""
     settings_overrides["environment"] = "development"
     settings_overrides["adr_api_key"] = ADR_KEY
     async with make_client(USER) as client:

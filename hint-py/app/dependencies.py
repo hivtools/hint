@@ -1,12 +1,9 @@
 """Who is making the request, and which projects and versions they may use.
 
-Authentication still lives in the Kotlin app. The nginx proxy in front of both apps asks Kotlin who the user is and
-passes the answer on in headers (see proxy/snippets/python.conf), so this API only ever reads headers. When login and
-sessions move to Python, only `current_user` needs to change.
-
-The project version a request works on is a separate matter: the browser tab sends it, and `current_version_id` checks
-that the user may use it. The Auth0 access token of a single sign-on user comes the same way, in
-`current_adr_access_token`.
+The user comes from the session cookie (app/services/web_sessions.py): a logged in user, or the guest user for anyone
+else. The project version a request works on is a separate matter: the browser tab sends it, and `current_version_id`
+checks that the user may use it. The Auth0 access token of a single sign-on user is kept in their session, and
+`current_adr_access_token` gives it to the endpoints that call ADR.
 
 The project endpoints name a project or version in their path. `owned_project` and `owned_version` check that it is the
 user's before the endpoint runs, and give the endpoint an `OwnedProject` or `OwnedVersion`. The repositories do not check
@@ -37,6 +34,7 @@ from app.errors import (
     ProjectDoesNotExistError,
     VersionDoesNotExistError,
 )
+from app.services.web_sessions import CurrentWebSession
 
 log = structlog.get_logger()
 
@@ -55,28 +53,23 @@ class User:
         return self.id == GUEST_USER
 
 
-def current_user(
-    x_hint_user: Annotated[str | None, Header()] = None,
-    x_hint_guest_versions: Annotated[str | None, Header()] = None,
-) -> User:
-    if not x_hint_user:
-        # Only happens if the API is reached without going through the proxy
-        raise HTTPException(status_code=401, detail="Missing identity header")
-    user = User(id=x_hint_user)
-    if not user.is_guest:
-        return user
-    # A comma separated list, kept in the Kotlin session (see `Session.addGuestVersionId`)
-    ids = frozenset(v.strip() for v in (x_hint_guest_versions or "").split(",") if v.strip())
-    return User(id=x_hint_user, guest_version_ids=ids)
+def current_user(session: CurrentWebSession) -> User:
+    if session is None or session.user_id is None:
+        # Nobody has logged in. A guest who was given versions has a session that lists them
+        return User(id=GUEST_USER, guest_version_ids=session.guest_version_ids if session else frozenset())
+    return User(id=session.user_id)
 
 
-def current_adr_access_token(x_hint_access_token: Annotated[str | None, Header()] = None) -> str | None:
-    """The user's Auth0 access token, which the proxy passes on for single sign-on users so that ADR can be called as
-    them. It is None for everyone else (a guest, a password login, anyone whose token the session does not hold).
+def current_adr_access_token(session: CurrentWebSession) -> str | None:
+    """The user's Auth0 access token, kept in the session of a single sign-on user so that ADR can be called as them. It
+    is None for everyone else (a guest, a dev login). The session ends when the token expires
+    (app/services/web_sessions.py), so a token here still works.
 
     The token is a credential. Use it only to call ADR, never put it in a response, a log line or an error message.
     """
-    return x_hint_access_token or None
+    if session is None or session.user_id is None:
+        return None
+    return session.access_token or None
 
 
 def requested_version_id(x_version_id: Annotated[str | None, Header()] = None) -> str | None:

@@ -11,6 +11,7 @@ from hintcontract.flows import TEST_USER, upload
 BAD = "badpassword"
 
 
+@pytest.mark.kotlin_login
 def test_login_success_redirects_to_root_and_sets_session(scn):
     a = scn.client("A")
     r = a.login(check_cookie=True)
@@ -19,6 +20,7 @@ def test_login_success_redirects_to_root_and_sets_session(scn):
     a.get("/project/current", name="current project is null before any project")
 
 
+@pytest.mark.kotlin_login
 def test_login_wrong_password(scn):
     a = scn.client("A")
     r = a.login(password=BAD)
@@ -26,10 +28,12 @@ def test_login_wrong_password(scn):
     a.get("/projects/", name="still a guest")
 
 
+@pytest.mark.kotlin_login
 def test_login_unknown_user(scn):
     scn.client("A").login("nobody@example.com", "password")
 
 
+@pytest.mark.kotlin_login
 def test_login_blank_username_and_password(scn):
     a = scn.client("A")
     a.login("", "password", name="blank username")
@@ -37,18 +41,21 @@ def test_login_blank_username_and_password(scn):
     a.post("/callback/formClient", form={}, name="no credentials at all")
 
 
+@pytest.mark.kotlin_login
 def test_login_username_is_case_insensitive(scn):
     a = scn.client("A")
     a.login("TEST.USER@EXAMPLE.COM", "password")
     a.get("/projects/", name="authenticated?")
 
 
+@pytest.mark.kotlin_login
 @pytest.mark.quirk
 def test_login_get_on_callback_without_credentials(scn):
     """quirk: GET /callback/formClient (no credentials) is accepted by pac4j and redirects back to login."""
     scn.client("A").get("/callback/formClient", name="GET callback without credentials")
 
 
+@pytest.mark.kotlin_login
 def test_login_with_redirect_to_goes_to_requested_url(scn):
     a = scn.client("A")
     a.get("/login", params={"redirectTo": "/projects"}, html_checks=["/projects"])
@@ -80,6 +87,7 @@ def test_guest_session_files_survive_login(scn):
     a.get("/project/current", name="version is not in a project")
 
 
+@pytest.mark.kotlin_login
 def test_second_login_replaces_first_user_in_same_session(scn):
     a = scn.client("A")
     a.login()
@@ -95,6 +103,7 @@ def _location_query(r):
     return urllib.parse.parse_qs(urllib.parse.urlsplit(r.headers["location"]).query)
 
 
+@pytest.mark.kotlin_login
 def test_oauth2_redirect_to_idp_authorize(scn):
     a = scn.client("A")
     r = a.get("/oauth2", check_cookie=True)
@@ -103,6 +112,7 @@ def test_oauth2_redirect_to_idp_authorize(scn):
     assert q["response_type"] == ["code"] and q["state"][0]
 
 
+@pytest.mark.kotlin_login
 def test_register_redirect_has_signup_hint(scn):
     a = scn.client("A")
     r = a.get("/register", check_cookie=True)
@@ -110,6 +120,7 @@ def test_register_redirect_has_signup_hint(scn):
     assert _location_query(r)["screen_hint"] == ["signup"]
 
 
+@pytest.mark.kotlin_login
 def test_oauth2_state_changes_every_call(scn):
     a = scn.client("A")
     s1 = _location_query(a.get("/oauth2"))["state"]

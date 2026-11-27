@@ -1,7 +1,7 @@
 # Front door for hint while endpoints are migrated from Kotlin to Python.
 #
 # Everything goes to Kotlin unless it is listed below. To migrate an endpoint, add a `location` that includes
-# snippets/python.conf (most specific prefix wins). See that file for how authentication works.
+# snippets/python.conf (most specific prefix wins). Python logs users in and keeps the sessions.
 #
 # KOTLIN_UPSTREAM and PYTHON_UPSTREAM (host:port) are substituted from the environment on container start by the nginx
 # image's envsubst templating.
@@ -41,6 +41,16 @@ server {
     location /public/ { include snippets/python-public.conf; }
     # Who the user is, which the app asks before it starts
     location = /me { include snippets/python.conf; }
+    # Logging in and out, and the sessions (Auth0, or the dev login in development)
+    location = /login { include snippets/python.conf; }
+    location = /login/options { include snippets/python.conf; }
+    location = /oauth2 { include snippets/python.conf; }
+    location = /register { include snippets/python.conf; }
+    location = /callback/oauth2Client { include snippets/python.conf; }
+    location = /logout { include snippets/python.conf; }
+    location = /dev-login { include snippets/python.conf; }
+    location = /guest/version { include snippets/python.conf; }
+    location /user/ { include snippets/python.conf; }
     location /items/ { include snippets/python.conf; }
     # Projects and their versions. /projects (no slash) is the page
     location = /project { include snippets/python.conf; }
@@ -109,28 +119,10 @@ server {
     location /calibrate/result/filteredData/ { include snippets/python.conf; }
     location /download/result/ { include snippets/python.conf; }
     # The debug zip of a model run, for developers. The caller sends a GitHub token and no hint login, so this location
-    # does not ask Kotlin who the user is (see snippets/python-github.conf). `/model/debug/` (no id) stays with Kotlin.
+    # does not send Python the session cookie (see snippets/python-github.conf). `/model/debug/` (no id) stays with Kotlin.
     location ~ ^/model/debug/[^/]+$ { include snippets/python-github.conf; }
 
-    # ---- Identity bridge ----
-    # Only reachable from auth_request, never directly. The Cookie and Authorization headers of the original request
-    # are passed through by default, the body is not needed.
-    location = /_whoami {
-        internal;
-        include snippets/proxy-common.conf;
-        # A guest's versions are in a header of the answer (37 bytes each), which has to fit in this one buffer
-        proxy_buffer_size 32k;
-        # nginx refuses to start with a buffer this big and the default buffers: the busy size must be at least the big
-        # buffer, and less than all the buffers together minus one
-        proxy_buffers 8 8k;
-        proxy_busy_buffers_size 32k;
-        proxy_pass_request_body off;
-        proxy_set_header Content-Length "";
-        proxy_set_header X-Original-URI $request_uri;
-        proxy_pass http://kotlin/internal/whoami;
-    }
-
-    # Kotlin's /internal/ endpoints are for this proxy only
+    # Kotlin's /internal/ endpoints were for this proxy only, and nothing uses them now
     location ^~ /internal/ { return 404; }
 
     # ---- Everything else is still Kotlin ----

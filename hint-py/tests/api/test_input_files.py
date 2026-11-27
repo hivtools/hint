@@ -426,8 +426,7 @@ async def test_the_language_of_the_request_goes_to_hintr(on_a_version, hintr, up
 async def test_a_guest_may_upload_to_a_version_the_server_gave_them(api, hintr, engine, uploads_dir):
     async with create_db_session_factory(engine)() as db_session, db_session.begin():
         await VersionRepository(db_session).save_version("g1", None)
-    async with make_client("guest", "g1") as guest:
-        guest.headers["X-Hint-Guest-Versions"] = "g1"
+    async with make_client("guest", "g1", guest_versions=["g1"]) as guest:
         r = await guest.post("/baseline/pjnz", **upload_of())
     assert r.status_code == 200
     assert (await version_files(engine, "g1"))["pjnz"][0] == f"{ABC}.PJNZ"

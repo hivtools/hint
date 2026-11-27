@@ -324,11 +324,12 @@ async def test_the_message_for_no_credentials_is_in_the_language_of_the_request(
 
 
 @pytest.mark.parametrize(("path", "form"), [RELEASE, PUSH], ids=["release", "push"])
-async def test_a_token_is_used_in_place_of_the_key_for_every_call_to_adr(pusher, adr, path, form):
+async def test_a_token_is_used_in_place_of_the_key_for_every_call_to_adr(pusher, adr, version_id, path, form):
     adr.resources["r1"] = {"id": "r1", "hash": "0" * 32}
     form = {**form, "resourceId": "r1"}
 
-    r = await pusher.post(path, data=form, headers={"X-Hint-Access-Token": ADR_TOKEN})
+    async with make_client(USER, version_id, access_token=ADR_TOKEN) as sso_pusher:
+        r = await sso_pusher.post(path, data=form)
 
     assert r.status_code == 200
     assert len(adr.calls) >= 2

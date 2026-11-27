@@ -12,6 +12,10 @@ ADR_KEY = "an-adr-api-key-for-tests"
 ADR_TOKEN = "an-auth0-access-token-for-tests"
 ADR_WAF_SECRET = "a-secret-for-the-firewall-of-adr-for-tests"
 
+# The key that encrypts the Auth0 tokens in the sessions (HINT_SESSION_ENCRYPTION_KEYS), set for every test in
+# tests/conftest.py. Made up for the tests.
+SESSION_ENCRYPTION_KEY = "1lq3g1_bzNDFsvGtab9Y95JcddazDVlNEzZVkto9vKA="
+
 # GitHub tokens, made up. No test may find them in a log (see `no_personal_data_in_logs`).
 GITHUB_TOKEN = "ghp_a-token-of-a-team-member-for-tests"
 GITHUB_OTHER_TOKEN = "ghp_a-token-of-a-user-not-in-the-team"

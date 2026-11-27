@@ -4,11 +4,13 @@ The defaults match the development database (docker-compose.yml).
 """
 
 from functools import lru_cache
-from typing import Literal
+from typing import Annotated, Literal
 
 from pydantic import SecretStr, field_validator, model_validator
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic_settings import BaseSettings, NoDecode, SettingsConfigDict
 from sqlalchemy import URL
+
+from app.services.token_encryption import TokenEncryption
 
 LogLevel = Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
 LogFormat = Literal["auto", "console", "json"]
@@ -77,6 +79,29 @@ class Settings(BaseSettings):
     # repository, for `make run`. A container sets it to where the files are in it.
     static_dir: str = "../src/app/static/public"
 
+    # The address of the app, as the browser sees it, without a "/" at the end. Auth0 sends the
+    # browser back to <application_url>/callback/oauth2Client after a login, and to <application_url>/login after a
+    # logout, so both must be in the Auth0 application's allowed URLs. The session cookie is `Secure` when it is https.
+    application_url: str = "http://localhost:8080"
+
+    # Login with Auth0 (single sign-on), as in every deployment: the domain (without https://), and the id and secret of
+    # the Auth0 application. If the domain is empty, the login page has no single sign-on button.
+    auth0_domain: str = ""
+    auth0_client_id: str = ""
+    auth0_client_secret: SecretStr = SecretStr("")
+    auth0_audience: str = "naomi"
+    # The ADR scope gives an access token that ADR accepts, so that this API can call ADR as the user
+    auth0_scope: str = "openid profile email access:adr"
+    # The keys that encrypt the Auth0 access tokens in the `web_session` table (app/services/token_encryption.py), comma
+    # separated, the one that encrypts first. Make one with
+    # `python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"`. Needed with Auth0.
+    session_encryption_keys: Annotated[list[SecretStr], NoDecode] = []
+
+    # Only for development (`environment`): the users who can log in without Auth0, with one button each on the login
+    # page (POST /dev-login), so that sharing a project between two users can be tried locally. Comma separated, e.g.
+    # HINT_DEV_USERS=test.user@example.com,test.user2@example.com. Not allowed with Auth0 or an https address.
+    dev_users: Annotated[list[str], NoDecode] = []
+
     # The lowest level that is logged, in any case. It applies to what this API logs and to what the libraries it uses
     # log (uvicorn, httpx, SQLAlchemy...).
     log_level: LogLevel = "INFO"
@@ -98,7 +123,39 @@ class Settings(BaseSettings):
         if self.environment != "development" and self.adr_api_key:
             message = "HINT_ADR_API_KEY is only for development. Set HINT_ENVIRONMENT=development to use it."
             raise ValueError(message)
+        if self.dev_users:
+            # A login with no password must never be possible on a real deployment
+            if self.environment != "development":
+                message = "HINT_DEV_USERS is only for development. Set HINT_ENVIRONMENT=development to use it."
+                raise ValueError(message)
+            if self.auth0_domain or self.application_url.startswith("https://"):
+                message = (
+                    "HINT_DEV_USERS cannot be used with Auth0 (HINT_AUTH0_DOMAIN) or an https HINT_APPLICATION_URL."
+                )
+                raise ValueError(message)
+        if self.auth0_configured and not self.session_encryption_keys:
+            message = "HINT_SESSION_ENCRYPTION_KEYS must be set with Auth0, to encrypt the access tokens."
+            raise ValueError(message)
+        if self.session_encryption_keys:
+            # Fails at the start, not at the first login, if a key is not a Fernet key
+            TokenEncryption(self.session_encryption_keys)
         return self
+
+    @field_validator("dev_users", "session_encryption_keys", mode="before")
+    @classmethod
+    def _split_comma_list(cls, value: object) -> object:
+        if isinstance(value, str):
+            return [user.strip() for user in value.split(",") if user.strip()]
+        return value
+
+    @field_validator("application_url")
+    @classmethod
+    def _no_trailing_slash(cls, value: str) -> str:
+        return value.rstrip("/")
+
+    @property
+    def auth0_configured(self) -> bool:
+        return bool(self.auth0_domain and self.auth0_client_id)
 
     @field_validator("log_level", mode="before")
     @classmethod
