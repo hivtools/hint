@@ -59,8 +59,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None]:
 app = FastAPI(lifespan=lifespan)
 register_error_handlers(app)
 app.add_middleware(UploadSizeLimitMiddleware, file_types=upload_file_types)
-# Compress the answers as Kotlin did (Spring Boot's server.compression): those of 1 KB or more, at zlib's default level,
-# if the browser accepts gzip. That is the JSON of the API, and the page and the JavaScript and CSS of the front end.
+# Compress the answers of 1 KB or more, at zlib's default level, if the browser accepts gzip. That is the JSON of the API, and the page and the JavaScript and CSS of the front end.
 # Not what is compressed already (zip files, images: Starlette's default list), and not the file downloads, which are
 # sent as application/octet-stream and can be large.
 app.add_middleware(

@@ -334,7 +334,7 @@ user, and `HINT_APPLICATION_TITLE`) before it starts.
 | Other `/public/`   | (none)                                | Fixed names (images, the favicon, the CSS of the login page).        |
 | `/me`              | `no-store`                            | It is different for each cookie.                                     |
 
-The answers of 1 KB or more are gzipped if the browser accepts it (the JSON too, as Spring Boot did for Kotlin), but not
+The answers of 1 KB or more are gzipped if the browser accepts it (the JSON too), but not
 the downloads (`application/octet-stream`) and not files that are compressed already (zip, images).
 
 | Setting                  | Default                     | What it is                                                         |

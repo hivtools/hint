@@ -1,7 +1,8 @@
 """GET /me: who is using the app, and the title of this deployment.
 
-Kotlin used to write both into the page. The page is now a static file (see app/routers/pages.py), so the Vue app asks
-for them here before it starts. A visitor who has not logged in is the guest user.
+The page of the app is a static file, the same for everybody (see app/routers/pages.py), so the Vue app asks for both
+here before it starts: it needs the user to make its store, and shows the title in the browser tab. A visitor who has
+not logged in is the guest user.
 """
 
 from typing import Annotated
@@ -21,6 +22,9 @@ async def me(
     settings: Annotated[Settings, Depends(get_settings)],
     response: Response,
 ) -> schemas.SuccessResponse[schemas.Me]:
-    # The answer depends on the cookie, so no cache (the browser's, a proxy's or a CDN's) may keep it
+    # no-store: no cache may keep a copy at all, not the browser's, a proxy's or a CDN's (Front Door). The answer is
+    # different for each session cookie, so a shared cache that kept it could give one user's name to another, and the
+    # browser could show the user from before a login or logout (for example on the back button). (`no-cache`, as on
+    # the page, would still let a cache keep a copy, as long as it asks the server before it uses it.)
     response.headers["Cache-Control"] = "no-store"
     return schemas.success(schemas.Me(user=user.id, title=settings.application_title))

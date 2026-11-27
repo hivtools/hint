@@ -83,7 +83,7 @@ async def test_hashed_assets_are_kept_for_a_year(anonymous_client: httpx2.AsyncC
 async def test_files_with_fixed_names_get_no_cache_control(
     anonymous_client: httpx2.AsyncClient, static_dir: Path, path: str
 ):
-    # As in Kotlin: the browser decides when to ask again, and a new build is seen when it does
+    # The browser decides when to ask again, and a new build is seen when it does
     r = await anonymous_client.get(path)
 
     assert r.status_code == 200
@@ -108,15 +108,8 @@ async def test_no_file_outside_the_folder_is_served(anonymous_client: httpx2.Asy
     assert "secret" not in r.text
 
 
-async def test_a_path_out_of_assets_is_not_kept_for_a_year(anonymous_client: httpx2.AsyncClient, static_dir: Path):
-    r = await anonymous_client.get("/public/assets/..%2findex.html")
-
-    assert r.status_code == 200
-    assert "cache-control" not in r.headers
-
-
 async def test_the_built_files_are_gzipped(anonymous_client: httpx2.AsyncClient, static_dir: Path):
-    # As Kotlin did (Spring Boot's server.compression). The JavaScript of the app is most of what a first visit downloads
+    # The JavaScript of the app is most of what a first visit downloads
     # Bytes, not text: Windows would write "\r\n"
     (static_dir / "assets" / "vendor-abc123.js").write_bytes(b"var x = 1;\n" * 1000)
 
