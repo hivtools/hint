@@ -32,7 +32,7 @@ import type {RootState} from "../app/root";
 import {currentHintVersion} from "../app/hintVersion";
 import {Language} from "../app/store/translations/locales";
 
-declare const currentUser: string; // set in jest config, or on the index page when run for real
+const currentUser = "some.user@example.com";
 
 describe("SessionStorageManager", () => {
 
@@ -146,13 +146,13 @@ describe("SessionStorageManager", () => {
             sendingErrorReport: false
         }});
         sessionStorageManager.saveVersionId("version1");
-        let result = sessionStorageManager.getState();
+        let result = sessionStorageManager.getState(currentUser);
         expect(result).not.toBe(null);
         expect(sessionStorage.getItem("hintUser")).toBe(currentUser);
         expect(sessionStorageManager.getVersionId()).toBe("version1");
 
         sessionStorage.setItem("hintUser", "bad-user");
-        result = sessionStorageManager.getState();
+        result = sessionStorageManager.getState(currentUser);
         expect(result).toBe(null);
         expect(sessionStorage.getItem("hintUser")).toBe(currentUser);
         expect(sessionStorageManager.getVersionId()).toBe(null);
@@ -187,7 +187,7 @@ describe("SessionStorageManager", () => {
         const testState = {baseline: mockBaselineState()};
         sessionStorageManager.savePartialState(testState);
 
-        const result = sessionStorageManager.getState();
+        const result = sessionStorageManager.getState(currentUser);
         expect(result).toStrictEqual({...testState, language: Language.pt});
     });
 

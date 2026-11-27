@@ -320,6 +320,31 @@ with a `send` method there and return it from `get_issue_reporter`. See D20 in `
 
 In the dev stack, `scripts/dev.sh` sets `HINT_ISSUE_REPORT_URL` to the stub of the flow.
 
+### The page of the app
+
+The Vue app is built in `src/app/static` (`npm run build && npm run copy`) to `src/app/static/public`. This API serves
+that folder: `index.html` for each page of the app (`/`, `/projects`, `/accessibility`, `/privacy`, see
+`app/routers/pages.py`), and the files at `/public/`. The page is the same for everybody. The app asks `GET /me` (the
+user, and `HINT_APPLICATION_TITLE`) before it starts.
+
+| Path               | Cache-Control                         | Why                                                                  |
+|--------------------|---------------------------------------|----------------------------------------------------------------------|
+| The pages          | `no-cache` (with an ETag, so a 304)   | A deploy changes the page: it names the new files.                   |
+| `/public/assets/`  | `public, max-age=31536000, immutable` | The names have a hash of the contents, so a new build has new names. |
+| Other `/public/`   | (none)                                | Fixed names (images, the favicon, the CSS of the login page).        |
+| `/me`              | `no-store`                            | It is different for each cookie.                                     |
+
+The answers of 1 KB or more are gzipped if the browser accepts it (the JSON too), but not
+the downloads (`application/octet-stream`) and not files that are compressed already (zip, images).
+
+| Setting                  | Default                     | What it is                                                         |
+|--------------------------|-----------------------------|--------------------------------------------------------------------|
+| `HINT_STATIC_DIR`        | `../src/app/static/public`  | The built front end. The default is right for `make run`.          |
+| `HINT_APPLICATION_TITLE` | `Naomi`                     | The title of the app, from `GET /me`.                              |
+
+The dev stack mounts the build output in the container, so a new build is served at once. For hot reload, run
+`npm run dev` in `src/app/static` against the dev stack (`HINT_BACKEND_URL`, default `http://localhost:8080`).
+
 ### Tests on Postgres
 
 By default the tests use an in memory SQLite database, so they need nothing installed. The same tests can run on a real

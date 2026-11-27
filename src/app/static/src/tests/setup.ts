@@ -31,8 +31,6 @@ const app = createApp(Hint);
 const store = new Vuex.Store<RootState>({});
 app.use(store);
 
-(global as any).currentUser = "some.user@example.com";
-
 // Override console.error to throw an error
 global.console.error = (message: any) => {
     throw message instanceof Error ? message : new Error(message);

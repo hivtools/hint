@@ -31,7 +31,7 @@ describe("newProjectCreate", () => {
 
     const getStore = (loadState: Partial<LoadState> = {}, isGuest = false) => {
         const store = new Vuex.Store({
-            state: emptyState,
+            state: () => emptyState("some.user@example.com"),
             getters: {
                 isGuest: () => isGuest
             },

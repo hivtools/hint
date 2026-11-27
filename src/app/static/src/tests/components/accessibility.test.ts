@@ -12,7 +12,7 @@ import {nextTick} from "vue";
 describe(`accessibility`, () =>{
     const createStore = () => {
         const store = new Vuex.Store({
-            state: emptyState(),
+            state: emptyState("some.user@example.com"),
             actions: actions,
             mutations: mutations
         });

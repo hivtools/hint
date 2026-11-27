@@ -8,7 +8,6 @@ import registerTranslations from "../../../app/store/translations/registerTransl
 import {getters} from "../../../app/store/root/getters";
 import {mountWithTranslate} from "../../testHelpers";
 
-(global as any).currentUser = "guest";
 
 describe("File upload component", () => {
 
@@ -19,7 +18,7 @@ describe("File upload component", () => {
 
     const createStore = (partialRootState: Partial<RootState> = {}) => {
         const store = new Vuex.Store({
-            state: mockRootState(partialRootState),
+            state: mockRootState({currentUser: "guest", ...partialRootState}),
             getters: getters,
             modules: {
                 stepper: {

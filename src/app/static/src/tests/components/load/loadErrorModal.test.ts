@@ -10,7 +10,7 @@ const mockClearLoadError = vi.fn();
 
 const getStore = (hasError: boolean, loadError: string) => {
     return new Vuex.Store<RootState>({
-        state: emptyState() as any,
+        state: emptyState("some.user@example.com") as any,
         modules: {
             load: {
                 namespaced: true,

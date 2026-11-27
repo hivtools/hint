@@ -52,7 +52,7 @@ describe("Review inputs page", () => {
 
     const createStore = (sapState: SurveyAndProgramState, dataFetched = true, error = false, timeSeriesError: Error | null = null) => {
         const store = new Vuex.Store({
-            state: emptyState(),
+            state: emptyState("some.user@example.com"),
             modules: {
                 surveyAndProgram: {
                     state: sapState

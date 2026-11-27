@@ -34,7 +34,7 @@ const createStore = (adr: Partial<ADRState> = {userCanUpload: true},
                      downloadResults?: Partial<DownloadResultsState>,
                      clearStatus = vi.fn()) => {
     const store = new Vuex.Store({
-        state: emptyState(),
+        state: emptyState("some.user@example.com"),
         modules: {
             modelCalibrate: {
                 namespaced: true,

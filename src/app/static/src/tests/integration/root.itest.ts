@@ -16,7 +16,7 @@ describe(`root actions`, () => {
         const dispatch = vi.fn();
 
         const state = {
-            ...emptyState(),
+            ...emptyState("some.user@example.com"),
             baseline: {
                 country: "Malawi"
             },

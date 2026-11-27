@@ -13,15 +13,13 @@ import ErrorAlert from "../../../app/components/ErrorAlert.vue";
 import {Language} from "../../../app/store/translations/locales";
 import {nextTick} from "vue";
 
-(global as any).currentUser = "test.user@example.com";
-
 describe("ShareProject", () => {
 
     const createStore = (userExists = vi.fn(),
                          cloneProject = vi.fn(),
                          state: ProjectsState = mockProjectsState()) => {
         const store = new Vuex.Store({
-            state: emptyState(),
+            state: emptyState("test.user@example.com"),
             modules: {
                 projects: {
                     state: state,

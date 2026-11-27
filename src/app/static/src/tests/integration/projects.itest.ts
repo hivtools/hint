@@ -62,7 +62,7 @@ describe("Projects actions", () => {
         const commit = vi.fn();
         const dispatch = vi.fn()
         const state = initialProjectsState();
-        const rootState = {...emptyState(), projects: state}
+        const rootState = {...emptyState("some.user@example.com"), projects: state}
         await actions.createProject({commit, dispatch, rootState, state} as any, projectPayload);
 
         const createdProject = commit.mock.calls[4][0]["payload"];
@@ -86,7 +86,7 @@ describe("Projects actions", () => {
         const commit = vi.fn();
         const dispatch = vi.fn();
         const state = initialProjectsState();
-        const rootState = {...emptyState(), projects: state}
+        const rootState = {...emptyState("some.user@example.com"), projects: state}
         await actions.createProject({commit, dispatch, rootState, state} as any, projectPayload);
 
         const createdProject = commit.mock.calls[4][0]["payload"];
@@ -111,7 +111,7 @@ describe("Projects actions", () => {
 
     it("can load version", async () => {
         const state = initialProjectsState();
-        const rootState = {...emptyState(), projects: state}
+        const rootState = {...emptyState("some.user@example.com"), projects: state}
         const commit = vi.fn();
         const dispatch = vi.fn();
         await actions.createProject({commit, dispatch, rootState, state} as any, projectPayload);

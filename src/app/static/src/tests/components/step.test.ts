@@ -8,7 +8,7 @@ import {nextTick} from 'vue';
 
 describe("Step component", () => {
 
-    const store = new Vuex.Store({state: emptyState()});
+    const store = new Vuex.Store({state: emptyState("some.user@example.com")});
     registerTranslations(store);
 
     it("renders step", async () => {

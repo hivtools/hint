@@ -1,15 +1,18 @@
 <!DOCTYPE html>
 <!--
-    This file is only the entry point for the Vite build. Kotlin does not serve it.
-    Kotlin makes the pages from the templates in ./templates.
-    The build reads the tags that Vite adds to this file and writes them to public/vite-assets.ftl
-    (see vite.config.ts). The templates include that file.
+    The page of the app. The build writes it to public/index.html, with the tags of the built files, and the Python
+    API sends that copy for /, /projects, /accessibility and /privacy. The dev server (npm run dev) sends this file.
+    The page has nothing in it for one user: the app asks GET /me who the user is (see src/app/index.ts).
 -->
 <html lang="en">
 <head>
     <meta charset="UTF-8"/>
+    <!-- The app sets the title of this deployment from GET /me -->
+    <title>Naomi</title>
+    <link rel="shortcut icon" href="/public/favicon.ico"/>
 </head>
 <body>
+<div id="app"></div>
 <script type="module" src="/src/app/index.ts"></script>
 </body>
 </html>

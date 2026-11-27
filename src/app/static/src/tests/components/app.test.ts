@@ -1,11 +1,13 @@
 import {flushPromises, mount, shallowMount} from '@vue/test-utils';
 import Vuex, {type Store} from 'vuex';
-import {type ReadyState, type RootState, storeOptions} from "../../app/root";
+import {createStoreOptions, type ReadyState, type RootState} from "../../app/root";
 import {sessionStorageManager} from "../../app/sessionStorageManager";
 import {prefixNamespace} from "../../app/utils";
 import {BaselineMutation} from "../../app/store/baseline/mutations";
 import {SurveyAndProgramMutation} from "../../app/store/surveyAndProgram/mutations";
 import {ModelOptionsMutation} from "../../app/store/modelOptions/mutations";
+
+const storeOptions = createStoreOptions("some.user@example.com");
 
 const baselineActions = {
     getBaselineData: vi.fn()
@@ -168,7 +170,7 @@ describe("App", () => {
 
         expect(spy).toHaveBeenCalled();
         expect(spy.mock.calls[0][0]?.language).toBe("pt");
-        expect(sessionStorageManager.getState()?.language).toEqual("pt")
+        expect(sessionStorageManager.getState("some.user@example.com")?.language).toEqual("pt")
     });
 
     it("resets model options if baseline selected dataset is updated and state is ready", () => {

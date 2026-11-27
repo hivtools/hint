@@ -28,6 +28,13 @@ def empty_success() -> SuccessResponse[bool]:
     return SuccessResponse(data=True)
 
 
+class Me(BaseModel):
+    """GET /me"""
+
+    user: str
+    title: str
+
+
 class Version(CamelModel):
     id: str
     created: datetime

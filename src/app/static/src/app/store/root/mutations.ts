@@ -83,7 +83,7 @@ export const mutations: MutationTree<RootState> = {
 
     [RootMutation.SetProject](state: RootState, action: PayloadWithType<Project>) {
         const resetState: RootState = {
-            ...emptyState(),
+            ...emptyState(state.currentUser),
             language: state.language,
             hintrVersion: state.hintrVersion,
             adr: state.adr,

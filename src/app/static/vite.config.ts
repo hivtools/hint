@@ -9,12 +9,13 @@ import https from "node:https";
 
 // How the built files get to the browser
 // --------------------------------------
-// Kotlin makes the pages from the Freemarker templates in ./templates. `npm run copy` copies the
-// templates to ./public, and Kotlin reads them from there. Kotlin serves ./public at /public/.
-// The build writes the files with hashed names to ./public/assets. The `freemarkerAssets` plugin below
-// writes ./public/vite-assets.ftl, which has the <script> and <link> tags for the current build.
-// index.ftl includes that file.
-// The build also writes ./public/css/app.css (a fixed name) for login.ftl and 404.ftl.
+// The build writes the files with hashed names to ./public/assets, and ./public/index.html with the tags for them.
+// The Python API sends ./public/index.html for the pages of the app (/, /projects, /accessibility, /privacy), and
+// serves ./public at /public/. The page has nothing in it for one user: the app asks GET /me.
+// Kotlin still makes the login page from the Freemarker templates in ./templates. `npm run copy` copies the
+// templates to ./public, and Kotlin reads them from there. The build writes ./public/css/app.css (a fixed name) for
+// login.ftl and 404.ftl. It also still writes ./public/vite-assets.ftl, which Kotlin's index.ftl includes, for as long
+// as Kotlin has that page.
 
 // The browsers that we support. Vue CLI used this list by default, so it is the same as before.
 // Vite does not read browserslist. browserslist-to-esbuild changes the list to targets such as "chrome151",
@@ -23,14 +24,11 @@ const packageJson = JSON.parse(readFileSync(fileURLToPath(new URL("./package.jso
 const buildTargets = browserslistToEsbuild(packageJson.browserslist);
 
 const base = "/public/";
-const entry = "/src/app/index.ts";
 
-// index.ftl puts these markers around the include of vite-assets.ftl.
-// The dev server replaces the part between the markers.
-const assetsStartMarker = "<!-- vite-assets -->";
-const assetsEndMarker = "<!-- /vite-assets -->";
+// The pages of the app (vue-router's routes). The Python API sends index.html for each.
+const appPages = new Set(["/", "/projects", "/accessibility", "/privacy"]);
 
-// The URL of the back end (Kotlin, or nginx in front of it) for `npm run dev`.
+// The URL of the back end (nginx in front of Python and Kotlin) for `npm run dev`.
 const backendUrl = new URL(process.env.HINT_BACKEND_URL || "http://localhost:8080");
 
 // Requests that the Vite dev server answers itself. It sends all other requests to the back end.
@@ -49,7 +47,8 @@ const sourceText = (source: string | Uint8Array) =>
     typeof source === "string" ? source : Buffer.from(source).toString("utf-8");
 
 // Build only. Writes public/vite-assets.ftl and public/css/app.css from the index.html that Vite makes.
-// Vite puts the tags for the entry script, the preloaded chunks and the CSS into index.html.
+// Vite puts the tags for the entry script, the preloaded chunks and the CSS into index.html. index.html stays in the
+// build, for the Python API.
 const freemarkerAssets = (): Plugin => ({
     name: "hint:freemarker-assets",
     apply: "build",
@@ -81,61 +80,20 @@ const freemarkerAssets = (): Plugin => ({
             return sourceText(asset.source).replace(/\/\*# sourceMappingURL=[^*]*\*\/\s*$/, "");
         });
         this.emitFile({type: "asset", fileName: "css/app.css", source: css.join("\n")});
-
-        delete bundle["index.html"];
     }
 });
 
-const readBody = (message: IncomingMessage) => new Promise<string>((resolve, reject) => {
-    const chunks: Buffer[] = [];
-    message.on("data", chunk => chunks.push(chunk));
-    message.on("end", () => resolve(Buffer.concat(chunks).toString("utf-8")));
-    message.on("error", reject);
-});
-
-// Puts the dev entry in place of the production tags. Pages without the markers (login, 404) do not change.
-const toDevPage = async (server: ViteDevServer, url: string, html: string) => {
-    const start = html.indexOf(assetsStartMarker);
-    const end = html.indexOf(assetsEndMarker);
-    if (start < 0 || end < start) {
-        return html;
-    }
-    const devHtml = html.slice(0, start)
-        + `<script type="module" src="${entry}"></script>`
-        + html.slice(end + assetsEndMarker.length);
-    return server.transformIndexHtml(url, devHtml);
-};
-
-// Gets a page from the back end with the browser's headers (and so its cookies).
-// Redirects (for example to /login) and errors go back to the browser as they are.
-const sendPage = (server: ViteDevServer, req: IncomingMessage, res: ServerResponse) => {
+// Gets a page from the back end with the browser's headers (and so its cookies), as it is. Only the login page
+// (Kotlin) comes this way: redirects (for example to Auth0) and errors go back to the browser as they are.
+const sendBackendPage = (server: ViteDevServer, req: IncomingMessage, res: ServerResponse) => {
     const url = req.url || "/";
     const client = backendUrl.protocol === "https:" ? https : http;
     const backendReq = client.request(new URL(url, backendUrl), {
         method: "GET",
-        headers: {...req.headers, "accept-encoding": "identity"}
+        headers: req.headers
     }, backendRes => {
-        const status = backendRes.statusCode || 502;
-        const isHtml = (backendRes.headers["content-type"] || "").includes("text/html");
-        if (status !== 200 || !isHtml) {
-            res.writeHead(status, backendRes.headers);
-            backendRes.pipe(res);
-            return;
-        }
-        readBody(backendRes)
-            .then(html => toDevPage(server, url, html))
-            .then(html => {
-                const headers = {...backendRes.headers};
-                delete headers["content-length"];
-                delete headers["transfer-encoding"];
-                res.writeHead(status, headers);
-                res.end(html);
-            })
-            .catch(error => {
-                server.config.logger.error(`Cannot make the dev page for ${url}: ${error}`);
-                res.statusCode = 500;
-                res.end(String(error));
-            });
+        res.writeHead(backendRes.statusCode || 502, backendRes.headers);
+        backendRes.pipe(res);
     });
     backendReq.on("error", error => {
         server.config.logger.error(`Cannot reach the back end at ${backendUrl.origin}: ${error.message}`);
@@ -146,6 +104,15 @@ const sendPage = (server: ViteDevServer, req: IncomingMessage, res: ServerRespon
     backendReq.end();
 };
 
+// The page of the app, from ./index.html, with the dev entry, as the Python API sends the built copy
+const sendAppPage = async (server: ViteDevServer, req: IncomingMessage, res: ServerResponse) => {
+    const html = readFileSync(fileURLToPath(new URL("./index.html", import.meta.url)), "utf-8");
+    const page = await server.transformIndexHtml(req.url || "/", html);
+    res.setHeader("Content-Type", "text/html");
+    res.setHeader("Cache-Control", "no-cache");
+    res.end(page);
+};
+
 // The login and 404 pages use /public/css/app.css. The dev server makes it from the source,
 // so that these pages have their styles before the first `npm run build`.
 const sendLoginCss = async (server: ViteDevServer, res: ServerResponse) => {
@@ -154,20 +121,23 @@ const sendLoginCss = async (server: ViteDevServer, res: ServerResponse) => {
     res.end(css.default);
 };
 
-// Dev server only. Kotlin makes the pages (with the user in them). This plugin gets each page from Kotlin
-// and replaces the production tags with the Vite entry, which gives hot reload.
-const kotlinPages = (): Plugin => ({
-    name: "hint:kotlin-pages",
+// Dev server only. Sends the page of the app itself (with hot reload), and gets the other pages (login) from the
+// back end. All other requests go to the back end through the proxy below.
+const devPages = (): Plugin => ({
+    name: "hint:dev-pages",
     apply: "serve",
     configureServer(server) {
         server.middlewares.use((req, res, next) => {
             const url = req.url || "/";
+            const path = url.split("?")[0];
             if (req.method !== "GET" || vitePaths.test(url)) {
                 next();
-            } else if (url.split("?")[0] === `${base}css/app.css`) {
+            } else if (path === `${base}css/app.css`) {
                 sendLoginCss(server, res).catch(next);
+            } else if (appPages.has(path)) {
+                sendAppPage(server, req, res).catch(next);
             } else if ((req.headers.accept || "").includes("text/html")) {
-                sendPage(server, req, res);
+                sendBackendPage(server, req, res);
             } else {
                 next();
             }
@@ -184,7 +154,7 @@ export default defineConfig(({command}) => ({
         // Adds the Vue DevTools to the dev server. It does nothing in the build.
         vueDevTools(),
         freemarkerAssets(),
-        kotlinPages()
+        devPages()
     ],
     resolve: {
         alias: [
