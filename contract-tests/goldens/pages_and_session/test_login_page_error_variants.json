@@ -1,0 +1,128 @@
+{
+  "scenario": "pages_and_session/test_login_page_error_variants",
+  "steps": [
+    {
+      "client": "A",
+      "name": "bad credentials error",
+      "request": {
+        "method": "GET",
+        "path": "/login",
+        "query": {
+          "error": "BadCredentialsException",
+          "username": "x@y.com"
+        }
+      },
+      "response": {
+        "body": {
+          "contains": [
+            "Username or password is incorrect",
+            "value=\"x@y.com\""
+          ],
+          "html": true,
+          "title": "Login"
+        },
+        "headers": {
+          "content-type": "text/html"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "session expired default message",
+      "request": {
+        "method": "GET",
+        "path": "/login",
+        "query": {
+          "error": "SessionExpired"
+        }
+      },
+      "response": {
+        "body": {
+          "contains": [
+            "Your session expired. Please log in again"
+          ],
+          "html": true,
+          "title": "Login"
+        },
+        "headers": {
+          "content-type": "text/html"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "session expired custom message",
+      "request": {
+        "method": "GET",
+        "path": "/login",
+        "query": {
+          "error": "SessionExpired",
+          "message": "Custom expiry message"
+        }
+      },
+      "response": {
+        "body": {
+          "contains": [
+            "Custom expiry message"
+          ],
+          "html": true,
+          "title": "Login"
+        },
+        "headers": {
+          "content-type": "text/html"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "any other error value",
+      "request": {
+        "method": "GET",
+        "path": "/login",
+        "query": {
+          "error": "Anything"
+        }
+      },
+      "response": {
+        "body": {
+          "contains": [
+            "Username or password is incorrect"
+          ],
+          "html": true,
+          "title": "Login"
+        },
+        "headers": {
+          "content-type": "text/html"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "redirectTo is used for continue as guest",
+      "request": {
+        "method": "GET",
+        "path": "/login",
+        "query": {
+          "redirectTo": "/projects"
+        }
+      },
+      "response": {
+        "body": {
+          "contains": [
+            "href=\"/projects\">Continue as guest"
+          ],
+          "html": true,
+          "title": "Login"
+        },
+        "headers": {
+          "content-type": "text/html"
+        },
+        "status": 200
+      }
+    }
+  ]
+}

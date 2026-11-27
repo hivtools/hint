@@ -1,0 +1,126 @@
+{
+  "scenario": "sso/test_sso_login_creates_user_and_session",
+  "steps": [
+    {
+      "client": "A",
+      "name": "start sso login",
+      "request": {
+        "method": "GET",
+        "path": "/oauth2"
+      },
+      "response": {
+        "body": {
+          "empty": true
+        },
+        "headers": {
+          "location": "https://<IDP_HOST>/authorize?response_type=code&client_id=fakeId&state=<STATE>&scope=openid+profile+email+access:adr&audience=naomi&redirect_uri=<APP>/callback/oauth2Client"
+        },
+        "status": 303
+      },
+      "session_cookie": "set"
+    },
+    {
+      "client": "A",
+      "name": "callback with correct state",
+      "outbound": [
+        {
+          "form": {
+            "code": "the-code",
+            "grant_type": "authorization_code",
+            "redirect_uri": "<APP>/callback/oauth2Client/oauth2Client"
+          },
+          "method": "POST",
+          "path": "/oauth/token",
+          "to": "idp"
+        },
+        {
+          "method": "GET",
+          "path": "/userinfo",
+          "to": "idp"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/callback/oauth2Client",
+        "query": {
+          "code": "the-code",
+          "state": "<STATE>"
+        }
+      },
+      "response": {
+        "body": {
+          "empty": true
+        },
+        "headers": {
+          "location": "/"
+        },
+        "status": 302
+      }
+    },
+    {
+      "client": "A",
+      "name": "logged in as sso user",
+      "request": {
+        "method": "GET",
+        "path": "/"
+      },
+      "response": {
+        "body": {
+          "contains": [
+            "currentUser = \"sso.user@example.com\""
+          ],
+          "html": true,
+          "title": "Naomi"
+        },
+        "headers": {
+          "content-type": "text/html"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "projects list works",
+      "request": {
+        "method": "GET",
+        "path": "/projects/"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": [],
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "name": "db:users",
+      "rows": [
+        {
+          "id": "guest",
+          "username": "guest"
+        },
+        {
+          "id": "naomi-support@imperial.ac.uk",
+          "username": "naomi-support@imperial.ac.uk"
+        },
+        {
+          "id": "sso.user@example.com",
+          "username": "sso.user@example.com"
+        },
+        {
+          "id": "test.user@example.com",
+          "username": "test.user@example.com"
+        }
+      ],
+      "table": "users",
+      "type": "db"
+    }
+  ]
+}

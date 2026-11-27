@@ -1,0 +1,186 @@
+# Everything hint needs to run in development, except hint itself (Kotlin), which you run from your IDE or gradle.
+#
+#   docker compose up -d --wait                       postgres (migrated, with users), redis, hintr
+#   docker compose --profile proxy up -d --wait       ... plus the Python API and the nginx proxy in front of
+#                                                     Kotlin and Python
+#
+# scripts/dev.sh wraps this (creates the upload dirs, pins the hintr version, can also start Kotlin).
+#
+# Test users, all with password "password": test.user@example.com, naomi-support@imperial.ac.uk (plus the passwordless
+# user "guest").
+
+name: hint
+
+services:
+  db:
+    image: ghcr.io/hivtools/hint-db:main
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    healthcheck:
+      # pg_isready reports ready too early for this image, see /hint-bin/wait-for-db
+      test: ["CMD-SHELL", "psql -U $$POSTGRES_USER -d $$POSTGRES_DB -c 'select 1' >/dev/null"]
+      interval: 1s
+      timeout: 3s
+      retries: 60
+
+  db-migrate:
+    image: ghcr.io/hivtools/hint-db-migrate:main
+    command: ["-url=jdbc:postgresql://db/hint"]
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db-users:
+    image: ghcr.io/hivtools/hint-user-cli:main
+    entrypoint:
+      - sh
+      - -c
+      - |
+        for user in "test.user@example.com password" "naomi-support@imperial.ac.uk password" "guest"; do
+          sh /userCLI/bin/userCLI add-user $$user || true
+        done
+    configs:
+      - source: user-cli-config
+        target: /etc/hint/config.properties
+    depends_on:
+      db-migrate:
+        condition: service_completed_successfully
+
+  redis:
+    image: redis:7-alpine
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 1s
+      retries: 30
+
+  hintr:
+    # scripts/dev.sh sets this from src/config/hintr_version
+    image: ghcr.io/hivtools/hintr:${HINTR_VERSION:-main}
+    # The Kotlin app sends hintr the path "<upload_dir>/<hash>". In production, upload_dir is "/uploads"
+    # (src/docker/config.properties). In the development config it is a relative path: "uploads" (config.properties).
+    # hintr runs in "/", so in both cases the folder is mounted at "/<name>". The Python app always sends the absolute
+    # path "/<name>/<hash>". This is the same file. scripts/dev.sh gives a second stack (PORT_OFFSET) other names.
+    command: ["--results-dir=/${RESULTS_NAME:-results}", "--inputs-dir=/${UPLOADS_NAME:-uploads}"]
+    ports:
+      - "${HINTR_PORT:-8888}:8888"
+    volumes:
+      - ./src/app/${UPLOADS_NAME:-uploads}:/${UPLOADS_NAME:-uploads}
+      - ./src/app/${RESULTS_NAME:-results}:/${RESULTS_NAME:-results}
+    environment:
+      REDIS_URL: redis://redis:6379
+      USE_MOCK_MODEL: "true"
+      # hintr's traces (a span for each request), to the `otel` service below. scripts/dev.sh sets this to "otlp" when it
+      # starts the dashboard. By hand: HINTR_TRACES_EXPORTER=otlp. "none" is off (an empty value is an error in otel).
+      # Only a hintr image built with tracing reads these (it sets OTEL_SERVICE_NAME=hintr itself). hintr sends OTLP
+      # over HTTP only, so it uses the dashboard's HTTP port, not the gRPC one that the Python API uses.
+      OTEL_TRACES_EXPORTER: ${HINTR_TRACES_EXPORTER:-none}
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel:18890
+    depends_on:
+      redis:
+        condition: service_healthy
+      # Nothing needs the users here, but without this `up --wait` can return before they have been added
+      db-users:
+        condition: service_completed_successfully
+
+  # ---- Migration to Python: only started with --profile proxy ----
+
+  python:
+    profiles: [proxy]
+    build: ./hint-py
+    # Not published to the host: the only way in is through the proxy, which sets the identity headers it trusts
+    expose:
+      - "8000"
+    environment:
+      HINT_DB_HOST: db
+      # Through the recording and faulting proxy the contract tests put in front of hintr, like Kotlin's hintr_url.
+      # It runs on the host (see ensure_stubs in scripts/dev.sh).
+      HINT_HINTR_URL: http://host.docker.internal:${FAULT_PORT:-8882}
+      # The address of ADR. The API calls ADR here, and gives it to the browser (GET /adr/schemas). For the contract tests,
+      # `scripts/dev.sh` sets it to the ADR stub, which runs on the host. So the container needs `host.docker.internal`
+      # to reach it.
+      HINT_ADR_URL: ${PYTHON_ADR_URL:-https://dev.adr.fjelltopp.org/}
+      # This file is for development. The settings below are only allowed in development.
+      HINT_ENVIRONMENT: development
+      # In development, the users have no Auth0 access token. The API calls ADR for all of them with one API key:
+      # - Contract tests: the key that the ADR stub accepts.
+      # - Otherwise: HINT_ADR_API_KEY from your shell (the key of a user on the real ADR).
+      HINT_ADR_API_KEY: ${PYTHON_ADR_API_KEY:-${HINT_ADR_API_KEY:-}}
+      # Where error reports are sent. `scripts/dev.sh` sets it to the stub of the Teams flow. Without it, a report
+      # is an unexpected error.
+      HINT_ISSUE_REPORT_URL: ${PYTHON_ISSUE_REPORT_URL:-}
+      # The folder where this container writes the uploaded files. It tells hintr that the files are in this folder.
+      # The share is at the same path in both containers.
+      HINT_UPLOAD_DIR: /${UPLOADS_NAME:-uploads}
+      # Where this container sees the results hintr writes. The path hintr gives for a result is relative to its own
+      # results folder, so this is mounted at the same place as in hintr
+      HINT_RESULTS_DIR: /${RESULTS_NAME:-results}
+      # The built front end, which this container serves: the page of the app, and the files at /public/. It is the
+      # build output in src/app/static, so a new `npm run build && npm run copy` is served at once.
+      HINT_STATIC_DIR: /static
+      # What the logs look like: "console" is one line for each message, "json" one object for each (for machines).
+      # (Run by hand in a terminal, the API picks one itself: see HINT_LOG_FORMAT in hint-py/README.md.)
+      HINT_LOG_FORMAT: ${HINT_LOG_FORMAT:-console}
+      # OTEL=1 starts the API with opentelemetry-instrument, which sends its logs and traces to the `otel` service below
+      OTEL_LAUNCHER: ${OTEL:+opentelemetry-instrument}
+      OTEL_SERVICE_NAME: hint-py
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel:18889
+      OTEL_PYTHON_LOGGING_AUTO_INSTRUMENTATION_ENABLED: "true"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - ./hint-py:/app
+      # This container writes the uploaded files here
+      - ./src/app/${UPLOADS_NAME:-uploads}:/${UPLOADS_NAME:-uploads}
+      # Only read, never written
+      - ./src/app/${RESULTS_NAME:-results}:/${RESULTS_NAME:-results}:ro
+      - ./src/app/static/public:/static:ro
+    # sh, so that OTEL_LAUNCHER (empty unless OTEL=1) can go in front of fastapi
+    command: ["sh", "-c", "exec uv run --frozen --no-dev $${OTEL_LAUNCHER} fastapi dev app/main.py --host 0.0.0.0 --port 8000"]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import socket; socket.create_connection(('127.0.0.1', 8000), 2)"]
+      interval: 1s
+      retries: 60
+
+  # Somewhere to see the logs and traces of the Python API and the traces of hintr (OpenTelemetry), with nothing to set up. Not started unless
+  # asked for. scripts/dev.sh asks for it (and for the API to send to it) unless you run it with OTEL=0. By hand:
+  # `OTEL=1 docker compose --profile proxy --profile otel up -d`, or `make otel-up` in hint-py (to use with
+  # `make run-otel`). Then browse to http://localhost:18888. It keeps what it gets in memory only, and has no login, so
+  # it only listens on this machine.
+  otel:
+    profiles: [otel]
+    image: mcr.microsoft.com/dotnet/aspire-dashboard:latest
+    ports:
+      - "127.0.0.1:${OTEL_UI_PORT:-18888}:18888"   # the web page
+      - "127.0.0.1:${OTEL_PORT:-4317}:18889"       # where an API on this machine sends (OTLP over gRPC)
+      - "127.0.0.1:${OTEL_HTTP_PORT:-4318}:18890"  # the same over HTTP, e.g. for hintr run from R on this machine
+    # It keeps everything in memory. Recent versions keep up to 100,000 logs and traces, which slows the page down until
+    # the browser stops answering. These keep the last few hours of a dev session. The oldest go first. .NET sizes its
+    # heap to the container's limit, so mem_limit makes it collect sooner rather than be killed.
+    mem_limit: 1g
+    environment:
+      DASHBOARD__FRONTEND__AUTHMODE: Unsecured
+      DASHBOARD__OTLP__AUTHMODE: Unsecured
+      DASHBOARD__TELEMETRYLIMITS__MAXTRACECOUNT: 2000
+      DASHBOARD__TELEMETRYLIMITS__MAXLOGCOUNT: 5000
+      DASHBOARD__TELEMETRYLIMITS__MAXMETRICSCOUNT: 10000
+
+  # The front door, on the port Kotlin normally uses (application_url is http://localhost:8080) so that redirects
+  # and cookies keep working. Kotlin has to be moved aside to KOTLIN_PORT.
+  proxy:
+    profiles: [proxy]
+    build: ./proxy
+    ports:
+      - "127.0.0.1:${PROXY_PORT:-8080}:80"
+    environment:
+      KOTLIN_UPSTREAM: host.docker.internal:${KOTLIN_PORT:-8081}
+      PYTHON_UPSTREAM: python:8000
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      python:
+        condition: service_healthy
+
+configs:
+  user-cli-config:
+    content: |
+      db_url=jdbc:postgresql://db/hint

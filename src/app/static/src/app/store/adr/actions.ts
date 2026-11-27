@@ -1,6 +1,5 @@
 import type {ActionContext, ActionTree} from "vuex";
 import {api} from "../../apiService";
-import qs from "qs";
 import {AdrDatasetType, type ADRState, getAdrDatasetUrl, getAdrReleaseUrl} from "./adr";
 import {ADRMutation, type DatasetTypePayload} from "./mutations";
 import {datasetFromMetadata, findResource, resourceTypes} from "../../utils";
@@ -10,15 +9,11 @@ import type {RootState} from "../../root";
 import type {Error} from "../../generated";
 
 export interface ADRActions {
-    fetchKey: (store: ActionContext<ADRState, RootState>) => void;
-    saveKey: (store: ActionContext<ADRState, RootState>, key: string) => void;
-    deleteKey: (store: ActionContext<ADRState, RootState>) => void;
     getDatasets: (store: ActionContext<ADRState, RootState>, type: AdrDatasetType) => void;
     getReleases: (store: ActionContext<ADRState, RootState>, payload: GetReleasesPayload) => void;
     getDataset: (store: ActionContext<ADRState, RootState>, payload: GetDatasetPayload) => void;
     getSchemas: (store: ActionContext<ADRState, RootState>) => void;
     getUserCanUpload: (store: ActionContext<ADRState, RootState>) => void;
-    ssoLoginMethod: (store: ActionContext<ADRState, RootState>) => void;
 }
 
 export interface GetDatasetPayload {
@@ -37,36 +32,6 @@ const payloadHandler = (datasetType: AdrDatasetType) => {
 };
 
 export const actions: ActionTree<ADRState, RootState> & ADRActions = {
-    async fetchKey(context) {
-        await api<ADRMutation, ADRMutation>(context)
-            .ignoreErrors()
-            .withSuccess(ADRMutation.UpdateKey)
-            .get("/adr/key/");
-    },
-
-    async ssoLoginMethod(context) {
-        await api<ADRMutation, ADRMutation>(context)
-            .ignoreErrors()
-            .withSuccess(ADRMutation.SetSSOLogin)
-            .get("/sso")
-    },
-
-    async saveKey(context, key) {
-        context.commit({type: ADRMutation.SetKeyError, payload: null});
-        await api<ADRMutation, ADRMutation>(context)
-            .withError(ADRMutation.SetKeyError)
-            .withSuccess(ADRMutation.UpdateKey)
-            .postAndReturn("/adr/key/", qs.stringify({key}));
-    },
-
-    async deleteKey(context) {
-        context.commit({type: ADRMutation.SetKeyError, payload: null});
-        await api<ADRMutation, ADRMutation>(context)
-            .withError(ADRMutation.SetKeyError)
-            .withSuccess(ADRMutation.UpdateKey)
-            .delete("/adr/key/")
-    },
-
     async getDatasets(context, datasetType: AdrDatasetType) {
         const { commit } = context;
         commit({type: ADRMutation.SetFetchingDatasets, payload: {datasetType, data: true}});
@@ -119,7 +84,7 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
         await api<ADRMutation, ADRMutation>(context)
             .ignoreErrors()
             .withSuccess(ADRMutation.SetSchemas)
-            .get("/adr/schemas/")
+            .get("/adr/schemas")
     },
 
     async getUserCanUpload(context) {

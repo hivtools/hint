@@ -13,6 +13,7 @@ import {initialLoadState, type LoadState} from "./store/load/state";
 import {load} from "./store/load/load";
 import {initialModelOutputState, modelOutput, type ModelOutputState} from "./store/modelOutput/modelOutput";
 import {localStorageManager} from "./localStorageManager";
+import {sessionStorageManager} from "./sessionStorageManager";
 import {actions} from "./store/root/actions";
 import {mutations, RootMutation} from "./store/root/mutations";
 import {getters} from "./store/root/getters";
@@ -89,7 +90,7 @@ const persistState = (store: Store<RootState>): void => {
         // loaded project state. If a project load has been initiated, block any further
         // mutations from happening. This will be reset when the browser refreshes.
         if (!state.projects.loadingProject) {
-            localStorageManager.saveState(state);
+            sessionStorageManager.saveState(state);
 
             const {dispatch} = store;
             const type = stripNamespace(mutation.type);
@@ -150,9 +151,7 @@ const resetState = (store: Store<RootState>): void => {
     })
 };
 
-declare const currentUser: string;
-
-export const emptyState = (): RootState => {
+export const emptyState = (currentUser: string): RootState => {
     return {
         language: Language.en,
         version: currentHintVersion,
@@ -181,33 +180,39 @@ export const emptyState = (): RootState => {
     }
 };
 
-const existingState = localStorageManager.getState();
-
-export const storeOptions: StoreOptions<RootState> = {
-    state: {...emptyState(), ...existingState},
-    modules: {
-        adr,
-        reviewInput,
-        adrUpload,
-        baseline: baseline(existingState),
-        metadata: metadata(existingState),
-        surveyAndProgram: surveyAndProgram(existingState),
-        modelCalibrate: modelCalibrate(existingState),
-        modelOptions: modelOptions(existingState),
-        modelRun: modelRun(existingState),
-        modelOutput: modelOutput(existingState),
-        plotData,
-        plotSelections,
-        plotState,
-        stepper: stepper(existingState),
-        load,
-        errors,
-        projects,
-        hintrVersion: hintrVersion(existingState),
-        downloadResults,
-    },
-    actions: actions,
-    mutations: mutations,
-    getters: getters,
-    plugins: [persistState, resetState]
+/**
+ * The store of the app, for `currentUser` (from GET /me). The tab's saved state is read here, not when this file is
+ * loaded, because it belongs to one user (see sessionStorageManager.getState).
+ */
+export const createStoreOptions = (currentUser: string): StoreOptions<RootState> => {
+    localStorageManager.removeLegacyState();
+    const existingState = sessionStorageManager.getState(currentUser);
+    return {
+        state: {...emptyState(currentUser), ...existingState},
+        modules: {
+            adr,
+            reviewInput,
+            adrUpload,
+            baseline: baseline(existingState),
+            metadata: metadata(existingState),
+            surveyAndProgram: surveyAndProgram(existingState),
+            modelCalibrate: modelCalibrate(existingState),
+            modelOptions: modelOptions(existingState),
+            modelRun: modelRun(existingState),
+            modelOutput: modelOutput(existingState),
+            plotData,
+            plotSelections,
+            plotState,
+            stepper: stepper(existingState),
+            load,
+            errors,
+            projects,
+            hintrVersion: hintrVersion(existingState),
+            downloadResults,
+        },
+        actions: actions,
+        mutations: mutations,
+        getters: getters,
+        plugins: [persistState, resetState]
+    };
 };

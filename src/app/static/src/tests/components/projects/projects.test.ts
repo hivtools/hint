@@ -23,7 +23,7 @@ describe("Projects component", () => {
                        isGuest = false) => {
 
         const store = new Vuex.Store({
-            state: emptyState(),
+            state: emptyState("some.user@example.com"),
             getters: {
                 isGuest: () => isGuest
             },

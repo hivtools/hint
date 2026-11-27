@@ -13,7 +13,7 @@ describe("Warning alert component", () => {
         modelCalibrate: [{ text: 'calibrate warning', locations: []}]
     }
 
-    const store = new Vuex.Store({state: emptyState()});
+    const store = new Vuex.Store({state: emptyState("some.user@example.com")});
     registerTranslations(store);
 
     const createWrapper = (warnings = warningsMock, activeStep = 3) => {

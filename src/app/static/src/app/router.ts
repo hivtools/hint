@@ -1,13 +1,22 @@
-import {createRouter, createWebHistory, type RouteLocationNormalized} from "vue-router";
+import {createRouter, createWebHistory, type RouteLocationNormalized, type Router} from "vue-router";
+import type {Store} from "vuex";
 import Stepper from "./components/Stepper.vue";
 import Projects from "./components/projects/Projects.vue";
-import {store} from "./main";
+import type {RootState} from "./root";
 
+// The store is made after the router (it needs the user from GET /me), so the guard gets it when the app starts
+let guardStore: Store<RootState> | null = null;
+
+// A guest who has not chosen "Continue as guest" in this tab goes to the login page
 export const beforeEnter = (_to: RouteLocationNormalized, _from: RouteLocationNormalized) => {
-    if (store.state.currentUser === "guest" && !sessionStorage.getItem("asGuest")) {
+    if (guardStore?.state.currentUser === "guest" && !sessionStorage.getItem("asGuest")) {
         window.location.assign("/login");
     }
 }
+
+export const guardAgainstGuests = (store: Store<RootState>) => {
+    guardStore = store;
+};
 
 const routes = [
     {
@@ -23,7 +32,7 @@ const routes = [
     {path: "/projects", component: Projects}
 ];
 
-export const router = createRouter({
+export const router: Router = createRouter({
     history: createWebHistory(),
     routes,
 });

@@ -21,7 +21,7 @@ const defaultSelections = {
 
 function getStore(modelCalibrateState: Partial<ModelCalibrateState> = {}, partialGetters = {}) {
     const store = new Vuex.Store({
-        state: emptyState(),
+        state: emptyState("guest"),
         modules: {
             modelCalibrate: {
                 state: {
@@ -43,7 +43,6 @@ function getStore(modelCalibrateState: Partial<ModelCalibrateState> = {}, partia
     return store;
 }
 
-(global as any).currentUser = "guest";
 
 describe("CalibrateResults component", () => {
 

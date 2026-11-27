@@ -1,0 +1,138 @@
+# Front door for hint while endpoints are migrated from Kotlin to Python.
+#
+# Everything goes to Kotlin unless it is listed below. To migrate an endpoint, add a `location` that includes
+# snippets/python.conf (most specific prefix wins). See that file for how authentication works.
+#
+# KOTLIN_UPSTREAM and PYTHON_UPSTREAM (host:port) are substituted from the environment on container start by the nginx
+# image's envsubst templating.
+
+# Trust X-Forwarded-Proto from an upstream TLS terminator, else use our own scheme.
+map $http_x_forwarded_proto $forwarded_proto {
+    default $http_x_forwarded_proto;
+    ''      $scheme;
+}
+
+upstream kotlin {
+    server ${KOTLIN_UPSTREAM};
+}
+
+upstream python {
+    server ${PYTHON_UPSTREAM};
+}
+
+server {
+    listen 80;
+
+    # Uploads can be large and are streamed straight through to the backend.
+    client_max_body_size 0;
+    proxy_request_buffering off;
+
+    # Model/ADR calls can be slow.
+    proxy_read_timeout 300s;
+    proxy_send_timeout 300s;
+
+    # ---- Migrated to Python ----
+    # The Vue app: its page (for each of its routes) and the built files. Nobody needs to be logged in for these
+    location = / { include snippets/python-public.conf; }
+    # Without this nginx redirects /projects to /projects/ (the list of projects)
+    location = /projects { include snippets/python-public.conf; }
+    location = /accessibility { include snippets/python-public.conf; }
+    location = /privacy { include snippets/python-public.conf; }
+    location /public/ { include snippets/python-public.conf; }
+    # Who the user is, which the app asks before it starts
+    location = /me { include snippets/python.conf; }
+    location /items/ { include snippets/python.conf; }
+    # Projects and their versions. /projects (no slash) is the page
+    location = /project { include snippets/python.conf; }
+    location /project/ { include snippets/python.conf; }
+    location /projects/ { include snippets/python.conf; }
+    # Calls that only pass on to hintr and need no files and no version
+    location = /meta/hintr/version { include snippets/python.conf; }
+    location /meta/adr/ { include snippets/python.conf; }
+    location /model/status/ { include snippets/python.conf; }
+    location /model/result/ { include snippets/python.conf; }
+    location /model/cancel/ { include snippets/python.conf; }
+    location /model/comparison/plot/ { include snippets/python.conf; }
+    location /calibrate/options/ { include snippets/python.conf; }
+    location /calibrate/status/ { include snippets/python.conf; }
+    location /calibrate/result/metadata/ { include snippets/python.conf; }
+    location /calibrate/plot/ { include snippets/python.conf; }
+    location /download/status/ { include snippets/python.conf; }
+    # Config only. /adr/schemas/ (trailing slash) stays with Kotlin, as the rest of /adr/ does
+    location = /adr/schemas { include snippets/python.conf; }
+    # Reading from ADR. Only these exact paths go to Python. Kotlin keeps the same paths with a trailing slash, and
+    # everything else under /adr/ that is not listed here (the key, and the VMMC and output zip imports).
+    location = /adr/datasets { include snippets/python.conf; }
+    location = /adr/orgs { include snippets/python.conf; }
+    location ~ ^/adr/datasets/[^/]+$ { include snippets/python.conf; }
+    # The releases of a dataset: GET reads them and POST makes one (and deletes the release with the same name first). Both
+    # are Python's, so every method goes to Python.
+    location ~ ^/adr/datasets/[^/]+/releases$ { include snippets/python.conf; }
+    # Push a file to ADR as a resource of a dataset: an output of the model, or one of the version's input files. Only this
+    # path shape goes to Python (the Vue app calls it without a trailing slash), so nothing else under /adr/datasets/ changes
+    # owner. The id of the dataset, the resource type and the download id are one part of the path each.
+    location ~ ^/adr/datasets/[^/]+/resource/[^/]+/[^/]+$ { include snippets/python.conf; }
+    # Import an input file from ADR into the version. Only these exact paths go to Python (the Vue app calls them
+    # without a trailing slash). /adr/vmmc and /adr/output stay with Kotlin.
+    location = /adr/pjnz { include snippets/python.conf; }
+    location = /adr/shape { include snippets/python.conf; }
+    location = /adr/population { include snippets/python.conf; }
+    location = /adr/survey { include snippets/python.conf; }
+    location = /adr/programme { include snippets/python.conf; }
+    location = /adr/anc { include snippets/python.conf; }
+    # Load a project from an output zip, uploaded or on ADR. Only these exact paths go to Python (the Vue app calls them
+    # without a trailing slash). The upload is not buffered by nginx (see above), and Python stops it at its size limit.
+    location = /rehydrate/zip { include snippets/python.conf; }
+    location = /rehydrate/adr { include snippets/python.conf; }
+    # Report an error to the support team (a guest may too)
+    location = /error-report { include snippets/python.conf; }
+    # Calls that add the files of the version to the call
+    location /chart-data/ { include snippets/python.conf; }
+    location /meta/review-inputs/ { include snippets/python.conf; }
+    location = /model/options { include snippets/python.conf; }
+    location = /model/validate/options { include snippets/python.conf; }
+    location = /model/run { include snippets/python.conf; }
+    location /calibrate/submit/ { include snippets/python.conf; }
+    location /download/submit/ { include snippets/python.conf; }
+    # Upload, validate and remove the input files, and set all the files. Each URL is listed. The proxy does not send all
+    # of /baseline/ and /disease/ to Python, for two reasons. `/disease/vmmc` is not ported, because nothing uses it now.
+    # A path with a trailing slash goes to Kotlin, which accepts it. FastAPI would redirect it.
+    location = /baseline/pjnz { include snippets/python.conf; }
+    location = /baseline/shape { include snippets/python.conf; }
+    location = /baseline/population { include snippets/python.conf; }
+    location = /baseline/validate { include snippets/python.conf; }
+    location = /disease/survey { include snippets/python.conf; }
+    location = /disease/programme { include snippets/python.conf; }
+    location = /disease/anc { include snippets/python.conf; }
+    location = /session/files { include snippets/python.conf; }
+    # Calls that read the results folder. `/calibrate/result/data/` is not ported, so it stays with Kotlin
+    location /calibrate/result/filteredData/ { include snippets/python.conf; }
+    location /download/result/ { include snippets/python.conf; }
+    # The debug zip of a model run, for developers. The caller sends a GitHub token and no hint login, so this location
+    # does not ask Kotlin who the user is (see snippets/python-github.conf). `/model/debug/` (no id) stays with Kotlin.
+    location ~ ^/model/debug/[^/]+$ { include snippets/python-github.conf; }
+
+    # ---- Identity bridge ----
+    # Only reachable from auth_request, never directly. The Cookie and Authorization headers of the original request
+    # are passed through by default, the body is not needed.
+    location = /_whoami {
+        internal;
+        include snippets/proxy-common.conf;
+        # A guest's versions are in a header of the answer (37 bytes each), which has to fit in this one buffer
+        proxy_buffer_size 32k;
+        # nginx refuses to start with a buffer this big and the default buffers: the busy size must be at least the big
+        # buffer, and less than all the buffers together minus one
+        proxy_buffers 8 8k;
+        proxy_busy_buffers_size 32k;
+        proxy_pass_request_body off;
+        proxy_set_header Content-Length "";
+        proxy_set_header X-Original-URI $request_uri;
+        proxy_pass http://kotlin/internal/whoami;
+    }
+
+    # Kotlin's /internal/ endpoints are for this proxy only
+    location ^~ /internal/ { return 404; }
+
+    # ---- Everything else is still Kotlin ----
+    location / { include snippets/kotlin.conf; }
+}

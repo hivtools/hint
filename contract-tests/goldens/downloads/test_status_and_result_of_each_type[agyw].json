@@ -1,0 +1,199 @@
+{
+  "scenario": "downloads/test_status_and_result_of_each_type[agyw]",
+  "steps": [
+    {
+      "client": "A",
+      "name": "login test.user@example.com",
+      "request": {
+        "body": {
+          "form": {
+            "password": "password",
+            "username": "test.user@example.com"
+          }
+        },
+        "method": "POST",
+        "path": "/callback/formClient"
+      },
+      "response": {
+        "body": {
+          "empty": true
+        },
+        "headers": {
+          "location": "/"
+        },
+        "status": 303
+      }
+    },
+    {
+      "client": "A",
+      "name": "open /",
+      "request": {
+        "method": "GET",
+        "path": "/"
+      },
+      "response": {
+        "body": {
+          "html": true,
+          "title": "Naomi"
+        },
+        "headers": {
+          "content-type": "text/html"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "status",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "GET",
+          "path": "/download/status/<TASK:download-agyw>",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/download/status/<TASK:download-agyw>"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "result",
+      "outbound": [
+        {
+          "method": "HEAD",
+          "path": "/download/result/<TASK:download-agyw>",
+          "status": 200,
+          "to": "hintr"
+        },
+        {
+          "method": "GET",
+          "path": "/download/result/<TASK:download-agyw>",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/download/result/<TASK:download-agyw>"
+      },
+      "response": {
+        "body": {
+          "binary": {
+            "magic": "zip",
+            "non_empty": true,
+            "zip_members": [
+              "[Content_Types].xml",
+              "_rels/.rels",
+              "docProps/app.xml",
+              "docProps/core.xml",
+              "xl/_rels/workbook.xml.rels",
+              "xl/sharedStrings.xml",
+              "xl/styles.xml",
+              "xl/theme/theme1.xml",
+              "xl/workbook.xml",
+              "xl/worksheets/sheet1.xml"
+            ]
+          }
+        },
+        "headers": {
+          "content-disposition": "attachment; filename=\"MWI_AGYW_<TIMESTAMP>.xlsx\"",
+          "content-type": "application/octet-stream"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "adr metadata",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "GET",
+          "path": "/meta/adr/<TASK:download-agyw>",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/meta/adr/<TASK:download-agyw>"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "result as guest-less second download",
+      "outbound": [
+        {
+          "method": "HEAD",
+          "path": "/download/result/<TASK:download-agyw>",
+          "status": 200,
+          "to": "hintr"
+        },
+        {
+          "method": "GET",
+          "path": "/download/result/<TASK:download-agyw>",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "headers": {
+          "accept-language": "fr"
+        },
+        "method": "GET",
+        "path": "/download/result/<TASK:download-agyw>"
+      },
+      "response": {
+        "body": {
+          "binary": {
+            "magic": "zip",
+            "non_empty": true,
+            "zip_members": [
+              "[Content_Types].xml",
+              "_rels/.rels",
+              "docProps/app.xml",
+              "docProps/core.xml",
+              "xl/_rels/workbook.xml.rels",
+              "xl/sharedStrings.xml",
+              "xl/styles.xml",
+              "xl/theme/theme1.xml",
+              "xl/workbook.xml",
+              "xl/worksheets/sheet1.xml"
+            ]
+          }
+        },
+        "headers": {
+          "content-disposition": "attachment; filename=\"MWI_AGYW_<TIMESTAMP>.xlsx\"",
+          "content-type": "application/octet-stream"
+        },
+        "status": 200
+      }
+    }
+  ]
+}

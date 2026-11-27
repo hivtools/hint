@@ -1,0 +1,28 @@
+{
+  "scenario": "pages_and_session/test_missing_static_asset_is_500_not_404",
+  "steps": [
+    {
+      "client": "A",
+      "name": "missing asset",
+      "request": {
+        "method": "GET",
+        "path": "/public/css/does-not-exist.css"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "error": "Internal Server Error",
+            "path": "/public/css/does-not-exist.css",
+            "status": 500,
+            "timestamp": "<EPOCH_MS>"
+          }
+        },
+        "headers": {
+          "content-disposition": "inline;filename=f.txt",
+          "content-type": "application/json"
+        },
+        "status": 500
+      }
+    }
+  ]
+}

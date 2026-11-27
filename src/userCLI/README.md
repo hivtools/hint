@@ -10,7 +10,7 @@ to the database.
         $image <command>
 
 or to test locally, from root of hint repository:
-1. `./scripts/run-development-dependencies.sh`
+1. `./scripts/dev.sh deps`
 1. `./scripts/test-cli.sh <command>`
 
 This will run the pushed container for the current commit. 

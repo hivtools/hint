@@ -28,6 +28,7 @@ import {initialErrorsState} from "../../app/store/errors/errors";
 import {LanguageMutation} from "../../app/store/language/mutations";
 import {Language} from "../../app/store/translations/locales";
 import {router} from "../../app/router";
+import {sessionStorageManager} from "../../app/sessionStorageManager";
 import {initialModelCalibrateState} from "../../app/store/modelCalibrate/modelCalibrate";
 import {initialDownloadResultsState} from "../../app/store/downloadResults/downloadResults";
 import {outputPlotNames} from "../../app/store/plotSelections/plotSelections";
@@ -49,7 +50,7 @@ describe("Root mutations", () => {
             adr: mockADRState({
                 adrData: mockADRDataState(),
                 schemas: ["TEST SCHEMAS"] as any,
-                key: "TEST KEY"
+                userCanUpload: true
             }),
             reviewInput: mockReviewInputState({
                 datasets: {
@@ -98,7 +99,7 @@ describe("Root mutations", () => {
         expect(state.adr).toStrictEqual(mockADRState({
             adrData: mockADRDataState(),
             schemas: ["TEST SCHEMAS"] as any,
-            key: "TEST KEY"
+            userCanUpload: true
         }));
 
         expect(state.downloadResults).toStrictEqual(initialDownloadResultsState());
@@ -189,7 +190,7 @@ describe("Root mutations", () => {
 
         state.adrUpload.uploadComplete = true;
 
-        state.adr.key = "abc";
+        state.adr.userCanUpload = true;
 
         mutations.ResetOutputs(state);
         expect(state.modelRun).toStrictEqual({...initialModelRunState(), ready: true});
@@ -198,7 +199,7 @@ describe("Root mutations", () => {
         expect(state.modelCalibrate).toStrictEqual({...initialModelCalibrateState(), ready: true})
 
         expect(state.adrUpload.uploadComplete).toBe(false);
-        expect(state.adr.key).toBe("abc")
+        expect(state.adr.userCanUpload).toBe(true)
     });
 
     it("can change language", () => {
@@ -221,6 +222,8 @@ describe("Root mutations", () => {
 
         expect(state.projects.currentProject).toBe(version);
         expect(state.projects.currentVersion).toBe(version.versions[0]);
+        // the new project's version is the one this tab sends from now on
+        expect(sessionStorageManager.getVersionId()).toBe("newVersion");
 
         expect(state.language).toBe(Language.fr);
 

@@ -12,6 +12,7 @@ import type {PayloadWithType, PollingState, Project} from "../../types";
 import {mutations as languageMutations} from "../language/mutations";
 import {initialProjectsState} from "../projects/projects";
 import {router} from "../../router"
+import {sessionStorageManager} from "../../sessionStorageManager";
 import {initialModelCalibrateState} from "../modelCalibrate/modelCalibrate";
 import {initialADRUploadState} from "../adrUpload/adrUpload";
 import {initialDownloadResultsState} from "../downloadResults/downloadResults";
@@ -82,7 +83,7 @@ export const mutations: MutationTree<RootState> = {
 
     [RootMutation.SetProject](state: RootState, action: PayloadWithType<Project>) {
         const resetState: RootState = {
-            ...emptyState(),
+            ...emptyState(state.currentUser),
             language: state.language,
             hintrVersion: state.hintrVersion,
             adr: state.adr,
@@ -95,6 +96,7 @@ export const mutations: MutationTree<RootState> = {
         };
 
         Object.assign(state, resetState);
+        sessionStorageManager.saveVersionId(action.payload.versions[0].id);
 
         state.surveyAndProgram.ready = true;
         state.baseline.ready = true;

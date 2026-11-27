@@ -1,0 +1,157 @@
+{
+  "scenario": "hintr_faults/test_accept_language_is_forwarded_to_hintr",
+  "steps": [
+    {
+      "client": "A",
+      "name": "Accept-Language fr",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "fr"
+          },
+          "method": "GET",
+          "path": "/hintr/version",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "headers": {
+          "accept-language": "fr"
+        },
+        "method": "GET",
+        "path": "/meta/hintr/version"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "Accept-Language pt",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "pt"
+          },
+          "method": "GET",
+          "path": "/hintr/version",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "headers": {
+          "accept-language": "pt"
+        },
+        "method": "GET",
+        "path": "/meta/hintr/version"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "Accept-Language de",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "de"
+          },
+          "method": "GET",
+          "path": "/hintr/version",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "headers": {
+          "accept-language": "de"
+        },
+        "method": "GET",
+        "path": "/meta/hintr/version"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "Accept-Language fr-FR,fr;q=0.9,en;q=0.8",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "fr-FR,fr;q=0.9,en;q=0.8"
+          },
+          "method": "GET",
+          "path": "/hintr/version",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "headers": {
+          "accept-language": "fr-FR,fr;q=0.9,en;q=0.8"
+        },
+        "method": "GET",
+        "path": "/meta/hintr/version"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "no Accept-Language header defaults to en",
+      "outbound": [
+        {
+          "headers": {
+            "accept-language": "en"
+          },
+          "method": "GET",
+          "path": "/hintr/version",
+          "status": 200,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/meta/hintr/version"
+      },
+      "response": {
+        "body": {
+          "same_as_upstream": "hintr"
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    }
+  ]
+}

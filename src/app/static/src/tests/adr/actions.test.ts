@@ -25,77 +25,6 @@ describe("ADR actions", () => {
         mockAxios.reset();
     });
 
-    it("fetches key", async () => {
-        mockAxios.onGet(`/adr/key/`)
-            .reply(200, mockSuccess("1234"));
-
-        const commit = vi.fn();
-
-        await actions.fetchKey({commit, state, rootState} as any);
-
-        expect(commit.mock.calls[0][0])
-            .toStrictEqual({
-                type: ADRMutation.UpdateKey,
-                payload: "1234"
-            });
-    });
-
-    it("fetches sso login method", async () => {
-        mockAxios.onGet(`/sso`)
-            .reply(200, mockSuccess(true));
-
-        const commit = vi.fn();
-        const dispatch = vi.fn()
-
-        await actions.ssoLoginMethod({commit, dispatch, state, rootState} as any);
-
-        expect(commit).toHaveBeenCalledTimes(1)
-        expect(commit).toHaveBeenCalledWith(
-            { type: ADRMutation.SetSSOLogin, payload: true },
-            { root: false }
-        );
-    });
-
-    it("saves key", async () => {
-        mockAxios.onPost(`/adr/key/`)
-            .reply(200, mockSuccess("1234"));
-
-        const commit = vi.fn();
-
-        await actions.saveKey({commit, state, rootState} as any, "1234");
-
-        expect(commit.mock.calls[0][0])
-            .toStrictEqual({
-                type: ADRMutation.SetKeyError,
-                payload: null
-            });
-        expect(commit.mock.calls[1][0])
-            .toStrictEqual({
-                type: ADRMutation.UpdateKey,
-                payload: "1234"
-            });
-    });
-
-    it("deletes key", async () => {
-        mockAxios.onDelete(`/adr/key/`)
-            .reply(200, mockSuccess(null));
-
-        const commit = vi.fn();
-
-        await actions.deleteKey({commit, state, rootState} as any);
-
-        expect(commit.mock.calls[0][0])
-            .toStrictEqual({
-                type:ADRMutation.SetKeyError,
-                payload: null
-            });
-        expect(commit.mock.calls[1][0])
-            .toStrictEqual({
-                type: ADRMutation.UpdateKey,
-                payload: null
-            });
-    });
-
     it.each(Object.values(AdrDatasetType))("fetches input datasets", async (datasetType) => {
         const url = getAdrDatasetUrl(datasetType);
         mockAxios.onGet(url)
@@ -196,7 +125,7 @@ describe("ADR actions", () => {
     });
 
     it("fetches schemas", async () => {
-        mockAxios.onGet(`/adr/schemas/`)
+        mockAxios.onGet(`/adr/schemas`)
             .reply(200, mockSuccess({baseUrl: "adr.com"}));
 
         const commit = vi.fn();

@@ -81,7 +81,7 @@ class HintApplicationTests : SecureIntegrationTests()
     @EnumSource(IsAuthorized::class)
     fun `authorized users and guest user can access REST endpoints`(isAuthorized: IsAuthorized)
     {
-        val entity = testRestTemplate.getForEntity<String>("/baseline/pjnz/")
+        val entity = testRestTemplate.getForEntity<String>("/baseline/pjnz")
         if (isAuthorized == IsAuthorized.TRUE)
         {
             assertThat(entity.statusCode).isEqualTo(HttpStatus.OK)
@@ -155,7 +155,7 @@ class HintApplicationTests : SecureIntegrationTests()
         disableAutomaticDecompression()
         testRestTemplate.getForEntity<String>("/")
         val postEntity = getTestEntity("malawi.geojson", acceptGzip = true)
-        val response = testRestTemplate.exchange<String>("/baseline/shape/", HttpMethod.POST, postEntity)
+        val response = testRestTemplate.exchange<String>("/baseline/shape", HttpMethod.POST, postEntity)
         assertThat(response.headers["Content-Encoding"]!!.first()).isEqualTo("gzip")
     }
 

@@ -9,7 +9,7 @@ import { DownloadType } from "../../../app/store/downloadResults/downloadConfig"
 describe("Download Error Alert", () => {
     const getWrapper = (downloadState: Partial<DownloadResultsState> = {}) => {
         const store = new Vuex.Store({
-            state: emptyState(),
+            state: emptyState("some.user@example.com"),
             modules: {
                 downloadResults: {
                     namespaced: true,

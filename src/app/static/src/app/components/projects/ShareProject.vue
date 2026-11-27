@@ -83,8 +83,6 @@ interface Data {
     open: boolean
 }
 
-declare const currentUser: string;
-
 export default defineComponent({
     props: {
         project: {
@@ -113,7 +111,7 @@ export default defineComponent({
                 if (email.value) {
                     let invalidMsg = null;
                     const emailValue = email.value.toLowerCase()
-                    if (emailValue == currentUser.toLowerCase()) {
+                    if (emailValue == this.$store.state.currentUser.toLowerCase()) {
                         invalidMsg = "projectsNoSelfShare";
                     } else if (this.emailsToShareWith.filter((val: RecipientEmail) => val.value.toLowerCase() === emailValue).length > 1) {
                         invalidMsg = "duplicateEmails";

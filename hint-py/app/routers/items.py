@@ -1,0 +1,30 @@
+from typing import Annotated
+
+from fastapi import APIRouter, Depends
+
+from app.dependencies import User, current_adr_access_token, current_user, requested_version_id
+
+router = APIRouter(prefix="/items", tags=["items"])
+
+
+# FastAPI matches routes in the order they are declared. "/items/whoami" would also match "/items/{item_id}" (with
+# item_id = "whoami", which then fails validation as it is not an int), so this has to come first.
+@router.get("/whoami")
+async def whoami(
+    user: Annotated[User, Depends(current_user)],
+    version_id: Annotated[str | None, Depends(requested_version_id)],
+    access_token: Annotated[str | None, Depends(current_adr_access_token)],
+):
+    return {
+        "user": user.id,
+        "version_id": version_id,
+        "is_guest": user.is_guest,
+        "guest_version_ids": sorted(user.guest_version_ids),
+        # Whether, never the token itself: it is a credential
+        "has_access_token": access_token is not None,
+    }
+
+
+@router.get("/{item_id}")
+async def read_item(item_id: int, user: Annotated[User, Depends(current_user)]):
+    return {"item_id": item_id}

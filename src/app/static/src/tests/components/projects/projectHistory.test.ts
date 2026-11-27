@@ -33,7 +33,7 @@ describe("Project history component", () => {
 
     function createStore(projects: Project[] = testProjects) {
         const store = new Vuex.Store({
-            state: emptyState(),
+            state: emptyState("some.user@example.com"),
             modules: {
                 projects: {
                     namespaced: true,

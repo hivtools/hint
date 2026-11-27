@@ -1,0 +1,49 @@
+{
+  "scenario": "auth/test_login_username_is_case_insensitive",
+  "steps": [
+    {
+      "client": "A",
+      "name": "login TEST.USER@EXAMPLE.COM",
+      "request": {
+        "body": {
+          "form": {
+            "password": "password",
+            "username": "TEST.USER@EXAMPLE.COM"
+          }
+        },
+        "method": "POST",
+        "path": "/callback/formClient"
+      },
+      "response": {
+        "body": {
+          "empty": true
+        },
+        "headers": {
+          "location": "/"
+        },
+        "status": 303
+      }
+    },
+    {
+      "client": "A",
+      "name": "authenticated?",
+      "request": {
+        "method": "GET",
+        "path": "/projects/"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": [],
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    }
+  ]
+}

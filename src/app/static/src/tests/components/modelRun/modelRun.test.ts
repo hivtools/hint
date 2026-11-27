@@ -30,7 +30,7 @@ describe("Model run component", () => {
 
     const createStore = (state: Partial<ModelRunState> = {}, testActions: any = actions, sGetters = stepperGetters): Store<RootState> => {
         const store = new Vuex.Store({
-            state: emptyState(),
+            state: emptyState("some.user@example.com"),
             getters: rootGetters,
             modules: {
                 modelRun: {
@@ -65,7 +65,7 @@ describe("Model run component", () => {
     const mockStatus = mockModelStatusResponse();
 
     beforeEach(() => {
-        mockAxios.onPost(`/model/run/`)
+        mockAxios.onPost(`/model/run`)
             .reply(200, mockSuccess({id: "1234"}));
 
         mockAxios.onGet(`/model/status/1234`)

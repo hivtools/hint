@@ -1,0 +1,211 @@
+{
+  "scenario": "adr_import/test_import_output_zip",
+  "steps": [
+    {
+      "client": "A",
+      "name": "login test.user@example.com",
+      "request": {
+        "body": {
+          "form": {
+            "password": "password",
+            "username": "test.user@example.com"
+          }
+        },
+        "method": "POST",
+        "path": "/callback/formClient"
+      },
+      "response": {
+        "body": {
+          "empty": true
+        },
+        "headers": {
+          "location": "/"
+        },
+        "status": 303
+      }
+    },
+    {
+      "client": "A",
+      "name": "open /",
+      "request": {
+        "method": "GET",
+        "path": "/"
+      },
+      "response": {
+        "body": {
+          "html": true,
+          "title": "Naomi"
+        },
+        "headers": {
+          "content-type": "text/html"
+        },
+        "status": 200
+      }
+    },
+    {
+      "client": "A",
+      "name": "import output zip",
+      "outbound": [
+        {
+          "headers": {
+            "authorization": "<UUID:1>"
+          },
+          "method": "GET",
+          "path": "/dataset/ds1/resource/res1/download/out.zip",
+          "to": "adr"
+        },
+        {
+          "headers": {
+            "authorization": "<UUID:1>"
+          },
+          "method": "GET",
+          "path": "/api/3/action/package_activity_list",
+          "query": {
+            "id": "ds1"
+          },
+          "to": "adr"
+        }
+      ],
+      "request": {
+        "body": {
+          "json": {
+            "datasetId": "ds1",
+            "resourceId": "res1",
+            "url": "<ADR>/dataset/ds1/resource/res1/download/out.zip"
+          }
+        },
+        "method": "POST",
+        "path": "/adr/output"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {
+              "filename": "out.zip",
+              "fromADR": true,
+              "hash": "BF4E1B306A300123D5B558CA565BF9B1.zip",
+              "path": "<UPLOADS>/BF4E1B306A300123D5B558CA565BF9B1.zip",
+              "resource_url": "<ADR>/dataset/ds1/resource/res1/download/out.zip?activity_id=act-1"
+            },
+            "errors": [],
+            "status": "success"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "name": "db:version_file",
+      "rows": [
+        {
+          "filename": "out.zip",
+          "from_adr": true,
+          "hash": "BF4E1B306A300123D5B558CA565BF9B1.zip",
+          "resource_url": "<ADR>/dataset/ds1/resource/res1/download/out.zip?activity_id=act-1",
+          "type": "outputzip",
+          "version": "<UUID:2>"
+        }
+      ],
+      "table": "version_file",
+      "type": "db"
+    },
+    {
+      "name": "db:file",
+      "rows": [
+        {
+          "hash": "BF4E1B306A300123D5B558CA565BF9B1.zip"
+        }
+      ],
+      "table": "file",
+      "type": "db"
+    },
+    {
+      "files": [
+        {
+          "name": "BF4E1B306A300123D5B558CA565BF9B1.zip",
+          "name_matches_md5": true,
+          "size": 146
+        }
+      ],
+      "name": "uploads",
+      "type": "uploads"
+    },
+    {
+      "client": "A",
+      "name": "unreachable adr url",
+      "request": {
+        "body": {
+          "json": {
+            "url": "http://127.0.0.1:1/none.zip"
+          }
+        },
+        "method": "POST",
+        "path": "/adr/output"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "An unexpected error occurred. If you see this message while you are using Naomi at a workshop, please contact your workshop technical support and show them this code: <ERROR_CODE>. Otherwise please contact support at naomi-support@imperial.ac.uk and quote this code: <ERROR_CODE>.",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 500
+      }
+    },
+    {
+      "client": "A",
+      "name": "download 404",
+      "outbound": [
+        {
+          "headers": {
+            "authorization": "<UUID:1>"
+          },
+          "method": "GET",
+          "path": "/dataset/ds1/resource/res1/download/out.zip",
+          "to": "adr"
+        }
+      ],
+      "request": {
+        "body": {
+          "json": {
+            "datasetId": "ds1",
+            "resourceId": "res1",
+            "url": "<ADR>/dataset/ds1/resource/res1/download/out.zip"
+          }
+        },
+        "method": "POST",
+        "path": "/adr/output"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "Unable to load resource, check resource in ADR <ADR>/dataset/ds1/resource/res1/download/out.zip.",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 404
+      }
+    }
+  ]
+}

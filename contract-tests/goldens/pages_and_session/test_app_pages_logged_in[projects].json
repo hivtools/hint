@@ -1,0 +1,51 @@
+{
+  "scenario": "pages_and_session/test_app_pages_logged_in[projects]",
+  "steps": [
+    {
+      "client": "A",
+      "name": "login test.user@example.com",
+      "request": {
+        "body": {
+          "form": {
+            "password": "password",
+            "username": "test.user@example.com"
+          }
+        },
+        "method": "POST",
+        "path": "/callback/formClient"
+      },
+      "response": {
+        "body": {
+          "empty": true
+        },
+        "headers": {
+          "location": "/"
+        },
+        "status": 303
+      }
+    },
+    {
+      "client": "A",
+      "name": "logged in GET /projects",
+      "request": {
+        "method": "GET",
+        "path": "/projects"
+      },
+      "response": {
+        "body": {
+          "contains": [
+            "var currentUser = \"test.user@example.com\"",
+            "data-user=\"test.user@example.com\"",
+            "data-title=\"Naomi\""
+          ],
+          "html": true,
+          "title": "Naomi"
+        },
+        "headers": {
+          "content-type": "text/html"
+        },
+        "status": 200
+      }
+    }
+  ]
+}

@@ -1,22 +1,18 @@
 <template>
     <div v-if="!isGuest" class="mb-5">
-        <adr-key v-if="!ssoLogin"></adr-key>
-        <div v-if="ssoLogin || key">
-            <adr-dataset></adr-dataset>
-            <div class="pt-3" id="adr-capacity" v-if="selectedDataset">
-                <span class="font-weight-bold align-self-stretch" v-translate="'adrAccessLevel'"></span>
-                <span v-tooltip="handleUploadPermission(hasUploadPermission, true)">
-                    <span class="text-danger ml-1">{{ handleUploadPermission(hasUploadPermission, false) }}</span>
-                </span>
-            </div>
+        <adr-dataset></adr-dataset>
+        <div class="pt-3" id="adr-capacity" v-if="selectedDataset">
+            <span class="font-weight-bold align-self-stretch" v-translate="'adrAccessLevel'"></span>
+            <span v-tooltip="handleUploadPermission(hasUploadPermission, true)">
+                <span class="text-danger ml-1">{{ handleUploadPermission(hasUploadPermission, false) }}</span>
+            </span>
         </div>
     </div>
 </template>
 <script lang="ts">
 import {mapActionByName, mapStateProp} from "../../utils";
-import AdrKey from "./ADRKey.vue";
 import AdrDataset from "./ADRInputDataset.vue";
-import {AdrDatasetType, type ADRState} from "../../store/adr/adr";
+import type {ADRState} from "../../store/adr/adr";
 import i18next from "i18next";
 import type {RootState} from "../../root";
 import type {Language} from "../../store/translations/locales";
@@ -29,7 +25,6 @@ const namespace = "adr";
 
 export default defineComponent({
     components: {
-        "adr-key": AdrKey,
         "adr-dataset": AdrDataset
     },
     setup() {
@@ -47,10 +42,7 @@ export default defineComponent({
                                                                      (state: BaselineState) => state.selectedDataset)
     },
     methods: {
-        getDatasets: mapActionByName(namespace, 'getDatasets'),
-        fetchADRKey: mapActionByName(namespace, "fetchKey"),
         getUserCanUpload: mapActionByName(namespace, 'getUserCanUpload'),
-        ssoLoginMethod: mapActionByName(namespace, "ssoLoginMethod"),
         handleUploadPermission: function (isADRWriter: boolean, isTooltip: boolean) {
             let displayText = null;
             switch (isADRWriter) {
@@ -77,9 +69,6 @@ export default defineComponent({
         }
     },
     watch: {
-        key() {
-            this.getDatasets(AdrDatasetType.Input);
-        },
         selectedDataset() {
             this.getUserCanUpload()
         }

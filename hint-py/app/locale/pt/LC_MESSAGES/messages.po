@@ -1,0 +1,174 @@
+# Messages shown to users by the API. The ids are the keys the Kotlin app uses.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: hint-py 0.1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-27 16:34+0000\n"
+"Language: pt\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#. Placeholders: {app_title}, {code} (to quote to support), {support_email}.
+msgid "unexpectedError"
+msgstr ""
+"Um erro inesperado ocorreu. Se você vir esta mensagem enquanto estiver usando {app_title} em um workshop, entre em "
+"contato com o suporte técnico do workshop e mostre a eles este código: {code}. Caso contrário, entre em contato com o"
+" suporte em {support_email} e cite este código: {code}"
+
+msgid "loadFailed"
+msgstr "Incapaz de carregar arquivos para a sessão. Os arquivos especificados não existem no servidor."
+
+msgid "userExists"
+msgstr "Usuário já existe."
+
+msgid "invalidEmail"
+msgstr "Por favor, forneça um endereço de e-mail válido."
+
+msgid "projectDoesNotExist"
+msgstr "O projeto não existe."
+
+msgid "versionDoesNotExist"
+msgstr "A versão não existe."
+
+msgid "invalidVersion"
+msgstr "Este utilizador não pode usar esta versão."
+
+msgid "guestsOnly"
+msgstr "Apenas os convidados podem criar uma versão de convidado."
+
+msgid "userDoesNotExist"
+msgstr "Usuário não existe."
+
+msgid "missingShapeFile"
+msgstr "Você deve fazer upload de um arquivo de forma antes de fazer upload de dados de pesquisa ou programa."
+
+#. Placeholders: {max_size} (such as "200 MB").
+msgid "fileTooLarge"
+msgstr "O arquivo é muito grande. Os arquivos podem ter até {max_size}."
+
+#. Placeholders: {expected} (such as "PJNZ, zip"), {got}.
+msgid "invalidFileExtension"
+msgstr "O ficheiro tem de ser do tipo {expected}, foi obtido o tipo {got}."
+
+msgid "invalidToken"
+msgstr "O token não é válido."
+
+msgid "invalidPasswordLength"
+msgstr "A senha deve ter pelo menos 6 caracteres."
+
+msgid "unknownInputTimeSeriesType"
+msgstr "Tipo de série temporal de entrada desconhecido"
+
+msgid "noPermissionToAccessResource"
+msgstr ""
+"Você não tem permissão para carregar este recurso do ADR. Entre em contato com o administrador do conjunto de dados "
+"para obter permissão."
+
+#. Placeholders: {resource}.
+msgid "adrResourceError"
+msgstr "Não é possível carregar o recurso, verifique o recurso no ADR {resource}."
+
+# New in hint-py: needs review by a translator.
+#. Placeholders: {resource} (the link that the user gave).
+#, fuzzy
+msgid "notOnAdr"
+msgstr "Este link não leva ao ADR, por isso o arquivo não pode ser importado: {resource}"
+
+# New in hint-py: needs review by a translator.
+#, fuzzy
+msgid "invalidResourceType"
+msgstr "Tipo de recurso inválido (resourceType)."
+
+# New in hint-py: needs review by a translator.
+#, fuzzy
+msgid "descriptionRequired"
+msgstr "Uma descrição (description) deve ser fornecida para um tipo de recurso de saída (resourceType)."
+
+# New in hint-py: needs review by a translator.
+#, fuzzy
+msgid "resourceIdRequired"
+msgstr "Um identificador de recurso (resourceId) deve ser fornecido para um tipo de recurso de entrada (resourceType)."
+
+# New in hint-py: needs review by a translator.
+#, fuzzy
+msgid "fileDoesNotExist"
+msgstr "O arquivo não existe."
+
+# New in hint-py: needs review by a translator.
+#, fuzzy
+msgid "adrHashUnavailable"
+msgstr "Não foi possível obter o hash do arquivo a partir do ADR."
+
+msgid "adrFetchingDatasetsError"
+msgstr "Ocorreu um erro ao obter conjuntos de dados do ADR"
+
+msgid "adrFetchingDatasetsNoAccountError"
+msgstr ""
+"Não é possível buscar conjuntos de dados do ADR porque você ainda não possui uma conta. Faça login no ADR com suas "
+"credenciais Auth0, retorne aqui e tente novamente."
+
+msgid "unknownReviewInputFileType"
+msgstr "Tipo de arquivo de plotagem de entrada de revisão desconhecido."
+
+msgid "missingCalibrateData"
+msgstr ""
+"Não foi encontrado nenhum resultado de calibração para este projeto, comunique um problema ou volte a calibrar o "
+"modelo"
+
+msgid "failedZipRehydrate"
+msgstr ""
+"Não é possível carregar os resultados do modelo. Este ajuste não foi gerado na aplicação web Naomi. Por favor, "
+"contacte a assistência."
+
+msgid "rehydrateMissingInputFile"
+msgstr ""
+"Não é possível carregar o zip de saída, os ficheiros de entrada não foram encontrados. Contacte um administrador do "
+"sistema."
+
+msgid "rehydrateModelFitIdUnknown"
+msgstr ""
+"Não é possível carregar o zip de saída, o ajuste do modelo não foi gerado na aplicação Web. Contacte um administrador"
+" do sistema."
+
+msgid "rehydrateCalibrateIdUnknown"
+msgstr ""
+"Não é possível carregar o zip de saída, a calibração do modelo não foi gerada na aplicação Web. Contacte um "
+"administrador do sistema."
+
+msgid "noADRKey"
+msgstr ""
+"Não foi possível encontrar as suas credenciais do ADR. Termine a sessão e volte a iniciar sessão com a sua conta de início de sessão único."
+
+msgid "noResponse"
+msgstr "Nenhuma resposta recebida. A solicitação pode ter expirado."
+
+msgid "unparseableResponse"
+msgstr "Não foi possível ler a resposta."
+
+msgid "adrTimeout"
+msgstr "A solicitação ao ADR expirou."
+
+msgid "adrBadGateway"
+msgstr "Falha ao obter resposta do ADR. Tente novamente mais tarde."
+
+# New in hint-py: needs a check by a translator.
+msgid "githubTokenRequired"
+msgstr "É necessário um token do GitHub. Envie-o no cabeçalho Authorization no formato \"Bearer <token>\"."
+
+# New in hint-py: needs a check by a translator.
+msgid "githubTokenInvalid"
+msgstr "O GitHub não aceitou o token. Verifique se está correto e se não expirou."
+
+# New in hint-py: needs a check by a translator.
+msgid "notInGitHubTeam"
+msgstr ""
+"Não pode descarregar isto. O seu utilizador do GitHub tem de ser membro da equipa autorizada a descarregar ficheiros "
+"de depuração, e o token tem de poder ler a equipa (um token clássico precisa do âmbito read:org)."
+
+# New in hint-py: needs a check by a translator.
+msgid "githubFailed"
+msgstr "Não foi possível verificar o token do GitHub, porque o GitHub não respondeu como esperado. Tente novamente mais tarde."

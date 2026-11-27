@@ -389,7 +389,7 @@ export const mockReviewInputDataset = (props?: Partial<ReviewInputDataset>): Rev
 
 export const mockRootState = (props?: Partial<RootState>): RootState => {
     return {
-        ...emptyState(),
+        ...emptyState("some.user@example.com"),
         ...props
     }
 };

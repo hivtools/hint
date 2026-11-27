@@ -1,0 +1,181 @@
+{
+  "scenario": "sso/test_model_debug_requires_a_github_bearer_token",
+  "steps": [
+    {
+      "client": "A",
+      "name": "no authorization header",
+      "request": {
+        "method": "GET",
+        "path": "/model/debug/<TASK:fit>"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "error": "Unauthorized",
+            "path": "/model/debug/<TASK:fit>",
+            "status": 401,
+            "timestamp": "<EPOCH_MS>"
+          }
+        },
+        "headers": {
+          "content-type": "application/json",
+          "www-authenticate": "Bearer realm=\"authentication required\""
+        },
+        "status": 401
+      }
+    },
+    {
+      "client": "A",
+      "name": "basic auth",
+      "request": {
+        "headers": {
+          "authorization": "Basic <TOKEN>"
+        },
+        "method": "GET",
+        "path": "/model/debug/<TASK:fit>"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "error": "Unauthorized",
+            "path": "/model/debug/<TASK:fit>",
+            "status": 401,
+            "timestamp": "<EPOCH_MS>"
+          }
+        },
+        "headers": {
+          "content-type": "application/json",
+          "www-authenticate": "Bearer realm=\"authentication required\""
+        },
+        "status": 401
+      }
+    },
+    {
+      "client": "A",
+      "name": "bearer without token",
+      "request": {
+        "headers": {
+          "authorization": "Bearer"
+        },
+        "method": "GET",
+        "path": "/model/debug/<TASK:fit>"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "error": "Unauthorized",
+            "path": "/model/debug/<TASK:fit>",
+            "status": 401,
+            "timestamp": "<EPOCH_MS>"
+          }
+        },
+        "headers": {
+          "content-type": "application/json",
+          "www-authenticate": "Bearer realm=\"authentication required\""
+        },
+        "status": 401
+      }
+    },
+    {
+      "client": "A",
+      "name": "wrong scheme",
+      "request": {
+        "headers": {
+          "authorization": "Token abc"
+        },
+        "method": "GET",
+        "path": "/model/debug/<TASK:fit>"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "error": "Unauthorized",
+            "path": "/model/debug/<TASK:fit>",
+            "status": 401,
+            "timestamp": "<EPOCH_MS>"
+          }
+        },
+        "headers": {
+          "content-type": "application/json",
+          "www-authenticate": "Bearer realm=\"authentication required\""
+        },
+        "status": 401
+      }
+    },
+    {
+      "client": "A",
+      "name": "login test.user@example.com",
+      "request": {
+        "body": {
+          "form": {
+            "password": "password",
+            "username": "test.user@example.com"
+          }
+        },
+        "method": "POST",
+        "path": "/callback/formClient"
+      },
+      "response": {
+        "body": {
+          "empty": true
+        },
+        "headers": {
+          "location": "/"
+        },
+        "status": 303
+      }
+    },
+    {
+      "client": "A",
+      "name": "a logged in session is not enough",
+      "outbound": [
+        {
+          "method": "GET",
+          "path": "/model/debug/<TASK:fit>",
+          "status": 400,
+          "to": "hintr"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/model/debug/<TASK:fit>"
+      },
+      "response": {
+        "body": {
+          "ignored": true,
+          "non_empty": true
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 400
+      }
+    },
+    {
+      "client": "A",
+      "name": "no id",
+      "request": {
+        "method": "GET",
+        "path": "/model/debug/"
+      },
+      "response": {
+        "body": {
+          "json": {
+            "data": {},
+            "errors": [
+              {
+                "detail": "An unexpected error occurred. If you see this message while you are using Naomi at a workshop, please contact your workshop technical support and show them this code: <ERROR_CODE>. Otherwise please contact support at naomi-support@imperial.ac.uk and quote this code: <ERROR_CODE>. No handler found for GET /model/debug/",
+                "error": "OTHER_ERROR"
+              }
+            ],
+            "status": "failure"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 404
+      }
+    }
+  ]
+}
