@@ -12,10 +12,9 @@ import https from "node:https";
 // The build writes the files with hashed names to ./public/assets, and ./public/index.html with the tags for them.
 // The Python API sends ./public/index.html for the pages of the app (/, /projects, /accessibility, /privacy), and
 // serves ./public at /public/. The page has nothing in it for one user: the app asks GET /me.
-// Kotlin still makes the login page from the Freemarker templates in ./templates. `npm run copy` copies the
-// templates to ./public, and Kotlin reads them from there. The build writes ./public/css/app.css (a fixed name) for
-// login.ftl and 404.ftl. It also still writes ./public/vite-assets.ftl, which Kotlin's index.ftl includes, for as long
-// as Kotlin has that page.
+// The Python API makes the login and 404 pages (hint-py/app/templates). They use ./public/css/app.css, which the build
+// writes with a fixed name. The build also still writes ./public/vite-assets.ftl, for the old Kotlin app's index.ftl
+// (`npm run copy` copies its templates to ./public), until the Kotlin app is deleted.
 
 // The browsers that we support. Vue CLI used this list by default, so it is the same as before.
 // Vite does not read browserslist. browserslist-to-esbuild changes the list to targets such as "chrome151",
@@ -28,7 +27,7 @@ const base = "/public/";
 // The pages of the app (vue-router's routes). The Python API sends index.html for each.
 const appPages = new Set(["/", "/projects", "/accessibility", "/privacy"]);
 
-// The URL of the back end (nginx in front of Python and Kotlin) for `npm run dev`.
+// The URL of the back end (nginx in front of the Python API) for `npm run dev`.
 const backendUrl = new URL(process.env.HINT_BACKEND_URL || "http://localhost:8080");
 
 // Requests that the Vite dev server answers itself. It sends all other requests to the back end.
@@ -84,7 +83,7 @@ const freemarkerAssets = (): Plugin => ({
 });
 
 // Gets a page from the back end with the browser's headers (and so its cookies), as it is. Only the login page
-// (Kotlin) comes this way: redirects (for example to Auth0) and errors go back to the browser as they are.
+// (from the Python API) comes this way: redirects (for example to Auth0) and errors go back to the browser as they are.
 const sendBackendPage = (server: ViteDevServer, req: IncomingMessage, res: ServerResponse) => {
     const url = req.url || "/";
     const client = backendUrl.protocol === "https:" ? https : http;

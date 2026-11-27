@@ -1,27 +1,30 @@
 #!/usr/bin/env bash
 # One development environment, which is also what the contract tests run against.
 #
-#   scripts/dev.sh up [--no-proxy] [--rebuild]   everything: postgres, redis, hintr (mock model), the Python API,
-#                                                 the nginx front door on :8080, the Kotlin app on :8081, and the
-#                                                 stubs the tests use. Browse to http://127.0.0.1:8080
+#   scripts/dev.sh up [--rebuild]                 everything: postgres, redis, hintr (mock model), the Python API, the
+#                                                 nginx front door on :8080, and the stubs the tests use. Browse to
+#                                                 http://127.0.0.1:8080 and log in with a dev user button
+#   scripts/dev.sh up --no-proxy [--rebuild]      the old Kotlin app alone on :8080 instead of Python and nginx, to
+#                                                 compare with it or record the contract goldens from it
 #   scripts/dev.sh down                           stop and remove everything `up` started (containers, volumes)
-#   scripts/dev.sh restart-app                    rebuild and restart the Kotlin app after a code change
-#   scripts/dev.sh logs [name]                    follow the logs. Without a name: the Kotlin app, the stubs and all the
-#                                                 containers. With one: kotlin (or app), kotlin-sso, stubs, or a
-#                                                 container (db, redis, hintr, python, proxy, ...)
+#   scripts/dev.sh restart-app                    rebuild and restart the Kotlin app (--no-proxy only)
+#   scripts/dev.sh logs [name]                    follow the logs. Without a name: the stubs, the Kotlin app if it runs,
+#                                                 and all the containers. With one: kotlin (or app), kotlin-sso, stubs,
+#                                                 or a container (db, redis, hintr, python, proxy, ...)
 #                                                 The logs and traces of the Python API, and hintr's traces, go to a
 #                                                 local OpenTelemetry dashboard, http://127.0.0.1:18888
 #                                                 (OTEL=0 scripts/dev.sh up: no dashboard)
-#   scripts/dev.sh deps                           only postgres, redis and hintr (run Kotlin yourself, e.g. in the IDE)
+#   scripts/dev.sh deps                           only postgres, redis and hintr
 #   scripts/dev.sh test [pytest args]             run the contract tests (starts the stack first if needed)
 #                                                 e.g. test --record, test -k projects, test -x, test --run-slow
 #   scripts/dev.sh test-determinism [N]           N replays, restart the app, one more replay; all must pass
 #   scripts/dev.sh test-coverage                  rewrite contract-tests/COVERAGE.md from the goldens
 #
 # Notes
-#   * Kotlin talks to the stubs (ADR, SSO identity provider, error-report flow) and, through the recording proxy, to
-#     hintr. The ADR is the exception: `up` keeps the real ADR from config.properties (REAL_ADR=0 for the stub), while
-#     `test` uses the stub. Each restarts the Kotlin app if it is running with the other one.
+#   * The apps talk to the stubs (ADR, SSO identity provider, error-report flow) and, through the recording proxy, to
+#     hintr. The ADR is the exception: `up` keeps the real ADR, while `test` uses the stub.
+#   * The contract tests were recorded from Kotlin, and still log in with its password form (see D22 in
+#     docs/porting-checklist.md). `test` starts a second Kotlin app (single sign-on mode) for the sso_mode scenarios.
 #   * The tests empty the database between scenarios. They stop if it holds projects, files or ADR keys unless you pass
 #     --reset-db.
 #   * PORT_OFFSET=10000 scripts/dev.sh up starts a second, independent stack (ports and folders shifted by the offset).
@@ -53,7 +56,6 @@ export RESULTS_NAME=${RESULTS_NAME:-results$SFX}    # requests to hintr, which s
 export DB_PORT=${DB_PORT:-$((5432 + PORT_OFFSET))}
 export HINTR_PORT=${HINTR_PORT:-$((8888 + PORT_OFFSET))}
 export PROXY_PORT=${PROXY_PORT:-$((8080 + PORT_OFFSET))}      # the front door (Kotlin itself with --no-proxy)
-export KOTLIN_PORT=${KOTLIN_PORT:-$((8081 + PORT_OFFSET))}    # Kotlin when it sits behind the nginx proxy
 SSO_PORT=${SSO_PORT:-$((8085 + PORT_OFFSET))}                 # second Kotlin instance (oauth2_login_method=true), tests only
 export FAULT_PORT=${FAULT_PORT:-$((8882 + PORT_OFFSET))}      # recording/faulting proxy in front of hintr (hintr_url)
 STUB_PORT=${STUB_PORT:-$((8883 + PORT_OFFSET))}               # stub ADR (/adr/, /adr-sso/) and error-report (/flow)
@@ -183,8 +185,6 @@ start_app() { # $1 = name (app | app-sso), $2 = port, $3 = application_url, $4 =
   echo $! > "$STATE/$1.pid"
 }
 
-app_port() { if [ "$(cat "$STATE/mode" 2>/dev/null || echo proxy)" = proxy ]; then echo "$KOTLIN_PORT"; else echo "$PROXY_PORT"; fi; }
-
 # ---- up / down
 do_up() { # $1 = pull | nopull, then --no-proxy, --rebuild
   local pull=$1 rebuild=0 mode="" a
@@ -234,10 +234,15 @@ do_up() { # $1 = pull | nopull, then --no-proxy, --rebuild
   ensure_python_env
   ensure_certificate
   ensure_stubs
-  if [ "$rebuild" = 1 ] || [ ! -s "$STATE/classpath.txt" ]; then resolve_classpath; fi
-  start_app app "$(app_port)" "http://127.0.0.1:$PROXY_PORT" false
-  wait_http "the Kotlin app" "http://127.0.0.1:$(app_port)/sso" 180
-  if [ "$mode" = proxy ]; then wait_http "the proxy" "http://127.0.0.1:$PROXY_PORT/sso" 60; fi
+  if [ "$mode" = proxy ]; then
+    # Kotlin is not routed any more: nothing to start
+    stop_proc app
+    wait_http "the proxy and the Python API" "http://127.0.0.1:$PROXY_PORT/me" 60
+  else
+    if [ "$rebuild" = 1 ] || [ ! -s "$STATE/classpath.txt" ]; then resolve_classpath; fi
+    start_app app "$PROXY_PORT" "http://127.0.0.1:$PROXY_PORT" false
+    wait_http "the Kotlin app" "http://127.0.0.1:$PROXY_PORT/sso" 180
+  fi
 
   # users the database starts with: the tests put them back after emptying the database
   if [ ! -f "$STATE/users_seed.json" ]; then
@@ -249,8 +254,13 @@ e = Env(base_url='x', db_url='postgresql://hintuser:changeme@127.0.0.1:$DB_PORT/
         users_seed_file=Path('$STATE/users_seed.json'))
 Db(e).snapshot_seed_users()")
   fi
-  echo "Ready: http://127.0.0.1:$PROXY_PORT  (Kotlin :$(app_port), hintr :$HINTR_PORT, postgres :$DB_PORT;" \
-       "test user test.user@example.com / password)"
+  if [ "$mode" = proxy ]; then
+    echo "Ready: http://127.0.0.1:$PROXY_PORT  (the Python API behind nginx, hintr :$HINTR_PORT, postgres :$DB_PORT;" \
+         "log in with a dev user button)"
+  else
+    echo "Ready: http://127.0.0.1:$PROXY_PORT  (Kotlin alone, hintr :$HINTR_PORT, postgres :$DB_PORT;" \
+         "test user test.user@example.com / password)"
+  fi
   if otel_on; then echo "OpenTelemetry dashboard (the Python API and hintr): http://127.0.0.1:$OTEL_UI_PORT"; fi
 }
 
@@ -273,8 +283,9 @@ do_restart_app() {
   stop_proc app; stop_proc app-sso
   sleep 3
   resolve_classpath
-  start_app app "$(app_port)" "http://127.0.0.1:$PROXY_PORT" false
-  wait_http "the Kotlin app" "http://127.0.0.1:$(app_port)/sso" 180
+  if [ "$(cat "$STATE/mode" 2>/dev/null || echo proxy)" = proxy ]; then return 0; fi
+  start_app app "$PROXY_PORT" "http://127.0.0.1:$PROXY_PORT" false
+  wait_http "the Kotlin app" "http://127.0.0.1:$PROXY_PORT/sso" 180
 }
 
 # ---- logs. Background tails ignore Ctrl+C, so they are stopped when the script ends
@@ -304,6 +315,7 @@ do_logs() { # $1 = nothing, kotlin (app), kotlin-sso, stubs, or the name of a co
 
 # ---- the tests
 ensure_sso_app() {
+  if [ ! -s "$STATE/classpath.txt" ]; then resolve_classpath; fi
   start_app app-sso "$SSO_PORT" "http://127.0.0.1:$SSO_PORT" true
   wait_http "the Kotlin app in SSO mode" "http://127.0.0.1:$SSO_PORT/sso" 180
 }

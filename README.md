@@ -29,14 +29,12 @@ apt-get install adoptopenjdk-11-hotspot -y
 1. Run `npm install` from `src/app/static`
 1. Run `./scripts/dev.sh up`. It builds the front end the first time, and starts everything in docker and on your
 machine: [hint-db](https://github.com/hivtools/hint-db/), [hintr](https://github.com/hivtools/hintr) (mock model), the
-Python API (`hint-py`), the Kotlin app on port 8081, and an nginx proxy on port 8080 in front of the two apps. It adds
-a test user with username `test.user@example.com` and password `password`. Open http://localhost:8080.
-`./scripts/dev.sh down` stops it. See [proxy/README.md](proxy/README.md).
+Python API (`hint-py`), and an nginx proxy on port 8080 in front of it. Open http://localhost:8080 and log in with one
+of the dev user buttons (`HINT_DEV_USERS` in `docker-compose.yml`). `./scripts/dev.sh down` stops it. See
+[proxy/README.md](proxy/README.md).
 
-The app needs the Python API and the proxy: the Python API sends the page and asks who the user is (`GET /me`), and the
-proxy sends the endpoints that have moved to Python there and everything else to Kotlin. Kotlin on its own (for example
-`./src/gradlew -p src :app:bootRun`, with `./scripts/dev.sh deps` for the database and hintr) still answers its
-endpoints, but the app does not start without `GET /me`.
+The Kotlin app in `src/app` is no longer used: nginx sends everything to the Python API. Its code is still here until it
+is deleted. `./scripts/dev.sh up --no-proxy` runs it alone on port 8080, to compare with it.
 
 After a change to the front end, run `npm run build && npm run copy` in `src/app/static`: the Python API serves the
 new build at once. To run the front end with hot reload instead, run `npm run dev` in `src/app/static` and open the URL

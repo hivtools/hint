@@ -124,3 +124,20 @@ async def test_small_files_are_not_gzipped(anonymous_client: httpx2.AsyncClient,
     r = await anonymous_client.get("/public/css/app.css", headers={"Accept-Encoding": "gzip"})
 
     assert "content-encoding" not in r.headers
+
+
+async def test_a_browser_that_opens_a_page_that_does_not_exist_gets_the_404_page(anonymous_client: httpx2.AsyncClient):
+    r = await anonymous_client.get("/no-such-page", headers={"Accept": "text/html,application/xhtml+xml,*/*;q=0.8"})
+
+    assert r.status_code == 404
+    assert r.headers["content-type"].startswith("text/html")
+    assert "<h1>Page Not Found </h1>" in r.text
+
+
+@pytest.mark.parametrize("path", ["/no-such-page", "/sso", "/adr/key", "/metrics", "/callback/formClient"])
+async def test_an_api_call_to_a_path_that_does_not_exist_gets_json(anonymous_client: httpx2.AsyncClient, path: str):
+    # Including paths that the app called once and that no longer exist
+    r = await anonymous_client.get(path, headers={"Accept": "application/json"})
+
+    assert r.status_code == 404
+    assert r.json()["status"] == "failure"
