@@ -20,7 +20,9 @@ app/schemas.py       request and response models
 app/errors.py        errors in the format the Vue app expects, with translated messages
 app/logging_setup.py where the logs go (see Logging below)
 app/messages.py      looks up translations in app/locale/ (gettext .po files, one per language, read with Babel)
-app/clients/         the HTTP services this API calls: hintr, ADR and GitHub
+app/clock.py         the time, in UTC, in one place so the tests can move it
+app/pages/           the login page (a static file; the app's own page is the front-end build)
+app/clients/         the HTTP services this API calls: hintr, ADR, GitHub and Auth0
 app/storage/         the files on the share: the uploads this API writes, and the results hintr writes
 app/services/        the rules that combine repositories, storage and clients (e.g. taking in an input file)
 app/routers/         one module per group of endpoints
@@ -212,9 +214,11 @@ these tests cannot show a project that is loaded, only that a real zip is downlo
 | `HINT_ADR_API_KEY`                                        | (none)                            | Development only. The API key of one user on ADR. It is used for users with no token. |
 | `HINT_ADR_SCHEMA_THIS_YEAR`, `HINT_ADR_SCHEMA_LAST_YEAR` | `country-estimates-27`, `-26`     | The type of the datasets of this year and of last year                             |
 
-In a real deployment, every user logs in with single sign-on. The proxy passes their access token to the API, and the API
-calls ADR as that user. In development, users log in with a password and have no token. Set `HINT_ADR_API_KEY` in your
-shell before `scripts/dev.sh up`, and every user calls ADR as the user of that key. (`scripts/dev.sh up` uses the real
+In a real deployment, every user logs in with single sign-on. Their session keeps their Auth0 access token (encrypted),
+and the API calls ADR as that user. When Auth0's token expires, a call to ADR answers 401 and the Vue app sends the user to
+the login page. In development, users log in with the dev login and have no token. Set `HINT_ADR_API_KEY` (or
+`ADR_TEST_KEY`, which the ADR tests use) in your shell before `scripts/dev.sh up`, and every user calls ADR as the user of
+that key. (`scripts/dev.sh up` uses the real
 ADR unless you set `REAL_ADR=0`.) The API does not start with `HINT_ADR_API_KEY` in production, because every user would
 then be the same user on ADR.
 
@@ -326,7 +330,8 @@ The API logs users in (`app/routers/login.py`) and keeps the sessions in Postgre
 tables `web_session` and `web_session_guest_version` from hint-db). The browser has a `hint_session` cookie with a random
 id, and the table only its SHA-256. Every endpoint gets the user from `Depends(current_user)` (`app/dependencies.py`).
 A visitor with no session is the guest user. A login lasts 7 days after its last use (30 days at most), a guest's
-session 24 hours. See D22 in `docs/porting-checklist.md`.
+session 24 hours. The Auth0 access token is encrypted in the table. `docs/login-and-sessions.md` has diagrams of the
+flows, the cookies and the timeouts; D22 in `docs/porting-checklist.md` has the differences from Kotlin.
 
 Deployed, users log in with Auth0. In development there is no Auth0: the login page has a button for each user in
 `HINT_DEV_USERS` (`POST /dev-login`), and the dev stack sets two.
@@ -339,6 +344,7 @@ Deployed, users log in with Auth0. In development there is no Auth0: the login p
 | `HINT_AUTH0_CLIENT_SECRET`  | (none)                            | A secret: the secret of the Auth0 application.                 |
 | `HINT_AUTH0_AUDIENCE`       | `naomi`                           | The API the access token is for.                               |
 | `HINT_AUTH0_SCOPE`          | `openid profile email access:adr` | `access:adr` gives a token that ADR accepts, to call ADR as the user. |
+| `HINT_SESSION_ENCRYPTION_KEYS` | (none)                          | A secret, needed with Auth0: the Fernet keys that encrypt the access tokens in `web_session`, comma separated, the one that encrypts first. To change the key, put the new one first and remove the old one 30 days later. Make one with `python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"`. |
 | `HINT_DEV_USERS`            | (none)                            | Development only, comma separated. Refused with Auth0, with an https address, or without `HINT_ENVIRONMENT=development`. |
 
 ### The page of the app

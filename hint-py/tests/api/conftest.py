@@ -84,7 +84,7 @@ async def adr(adr: FakeAdr) -> FakeAdr:
 async def auth0(settings_overrides: dict) -> AsyncIterator[FakeAuth0]:
     """Auth0, as a deployment has it: the settings name it, and the app calls the fake (see tests/auth0.py)."""
     fake = FakeAuth0()
-    app.state.auth0_http = fake.http
+    app.state.auth0_oauth = fake.http
     settings_overrides.update(
         auth0_domain=AUTH0_DOMAIN,
         auth0_client_id=AUTH0_CLIENT_ID,

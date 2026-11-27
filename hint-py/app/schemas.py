@@ -35,6 +35,16 @@ class Me(BaseModel):
     title: str
 
 
+class LoginOptions(CamelModel):
+    """GET /login/options: what the login page shows."""
+
+    title: str
+    # The single sign-on (Auth0) button
+    sso: bool
+    # Development only: a button for each of these users (POST /dev-login)
+    dev_users: list[str]
+
+
 class Version(CamelModel):
     id: str
     created: datetime

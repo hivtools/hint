@@ -43,6 +43,7 @@ server {
     location = /me { include snippets/python.conf; }
     # Logging in and out, and the sessions (Auth0, or the dev login in development)
     location = /login { include snippets/python.conf; }
+    location = /login/options { include snippets/python.conf; }
     location = /oauth2 { include snippets/python.conf; }
     location = /register { include snippets/python.conf; }
     location = /callback/oauth2Client { include snippets/python.conf; }

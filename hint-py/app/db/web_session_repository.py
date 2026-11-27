@@ -1,11 +1,12 @@
-"""The rows of `web_session` and `web_session_guest_version`. The rules (how long a session lasts, the cookie) are in
-app/services/web_sessions.py, this only reads and writes."""
+"""The rows of `web_session` and `web_session_guest_version`. The rules (how long a session lasts, the cookie, the
+encryption of the token) are in app/services/web_sessions.py, this only reads and writes."""
 
 from dataclasses import dataclass
-from datetime import UTC, datetime
+from datetime import datetime
 
 from sqlalchemy import delete, insert, select, update
 
+from app.clock import as_utc
 from app.db.database import DbSession
 from app.db.models import WebSession, WebSessionGuestVersion
 
@@ -14,9 +15,8 @@ from app.db.models import WebSession, WebSessionGuestVersion
 class WebSessionRow:
     id_hash: bytes
     user_id: str | None
-    access_token: str | None
-    oauth_state: str | None
-    redirect_to: str | None
+    encrypted_access_token: str | None
+    access_token_expires_at: datetime | None
     created_at: datetime
     expires_at: datetime
     guest_version_ids: frozenset[str]
@@ -26,30 +26,28 @@ class WebSessionRepository:
     def __init__(self, db_session: DbSession):
         self.db_session = db_session
 
-    async def create(
+    async def create_session(
         self,
         id_hash: bytes,
         *,
         user_id: str | None,
         created_at: datetime,
         expires_at: datetime,
-        access_token: str | None = None,
-        oauth_state: str | None = None,
-        redirect_to: str | None = None,
+        encrypted_access_token: str | None = None,
+        access_token_expires_at: datetime | None = None,
     ) -> None:
         await self.db_session.execute(
             insert(WebSession).values(
                 id_hash=id_hash,
                 user_id=user_id,
-                access_token=access_token,
-                oauth_state=oauth_state,
-                redirect_to=redirect_to,
+                encrypted_access_token=encrypted_access_token,
+                access_token_expires_at=access_token_expires_at,
                 created_at=created_at,
                 expires_at=expires_at,
             )
         )
 
-    async def get_live(self, id_hash: bytes, now: datetime, created_after: datetime) -> WebSessionRow | None:
+    async def get_live_session(self, id_hash: bytes, now: datetime, created_after: datetime) -> WebSessionRow | None:
         """The session, if it has not expired (`expires_at`) and is not too old (`created_after`). Both are checked here,
         so a row that the clean-up has not removed yet lets nobody in."""
         row = (
@@ -69,25 +67,16 @@ class WebSessionRepository:
         return WebSessionRow(
             id_hash=row.id_hash,
             user_id=row.user_id,
-            access_token=row.access_token,
-            oauth_state=row.oauth_state,
-            redirect_to=row.redirect_to,
-            created_at=_utc(row.created_at),
-            expires_at=_utc(row.expires_at),
+            encrypted_access_token=row.encrypted_access_token,
+            access_token_expires_at=as_utc(row.access_token_expires_at) if row.access_token_expires_at else None,
+            created_at=as_utc(row.created_at),
+            expires_at=as_utc(row.expires_at),
             guest_version_ids=frozenset(versions),
         )
 
-    async def set_expires_at(self, id_hash: bytes, expires_at: datetime) -> None:
+    async def extend_session(self, id_hash: bytes, expires_at: datetime) -> None:
         await self.db_session.execute(
             update(WebSession).where(WebSession.id_hash == id_hash).values(expires_at=expires_at)
-        )
-
-    async def set_login_target(self, id_hash: bytes, oauth_state: str, redirect_to: str | None) -> None:
-        """What a login with Auth0 that starts from this (guest) session must come back with, and where it goes then."""
-        await self.db_session.execute(
-            update(WebSession)
-            .where(WebSession.id_hash == id_hash)
-            .values(oauth_state=oauth_state, redirect_to=redirect_to)
         )
 
     async def add_guest_version(self, id_hash: bytes, version_id: str) -> None:
@@ -96,16 +85,11 @@ class WebSessionRepository:
             insert(WebSessionGuestVersion).values(session_id_hash=id_hash, version_id=version_id)
         )
 
-    async def delete(self, id_hash: bytes) -> None:
+    async def delete_session(self, id_hash: bytes) -> None:
         await self.db_session.execute(
             delete(WebSessionGuestVersion).where(WebSessionGuestVersion.session_id_hash == id_hash)
         )
         await self.db_session.execute(delete(WebSession).where(WebSession.id_hash == id_hash))
-
-
-def _utc(value: datetime) -> datetime:
-    # Postgres gives a timestamptz back with its time zone. SQLite (the tests) keeps none, and the times are UTC
-    return value if value.tzinfo else value.replace(tzinfo=UTC)
 
 
 def get_web_session_repository(db_session: DbSession) -> WebSessionRepository:

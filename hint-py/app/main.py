@@ -7,7 +7,7 @@ from fastapi import FastAPI
 from starlette.middleware.gzip import DEFAULT_EXCLUDED_CONTENT_TYPES, GZipMiddleware
 
 from app.clients.adr_client import create_adr_http_client
-from app.clients.auth0_client import create_auth0_http_client
+from app.clients.auth0_client import create_auth0_oauth_client
 from app.clients.github_client import create_github_http_client
 from app.clients.hintr_client import create_hintr_http_client
 from app.clients.issue_reporter import create_issue_report_http_client
@@ -51,9 +51,9 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None]:
     app.state.adr_http = create_adr_http_client(get_settings())
     app.state.github_http = create_github_http_client(get_settings())
     app.state.issue_report_http = create_issue_report_http_client()
-    app.state.auth0_http = create_auth0_http_client(get_settings())
+    app.state.auth0_oauth = create_auth0_oauth_client(get_settings())
     yield
-    await app.state.auth0_http.aclose()
+    await app.state.auth0_oauth.aclose()
     await app.state.issue_report_http.aclose()
     await app.state.github_http.aclose()
     await app.state.adr_http.aclose()

@@ -10,6 +10,8 @@ from pydantic import SecretStr, field_validator, model_validator
 from pydantic_settings import BaseSettings, NoDecode, SettingsConfigDict
 from sqlalchemy import URL
 
+from app.services.token_encryption import TokenEncryption
+
 LogLevel = Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
 LogFormat = Literal["auto", "console", "json"]
 Environment = Literal["development", "production"]
@@ -90,6 +92,10 @@ class Settings(BaseSettings):
     auth0_audience: str = "naomi"
     # The ADR scope gives an access token that ADR accepts, so that this API can call ADR as the user
     auth0_scope: str = "openid profile email access:adr"
+    # The keys that encrypt the Auth0 access tokens in the `web_session` table (app/services/token_encryption.py), comma
+    # separated, the one that encrypts first. Make one with
+    # `python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"`. Needed with Auth0.
+    session_encryption_keys: Annotated[list[SecretStr], NoDecode] = []
 
     # Only for development (`environment`): the users who can log in without Auth0, with one button each on the login
     # page (POST /dev-login), so that sharing a project between two users can be tried locally. Comma separated, e.g.
@@ -127,11 +133,17 @@ class Settings(BaseSettings):
                     "HINT_DEV_USERS cannot be used with Auth0 (HINT_AUTH0_DOMAIN) or an https HINT_APPLICATION_URL."
                 )
                 raise ValueError(message)
+        if self.auth0_configured and not self.session_encryption_keys:
+            message = "HINT_SESSION_ENCRYPTION_KEYS must be set with Auth0, to encrypt the access tokens."
+            raise ValueError(message)
+        if self.session_encryption_keys:
+            # Fails at the start, not at the first login, if a key is not a Fernet key
+            TokenEncryption(self.session_encryption_keys)
         return self
 
-    @field_validator("dev_users", mode="before")
+    @field_validator("dev_users", "session_encryption_keys", mode="before")
     @classmethod
-    def _split_dev_users(cls, value: object) -> object:
+    def _split_comma_list(cls, value: object) -> object:
         if isinstance(value, str):
             return [user.strip() for user in value.split(",") if user.strip()]
         return value

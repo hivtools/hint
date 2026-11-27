@@ -9,6 +9,11 @@ from sqlalchemy import insert, text
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, create_async_engine
 from sqlalchemy.pool import NullPool, StaticPool
 
+from tests.support import SESSION_ENCRYPTION_KEY
+
+# Before any Settings is made: every test's settings have a key to encrypt the Auth0 tokens of the sessions with
+os.environ["HINT_SESSION_ENCRYPTION_KEYS"] = SESSION_ENCRYPTION_KEY
+
 from app.config import Settings
 from app.db.database import create_db_session_factory
 from app.db.models import Base, User

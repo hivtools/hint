@@ -10,9 +10,9 @@ import pytest_asyncio
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncEngine
 
+from app import clock as app_clock
 from app.db.models import WebSession
 from app.main import app
-from app.services import web_sessions
 from app.services.web_sessions import COOKIE_NAME
 from tests.support import USER
 
@@ -30,7 +30,7 @@ class Clock:
 @pytest.fixture
 def clock(monkeypatch: pytest.MonkeyPatch) -> Clock:
     clock = Clock()
-    monkeypatch.setattr(web_sessions, "utc_now", lambda: clock.now)
+    monkeypatch.setattr(app_clock, "utc_now", lambda: clock.now)
     return clock
 
 

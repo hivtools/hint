@@ -227,6 +227,14 @@ class NoAdrCredentialsError(HintError):
         super().__init__("noADRKey", 400)
 
 
+class AdrLoginExpiredError(HintError):
+    """The user's Auth0 access token, with which ADR is called as them, has expired. A 401, so that the Vue app sends
+    them to the login page, as for an ended session: a new login gives a new token."""
+
+    def __init__(self):
+        super().__init__("adrLoginExpired", 401)
+
+
 class AdrFetchingDatasetsError(HintError):
     """ADR did not give the list of datasets. The status is the status of the answer of ADR, as the ADR client made it.
 

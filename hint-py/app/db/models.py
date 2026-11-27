@@ -13,19 +13,19 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from sqlalchemy.sql import expression
 
 
-class utc_now(expression.FunctionElement):
+class sql_utc_now(expression.FunctionElement):
     """The column default `now() at time zone 'utc'`, which SQLite (used by the tests) cannot run."""
 
     type = DateTime()
     inherit_cache = True
 
 
-@compiles(utc_now, "postgresql")
+@compiles(sql_utc_now, "postgresql")
 def _utc_now_postgresql(element, compiler, **kw) -> str:
     return "(now() at time zone 'utc')"
 
 
-@compiles(utc_now, "sqlite")
+@compiles(sql_utc_now, "sqlite")
 def _utc_now_sqlite(element, compiler, **kw) -> str:
     return "CURRENT_TIMESTAMP"
 
@@ -68,8 +68,8 @@ class ProjectVersion(Base):
     state: Mapped[str | None]
     note: Mapped[str | None]
     # These are nullable in the schema, but always set (by column defaults and the project_version_updated trigger)
-    created: Mapped[datetime] = mapped_column(server_default=utc_now())
-    updated: Mapped[datetime] = mapped_column(server_default=utc_now())
+    created: Mapped[datetime] = mapped_column(server_default=sql_utc_now())
+    updated: Mapped[datetime] = mapped_column(server_default=sql_utc_now())
     deleted: Mapped[bool | None] = mapped_column(server_default=false())
     version_number: Mapped[int]
 
@@ -86,17 +86,17 @@ class VersionFile(Base):
 
 
 class WebSession(Base):
-    """A login, or a guest's visit (migration V2026.11.26.1900 in hint-db). The cookie holds a random id, and this table
-    only the SHA-256 of it. See app/services/web_sessions.py."""
+    """A login, or a guest's visit. The cookie holds a random id, and this table only the SHA-256 of it. See
+    app/services/web_sessions.py."""
 
     __tablename__ = "web_session"
 
     id_hash: Mapped[bytes] = mapped_column(LargeBinary, primary_key=True)
     # None for someone who has not logged in (a guest)
     user_id: Mapped[str | None]
-    access_token: Mapped[str | None]
-    oauth_state: Mapped[str | None]
-    redirect_to: Mapped[str | None]
+    # Encrypted (app/services/token_encryption.py)
+    encrypted_access_token: Mapped[str | None]
+    access_token_expires_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
     expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
 

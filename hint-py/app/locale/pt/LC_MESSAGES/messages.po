@@ -184,3 +184,7 @@ msgstr "O parâmetro state do Auth0 não corresponde: possível ataque de falsif
 # New in hint-py: needs a check by a translator.
 msgid "auth0CodeMissing"
 msgstr "O Auth0 não enviou um código de login. Tente fazer login novamente."
+
+
+msgid "adrLoginExpired"
+msgstr "O seu login no ADR expirou. Faça login novamente."

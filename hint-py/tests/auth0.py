@@ -9,7 +9,7 @@ from urllib.parse import parse_qs
 
 import httpx2
 
-from app.clients.auth0_client import create_auth0_http_client
+from app.clients.auth0_client import create_auth0_oauth_client
 from app.config import Settings
 
 DOMAIN = "auth0.example"
@@ -17,6 +17,8 @@ CLIENT_ID = "the-client"
 CLIENT_SECRET = "the-secret"
 CODE = "the-code"
 TOKEN = "an.auth0.access.token"
+# The address of the app in the tests that use Auth0, as a deployment has it (https)
+APPLICATION_URL = "https://naomi.example"
 
 
 @dataclass
@@ -29,7 +31,15 @@ class FakeAuth0:
     calls: list[httpx2.Request] = field(default_factory=list)
 
     def __post_init__(self):
-        self.http = create_auth0_http_client(Settings(auth0_domain=DOMAIN), transport=httpx2.MockTransport(self.handle))
+        self.http = create_auth0_oauth_client(
+            Settings(
+                auth0_domain=DOMAIN,
+                auth0_client_id=CLIENT_ID,
+                auth0_client_secret=CLIENT_SECRET,
+                application_url=APPLICATION_URL,
+            ),
+            transport=httpx2.MockTransport(self.handle),
+        )
 
     def handle(self, request: httpx2.Request) -> httpx2.Response:
         self.calls.append(request)

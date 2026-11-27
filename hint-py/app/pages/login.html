@@ -4,46 +4,87 @@
     <title>Login</title>
     <link rel="shortcut icon" href="/public/favicon.ico"/>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    {# The front-end build writes app.css (a fixed name) for this page. See src/app/static/vite.config.ts. #}
+    <!-- The front-end build writes app.css (a fixed name) for this page. See src/app/static/vite.config.ts. -->
     <link href="/public/css/app.css" rel="stylesheet">
+    <!--
+        The same file for everyone (served by app/routers/login.py). The script fills in what changes:
+        - from GET /login/options: the title, and either the single sign-on button or (in development) a button for
+          each dev user;
+        - from this page's address: the message of an ended session (?error=SessionExpired&message=..., sent by the
+          Vue app). It is put in as text (textContent), never as HTML.
+    -->
     <script>
         function continueAsGuest() {
             sessionStorage.setItem("asGuest", "continueAsGuest")
         }
+
+        function show(id) {
+            document.getElementById(id).classList.remove("d-none")
+        }
+
+        function showSessionExpired() {
+            const query = new URLSearchParams(window.location.search)
+            if (query.get("error") === "SessionExpired") {
+                const error = document.getElementById("error")
+                error.textContent = query.get("message") || "Your session expired. Please log in again"
+                error.classList.remove("d-none")
+            }
+        }
+
+        async function showLoginOptions() {
+            const response = await fetch("/login/options", {cache: "no-store"})
+            const options = (await response.json()).data
+            document.getElementById("app-title").textContent = options.title
+            if (options.sso) {
+                show("sso")
+            }
+            if (options.devUsers.length > 0) {
+                const form = document.getElementById("dev-login-form")
+                for (const user of options.devUsers) {
+                    const button = document.createElement("button")
+                    button.className = "btn btn-red w-100 mt-2 dev-login"
+                    button.type = "submit"
+                    button.name = "user"
+                    button.value = user
+                    button.textContent = "Log in as " + user
+                    form.appendChild(button)
+                }
+                show("dev-login")
+            }
+            if (options.sso || options.devUsers.length > 0) {
+                show("or")
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            showSessionExpired()
+            showLoginOptions()
+        })
     </script>
 </head>
 <body class="login-page m-0 p-0 h-100">
     <div id="container" class="d-flex flex-column vh-100">
         <a href="https://www.unaids.org" target="_blank"><img src="/public/images/unaids_logo.png" class="large-logo mt-4 mb-4 mx-auto d-flex"/></a>
-        <h1 class="m-0 text-center"><strong>{{ app_title }}</strong></h1>
+        <h1 class="m-0 text-center"><strong id="app-title"></strong></h1>
         <div id="app" class="card login-form mx-auto mt-3">
             <div class="card-body mx-2">
-                {% if sso %}
+                <div id="sso" class="d-none">
                     <div class="text-center mt-2">
-                        <a id="sso-login" class="btn btn-red w-100" href="{{ sso_url }}">Log in with HIV Tools Single Sign-On account</a>
+                        <a id="sso-login" class="btn btn-red w-100" href="/oauth2">Log in with HIV Tools Single Sign-On account</a>
                     </div>
                     <div id="register-oauth2-account" class="text-muted text-center mt-2">
                         Don't have an account? <a href="/register" target="_blank">Create an account</a>
                     </div>
-                {% endif %}
-                {% if dev_users %}
-                    {# Development only (HINT_DEV_USERS): log in as one of these users, with no password #}
+                </div>
+                <div id="dev-login" class="d-none">
+                    <!-- Development only (HINT_DEV_USERS): log in as one of these users, with no password -->
                     <h2 class="text-dark mb-3">Login</h2>
-                    <form id="dev-login-form" method="post" action="/dev-login">
-                        <input type="hidden" name="redirectTo" value="{{ continue_to }}">
-                        {% for user in dev_users %}
-                            <button class="btn btn-red w-100 mt-2 dev-login" type="submit" name="user" value="{{ user }}">Log in as {{ user }}</button>
-                        {% endfor %}
-                    </form>
-                {% endif %}
-                {% if error %}
-                    <div id="error" class="alert alert-danger mt-2">{{ error }}</div>
-                {% endif %}
+                    <form id="dev-login-form" method="post" action="/dev-login"></form>
+                </div>
+                <div id="error" class="alert alert-danger mt-2 d-none"></div>
                 <div id="continue-as-guest" class="text-center mt-2">
-                    {% if sso or dev_users %}
-                        <div class="text-divider"><span class="text-muted">OR</span></div>
-                    {% endif %}
-                    <a class="btn btn-red w-100" onclick="continueAsGuest()" href="{{ continue_to }}">Continue as guest</a>
+                    <div id="or" class="text-divider d-none"><span class="text-muted">OR</span></div>
+                    <a class="btn btn-red w-100" onclick="continueAsGuest()" href="/">Continue as guest</a>
                 </div>
             </div>
         </div>

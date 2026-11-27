@@ -21,7 +21,7 @@ The browser's `hint_session` cookie goes to Python as it is, through `snippets/p
 from it. Kotlin is no longer asked, and its own session (`JSESSIONID`) knows nobody: the endpoints still on Kotlin answer
 as for a guest.
 
-- Login: `/login` (the page), `/oauth2` and `/register` (start a login with Auth0), `/callback/oauth2Client` (where
+- Login: `/login` (the page) and `/login/options` (what it shows), `/oauth2` and `/register` (start a login with Auth0), `/callback/oauth2Client` (where
   Auth0 sends the browser back), `/logout`, and in development `/dev-login`. All go to Python.
 - The version a request works on is not part of the identity. The browser tab sends it in `X-Version-Id` on every
   request, nginx passes it on, and Python checks that the user may use it (`current_version_id`). A guest may use the

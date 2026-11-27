@@ -86,3 +86,13 @@ async def test_the_session_of_a_user_who_is_not_a_guest_is_not_changed(api: http
 
     async with make_client(USER) as again:
         assert (await again.get("/items/whoami")).json()["guest_version_ids"] == []
+
+
+async def test_every_guest_version_is_version_1(anonymous_client: httpx2.AsyncClient):
+    # A guest's versions are in no project, so none comes after another (as in Kotlin): two tabs, and another guest
+    first = (await anonymous_client.post("/guest/version")).json()["data"]
+    second = (await anonymous_client.post("/guest/version")).json()["data"]
+    async with make_client("guest") as other_guest:
+        other = (await other_guest.post("/guest/version")).json()["data"]
+
+    assert [first["versionNumber"], second["versionNumber"], other["versionNumber"]] == [1, 1, 1]

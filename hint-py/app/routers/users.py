@@ -33,7 +33,7 @@ async def new_guest_version(
     response: Response,
     session: CurrentWebSession,
     sessions: Sessions,
-    rows: Annotated[WebSessionRepository, Depends(get_web_session_repository)],
+    session_repository: Annotated[WebSessionRepository, Depends(get_web_session_repository)],
     versions: Versions,
 ) -> schemas.SuccessResponse[schemas.Version]:
     if session is not None and session.user_id is not None:
@@ -43,5 +43,5 @@ async def new_guest_version(
         session = await sessions.start_guest(response)
     version_id = str(uuid.uuid4())
     await versions.save_version(version_id, None)
-    await rows.add_guest_version(session.id_hash, version_id)
+    await session_repository.add_guest_version(session.id_hash, version_id)
     return schemas.success(await versions.get_version(version_id))

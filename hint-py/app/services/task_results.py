@@ -8,12 +8,13 @@ When that is built, this module reads the manifest instead of asking hintr, and 
 """
 
 from dataclasses import dataclass
-from datetime import UTC, datetime
+from datetime import datetime
 from pathlib import Path
 from typing import Annotated
 
 from fastapi import Depends
 
+from app import clock
 from app.clients.hintr_client import Hintr, HintrClient
 from app.config import Settings, get_settings
 from app.errors import MissingCalibrateDataError, MissingResultFileError
@@ -54,7 +55,7 @@ class TaskResults:
         path = find_result_file(self._results_dir, result.path, task_id)
         if path is None:
             raise MissingResultFileError(result.path)
-        return DownloadFile(path, download_filename(result.metadata, datetime.now(UTC)))
+        return DownloadFile(path, download_filename(result.metadata, clock.utc_now()))
 
 
 def get_task_results(hintr: Hintr, settings: Annotated[Settings, Depends(get_settings)]) -> TaskResults:

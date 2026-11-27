@@ -154,3 +154,7 @@ msgstr "Auth0 State parameter mismatch possible threat of cross-site request for
 # New in hint-py.
 msgid "auth0CodeMissing"
 msgstr "Auth0 did not send a login code. Please try to log in again."
+
+
+msgid "adrLoginExpired"
+msgstr "Your login to ADR has expired. Please log in again."

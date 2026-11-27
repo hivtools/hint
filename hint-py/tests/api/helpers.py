@@ -9,6 +9,7 @@ from datetime import UTC, datetime, timedelta
 
 import httpx2
 from fastapi import FastAPI
+from pydantic import SecretStr
 from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, async_sessionmaker
 
@@ -20,7 +21,9 @@ from app.db.web_session_repository import WebSessionRepository
 from app.dependencies import GUEST_USER
 from app.main import app
 from app.schemas import FileType
+from app.services.token_encryption import TokenEncryption
 from app.services.web_sessions import COOKIE_NAME
+from tests.support import SESSION_ENCRYPTION_KEY
 
 STATE = json.dumps({"datasets": {}, "model_fit": {"id": "abc"}, "step": 3})
 
@@ -30,6 +33,7 @@ async def create_web_session(
     user: str,
     guest_versions: Collection[str] = (),
     access_token: str | None = None,
+    access_token_expires_at: datetime | None = None,
 ) -> str:
     """A live session in the database for `user` (or a guest who was given `guest_versions`), as a login or
     POST /guest/version makes. It gives the id for the cookie."""
@@ -38,10 +42,13 @@ async def create_web_session(
     now = datetime.now(UTC)
     async with db_session_factory() as db_session, db_session.begin():
         repository = WebSessionRepository(db_session)
-        await repository.create(
+        await repository.create_session(
             id_hash,
             user_id=None if user == GUEST_USER else user,
-            access_token=access_token,
+            encrypted_access_token=TokenEncryption([SecretStr(SESSION_ENCRYPTION_KEY)]).encrypt(access_token)
+            if access_token
+            else None,
+            access_token_expires_at=access_token_expires_at,
             created_at=now,
             expires_at=now + timedelta(days=1),
         )
@@ -57,6 +64,7 @@ async def make_client(
     *,
     guest_versions: Collection[str] = (),
     access_token: str | None = None,
+    access_token_expires_at: datetime | None = None,
     to: FastAPI = app,
 ) -> AsyncGenerator[httpx2.AsyncClient]:
     """A client of the app (or of the app `to`), logged in as `user` with a session cookie (and working on `version_id`,
@@ -67,7 +75,9 @@ async def make_client(
     headers = {"X-Version-Id": version_id} if version_id else {}
     cookies = {}
     if user != GUEST_USER or guest_versions or access_token:
-        cookies[COOKIE_NAME] = await create_web_session(to.state.db_session_factory, user, guest_versions, access_token)
+        cookies[COOKIE_NAME] = await create_web_session(
+            to.state.db_session_factory, user, guest_versions, access_token, access_token_expires_at
+        )
     transport = httpx2.ASGITransport(app=to, raise_app_exceptions=False)
     async with httpx2.AsyncClient(transport=transport, base_url="http://test", headers=headers, cookies=cookies) as c:
         yield c
