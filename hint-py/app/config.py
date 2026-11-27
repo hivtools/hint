@@ -77,14 +77,13 @@ class Settings(BaseSettings):
     # repository, for `make run`. A container sets it to where the files are in it.
     static_dir: str = "../src/app/static/public"
 
-    # The address of the app, as the browser sees it (Kotlin: application_url), without a "/" at the end. Auth0 sends the
+    # The address of the app, as the browser sees it, without a "/" at the end. Auth0 sends the
     # browser back to <application_url>/callback/oauth2Client after a login, and to <application_url>/login after a
     # logout, so both must be in the Auth0 application's allowed URLs. The session cookie is `Secure` when it is https.
     application_url: str = "http://localhost:8080"
 
-    # Login with Auth0 (single sign-on), as in every deployment. Kotlin: oauth2_client_url (the domain, without
-    # https://), oauth2_client_id, oauth2_client_secret, oauth2_client_audience, oauth2_client_scope. If the domain is
-    # empty, the login page has no single sign-on button.
+    # Login with Auth0 (single sign-on), as in every deployment: the domain (without https://), and the id and secret of
+    # the Auth0 application. If the domain is empty, the login page has no single sign-on button.
     auth0_domain: str = ""
     auth0_client_id: str = ""
     auth0_client_secret: SecretStr = SecretStr("")

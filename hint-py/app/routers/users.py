@@ -1,7 +1,7 @@
-"""The users and the guest's versions, which Kotlin served until login moved to Python.
+"""The users, and the versions of the guests.
 
 - `GET /user/{email}/exists`: whether a user has this email (ignoring case). The Vue app asks it before it shares or
-  copies a project to someone. Only for a logged in user (Kotlin: SecurePaths, `/user/**`).
+  copies a project to someone. Only for a logged in user: it tells whether someone has an account.
 - `POST /guest/version`: a guest has no projects, so each guest tab asks for a version of its own here. The session
   remembers which versions it gave out, and only those are the guest's (see `current_version_id`).
 """

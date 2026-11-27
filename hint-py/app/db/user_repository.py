@@ -22,9 +22,8 @@ class UserRepository:
         )
 
     async def find_or_add_user(self, email: str) -> str:
-        """The id of the user with this email (ignoring case), after adding them if there is none. As Kotlin did for a
-        first login with Auth0 (`addOAuth2User`): the new user's id and username are the email, and they have no
-        password."""
+        """The id of the user with this email (ignoring case), after adding them if there is none (a first login).
+        A new user's id and username are the email, and they have no password."""
         user_id = await self.find_user_id(email)
         if user_id is not None:
             return user_id

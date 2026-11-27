@@ -118,7 +118,7 @@ async def test_the_login_page_shows_no_error_otherwise(browser, auth0):
 
 
 async def test_what_the_login_page_shows_from_the_query_is_escaped(browser, auth0):
-    # Kotlin's page put the username from the query in the page as it was (quirk), Python's escapes all of it
+    # What comes from the query string must not become HTML in the page
     r = await browser.get("/login", params={"error": "SessionExpired", "message": "<b>x</b>"})
 
     assert "<b>x</b>" not in r.text
@@ -229,8 +229,7 @@ async def test_a_first_login_makes_the_user(browser, auth0, engine):
 
 
 async def test_an_existing_user_is_found_whatever_the_case_of_the_email(browser, auth0, engine):
-    # Kotlin found the user too, but then used Auth0's spelling as the id, so the user's projects could not be made
-    # (a foreign key error). Python uses the id of the user it found.
+    # The user's id is the one in the database, whatever the case Auth0 uses, so their projects are theirs
     auth0.email = USER.upper()
 
     await browser.get("/callback/oauth2Client", params={"state": await start_login(browser), "code": CODE})
@@ -297,7 +296,7 @@ async def test_a_state_cannot_be_used_twice(browser, auth0):
 
 
 async def test_a_callback_with_no_code_is_refused(browser, auth0):
-    # Auth0 sends no code when the user does not let the app in. Kotlin sent the browser to / without a login.
+    # Auth0 sends no code when the user does not let the app in
     r = await browser.get(
         "/callback/oauth2Client", params={"state": await start_login(browser), "error": "access_denied"}
     )
@@ -325,7 +324,7 @@ async def test_when_auth0_fails_nobody_is_logged_in(browser, auth0, engine, faul
 
     r = await browser.get("/callback/oauth2Client", params={"state": state, "code": CODE})
 
-    # An unexpected error, as in Kotlin
+    # An unexpected error: the user can only try again
     assert r.status_code == 500
     assert TOKEN not in r.text
     assert await me(browser) == "guest"

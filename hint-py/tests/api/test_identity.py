@@ -52,7 +52,7 @@ async def test_guest_versions_are_the_ones_the_server_gave_to_the_guest():
 
 
 async def test_the_identity_headers_of_the_old_proxy_are_ignored(anonymous_client: httpx2.AsyncClient):
-    # nginx used to ask Kotlin who the user was and send it in these. Now a client could send them itself
+    # Old headers that once said who the user was. A client could send them, so they must not count
     r = await anonymous_client.get(
         "/items/whoami",
         headers={"X-Hint-User": USER, "X-Hint-Guest-Versions": "v1", "X-Hint-Access-Token": "a.b.c"},

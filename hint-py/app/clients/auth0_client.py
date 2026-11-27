@@ -1,4 +1,4 @@
-"""Login with Auth0 (single sign-on), the OAuth 2 authorization code flow. Kotlin did this with pac4j.
+"""Login with Auth0 (single sign-on), the OAuth 2 authorization code flow.
 
 1. `GET /oauth2` sends the browser to Auth0's `/authorize`, with a random `state` that the session keeps.
 2. The user logs in at Auth0, which sends the browser back to `/callback/oauth2Client` with a `code` and the `state`.

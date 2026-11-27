@@ -334,10 +334,10 @@ Deployed, users log in with Auth0. In development there is no Auth0: the login p
 | Setting                     | Default                           | What it is                                                     |
 |-----------------------------|-----------------------------------|----------------------------------------------------------------|
 | `HINT_APPLICATION_URL`      | `http://localhost:8080`           | The app as the browser sees it. Auth0 sends the browser back to `<this>/callback/oauth2Client`, and to `<this>/login` after a logout. The cookie is `Secure` if it is https. |
-| `HINT_AUTH0_DOMAIN`         | (none)                            | The Auth0 domain, without `https://` (Kotlin: `oauth2_client_url`). Without it there is no Auth0 button. |
-| `HINT_AUTH0_CLIENT_ID`      | (none)                            | Kotlin: `oauth2_client_id`.                                    |
-| `HINT_AUTH0_CLIENT_SECRET`  | (none)                            | A secret. Kotlin: `oauth2_client_secret`.                      |
-| `HINT_AUTH0_AUDIENCE`       | `naomi`                           | Kotlin: `oauth2_client_audience`.                              |
+| `HINT_AUTH0_DOMAIN`         | (none)                            | The Auth0 domain, without `https://`. Without it there is no Auth0 button. |
+| `HINT_AUTH0_CLIENT_ID`      | (none)                            | The id of the Auth0 application.                               |
+| `HINT_AUTH0_CLIENT_SECRET`  | (none)                            | A secret: the secret of the Auth0 application.                 |
+| `HINT_AUTH0_AUDIENCE`       | `naomi`                           | The API the access token is for.                               |
 | `HINT_AUTH0_SCOPE`          | `openid profile email access:adr` | `access:adr` gives a token that ADR accepts, to call ADR as the user. |
 | `HINT_DEV_USERS`            | (none)                            | Development only, comma separated. Refused with Auth0, with an https address, or without `HINT_ENVIRONMENT=development`. |
 

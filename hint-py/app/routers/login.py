@@ -1,4 +1,4 @@
-"""Logging in and out. Kotlin did this with pac4j. See D22 in docs/porting-checklist.md for what is different.
+"""Logging in and out.
 
 - `GET /login`: the login page. Deployed, it has the Auth0 (single sign-on) button. In development it has one button
   for each user in `HINT_DEV_USERS` instead (`POST /dev-login`). There is no password login (D11).
@@ -131,7 +131,7 @@ async def auth0_callback(
         raise LoginStateMismatchError
     if not code:
         raise LoginCodeMissingError
-    # Auth0Error, if Auth0 gives no token or no user, is an unexpected error (500), as in Kotlin
+    # Auth0Error, if Auth0 gives no token or no user, is an unexpected error (500): the user can only try again
     access_token = await auth0.access_token(code)
     email = await auth0.email(access_token)
     if not email or "@" not in email:
@@ -166,7 +166,7 @@ async def dev_login(
 
 @router.get("/logout")
 async def logout(settings: SettingsDep, sessions: Sessions, session: CurrentWebSession, auth0: Auth0Client) -> Response:
-    # A user who logged in with Auth0 is logged out of Auth0 too (Kotlin: pac4j's central logout), or Auth0 would log
+    # A user who logged in with Auth0 is logged out of Auth0 too or Auth0 would log
     # them straight back in. Auth0 then sends the browser to the login page.
     with_auth0 = session is not None and session.access_token is not None and settings.auth0_configured
     response = RedirectResponse(auth0.logout_url() if with_auth0 else "/login", status_code=302)
